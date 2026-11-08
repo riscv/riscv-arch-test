@@ -104,12 +104,12 @@ SEW_INDEPENDENT_CPS = {
 }
 
 # Vector extension prefixes used to identify vector architectures.
-VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv")
+VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv", "SsstrictV", "SsstrictZv")
 
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsZv", "ExceptionsV", "SsstrictV", "MisalignV")
+PRIV_VECTOR_PREFIXES = ("ExceptionsZv", "ExceptionsV", "SsstrictV", "SsstrictZv")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")

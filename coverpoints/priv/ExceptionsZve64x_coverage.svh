@@ -1058,6 +1058,33 @@ covergroup ExceptionsZve64x_vl1re16_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -1151,6 +1178,33 @@ covergroup ExceptionsZve64x_vl1re32_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -1246,6 +1300,33 @@ covergroup ExceptionsZve64x_vl1re64_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -1339,6 +1420,33 @@ covergroup ExceptionsZve64x_vl1re64_v_sew32__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -1434,6 +1542,33 @@ covergroup ExceptionsZve64x_vl1re64_v_sew8__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -1527,6 +1662,33 @@ covergroup ExceptionsZve64x_vl1re64_v_sew16__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -1622,6 +1784,33 @@ covergroup ExceptionsZve64x_vl1re8_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -1715,6 +1904,33 @@ covergroup ExceptionsZve64x_vl2re16_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -1810,6 +2026,33 @@ covergroup ExceptionsZve64x_vl2re32_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -1903,6 +2146,33 @@ covergroup ExceptionsZve64x_vl2re64_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -1998,6 +2268,33 @@ covergroup ExceptionsZve64x_vl2re64_v_sew32__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -2091,6 +2388,33 @@ covergroup ExceptionsZve64x_vl2re64_v_sew8__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -2186,6 +2510,33 @@ covergroup ExceptionsZve64x_vl2re64_v_sew16__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -2279,6 +2630,33 @@ covergroup ExceptionsZve64x_vl2re8_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -2374,6 +2752,33 @@ covergroup ExceptionsZve64x_vl4re16_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -2467,6 +2872,33 @@ covergroup ExceptionsZve64x_vl4re32_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -2562,6 +2994,33 @@ covergroup ExceptionsZve64x_vl4re64_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -2655,6 +3114,33 @@ covergroup ExceptionsZve64x_vl4re64_v_sew32__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -2750,6 +3236,33 @@ covergroup ExceptionsZve64x_vl4re64_v_sew8__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -2843,6 +3356,33 @@ covergroup ExceptionsZve64x_vl4re64_v_sew16__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -2938,6 +3478,33 @@ covergroup ExceptionsZve64x_vl4re8_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -3031,6 +3598,33 @@ covergroup ExceptionsZve64x_vl8re16_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -3126,6 +3720,33 @@ covergroup ExceptionsZve64x_vl8re32_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -3219,6 +3840,33 @@ covergroup ExceptionsZve64x_vl8re64_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -3314,6 +3962,33 @@ covergroup ExceptionsZve64x_vl8re64_v_sew32__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -3407,6 +4082,33 @@ covergroup ExceptionsZve64x_vl8re64_v_sew8__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -3502,6 +4204,33 @@ covergroup ExceptionsZve64x_vl8re64_v_sew16__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -3596,6 +4325,33 @@ covergroup ExceptionsZve64x_vl8re8_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -3689,6 +4445,31 @@ covergroup ExceptionsZve64x_vle16_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -3803,6 +4584,31 @@ covergroup ExceptionsZve64x_vle16ff_v_sew64__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -3896,6 +4702,31 @@ covergroup ExceptionsZve64x_vle32_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -4010,6 +4841,31 @@ covergroup ExceptionsZve64x_vle32ff_v_sew64__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -4103,6 +4959,31 @@ covergroup ExceptionsZve64x_vle64_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -4198,6 +5079,31 @@ covergroup ExceptionsZve64x_vle64_v_sew32__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -4292,6 +5198,31 @@ covergroup ExceptionsZve64x_vle64_v_sew8__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -4385,6 +5316,31 @@ covergroup ExceptionsZve64x_vle64_v_sew16__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -4499,6 +5455,31 @@ covergroup ExceptionsZve64x_vle64ff_v_sew64__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -4611,6 +5592,31 @@ covergroup ExceptionsZve64x_vle64ff_v_sew32__cg with function sample(ins_t ins);
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -4725,6 +5731,31 @@ covergroup ExceptionsZve64x_vle64ff_v_sew8__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -4838,6 +5869,31 @@ covergroup ExceptionsZve64x_vle64ff_v_sew16__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -4931,6 +5987,31 @@ covergroup ExceptionsZve64x_vle8_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -5045,6 +6126,31 @@ covergroup ExceptionsZve64x_vle8ff_v_sew64__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -5138,6 +6244,31 @@ covergroup ExceptionsZve64x_vlm_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -5273,6 +6404,31 @@ covergroup ExceptionsZve64x_vloxei16_v_sew64__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -5406,6 +6562,31 @@ covergroup ExceptionsZve64x_vloxei32_v_sew64__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -5541,6 +6722,31 @@ covergroup ExceptionsZve64x_vloxei64_v_sew32__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -5674,6 +6880,31 @@ covergroup ExceptionsZve64x_vloxei64_v_sew16__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -5809,6 +7040,31 @@ covergroup ExceptionsZve64x_vloxei64_v_sew8__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -5924,6 +7180,31 @@ covergroup ExceptionsZve64x_vloxei8_v_sew64__cg with function sample(ins_t ins);
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -6059,6 +7340,31 @@ covergroup ExceptionsZve64x_vloxseg2ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -6192,6 +7498,31 @@ covergroup ExceptionsZve64x_vloxseg2ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -6327,6 +7658,31 @@ covergroup ExceptionsZve64x_vloxseg2ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -6460,6 +7816,31 @@ covergroup ExceptionsZve64x_vloxseg2ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -6595,6 +7976,31 @@ covergroup ExceptionsZve64x_vloxseg2ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -6710,6 +8116,31 @@ covergroup ExceptionsZve64x_vloxseg2ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -6845,6 +8276,31 @@ covergroup ExceptionsZve64x_vloxseg3ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -6978,6 +8434,31 @@ covergroup ExceptionsZve64x_vloxseg3ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -7113,6 +8594,31 @@ covergroup ExceptionsZve64x_vloxseg3ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -7246,6 +8752,31 @@ covergroup ExceptionsZve64x_vloxseg3ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -7381,6 +8912,31 @@ covergroup ExceptionsZve64x_vloxseg3ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -7496,6 +9052,31 @@ covergroup ExceptionsZve64x_vloxseg3ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -7631,6 +9212,31 @@ covergroup ExceptionsZve64x_vloxseg4ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -7764,6 +9370,31 @@ covergroup ExceptionsZve64x_vloxseg4ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -7899,6 +9530,31 @@ covergroup ExceptionsZve64x_vloxseg4ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -8032,6 +9688,31 @@ covergroup ExceptionsZve64x_vloxseg4ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -8167,6 +9848,31 @@ covergroup ExceptionsZve64x_vloxseg4ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -8282,6 +9988,31 @@ covergroup ExceptionsZve64x_vloxseg4ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -8417,6 +10148,31 @@ covergroup ExceptionsZve64x_vloxseg5ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -8550,6 +10306,31 @@ covergroup ExceptionsZve64x_vloxseg5ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -8685,6 +10466,31 @@ covergroup ExceptionsZve64x_vloxseg5ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -8818,6 +10624,31 @@ covergroup ExceptionsZve64x_vloxseg5ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -8953,6 +10784,31 @@ covergroup ExceptionsZve64x_vloxseg5ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -9068,6 +10924,31 @@ covergroup ExceptionsZve64x_vloxseg5ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -9203,6 +11084,31 @@ covergroup ExceptionsZve64x_vloxseg6ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -9336,6 +11242,31 @@ covergroup ExceptionsZve64x_vloxseg6ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -9471,6 +11402,31 @@ covergroup ExceptionsZve64x_vloxseg6ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -9604,6 +11560,31 @@ covergroup ExceptionsZve64x_vloxseg6ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -9739,6 +11720,31 @@ covergroup ExceptionsZve64x_vloxseg6ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -9854,6 +11860,31 @@ covergroup ExceptionsZve64x_vloxseg6ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -9989,6 +12020,31 @@ covergroup ExceptionsZve64x_vloxseg7ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -10122,6 +12178,31 @@ covergroup ExceptionsZve64x_vloxseg7ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -10257,6 +12338,31 @@ covergroup ExceptionsZve64x_vloxseg7ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -10390,6 +12496,31 @@ covergroup ExceptionsZve64x_vloxseg7ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -10525,6 +12656,31 @@ covergroup ExceptionsZve64x_vloxseg7ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -10640,6 +12796,31 @@ covergroup ExceptionsZve64x_vloxseg7ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -10775,6 +12956,31 @@ covergroup ExceptionsZve64x_vloxseg8ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -10908,6 +13114,31 @@ covergroup ExceptionsZve64x_vloxseg8ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -11043,6 +13274,31 @@ covergroup ExceptionsZve64x_vloxseg8ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -11176,6 +13432,31 @@ covergroup ExceptionsZve64x_vloxseg8ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -11311,6 +13592,31 @@ covergroup ExceptionsZve64x_vloxseg8ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -11427,6 +13733,31 @@ covergroup ExceptionsZve64x_vloxseg8ei8_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -11520,6 +13851,31 @@ covergroup ExceptionsZve64x_vlse16_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -11615,6 +13971,31 @@ covergroup ExceptionsZve64x_vlse32_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -11708,6 +14089,31 @@ covergroup ExceptionsZve64x_vlse64_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -11803,6 +14209,31 @@ covergroup ExceptionsZve64x_vlse64_v_sew32__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -11896,6 +14327,31 @@ covergroup ExceptionsZve64x_vlse64_v_sew8__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -11991,6 +14447,31 @@ covergroup ExceptionsZve64x_vlse64_v_sew16__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -12085,6 +14566,31 @@ covergroup ExceptionsZve64x_vlse8_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -12178,6 +14684,31 @@ covergroup ExceptionsZve64x_vlseg2e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -12292,6 +14823,31 @@ covergroup ExceptionsZve64x_vlseg2e16ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -12385,6 +14941,31 @@ covergroup ExceptionsZve64x_vlseg2e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -12499,6 +15080,31 @@ covergroup ExceptionsZve64x_vlseg2e32ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -12592,6 +15198,31 @@ covergroup ExceptionsZve64x_vlseg2e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -12687,6 +15318,31 @@ covergroup ExceptionsZve64x_vlseg2e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -12781,6 +15437,31 @@ covergroup ExceptionsZve64x_vlseg2e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -12874,6 +15555,31 @@ covergroup ExceptionsZve64x_vlseg2e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -12988,6 +15694,31 @@ covergroup ExceptionsZve64x_vlseg2e64ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -13100,6 +15831,31 @@ covergroup ExceptionsZve64x_vlseg2e64ff_v_sew32__cg with function sample(ins_t i
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -13214,6 +15970,31 @@ covergroup ExceptionsZve64x_vlseg2e64ff_v_sew8__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -13327,6 +16108,31 @@ covergroup ExceptionsZve64x_vlseg2e64ff_v_sew16__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -13420,6 +16226,31 @@ covergroup ExceptionsZve64x_vlseg2e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -13534,6 +16365,31 @@ covergroup ExceptionsZve64x_vlseg2e8ff_v_sew64__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -13627,6 +16483,31 @@ covergroup ExceptionsZve64x_vlseg3e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -13741,6 +16622,31 @@ covergroup ExceptionsZve64x_vlseg3e16ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -13834,6 +16740,31 @@ covergroup ExceptionsZve64x_vlseg3e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -13948,6 +16879,31 @@ covergroup ExceptionsZve64x_vlseg3e32ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -14041,6 +16997,31 @@ covergroup ExceptionsZve64x_vlseg3e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -14136,6 +17117,31 @@ covergroup ExceptionsZve64x_vlseg3e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -14230,6 +17236,31 @@ covergroup ExceptionsZve64x_vlseg3e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -14323,6 +17354,31 @@ covergroup ExceptionsZve64x_vlseg3e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -14437,6 +17493,31 @@ covergroup ExceptionsZve64x_vlseg3e64ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -14549,6 +17630,31 @@ covergroup ExceptionsZve64x_vlseg3e64ff_v_sew32__cg with function sample(ins_t i
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -14663,6 +17769,31 @@ covergroup ExceptionsZve64x_vlseg3e64ff_v_sew8__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -14776,6 +17907,31 @@ covergroup ExceptionsZve64x_vlseg3e64ff_v_sew16__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -14869,6 +18025,31 @@ covergroup ExceptionsZve64x_vlseg3e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -14983,6 +18164,31 @@ covergroup ExceptionsZve64x_vlseg3e8ff_v_sew64__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -15076,6 +18282,31 @@ covergroup ExceptionsZve64x_vlseg4e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -15190,6 +18421,31 @@ covergroup ExceptionsZve64x_vlseg4e16ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -15283,6 +18539,31 @@ covergroup ExceptionsZve64x_vlseg4e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -15397,6 +18678,31 @@ covergroup ExceptionsZve64x_vlseg4e32ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -15490,6 +18796,31 @@ covergroup ExceptionsZve64x_vlseg4e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -15585,6 +18916,31 @@ covergroup ExceptionsZve64x_vlseg4e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -15679,6 +19035,31 @@ covergroup ExceptionsZve64x_vlseg4e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -15772,6 +19153,31 @@ covergroup ExceptionsZve64x_vlseg4e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -15886,6 +19292,31 @@ covergroup ExceptionsZve64x_vlseg4e64ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -15998,6 +19429,31 @@ covergroup ExceptionsZve64x_vlseg4e64ff_v_sew32__cg with function sample(ins_t i
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -16112,6 +19568,31 @@ covergroup ExceptionsZve64x_vlseg4e64ff_v_sew8__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -16225,6 +19706,31 @@ covergroup ExceptionsZve64x_vlseg4e64ff_v_sew16__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -16318,6 +19824,31 @@ covergroup ExceptionsZve64x_vlseg4e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -16432,6 +19963,31 @@ covergroup ExceptionsZve64x_vlseg4e8ff_v_sew64__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -16525,6 +20081,31 @@ covergroup ExceptionsZve64x_vlseg5e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -16639,6 +20220,31 @@ covergroup ExceptionsZve64x_vlseg5e16ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -16732,6 +20338,31 @@ covergroup ExceptionsZve64x_vlseg5e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -16846,6 +20477,31 @@ covergroup ExceptionsZve64x_vlseg5e32ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -16939,6 +20595,31 @@ covergroup ExceptionsZve64x_vlseg5e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -17034,6 +20715,31 @@ covergroup ExceptionsZve64x_vlseg5e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -17128,6 +20834,31 @@ covergroup ExceptionsZve64x_vlseg5e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -17221,6 +20952,31 @@ covergroup ExceptionsZve64x_vlseg5e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -17335,6 +21091,31 @@ covergroup ExceptionsZve64x_vlseg5e64ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -17447,6 +21228,31 @@ covergroup ExceptionsZve64x_vlseg5e64ff_v_sew32__cg with function sample(ins_t i
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -17561,6 +21367,31 @@ covergroup ExceptionsZve64x_vlseg5e64ff_v_sew8__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -17674,6 +21505,31 @@ covergroup ExceptionsZve64x_vlseg5e64ff_v_sew16__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -17767,6 +21623,31 @@ covergroup ExceptionsZve64x_vlseg5e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -17881,6 +21762,31 @@ covergroup ExceptionsZve64x_vlseg5e8ff_v_sew64__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -17974,6 +21880,31 @@ covergroup ExceptionsZve64x_vlseg6e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -18088,6 +22019,31 @@ covergroup ExceptionsZve64x_vlseg6e16ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -18181,6 +22137,31 @@ covergroup ExceptionsZve64x_vlseg6e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -18295,6 +22276,31 @@ covergroup ExceptionsZve64x_vlseg6e32ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -18388,6 +22394,31 @@ covergroup ExceptionsZve64x_vlseg6e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -18483,6 +22514,31 @@ covergroup ExceptionsZve64x_vlseg6e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -18577,6 +22633,31 @@ covergroup ExceptionsZve64x_vlseg6e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -18670,6 +22751,31 @@ covergroup ExceptionsZve64x_vlseg6e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -18784,6 +22890,31 @@ covergroup ExceptionsZve64x_vlseg6e64ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -18896,6 +23027,31 @@ covergroup ExceptionsZve64x_vlseg6e64ff_v_sew32__cg with function sample(ins_t i
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -19010,6 +23166,31 @@ covergroup ExceptionsZve64x_vlseg6e64ff_v_sew8__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -19123,6 +23304,31 @@ covergroup ExceptionsZve64x_vlseg6e64ff_v_sew16__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -19216,6 +23422,31 @@ covergroup ExceptionsZve64x_vlseg6e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -19330,6 +23561,31 @@ covergroup ExceptionsZve64x_vlseg6e8ff_v_sew64__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -19423,6 +23679,31 @@ covergroup ExceptionsZve64x_vlseg7e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -19537,6 +23818,31 @@ covergroup ExceptionsZve64x_vlseg7e16ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -19630,6 +23936,31 @@ covergroup ExceptionsZve64x_vlseg7e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -19744,6 +24075,31 @@ covergroup ExceptionsZve64x_vlseg7e32ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -19837,6 +24193,31 @@ covergroup ExceptionsZve64x_vlseg7e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -19932,6 +24313,31 @@ covergroup ExceptionsZve64x_vlseg7e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -20026,6 +24432,31 @@ covergroup ExceptionsZve64x_vlseg7e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -20119,6 +24550,31 @@ covergroup ExceptionsZve64x_vlseg7e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -20233,6 +24689,31 @@ covergroup ExceptionsZve64x_vlseg7e64ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -20345,6 +24826,31 @@ covergroup ExceptionsZve64x_vlseg7e64ff_v_sew32__cg with function sample(ins_t i
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -20459,6 +24965,31 @@ covergroup ExceptionsZve64x_vlseg7e64ff_v_sew8__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -20572,6 +25103,31 @@ covergroup ExceptionsZve64x_vlseg7e64ff_v_sew16__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -20665,6 +25221,31 @@ covergroup ExceptionsZve64x_vlseg7e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -20779,6 +25360,31 @@ covergroup ExceptionsZve64x_vlseg7e8ff_v_sew64__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -20872,6 +25478,31 @@ covergroup ExceptionsZve64x_vlseg8e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -20986,6 +25617,31 @@ covergroup ExceptionsZve64x_vlseg8e16ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -21079,6 +25735,31 @@ covergroup ExceptionsZve64x_vlseg8e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -21193,6 +25874,31 @@ covergroup ExceptionsZve64x_vlseg8e32ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -21286,6 +25992,31 @@ covergroup ExceptionsZve64x_vlseg8e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -21381,6 +26112,31 @@ covergroup ExceptionsZve64x_vlseg8e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -21475,6 +26231,31 @@ covergroup ExceptionsZve64x_vlseg8e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -21568,6 +26349,31 @@ covergroup ExceptionsZve64x_vlseg8e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -21682,6 +26488,31 @@ covergroup ExceptionsZve64x_vlseg8e64ff_v_sew64__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -21794,6 +26625,31 @@ covergroup ExceptionsZve64x_vlseg8e64ff_v_sew32__cg with function sample(ins_t i
     cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -21908,6 +26764,31 @@ covergroup ExceptionsZve64x_vlseg8e64ff_v_sew8__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -22021,6 +26902,31 @@ covergroup ExceptionsZve64x_vlseg8e64ff_v_sew16__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -22114,6 +27020,31 @@ covergroup ExceptionsZve64x_vlseg8e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -22228,6 +27159,31 @@ covergroup ExceptionsZve64x_vlseg8e8ff_v_sew64__cg with function sample(ins_t in
 
     //// end cp_exceptionsv_ffLS////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -22321,6 +27277,31 @@ covergroup ExceptionsZve64x_vlsseg2e16_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -22416,6 +27397,31 @@ covergroup ExceptionsZve64x_vlsseg2e32_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -22509,6 +27515,31 @@ covergroup ExceptionsZve64x_vlsseg2e64_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -22604,6 +27635,31 @@ covergroup ExceptionsZve64x_vlsseg2e64_v_sew32__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -22697,6 +27753,31 @@ covergroup ExceptionsZve64x_vlsseg2e64_v_sew8__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -22792,6 +27873,31 @@ covergroup ExceptionsZve64x_vlsseg2e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -22885,6 +27991,31 @@ covergroup ExceptionsZve64x_vlsseg2e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -22980,6 +28111,31 @@ covergroup ExceptionsZve64x_vlsseg3e16_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -23073,6 +28229,31 @@ covergroup ExceptionsZve64x_vlsseg3e32_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -23168,6 +28349,31 @@ covergroup ExceptionsZve64x_vlsseg3e64_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -23261,6 +28467,31 @@ covergroup ExceptionsZve64x_vlsseg3e64_v_sew32__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -23356,6 +28587,31 @@ covergroup ExceptionsZve64x_vlsseg3e64_v_sew8__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -23449,6 +28705,31 @@ covergroup ExceptionsZve64x_vlsseg3e64_v_sew16__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -23544,6 +28825,31 @@ covergroup ExceptionsZve64x_vlsseg3e8_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -23637,6 +28943,31 @@ covergroup ExceptionsZve64x_vlsseg4e16_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -23732,6 +29063,31 @@ covergroup ExceptionsZve64x_vlsseg4e32_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -23825,6 +29181,31 @@ covergroup ExceptionsZve64x_vlsseg4e64_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -23920,6 +29301,31 @@ covergroup ExceptionsZve64x_vlsseg4e64_v_sew32__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -24013,6 +29419,31 @@ covergroup ExceptionsZve64x_vlsseg4e64_v_sew8__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -24108,6 +29539,31 @@ covergroup ExceptionsZve64x_vlsseg4e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -24201,6 +29657,31 @@ covergroup ExceptionsZve64x_vlsseg4e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -24296,6 +29777,31 @@ covergroup ExceptionsZve64x_vlsseg5e16_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -24389,6 +29895,31 @@ covergroup ExceptionsZve64x_vlsseg5e32_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -24484,6 +30015,31 @@ covergroup ExceptionsZve64x_vlsseg5e64_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -24577,6 +30133,31 @@ covergroup ExceptionsZve64x_vlsseg5e64_v_sew32__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -24672,6 +30253,31 @@ covergroup ExceptionsZve64x_vlsseg5e64_v_sew8__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -24765,6 +30371,31 @@ covergroup ExceptionsZve64x_vlsseg5e64_v_sew16__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -24860,6 +30491,31 @@ covergroup ExceptionsZve64x_vlsseg5e8_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -24953,6 +30609,31 @@ covergroup ExceptionsZve64x_vlsseg6e16_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -25048,6 +30729,31 @@ covergroup ExceptionsZve64x_vlsseg6e32_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -25141,6 +30847,31 @@ covergroup ExceptionsZve64x_vlsseg6e64_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -25236,6 +30967,31 @@ covergroup ExceptionsZve64x_vlsseg6e64_v_sew32__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -25329,6 +31085,31 @@ covergroup ExceptionsZve64x_vlsseg6e64_v_sew8__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -25424,6 +31205,31 @@ covergroup ExceptionsZve64x_vlsseg6e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -25517,6 +31323,31 @@ covergroup ExceptionsZve64x_vlsseg6e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -25612,6 +31443,31 @@ covergroup ExceptionsZve64x_vlsseg7e16_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -25705,6 +31561,31 @@ covergroup ExceptionsZve64x_vlsseg7e32_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -25800,6 +31681,31 @@ covergroup ExceptionsZve64x_vlsseg7e64_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -25893,6 +31799,31 @@ covergroup ExceptionsZve64x_vlsseg7e64_v_sew32__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -25988,6 +31919,31 @@ covergroup ExceptionsZve64x_vlsseg7e64_v_sew8__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -26081,6 +32037,31 @@ covergroup ExceptionsZve64x_vlsseg7e64_v_sew16__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -26176,6 +32157,31 @@ covergroup ExceptionsZve64x_vlsseg7e8_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -26269,6 +32275,31 @@ covergroup ExceptionsZve64x_vlsseg8e16_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -26364,6 +32395,31 @@ covergroup ExceptionsZve64x_vlsseg8e32_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -26457,6 +32513,31 @@ covergroup ExceptionsZve64x_vlsseg8e64_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -26552,6 +32633,31 @@ covergroup ExceptionsZve64x_vlsseg8e64_v_sew32__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -26645,6 +32751,31 @@ covergroup ExceptionsZve64x_vlsseg8e64_v_sew8__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -26740,6 +32871,31 @@ covergroup ExceptionsZve64x_vlsseg8e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -26833,6 +32989,31 @@ covergroup ExceptionsZve64x_vlsseg8e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -26968,6 +33149,31 @@ covergroup ExceptionsZve64x_vluxei16_v_sew64__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -27101,6 +33307,31 @@ covergroup ExceptionsZve64x_vluxei32_v_sew64__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -27236,6 +33467,31 @@ covergroup ExceptionsZve64x_vluxei64_v_sew32__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -27369,6 +33625,31 @@ covergroup ExceptionsZve64x_vluxei64_v_sew16__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -27504,6 +33785,31 @@ covergroup ExceptionsZve64x_vluxei64_v_sew8__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -27619,6 +33925,31 @@ covergroup ExceptionsZve64x_vluxei8_v_sew64__cg with function sample(ins_t ins);
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -27754,6 +34085,31 @@ covergroup ExceptionsZve64x_vluxseg2ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -27887,6 +34243,31 @@ covergroup ExceptionsZve64x_vluxseg2ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -28022,6 +34403,31 @@ covergroup ExceptionsZve64x_vluxseg2ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -28155,6 +34561,31 @@ covergroup ExceptionsZve64x_vluxseg2ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -28290,6 +34721,31 @@ covergroup ExceptionsZve64x_vluxseg2ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -28405,6 +34861,31 @@ covergroup ExceptionsZve64x_vluxseg2ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -28540,6 +35021,31 @@ covergroup ExceptionsZve64x_vluxseg3ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -28673,6 +35179,31 @@ covergroup ExceptionsZve64x_vluxseg3ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -28808,6 +35339,31 @@ covergroup ExceptionsZve64x_vluxseg3ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -28941,6 +35497,31 @@ covergroup ExceptionsZve64x_vluxseg3ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -29076,6 +35657,31 @@ covergroup ExceptionsZve64x_vluxseg3ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -29191,6 +35797,31 @@ covergroup ExceptionsZve64x_vluxseg3ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -29326,6 +35957,31 @@ covergroup ExceptionsZve64x_vluxseg4ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -29459,6 +36115,31 @@ covergroup ExceptionsZve64x_vluxseg4ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -29594,6 +36275,31 @@ covergroup ExceptionsZve64x_vluxseg4ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -29727,6 +36433,31 @@ covergroup ExceptionsZve64x_vluxseg4ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -29862,6 +36593,31 @@ covergroup ExceptionsZve64x_vluxseg4ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -29977,6 +36733,31 @@ covergroup ExceptionsZve64x_vluxseg4ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -30112,6 +36893,31 @@ covergroup ExceptionsZve64x_vluxseg5ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -30245,6 +37051,31 @@ covergroup ExceptionsZve64x_vluxseg5ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -30380,6 +37211,31 @@ covergroup ExceptionsZve64x_vluxseg5ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -30513,6 +37369,31 @@ covergroup ExceptionsZve64x_vluxseg5ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -30648,6 +37529,31 @@ covergroup ExceptionsZve64x_vluxseg5ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -30763,6 +37669,31 @@ covergroup ExceptionsZve64x_vluxseg5ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -30898,6 +37829,31 @@ covergroup ExceptionsZve64x_vluxseg6ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -31031,6 +37987,31 @@ covergroup ExceptionsZve64x_vluxseg6ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -31166,6 +38147,31 @@ covergroup ExceptionsZve64x_vluxseg6ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -31299,6 +38305,31 @@ covergroup ExceptionsZve64x_vluxseg6ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -31434,6 +38465,31 @@ covergroup ExceptionsZve64x_vluxseg6ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -31549,6 +38605,31 @@ covergroup ExceptionsZve64x_vluxseg6ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -31684,6 +38765,31 @@ covergroup ExceptionsZve64x_vluxseg7ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -31817,6 +38923,31 @@ covergroup ExceptionsZve64x_vluxseg7ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -31952,6 +39083,31 @@ covergroup ExceptionsZve64x_vluxseg7ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -32085,6 +39241,31 @@ covergroup ExceptionsZve64x_vluxseg7ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -32220,6 +39401,31 @@ covergroup ExceptionsZve64x_vluxseg7ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -32335,6 +39541,31 @@ covergroup ExceptionsZve64x_vluxseg7ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -32470,6 +39701,31 @@ covergroup ExceptionsZve64x_vluxseg8ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -32603,6 +39859,31 @@ covergroup ExceptionsZve64x_vluxseg8ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -32738,6 +40019,31 @@ covergroup ExceptionsZve64x_vluxseg8ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -32871,6 +40177,31 @@ covergroup ExceptionsZve64x_vluxseg8ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -33006,6 +40337,31 @@ covergroup ExceptionsZve64x_vluxseg8ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -33121,6 +40477,31 @@ covergroup ExceptionsZve64x_vluxseg8ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -37276,6 +44657,58 @@ covergroup ExceptionsZve64x_vs1r_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -37369,6 +44802,58 @@ covergroup ExceptionsZve64x_vs2r_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -37464,6 +44949,58 @@ covergroup ExceptionsZve64x_vs4r_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -37557,6 +45094,58 @@ covergroup ExceptionsZve64x_vs8r_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_wholereg_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise whole-register vector load/store (vl<nf>r / vs<nf>r) instructions
+// whose base address is not naturally aligned to max(EEW/8, SEWMIN/8).
+// Implementations are permitted to raise a misaligned-address exception on
+// such accesses or to complete them successfully; both outcomes are valid.
+// This coverpoint samples occurrence of the misaligned base with a valid
+// vtype and is intended to be applied to the whole-register L/S instruction
+// list.
+
+
+    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // any supported EEW of 2 bytes or larger.
+    base_misalign_0293c6 : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_wholereg_misaligned : cross vtype_valid_0293c6, base_misalign_0293c6;
+
+//// end cp_misalignv_ls_wholereg_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -37956,6 +45545,31 @@ covergroup ExceptionsZve64x_vse16_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -38049,6 +45663,31 @@ covergroup ExceptionsZve64x_vse32_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -38144,6 +45783,31 @@ covergroup ExceptionsZve64x_vse64_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -38237,6 +45901,31 @@ covergroup ExceptionsZve64x_vse64_v_sew32__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -38332,6 +46021,31 @@ covergroup ExceptionsZve64x_vse64_v_sew8__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -38426,6 +46140,31 @@ covergroup ExceptionsZve64x_vse64_v_sew16__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -38519,6 +46258,31 @@ covergroup ExceptionsZve64x_vse8_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -39070,6 +46834,31 @@ covergroup ExceptionsZve64x_vsm_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -39203,6 +46992,31 @@ covergroup ExceptionsZve64x_vsoxei16_v_sew64__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -39338,6 +47152,31 @@ covergroup ExceptionsZve64x_vsoxei32_v_sew64__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -39471,6 +47310,31 @@ covergroup ExceptionsZve64x_vsoxei64_v_sew32__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -39606,6 +47470,31 @@ covergroup ExceptionsZve64x_vsoxei64_v_sew16__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -39740,6 +47629,31 @@ covergroup ExceptionsZve64x_vsoxei64_v_sew8__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -39855,6 +47769,31 @@ covergroup ExceptionsZve64x_vsoxei8_v_sew64__cg with function sample(ins_t ins);
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -39990,6 +47929,31 @@ covergroup ExceptionsZve64x_vsoxseg2ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -40123,6 +48087,31 @@ covergroup ExceptionsZve64x_vsoxseg2ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -40258,6 +48247,31 @@ covergroup ExceptionsZve64x_vsoxseg2ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -40391,6 +48405,31 @@ covergroup ExceptionsZve64x_vsoxseg2ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -40526,6 +48565,31 @@ covergroup ExceptionsZve64x_vsoxseg2ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -40641,6 +48705,31 @@ covergroup ExceptionsZve64x_vsoxseg2ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -40776,6 +48865,31 @@ covergroup ExceptionsZve64x_vsoxseg3ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -40909,6 +49023,31 @@ covergroup ExceptionsZve64x_vsoxseg3ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -41044,6 +49183,31 @@ covergroup ExceptionsZve64x_vsoxseg3ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -41177,6 +49341,31 @@ covergroup ExceptionsZve64x_vsoxseg3ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -41312,6 +49501,31 @@ covergroup ExceptionsZve64x_vsoxseg3ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -41427,6 +49641,31 @@ covergroup ExceptionsZve64x_vsoxseg3ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -41562,6 +49801,31 @@ covergroup ExceptionsZve64x_vsoxseg4ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -41695,6 +49959,31 @@ covergroup ExceptionsZve64x_vsoxseg4ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -41830,6 +50119,31 @@ covergroup ExceptionsZve64x_vsoxseg4ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -41963,6 +50277,31 @@ covergroup ExceptionsZve64x_vsoxseg4ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -42098,6 +50437,31 @@ covergroup ExceptionsZve64x_vsoxseg4ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -42213,6 +50577,31 @@ covergroup ExceptionsZve64x_vsoxseg4ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -42348,6 +50737,31 @@ covergroup ExceptionsZve64x_vsoxseg5ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -42481,6 +50895,31 @@ covergroup ExceptionsZve64x_vsoxseg5ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -42616,6 +51055,31 @@ covergroup ExceptionsZve64x_vsoxseg5ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -42749,6 +51213,31 @@ covergroup ExceptionsZve64x_vsoxseg5ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -42884,6 +51373,31 @@ covergroup ExceptionsZve64x_vsoxseg5ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -42999,6 +51513,31 @@ covergroup ExceptionsZve64x_vsoxseg5ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -43134,6 +51673,31 @@ covergroup ExceptionsZve64x_vsoxseg6ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -43267,6 +51831,31 @@ covergroup ExceptionsZve64x_vsoxseg6ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -43402,6 +51991,31 @@ covergroup ExceptionsZve64x_vsoxseg6ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -43535,6 +52149,31 @@ covergroup ExceptionsZve64x_vsoxseg6ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -43670,6 +52309,31 @@ covergroup ExceptionsZve64x_vsoxseg6ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -43785,6 +52449,31 @@ covergroup ExceptionsZve64x_vsoxseg6ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -43920,6 +52609,31 @@ covergroup ExceptionsZve64x_vsoxseg7ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -44053,6 +52767,31 @@ covergroup ExceptionsZve64x_vsoxseg7ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -44188,6 +52927,31 @@ covergroup ExceptionsZve64x_vsoxseg7ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -44321,6 +53085,31 @@ covergroup ExceptionsZve64x_vsoxseg7ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -44456,6 +53245,31 @@ covergroup ExceptionsZve64x_vsoxseg7ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -44571,6 +53385,31 @@ covergroup ExceptionsZve64x_vsoxseg7ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -44706,6 +53545,31 @@ covergroup ExceptionsZve64x_vsoxseg8ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -44839,6 +53703,31 @@ covergroup ExceptionsZve64x_vsoxseg8ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -44974,6 +53863,31 @@ covergroup ExceptionsZve64x_vsoxseg8ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -45107,6 +54021,31 @@ covergroup ExceptionsZve64x_vsoxseg8ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -45242,6 +54181,31 @@ covergroup ExceptionsZve64x_vsoxseg8ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -45357,6 +54321,31 @@ covergroup ExceptionsZve64x_vsoxseg8ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -45680,6 +54669,31 @@ covergroup ExceptionsZve64x_vsse16_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -45773,6 +54787,31 @@ covergroup ExceptionsZve64x_vsse32_v_sew64__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -45868,6 +54907,31 @@ covergroup ExceptionsZve64x_vsse64_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -45961,6 +55025,31 @@ covergroup ExceptionsZve64x_vsse64_v_sew32__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -46056,6 +55145,31 @@ covergroup ExceptionsZve64x_vsse64_v_sew8__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -46149,6 +55263,31 @@ covergroup ExceptionsZve64x_vsse64_v_sew16__cg with function sample(ins_t ins);
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -46244,6 +55383,31 @@ covergroup ExceptionsZve64x_vsse8_v_sew64__cg with function sample(ins_t ins);
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -46337,6 +55501,31 @@ covergroup ExceptionsZve64x_vsseg2e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -46432,6 +55621,31 @@ covergroup ExceptionsZve64x_vsseg2e32_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -46525,6 +55739,31 @@ covergroup ExceptionsZve64x_vsseg2e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -46620,6 +55859,31 @@ covergroup ExceptionsZve64x_vsseg2e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -46713,6 +55977,31 @@ covergroup ExceptionsZve64x_vsseg2e64_v_sew8__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -46808,6 +56097,31 @@ covergroup ExceptionsZve64x_vsseg2e64_v_sew16__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -46901,6 +56215,31 @@ covergroup ExceptionsZve64x_vsseg2e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -46996,6 +56335,31 @@ covergroup ExceptionsZve64x_vsseg3e16_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -47089,6 +56453,31 @@ covergroup ExceptionsZve64x_vsseg3e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -47184,6 +56573,31 @@ covergroup ExceptionsZve64x_vsseg3e64_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -47277,6 +56691,31 @@ covergroup ExceptionsZve64x_vsseg3e64_v_sew32__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -47372,6 +56811,31 @@ covergroup ExceptionsZve64x_vsseg3e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -47465,6 +56929,31 @@ covergroup ExceptionsZve64x_vsseg3e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -47560,6 +57049,31 @@ covergroup ExceptionsZve64x_vsseg3e8_v_sew64__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -47653,6 +57167,31 @@ covergroup ExceptionsZve64x_vsseg4e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -47748,6 +57287,31 @@ covergroup ExceptionsZve64x_vsseg4e32_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -47841,6 +57405,31 @@ covergroup ExceptionsZve64x_vsseg4e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -47936,6 +57525,31 @@ covergroup ExceptionsZve64x_vsseg4e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -48029,6 +57643,31 @@ covergroup ExceptionsZve64x_vsseg4e64_v_sew8__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -48124,6 +57763,31 @@ covergroup ExceptionsZve64x_vsseg4e64_v_sew16__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -48217,6 +57881,31 @@ covergroup ExceptionsZve64x_vsseg4e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -48312,6 +58001,31 @@ covergroup ExceptionsZve64x_vsseg5e16_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -48405,6 +58119,31 @@ covergroup ExceptionsZve64x_vsseg5e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -48500,6 +58239,31 @@ covergroup ExceptionsZve64x_vsseg5e64_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -48593,6 +58357,31 @@ covergroup ExceptionsZve64x_vsseg5e64_v_sew32__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -48688,6 +58477,31 @@ covergroup ExceptionsZve64x_vsseg5e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -48781,6 +58595,31 @@ covergroup ExceptionsZve64x_vsseg5e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -48876,6 +58715,31 @@ covergroup ExceptionsZve64x_vsseg5e8_v_sew64__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -48969,6 +58833,31 @@ covergroup ExceptionsZve64x_vsseg6e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -49064,6 +58953,31 @@ covergroup ExceptionsZve64x_vsseg6e32_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -49157,6 +59071,31 @@ covergroup ExceptionsZve64x_vsseg6e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -49252,6 +59191,31 @@ covergroup ExceptionsZve64x_vsseg6e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -49345,6 +59309,31 @@ covergroup ExceptionsZve64x_vsseg6e64_v_sew8__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -49440,6 +59429,31 @@ covergroup ExceptionsZve64x_vsseg6e64_v_sew16__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -49533,6 +59547,31 @@ covergroup ExceptionsZve64x_vsseg6e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -49628,6 +59667,31 @@ covergroup ExceptionsZve64x_vsseg7e16_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -49721,6 +59785,31 @@ covergroup ExceptionsZve64x_vsseg7e32_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -49816,6 +59905,31 @@ covergroup ExceptionsZve64x_vsseg7e64_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -49909,6 +60023,31 @@ covergroup ExceptionsZve64x_vsseg7e64_v_sew32__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -50004,6 +60143,31 @@ covergroup ExceptionsZve64x_vsseg7e64_v_sew8__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -50097,6 +60261,31 @@ covergroup ExceptionsZve64x_vsseg7e64_v_sew16__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -50192,6 +60381,31 @@ covergroup ExceptionsZve64x_vsseg7e8_v_sew64__cg with function sample(ins_t ins)
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -50285,6 +60499,31 @@ covergroup ExceptionsZve64x_vsseg8e16_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -50380,6 +60619,31 @@ covergroup ExceptionsZve64x_vsseg8e32_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -50473,6 +60737,31 @@ covergroup ExceptionsZve64x_vsseg8e64_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -50568,6 +60857,31 @@ covergroup ExceptionsZve64x_vsseg8e64_v_sew32__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -50661,6 +60975,31 @@ covergroup ExceptionsZve64x_vsseg8e64_v_sew8__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -50756,6 +61095,31 @@ covergroup ExceptionsZve64x_vsseg8e64_v_sew16__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -50849,6 +61213,31 @@ covergroup ExceptionsZve64x_vsseg8e8_v_sew64__cg with function sample(ins_t ins)
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -51172,6 +61561,31 @@ covergroup ExceptionsZve64x_vssseg2e16_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -51265,6 +61679,31 @@ covergroup ExceptionsZve64x_vssseg2e32_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -51360,6 +61799,31 @@ covergroup ExceptionsZve64x_vssseg2e64_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -51453,6 +61917,31 @@ covergroup ExceptionsZve64x_vssseg2e64_v_sew32__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -51548,6 +62037,31 @@ covergroup ExceptionsZve64x_vssseg2e64_v_sew8__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -51641,6 +62155,31 @@ covergroup ExceptionsZve64x_vssseg2e64_v_sew16__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -51736,6 +62275,31 @@ covergroup ExceptionsZve64x_vssseg2e8_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -51829,6 +62393,31 @@ covergroup ExceptionsZve64x_vssseg3e16_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -51924,6 +62513,31 @@ covergroup ExceptionsZve64x_vssseg3e32_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -52017,6 +62631,31 @@ covergroup ExceptionsZve64x_vssseg3e64_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -52112,6 +62751,31 @@ covergroup ExceptionsZve64x_vssseg3e64_v_sew32__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -52205,6 +62869,31 @@ covergroup ExceptionsZve64x_vssseg3e64_v_sew8__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -52300,6 +62989,31 @@ covergroup ExceptionsZve64x_vssseg3e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -52393,6 +63107,31 @@ covergroup ExceptionsZve64x_vssseg3e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -52488,6 +63227,31 @@ covergroup ExceptionsZve64x_vssseg4e16_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -52581,6 +63345,31 @@ covergroup ExceptionsZve64x_vssseg4e32_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -52676,6 +63465,31 @@ covergroup ExceptionsZve64x_vssseg4e64_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -52769,6 +63583,31 @@ covergroup ExceptionsZve64x_vssseg4e64_v_sew32__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -52864,6 +63703,31 @@ covergroup ExceptionsZve64x_vssseg4e64_v_sew8__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -52957,6 +63821,31 @@ covergroup ExceptionsZve64x_vssseg4e64_v_sew16__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -53052,6 +63941,31 @@ covergroup ExceptionsZve64x_vssseg4e8_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -53145,6 +64059,31 @@ covergroup ExceptionsZve64x_vssseg5e16_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -53240,6 +64179,31 @@ covergroup ExceptionsZve64x_vssseg5e32_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -53333,6 +64297,31 @@ covergroup ExceptionsZve64x_vssseg5e64_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -53428,6 +64417,31 @@ covergroup ExceptionsZve64x_vssseg5e64_v_sew32__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -53521,6 +64535,31 @@ covergroup ExceptionsZve64x_vssseg5e64_v_sew8__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -53616,6 +64655,31 @@ covergroup ExceptionsZve64x_vssseg5e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -53709,6 +64773,31 @@ covergroup ExceptionsZve64x_vssseg5e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -53804,6 +64893,31 @@ covergroup ExceptionsZve64x_vssseg6e16_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -53897,6 +65011,31 @@ covergroup ExceptionsZve64x_vssseg6e32_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -53992,6 +65131,31 @@ covergroup ExceptionsZve64x_vssseg6e64_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -54085,6 +65249,31 @@ covergroup ExceptionsZve64x_vssseg6e64_v_sew32__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -54180,6 +65369,31 @@ covergroup ExceptionsZve64x_vssseg6e64_v_sew8__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -54273,6 +65487,31 @@ covergroup ExceptionsZve64x_vssseg6e64_v_sew16__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -54368,6 +65607,31 @@ covergroup ExceptionsZve64x_vssseg6e8_v_sew64__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -54461,6 +65725,31 @@ covergroup ExceptionsZve64x_vssseg7e16_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -54556,6 +65845,31 @@ covergroup ExceptionsZve64x_vssseg7e32_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -54649,6 +65963,31 @@ covergroup ExceptionsZve64x_vssseg7e64_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -54744,6 +66083,31 @@ covergroup ExceptionsZve64x_vssseg7e64_v_sew32__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -54837,6 +66201,31 @@ covergroup ExceptionsZve64x_vssseg7e64_v_sew8__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -54932,6 +66321,31 @@ covergroup ExceptionsZve64x_vssseg7e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -55025,6 +66439,31 @@ covergroup ExceptionsZve64x_vssseg7e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -55120,6 +66559,31 @@ covergroup ExceptionsZve64x_vssseg8e16_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -55213,6 +66677,31 @@ covergroup ExceptionsZve64x_vssseg8e32_v_sew64__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -55308,6 +66797,31 @@ covergroup ExceptionsZve64x_vssseg8e64_v_sew64__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -55401,6 +66915,31 @@ covergroup ExceptionsZve64x_vssseg8e64_v_sew32__cg with function sample(ins_t in
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -55496,6 +67035,31 @@ covergroup ExceptionsZve64x_vssseg8e64_v_sew8__cg with function sample(ins_t ins
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -55590,6 +67154,31 @@ covergroup ExceptionsZve64x_vssseg8e64_v_sew16__cg with function sample(ins_t in
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -55683,6 +67272,31 @@ covergroup ExceptionsZve64x_vssseg8e8_v_sew64__cg with function sample(ins_t ins
     cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -56046,6 +67660,31 @@ covergroup ExceptionsZve64x_vsuxei16_v_sew64__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -56179,6 +67818,31 @@ covergroup ExceptionsZve64x_vsuxei32_v_sew64__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -56314,6 +67978,31 @@ covergroup ExceptionsZve64x_vsuxei64_v_sew32__cg with function sample(ins_t ins)
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -56447,6 +68136,31 @@ covergroup ExceptionsZve64x_vsuxei64_v_sew16__cg with function sample(ins_t ins)
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -56582,6 +68296,31 @@ covergroup ExceptionsZve64x_vsuxei64_v_sew8__cg with function sample(ins_t ins);
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -56697,6 +68436,31 @@ covergroup ExceptionsZve64x_vsuxei8_v_sew64__cg with function sample(ins_t ins);
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -56832,6 +68596,31 @@ covergroup ExceptionsZve64x_vsuxseg2ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -56965,6 +68754,31 @@ covergroup ExceptionsZve64x_vsuxseg2ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -57100,6 +68914,31 @@ covergroup ExceptionsZve64x_vsuxseg2ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -57233,6 +69072,31 @@ covergroup ExceptionsZve64x_vsuxseg2ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -57368,6 +69232,31 @@ covergroup ExceptionsZve64x_vsuxseg2ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -57483,6 +69372,31 @@ covergroup ExceptionsZve64x_vsuxseg2ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -57618,6 +69532,31 @@ covergroup ExceptionsZve64x_vsuxseg3ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -57751,6 +69690,31 @@ covergroup ExceptionsZve64x_vsuxseg3ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -57886,6 +69850,31 @@ covergroup ExceptionsZve64x_vsuxseg3ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -58019,6 +70008,31 @@ covergroup ExceptionsZve64x_vsuxseg3ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -58154,6 +70168,31 @@ covergroup ExceptionsZve64x_vsuxseg3ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -58269,6 +70308,31 @@ covergroup ExceptionsZve64x_vsuxseg3ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -58404,6 +70468,31 @@ covergroup ExceptionsZve64x_vsuxseg4ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -58537,6 +70626,31 @@ covergroup ExceptionsZve64x_vsuxseg4ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -58672,6 +70786,31 @@ covergroup ExceptionsZve64x_vsuxseg4ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -58805,6 +70944,31 @@ covergroup ExceptionsZve64x_vsuxseg4ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -58940,6 +71104,31 @@ covergroup ExceptionsZve64x_vsuxseg4ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -59055,6 +71244,31 @@ covergroup ExceptionsZve64x_vsuxseg4ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -59190,6 +71404,31 @@ covergroup ExceptionsZve64x_vsuxseg5ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -59323,6 +71562,31 @@ covergroup ExceptionsZve64x_vsuxseg5ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -59458,6 +71722,31 @@ covergroup ExceptionsZve64x_vsuxseg5ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -59591,6 +71880,31 @@ covergroup ExceptionsZve64x_vsuxseg5ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -59726,6 +72040,31 @@ covergroup ExceptionsZve64x_vsuxseg5ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -59841,6 +72180,31 @@ covergroup ExceptionsZve64x_vsuxseg5ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -59976,6 +72340,31 @@ covergroup ExceptionsZve64x_vsuxseg6ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -60109,6 +72498,31 @@ covergroup ExceptionsZve64x_vsuxseg6ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -60244,6 +72658,31 @@ covergroup ExceptionsZve64x_vsuxseg6ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -60377,6 +72816,31 @@ covergroup ExceptionsZve64x_vsuxseg6ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -60512,6 +72976,31 @@ covergroup ExceptionsZve64x_vsuxseg6ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -60627,6 +73116,31 @@ covergroup ExceptionsZve64x_vsuxseg6ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -60762,6 +73276,31 @@ covergroup ExceptionsZve64x_vsuxseg7ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -60895,6 +73434,31 @@ covergroup ExceptionsZve64x_vsuxseg7ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -61030,6 +73594,31 @@ covergroup ExceptionsZve64x_vsuxseg7ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -61163,6 +73752,31 @@ covergroup ExceptionsZve64x_vsuxseg7ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -61298,6 +73912,31 @@ covergroup ExceptionsZve64x_vsuxseg7ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -61413,6 +74052,31 @@ covergroup ExceptionsZve64x_vsuxseg7ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -61548,6 +74212,31 @@ covergroup ExceptionsZve64x_vsuxseg8ei16_v_sew64__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -61681,6 +74370,31 @@ covergroup ExceptionsZve64x_vsuxseg8ei32_v_sew64__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -61816,6 +74530,31 @@ covergroup ExceptionsZve64x_vsuxseg8ei64_v_sew32__cg with function sample(ins_t 
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -61949,6 +74688,31 @@ covergroup ExceptionsZve64x_vsuxseg8ei64_v_sew16__cg with function sample(ins_t 
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
@@ -62084,6 +74848,31 @@ covergroup ExceptionsZve64x_vsuxseg8ei64_v_sew8__cg with function sample(ins_t i
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
@@ -62199,6 +74988,31 @@ covergroup ExceptionsZve64x_vsuxseg8ei8_v_sew64__cg with function sample(ins_t i
     }
 
     //// end cp_exceptionsv_indexed //////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_misalignv_ls_element_misaligned
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Exercise vector memory accesses whose base address is not naturally aligned
+// to the element size. The rule permits either a successful transfer or an
+// address-misaligned exception on the offending element; both outcomes are
+// architecturally valid, so this coverpoint samples only the occurrence of a
+// misaligned base with a valid vtype.
+
+
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        bins valid = {1'b0};
+    }
+
+    // Non-zero low bits of the base address indicate misalignment relative to
+    // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
+        bins offsets[] = {[3'b001:3'b111]};
+    }
+
+    cp_misalignv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
+
+//// end cp_misalignv_ls_element_misaligned ///////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill

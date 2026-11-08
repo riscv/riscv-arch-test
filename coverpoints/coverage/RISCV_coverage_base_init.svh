@@ -222,6 +222,26 @@
         `cover_info("//      SsstrictV - Enabled");
         `include "SsstrictV_coverage_init.svh"
     `endif
+    `ifdef COVER_SSSTRICTZVE32F
+        `cover_info("//      SsstrictZve32f - Enabled");
+        `include "SsstrictZve32f_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSSTRICTZVE32X
+        `cover_info("//      SsstrictZve32x - Enabled");
+        `include "SsstrictZve32x_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSSTRICTZVE64D
+        `cover_info("//      SsstrictZve64d - Enabled");
+        `include "SsstrictZve64d_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSSTRICTZVE64F
+        `cover_info("//      SsstrictZve64f - Enabled");
+        `include "SsstrictZve64f_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSSTRICTZVE64X
+        `cover_info("//      SsstrictZve64x - Enabled");
+        `include "SsstrictZve64x_coverage_init.svh"
+    `endif
     `ifdef COVER_SSTC
         `cover_info("//      Sstc - Enabled");
         `include "Sstc_coverage_init.svh"

@@ -169,6 +169,21 @@
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSSTRICTZVE32F
+        ssstrictzve32f_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE32X
+        ssstrictzve32x_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE64D
+        ssstrictzve64d_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE64F
+        ssstrictzve64f_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE64X
+        ssstrictzve64x_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSTC
         sstc_sample(hart, issue, ins);
     `endif

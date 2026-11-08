@@ -170,6 +170,21 @@
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
 `endif
+`ifdef SSSTRICTZVE32F_COVERAGE
+  `include "SsstrictZve32f_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE32X_COVERAGE
+  `include "SsstrictZve32x_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE64D_COVERAGE
+  `include "SsstrictZve64d_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE64F_COVERAGE
+  `include "SsstrictZve64f_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE64X_COVERAGE
+  `include "SsstrictZve64x_coverage.svh"
+`endif
 `ifdef SSTC_COVERAGE
   `include "Sstc_coverage.svh"
 `endif

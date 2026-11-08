@@ -104,7 +104,7 @@ SEW_INDEPENDENT_CPS = {
 }
 
 # Vector extension prefixes used to identify vector architectures.
-VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
+VECTOR_PREFIXES = ("Zv", "V")
 
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups

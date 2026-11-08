@@ -203,6 +203,9 @@
 `ifdef U_COVERAGE
   `include "U_coverage.svh"
 `endif
+`ifdef V_COVERAGE
+  `include "V_coverage.svh"
+`endif
 `ifdef VF16_COVERAGE
   `include "Vf16_coverage.svh"
 `endif
@@ -398,8 +401,20 @@
 `ifdef ZVBC64_COVERAGE
   `include "Zvbc64_coverage.svh"
 `endif
+`ifdef ZVE32F_COVERAGE
+  `include "Zve32f_coverage.svh"
+`endif
 `ifdef ZVE32X_COVERAGE
   `include "Zve32x_coverage.svh"
+`endif
+`ifdef ZVE64D_COVERAGE
+  `include "Zve64d_coverage.svh"
+`endif
+`ifdef ZVE64F_COVERAGE
+  `include "Zve64f_coverage.svh"
+`endif
+`ifdef ZVE64X_COVERAGE
+  `include "Zve64x_coverage.svh"
 `endif
 `ifdef ZVFBFMIN_COVERAGE
   `include "Zvfbfmin_coverage.svh"

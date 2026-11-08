@@ -5,13 +5,17 @@
 # Usage: tests_ai/run_ai.sh <Suite[,Suite...]> <config-dir>...
 #   e.g. tests_ai/run_ai.sh M,Sstc config/sail/sail-rv64-max config/spike/spike-rv32-max
 # Environment: DEBUG=1 adds objdumps and simulator traces; AI_WORKDIR overrides the work dir;
-#   AI_ONLY="glob ..." builds only the tests whose file names (without .S) match one of the globs.
+#   AI_ONLY="glob ..." builds only the tests whose file names (without .S) match one of the globs;
+#   AI_JOBS=N limits the parallel build and run jobs (default: all CPUs).
 #
+# The tests are generated, not committed: the script first runs `make tests-ai`, which regenerates
+# tests_ai/<Suite>/*.S from tests_ai/gen when a generator or helper has changed.
 # act discovers tests under <test-dir>/*/<Suite>/*.S and includes <test-dir>/env, so the
 # script builds a staging test dir with symlinks to tests/env and tests_ai.
 set -euo pipefail
 
 root=$(cd "$(dirname "$0")/.." && pwd)
+make -C "$root" -s tests-ai
 suites=$1
 shift
 work=${AI_WORKDIR:-$root/work/tests_ai}
@@ -47,7 +51,7 @@ for d in "$@"; do cfgs+=("$root/${d%/}/test_config.yaml"); done
 
 cd "$root"
 uv run act "${cfgs[@]}" --test-dir "$stage" --workdir "$work" --extensions "$suites" \
-  ${DEBUG:+--debug} --keep-going || true
+  ${DEBUG:+--debug} ${AI_JOBS:+--jobs "$AI_JOBS"} --keep-going || true
 
 rc=0
 for d in "$@"; do
@@ -57,6 +61,6 @@ for d in "$@"; do
     rc=1
     continue
   }
-  ./run_tests.py ${DEBUG:+--debug} "$(cat "$root/${d%/}/run_cmd.txt")" "$work/$name/elfs" || rc=1
+  ./run_tests.py ${DEBUG:+--debug} ${AI_JOBS:+--jobs "$AI_JOBS"} "$(cat "$root/${d%/}/run_cmd.txt")" "$work/$name/elfs" || rc=1
 done
 exit $rc

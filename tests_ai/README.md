@@ -4,7 +4,10 @@ Each test checks one normative rule (`norm:` tag in the ISA manual). The file is
 
 Layout:
 
-- `<Suite>/*.S` are the generated tests (do not edit). `<Suite>/README.md` describes them.
+- `<Suite>/*.S` are the generated tests. They are not committed: `make tests-ai` writes them by running every
+  `gen/gen_*.py` (with the repository's uv Python, as for the other generators; they also run on Python 3.9), and
+  regenerates all suites when a generator or helper changes. `run_ai.sh` runs it first. `<Suite>/README.md`
+  describes the tests.
 - `gen/gen_<Suite>.py` is the generator for one suite. `gen/aigen.py` is the shared writer: XLEN-dual tables, checks, registers, T-SBI and trap-window helpers.
 - `gen/norm_rules.py` lists the rules in ISA-manual sources. `gen/mutate.py` regenerates a suite from deliberately wrong semantics to show the tests catch those bugs.
 - `common/ai_macros.h` holds the check and trap-window macros on top of `tests/env`.
@@ -19,7 +22,8 @@ mise exec -- tests_ai/run_ai.sh M,Sstc config/sail/sail-rv64-max config/spike/sp
 DEBUG=1 mise exec -- tests_ai/run_ai.sh Sstc config/qemu/qemu-rv32-max   # traces and objdumps
 AI_ONLY="hgatp_* sret_*" mise exec -- tests_ai/run_ai.sh H config/sail/sail-rv64-max   # only matching tests
 mise exec -- tests_ai/run_mutants.sh h_csr: config/sail/sail-rv64-max                    # mutation check
-python3 tests_ai/gen/gen_Sstc.py                                         # regenerate a suite
+make tests-ai                                                            # generate every suite
+python3 tests_ai/gen/gen_Sstc.py                                         # regenerate one generator's suites
 ```
 
 Logs are in `work/tests_ai/<config>/logs/ai/<Suite>/`. Concurrent runs need their own `AI_WORKDIR` and

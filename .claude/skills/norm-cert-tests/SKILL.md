@@ -15,6 +15,8 @@ Before starting, read `tests_ai/README.md` (mechanics), `tests_ai/gen/aigen.py` 
 
 - Write one test per normative rule. Every `norm:` tag is a rule (riscv-isa-manual #3422).
 - The file is `tests_ai/<Suite>/<rule>.S`. The suite is the extension name, and its tests require that extension.
+  The `.S` files are generated (`make tests-ai`, which `run_ai.sh` runs first) and not committed: commit the generator,
+  its helpers and the README.
 - If a rule needs a second file (only the M-mode part, see "Privilege mode"), name it `<rule>_Sm.S` with `suffix="_Sm"`.
 
 **Expected values**

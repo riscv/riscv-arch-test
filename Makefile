@@ -125,6 +125,7 @@ help:
 	  'elfs (default)'      'Generate tests and compile self-checking ELFs for $$(CONFIG_FILES)' \
 	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
 	  'vector-tests'        'Generate vector test sources' \
+	  'tests-ai'            'Generate the rule-derived tests in tests_ai/ (run with tests_ai/run_ai.sh)' \
 	  'coverage'            'Build with coverage instrumentation for $$(CONFIG_FILES) (default: Sail max)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
 	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
@@ -226,6 +227,23 @@ tests: covergroupgen testgen
 
 .PHONY: vector-tests
 vector-tests: covergroupgen vector-testgen
+
+# Rule-derived tests: tests_ai/<Suite>/*.S are generated, not committed. Each tests_ai/gen/gen_*.py writes one or
+# more suites, and they share helper modules, so a change to any generator or helper regenerates every suite (a few
+# seconds). Stale tests are removed first; mutant directories (tests_ai/Mut*, from run_mutants.sh) are left alone.
+TESTS_AI_DIR   := tests_ai
+TESTS_AI_GENS  := $(sort $(wildcard $(TESTS_AI_DIR)/gen/gen_*.py))
+TESTS_AI_DEPS  := $(wildcard $(TESTS_AI_DIR)/gen/*.py)
+TESTS_AI_STAMP := $(TESTS_AI_DIR)/.generated
+TESTS_AI_FIND  := find $(TESTS_AI_DIR) -mindepth 2 -maxdepth 2 -name '*.S' ! -path '$(TESTS_AI_DIR)/Mut*'
+
+.PHONY: tests-ai
+tests-ai: $(TESTS_AI_STAMP)
+$(TESTS_AI_STAMP): $(TESTS_AI_DEPS) Makefile
+	@$(TESTS_AI_FIND) -delete
+	@AI_MUTANT= $(UV_RUN) sh -c 'set -e; for g in $(TESTS_AI_GENS); do python "$$g" > /dev/null; done'
+	@echo "tests-ai: generated $$($(TESTS_AI_FIND) | wc -l) tests in $(TESTS_AI_DIR)/"
+	@touch $@
 
 
 

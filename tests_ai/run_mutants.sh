@@ -11,8 +11,15 @@ cfg=$2
 suite=${AI_MUT_SUITE:-Mut}
 export AI_MUT_SUITE=$suite
 survivors=()
+genfail=()
 for m in $(python3 "$root/tests_ai/gen/mutate.py" --list | grep "^$prefix"); do
-  python3 "$root/tests_ai/gen/mutate.py" "$m" >/dev/null
+  # A mutant whose generation fails, or writes no tests, has not been checked: report it, don't run it.
+  rm -rf "${root:?}/tests_ai/$suite"
+  if ! python3 "$root/tests_ai/gen/mutate.py" "$m" >/dev/null || ! compgen -G "$root/tests_ai/$suite/*.S" >/dev/null; then
+    echo "GENFAIL  $m"
+    genfail+=("$m")
+    continue
+  fi
   out=$("$root/tests_ai/run_ai.sh" "$suite" "$cfg" 2>&1)
   if grep -q "FAIL " <<<"$out"; then
     echo "caught   $m: $(grep -c 'FAIL ' <<<"$out") failing test(s)"
@@ -22,7 +29,6 @@ for m in $(python3 "$root/tests_ai/gen/mutate.py" --list | grep "^$prefix"); do
   fi
 done
 rm -rf "${root:?}/tests_ai/$suite"
-[ ${#survivors[@]} -eq 0 ] || {
-  echo "survivors: ${survivors[*]}"
-  exit 1
-}
+[ ${#genfail[@]} -eq 0 ] || echo "generation failed: ${genfail[*]}"
+[ ${#survivors[@]} -eq 0 ] || echo "survivors: ${survivors[*]}"
+[ ${#survivors[@]} -eq 0 ] && [ ${#genfail[@]} -eq 0 ]

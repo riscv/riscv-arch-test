@@ -8,11 +8,12 @@ Layout:
   `gen/gen_*.py` (with the repository's uv Python, as for the other generators; they also run on Python 3.9), and
   regenerates all suites when a generator or helper changes. `run_ai.sh` runs it first. `<Suite>/README.md`
   describes the tests.
-- `gen/gen_<Suite>.py` is the generator for one suite. `gen/aigen.py` is the shared writer: XLEN-dual tables, checks, registers, T-SBI and trap-window helpers.
+- `gen/gen_<Suite>.py` is the generator for one suite. Some write several directories (`gen_Sv.py`, `gen_Sx.py`,
+  `gen_Vzv.py`), and several share one: `gen_Vctl.py`, `gen_Vmem.py` and `gen_Vinsn.py` all write `V/`. `gen/aigen.py` is the shared writer: XLEN-dual tables, checks, registers, T-SBI and trap-window helpers.
 - `gen/norm_rules.py` lists the rules in ISA-manual sources. `gen/mutate.py` regenerates a suite from deliberately wrong semantics to show the tests catch those bugs.
 - `common/ai_macros.h` holds the check and trap-window macros on top of `tests/env`.
 - `run_ai.sh` builds and runs suites on ACT configurations. `run_mutants.sh <prefix> <config>` runs every mutant whose
-  name starts with prefix and requires each to fail a test. Mutants are named `<area>:<mutant>` for H (one `MUTANTS`
+  name starts with prefix and requires each to fail a test; a mutant that fails to generate is reported as `GENFAIL`. Mutants are named `<area>:<mutant>` for H (one `MUTANTS`
   dict per `gen/h_*.py`) and `<Suite>:<mutant>` for any other `gen/gen_<Suite>.py` with a `MUTANTS` dict.
 
 Running:

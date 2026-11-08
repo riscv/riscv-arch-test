@@ -12,14 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKSED
-`define COVER_ZVKSEDCUSTOM32
-`ifdef UDB_ELEN_32
-    `define SEW_32_EQ_ELEN
-`endif
-`ifdef UDB_ELEN_64
-    `define SEW_32_EQ_ELEN_DIV_2
-`endif
-covergroup Zvksed_vsm4k_vi_cg with function sample(ins_t ins);
+covergroup Zvksed_vsm4k_vi_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -284,7 +277,7 @@ covergroup Zvksed_vsm4k_vi_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvksed_vsm4r_vs_cg with function sample(ins_t ins);
+covergroup Zvksed_vsm4r_vs_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsm4r.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -530,7 +523,7 @@ covergroup Zvksed_vsm4r_vs_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvksed_vsm4r_vv_cg with function sample(ins_t ins);
+covergroup Zvksed_vsm4r_vv_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -819,18 +812,45 @@ function void zvksed_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-            "vsm4k.vi"     : begin
-                Zvksed_vsm4k_vi_cg.sample(ins);
-            end
-            "vsm4r.vs"     : begin
-                Zvksed_vsm4r_vs_cg.sample(ins);
-            end
-            "vsm4r.vv"     : begin
-                Zvksed_vsm4r_vv_cg.sample(ins);
-            end
+        "vsm4k.vi"     : begin
+            Zvksed_vsm4k_vi_cg.sample(ins);
+        end
+        "vsm4r.vs"     : begin
+            Zvksed_vsm4r_vs_cg.sample(ins);
+        end
+        "vsm4r.vv"     : begin
+            Zvksed_vsm4r_vv_cg.sample(ins);
+        end
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

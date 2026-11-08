@@ -12,24 +12,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVFBFMIN
-`define COVER_ZVFBFMINCUSTOM16
-`ifdef UDB_ELEN_16
-    `define SEW_16_EQ_ELEN
-`endif
-`ifdef UDB_ELEN_32
-    `define SEW_16_EQ_ELEN_DIV_2
-`endif
-covergroup Zvfbfmin_vfncvtbf16_f_f_w_cg with function sample(ins_t ins);
+covergroup Zvfbfmin_vfncvtbf16_f_f_w_sew16__cg with function sample(ins_t ins);
     option.per_instance = 0;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
     cp_asm_count : coverpoint ins.ins_str == "vfncvtbf16.f.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -162,6 +146,15 @@ covergroup Zvfbfmin_vfncvtbf16_f_f_w_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -222,7 +215,7 @@ covergroup Zvfbfmin_vfncvtbf16_f_f_w_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvfbfmin_vfwcvtbf16_f_f_v_cg with function sample(ins_t ins);
+covergroup Zvfbfmin_vfwcvtbf16_f_f_v_sew16__cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvtbf16.f.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -381,15 +374,42 @@ function void zvfbfmin_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-            "vfncvtbf16.f.f.w"     : begin
-                Zvfbfmin_vfncvtbf16_f_f_w_cg.sample(ins);
-            end
-            "vfwcvtbf16.f.f.v"     : begin
-                Zvfbfmin_vfwcvtbf16_f_f_v_cg.sample(ins);
-            end
+        "vfncvtbf16.f.f.w"     : begin
+            Zvfbfmin_vfncvtbf16_f_f_w_cg.sample(ins);
+        end
+        "vfwcvtbf16.f.f.v"     : begin
+            Zvfbfmin_vfwcvtbf16_f_f_v_cg.sample(ins);
+        end
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

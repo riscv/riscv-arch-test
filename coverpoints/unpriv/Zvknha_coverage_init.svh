@@ -10,6 +10,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zvknha_vsha2ch_vv_cg = new(); Zvknha_vsha2ch_vv_cg.set_inst_name("obj_Zvknha_vsha2ch_vv");
-    Zvknha_vsha2cl_vv_cg = new(); Zvknha_vsha2cl_vv_cg.set_inst_name("obj_Zvknha_vsha2cl_vv");
-    Zvknha_vsha2ms_vv_cg = new(); Zvknha_vsha2ms_vv_cg.set_inst_name("obj_Zvknha_vsha2ms_vv");
+    Zvknha_vsha2ch_vv_sew32_cg = new(); Zvknha_vsha2ch_vv_cg.set_inst_name("obj_Zvknha_vsha2ch_vv");
+    Zvknha_vsha2cl_vv_sew32_cg = new(); Zvknha_vsha2cl_vv_cg.set_inst_name("obj_Zvknha_vsha2cl_vv");
+    Zvknha_vsha2ms_vv_sew32_cg = new(); Zvknha_vsha2ms_vv_cg.set_inst_name("obj_Zvknha_vsha2ms_vv");

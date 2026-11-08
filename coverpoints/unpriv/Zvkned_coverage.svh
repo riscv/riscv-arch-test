@@ -12,14 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKNED
-`define COVER_ZVKNEDCUSTOM32
-`ifdef UDB_ELEN_32
-    `define SEW_32_EQ_ELEN
-`endif
-`ifdef UDB_ELEN_64
-    `define SEW_32_EQ_ELEN_DIV_2
-`endif
-covergroup Zvkned_vaesdf_vs_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdf_vs_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesdf.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -334,7 +327,7 @@ covergroup Zvkned_vaesdf_vs_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesdf_vv_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdf_vv_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -688,7 +681,7 @@ covergroup Zvkned_vaesdf_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesdm_vs_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdm_vs_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesdm.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -1003,7 +996,7 @@ covergroup Zvkned_vaesdm_vs_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesdm_vv_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesdm_vv_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -1357,7 +1350,7 @@ covergroup Zvkned_vaesdm_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesef_vs_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesef_vs_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesef.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -1672,7 +1665,7 @@ covergroup Zvkned_vaesef_vs_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesef_vv_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesef_vv_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -2026,7 +2019,7 @@ covergroup Zvkned_vaesef_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesem_vs_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesem_vs_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesem.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -2341,7 +2334,7 @@ covergroup Zvkned_vaesem_vs_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesem_vv_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesem_vv_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -2695,7 +2688,7 @@ covergroup Zvkned_vaesem_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaeskf1_vi_cg with function sample(ins_t ins);
+covergroup Zvkned_vaeskf1_vi_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -3018,7 +3011,7 @@ covergroup Zvkned_vaeskf1_vi_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaeskf2_vi_cg with function sample(ins_t ins);
+covergroup Zvkned_vaeskf2_vi_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs2_egs4
@@ -3381,7 +3374,7 @@ covergroup Zvkned_vaeskf2_vi_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvkned_vaesz_vs_cg with function sample(ins_t ins);
+covergroup Zvkned_vaesz_vs_sew32__cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vaesz.vs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -3617,42 +3610,69 @@ function void zvkned_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-            "vaesdf.vs"     : begin
-                Zvkned_vaesdf_vs_cg.sample(ins);
-            end
-            "vaesdf.vv"     : begin
-                Zvkned_vaesdf_vv_cg.sample(ins);
-            end
-            "vaesdm.vs"     : begin
-                Zvkned_vaesdm_vs_cg.sample(ins);
-            end
-            "vaesdm.vv"     : begin
-                Zvkned_vaesdm_vv_cg.sample(ins);
-            end
-            "vaesef.vs"     : begin
-                Zvkned_vaesef_vs_cg.sample(ins);
-            end
-            "vaesef.vv"     : begin
-                Zvkned_vaesef_vv_cg.sample(ins);
-            end
-            "vaesem.vs"     : begin
-                Zvkned_vaesem_vs_cg.sample(ins);
-            end
-            "vaesem.vv"     : begin
-                Zvkned_vaesem_vv_cg.sample(ins);
-            end
-            "vaeskf1.vi"     : begin
-                Zvkned_vaeskf1_vi_cg.sample(ins);
-            end
-            "vaeskf2.vi"     : begin
-                Zvkned_vaeskf2_vi_cg.sample(ins);
-            end
-            "vaesz.vs"     : begin
-                Zvkned_vaesz_vs_cg.sample(ins);
-            end
+        "vaesdf.vs"     : begin
+            Zvkned_vaesdf_vs_cg.sample(ins);
+        end
+        "vaesdf.vv"     : begin
+            Zvkned_vaesdf_vv_cg.sample(ins);
+        end
+        "vaesdm.vs"     : begin
+            Zvkned_vaesdm_vs_cg.sample(ins);
+        end
+        "vaesdm.vv"     : begin
+            Zvkned_vaesdm_vv_cg.sample(ins);
+        end
+        "vaesef.vs"     : begin
+            Zvkned_vaesef_vs_cg.sample(ins);
+        end
+        "vaesef.vv"     : begin
+            Zvkned_vaesef_vv_cg.sample(ins);
+        end
+        "vaesem.vs"     : begin
+            Zvkned_vaesem_vs_cg.sample(ins);
+        end
+        "vaesem.vv"     : begin
+            Zvkned_vaesem_vv_cg.sample(ins);
+        end
+        "vaeskf1.vi"     : begin
+            Zvkned_vaeskf1_vi_cg.sample(ins);
+        end
+        "vaeskf2.vi"     : begin
+            Zvkned_vaeskf2_vi_cg.sample(ins);
+        end
+        "vaesz.vs"     : begin
+            Zvkned_vaesz_vs_cg.sample(ins);
+        end
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

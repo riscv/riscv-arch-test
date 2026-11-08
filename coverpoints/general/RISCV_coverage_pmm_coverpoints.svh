@@ -236,7 +236,12 @@
             bins sv39 = {4'b1000};
         `endif
     }
-    a_upper_bits: coverpoint (ins.current.eff_addr >> 48) {
+    // A prefetch is an ori with rd = x0, which a run that does not collect Zicbop coverage decodes as ori, setting no
+    // eff_addr.  Take its address from the encoding: rs1 (bits 19:15) plus bits 31:25 shifted left by 5.
+    a_upper_bits: coverpoint ((((ins.current.insn ==? PREFETCH_I) || (ins.current.insn ==? PREFETCH_R) ||
+                                 (ins.current.insn ==? PREFETCH_W)) ?
+                                (ins.prev.x_wdata[ins.current.insn[19:15]] + `UDB_MXLEN'(signed'({ins.current.insn[31:25], 5'b0}))) :
+                                ins.current.eff_addr) >> 48) {
         type_option.weight = 0;
         bins upper_0000 = {16'h0000};   // Unaffected by pointer masking
         bins upper_0001 = {16'h0001};   // Bit 48 masked if PMLEN=16 but not 7

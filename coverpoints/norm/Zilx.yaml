@@ -28,7 +28,11 @@ normative_rule_definitions:
       ]
 
   - name: Zilx_rd_x0
-    coverpoint: ["Zilx_lxh_cg/cp_rd"]
+    coverpoint:
+      [
+        "{Exceptions_S_cg, Exceptions_Sm_cg, Exceptions_U_cg}/cp_zilx_rd_x0_fault",
+        "Not tested - platform-specific non-idempotent read side effects",
+      ]
 
   - name: Zilx_load_semantics
     coverpoint:
@@ -53,6 +57,8 @@ normative_rule_definitions:
         "{Exceptions_S_cg, Exceptions_Sm_cg, Exceptions_U_cg}/{cp_load_address_misaligned, cp_load_access_fault}",
         "Sv_vm_permissions_cg/cp_zilx_permissions",
         "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_pmlen_masking",
+        "{PMP_S_cg, PMP_Sm_cg, PMP_U_cg}/cp_cfg_R",
+        "Not tested - multi-hart memory-ordering behavior",
       ]
 
   - name: Zilx_common_encoding

@@ -324,6 +324,17 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
         cp_misaligned_priority_store:            cross priv_mode_s, sw, illegal_address_misaligned_store;
     `endif
 
+    `ifdef ZILX_SUPPORTED
+        `include "general/RISCV_coverage_zilx_rd_x0.svh"
+        cp_zilx_rd_x0_fault: cross priv_mode_s, zilx_loadops, zilx_rd_zero, zilx_load_fault {
+            ignore_bins byte_misaligned =
+                (binsof(zilx_loadops.lxsb) || binsof(zilx_loadops.lxsbu)
+                `ifdef UDB_MXLEN_64
+                    || binsof(zilx_loadops.lxsuwb) || binsof(zilx_loadops.lxsuwbu)
+                `endif
+                ) && binsof(zilx_load_fault.misaligned);
+        }
+    `endif
 endgroup
 
 `endif // S_SUPPORTED
@@ -554,6 +565,17 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         `endif
     `endif
 
+    `ifdef ZILX_SUPPORTED
+        `include "general/RISCV_coverage_zilx_rd_x0.svh"
+        cp_zilx_rd_x0_fault: cross priv_mode_m, zilx_loadops, zilx_rd_zero, zilx_load_fault {
+            ignore_bins byte_misaligned =
+                (binsof(zilx_loadops.lxsb) || binsof(zilx_loadops.lxsbu)
+                `ifdef UDB_MXLEN_64
+                    || binsof(zilx_loadops.lxsuwb) || binsof(zilx_loadops.lxsuwbu)
+                `endif
+                ) && binsof(zilx_load_fault.misaligned);
+        }
+    `endif
 endgroup
 
 
@@ -722,6 +744,17 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
     `endif
 
 
+    `ifdef ZILX_SUPPORTED
+        `include "general/RISCV_coverage_zilx_rd_x0.svh"
+        cp_zilx_rd_x0_fault: cross priv_mode_u, zilx_loadops, zilx_rd_zero, zilx_load_fault {
+            ignore_bins byte_misaligned =
+                (binsof(zilx_loadops.lxsb) || binsof(zilx_loadops.lxsbu)
+                `ifdef UDB_MXLEN_64
+                    || binsof(zilx_loadops.lxsuwb) || binsof(zilx_loadops.lxsuwbu)
+                `endif
+                ) && binsof(zilx_load_fault.misaligned);
+        }
+    `endif
 endgroup
 
 `endif // U_SUPPORTED

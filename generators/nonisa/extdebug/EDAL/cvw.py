@@ -20,7 +20,7 @@ import shlex
 from pathlib import Path
 
 from EDAL import dut
-from EDAL.base import EDALError
+from EDAL.base import EDALError, EDALUnsupported
 from EDAL.config import DutConfig
 from EDAL.jtag import JtagEDAL
 
@@ -46,7 +46,7 @@ class CvwEDAL(JtagEDAL):
         command[0] = str(wally / "bin" / "wsim")
         base = next((tok for tok in command if tok in DEBUG_CONFIGS), None)
         if base is None:
-            raise EDALError(f"{config.name}: no cvw configuration with the Debug Module for {shlex.join(command)}")
+            raise EDALUnsupported(f"{config.name}: no cvw configuration with the Debug Module")
         command[command.index(base)] = DEBUG_CONFIGS[base]
         if command[-1] != "--elf":
             raise EDALError(f"{config.name}: expected run_cmd.txt to end with --elf")

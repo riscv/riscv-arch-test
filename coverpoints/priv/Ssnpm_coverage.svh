@@ -202,7 +202,11 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins tFF00 = {16'hFF00}; // masked in full by PMLEN 16 and in part by PMLEN 7.
         bins tFFFF = {16'hFFFF}; // masked in full by PMLEN 16 and in part by PMLEN 7.
     }
-    tag3: coverpoint (ins.current.eff_addr >> 48) {
+    // A prefetch is an ori with rd = x0, which a run that does not collect Zicbop coverage decodes as ori, setting no
+    // eff_addr.  Take its address from the encoding: rs1 (bits 19:15) plus bits 31:25 shifted left by 5.
+    tag3: coverpoint (((ins.current.insn ==? PREFETCH_W) ?
+                       (ins.prev.x_wdata[ins.current.insn[19:15]] + `UDB_MXLEN'(signed'({ins.current.insn[31:25], 5'b0}))) :
+                       ins.current.eff_addr) >> 48) {
         type_option.weight = 0;
         bins t0000 = {16'h0000};
         bins t0400 = {16'h0400};
@@ -515,19 +519,21 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         type_option.weight = 0;
         wildcard bins sw = {SW};
     }
-    scause_load_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+    // The cause is sampled only on a trap.  Without the guard, a lw or sw that does not fault would fill a bin with
+    // the cause of the previous trap.
+    scause_load_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") iff (ins.current.trap) {
         type_option.weight = 0;
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-            bins load_access_fault = {5};
+            bins load_access_fault = {LOAD_ACCESS_FAULT};
         `endif
-        bins load_guest_page_fault = {21};
+        bins load_guest_page_fault = {LOAD_GUEST_PAGE_FAULT};
     }
-    scause_store_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+    scause_store_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") iff (ins.current.trap) {
         type_option.weight = 0;
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-            bins store_access_fault = {7};
+            bins store_access_fault = {STORE_AMO_ACCESS_FAULT};
         `endif
-        bins store_guest_page_fault = {23};
+        bins store_guest_page_fault = {STORE_AMO_GUEST_PAGE_FAULT};
     }
     cp_vs_hardware_csr_writes_fault_load:  cross priv_mode_vs, lw_h, pmm_tag_h, pair_chosen, scause_load_fault;
     cp_vu_hardware_csr_writes_fault_load:  cross priv_mode_vu, lw_h, pmm_tag_s, pair_chosen, scause_load_fault;
@@ -542,7 +548,10 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     // The change coverpoints sample hgatp.MODE, then the PMM field before and after a write, on the instruction right
     // after the write.  ins.prev is the write, record 2 is the state before it and SAMPLE_BEFORE the state after it.
-    //The Sv57x4 ones (cases 1, 2 and 4 of the plan) need Sv57x4.  The Sv48x4 ones (case 3) need Sv48x4 and PMLEN 16.
+    //
+    // They are split by G-stage mode, and each is compiled only where it has bins.  A coverpoint with no bins gets
+    // automatic ones from SystemVerilog, and each HFENCE cross would then carry bins that cannot be hit.  The Sv57x4
+    // ones (cases 1, 2 and 4 of the plan) need Sv57x4.  The Sv48x4 ones (case 3) need Sv48x4 and PMLEN 16.
     `ifdef UDB_SV57X4_TRANSLATION
         // hgatp.MODE, then henvcfg.PMM before and after a write to henvcfg, sampled on the instruction right after the
         // write.

@@ -20,6 +20,9 @@ exclude_extensions:
   # vsiselect, vstopi, vstopei, hvien), where Sail raises illegal instruction because it lacks them.
   - Ssstrict_S_CSR
   - Ssstrict_H_vs_CSR
+  # SSAMOSWAP with rd = rs2 stores the loaded value instead of the original rs2
+  # (https://github.com/tenstorrent/whisper/issues/233).
+  - Zicfiss_U_ssamoswap_rd_eq_rs2
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

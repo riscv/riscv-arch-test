@@ -37,5 +37,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssnpm_H_cg/{cp_vs_pmm, cp_vs_pmlen_masking, cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
-        "Ssnpm_H_cg/cp_henvcfg_pmm_change_hfence",
+        "Ssnpm_H_cg/{cp_vs_pmlen_zicfiss_amo, cp_vs_pmlen_zicfiss_ssp}",
+        "Ssnpm_H_cg/{cp_henvcfg_pmm_change_hfence, cp_henvcfg_pmm_change_hfence_sv48x4}",
+        "Ssnpm_H_cg/cp_henvcfg_pmm_change_no_hfence",
+        "Tested by the signature: henvcfg.PMM does not mask the guest physical address from the VS stage (Ssnpm_H plan, cp_vs_gstage_no_pmm)",
       ]

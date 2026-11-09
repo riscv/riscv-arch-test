@@ -1366,6 +1366,7 @@ normative_rule_definitions:
       [
         "Sm_mcsr_cg/cp_mcsr_access/mcountinhibit",
         "Sm_mcsr_cg/{cp_inhibit_mcycle, cp_inhibit_minstret}",
+        "{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/cp_mcountinhibit_freeze_holds_count",
         "Other counters do not increment predictably and are not tested",
       ]
 
@@ -1382,6 +1383,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_mcsr_cg/{cp_inhibit_mcycle, cp_inhibit_minstret}",
+        "{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/cp_mcountinhibit_freeze_holds_count",
         "Other counters do not increment predictably and are not tested",
       ]
 

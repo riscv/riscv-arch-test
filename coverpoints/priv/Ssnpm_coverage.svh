@@ -540,64 +540,77 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         type_option.weight = 0;
         wildcard bins hfence_gvma = {HFENCE_GVMA};
     }
-    // hgatp.MODE, then henvcfg.PMM before and after a write to henvcfg, sampled on the instruction right after the
-    // write.  ins.prev is the write, record 2 is the state before it and SAMPLE_BEFORE the state after it.
-    henvcfg_pmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
-                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
-                    iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
-        type_option.weight = 0;
-            `ifdef UDB_SV57X4_TRANSLATION
+    // The change coverpoints sample hgatp.MODE, then the PMM field before and after a write, on the instruction right
+    // after the write.  ins.prev is the write, record 2 is the state before it and SAMPLE_BEFORE the state after it.
+    //The Sv57x4 ones (cases 1, 2 and 4 of the plan) need Sv57x4.  The Sv48x4 ones (case 3) need Sv48x4 and PMLEN 16.
+    `ifdef UDB_SV57X4_TRANSLATION
+        // hgatp.MODE, then henvcfg.PMM before and after a write to henvcfg, sampled on the instruction right after the
+        // write.
+        henvcfg_pmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
+                                    get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
+                        iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
+            type_option.weight = 0;
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                bins sv57x4_00_to_10 = {{4'hA, 2'b00, 2'b10}};  // case 1
+                bins sv57x4_10_to_00 = {{4'hA, 2'b10, 2'b00}};
+            `endif
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                bins sv57x4_00_to_11 = {{4'hA, 2'b00, 2'b11}};  // case 2
+                bins sv57x4_11_to_00 = {{4'hA, 2'b11, 2'b00}};
                 `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
-                    bins sv57x4_00_to_10 = {{4'hA, 2'b00, 2'b10}};  // case 1
-                    bins sv57x4_10_to_00 = {{4'hA, 2'b10, 2'b00}};
-                `endif
-                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-                    bins sv57x4_00_to_11 = {{4'hA, 2'b00, 2'b11}};  // case 2
-                    bins sv57x4_11_to_00 = {{4'hA, 2'b11, 2'b00}};
-                    `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
-                        bins sv57x4_10_to_11 = {{4'hA, 2'b10, 2'b11}};  // case 4
-                        bins sv57x4_11_to_10 = {{4'hA, 2'b11, 2'b10}};
-                    `endif
+                    bins sv57x4_10_to_11 = {{4'hA, 2'b10, 2'b11}};  // case 4
+                    bins sv57x4_11_to_10 = {{4'hA, 2'b11, 2'b10}};
                 `endif
             `endif
-            `ifdef UDB_SV48X4_TRANSLATION
-                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-                    bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
-                    bins sv48x4_11_to_00 = {{4'h9, 2'b11, 2'b00}};
-                `endif
+        }
+        // hgatp.MODE, then hstatus.HUPMM before and after a write to hstatus, sampled on the instruction right after
+        // the write.
+        hupmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
+                                    get_csr_val(ins.hart, ins.issue, 2, "hstatus", "hupmm")[1:0],
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]}
+                        iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HSTATUS)) {
+            type_option.weight = 0;
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                bins sv57x4_00_to_10 = {{4'hA, 2'b00, 2'b10}};  // case 1
+                bins sv57x4_10_to_00 = {{4'hA, 2'b10, 2'b00}};
             `endif
-    }
-    // hgatp.MODE, then hstatus.HUPMM before and after a write to hstatus, sampled on the instruction right after the
-    // write.  ins.prev is the write, record 2 is the state before it and SAMPLE_BEFORE the state after it.
-    hupmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                get_csr_val(ins.hart, ins.issue, 2, "hstatus", "hupmm")[1:0],
-                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]}
-                    iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HSTATUS)) {
-        type_option.weight = 0;
-            `ifdef UDB_SV57X4_TRANSLATION
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                bins sv57x4_00_to_11 = {{4'hA, 2'b00, 2'b11}};  // case 2
+                bins sv57x4_11_to_00 = {{4'hA, 2'b11, 2'b00}};
                 `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
-                    bins sv57x4_00_to_10 = {{4'hA, 2'b00, 2'b10}};  // case 1
-                    bins sv57x4_10_to_00 = {{4'hA, 2'b10, 2'b00}};
-                `endif
-                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-                    bins sv57x4_00_to_11 = {{4'hA, 2'b00, 2'b11}};  // case 2
-                    bins sv57x4_11_to_00 = {{4'hA, 2'b11, 2'b00}};
-                    `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
-                        bins sv57x4_10_to_11 = {{4'hA, 2'b10, 2'b11}};  // case 4
-                        bins sv57x4_11_to_10 = {{4'hA, 2'b11, 2'b10}};
-                    `endif
+                    bins sv57x4_10_to_11 = {{4'hA, 2'b10, 2'b11}};  // case 4
+                    bins sv57x4_11_to_10 = {{4'hA, 2'b11, 2'b10}};
                 `endif
             `endif
-            `ifdef UDB_SV48X4_TRANSLATION
-                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-                    bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
-                    bins sv48x4_11_to_00 = {{4'h9, 2'b11, 2'b00}};
-                `endif
-            `endif
-    }
-    cp_henvcfg_pmm_change_hfence: cross priv_mode_hs, hfence_gvma_rs1_x0, henvcfg_pmm_change;
-    cp_hupmm_change_hfence:       cross priv_mode_hs, hfence_gvma_rs1_x0, hupmm_change;
+        }
+        cp_henvcfg_pmm_change_hfence: cross priv_mode_hs, hfence_gvma_rs1_x0, henvcfg_pmm_change;
+        cp_hupmm_change_hfence:       cross priv_mode_hs, hfence_gvma_rs1_x0, hupmm_change;
+    `endif // UDB_SV57X4_TRANSLATION
+    `ifdef UDB_SV48X4_TRANSLATION
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            // Case 3: hgatp.MODE = Sv48x4, PMM 00 <-> 11.  Same expression and iff as henvcfg_pmm_change.
+            henvcfg_pmm_change_sv48x4: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
+                                        get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
+                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
+                            iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
+                type_option.weight = 0;
+                bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
+                bins sv48x4_11_to_00 = {{4'h9, 2'b11, 2'b00}};
+            }
+            // Same expression and iff as hupmm_change
+            hupmm_change_sv48x4: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
+                                        get_csr_val(ins.hart, ins.issue, 2, "hstatus", "hupmm")[1:0],
+                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]}
+                            iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HSTATUS)) {
+                type_option.weight = 0;
+                bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
+                bins sv48x4_11_to_00 = {{4'h9, 2'b11, 2'b00}};
+            }
+            cp_henvcfg_pmm_change_hfence_sv48x4: cross priv_mode_hs, hfence_gvma_rs1_x0, henvcfg_pmm_change_sv48x4;
+            cp_hupmm_change_hfence_sv48x4:       cross priv_mode_hs, hfence_gvma_rs1_x0, hupmm_change_sv48x4;
+        `endif // UDB_SUPPORTED_PMLEN_SSNPM_16
+    `endif // UDB_SV48X4_TRANSLATION
 
     // ---- henvcfg.PMM change with no HFENCE right after it ----
     // The plan's cases: (vsatp, hgatp) = (Bare, Sv39x4), (Bare, Sv48x4) and (Sv57, Sv57x4).  The cross shows that
@@ -644,8 +657,9 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     cp_henvcfg_pmm_change_no_hfence: cross priv_mode_hs, not_hfence_gvma, henvcfg_pmm_change_no_fence;
 
-    // Case 3 of cp_hupmm_change_hfence: (vsatp, hgatp) = (Bare, Sv48x4), tag 0x0002 (bit 49), PMM 00 and 11.
-    // cp_hlv_u_spvp0_pmm samples only the widest bare pair, which is Sv57x4 when it is supported.
+    // Case 3 access cross for hstatus.HUPMM: (vsatp, hgatp) = (Bare, Sv48x4), tag 0x0002 (bit 49), PMM 00 and 11.
+    // It is cp_hlv_u_spvp0_pmm at (Bare, Sv48x4).  cp_hlv_u_spvp0_pmm samples only the widest bare pair, which is
+    // Sv57x4 when it is supported.
     `ifdef UDB_SV48X4_TRANSLATION
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
             hupmm_sv48x4_bit49: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
@@ -656,7 +670,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
                 bins pmm00 = {{4'h0, 4'h9, 2'b00, 16'h0002}};  // vsatp Bare, hgatp Sv48x4
                 bins pmm11 = {{4'h0, 4'h9, 2'b11, 16'h0002}};
             }
-            cp_hupmm_change_hfence_sv48x4: cross priv_mode_u, hstatus_hu, spvp_vu, hlv_hsv, hupmm_sv48x4_bit49;
+            cp_hlv_u_spvp0_sv48x4_pmm: cross priv_mode_u, hstatus_hu, spvp_vu, hlv_hsv, hupmm_sv48x4_bit49;
         `endif
     `endif
 

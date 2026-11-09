@@ -81,7 +81,7 @@
 
     // Where ssp sits inside its page. A push decrements before storing, so a pointer
     // at the page base writes into the preceding page.
-    ssp_page_offset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[11:0] {
+    ssp_page_offset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP)[11:0] {
         bins at_page_base = {12'h000};
         bins near_base    = {[12'h001:12'h010]};
         bins mid_page     = {[12'h011:12'hFEF]};
@@ -145,7 +145,7 @@
     jalr_instr: coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    jalr_target_ss_page: coverpoint ((ins.current.rs1_val + ins.current.imm) & ~1) {
+    jalr_target_ss_page: coverpoint (ins.current.eff_addr & ~1) {
         `ifdef UDB_MXLEN_64
             bins ss_page = {[64'h140300000:64'h140300FFF]};
         `else
@@ -153,7 +153,7 @@
         `endif
     }
     // The fetch fault is recorded with the jalr, the last instruction that retired before it.
-    scause_fetch_access: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+    scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
                          iff (ins.current.csr_wb[CSR_SEPC]) {
         bins access_fault = {INSTRUCTION_ACCESS_FAULT};
     }

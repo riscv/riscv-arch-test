@@ -17,10 +17,6 @@ exclude_extensions:
   # exclusions can be given per config.
   - Smstateen
   - Ssstateen
-  # Spike keeps the last vstimecmp comparison in hip.VSTIP after henvcfg.STCE or menvcfg.STCE is cleared; hip.VSTIP
-  # must revert to hvip.VSTIP (riscv/csrs.cc time_counter_csr_t::sync, https://github.com/riscv-software-src/riscv-isa-sim/issues/2504).
-  - Sstc_H_vstip
-  - Sstc_HSm_vstip
   # Zicfiss_H: Sail completes HLVX on a VS-stage shadow stack page, which is not executable
   # (https://github.com/riscv/sail-riscv/issues/2081), and keeps a TLB-cached VS-stage shadow stack page valid
   # after henvcfg.SSE is cleared without a fence (cp_ss_sse_change_no_fence,

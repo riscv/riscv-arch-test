@@ -45,6 +45,25 @@ static void print_str(const char *s)
   }
 }
 
+// Shift-subtract division. Tests link without libgcc and may not have M,
+// so the compiler cannot emit div/rem or __udivdi3 calls.
+static uintmax_t udivmod(uintmax_t n, unsigned d, unsigned *rem)
+{
+  uintmax_t q = 0;
+  uintmax_t r = 0;
+  for (int bit = (int)(sizeof(n) * 8) - 1; bit >= 0; bit--)
+  {
+    r = (r << 1) | ((n >> bit) & 1);
+    if (r >= d)
+    {
+      r -= d;
+      q |= (uintmax_t)1 << bit;
+    }
+  }
+  *rem = (unsigned)r;
+  return q;
+}
+
 static void print_uint(uintmax_t val, unsigned base, int upper)
 {
   char buf[32];
@@ -57,8 +76,9 @@ static void print_uint(uintmax_t val, unsigned base, int upper)
   }
   while (val != 0)
   {
-    buf[i++] = digits[val % base];
-    val /= base;
+    unsigned digit;
+    val = udivmod(val, base, &digit);
+    buf[i++] = digits[digit];
   }
   while (i != 0)
   {

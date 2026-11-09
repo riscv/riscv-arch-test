@@ -62,13 +62,13 @@ coverpoints:
     goal: Verify a load/store/AMO access-fault on the pop takes priority over the software-check exception
     description: |-
       Point ssp at memory whose access will fault, and simultaneously set the link register so a value mismatch would also be detected. Execute SSPOPCHK.
-      An UNMAPPED page yields a store/AMO PAGE-fault (15). To get a store/AMO ACCESS-fault (7) the page must be mapped to RVMODEL_ACCESS_FAULT_ADDRESS, guarded by #ifdef.
+      An UNMAPPED page yields a store/AMO PAGE-fault (15). To get a store/AMO ACCESS-fault (7) the page must be mapped to RVMODEL_ACCESS_FAULT_ADDRESS_STORE, guarded by #ifdef.
       PMP-denied regions can only be programmed from M-mode, so that variant lives on the Zicfiss_Sm sheet as cp_sspopchk_fault_priority_pmp.
     expectation: |-
       The memory fault is reported, not the software-check exception.
-      Unmapped page: store/AMO page-fault (cause=15). RVMODEL_ACCESS_FAULT_ADDRESS: store/AMO access-fault (cause=7). Either way the fault code is remapped to the store/AMO flavour.
+      Unmapped page: store/AMO page-fault (cause=15). RVMODEL_ACCESS_FAULT_ADDRESS_STORE: store/AMO access-fault (cause=7). Either way the fault code is remapped to the store/AMO flavour.
       ssp is unchanged.
-    bins: fault_source {unmapped -> cause 15, RVMODEL_ACCESS_FAULT_ADDRESS -> cause 7} x mismatch_also_present {yes} x reported_cause {not 18}
+    bins: fault_source {unmapped -> cause 15, RVMODEL_ACCESS_FAULT_ADDRESS_STORE -> cause 7} x mismatch_also_present {yes} x reported_cause {not 18}
   - name: Call/return sequence (samples cp_sspush, cp_sspopchk_match and cp_sspopchk_mismatch)
     goal: Verify the architectural non-leaf function prologue/epilogue round trip across nested call depth
     description: "Build a nested call chain of non-leaf functions. In each prologue: store the link register to the regular stack and SSPUSH it to the shadow stack. In each epilogue: load the link register from the regular stack, SSPOPCHK it against the shadow stack, then return. Exercise x1 and x5 as the link register and depth > 1 so ssp walks several slots."

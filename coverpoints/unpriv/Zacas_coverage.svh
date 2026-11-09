@@ -51,7 +51,7 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amocas.w"  iff (ins.trap == 0 )  {
@@ -129,8 +129,6 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
         ) iff (ins.trap == 0)
         {
         // Cases where rd and rs1 have matching high or low halves but not both
-            bins rd_pair_partial_equal_val_rs1 = {1};
-            bins rd_pair_partial_not_equal_val_rs1 = {0};
         }
 
     cmp_rd_rs1_rs2_nx0_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -257,8 +255,6 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.current.rd_val_pre[31:0]) iff (ins.trap == 0) {
         // Compare the lowest 32 bits of current rd value to the
         // lowest 32 bits of the value rd held before this instruction, which is the comparand
-        bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
-        bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
     }
 
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -344,8 +340,6 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
         ) iff (ins.trap == 0)
         {
         // Cases where rd and rs1 have matching high or low halves but not both
-            bins rd_pair_partial_equal_val_rs1 = {1};
-            bins rd_pair_partial_not_equal_val_rs1 = {0};
         }
 
     cmp_rd_rs1_rs2_nx0_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -371,8 +365,6 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
     cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.current.rd_val_pre[31:0]) iff (ins.trap == 0) {
         // Compare the lowest 32 bits of current rd value to the
         // lowest 32 bits of the value rd held before this instruction, which is the comparand
-        bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
-        bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
     }
 
     cmp_rd_rs2_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -471,7 +463,7 @@ covergroup ZacasZabha_amocas_b_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amocas.b"  iff (ins.trap == 0 )  {
@@ -555,7 +547,7 @@ covergroup ZacasZabha_amocas_h_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amocas.h"  iff (ins.trap == 0 )  {

@@ -42,6 +42,43 @@
   `endif
 `endif
 
+// PMP_HSvZicbo needs a NAPOT entry the size of the 4 KiB test page (a grain of at most 4 KiB) below the background
+// entry
+`ifdef H_SUPPORTED
+  `ifdef PMP_HAS_CBO
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      `ifdef UDB_PMP_GRANULARITY_2
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_3
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_4
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_5
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_6
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_7
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_8
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_9
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_10
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_11
+        `define PMP_COVER_HSVZICBO
+      `elsif UDB_PMP_GRANULARITY_12
+        `define PMP_COVER_HSVZICBO
+      `endif
+      `ifdef UDB_NUM_PMP_ENTRIES_0
+        `undef PMP_COVER_HSVZICBO
+      `elsif UDB_NUM_PMP_ENTRIES_1
+        `undef PMP_COVER_HSVZICBO
+      `endif
+    `endif
+  `endif
+`endif
+
 
 `ifdef F_SUPPORTED
 covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
@@ -50,7 +87,7 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
 
   // The test places its NAPOT region at PMP_NAPOT_REGION_START, which is g_napot-aligned, so the
   // fld/fsd probes are naturally aligned at every grain.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -75,7 +112,7 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
     wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
   }
 
-  fs_mstatus: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "fs")[1:0]!=0) {
+  fs_mstatus: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "fs")[1:0]!=0) {
     bins non_zero = {1};
   }
 
@@ -93,7 +130,7 @@ function void pmp_F_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+      logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -102,7 +139,7 @@ function void pmp_F_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -115,7 +152,7 @@ function void pmp_F_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -131,13 +168,13 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
   // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
-  addr_offset_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};                // Access exactly at the region base
     bins below_base   = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes below the region
     bins just_inside  = {(`PMP_NAPOT_REGION_START + 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes into the region
@@ -145,7 +182,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};     // Access exactly at the end of the region
   }
 
-  addr_offset_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};      // Access exactly at the region base
     bins below_base  = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};  // Access below region base
     bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
@@ -153,7 +190,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-    addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // Access exactly at the region base
       bins below_base   = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};          // Access 4 bytes below the base
       bins at_top       = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};     // Access exactly at top of range
@@ -195,14 +232,14 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) {
+  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
     bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
   }
 
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
   // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
   // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -316,16 +353,13 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0]{}
 
-  mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+  mpp_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
     bins S_mode = {2'b01};
   }
 
-  lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
+  lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
     bins cfg_1000 = {8'b10011000};
     bins cfg_1111 = {8'b10011111};
     bins cfg_0000 = {8'b00011000};
@@ -333,7 +367,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   }
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = OFF, pmpcfg_i.XWR = 000, pmpaddr_i = all 1s
-  cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")} {
+  cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)} {
     bins region_off = {8'b00000000,{(`EFFECTIVE_PMPADDR + 1){1'b1}}};
   }
 
@@ -420,7 +454,7 @@ function void pmp_S_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+      logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -429,7 +463,7 @@ function void pmp_S_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -442,69 +476,69 @@ function void pmp_S_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr15", "pmpaddr15")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr14", "pmpaddr14")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr13", "pmpaddr13")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr12", "pmpaddr12")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr11", "pmpaddr11")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr10", "pmpaddr10")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr9", "pmpaddr9")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr8", "pmpaddr8")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr7", "pmpaddr7")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr6", "pmpaddr6")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr5", "pmpaddr5")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr4", "pmpaddr4")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr3", "pmpaddr3")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")
+  pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR15)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR14)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR13)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR12)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR11)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR10)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR9)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR8)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR7)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR6)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR5)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR4)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR3)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR2)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR1)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)
                 };
 
   `ifdef UDB_MXLEN_32
     pmpcfg_a =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp15cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp14cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp13cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp12cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp7cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp6cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp5cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp4cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_a =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp15cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp14cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp13cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp12cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp7cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp6cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp5cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp4cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
   PMP_S_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
@@ -537,18 +571,18 @@ covergroup PMP_Sm_cg with function sample(
 
   // Address coverpoints mask the access address to its code-size-invariant low bits (see
   // PMP_ADDR_LOWMASK) so they match wherever .data landed (region at 0x80005xxx or 0x80009xxx).
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};   // NAPOT/OFF region-under-test start
   }
 
-  addr_offset_cp_cfg_A_napot_all: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
     bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
     bins just_beyond  = {(`PMP_NAPOT_REGION_START+`g_napot) & `PMP_ADDR_LOWMASK};
   }
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    address_offsets_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    address_offsets_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
       bins above_base   = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
@@ -557,7 +591,7 @@ covergroup PMP_Sm_cg with function sample(
     }
   `endif
 
-  address_offsets_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  address_offsets_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
     bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
     bins above_base   = {(`PMP_NAPOT_REGION_START+4) & `PMP_ADDR_LOWMASK};
@@ -566,7 +600,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    addr_offset_cp_cfg_A_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_cp_cfg_A_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins just_beyond = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
       bins below_base  = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
@@ -574,7 +608,7 @@ covergroup PMP_Sm_cg with function sample(
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_offset_cp_cfg_A_tor0: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_cp_cfg_A_tor0: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
     }
@@ -629,50 +663,50 @@ covergroup PMP_Sm_cg with function sample(
     // Addresses for TOR regions moving up by g*i. Masked to low bits (see
     // PMP_ADDR_LOWMASK) so they match wherever .data landed for this test's code
     // size, same rationale as addr_in_region/address_offsets_tor above.
-    addr_for_tor_all_region0: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region0: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK}; // Region with XWR-111 for test to be executed.
     }
     // Access at the start of the region
-    addr_for_tor_all_region1: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region1: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region2: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region2: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region3: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region3: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 3*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region4: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region4: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 6*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region5: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region5: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 10*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region6: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region6: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 15*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region7: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region7: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 21*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region8: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region8: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 28*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region9: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region9: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 36*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region10: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region10: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 45*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region11: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region11: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 55*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region12: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region12: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 66*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region13: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region13: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 78*`g_tor) & `PMP_ADDR_LOWMASK};
     }
-    addr_for_tor_all_region14: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+    addr_for_tor_all_region14: coverpoint(ins.current.eff_addr & `PMP_ADDR_LOWMASK){
       bins address = {(`PMP_REGION_START + 91*`g_tor) & `PMP_ADDR_LOWMASK};
     }
 
@@ -847,24 +881,24 @@ covergroup PMP_Sm_cg with function sample(
   }
 //-------------------------------------------------------
   `ifndef UDB_PMP_GRANULARITY_2
-    pmpcfg0_A_mode_was_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")} {
+    pmpcfg0_A_mode_was_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00000???};
     }
 
-    pmpcfg0_A_mode_was_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")} {
+    pmpcfg0_A_mode_was_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00011???};
     }
 
-    pmpcfg0_A_mode_is_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")} {
+    pmpcfg0_A_mode_is_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00000???};
     }
 
-    pmpcfg0_A_mode_is_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")} {
+    pmpcfg0_A_mode_is_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00011???};
     }
 
     `ifdef UDB_PMP_TOR_SUPPORTED
-      pmpcfg0_A_mode_is_TOR: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")} {
+      pmpcfg0_A_mode_is_TOR: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)} {
         wildcard bins OFF = {8'b00001???};
       }
     `endif
@@ -910,7 +944,7 @@ covergroup PMP_Sm_cg with function sample(
       bins range = {`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
     }
 
-    addr_for_tor_bot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_for_tor_bot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins pmpaddr0_4 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr0-4
       bins pmpaddr0   = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr0
       bins pmpaddr1_4 = {((`PMP_REGION_START+`g_tor)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
@@ -937,7 +971,7 @@ covergroup PMP_Sm_cg with function sample(
       bins pmp_cfg_tor1 =  {16'b10001000_00000000}; //L=1 for pmpcfg1 and L=0 for pmpcfg0,A=TOR for cf1 and A=OFF for 0,XWR=000(both)
     }
 
-    addr_for_tor_nonoverlap: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_for_tor_nonoverlap: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins addr1 = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr1
       bins addr2 = {(((`NON_STANDARD_REGION)<<2)+4) & `PMP_ADDR_LOWMASK}; //pmpaddr1+4
       bins addr3 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4
@@ -1103,7 +1137,7 @@ covergroup PMP_Sm_cg with function sample(
    we need to check from tests and logs that pmpcfg and pmpaddr are unwritable when
    L = 1, and write to pmpaddr of previous region in case of TOR is also ignored.*/
 
-  pmp_region: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_a")[1:0] {
+  pmp_region: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0, "pmp1cfg_a")[1:0] {
     bins OFF   = {0};
     `ifdef UDB_PMP_TOR_SUPPORTED
       bins TOR   = {1};
@@ -1112,10 +1146,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
-  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {
-    bins locked_region = {1};
-    bins unlocked_region = {0};
-  }
+  lock_checking: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0, "pmp1cfg_l")[0] {}
 
   // Attempt to write values in given PMP CSRs when A = {OFF/TOR/NAPOT} and L = {0/1}
   // rs1 should be x0 while writing to pmpaddr1 & pmp1cfg0 in order to write all 0s.
@@ -1409,7 +1440,7 @@ covergroup PMP_Sm_cg with function sample(
 
   // Address at the last word of each overlapping NAPOT region.
   // Region i has size (1<<i)*g_napot, so its last word is at REGIONSTART + (1<<i)*g_napot - 4.
-  addr_offset_for_priority_check: coverpoint ((ins.current.rs1_val+ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_for_priority_check: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_end_of_region6 = {(`PMP_NAPOT_PRIORITY_REGION_START + 64*`g_napot - 4) & `PMP_ADDR_LOWMASK};
     bins at_end_of_region5 = {(`PMP_NAPOT_PRIORITY_REGION_START + 32*`g_napot - 4) & `PMP_ADDR_LOWMASK};
     bins at_end_of_region4 = {(`PMP_NAPOT_PRIORITY_REGION_START + 16*`g_napot - 4) & `PMP_ADDR_LOWMASK};
@@ -1611,7 +1642,7 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-        logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+        logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
         pmpcfg[i*4 + 0] = cfg_word[7:0];
         pmpcfg[i*4 + 1] = cfg_word[15:8];
         pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -1620,7 +1651,7 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -1633,7 +1664,7 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -1647,597 +1678,597 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
     pmp_HIT[k-15] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr15", "pmpaddr15")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr14", "pmpaddr14")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr13", "pmpaddr13")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr12", "pmpaddr12")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr11", "pmpaddr11")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr10", "pmpaddr10")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr9", "pmpaddr9")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr8", "pmpaddr8")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr7", "pmpaddr7")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr6", "pmpaddr6")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr5", "pmpaddr5")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr4", "pmpaddr4")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr3", "pmpaddr3")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1")
-                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")
+  pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR15)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR14)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR13)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR12)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR11)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR10)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR9)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR8)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR7)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR6)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR5)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR4)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR3)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR2)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR1)
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)
                 };
 
   `ifdef UDB_MXLEN_32
     pmpcfg_wr = {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp14cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp13cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp12cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp7cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp6cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp5cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp4cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_xwr")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_wr = {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp14cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp13cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp12cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp7cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp6cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp5cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp4cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_xwr")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_WR = {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_xwr")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp62cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp61cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp60cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp55cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp54cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp53cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp52cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp47cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp46cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp45cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp44cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp39cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp38cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp37cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp36cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp31cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp30cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp29cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp28cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp23cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp22cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp21cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp20cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp15cfg_xwr")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_WR = {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_xwr")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp62cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp61cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp60cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp55cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp54cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp53cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp52cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp47cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp46cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp45cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp44cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp39cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp38cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp37cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp36cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp31cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp30cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp29cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp28cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp23cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp22cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp21cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp20cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_xwr")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp15cfg_xwr")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_X =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_xwr")[2]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp62cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp61cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp60cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp55cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp54cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp53cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp52cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp47cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp46cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp45cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp44cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp39cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp38cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp37cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp36cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp31cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp30cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp29cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp28cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp23cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp22cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp21cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp20cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp14cfg_xwr")[2]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_X =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_xwr")[2]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp62cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp61cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp60cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp55cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp54cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp53cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp52cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp47cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp46cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp45cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp44cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp39cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp38cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp37cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp36cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp31cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp30cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp29cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp28cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp23cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp22cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp21cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp20cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp15cfg_xwr")[2]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_x =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[2]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp14cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp13cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp12cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp7cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp6cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp5cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp4cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_xwr")[2]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_x =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[2],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[2]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp14cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp13cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp12cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp7cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp6cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp5cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp4cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_xwr")[2],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_xwr")[2]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_a =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp14cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp13cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp12cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp7cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp6cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp5cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp4cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_a =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp14cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp13cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp12cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp7cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp6cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp5cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp4cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_A =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp62cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp61cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp60cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp55cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp54cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp53cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp52cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp47cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp46cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp45cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp44cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp39cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp38cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp37cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp36cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp31cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp30cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp29cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp28cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp23cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp22cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp21cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp20cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp15cfg_a")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_A =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp62cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp61cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp60cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp55cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp54cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp53cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp52cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp47cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp46cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp45cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp44cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp39cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp38cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp37cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp36cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp31cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp30cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp29cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp28cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp23cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp22cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp21cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp20cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp15cfg_a")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_L =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_l")[0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp62cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp61cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG15, "pmp60cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp55cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp54cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp53cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG13, "pmp52cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp47cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp46cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp45cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG11, "pmp44cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp39cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp38cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp37cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG9, "pmp36cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp31cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp30cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp29cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG7, "pmp28cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp23cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp22cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp21cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG5, "pmp20cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp15cfg_l")[0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_L =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_l")[0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp62cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp61cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp60cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp59cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp58cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp57cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG14, "pmp56cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp55cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp54cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp53cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp52cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp51cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp50cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp49cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG12, "pmp48cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp47cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp46cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp45cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp44cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp43cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp42cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp41cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG10, "pmp40cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp39cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp38cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp37cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp36cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp35cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp34cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp33cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG8, "pmp32cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp31cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp30cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp29cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp28cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp27cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp26cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp25cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG6, "pmp24cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp23cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp22cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp21cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp20cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp19cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp18cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp17cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG4, "pmp16cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp15cfg_l")[0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_l =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_l")[0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp14cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp13cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp12cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp7cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp6cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp5cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp4cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_l")[0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_l =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_l")[0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_l")[0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp14cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp13cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp12cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp7cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp6cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp5cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp4cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_l")[0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_l")[0]
           };
   `endif
   PMP_Sm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
@@ -2248,13 +2279,13 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
   // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
-  addr_offset_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base    = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};           // Access exactly at the region base
     bins below_base    = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes below the region
     bins just_inside  = {(`PMP_NAPOT_REGION_START + 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes into the region
@@ -2262,7 +2293,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};      // Access exactly at the end of the region
   }
 
-  addr_offset_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_offset_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base  = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};     // Access exactly at the region base
     bins below_base  = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};  // Access below region base
     bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
@@ -2270,7 +2301,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-    addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_offset_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins at_base    = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};           // Access exactly at the region base
       bins below_base    = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes below the base
       bins at_top      = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};    // Access exactly at top of range
@@ -2312,14 +2343,14 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) {
+  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
     bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
   }
 
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
   // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
   // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -2432,16 +2463,13 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
-    bins set   = {1};
-    bins unset = {0};
-  }
+  mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0]{}
 
-  mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+  mpp_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
     bins U_mode = {2'b00};
   }
 
-  lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
+  lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
     bins cfg_1000 = {8'b10011000};
     bins cfg_1111 = {8'b10011111};
     bins cfg_0000 = {8'b00011000};
@@ -2449,7 +2477,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   }
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = OFF, pmpcfg_i.XWR = 000, pmpaddr_i = all 1s
-  cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")} {
+  cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)} {
     bins region_off = {8'b00000000,{(`EFFECTIVE_PMPADDR + 1){1'b1}}};
   }
 
@@ -2536,7 +2564,7 @@ function void pmp_U_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-          logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+          logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
           pmpcfg[i*4 + 0] = cfg_word[7:0];
           pmpcfg[i*4 + 1] = cfg_word[15:8];
           pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -2545,7 +2573,7 @@ function void pmp_U_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-        logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+        logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
         pmpcfg[i*8 + 0] = cfg_word[7:0];
         pmpcfg[i*8 + 1] = cfg_word[15:8];
         pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -2559,69 +2587,69 @@ function void pmp_U_sample(int hart, int issue, ins_t ins);
 
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  pack_pmpaddr = {  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr15", "pmpaddr15")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr14", "pmpaddr14")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr13", "pmpaddr13")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr12", "pmpaddr12")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr11", "pmpaddr11")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr10", "pmpaddr10")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr9", "pmpaddr9")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr8", "pmpaddr8")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr7", "pmpaddr7")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr6", "pmpaddr6")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr5", "pmpaddr5")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr4", "pmpaddr4")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr3", "pmpaddr3")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1")
-           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")
+  pack_pmpaddr = {  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR15)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR14)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR13)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR12)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR11)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR10)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR9)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR8)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR7)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR6)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR5)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR4)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR3)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR2)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR1)
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)
           };
 
   `ifdef UDB_MXLEN_32
     pmpcfg_a =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp15cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp14cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp13cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG3, "pmp12cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp7cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp6cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp5cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG1, "pmp4cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_a =  {
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
-          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp15cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp14cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp13cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp12cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp11cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp10cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp9cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG2, "pmp8cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp7cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp6cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp5cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp4cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp3cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp2cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_a")[1:0],
+          get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
   PMP_U_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
@@ -2682,7 +2710,7 @@ function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-        logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+        logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
         pmpcfg[i*4 + 0] = cfg_word[7:0];
         pmpcfg[i*4 + 1] = cfg_word[15:8];
         pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -2691,7 +2719,7 @@ function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -2704,7 +2732,7 @@ function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -2758,7 +2786,7 @@ function void pmp_Zalrsc_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-          logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+          logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
           pmpcfg[i*4 + 0] = cfg_word[7:0];
           pmpcfg[i*4 + 1] = cfg_word[15:8];
           pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -2767,7 +2795,7 @@ function void pmp_Zalrsc_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-        logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+        logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
         pmpcfg[i*8 + 0] = cfg_word[7:0];
         pmpcfg[i*8 + 1] = cfg_word[15:8];
         pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -2780,7 +2808,7 @@ function void pmp_Zalrsc_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -2800,7 +2828,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
 
   // The legal_lwrx and Zcb/Zcd/Zcf walks place their NAPOT region at PMP_NAPOT_REGION_START, which
   // is g_napot-aligned, so the 8-byte c.ld/c.sd/c.fld/c.fsd probes are naturally aligned at every grain.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_in_napot_region: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
@@ -2865,7 +2893,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   }
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_in_consecutive_regions: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_in_consecutive_regions: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins inside_first_region   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins straddle_first_second = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};
       bins inside_second_region  = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
@@ -2883,14 +2911,14 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   }
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    addr_in_consecutive_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_in_consecutive_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins straddle_first_second = {(`PMP_REGION_START + 2) & `PMP_ADDR_LOWMASK};
       bins straddle_second_third = {(`PMP_REGION_START + 6) & `PMP_ADDR_LOWMASK};
     }
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_adjacent_to_pmp_boundary_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_adjacent_to_pmp_boundary_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       bins just_below_pmp = {(`PMP_REGION_START - 2) & `PMP_ADDR_LOWMASK};          // 2 bytes before region start (possible straddle)
       bins at_start_pmp   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // aligned to start of region
       bins at_end_pmp     = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};   // 2 bytes before end → straddles out
@@ -2899,7 +2927,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   `endif
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): see addr_in_consecutive_regions_napot.
-  addr_adjacent_to_pmp_boundary_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+  addr_adjacent_to_pmp_boundary_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins just_below_pmp = {(`PMP_NAPOT_REGION_START - 2) & `PMP_ADDR_LOWMASK};          // 2 bytes before region start (possible straddle)
     bins at_start_pmp   = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};              // aligned to start of region
     bins at_end_pmp     = {(`PMP_NAPOT_REGION_START + `g_napot - 2) & `PMP_ADDR_LOWMASK}; // 2 bytes before end → straddles out
@@ -2907,7 +2935,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   }
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    addr_adjacent_to_na4_boundary: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    addr_adjacent_to_na4_boundary: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
       // NA4 region (4 bytes): (PMP_REGION_START, PMP_REGION_START + 4)
       bins just_before_start     = {(`PMP_REGION_START - 2) & `PMP_ADDR_LOWMASK};
       bins at_the_top     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
@@ -2918,7 +2946,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
 
   // First three consecutive standard napot regions.
   // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
-  cfg_consecutive_napot: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[23:0]) {
+  cfg_consecutive_napot: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[23:0]) {
     bins locked_napot_regions = {24'b100110001001111110011111};
   }
 
@@ -2930,18 +2958,18 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
     bins first_three_regions = {1};
   }
 
-  napot_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) {
+  napot_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
     bins address = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK}; // NAPOT region with LXWR 1111
   }
 
-  napot_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0]) {
+  napot_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0]) {
     bins napot_lxwr = {8'b10011111}; // NAPOT region with LXWR 1111
   }
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // First three consecutive standard tor regions.
     // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
-    cfg_consecutive_tor: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")) {
+    cfg_consecutive_tor: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)) {
       bins locked_tor_regions = {32'b10001000_10001111_10001111_00000000};
     }
 
@@ -2960,34 +2988,34 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
       bins address = {1};
     }
 
-    tor_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[15:8]) {
+    tor_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8]) {
       bins tor_lxwr = { 8'b10001111}; // TOR region with LXWR 1111
     }
   `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
-    cfg_consecutive_na4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[23:0]) {
+    cfg_consecutive_na4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[23:0]) {
       bins locked_na4_regions = {24'b100100001001011110010111};
     }
 
     // PMP0, PMP1, PMP2: NA4, L=1, XWR=111 — regions at PMP_REGION_START, PMP_REGION_START+4, PMP_REGION_START+8
-    pmpaddr_consecutive_na4: coverpoint (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2") & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 8) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                                         ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1") & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 4) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                                         ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK))) {
+    pmpaddr_consecutive_na4: coverpoint (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR2) & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 8) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                                         ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR1) & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 4) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                                         ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK))) {
       bins first_three_regions = {1};
     }
 
-    na4_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) {
+    na4_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
       bins address = {(`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK}; // NA4 region with LXWR 1111
     }
 
-    na4_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0]) {
+    na4_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0]) {
       bins na4_lxwr = { 8'b10010111}; // NA4 region with LXWR 1111
     }
 
   `endif
 
-  cfg_consecutive_off: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[23:0]) {
+  cfg_consecutive_off: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[23:0]) {
     bins locked_off_regions = {24'b100001111000011110000111};
   }
 
@@ -3025,7 +3053,7 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+      logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -3034,7 +3062,7 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -3047,7 +3075,7 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -3067,7 +3095,7 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    cfg_for_menvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
+    cfg_for_menvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
         bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
     }
 
@@ -3146,7 +3174,7 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
+      logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -3155,7 +3183,7 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -3168,7 +3196,7 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -3197,48 +3225,48 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
     }
     `else
         PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
     `endif
 
     `ifdef UDB_MXLEN_64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
     }
     `else
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
     `endif
 
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
         `ifdef UDB_MXLEN_64
-        mode: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        mode: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -3250,7 +3278,7 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        mode: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        mode: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -3266,13 +3294,13 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    load_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+    load_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
         bins load_acc_fault = {LOAD_ACCESS_FAULT};
     }
-    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
         bins store_acc_fault = {STORE_AMO_ACCESS_FAULT};
     }
-    ins_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+    ins_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
         bins ins_acc_fault  = {INSTRUCTION_ACCESS_FAULT};
     }
 
@@ -3286,7 +3314,7 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
         wildcard bins jalr = {JALR};
     }
 
-    PMP0_PTE: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {        // PMP permissions of PTE
+    PMP0_PTE: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {        // PMP permissions of PTE
         wildcard bins noread   = {8'b?????100};
     }
 
@@ -3299,7 +3327,7 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
     pmp0_pte_noexec_u:  cross PageType_i, PMP0_PTE, ins_acc_fault, priv_mode_u, jalr;
 
 
-    PMP0_PA: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[15:8] {       // PMP permissions of (translated) phys addr region
+    PMP0_PA: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {       // PMP permissions of (translated) phys addr region
         wildcard bins noread   = {8'b?????100};
         wildcard bins nowrite  = {8'b?????101};
         wildcard bins noexe    = {8'b?????011};
@@ -3359,25 +3387,25 @@ covergroup PMP_SvZicbo_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
     }
     `else
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
     `endif
 
-    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
         bins store_acc_fault = {STORE_AMO_ACCESS_FAULT};
     }
 
@@ -3390,7 +3418,7 @@ covergroup PMP_SvZicbo_cg with function sample(ins_t ins);
         `endif
     }
 
-    PMP_perm: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
+    PMP_perm: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
         wildcard bins rw_unset   = {8'b?????100};
     }
 
@@ -3404,6 +3432,50 @@ endgroup
 
 function void pmp_SvZicbo_sample(int hart, int issue, ins_t ins);
     PMP_SvZicbo_cg.sample(ins);
+endfunction
+`endif
+
+`ifdef PMP_COVER_HSVZICBO
+// PMP on the final supervisor physical address of a CBO from VS-mode and VU-mode, through a VS-stage or a G-stage
+// kilopage
+covergroup PMP_HSvZicbo_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    cbo: coverpoint ins.current.insn {
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins clean = {CBO_CLEAN};
+            wildcard bins flush = {CBO_FLUSH};
+            wildcard bins inval = {CBO_INVAL};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zero = {CBO_ZERO};
+        `endif
+    }
+    // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
+    // SV39X4/SV32X4 data_va through a VS-stage identity superpage
+    `ifdef UDB_MXLEN_64
+        stage: coverpoint ins.current.rs1_val[63:30] {
+            bins vs = {5};
+            bins g  = {11};
+        }
+    `else
+        stage: coverpoint ins.current.rs1_val[31:22] {
+            bins vs = {'h241};
+            bins g  = {'h341};
+        }
+    `endif
+    // PMP entry 0 covers the test page with no permissions, or with read permission only
+    pmp_xwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
+        bins none = {8'b00011000};
+        bins r    = {8'b00011001};
+    }
+
+    cp_pmp: cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
+endgroup
+
+function void pmp_HSvZicbo_sample(int hart, int issue, ins_t ins);
+    PMP_HSvZicbo_cg.sample(ins);
 endfunction
 `endif
 
@@ -3434,38 +3506,38 @@ covergroup PMP_Svadu_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
     `else
         PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0]);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0]);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0]);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0]);
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0]);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0]);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0]);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0]);
         }
     `endif
 
@@ -3478,27 +3550,27 @@ covergroup PMP_Svadu_cg with function sample(ins_t ins);
     sw: coverpoint ins.current.insn {
         wildcard bins sw = {SW};
     }
-    load_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+    load_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
         bins load_acc_fault = {LOAD_ACCESS_FAULT} iff (ins.current.trap);
     }
-    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
         bins store_acc_fault = {STORE_AMO_ACCESS_FAULT} iff (ins.current.trap);
     }
-    ins_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause") {
+    ins_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
         bins ins_acc_fault  = {INSTRUCTION_ACCESS_FAULT} iff (ins.current.trap);
     }
 
     `ifdef UDB_MXLEN_64
-        Svadu_enabled: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "adue")[0] {
+        Svadu_enabled: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "adue")[0] {
             bins ADUE_set = {1'b1};
         }
     `else
-        Svadu_enabled: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfgh", "adue")[0] {
+        Svadu_enabled: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFGH, "adue")[0] {
             bins ADUE_set = {1'b1};
         }
     `endif
 
-    PMP_pagetable: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {      // PMP permission of page table
+    PMP_pagetable: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {      // PMP permission of page table
         wildcard bins w_unset = {8'b??????01};
     }
 
@@ -3547,6 +3619,9 @@ function void pmp_sample(int hart, int issue, ins_t ins);
   `endif
   `ifdef PMP_COVER_SVZICBO
     pmp_SvZicbo_sample(hart, issue, ins);
+  `endif
+  `ifdef PMP_COVER_HSVZICBO
+    pmp_HSvZicbo_sample(hart, issue, ins);
   `endif
   `ifdef SVADU_SUPPORTED
     pmp_Svadu_sample(hart, issue, ins);

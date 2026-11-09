@@ -13,7 +13,7 @@
 ///////////////////////////////////////////
 // supported standard trigger types; 1 and 2 are legacy, 7 is tmexttrigger, 8-11 are reserved, 12-14 are custom.
 // 0 means no trigger at this tselect, which no implemented trigger (triggernum) can read back.
-tdata1_type: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0] {
+tdata1_type: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
     type_option.weight = 0;
     `ifdef SDTRIG_ICOUNT_ANY
         bins icount    = {4'd3};

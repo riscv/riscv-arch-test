@@ -93,10 +93,11 @@ function string disassemble (logic [31:0] instrRaw);
     PAUSE:   $sformat(decoded, "pause");
   `endif
   `ifdef ZICBOP_COVERAGE
-    // Zicbop Extension (note these are hints)
-    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immIType, rs1);
-    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
-    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
+    // Zicbop Extension (note these are hints). Bits 24:20 select the prefetch, and the offset is bits
+    // 31:25 shifted left by 5, which is immSType as rd = 0.
+    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immSType, rs1);
+    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immSType, rs1);
+    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immSType, rs1);
   `endif
   `ifdef ZIHINTNTL_COVERAGE
     NTL_ALL: $sformat(decoded, "ntl.all");

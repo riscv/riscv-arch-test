@@ -16,7 +16,8 @@ from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_te
 from testgen.priv.extensions.sv.page_tables import SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
-_PBMT = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
+# The PBMT encodings of a leaf: (bits, description, reserved)
+PBMT_ENCODINGS = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
 
 
 def _crosses(prefix: str, mode: str) -> Crosses:
@@ -49,7 +50,7 @@ def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     umode = mode == "Umode"
     number = 0
     for level in sv.levels_desc:
-        for bits, description, guarded in _PBMT:
+        for bits, description, guarded in PBMT_ENCODINGS:
             number += 1
             permissions = PteFlags(user=umode, extra=(bits,))
             if guarded:
@@ -88,7 +89,7 @@ def _make_nonleaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
     umode = mode == "Umode"
     number = 0
     for level in (level for level in sv.levels_desc if level < sv.levels - 1):
-        for bits, description, _guarded in _PBMT:
+        for bits, description, _guarded in PBMT_ENCODINGS:
             number += 1
             permissions = PteFlags(user=umode)
             chunk.code.extend(

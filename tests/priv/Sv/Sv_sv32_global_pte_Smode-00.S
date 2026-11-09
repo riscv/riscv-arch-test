@@ -130,6 +130,13 @@ Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec, Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec_str)
 
+#if UDB_ASID_WIDTH < 9
+  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set
+  LI(x4, (((1 << 9) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)
+  or x15, x15, x4
+Sv_sfence_cg_cp_sfence_asid_len_test1_Smode_asid_high_bits:
+  sfence.vma x0, x15
+#endif
 
 // 4KB page at level 0
 
@@ -194,6 +201,13 @@ Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec, Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec_str)
 
+#if UDB_ASID_WIDTH < 9
+  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set
+  LI(x4, (((1 << 9) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)
+  or x15, x15, x4
+Sv_sfence_cg_cp_sfence_asid_len_test2_Smode_asid_high_bits:
+  sfence.vma x0, x15
+#endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -228,12 +242,14 @@ Sv_res_global_pte_cg_cp_global_exec_s_test1_access1_exec_str: .string "\"test: 1
 Sv_res_global_pte_cg_cp_global_write_s_test1_access2_store_str: .string "\"test: 16; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test1_access2_store\""
 Sv_res_global_pte_cg_cp_global_read_s_test1_access2_load_str: .string "\"test: 17; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test1_access2_load\""
 Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec_str: .string "\"test: 18; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test1_access2_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test2_access1_store_str: .string "\"test: 19; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access1_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test2_access1_load_str: .string "\"test: 20; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access1_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test2_access1_exec_str: .string "\"test: 21; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access1_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test2_access2_store_str: .string "\"test: 22; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access2_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test2_access2_load_str: .string "\"test: 23; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access2_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec_str: .string "\"test: 24; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access2_exec\""
+Sv_sfence_cg_cp_sfence_asid_len_test1_Smode_asid_high_bits_str: .string "\"test: 19; cg: Sv_sfence_cg; cp: cp_sfence_asid_len; bin: test1_Smode_asid_high_bits\""
+Sv_res_global_pte_cg_cp_global_write_s_test2_access1_store_str: .string "\"test: 20; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access1_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test2_access1_load_str: .string "\"test: 21; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access1_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test2_access1_exec_str: .string "\"test: 22; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access1_exec\""
+Sv_res_global_pte_cg_cp_global_write_s_test2_access2_store_str: .string "\"test: 23; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access2_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test2_access2_load_str: .string "\"test: 24; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access2_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec_str: .string "\"test: 25; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access2_exec\""
+Sv_sfence_cg_cp_sfence_asid_len_test2_Smode_asid_high_bits_str: .string "\"test: 26; cg: Sv_sfence_cg; cp: cp_sfence_asid_len; bin: test2_Smode_asid_high_bits\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -126,9 +126,9 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_misaligned_write_u_test1_store_str: .string "\"test: 40; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_u; bin: test1_store\""
-Sv_vm_permissions_cg_cp_misaligned_read_u_test1_load_str: .string "\"test: 41; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_u; bin: test1_load\""
-Sv_vm_permissions_cg_cp_misaligned_exec_u_test1_exec_str: .string "\"test: 42; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_u; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_misaligned_write_u_test1_store_str: .string "\"test: 44; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_u; bin: test1_store\""
+Sv_vm_permissions_cg_cp_misaligned_read_u_test1_load_str: .string "\"test: 45; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_u; bin: test1_load\""
+Sv_vm_permissions_cg_cp_misaligned_exec_u_test1_exec_str: .string "\"test: 46; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_u; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

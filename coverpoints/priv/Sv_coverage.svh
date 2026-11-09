@@ -117,9 +117,29 @@ endgroup
 
 covergroup Sv_sfence_cg with function sample(ins_t ins); //sf.1
     option.per_instance = 0;
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
     cp_ins: coverpoint ins.current.insn {
         wildcard bins sfence = {SFENCE_VMA};
     }
+    // Only when ASIDLEN < ASIDMAX: rs2 = the current ASID with the unimplemented bits ASIDMAX-1:ASIDLEN set,
+    // which SFENCE.VMA ignores
+    `ifdef UDB_MXLEN_64
+        `ifndef UDB_ASID_WIDTH_16
+            sfence_rs2_asid_len: coverpoint ins.current.rs2_val iff ((ins.current.insn ==? SFENCE_VMA) && (ins.current.insn[24:20] != 5'd0)) {
+                bins cur_plus_high = {[0:$]} iff (ins.current.rs2_val ==
+                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "asid") | ((64'hFFFF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
+            }
+            cp_sfence_asid_len: cross priv_mode_s, sfence_rs2_asid_len;
+        `endif
+    `else
+        `ifndef UDB_ASID_WIDTH_9
+            sfence_rs2_asid_len: coverpoint ins.current.rs2_val iff ((ins.current.insn ==? SFENCE_VMA) && (ins.current.insn[24:20] != 5'd0)) {
+                bins cur_plus_high = {[0:$]} iff (ins.current.rs2_val ==
+                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "asid") | ((32'h1FF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
+            }
+            cp_sfence_asid_len: cross priv_mode_s, sfence_rs2_asid_len;
+        `endif
+    `endif
 endgroup
 
 covergroup Sv_vm_permissions_cg with function sample(ins_t ins);

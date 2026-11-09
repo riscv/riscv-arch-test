@@ -130,6 +130,13 @@ Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec, Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec_str)
 
+#if UDB_ASID_WIDTH < 16
+  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set
+  LI(x4, (((1 << 16) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)
+  or x15, x15, x4
+Sv_sfence_cg_cp_sfence_asid_len_test1_Smode_asid_high_bits:
+  sfence.vma x0, x15
+#endif
 
 // 512GB page at level 3
 
@@ -202,6 +209,13 @@ Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec, Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec_str)
 
+#if UDB_ASID_WIDTH < 16
+  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set
+  LI(x4, (((1 << 16) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)
+  or x15, x15, x4
+Sv_sfence_cg_cp_sfence_asid_len_test2_Smode_asid_high_bits:
+  sfence.vma x0, x15
+#endif
 
 // 1GB page at level 2
 
@@ -275,6 +289,13 @@ Sv_res_global_pte_cg_cp_global_exec_s_test3_access2_exec:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_global_exec_s_test3_access2_exec, Sv_res_global_pte_cg_cp_global_exec_s_test3_access2_exec_str)
 
+#if UDB_ASID_WIDTH < 16
+  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set
+  LI(x4, (((1 << 16) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)
+  or x15, x15, x4
+Sv_sfence_cg_cp_sfence_asid_len_test3_Smode_asid_high_bits:
+  sfence.vma x0, x15
+#endif
 
 // 2MB page at level 1
 
@@ -349,6 +370,13 @@ Sv_res_global_pte_cg_cp_global_exec_s_test4_access2_exec:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_global_exec_s_test4_access2_exec, Sv_res_global_pte_cg_cp_global_exec_s_test4_access2_exec_str)
 
+#if UDB_ASID_WIDTH < 16
+  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set
+  LI(x4, (((1 << 16) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)
+  or x15, x15, x4
+Sv_sfence_cg_cp_sfence_asid_len_test4_Smode_asid_high_bits:
+  sfence.vma x0, x15
+#endif
 
 // 4KB page at level 0
 
@@ -424,6 +452,13 @@ Sv_res_global_pte_cg_cp_global_exec_s_test5_access2_exec:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_global_exec_s_test5_access2_exec, Sv_res_global_pte_cg_cp_global_exec_s_test5_access2_exec_str)
 
+#if UDB_ASID_WIDTH < 16
+  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set
+  LI(x4, (((1 << 16) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)
+  or x15, x15, x4
+Sv_sfence_cg_cp_sfence_asid_len_test5_Smode_asid_high_bits:
+  sfence.vma x0, x15
+#endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -467,30 +502,35 @@ Sv_res_global_pte_cg_cp_global_exec_s_test1_access1_exec_str: .string "\"test: 6
 Sv_res_global_pte_cg_cp_global_write_s_test1_access2_store_str: .string "\"test: 64; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test1_access2_store\""
 Sv_res_global_pte_cg_cp_global_read_s_test1_access2_load_str: .string "\"test: 65; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test1_access2_load\""
 Sv_res_global_pte_cg_cp_global_exec_s_test1_access2_exec_str: .string "\"test: 66; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test1_access2_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test2_access1_store_str: .string "\"test: 67; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access1_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test2_access1_load_str: .string "\"test: 68; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access1_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test2_access1_exec_str: .string "\"test: 69; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access1_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test2_access2_store_str: .string "\"test: 70; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access2_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test2_access2_load_str: .string "\"test: 71; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access2_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec_str: .string "\"test: 72; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access2_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test3_access1_store_str: .string "\"test: 73; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test3_access1_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test3_access1_load_str: .string "\"test: 74; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test3_access1_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test3_access1_exec_str: .string "\"test: 75; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test3_access1_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test3_access2_store_str: .string "\"test: 76; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test3_access2_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test3_access2_load_str: .string "\"test: 77; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test3_access2_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test3_access2_exec_str: .string "\"test: 78; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test3_access2_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test4_access1_store_str: .string "\"test: 79; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test4_access1_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test4_access1_load_str: .string "\"test: 80; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test4_access1_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test4_access1_exec_str: .string "\"test: 81; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test4_access1_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test4_access2_store_str: .string "\"test: 82; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test4_access2_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test4_access2_load_str: .string "\"test: 83; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test4_access2_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test4_access2_exec_str: .string "\"test: 84; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test4_access2_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test5_access1_store_str: .string "\"test: 85; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test5_access1_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test5_access1_load_str: .string "\"test: 86; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test5_access1_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test5_access1_exec_str: .string "\"test: 87; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test5_access1_exec\""
-Sv_res_global_pte_cg_cp_global_write_s_test5_access2_store_str: .string "\"test: 88; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test5_access2_store\""
-Sv_res_global_pte_cg_cp_global_read_s_test5_access2_load_str: .string "\"test: 89; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test5_access2_load\""
-Sv_res_global_pte_cg_cp_global_exec_s_test5_access2_exec_str: .string "\"test: 90; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test5_access2_exec\""
+Sv_sfence_cg_cp_sfence_asid_len_test1_Smode_asid_high_bits_str: .string "\"test: 67; cg: Sv_sfence_cg; cp: cp_sfence_asid_len; bin: test1_Smode_asid_high_bits\""
+Sv_res_global_pte_cg_cp_global_write_s_test2_access1_store_str: .string "\"test: 68; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access1_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test2_access1_load_str: .string "\"test: 69; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access1_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test2_access1_exec_str: .string "\"test: 70; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access1_exec\""
+Sv_res_global_pte_cg_cp_global_write_s_test2_access2_store_str: .string "\"test: 71; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test2_access2_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test2_access2_load_str: .string "\"test: 72; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test2_access2_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test2_access2_exec_str: .string "\"test: 73; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test2_access2_exec\""
+Sv_sfence_cg_cp_sfence_asid_len_test2_Smode_asid_high_bits_str: .string "\"test: 74; cg: Sv_sfence_cg; cp: cp_sfence_asid_len; bin: test2_Smode_asid_high_bits\""
+Sv_res_global_pte_cg_cp_global_write_s_test3_access1_store_str: .string "\"test: 75; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test3_access1_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test3_access1_load_str: .string "\"test: 76; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test3_access1_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test3_access1_exec_str: .string "\"test: 77; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test3_access1_exec\""
+Sv_res_global_pte_cg_cp_global_write_s_test3_access2_store_str: .string "\"test: 78; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test3_access2_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test3_access2_load_str: .string "\"test: 79; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test3_access2_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test3_access2_exec_str: .string "\"test: 80; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test3_access2_exec\""
+Sv_sfence_cg_cp_sfence_asid_len_test3_Smode_asid_high_bits_str: .string "\"test: 81; cg: Sv_sfence_cg; cp: cp_sfence_asid_len; bin: test3_Smode_asid_high_bits\""
+Sv_res_global_pte_cg_cp_global_write_s_test4_access1_store_str: .string "\"test: 82; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test4_access1_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test4_access1_load_str: .string "\"test: 83; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test4_access1_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test4_access1_exec_str: .string "\"test: 84; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test4_access1_exec\""
+Sv_res_global_pte_cg_cp_global_write_s_test4_access2_store_str: .string "\"test: 85; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test4_access2_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test4_access2_load_str: .string "\"test: 86; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test4_access2_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test4_access2_exec_str: .string "\"test: 87; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test4_access2_exec\""
+Sv_sfence_cg_cp_sfence_asid_len_test4_Smode_asid_high_bits_str: .string "\"test: 88; cg: Sv_sfence_cg; cp: cp_sfence_asid_len; bin: test4_Smode_asid_high_bits\""
+Sv_res_global_pte_cg_cp_global_write_s_test5_access1_store_str: .string "\"test: 89; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test5_access1_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test5_access1_load_str: .string "\"test: 90; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test5_access1_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test5_access1_exec_str: .string "\"test: 91; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test5_access1_exec\""
+Sv_res_global_pte_cg_cp_global_write_s_test5_access2_store_str: .string "\"test: 92; cg: Sv_res_global_pte_cg; cp: cp_global_write_s; bin: test5_access2_store\""
+Sv_res_global_pte_cg_cp_global_read_s_test5_access2_load_str: .string "\"test: 93; cg: Sv_res_global_pte_cg; cp: cp_global_read_s; bin: test5_access2_load\""
+Sv_res_global_pte_cg_cp_global_exec_s_test5_access2_exec_str: .string "\"test: 94; cg: Sv_res_global_pte_cg; cp: cp_global_exec_s; bin: test5_access2_exec\""
+Sv_sfence_cg_cp_sfence_asid_len_test5_Smode_asid_high_bits_str: .string "\"test: 95; cg: Sv_sfence_cg; cp: cp_sfence_asid_len; bin: test5_Smode_asid_high_bits\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

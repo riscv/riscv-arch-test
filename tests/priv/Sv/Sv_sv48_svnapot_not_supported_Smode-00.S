@@ -135,9 +135,9 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str: .string "\"test: 397; cg: Sv_add_feature_cg; cp: cp_svnapot_write_fault; bin: test1_store\""
-Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str: .string "\"test: 398; cg: Sv_add_feature_cg; cp: cp_svnapot_read_fault; bin: test1_load\""
-Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str: .string "\"test: 399; cg: Sv_add_feature_cg; cp: cp_svnapot_exec_fault; bin: test1_exec\""
+Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str: .string "\"test: 405; cg: Sv_add_feature_cg; cp: cp_svnapot_write_fault; bin: test1_store\""
+Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str: .string "\"test: 406; cg: Sv_add_feature_cg; cp: cp_svnapot_read_fault; bin: test1_load\""
+Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str: .string "\"test: 407; cg: Sv_add_feature_cg; cp: cp_svnapot_exec_fault; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

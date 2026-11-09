@@ -233,18 +233,18 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test1_store_str: .string "\"test: 43; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test1_store\""
-Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test1_load_str: .string "\"test: 44; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test1_load\""
-Sv_vm_permissions_cg_cp_spage_exec_s_i_test1_exec_str: .string "\"test: 45; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test1_exec\""
-Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test2_store_str: .string "\"test: 46; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test2_store\""
-Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test2_load_str: .string "\"test: 47; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test2_load\""
-Sv_vm_permissions_cg_cp_spage_exec_s_i_test2_exec_str: .string "\"test: 48; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test2_exec\""
-Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test3_store_str: .string "\"test: 49; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test3_store\""
-Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test3_load_str: .string "\"test: 50; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test3_load\""
-Sv_vm_permissions_cg_cp_spage_exec_s_i_test3_exec_str: .string "\"test: 51; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test3_exec\""
-Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test4_store_str: .string "\"test: 52; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test4_store\""
-Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test4_load_str: .string "\"test: 53; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test4_load\""
-Sv_vm_permissions_cg_cp_spage_exec_s_i_test4_exec_str: .string "\"test: 54; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test4_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test1_store_str: .string "\"test: 47; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test1_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test1_load_str: .string "\"test: 48; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test1_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test1_exec_str: .string "\"test: 49; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test2_store_str: .string "\"test: 50; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test2_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test2_load_str: .string "\"test: 51; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test2_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test2_exec_str: .string "\"test: 52; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test2_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test3_store_str: .string "\"test: 53; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test3_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrunset_read_s_test3_load_str: .string "\"test: 54; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrunset_read_s; bin: test3_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test3_exec_str: .string "\"test: 55; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test3_exec\""
+Sv_vm_permissions_cg_cp_spage_nowrite_s_d_test4_store_str: .string "\"test: 56; cg: Sv_vm_permissions_cg; cp: cp_spage_nowrite_s_d; bin: test4_store\""
+Sv_vm_permissions_cg_cp_xpage_mxrset_read_s_test4_load_str: .string "\"test: 57; cg: Sv_vm_permissions_cg; cp: cp_xpage_mxrset_read_s; bin: test4_load\""
+Sv_vm_permissions_cg_cp_spage_exec_s_i_test4_exec_str: .string "\"test: 58; cg: Sv_vm_permissions_cg; cp: cp_spage_exec_s_i; bin: test4_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

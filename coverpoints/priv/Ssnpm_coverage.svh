@@ -234,7 +234,6 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // vsstatus.MXR = 1 turns masking off in VS-mode and VU-mode
     cp_mxr_pmm: cross priv_mode_vs_vu, ld, vsstatus_mxr, henvcfg_pmm_enabled, senvcfg_pmm_enabled, tag, vsatp_bare, hgatp_mode;
 
-
     // csrrw henvcfg and hstatus with the reserved PMM = 01 in henvcfg.PMM and hstatus.HUPMM
     henvcfg_csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_HENVCFG);
@@ -250,6 +249,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     cp_henvcfg_pmm_rsv: cross priv_mode_hs, henvcfg_csrrw, henvcfg_pmm_rsv_written;
     cp_hstatus_hupmm_rsv: cross priv_mode_hs, hstatus_csrrw, hstatus_hupmm_rsv_written;
+
     // MXR is in effect for VS-mode and VU-mode when either vsstatus.MXR or the HS-level sstatus.MXR is 1.
     // {vsstatus.MXR, sstatus.MXR}; both 0 is cp_vs_pmm and cp_vu_pmm.
     mxr_pair: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0],

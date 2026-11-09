@@ -31,3 +31,14 @@ coverpoints:
     bins: 2 MXR * 3 mseccfg.PMM * 3 menvcfg.PMM * 1 MPRV * 1 MPP (S) * 2 satp.MODE * 3 addresses * 2 instructions (lw, sw)
     rules:
       - pm_mprv_spvp
+  - name: cp_menvcfg_pmm_rsv
+    goal: Verify that the reserved menvcfg.PMM = 01 is never stored, and that an access under it works.
+    description: |-
+      In M-mode with menvcfg.PMM = 00: csrrw menvcfg with PMM = 01 and its other bits unchanged, read menvcfg.PMM back
+      and record whether it is 00 or a supported value. Then write PMM = 01 again and, with MPRV = 1 and MPP = S, load
+      through an untagged pointer.
+    expectation: menvcfg.PMM reads back 00 or a supported value. The load returns the seeded value.
+    bins: "1"
+    rules:
+      - pmlen_future_reserved
+      - pmlen_illegal_warl

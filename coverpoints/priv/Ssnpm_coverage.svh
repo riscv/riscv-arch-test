@@ -114,6 +114,15 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
         cp_pm_mprv_mpp_u: cross priv_mode_m, pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_u;
     `endif // SMMPM_SUPPORTED
 
+
+    // csrrw senvcfg with the reserved PMM = 01
+    senvcfg_csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_SENVCFG);
+    }
+    pmm_rsv_written: coverpoint ins.current.rs1_val[33:32] {
+        bins w01_reserved = {2'b01};
+    }
+    cp_senvcfg_pmm_rsv: cross priv_mode_m, senvcfg_csrrw, pmm_rsv_written;
 endgroup
 `endif // EXCLUDE_SM
 
@@ -225,6 +234,22 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // vsstatus.MXR = 1 turns masking off in VS-mode and VU-mode
     cp_mxr_pmm: cross priv_mode_vs_vu, ld, vsstatus_mxr, henvcfg_pmm_enabled, senvcfg_pmm_enabled, tag, vsatp_bare, hgatp_mode;
 
+
+    // csrrw henvcfg and hstatus with the reserved PMM = 01 in henvcfg.PMM and hstatus.HUPMM
+    henvcfg_csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_HENVCFG);
+    }
+    hstatus_csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_HSTATUS);
+    }
+    henvcfg_pmm_rsv_written: coverpoint ins.current.rs1_val[33:32] {
+        bins w01_reserved = {2'b01};
+    }
+    hstatus_hupmm_rsv_written: coverpoint ins.current.rs1_val[49:48] {
+        bins w01_reserved = {2'b01};
+    }
+    cp_henvcfg_pmm_rsv: cross priv_mode_hs, henvcfg_csrrw, henvcfg_pmm_rsv_written;
+    cp_hstatus_hupmm_rsv: cross priv_mode_hs, hstatus_csrrw, hstatus_hupmm_rsv_written;
 endgroup
 `endif // H_SUPPORTED
 

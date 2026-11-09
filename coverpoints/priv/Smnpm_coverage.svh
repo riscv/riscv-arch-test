@@ -123,6 +123,15 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
     `else
         cp_pm_mprv_mpp_s: cross priv_mode_m, pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_s;
     `endif // SMMPM_SUPPORTED
+
+    // csrrw menvcfg with the reserved PMM = 01
+    menvcfg_csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_MENVCFG);
+    }
+    pmm_rsv_written: coverpoint ins.current.rs1_val[33:32] {
+        bins w01_reserved = {2'b01};
+    }
+    cp_menvcfg_pmm_rsv: cross priv_mode_m, menvcfg_csrrw, pmm_rsv_written;
 endgroup
 `endif // EXCLUDE_SM
 

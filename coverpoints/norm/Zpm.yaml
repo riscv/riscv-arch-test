@@ -58,6 +58,8 @@ normative_rule_definitions:
       [
         "S_scsr_cg/cp_scsrwalk/senvcfg",
         "Sm_mcsr_cg/cp_mcsrwalk_masked/{menvcfg, mseccfg}",
+        "Smmpm_cg/cp_mseccfg_pmm_write",
+        "Smnpm_SSm_cg/cp_menvcfg_pmm_rsv",
       ]
 
   # Pointer masking is controlled separately for different privilege modes.
@@ -197,4 +199,8 @@ normative_rule_definitions:
       [
         "Sm_mcsr_cg/cp_mcsrwalk_masked/{menvcfg, mseccfg, menvcfgh, mseccfgh}",
         "S_scsr_cg/cp_scsrwalk/senvcfg",
+        "Smmpm_cg/cp_mseccfg_pmm_write",
+        "Smnpm_SSm_cg/cp_menvcfg_pmm_rsv",
+        "Ssnpm_Sm_cg/cp_senvcfg_pmm_rsv",
+        "Ssnpm_H_cg/{cp_henvcfg_pmm_rsv, cp_hstatus_hupmm_rsv}",
       ]

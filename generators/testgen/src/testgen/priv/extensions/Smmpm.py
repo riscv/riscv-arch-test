@@ -17,6 +17,7 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_edge_case_tests,
     generate_instruction_sweep_tests,
     generate_mprv_mpp_m_tests,
+    generate_pmm_write_tests,
     mprv_data_section,
     set_mxr,
     set_pmm_field,
@@ -124,5 +125,25 @@ def make_smmpm_mprv(test_data: TestData) -> list[TestChunk]:
         "#ifdef S_SUPPORTED",
         *set_mxr(False, test_data, "mstatus"),
         "#endif // S_SUPPORTED",
+    ]
+    return [test_data.end_test_chunk()]
+
+
+# Every mseccfg.PMM transition, including writes of the reserved 01 and of unsupported PMLENs.
+@add_priv_test_generator(
+    "Smmpm",
+    required_extensions=["Smmpm"],
+    march_extensions=["I"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_smmpm_pmm_write(test_data: TestData) -> list[TestChunk]:
+    tc = test_data.begin_test_chunk(split_name="pmm_write")
+    tc.code = [
+        comment_banner(
+            "cp_mseccfg_pmm_write",
+            "From each supported mseccfg.PMM, write PMM = 00, 01, 10 and 11 with csrrw and read it back.\n"
+            "A supported value reads back as written; 01 and unsupported values read back as a supported one.",
+        ),
+        *generate_pmm_write_tests("mseccfg", test_data, COVERGROUP, "cp_mseccfg_pmm_write", befores=(0b00, 0b10, 0b11)),
     ]
     return [test_data.end_test_chunk()]

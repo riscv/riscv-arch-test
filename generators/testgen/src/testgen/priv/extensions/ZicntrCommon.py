@@ -362,7 +362,7 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
         comment_banner("cp_instret_load_access_fault", f"Load access fault in {mode}-mode: {csr} delta recorded"),
         "",
-        f"LA(x{r_addr}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
+        f"LI_FIXED_LEN(x{r_addr}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
         *_instret_case(test_data, covergroup, "load_access_fault", mode, [f"lw x{r_tmp}, 0(x{r_addr})"]),
         "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
         "",

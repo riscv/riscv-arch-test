@@ -93,7 +93,7 @@ def _hlv_fault_tests(test_data: TestData) -> list[str]:
             "access-fault address",
         )
     )
-    load_lines = [f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"]
+    load_lines = [f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"]
     for instr, rv64 in (*HLV_INSTRS, *HLVX_INSTRS):
         body = [
             f"LI(x{rd}, 42)",
@@ -102,7 +102,7 @@ def _hlv_fault_tests(test_data: TestData) -> list[str]:
             write_sigupd(rd, test_data),
         ]
         load_lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
-    store_lines = [f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"]
+    store_lines = [f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"]
     for instr, rv64 in HSV_INSTRS:
         body = [test_data.add_testcase(instr, "cp_hsv_access_fault", CG), f"{instr} x{data_reg}, (x{addr_reg})"]
         store_lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))

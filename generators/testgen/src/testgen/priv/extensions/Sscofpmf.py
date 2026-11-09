@@ -324,7 +324,7 @@ def _freeze_case(
     priv_mode: str,
     coverpoint: str,
     freeze: list[str],
-    regs: tuple[int, int, int, int],
+    regs: list[int],
 ) -> list[str]:
     """Count in ``priv_mode``, stop the counter with the ``freeze`` instructions, and check the count survives.
 
@@ -397,7 +397,7 @@ def _generate_xinh_freeze_tests(test_data: TestData, priv_mode: str) -> list[str
         tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", priv_mode),
         "",
     ]
-    test_data.int_regs.return_registers(list(regs))
+    test_data.int_regs.return_registers(regs)
     return lines
 
 

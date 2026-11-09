@@ -29,15 +29,15 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         jalr : coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        instr_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        instr_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {20};
         }
-        load_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        load_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {21};
         }
-        store_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        store_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {23};
         }
@@ -45,9 +45,9 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         // page offset of the virtual address, or the implicit read of a VS-stage PTE, after which htinst holds a
         // pseudoinstruction.  The test sets htval to a random value before each trap.
         htval_gpa : coverpoint {
-            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
-            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) ==
-                ((ins.current.rs1_val + ins.current.imm) & 'hFFF)
+            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
+            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) << 2) & 'hFFF) ==
+                (ins.current.eff_addr & 'hFFF)
         } {
             bins final_gpa    = {2'b01};
             bins implicit_gpa = {2'b10};
@@ -64,15 +64,15 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         }
         // As htval_gpa, for HLV, HSV, AMOs and LR, whose address is rs1 alone
         htval_gpa_hlsv : coverpoint {
-            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
-            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) ==
+            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
+            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) << 2) & 'hFFF) ==
                 (ins.current.rs1_val & 'hFFF)
         } {
             bins final_gpa    = {2'b01};
             bins implicit_gpa = {2'b10};
         }
 
-        hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {
+        hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu")[0] {
             bins on = {1};
         }
 
@@ -101,10 +101,10 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         // second half: htval holds the guest physical address of the page boundary.  As straddle and
         // htval_page_boundary below, which only harts that perform misaligned accesses compile.
         `ifdef ZCA_SUPPORTED
-            straddle_fetch : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+            straddle_fetch : coverpoint (ins.current.eff_addr & 'hFFF) {
                 bins page_end = {'hFFE};
             }
-            htval_page_boundary_fetch : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) {
+            htval_page_boundary_fetch : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) << 2) & 'hFFF) {
                 bins page_boundary = {0};
             }
             cp_instr_straddle_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, straddle_fetch,
@@ -128,7 +128,7 @@ covergroup Shtvala_cg with function sample(ins_t ins);
                 wildcard bins hsv_h = {HSV_H};
             }
             // A halfword one byte below the end of a page, which continues into the next page
-            straddle : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+            straddle : coverpoint (ins.current.eff_addr & 'hFFF) {
                 bins page_end = {'hFFF};
             }
             // As straddle, for HLV and HSV, whose address is rs1 alone: their disassembly has no immediate operand, so
@@ -138,7 +138,7 @@ covergroup Shtvala_cg with function sample(ins_t ins);
             }
             // htval holds the guest physical address of the page boundary, where the faulting part begins.  The
             // test sets htval to a random value before each trap.
-            htval_page_boundary : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) {
+            htval_page_boundary : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) << 2) & 'hFFF) {
                 bins page_boundary = {0};
             }
 

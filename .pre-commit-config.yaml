@@ -35,6 +35,8 @@ repos:
     rev: 50e0f3aee9dc5747a5f173f79a7417403c18dda6 # frozen: v2.30.3
     hooks:
       - id: pyproject-fmt
+        # pyproject-fmt requires Python 3.11+. The CI job for the oldest supported Python pins 3.10.
+        language_version: ">=3.11"
 
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit

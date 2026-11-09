@@ -37,7 +37,7 @@ covergroup Zawrs_Sm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+    mstatus_tw:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")) {
         bins zero = {0};
         `ifdef U_SUPPORTED
             bins one  = {1}; // TW is read-only zero without a mode below M
@@ -45,41 +45,41 @@ covergroup Zawrs_Sm_cg with function sample(ins_t ins);
     }
 
     `ifdef U_SUPPORTED
-        mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+        mstatus_tw_one:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")) {
             bins one = {1};
         }
     `endif
 
-    mstatus_tw_zero:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+    mstatus_tw_zero:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")) {
         bins zero = {0};
     }
 
-    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {}
-    mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
+    mstatus_mie: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0])  {}
+    mstatus_mie_zero: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")) {
         bins zero = {0};
     }
-    mstatus_mie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
+    mstatus_mie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")) {
         bins one = {1};
     }
 
     `ifdef UDB_MTI_INTR_IMPL
-        mip_mtip_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")) {
+        mip_mtip_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "mtip")) {
             bins one = {1};
         }
     `endif
 
-    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
+    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
     `ifdef UDB_MTI_INTR_IMPL
-        mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
+        mie_mtie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "mtie")) {
             bins one = {1};
         }
     `endif
 
-    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0] ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0] ){
+    mip_any_ones: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "mtip")[0] ||
+                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "meip")[0] ||
+                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "msip")[0] ){
         bins any_ones = {1};
     }
 
@@ -128,64 +128,64 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {}
+    mstatus_tw:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")[0]) {}
 
-    mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+    mstatus_tw_one:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")) {
         bins one = {1};
     }
 
-    mstatus_tw_zero:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+    mstatus_tw_zero:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")) {
         bins zero = {0};
     }
 
-    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {}
-    mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
+    mstatus_mie: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0])  {}
+    mstatus_mie_zero: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")) {
         bins zero = {0};
     }
-    mstatus_mie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
+    mstatus_mie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")) {
         bins one = {1};
     }
 
-    mip_mtip_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")) {
+    mip_mtip_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "mtip")) {
         bins one = {1};
     }
 
-    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] ||
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0] ||
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0] ||
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0] ||
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0] ||
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]
+    mip_any_ones: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "mtip")[0] ||
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "meip")[0] ||
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "msip")[0] ||
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "stip")[0] ||
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "seip")[0] ||
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "ssip")[0]
                             ){
         bins any_ones = {1};
     }
 
 
-    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {}
-    mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+    mstatus_sie: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0]) {}
+    mstatus_sie_zero: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")) {
         bins zero = {0};
     }
-    mstatus_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+    mstatus_sie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")) {
         bins one = {1};
     }
-    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
+    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
     `ifdef SSTC_SUPPORTED
-        sie_stie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "stie")) {
+        sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
             bins one = {1};
         }
     `else
-        mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
+        mie_mtie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "mtie")) {
             bins one = {1};
         }
     `endif
 
     `ifdef H_SUPPORTED
-        hstatus_vtw_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")) {
+        hstatus_vtw_enabled: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtw")) {
             bins one = {1};
         }
-        hedeleg_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hedeleg", "hedeleg")) {
+        hedeleg_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HEDELEG)) {
             bins zeros = {0}; // zero in all 6 interrupt enable bits
         }
     `endif
@@ -193,11 +193,11 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
 
     `ifdef SSTC_SUPPORTED
         `ifdef UDB_MXLEN_64
-            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")) {
+            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
                 bins one  = {1};
             }
         `else
-            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")) {
+            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
                 bins one  = {1};
             }
         `endif
@@ -255,68 +255,68 @@ covergroup Zawrs_U_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")[0]) {}
+    mstatus_tw:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")[0]) {}
 
-    mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+    mstatus_tw_one:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")) {
         bins one = {1};
     }
 
-    mstatus_tw_zero:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+    mstatus_tw_zero:  coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tw")) {
         bins zero = {0};
     }
 
-    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0])  {}
-    mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
+    mstatus_mie: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0])  {}
+    mstatus_mie_zero: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")) {
         bins zero = {0};
     }
-    mstatus_mie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
+    mstatus_mie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")) {
         bins one = {1};
     }
 
-    mip_mtip_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")) {
+    mip_mtip_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "mtip")) {
         bins one = {1};
     }
 
-    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0] ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]
+    mip_any_ones: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "mtip")[0] ||
+                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "meip")[0] ||
+                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "msip")[0]
                            `ifdef S_SUPPORTED
-                        || get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0] ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0] ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]
+                        || get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "stip")[0] ||
+                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "seip")[0] ||
+                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "ssip")[0]
                            `endif){
         bins any_ones = {1};
     }
 
-    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
+    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
 
     `ifdef S_SUPPORTED
-        mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {}
-        mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+        mstatus_sie: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0]) {}
+        mstatus_sie_zero: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")) {
             bins zero = {0};
         }
-        mstatus_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+        mstatus_sie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")) {
             bins one = {1};
         }
     `endif
     `ifdef SSTC_SUPPORTED
-        sie_stie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "stie")) {
+        sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
             bins one = {1};
         }
         `ifdef UDB_MXLEN_64
-            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")) {
+            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
                 bins one  = {1};
             }
 
         `else
-            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")) {
+            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
                 bins one  = {1};
             }
         `endif
     `else
-        mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
+        mie_mtie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "mtie")) {
             bins one = {1};
         }
     `endif

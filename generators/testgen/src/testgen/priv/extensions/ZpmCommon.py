@@ -1371,11 +1371,11 @@ def generate_pmm_write_tests(
     cg: str,
     coverpoint: str,
     *,
-    befores: tuple[int, ...] = (0b00,),
+    initial_values: tuple[int, ...] = (0b00,),
     writes: tuple[int, ...] = (0b00, 0b01, 0b10, 0b11),
     tsbi: bool = False,
 ) -> list[str]:
-    """From each PMM value in *befores*, csrrw *csr* with its PMM field (hstatus.HUPMM for hstatus) set to each
+    """From each PMM value in *initial_values*, csrrw *csr* with its PMM field (hstatus.HUPMM for hstatus) set to each
     value in *writes* and its other bits unchanged, then read the field back.
 
     A supported value reads back as written. 01 is reserved and 10/11 may be unsupported; the WARL field then
@@ -1389,7 +1389,7 @@ def generate_pmm_write_tests(
         return tsbi_call(instr) if tsbi else instr
 
     lines = []
-    for before in befores:
+    for before in initial_values:
         pmlen = PMLEN_BY_PMM[before]
         body: list[str] = []
         for written in writes:

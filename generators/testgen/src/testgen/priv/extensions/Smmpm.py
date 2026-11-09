@@ -144,6 +144,8 @@ def make_smmpm_pmm_write(test_data: TestData) -> list[TestChunk]:
             "From each supported mseccfg.PMM, write PMM = 00, 01, 10 and 11 with csrrw and read it back.\n"
             "A supported value reads back as written; 01 and unsupported values read back as a supported one.",
         ),
-        *generate_pmm_write_tests("mseccfg", test_data, COVERGROUP, "cp_mseccfg_pmm_write", befores=(0b00, 0b10, 0b11)),
+        *generate_pmm_write_tests(
+            "mseccfg", test_data, COVERGROUP, "cp_mseccfg_pmm_write", initial_values=(0b00, 0b10, 0b11)
+        ),
     ]
     return [test_data.end_test_chunk()]

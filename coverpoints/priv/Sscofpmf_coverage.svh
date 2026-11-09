@@ -51,16 +51,16 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] == 5'b00000) {
+        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58] == 5'b00000) {
                 bins yes = {1};
         }
     `else
-        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] == 5'b00000) {
+        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26] == 5'b00000) {
                 bins yes = {1};
         }
     `endif
 
-    mcounteren_all_ones_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0] == '1) {
+    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == '1) {
         `ifndef UDB_MCOUNTENABLE_EN_3
         ignore_bins disabled_hpm3 = {1};
         `endif
@@ -152,7 +152,7 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
             bins yes = {1};
     }
 
-    mcounteren_stimulus_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0]) {
+    mcounteren_stimulus_pattern_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0]) {
         // Read-only-zero enables cannot produce these readback patterns.
         `ifndef UDB_MCOUNTENABLE_EN_3
         ignore_bins disabled_hpm3 = {29'h1, 29'h1fffffff};
@@ -267,25 +267,25 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
             bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010}; // odd-indexed OF bits set
     }
 
-    lcofi_ip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
+    lcofi_ip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
             bins one  = {1};
     }
-    lcofi_ip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
+    lcofi_ip_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
                 bins zero  = {0};
     }
-    lcofi_ip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {}
-    lcofi_ie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "lcofie")[0] {}
-    lcofi_mideleg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0] {}
+    lcofi_ip: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {}
+    lcofi_ie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "lcofie")[0] {}
+    lcofi_mideleg: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "lcofip")[0] {}
 
-    mstatus_mie_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+    mstatus_mie_set: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0] {
             bins one = {1};
     }
 
-    mie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) {
+    mie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)[15:0]) {
             bins all_zeros = {16'b0};
             wildcard bins all_ones = {16'b??1?1???1???1???};
     }
-    mip_other_pending: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]} {
+    mip_other_pending: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "meip")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "mtip")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "msip")[0]} {
             bins none = {3'b000};
             `ifdef UDB_MEI_INTR_IMPL
             bins meip = {3'b100};
@@ -321,35 +321,35 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sscofpmf.svh"
 
-    sip_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {}
-    sip_lcofi_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
+    sip_lcofi: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP, "lcofip")[0] {}
+    sip_lcofi_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP, "lcofip")[0] {
             bins one = {1};
     }
-    sip_lcofi_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
+    sip_lcofi_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP, "lcofip")[0] {
             bins zero = {0};
     }
     // S-mode clears LCOFIP through sip, so check sip rather than mip here.
-    sip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "sip") == 0) {
+    sip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP) == 0) {
             bins yes = {1};
     }
 
-    sie_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "lcofie")[0] {}
+    sie_lcofi: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "lcofie")[0] {}
     // SIE before the instruction: an interrupt the instruction enables is taken right after it,
     // and the trap's clear of SIE can land in the same trace record.
-    prev_mstatus_sie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
+    prev_mstatus_sie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0] {
             bins one = {1};
     }
-    sie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "sie")[15:0]) {
+    sie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE)[15:0]) {
             bins all_zeros = {16'b0};
             // sie is WARL; unimplemented bits stay 0 after a write of all-1s, so "all
             // ones" means all ones in the bits this coverpoint actually cares about
             // (LCOFIE + the 3 standard S-mode enables), not a literal all-1s register.
             wildcard bins all_ones = {16'b??1???1???1???1?};
     }
-    lcofi_ip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
+    lcofi_ip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
             bins one  = {1};
     }
-    mip_other_pending_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]} {
+    mip_other_pending_s: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "seip")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "stip")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "ssip")[0]} {
             bins none = {3'b000};
             `ifdef UDB_SEI_INTR_IMPL
             bins seip = {3'b100};
@@ -361,8 +361,8 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
             bins ssip = {3'b001};
             `endif
     }
-    mideleg_s_ints: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
-                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
+    mideleg_s_ints: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "lcofip")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "seip")[0],
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "stip")[0],  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "ssip")[0]} {
             bins delegated = {4'b1111};
     }
 
@@ -381,24 +381,24 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
 
     // M-mode counting stays inhibited so the T-SBI trap handler never counts
     `ifdef UDB_MXLEN_64
-        mhpmevent_s_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]) {
+        mhpmevent_s_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58]) {
                 bins minh_only = {5'b10000};
                 bins minh_uinh = {5'b10100};
         }
-        mhpmevent_minh_only_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] == 5'b10000) {
+        mhpmevent_minh_only_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58] == 5'b10000) {
                 bins yes = {1};
         }
     `else
-        mhpmevent_s_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]) {
+        mhpmevent_s_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26]) {
                 bins minh_only = {5'b10000};
                 bins minh_uinh = {5'b10100};
         }
-        mhpmevent_minh_only_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] == 5'b10000) {
+        mhpmevent_minh_only_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26] == 5'b10000) {
                 bins yes = {1};
         }
     `endif
 
-    mcounteren_all_ones_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0] == '1) {
+    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == '1) {
         `ifndef UDB_MCOUNTENABLE_EN_3
         ignore_bins disabled_hpm3 = {1};
         `endif
@@ -490,7 +490,7 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
             bins yes = {1};
     }
 
-    mcounteren_stimulus_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0]) {
+    mcounteren_stimulus_pattern_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0]) {
         // Read-only-zero enables cannot produce these readback patterns.
         `ifndef UDB_MCOUNTENABLE_EN_3
         ignore_bins disabled_hpm3 = {29'h1, 29'h1fffffff};
@@ -609,7 +609,7 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
             bins scountovf   = {CSR_SCOUNTOVF};
     }
 
-    lcofi_mideleg_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0] {
+    lcofi_mideleg_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "lcofip")[0] {
             bins one  = {1};
     }
 
@@ -633,16 +633,16 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
 
     `ifdef S_SUPPORTED
 
-        sie_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "lcofie")[0] {}
-        sip_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {}
-        sip_lcofi_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
+        sie_lcofi: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "lcofie")[0] {}
+        sip_lcofi: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP, "lcofip")[0] {}
+        sip_lcofi_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP, "lcofip")[0] {
                 bins one = {1};
         }
-        sip_lcofi_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
+        sip_lcofi_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP, "lcofip")[0] {
             bins zero = {0};
         }
         // With S, LCOFIP is cleared through sip, so check sip rather than mip here.
-        sip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "sip") == 0) {
+        sip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIP) == 0) {
                 bins yes = {1};
         }
 
@@ -650,20 +650,20 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 bins sret = {SRET};
         }
-        old_sstatus_spp_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
+        old_sstatus_spp_u: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0] {
                 type_option.weight = 0;
                 bins to_u = {0};
         }
     `else
-        lcofi_ip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
+        lcofi_ip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
                 bins one  = {1};
         }
-        lcofi_ip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
+        lcofi_ip_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
                 bins zero  = {0};
         }
 
-        lcofi_ip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {}
-        lcofi_ie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "lcofie")[0] {}
+        lcofi_ip: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {}
+        lcofi_ie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "lcofie")[0] {}
     `endif
 
     cp_uinh_inhibits_umode:    cross priv_mode_u, mhpmevent_xinh_combos, mhpmevent_of_zero;
@@ -671,11 +671,11 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
 
         // Counting stays inhibited above U so the T-SBI trap handler never counts
         `ifdef UDB_MXLEN_64
-            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]) {
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58]) {
                     bins minh_sinh = {5'b11000};
             }
         `else
-            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]) {
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26]) {
                     bins minh_sinh = {5'b11000};
             }
         `endif
@@ -683,11 +683,11 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
     `else
         // Counting stays inhibited above U so the T-SBI trap handler never counts
         `ifdef UDB_MXLEN_64
-            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]) {
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58]) {
                     bins minh_only = {5'b10000};   // SINH is read-only zero without S-mode
             }
         `else
-            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]) {
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26]) {
                     bins minh_only = {5'b10000};   // SINH is read-only zero without S-mode
             }
         `endif

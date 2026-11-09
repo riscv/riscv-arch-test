@@ -8,7 +8,7 @@ notes: |
   - Background entry: the highest usable entry (15 of 16, 63 of 64) is L=1, XWR=111, NAPOT over all of memory (TOR up to all ones when NAPOT is not supported), so accesses that match no lower entry succeed. cp_none_* runs before it is set.
   - Grain g = 2^(G+2) bytes from PMP_GRANULARITY. A standard region is a NAPOT region of max(g, 8) bytes in .data, g-aligned past the code. A TOR region is one grain.
   - Fetch probe = jalr into the region, which holds a return instruction. Loads = lb, lbu, lh, lhu, lw (+ lwu, ld on RV64). Stores = sb, sh, sw (+ sd on RV64).
-  - Legal XWR = {000, 001, 011, 100, 101, 111}. R=0 with W=1 is reserved and never written.
+  - Legal XWR = {000, 001, 011, 100, 101, 111}. R=0 with W=1 is reserved; only cp_pmpcfg_xwr_all and cp_pmpcfg_rw01_rsv write it.
   - After every PMP CSR write the tests execute sfence.vma when S-mode is implemented.
   - Coverpoints compare addresses and pmpaddr values on their low bits (PMP_ADDR_LOWMASK), so bins match wherever .data lands.
   - Entries 0-14 are the entries below the background entry of a 16-entry PMP; with 64 entries, cp_pmp64_* covers entries 15-62.
@@ -365,6 +365,21 @@ coverpoints:
       - pmp_cfg_rv64_layout
       - pmp_rwx_warl
       - pmp_csrs_warl_access
+  - name: cp_pmpcfg_xwr_all
+    goal: Verify that every legal XWR value is written and read back, and that the reserved ones are not stored.
+    description: Write pmpcfg0 with pmp0cfg L=0, A={OFF, NAPOT (PMP_NAPOT_SUPPORTED only)} and each of the eight XWR values, and read pmpcfg0 back.
+    expectation: "A legal XWR reads back as written. For XWR = 010 and 110 see cp_pmpcfg_rw01_rsv."
+    bins: 8 XWR × 2 A = 16 (8 without NAPOT)
+    rules:
+      - pmp_rwx_warl
+      - pmp_csrs_warl_access
+  - name: cp_pmpcfg_rw01_rsv
+    goal: Verify that the reserved R=0, W=1 combination is never stored.
+    description: "With mseccfg.MML=0 (Smepmp not enabled), write pmpcfg0 with pmp0cfg L=0, R=0, W=1, X={0,1}, A={OFF, NAPOT}, and read pmpcfg0 back. The WARL field may read back any legal value, so the test records only whether pmp0cfg reads R=0, W=1."
+    expectation: pmp0cfg does not read back R=0, W=1.
+    bins: 2 (X={0,1})
+    rules:
+      - pmp_rwx_warl
   - heading: 64 PMP entries
   - name: |-
       cp_pmp64_write
@@ -388,19 +403,19 @@ coverpoints:
     rules:
       - pmp_cfg_rv64_illegal
   - name: cp_na4_boundary
-    goal: Verify that an aligned doubleword that only half matches an NA4 entry fails.
-    description: "RV64, PMP_NA4_SUPPORTED only. Entry i: L=1, A=NA4, XWR=111 over the lower or the upper word of an aligned doubleword. ld and sd on the doubleword."
-    expectation: "Load or store/AMO access fault: the entry matches only some bytes of one memory operation."
-    bins: 2 halves × 2 accesses = 4
+    goal: Verify that an aligned doubleword that only half matches an NA4 entry fails, also when M-mode ignores the entry's permissions.
+    description: "RV64, PMP_NA4_SUPPORTED only. Entry 0: L={0,1}, A=NA4, XWR=111 over the lower or the upper word of an aligned doubleword. sd and ld on the doubleword; ld's destination holds a sentinel beforehand."
+    expectation: "Store/AMO or load access fault, with L=0 as well as L=1: the entry matches only some bytes of one memory operation. ld leaves its destination unchanged."
+    bins: 2 L × 2 halves × 2 accesses = 8
     rules:
       - pmp_full_match_required
       - pmp_entry_priority
       - pmp_access_fault_exception
   - name: cp_tor_boundary
-    goal: Verify that an aligned doubleword that only half matches a TOR entry fails.
-    description: "RV64, G = 0, PMP_TOR_SUPPORTED only. Entry i: L=1, A=TOR, XWR=111, a 4-byte region over the lower or upper word of an aligned doubleword (entry i-1: OFF, pmpaddr(i-1) = pmpaddr(i) - 4). ld and sd on the doubleword."
-    expectation: Load or store/AMO access fault. (The original plan also allowed success for a split access; an aligned doubleword is one memory operation.)
-    bins: 2 halves × 2 accesses = 4
+    goal: Verify that an aligned doubleword that only half matches a TOR entry fails, also when M-mode ignores the entry's permissions.
+    description: "RV64, G = 0, PMP_TOR_SUPPORTED only. Entry 1: L={0,1}, A=TOR, XWR=111, a 4-byte region over the lower or upper word of an aligned doubleword (entry 0: OFF, pmpaddr1 = pmpaddr0 + 1). sd and ld on the doubleword; ld's destination holds a sentinel beforehand."
+    expectation: Store/AMO or load access fault, with L=0 as well as L=1. ld leaves its destination unchanged. (The original plan also allowed success for a split access; an aligned doubleword is one memory operation.)
+    bins: 2 L × 2 halves × 2 accesses = 8
     rules:
       - pmp_full_match_required
       - pmp_entry_priority

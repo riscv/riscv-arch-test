@@ -15,6 +15,8 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
     CSR_CHECK_REG,
     LOCKED_LXWR_CASES,
+    PARTIAL_CASES,
+    PARTIAL_DATA,
     REGION_BLOBS,
     TOR_ENTRIES,
     UNLOCKED_LXWR_CASES,
@@ -22,6 +24,7 @@ from testgen.priv.extensions.pmp.helpers import (
     cfg_shift,
     lxwr_walk_body,
     napot_mask_defines,
+    partial_match_body,
     set_pmpaddr,
     set_pmpcfg,
     zero_pmp_regs,
@@ -232,3 +235,19 @@ def make_lower_mode_amode(test_data: TestData, mode: Mode, amode: str) -> list[T
     if amode == "na4":
         return [_make_legal_chunk(test_data, mode, amode)]
     return [_make_legal_chunk(test_data, mode, amode, part) for part in (1, 2)]
+
+
+def make_lower_mode_partial(test_data: TestData, mode: Mode, amode: str) -> list[TestChunk]:
+    """sd and ld from the lower mode at a doubleword that an NA4 or 4-byte TOR region only half covers."""
+    chunks = []
+    for part, cases in enumerate(PARTIAL_CASES, start=1):
+        chunk = test_data.begin_test_chunk(f"{mode.letter}_{amode}_boundary-{part:02d}")
+        chunk.section_header = comment_banner(
+            f"{mode.suite} cp_{amode}_boundary",
+            f"sd and ld from {mode.letter} mode at an aligned doubleword whose lower or upper word is a "
+            f"{amode.upper()} region\nwith XWR = 111: the entry matches only part of each access, so both fault.",
+        )
+        chunk.code.extend(partial_match_body(test_data, amode, cases, lower_mode=mode.letter))
+        chunk.raw_data.extend(PARTIAL_DATA)
+        chunks.append(test_data.end_test_chunk())
+    return chunks

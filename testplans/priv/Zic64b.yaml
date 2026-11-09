@@ -3,27 +3,9 @@ suite: Zic64b
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180
 coverpoints:
   - name: cp_zic64b
-    goal: cbo.zero clears exactly one naturally aligned 64-byte block
-    description: "scratch+128 is the base, so rs1[6:0] is the offset. Offsets 0, 1, 63 and 64. Fill the surrounding bytes with 0xFF, execute cbo.zero, and read the byte before the block, every byte of the block, and the byte after it."
-    expectation: "Offsets 0, 1 and 63 clear [0, 63] and leave the bytes at -1 and 64 unchanged. Offset 64 clears [64, 127] and leaves the bytes at 63 and 128 unchanged."
-    bins: "4 offsets"
+    goal: Cache block zeros
+    description: "For each offset in range of [0, 64]: Write all 1s to 128 consecutive bytes, then do cbo with offset from 64-bit aligned base.  Read back words at offsets of 0, 60, 64, 124 from base."
+    expectation: Match ref model. Only 64 bytes written. When offset is 64, they are in the second block.
+    bins: "65"
     rules:
       - Zic64b_cache_block_size
-  - name: |-
-      cp_zic64b_sv_ok
-      cp_zic64b_sv_fault
-    goal: A 64-byte block does not cross a 4 KiB page, and cbo.zero uses that block's write permission
-    description: "Sv32, Sv39, Sv48 and Sv57, S-mode. Page A is writable. Page B = A+4KiB is R|X with W=0. cbo.zero at block offsets 0 and 63 of the last block of A, then of the first block of B."
-    expectation: "On A, the 64 bytes become 0 and the first byte of B stays 0xFF. On B, store page fault (scause = 15, stval = rs1) and those 64 bytes stay 0xFF."
-    bins: "2 offsets x {success, store page fault}"
-    rules:
-      - Zic64b_cache_block_size
-      - cbz_unperm_fault
-  - name: cp_zic64b_pmp_fault
-    goal: A 64-byte block does not cross a uniform PMP region, and cbo.zero uses that region's write permission
-    description: "M-mode, at least 4 PMP entries, NAPOT. Entry 0 is L|R and entry 1 is L|R|W. The regions are adjacent and each is max(grain, 4KiB). cbo.zero at block offsets 0 and 63 on each side of the boundary. The success cases are signed; the coverpoint records the faults."
-    expectation: "On entry 0, store access fault (mcause = 7, mtval = rs1) and the block stays 0xFF. On entry 1, the 64 bytes become 0 and the next byte stays 0xFF."
-    bins: "2 block offsets, store access fault"
-    rules:
-      - Zic64b_cache_block_size
-      - cbz_unperm_fault

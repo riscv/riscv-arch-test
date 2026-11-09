@@ -315,6 +315,8 @@ def _generate_xinh_inhibits_tests(
 
 # xINH bit (in the 5-bit MINH/SINH/UINH/VSINH/VUINH field) that stops counting in each mode
 FREEZE_BIT = {"M": 0b10000, "S": 0b01000, "U": 0b00100}
+# Only the mode under test counts. Setting its xINH bit then inhibits every mode.
+ONLY_MODE_PATTERN = {mode: 0b11111 & ~bit for mode, bit in FREEZE_BIT.items()}
 
 
 def _freeze_case(
@@ -331,11 +333,13 @@ def _freeze_case(
     the implementation, so neither value is recorded."""
     r_val, r_hval, r_temp, r_c2 = regs
     return [
-        *write_event_pattern(r_val, r_hval, HIGHER_MODE_PATTERN[priv_mode], priv_mode),
+        # Clear the counter while every mode is inhibited, then let only the mode under test count.
+        *write_event_pattern(r_val, r_hval, INHIBIT_ALL_PATTERN, priv_mode),
         tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", priv_mode),
         "#if __riscv_xlen == 32",
         tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTERH, zero", priv_mode),
         "#endif",
+        *write_event_pattern(r_val, r_hval, ONLY_MODE_PATTERN[priv_mode], priv_mode),
         f"LA(x{r_temp}, scratch)",
         f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
         test_data.add_testcase(f"{coverpoint.removeprefix('cp_')}_{priv_mode.lower()}", coverpoint, _cg(priv_mode)),
@@ -373,7 +377,7 @@ def _generate_xinh_freeze_tests(test_data: TestData, priv_mode: str) -> list[str
     lines = [
         comment_banner(
             "cp_xinh_freeze_holds_count and cp_mcountinhibit_freeze_holds_count",
-            f"Count in {priv_mode}-mode, then stop the counter by setting {priv_mode}INH or its mcountinhibit bit.\n"
+            f"Count in {priv_mode}-mode only, then stop the counter by setting {priv_mode}INH or its mcountinhibit bit.\n"
             "The counter must keep the events it counted (c2 != 0), and must not count while stopped\n"
             "(c3 == c2 after the workload runs again).",
         ),

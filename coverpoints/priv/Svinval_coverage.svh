@@ -20,7 +20,7 @@ covergroup Svinval_cg with function sample(ins_t ins);
         wildcard bins sinval_vma      = {SINVAL_VMA};
         wildcard bins sfence_vma      = {SFENCE_VMA}; // not essential, but might as well cross it
     }
-    cp_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
+    cp_tvm : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm")[0] {
         bins zero = {0};
     }
     cp_svinval : cross cp_instr, priv_mode_s_u, cp_tvm {
@@ -40,7 +40,7 @@ covergroup Svinval_cg with function sample(ins_t ins);
         bins x0       = {x0};
         bins register = {[x1:x31]};
     }
-    satp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+    satp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
         bins paged = {[1:15]};
     }
     cp_sinval_vma : cross priv_mode_s, sinval_vma, satp_paged, rs1, rs2;
@@ -58,7 +58,7 @@ covergroup Svinval_Sm_cg with function sample(ins_t ins);
         wildcard bins sinval_vma      = {SINVAL_VMA};
         wildcard bins sfence_vma      = {SFENCE_VMA}; // not essential, but might as well cross it
     }
-    cp_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
+    cp_tvm : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm")[0] {}
     cp_svinval : cross cp_instr, priv_mode_m_s_u, cp_tvm {
         // each instruction executed in every mode with mstatus.TVM clear and set
     }
@@ -84,10 +84,10 @@ covergroup Svinval_H_cg with function sample(ins_t ins);
         wildcard bins hinval_vvma     = {HINVAL_VVMA};
         wildcard bins hinval_gvma     = {HINVAL_GVMA};
     }
-    mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+    mstatus_tvm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm") {
         bins off = {0};
     }
-    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {}
+    hstatus_vtvm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtvm")[0] {}
 
     // mstatus.TVM = 1 and M-mode are in Svinval_SmH_cg
     cp_svinval: cross priv_mode_hs_vs_u_vu, svinval, mstatus_tvm, hstatus_vtvm;
@@ -113,10 +113,10 @@ covergroup Svinval_H_cg with function sample(ins_t ins);
             bins x0       = {x0};
             bins register = {[x1:x31]};
         }
-        vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
             bins paged = {[1:15]};
         }
-        hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+        hgatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
             bins paged = {[1:15]};
         }
 
@@ -126,7 +126,7 @@ covergroup Svinval_H_cg with function sample(ins_t ins);
 
         // A guest physical address >> 2 in rs1 whose top two bits (33:32 for Sv32x4, 40:39 for Sv39x4) are 01, 10
         // or 11
-        rs1_gpa_x4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") iff (ins.current.insn[19:15] != 0) {
+        rs1_gpa_x4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") iff (ins.current.insn[19:15] != 0) {
             `ifdef UDB_MXLEN_64
                 bins sv39x4_01 = {8} iff (ins.current.rs1_val[63:37] == 1);
                 bins sv39x4_10 = {8} iff (ins.current.rs1_val[63:37] == 2);
@@ -156,11 +156,11 @@ covergroup Svinval_SmH_cg with function sample(ins_t ins);
         wildcard bins hinval_vvma     = {HINVAL_VVMA};
         wildcard bins hinval_gvma     = {HINVAL_GVMA};
     }
-    mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
-    mstatus_tvm_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+    mstatus_tvm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm")[0] {}
+    mstatus_tvm_on: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm") {
         bins on = {1};
     }
-    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {}
+    hstatus_vtvm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtvm")[0] {}
 
     // Svinval_H_cg covers the lower modes with mstatus.TVM = 0
     cp_svinval_m:   cross priv_mode_m, svinval, mstatus_tvm, hstatus_vtvm;

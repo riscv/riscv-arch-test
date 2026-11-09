@@ -947,8 +947,7 @@ normative_rule_definitions:
 
   # If Smcdeleg is not implemented, CDE is read-only zero.
   - name: menvcfg_cde_rdonly0
-    coverpoint:
-      ["TODO: check menvcfg.CDE in the Sm walk once Sail supports Smcdeleg"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg"]
 
   # The Sstc extension adds the STCE (STimecmp Enable) bit to menvcfg CSR.
   - name: menvcfg_stce_exists

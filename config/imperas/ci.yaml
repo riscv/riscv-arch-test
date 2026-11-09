@@ -99,6 +99,13 @@ exclude_extensions:
   # - Zicfiss_U
   # - Zicfiss_S
   # - Zicfiss_Sm
+  # Stock only: an ordinary store or AMO to a shadow stack page with pte.D = 0 raises a store/AMO page fault
+  # instead of the store/AMO access fault (SolvNet package imperas-zicfiss-store-ss-d0), and auipc with rd != x0
+  # is accepted as a landing pad (SolvNet package imperas-zicfilp-auipc-rd-lpad). Both pass on
+  # Imperas-HMC101126-eng-build.
+  # - Zicfiss_U_page_access_ad
+  # - Zicfiss_S_page_access_ad
+  # - Zicfilp_U_lpad_near_miss
 # Not excluded:
 # - Zama16b is not declared. The model has no misaligned atomicity granule: Zam=T performs every
 #   misaligned AMO, including SSAMOSWAP (riscv-isa-manual#3426), so the configs use Zam=F, where

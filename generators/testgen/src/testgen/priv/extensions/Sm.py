@@ -534,7 +534,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
         | (1 << 59)  # DTE: Double Trap Enable
-        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
+        | (0 << 60)  # CDE: Smcdeleg is not modeled by Sail; walked only without Smcdeleg (see menvcfg_cde)
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
@@ -588,10 +588,18 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
+    # The walks also cover menvcfg.CDE, which is read-only zero without Smcdeleg. Sail does not model
+    # Smcdeleg, so with Smcdeleg CDE is neither written nor checked.
+    # TODO: walk and check CDE everywhere (fold it into menvcfg_mask) when Sail implements Smcdeleg
+    menvcfg_cde = 1 << 60
+    csr_menvcfg_walk = ("menvcfg", menvcfg_mask | menvcfg_cde)
+    menvcfg_cde_unchecked = [(menvcfg_cde, "SMCDELEG_SUPPORTED")]
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
+    csr_menvcfgh_walk = ("menvcfgh", (menvcfg_mask | menvcfg_cde) >> 32)
+    menvcfgh_cde_unchecked = [(menvcfg_cde >> 32, "SMCDELEG_SUPPORTED")]
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
     # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
     csr_medelegh = ("0x312", 0x00000000)
@@ -742,7 +750,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_menvcfg_walk,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=warl_fields,
+            maskedwrites=True,
+            unchecked_bits=menvcfg_cde_unchecked,
+        )
     )
     tc.code.append("#endif")
 
@@ -763,7 +779,16 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            csr_menvcfgh_walk,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            unchecked_bits=menvcfgh_cde_unchecked,
+        )
+    )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))

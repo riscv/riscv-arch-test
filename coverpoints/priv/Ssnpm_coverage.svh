@@ -124,7 +124,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // Shared pointer-masking coverpoints: sw_lw_insn, jalr_insn, csrw_insn, misaligned_addr, pm_ssamoswap_insn,
-    // pm_ssp_insn, lw_insn, sw_insn, illegal_addr_load and illegal_addr_store.
+    // pm_ssp_insn.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     // ---- Instructions ----
@@ -541,7 +541,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     cp_vu_hardware_csr_writes_fault_store: cross priv_mode_vu, sw_h, pmm_tag_s, pair_chosen, scause_store_fault;
 
     // ---- HFENCE.GVMA right after a PMM change ----
-    // The test writes henvcfg or hstatus and execute hfence.gvma x0, x0 in the next instruction.
+    // The test writes henvcfg or hstatus and executes hfence.gvma x0, x0 in the next instruction.
     hfence_gvma_rs1_x0: coverpoint ins.current.insn iff (ins.current.insn[19:15] == 5'b0) {
         type_option.weight = 0;
         wildcard bins hfence_gvma = {HFENCE_GVMA};

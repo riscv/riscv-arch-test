@@ -454,7 +454,7 @@ def lpad_near_miss_tests(test_data: TestData, priv: Mode, covergroup: str) -> Te
     """Encodings next to LPAD (auipc with rd = x0) at the target of an ELP-setting jump are not landing pads."""
     coverpoint = "cp_lpad_near_miss"
     jump_reg, save_reg, temp_reg, rd_reg = test_data.int_regs.get_registers(4)
-    tc = test_data.begin_test_chunk(_split(covergroup))
+    tc = test_data.begin_test_chunk(f"{_split(covergroup)}_lpad_near_miss")
     lines = [
         comment_banner(
             coverpoint,
@@ -509,7 +509,6 @@ def make_zicfilp_tests(test_data: TestData, priv: Mode, covergroup: str) -> list
         exception_priority_tests(test_data, priv, covergroup),
         lpad_nop_tests(test_data, priv, covergroup),
         lpad_alignment_tests(test_data, priv, covergroup),
-        lpad_near_miss_tests(test_data, priv, covergroup),
     ]
 
 
@@ -552,7 +551,7 @@ def pelp_lpe_off_trap_tests(test_data: TestData, priv: Priv, covergroup: str) ->
     coverpoint = "cp_pelp_trap_entry_lpe_off"
     save_tvec, save_status, save_statush, temp_reg, mode_reg = test_data.int_regs.get_registers(5)
     tvec, status = ("mtvec", "mstatus") if priv == "M" else ("stvec", "sstatus")
-    tc = test_data.begin_test_chunk(_split(covergroup))
+    tc = test_data.begin_test_chunk(f"{_split(covergroup)}_pelp_lpe_off")
     testcase = test_data.add_testcase(_bin(priv, "ebreak_xpelp_stale"), coverpoint, covergroup)
     handler = f"{test_data.current_testcase_label}_handler"
     if priv == "M":
@@ -897,11 +896,12 @@ def make_zicfilpsm(test_data: TestData) -> list[TestChunk]:
     return [
         *make_zicfilp_tests(test_data, "M", covergroup),
         trap_entry_tests(test_data, "M", covergroup),
-        pelp_lpe_off_trap_tests(test_data, "M", covergroup),
         guarded_trap_entry_tests(test_data, "M", covergroup),
         elp_state_preservation_tests(test_data, "M", covergroup),
         trap_return_tests(test_data, "M", covergroup),
         async_interrupt_tests(test_data, covergroup),
+        lpad_near_miss_tests(test_data, "M", covergroup),
+        pelp_lpe_off_trap_tests(test_data, "M", covergroup),
     ]
 
 
@@ -916,10 +916,11 @@ def make_zicfilps(test_data: TestData) -> list[TestChunk]:
     return [
         *make_zicfilp_tests(test_data, "S", covergroup),
         trap_entry_tests(test_data, "S", covergroup),
-        pelp_lpe_off_trap_tests(test_data, "S", covergroup),
         guarded_trap_entry_tests(test_data, "S", covergroup),
         elp_state_preservation_tests(test_data, "S", covergroup),
         trap_return_tests(test_data, "S", covergroup),
+        lpad_near_miss_tests(test_data, "S", covergroup),
+        pelp_lpe_off_trap_tests(test_data, "S", covergroup),
     ]
 
 
@@ -929,7 +930,7 @@ def make_zicfilps(test_data: TestData) -> list[TestChunk]:
 )
 def make_zicfilpu(test_data: TestData) -> list[TestChunk]:
     """Generate Zicfilp landing pad tests in U-mode."""
-    return make_zicfilp_tests(test_data, "U", "Zicfilp_U_cg")
+    return [*make_zicfilp_tests(test_data, "U", "Zicfilp_U_cg"), lpad_near_miss_tests(test_data, "U", "Zicfilp_U_cg")]
 
 
 # H group: the test boots to HS-mode. hedeleg is 0, so software-check exceptions are taken in HS-mode unless a test
@@ -1321,6 +1322,7 @@ def make_zicfilph(test_data: TestData) -> list[TestChunk]:
         _h_hs_sret_tests(test_data),
         _h_sstatus_alias_tests(test_data),
         _h_async_interrupt_tests(test_data),
+        *(_in_mode(lpad_near_miss_tests(test_data, mode, _H_CG), mode) for mode in _V_MODES),
     ]
 
 

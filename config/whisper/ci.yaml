@@ -23,6 +23,12 @@ exclude_extensions:
   # SSAMOSWAP with rd = rs2 stores the loaded value instead of the original rs2
   # (https://github.com/tenstorrent/whisper/issues/233).
   - Zicfiss_U_ssamoswap_rd_eq_rs2
+  # With mstatus.TVM = 1, a VS-mode hgatp write (or a VU-mode satp write) raises illegal instead of virtual
+  # instruction (https://github.com/tenstorrent/whisper/issues/227).
+  - Sm_H_tvm
+  # SRET from HS-mode to VU-mode leaves vsstatus.SDT = 1
+  # (https://github.com/tenstorrent/whisper/issues/228).
+  - Ssdbltrp_H
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

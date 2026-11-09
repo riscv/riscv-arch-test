@@ -64,6 +64,9 @@
     `ifdef COVER_I
         i_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_INTERRUPTSH
+        interruptsh_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_INTERRUPTSS
         interruptss_sample(hart, issue, ins);
     `endif
@@ -129,6 +132,9 @@
     `endif
     `ifdef COVER_SSCOUNTERENW
         sscounterenw_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSDBLTRP
+        ssdbltrp_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSNPM
         ssnpm_sample(hart, issue, ins);

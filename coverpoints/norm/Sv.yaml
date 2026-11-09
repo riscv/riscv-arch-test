@@ -987,7 +987,7 @@ normative_rule_definitions:
 
   # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
   - names: [henvcfg_pbmte_op, Svpbmt_vsatp_stage_override_rule]
-    coverpoint: ["Svpbmt_H_cg/cp_vsatp_pbmt"]
+    coverpoint: ["Svpbmt_H_cg/{cp_vsatp_pbmt, cp_hlv_pbmt}"]
 
   - names: [menvcfg_pbmte_op, Svpbmt_hgatp_stage_override_rule]
     coverpoint: ["Svpbmt_H_cg/cp_hgatp_pbmt"]
@@ -998,7 +998,7 @@ normative_rule_definitions:
       [
         "Sv_H_vsstage_cg/cp_vsatp_svade",
         "Sv_H_twostage_cg/cp_twostage_svade",
-        "Svadu_H_cg/{cp_vsatp_adue,cp_twostage_adue}",
+        "Svadu_H_cg/{cp_vsatp_adue,cp_twostage_adue,cp_hlv_adue}",
       ]
 
   - name: menvcfg_adue_op

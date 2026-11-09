@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sscofpmf_H
+source: https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0
+coverpoints:
+  - heading: The H tests boot to HS-mode, reach the M-level CSRs through T-SBI, and run the event code in VS-mode and VU-mode.
+  - name: cp_virt_xinh_filter
+    goal: VSINH and VUINH inhibit counting in VS-mode and VU-mode, and UINH does not
+    description: |-
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0, and mhpmevent[62:58] (MINH, SINH, UINH, VSINH, VUINH) = 11101 (only VS-mode counts), 11110 (only VU-mode counts) and 11011 (only U-mode counts)
+      For each pattern, in VS-mode and then in VU-mode: mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, and read mhpmcounter in HS-mode
+    expectation: mhpmcounter is nonzero iff the inhibit bit of the mode that ran the event code is 0
+    bins: 3 patterns * {VS, VU} = 6

@@ -617,7 +617,7 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     spelp_operand: coverpoint ins.current.rs1_val[23] {
         bins spelp = {1'b1};
     }
-    cp_vs_sstatus_spelp: cross priv_mode_vs, sstatus_spelp_write, spelp_operand;
+    cp_vs_sstatus_spelp: cross priv_mode_vs, sstatus_spelp_write, spelp_operand, henvcfg_lpe_before;
 
     // SRET from HS-mode to HS-mode (hstatus.SPV = 0) restores ELP from sstatus.SPELP when menvcfg.LPE = 1, and clears
     // sstatus.SPELP, not vsstatus.SPELP, which the test gives the opposite value

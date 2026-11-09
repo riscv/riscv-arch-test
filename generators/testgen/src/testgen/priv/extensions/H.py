@@ -259,6 +259,99 @@ def _vs_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     )
 
 
+# The eight CSR instruction forms: rs1 = x0 and uimm = 0 read only; every other form writes, even with a zero value
+CSR_FORMS = {
+    "csrrw": "csrrw x{rd}, {csr}, x{zero}",
+    "csrrs_x0": "csrrs x{rd}, {csr}, x0",
+    "csrrs_zero": "csrrs x{rd}, {csr}, x{zero}",
+    "csrrc_x0": "csrrc x{rd}, {csr}, x0",
+    "csrrc_zero": "csrrc x{rd}, {csr}, x{zero}",
+    "csrrwi": "csrrwi x{rd}, {csr}, 0",
+    "csrrsi_zero": "csrrsi x{rd}, {csr}, 0",
+    "csrrci_nz": "csrrci x{rd}, {csr}, 1",
+}
+# S CSRs, which VU-mode cannot access
+S_CSRS = [
+    HCsr("sstatus"),
+    HCsr("sie"),
+    HCsr("stvec"),
+    HCsr("scounteren"),
+    HCsr("senvcfg", gate="defined(S1P12P0_OR_LATER_SUPPORTED)"),
+    HCsr("sscratch"),
+    HCsr("sepc"),
+    HCsr("scause"),
+    HCsr("stval"),
+    HCsr("sip"),
+    HCsr("satp"),
+]
+
+
+def _csr_forms_tests(test_data: TestData, csrs: list[HCsr], mode: str, covergroup: str, coverpoint: str) -> list[str]:
+    """Access each CSR with all eight CSR instruction forms in mode (already entered); every access traps.
+
+    Reads and writes are decided separately: an access raises virtual instruction when the same access is legal in
+    HS-mode, so writes to the read-only hgeip raise illegal instruction.  rd keeps its old value.
+    """
+    rd, zero_reg = test_data.int_regs.get_registers(2)
+    lines = [f"LI(x{zero_reg}, 0)"]
+    for csr in csrs:
+        body = list(csr.setup)
+        for form, instr in CSR_FORMS.items():
+            body.extend(
+                [
+                    f"LI(x{rd}, 42)",
+                    test_data.add_testcase(f"{mode.lower()}_{csr.name}_{form}", coverpoint, covergroup),
+                    instr.format(rd=rd, csr=csr.operand, zero=zero_reg),
+                    write_sigupd(rd, test_data),
+                ]
+            )
+        body.extend(csr.restore)
+        lines.extend(gated(body, csr.gate))
+    test_data.int_regs.return_registers([rd, zero_reg])
+    return lines
+
+
+def _csr_forms_chunks(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """The H and VS CSRs from VS-mode, and the S, H and VS CSRs from VU-mode, with all eight CSR forms.
+
+    The VU-mode group is not named vucsr, so the H_vucsr exclusions, which concern the AIA and Sscsrind CSRs, do not
+    cover it.
+    """
+    tc = test_data.new_test_chunk(test_chunks, "vsforms")
+    tc.section_header = comment_banner(
+        "cp_hcsr_forms_vs",
+        "In VS-mode, access each HS and VS H CSR with csrrw, csrrs/csrrc (rs1 = x0 and a zero-valued rs1 != x0),\n"
+        "csrrwi, csrrsi (uimm = 0) and csrrci (uimm != 0)",
+    )
+    for start in range(0, len(HS_VS_CSRS), CSRS_PER_CHUNK):
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(
+            [
+                "RVTEST_TSBI_GOTO_VSMODE",
+                *_csr_forms_tests(
+                    test_data, HS_VS_CSRS[start : start + CSRS_PER_CHUNK], "VS", VS_CG, "cp_hcsr_forms_vs"
+                ),
+                "RVTEST_TSBI_GOTO_SMODE",
+            ]
+        )
+
+    vu_csrs = [*S_CSRS, *HS_VS_CSRS]
+    tc = test_data.new_test_chunk(test_chunks, "vuforms")
+    tc.section_header = comment_banner(
+        "cp_scsr_forms_vu",
+        "In VU-mode, access each S CSR and each HS and VS H CSR with the same eight CSR forms",
+    )
+    for start in range(0, len(vu_csrs), CSRS_PER_CHUNK):
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(
+            [
+                "RVTEST_TSBI_GOTO_VUMODE",
+                *_csr_forms_tests(test_data, vu_csrs[start : start + CSRS_PER_CHUNK], "VU", VU_CG, "cp_scsr_forms_vu"),
+                "RVTEST_TSBI_GOTO_SMODE",
+            ]
+        )
+
+
 def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     """CSR accesses from VU-mode, as the U suite's from U-mode."""
     csr_insufficient_priv_tests(
@@ -403,6 +496,37 @@ def _vtvm_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _vsstatus_sd_hs_view_tests(test_data: TestData, dirty: str) -> list[str]:
+    """A VS-mode instruction dirties vsstatus.FS ("fs") or vsstatus.VS ("vs"); HS-mode then reads vsstatus.
+
+    The other field is left at Initial, so SD = 1 comes from the dirtied field alone.
+    """
+    temp_reg, check_reg, mask_reg = test_data.int_regs.get_registers(3)
+    field, other = ("SSTATUS_FS", "SSTATUS_VS") if dirty == "fs" else ("SSTATUS_VS", "SSTATUS_FS")
+    instr = "fmv.w.x f0, zero" if dirty == "fs" else "vsetivli x0, 1, e8, m1, ta, ma"
+    lines = [
+        comment_banner(
+            "cp_vsstatus_sd_hs_view",
+            f"With vsstatus.{dirty.upper()} = Initial, a VS-mode {instr.split()[0]} makes it Dirty; HS-mode reads vsstatus,\n"
+            "whose SD is 1",
+        ),
+        f"LI(x{temp_reg}, {field})",
+        f"csrs sstatus, x{temp_reg}    # HS-level {dirty.upper()} on, so VS-mode may execute the instruction",
+        f"LI(x{temp_reg}, SSTATUS_FS | SSTATUS_VS)",
+        f"csrc vsstatus, x{temp_reg}",
+        f"LI(x{temp_reg}, (SSTATUS_FS | SSTATUS_VS) & ((SSTATUS_FS | SSTATUS_VS) >> 1))    # FS = VS = Initial",
+        f"csrs vsstatus, x{temp_reg}",
+        "RVTEST_TSBI_GOTO_VSMODE",
+        instr,
+        "RVTEST_TSBI_GOTO_SMODE",
+        f"LI(x{mask_reg}, SSTATUS_SD | {field} | {other})",
+        test_data.add_testcase(f"{dirty}_dirty", "cp_vsstatus_sd_hs_view", VSSTATUS_CG),
+        gen_csr_read_sigupd(check_reg, ("vsstatus", -1), test_data, mask_reg),
+    ]
+    test_data.int_regs.return_registers([temp_reg, check_reg, mask_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "H",
     required_extensions=["H"],
@@ -427,6 +551,7 @@ def make_h(test_data: TestData) -> list[TestChunk]:
 
     _vs_csr_tests(test_data, test_chunks)
     _vu_csr_tests(test_data, test_chunks)
+    _csr_forms_chunks(test_data, test_chunks)
 
     tc = test_data.new_test_chunk(test_chunks, "inst")
     tc.code.extend(
@@ -558,6 +683,10 @@ def make_h_f(test_data: TestData) -> list[TestChunk]:
     )
     test_chunks.append(test_data.end_test_chunk())
 
+    tc = test_data.begin_test_chunk("F_sd")
+    tc.code.extend(_vsstatus_sd_hs_view_tests(test_data, "fs"))
+    test_chunks.append(test_data.end_test_chunk())
+
     return test_chunks
 
 
@@ -582,6 +711,10 @@ def make_h_v(test_data: TestData) -> list[TestChunk]:
     for tc in gen_v_tests(test_data, "VU", "H_V_cg"):
         tc.code = ["RVTEST_TSBI_GOTO_VUMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
         test_chunks.append(tc)
+
+    tc = test_data.begin_test_chunk("V_sd")
+    tc.code.extend(_vsstatus_sd_hs_view_tests(test_data, "vs"))
+    test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks
 

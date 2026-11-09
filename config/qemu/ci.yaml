@@ -115,7 +115,9 @@ exclude_extensions:
   - Exceptions_HSm
   - Zicfilp_H
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
-  # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
+  # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).  Sm_H_hideleg, which runs in
+  # M-mode only, fails because hideleg bits 63:16 are writable while mideleg is 0 there
+  # (https://gitlab.com/qemu-project/qemu/-/issues/4814).
   - Sm_H
   - Zicfilp_SmH
   # mstatus.MPV is read-only, so no VS/VU-mode (https://gitlab.com/qemu-project/qemu/-/work_items/4588);
@@ -135,6 +137,11 @@ exclude_extensions:
   # The same mstatus.MPV bug keeps the VS-mode and VU-mode seed accesses in HS-mode
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
   - Zkr_H
+  # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the VS-mode
+  # writes of sip and sie, the VS-mode SRETs and the VS/VU event counts run in HS-mode instead.
+  - InterruptsH_alias
+  - Ssdbltrp_H
+  - Sscofpmf_H
   # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the VS/VU
   # accesses and the VS timer interrupts fail, and M-mode writes of hvip.VSTIP are dropped while
   # menvcfg.STCE = henvcfg.STCE = 1 (https://gitlab.com/qemu-project/qemu/-/work_items/4593).

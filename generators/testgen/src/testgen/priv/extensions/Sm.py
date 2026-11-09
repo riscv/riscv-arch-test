@@ -2031,6 +2031,42 @@ def _h_tvm_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
+            "cp_tvm_vs_atp, cp_tvm_vu_atp",
+            "Access satp, vsatp and hgatp with csrr, csrrw, csrrs (nonzero rs1) and csrrwi in VS-mode with\n"
+            "mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1, and in VU-mode with TVM = 0, 1.  Only VTVM traps VS-mode\n"
+            "satp; vsatp and hgatp, and every VU-mode access, raise virtual instruction.  The writes are zero",
+        )
+    )
+    zero_reg = test_data.int_regs.get_register()
+    lines.append(f"LI(x{zero_reg}, 0)")
+    atp_forms = {
+        "csrr": "csrr x{rd}, {csr}",
+        "csrrw": "csrrw x{rd}, {csr}, x{zero}",
+        "csrrs": "csrrs x{rd}, {csr}, x{zero}",
+        "csrrwi": "csrrwi x{rd}, {csr}, 0",
+    }
+    for mode, vtvms in (("VS", (0, 1)), ("VU", (0,))):
+        for tvm in (0, 1):
+            for vtvm in vtvms:
+                suffix = f"tvm{tvm}" if mode == "VU" else f"tvm{tvm}_vtvm{vtvm}"
+                lines.extend([*tvm_bits(tvm, vtvm), f"RVTEST_TSBI_GOTO_{mode}MODE"])
+                for csr in ("satp", "vsatp", "hgatp"):
+                    for form, instr in atp_forms.items():
+                        lines.extend(
+                            [
+                                f"LI(x{rd}, 42)",
+                                test_data.add_testcase(
+                                    f"{mode.lower()}_{csr}_{form}_{suffix}", f"cp_tvm_{mode.lower()}_atp", _H_TVM_CG
+                                ),
+                                instr.format(rd=rd, csr=csr, zero=zero_reg),
+                                write_sigupd(rd, test_data),
+                            ]
+                        )
+                lines.append("RVTEST_TSBI_GOTO_MMODE")
+    test_data.int_regs.return_register(zero_reg)
+
+    lines.append(
+        comment_banner(
             "cp_hfence, cp_sfence",
             "Execute hfence.vvma, hfence.gvma and sfence.vma in M, HS, VS, U and VU modes with\n"
             "mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1",
@@ -2055,6 +2091,43 @@ def _h_tvm_tests(test_data: TestData) -> list[str]:
                 )
     lines.extend(tvm_bits(0, 0))
     test_data.int_regs.return_registers([temp_reg, rd])
+    return lines
+
+
+def _h_hideleg_high_tests(test_data: TestData) -> list[str]:
+    """Write hideleg with all ones while mideleg[XLEN-1:16] = 0, and read bits XLEN-1:16 back.
+
+    With Smaia, a bit of hideleg for interrupts 13-63 is read-only zero when the same bit of mideleg and of mvien
+    is zero; boot leaves mvien at its reset value of zero.  Without Smaia no rule constrains hideleg[XLEN-1:16],
+    so the readback is checked only with Smaia.
+    """
+    save_mideleg, save_hideleg, ones_reg, mask_reg, check_reg = test_data.int_regs.get_registers(5)
+    lines = [
+        comment_banner(
+            "cp_hideleg_high_roz",
+            "With mideleg[XLEN-1:16] = 0, write and set hideleg with all ones.  With Smaia, hideleg[XLEN-1:16]\n"
+            "reads zero",
+        ),
+        f"csrr x{save_mideleg}, mideleg",
+        f"csrr x{save_hideleg}, hideleg",
+        f"LI(x{mask_reg}, -65536)    # bits XLEN-1:16",
+        f"csrc mideleg, x{mask_reg}",
+        f"LI(x{ones_reg}, -1)",
+    ]
+    for form, instr in (("csrrw1", "csrw"), ("csrrs1", "csrs")):
+        lines.extend(
+            [
+                "csrw hideleg, zero",
+                test_data.add_testcase(f"hideleg_high_{form}", "cp_hideleg_high_roz", _H_CSR_CG),
+                f"{instr} hideleg, x{ones_reg}",
+                *gated(
+                    [gen_csr_read_sigupd(check_reg, ("hideleg", -65536), test_data, mask_reg)],
+                    "defined(SMAIA_SUPPORTED)",
+                ),
+            ]
+        )
+    lines.extend([f"csrw hideleg, x{save_hideleg}", f"csrw mideleg, x{save_mideleg}"])
+    test_data.int_regs.return_registers([save_mideleg, save_hideleg, ones_reg, mask_reg, check_reg])
     return lines
 
 
@@ -2135,6 +2208,9 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "H_replica")
     tc.code.extend([*_h_replica_tests(test_data), *_h_replica_vs_tests(test_data), *_h_mtvala_tests(test_data)])
+
+    tc = test_data.new_test_chunk(test_chunks, "H_hideleg")
+    tc.code.extend(_h_hideleg_high_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "H_tvm")
     tc.code.extend(_h_tvm_tests(test_data))

@@ -43,12 +43,17 @@ from testgen.priv.extensions.sv.SvH import (
     ImplicitCase,
     begin_chunk,
     g_ad_accesses,
+    guest_access,
     guest_chunk_setup,
     guest_chunk_teardown,
+    henvcfg_bits,
     henvcfg_gate,
     hlv_implicit_accesses,
     implicit_accesses,
+    map_test_page,
+    menvcfg_bits,
     perm_flags,
+    read_pte,
     set_csr_bits,
     vs_ad_accesses,
 )
@@ -92,15 +97,42 @@ HLV_IMPLICIT_CASES: tuple[HlvImplicitCase, ...] = (
 )
 
 
+# HLV.W and HSV.W from HS-mode through a VS-stage leaf with A = D = 0: (menvcfg.ADUE, henvcfg.ADUE).  henvcfg.ADUE
+# alone selects Svade or Svadu for the VS-stage, as for VS-mode accesses.
+HLV_AD_CASES = ((0, 0), (1, 0), (1, 1))
+
+
+def _hlv_ad_accesses(test_data: TestData, vs: SvMode) -> list[str]:
+    """hlv.w and hsv.w in HS-mode with hstatus.SPVP = 1 and hgatp = Bare through a VS-stage leaf with A = D = 0.
+    henvcfg.ADUE = 0 raises a page fault; 1 sets A, and D for the store.  The leaf is read back."""
+    va = f"{vs.data_va} + 8"
+    reg = test_data.int_regs.get_register()
+    code = set_csr_bits("hstatus", "HSTATUS_SPVP", "HSTATUS_SPVP", reg)
+    for m_adue, h_adue in HLV_AD_CASES:
+        for op in ("hlv", "hsv"):
+            name = f"hlv_madue{m_adue}_hadue{h_adue}_{op}"
+            setup = [
+                *menvcfg_bits(vs.xlen, adue=m_adue),
+                *henvcfg_bits(vs.xlen, reg, adue=h_adue),
+                *map_test_page(test_data, None, vs, vs_flags=VS_NO_AD),
+            ]
+            code.extend(guest_access(test_data, CG, "cp_hlv_adue", name, None, va, setup=setup, ops=(op,)))
+            code.extend(read_pte(test_data, vs, 0, vs.data_va, CG, "cp_hlv_adue", f"{name}_pte"))
+    code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
+    test_data.int_regs.return_register(reg)
+    return code
+
+
 def _vs_chunk(test_data: TestData, vs: SvMode, henvcfg: bool) -> TestChunk:
     """VS-stage A/D bits with each (menvcfg.ADUE, henvcfg.ADUE), and with ``henvcfg``, henvcfg.ADUE itself."""
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_adue",
-        "cp_henvcfg_menvcfg, cp_vsatp_adue" if henvcfg else "cp_vsatp_adue",
+        "cp_henvcfg_menvcfg, cp_vsatp_adue, cp_hlv_adue" if henvcfg else "cp_vsatp_adue, cp_hlv_adue",
         "In VS-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with A or D clear, with\n"
         "(menvcfg.ADUE, henvcfg.ADUE) = (0, 1 written), (1, 0) and (1, 1).  Svade raises a page fault; Svadu sets\n"
-        "the bits, which are checked in the PTE"
+        "the bits, which are checked in the PTE.  Then hlv.w and hsv.w in HS-mode through a VS-stage leaf with\n"
+        "A = D = 0 with (menvcfg.ADUE, henvcfg.ADUE) = (0, 0), (1, 0) and (1, 1)"
         + (
             "\nIn HS-mode, set henvcfg.ADUE with menvcfg.ADUE = 0, where it is read-only zero, and 1" if henvcfg else ""
         ),
@@ -109,6 +141,7 @@ def _vs_chunk(test_data: TestData, vs: SvMode, henvcfg: bool) -> TestChunk:
     code = henvcfg_gate(test_data, vs.xlen, "ADUE", CG) if henvcfg else []
     code.extend(guest_chunk_setup(test_data, None, vs, "VS"))
     code.extend(vs_ad_accesses(test_data, vs, AD_CASES, CG, "cp_vsatp_adue"))
+    code.extend(_hlv_ad_accesses(test_data, vs))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     return test_data.end_test_chunk()
 

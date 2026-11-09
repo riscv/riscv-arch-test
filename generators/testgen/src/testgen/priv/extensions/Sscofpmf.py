@@ -1262,3 +1262,64 @@ def make_sscofpmfu(test_data: TestData) -> list[TestChunk]:
     test_chunks.append(test_data.end_test_chunk())
     test_chunks.extend(generate_sscofpmf_suite(test_data, "U"))
     return test_chunks
+
+
+# {MINH, SINH, UINH, VSINH, VUINH} patterns that leave one mode below HS-mode uninhibited
+_VIRT_INHIBIT_PATTERNS = {"only_vs": 0b11101, "only_vu": 0b11110, "only_u": 0b11011}
+
+
+def _generate_virt_xinh_filter_tests(test_data: TestData) -> list[str]:
+    """The event code runs in VS-mode and in VU-mode under each pattern; the counter moves iff that mode's own
+    inhibit bit is clear.  HS-mode reads the counter through T-SBI and records whether it moved."""
+    r_val, r_hval, r_temp, r_addr = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            "cp_virt_xinh_filter",
+            "With only VSINH, only VUINH or only UINH clear, run the event code in VS-mode and in VU-mode.  The\n"
+            "counter moves only in the mode whose inhibit bit is clear: UINH does not filter VU-mode",
+        ),
+        tsbi_call_or_direct("csrw mie, zero", "S"),
+    ]
+    for name, pattern in _VIRT_INHIBIT_PATTERNS.items():
+        lines.extend(write_event_pattern(r_val, r_hval, pattern, "S"))
+        for mode in ("VS", "VU"):
+            lines.extend(
+                [
+                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
+                    "#if __riscv_xlen == 32",
+                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTERH, zero", "S"),
+                    "#endif",
+                    f"RVTEST_TSBI_GOTO_{mode}MODE",
+                    test_data.add_testcase(f"{name}_{mode.lower()}", "cp_virt_xinh_filter", "Sscofpmf_H_cg"),
+                    f"LA(x{r_addr}, scratch)",
+                    f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_temp})",
+                    "RVTEST_TSBI_GOTO_SMODE",
+                    tsbi_call_or_direct(f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER", "S"),
+                    f"snez x{r_temp}, x{r_temp}    # counted iff the mode is uninhibited",
+                    write_sigupd(r_temp, test_data),
+                ]
+            )
+    lines.extend(
+        [
+            tsbi_call_or_direct("csrw RVTEST_CSR_MHPMEVENT, zero", "S"),
+            "#if __riscv_xlen == 32",
+            tsbi_call_or_direct("csrw RVTEST_CSR_MHPMEVENTH, zero", "S"),
+            "#endif",
+            tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
+        ]
+    )
+    test_data.int_regs.return_registers([r_val, r_hval, r_temp, r_addr])
+    return lines
+
+
+@add_priv_test_generator(
+    "Sscofpmf",
+    required_extensions=["Sscofpmf", "H"],
+    march_extensions=[],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_sscofpmfh(test_data: TestData) -> list[TestChunk]:
+    """Generate the Sscofpmf_H tests: VSINH and VUINH filtering of events in VS-mode and VU-mode."""
+    tc = test_data.begin_test_chunk("H_inhibit")
+    tc.code.extend(_generate_virt_xinh_filter_tests(test_data))
+    return [test_data.end_test_chunk()]

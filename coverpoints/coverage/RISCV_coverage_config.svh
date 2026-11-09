@@ -65,6 +65,9 @@
 `ifdef I_COVERAGE
   `include "I_coverage.svh"
 `endif
+`ifdef INTERRUPTSH_COVERAGE
+  `include "InterruptsH_coverage.svh"
+`endif
 `ifdef INTERRUPTSS_COVERAGE
   `include "InterruptsS_coverage.svh"
 `endif
@@ -130,6 +133,9 @@
 `endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
+`endif
+`ifdef SSDBLTRP_COVERAGE
+  `include "Ssdbltrp_coverage.svh"
 `endif
 `ifdef SSNPM_COVERAGE
   `include "Ssnpm_coverage.svh"

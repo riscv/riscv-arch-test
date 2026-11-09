@@ -18,7 +18,11 @@ normative_rule_definitions:
   # when occurring in S-mode or U-mode, to the S-mode trap handler.
   - name: medeleg_mideleg_delegate_op
     coverpoint:
-      ["InterruptsS_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+      [
+        "InterruptsS_cg/cp_trigger",
+        "InterruptsSm_cg/cp_priority_mideleg",
+        "Exceptions_Sm_cg/cp_medeleg_msu_softwarecheck",
+      ]
 
   - name: mideleg_enc_img
     coverpoint:
@@ -236,3 +240,8 @@ normative_rule_definitions:
   # supervisor mode if the SPP bit is 1; SPP is then set to 0.
   - name: sstatus_spp
     coverpoint: ["InterruptsS_cg/cp_trigger"]
+
+  # On an interrupt, the trap instruction register is written with zero.  The trap record checks htinst or mtinst on
+  # every interrupt taken into HS-mode or M-mode, including these from VS-mode.
+  - name: H_trap_xtinst_interrupt
+    coverpoint: ["InterruptsS_cg/cp_wfi_vs", "InterruptsSm_cg/cp_wfi_vs"]

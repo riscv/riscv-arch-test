@@ -12,8 +12,9 @@ notes: |
   ssp for SSPUSH and SSPOPCHK, rs1 for SSAMOSWAP, HLV/HSV and ordinary accesses.  A coverpoint whose name ends in
   _swap is the SSAMOSWAP half of the coverpoint without the suffix.
   The software-check exception's delegation through medeleg[18] and hedeleg[18] is a trap-delegation property, so it
-  belongs with the other causes in Exceptions_H and Exceptions_HSm, which do not cover it yet.  This suite covers the
-  shadow stack fault code that such a trap reports in stval or vstval.
+  is with the other causes in Exceptions_Sm cp_medeleg_msu_softwarecheck, Exceptions_H cp_hedeleg_software_check and
+  Exceptions_HSm cp_software_check_to_m, which raise it with a missing landing pad.  This suite covers the shadow stack
+  fault code that such a trap reports in stval or vstval.
 coverpoints:
   - name: |-
       cp_ssp_access
@@ -266,5 +267,5 @@ coverpoints:
     rules:
       - ss_fault_exception_code
       - hedeleg_op
-  - goal: "Software-check delegation through medeleg[18] and hedeleg[18], swept across HS, VS and VU, is a trap-delegation property: it belongs with the other exception causes in Exceptions_H and Exceptions_HSm."
+  - goal: "Software-check delegation through medeleg[18] and hedeleg[18], swept across HS, VS and VU, is a trap-delegation property: Exceptions_H cp_hedeleg_software_check (medeleg[18] = 1) and Exceptions_HSm cp_software_check_to_m (medeleg = 0) cover it with the other exception causes, and Exceptions_Sm cp_medeleg_msu_softwarecheck covers medeleg[18] from M, S and U."
     description: Be sure software check extension is delegated appropriately with hedeleg as well as medeleg.

@@ -19,8 +19,10 @@ from testgen.priv.extensions.exceptions.ExceptionsHCommon import (
     DELEGATED_FAULTS,
     HEDELEG_WALK,
     HEDELEG_WRITABLE,
+    SOFTWARE_CHECK_TRAPS,
     hedeleg_tests,
     hlv_priority_tests,
+    software_check_tests,
     xtinst_exception_tests,
 )
 from testgen.priv.extensions.HCommon import P1P13_OFF, P1P13_ON
@@ -213,6 +215,10 @@ def make_exceptionsh(test_data: TestData) -> list[TestChunk]:
     tc = test_data.new_test_chunk(test_chunks, "H_hlv")
     for mode in ("s", "vs", "u", "vu"):
         tc.code.extend(hlv_priority_tests(test_data, CG, mode, "s"))
+
+    tc = test_data.new_test_chunk(test_chunks, "H_swcheck")
+    tc.code.extend(software_check_tests(test_data, CG, "cp_hedeleg_software_check", "s"))
+    tc.trap_sigupd_count = trap_sigupd_count(SOFTWARE_CHECK_TRAPS)
 
     tc = test_data.new_test_chunk(test_chunks, "H_xtinst")
     tc.code.extend(xtinst_exception_tests(test_data, CG, "s"))

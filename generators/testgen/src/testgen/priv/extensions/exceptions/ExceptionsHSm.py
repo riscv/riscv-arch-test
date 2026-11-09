@@ -17,8 +17,10 @@ from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.exceptions.ExceptionsHCommon import (
     DELEGATED_FAULTS,
     HEDELEG_WRITABLE,
+    SOFTWARE_CHECK_TRAPS,
     hedeleg_tests,
     hlv_priority_tests,
+    software_check_tests,
     xtinst_exception_tests,
 )
 from testgen.priv.extensions.HCommon import HLV_INSTRS, HLVX_INSTRS, HSV_INSTRS
@@ -186,6 +188,10 @@ def make_exceptionshsm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "HSm_hlv")
     tc.code.extend([*_hlv_fault_tests(test_data), *hlv_priority_tests(test_data, CG, "m", "m")])
+
+    tc = test_data.new_test_chunk(test_chunks, "HSm_swcheck")
+    tc.code.extend(software_check_tests(test_data, CG, "cp_software_check_to_m", "m"))
+    tc.trap_sigupd_count = trap_sigupd_count(SOFTWARE_CHECK_TRAPS)
 
     tc = test_data.new_test_chunk(test_chunks, "HSm_xtinst")
     tc.code.extend(xtinst_exception_tests(test_data, CG, "m"))

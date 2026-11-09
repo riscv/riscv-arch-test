@@ -276,9 +276,7 @@ normative_rule_definitions:
   # other side effects even though the load value is discarded.
   - name: load_exc_x0
     coverpoint:
-      [
-        "TODO: currently have no cp in Exceptions_Sm that tests for load with rd = x0",
-      ]
+      ["Exceptions_Sm_cg/{cp_load_x0_access_fault, cp_load_x0_misaligned}"]
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of
   # the access in bytes) have behavior dependent on the EEI.
@@ -821,6 +819,23 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_hedeleg_{breakpoint, ecall, hs_u_breakpoint, hs_u_ecall, hs_u_illegal_instruction, hs_u_instr_access_fault, hs_u_instr_misaligned_jalr, hs_u_load_access_fault, hs_u_load_misaligned, hs_u_store_access_fault, hs_u_store_misaligned, illegal_instruction, instr_access_fault, instr_misaligned_jalr, load_access_fault, load_misaligned, store_access_fault, store_misaligned}",
         "Exceptions_HSm_cg/cp_hedeleg_{breakpoint, ecall, illegal_instruction, instr_access_fault, instr_misaligned_jalr, load_access_fault, load_misaligned, store_access_fault, store_misaligned}",
+        "Exceptions_H_cg/cp_hedeleg_software_check",
+        "Exceptions_HSm_cg/cp_software_check_to_m",
+      ]
+
+  # On a software-check exception, xtval holds its code: 2 for a landing pad fault.  The trap record checks mtval
+  # for traps into M-mode, and stval or vstval for traps delegated to HS-mode or VS-mode.
+  - names: [mtval_swchk_lead_in, mtval_swchk_list]
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_softwarecheck",
+        "Exceptions_HSm_cg/cp_software_check_to_m",
+      ]
+  - name: stval_exception_info
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_softwarecheck",
+        "Exceptions_H_cg/cp_hedeleg_software_check",
       ]
 
   # A trap into HS-mode writes sstatus.SPP/SPIE/SIE and hstatus.SPV/GVA, and writes SPVP only for traps from V = 1
@@ -1048,6 +1063,45 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
         "Exceptions_HSm_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
+        "Exceptions_H_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
+      ]
+  # A synchronous exception may write a standard transformation only for explicit memory accesses by loads, stores,
+  # AMOs, CBOs and their compressed forms.  The trap record accepts the reference model's transformation or zero.
+  - name: H_trap_xtinst_std_trans_mem
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
+      ]
+  # Transformed loads and stores: the immediate offset becomes zero and rs1 the address offset
+  - names: [H_trans_load, H_trans_store, H_trans_ldst_imm_zero]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned}",
+        "Exceptions_HSm_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned}",
+      ]
+  # Transformed LR, SC and AMOs (including Zabha and Zacas)
+  - name: H_trans_atomic
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access}",
+      ]
+  # A compressed instruction is expanded and transformed, and bit 1 is cleared, so bits 1:0 are 01
+  - names:
+      [H_trans_compressed_lead_in, H_trans_compressed_list, H_trans_bits_1_0]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{c_load_access, c_store_access, zcb_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{c_load_access, c_store_access, zcb_access}",
+      ]
+  # A standard instruction with no transformation writes zero
+  - name: H_trap_xtinst_no_trans_zero
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, virtinstr}",
+        "Exceptions_HSm_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, virtinstr}",
       ]
 
   # When a trap is taken into M-mode, virtualization mode V gets set to 0, and fields MPV

@@ -84,3 +84,4 @@ install_script: ".github/scripts/install-cva6.sh"
 setup_script: ".github/scripts/setup-cva6.sh"
 config_shards:
   cv32a6_imac_sv32: 2
+  cv64a6_imafdc_sv39: 6

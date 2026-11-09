@@ -120,7 +120,7 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
     cp_fflags_set_m_NX:       cross fdiv,  fs1_one,      fs2_three;
 
     // An instruction with a static rounding mode must not trap when frm holds a reserved value
-    frm_reserved: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm") {
+    frm_reserved: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
         bins reserved[] = {[5:7]};
     }
     static_rm: coverpoint ins.current.insn[14:12] {

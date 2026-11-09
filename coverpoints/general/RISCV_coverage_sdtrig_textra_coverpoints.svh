@@ -76,7 +76,7 @@ csr_tdata3: coverpoint ins.current.insn[31:20] {
     type_option.weight = 0;
     bins tdata3 = {CSR_TDATA3};
 }
-armed_type: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "type")[3:0] {
+armed_type: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "type")[3:0] {
     type_option.weight = 0;
     bins icount    = {4'd3};
     bins mcontrol6 = {4'd6};

@@ -11,6 +11,10 @@
 # IDE settings
 .vscode/
 
+# Local AI files
+CLAUDE.local.md
+AGENTS.local.md
+
 # virtualenv
 .venv
 

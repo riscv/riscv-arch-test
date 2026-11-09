@@ -1056,7 +1056,7 @@ def generate_fault_address_tests(prefix: str, test_data: TestData, cg: str) -> l
         lines.extend(
             [
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
-                f"LI(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
+                f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
                 f"LI(x{a}, {hex(upper << 48)})",
                 f"xor x{a}, x{a}, x{base}",
                 f"LI(x{chk}, {hex(SENTINEL)})",
@@ -1065,7 +1065,7 @@ def generate_fault_address_tests(prefix: str, test_data: TestData, cg: str) -> l
                 write_sigupd(chk, test_data),
                 "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
-                f"LI(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
+                f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
                 f"LI(x{a}, {hex(upper << 48)})",
                 f"xor x{a}, x{a}, x{base}",
                 f"LI(x{data}, {hex(VALUE_NEW)})",

@@ -89,41 +89,41 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     // stval holds the load or store address, the jalr target, or the instruction.  The test sets stval to a
     // random value before each trap.
-    stval_address : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") ==
-                               ins.current.rs1_val + ins.current.imm {
+    stval_address : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) ==
+                               ins.current.eff_addr {
         type_option.weight = 0;
         bins match = {1};
     }
-    stval_target : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") ==
-                              ((ins.current.rs1_val + ins.current.imm) & ~1) {
+    stval_target : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) ==
+                              (ins.current.eff_addr & ~1) {
         type_option.weight = 0;
         bins match = {1};
     }
-    stval_fetch_target : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") ==
+    stval_fetch_target : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) ==
                                     ins.jalr_fetch_target() {
         type_option.weight = 0;
         bins match = {1};
     }
-    stval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == `UDB_MXLEN'(ins.current.insn) {
+    stval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == `UDB_MXLEN'(ins.current.insn) {
         bins match = {1};
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        instr_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        instr_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {1};
         }
         cp_instr_access_fault: cross priv_mode_s_u, jalr_fetch, instr_access_fault, stval_fetch_target;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        load_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        load_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {5};
         }
         cp_load_access_fault:  cross priv_mode_s_u, loadops,  load_access_fault,  stval_address;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        store_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        store_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {7};
         }
@@ -132,11 +132,11 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     // Misaligned loads and stores trap only when the implementation does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        load_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        load_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {4};
         }
-        store_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        store_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {6};
         }
@@ -155,7 +155,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
             type_option.weight = 0;
             wildcard bins sw = {SW};
         }
-        word_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 3 {
+        word_misalignment : coverpoint ins.current.eff_addr & 3 {
             type_option.weight = 0;
             bins offset[] = {[1:3]};
         }
@@ -170,7 +170,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 wildcard bins sd = {SD};
             }
-            doubleword_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 7 {
+            doubleword_misalignment : coverpoint ins.current.eff_addr & 7 {
                 type_option.weight = 0;
                 bins offset[] = {[1:7]};
             }
@@ -181,14 +181,14 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     // Misaligned fetches trap only when IALIGN = 32
     `ifndef ZCA_SUPPORTED
-        instr_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        instr_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {0};
         }
         cp_instr_adr_misaligned_jalr: cross priv_mode_s_u, jalr, instr_misaligned, stval_target;
     `endif
 
-    illegal_instruction : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+    illegal_instruction : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
         bins scause = {2};
     }
@@ -203,15 +203,15 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         `define SSTVALA_PAGE_FAULTS
     `endif
     `ifdef SSTVALA_PAGE_FAULTS
-        instr_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        instr_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {12};
         }
-        load_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {13};
         }
-        store_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        store_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {15};
         }

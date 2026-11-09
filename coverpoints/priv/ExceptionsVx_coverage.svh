@@ -18,7 +18,7 @@ covergroup ExceptionsVx_vaadd_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -41,8 +41,8 @@ covergroup ExceptionsVx_vaadd_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -56,7 +56,7 @@ covergroup ExceptionsVx_vaadd_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -79,8 +79,8 @@ covergroup ExceptionsVx_vaadd_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -94,7 +94,7 @@ covergroup ExceptionsVx_vaaddu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -117,8 +117,8 @@ covergroup ExceptionsVx_vaaddu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -132,7 +132,7 @@ covergroup ExceptionsVx_vaaddu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -155,8 +155,8 @@ covergroup ExceptionsVx_vaaddu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -170,7 +170,7 @@ covergroup ExceptionsVx_vadc_vim_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -193,8 +193,8 @@ covergroup ExceptionsVx_vadc_vim_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -208,7 +208,7 @@ covergroup ExceptionsVx_vadc_vvm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -231,8 +231,8 @@ covergroup ExceptionsVx_vadc_vvm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -246,7 +246,7 @@ covergroup ExceptionsVx_vadc_vxm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -269,8 +269,8 @@ covergroup ExceptionsVx_vadc_vxm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -284,7 +284,7 @@ covergroup ExceptionsVx_vadd_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -307,8 +307,8 @@ covergroup ExceptionsVx_vadd_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -322,7 +322,7 @@ covergroup ExceptionsVx_vadd_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -345,8 +345,8 @@ covergroup ExceptionsVx_vadd_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -360,7 +360,7 @@ covergroup ExceptionsVx_vadd_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -383,8 +383,8 @@ covergroup ExceptionsVx_vadd_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -398,7 +398,7 @@ covergroup ExceptionsVx_vand_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -421,8 +421,8 @@ covergroup ExceptionsVx_vand_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -436,7 +436,7 @@ covergroup ExceptionsVx_vand_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -459,8 +459,8 @@ covergroup ExceptionsVx_vand_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -474,7 +474,7 @@ covergroup ExceptionsVx_vand_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -497,8 +497,8 @@ covergroup ExceptionsVx_vand_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -512,7 +512,7 @@ covergroup ExceptionsVx_vasub_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -535,8 +535,8 @@ covergroup ExceptionsVx_vasub_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -550,7 +550,7 @@ covergroup ExceptionsVx_vasub_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -573,8 +573,8 @@ covergroup ExceptionsVx_vasub_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -588,7 +588,7 @@ covergroup ExceptionsVx_vasubu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -611,8 +611,8 @@ covergroup ExceptionsVx_vasubu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -626,7 +626,7 @@ covergroup ExceptionsVx_vasubu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -649,8 +649,8 @@ covergroup ExceptionsVx_vasubu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -664,7 +664,7 @@ covergroup ExceptionsVx_vcompress_vm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -687,8 +687,8 @@ covergroup ExceptionsVx_vcompress_vm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -702,7 +702,7 @@ covergroup ExceptionsVx_vcpop_m_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -725,8 +725,8 @@ covergroup ExceptionsVx_vcpop_m_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -740,7 +740,7 @@ covergroup ExceptionsVx_vdiv_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -763,8 +763,8 @@ covergroup ExceptionsVx_vdiv_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -778,7 +778,7 @@ covergroup ExceptionsVx_vdiv_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -801,8 +801,8 @@ covergroup ExceptionsVx_vdiv_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -816,7 +816,7 @@ covergroup ExceptionsVx_vdivu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -839,8 +839,8 @@ covergroup ExceptionsVx_vdivu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -854,7 +854,7 @@ covergroup ExceptionsVx_vdivu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -877,8 +877,8 @@ covergroup ExceptionsVx_vdivu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -892,7 +892,7 @@ covergroup ExceptionsVx_vfirst_m_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -915,8 +915,8 @@ covergroup ExceptionsVx_vfirst_m_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -930,7 +930,7 @@ covergroup ExceptionsVx_vid_v_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -953,8 +953,8 @@ covergroup ExceptionsVx_vid_v_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -968,7 +968,7 @@ covergroup ExceptionsVx_viota_m_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -991,8 +991,8 @@ covergroup ExceptionsVx_viota_m_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1006,7 +1006,7 @@ covergroup ExceptionsVx_vmacc_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1029,8 +1029,8 @@ covergroup ExceptionsVx_vmacc_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1044,7 +1044,7 @@ covergroup ExceptionsVx_vmacc_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1067,8 +1067,8 @@ covergroup ExceptionsVx_vmacc_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1082,7 +1082,7 @@ covergroup ExceptionsVx_vmadc_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1105,8 +1105,8 @@ covergroup ExceptionsVx_vmadc_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1120,7 +1120,7 @@ covergroup ExceptionsVx_vmadc_vim_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1143,8 +1143,8 @@ covergroup ExceptionsVx_vmadc_vim_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1158,7 +1158,7 @@ covergroup ExceptionsVx_vmadc_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1181,8 +1181,8 @@ covergroup ExceptionsVx_vmadc_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1196,7 +1196,7 @@ covergroup ExceptionsVx_vmadc_vvm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1219,8 +1219,8 @@ covergroup ExceptionsVx_vmadc_vvm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1234,7 +1234,7 @@ covergroup ExceptionsVx_vmadc_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1257,8 +1257,8 @@ covergroup ExceptionsVx_vmadc_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1272,7 +1272,7 @@ covergroup ExceptionsVx_vmadc_vxm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1295,8 +1295,8 @@ covergroup ExceptionsVx_vmadc_vxm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1310,7 +1310,7 @@ covergroup ExceptionsVx_vmadd_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1333,8 +1333,8 @@ covergroup ExceptionsVx_vmadd_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1348,7 +1348,7 @@ covergroup ExceptionsVx_vmadd_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1371,8 +1371,8 @@ covergroup ExceptionsVx_vmadd_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1386,7 +1386,7 @@ covergroup ExceptionsVx_vmand_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1409,8 +1409,8 @@ covergroup ExceptionsVx_vmand_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1424,7 +1424,7 @@ covergroup ExceptionsVx_vmandn_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1447,8 +1447,8 @@ covergroup ExceptionsVx_vmandn_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1462,7 +1462,7 @@ covergroup ExceptionsVx_vmax_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1485,8 +1485,8 @@ covergroup ExceptionsVx_vmax_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1500,7 +1500,7 @@ covergroup ExceptionsVx_vmax_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1523,8 +1523,8 @@ covergroup ExceptionsVx_vmax_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1538,7 +1538,7 @@ covergroup ExceptionsVx_vmaxu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1561,8 +1561,8 @@ covergroup ExceptionsVx_vmaxu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1576,7 +1576,7 @@ covergroup ExceptionsVx_vmaxu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1599,8 +1599,8 @@ covergroup ExceptionsVx_vmaxu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1614,7 +1614,7 @@ covergroup ExceptionsVx_vmerge_vim_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1637,8 +1637,8 @@ covergroup ExceptionsVx_vmerge_vim_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1652,7 +1652,7 @@ covergroup ExceptionsVx_vmerge_vvm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1675,8 +1675,8 @@ covergroup ExceptionsVx_vmerge_vvm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1690,7 +1690,7 @@ covergroup ExceptionsVx_vmerge_vxm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1713,8 +1713,8 @@ covergroup ExceptionsVx_vmerge_vxm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1728,7 +1728,7 @@ covergroup ExceptionsVx_vmin_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1751,8 +1751,8 @@ covergroup ExceptionsVx_vmin_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1766,7 +1766,7 @@ covergroup ExceptionsVx_vmin_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1789,8 +1789,8 @@ covergroup ExceptionsVx_vmin_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1804,7 +1804,7 @@ covergroup ExceptionsVx_vminu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1827,8 +1827,8 @@ covergroup ExceptionsVx_vminu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1842,7 +1842,7 @@ covergroup ExceptionsVx_vminu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1865,8 +1865,8 @@ covergroup ExceptionsVx_vminu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1880,7 +1880,7 @@ covergroup ExceptionsVx_vmnand_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1903,8 +1903,8 @@ covergroup ExceptionsVx_vmnand_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1918,7 +1918,7 @@ covergroup ExceptionsVx_vmnor_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1941,8 +1941,8 @@ covergroup ExceptionsVx_vmnor_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1956,7 +1956,7 @@ covergroup ExceptionsVx_vmor_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -1979,8 +1979,8 @@ covergroup ExceptionsVx_vmor_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -1994,7 +1994,7 @@ covergroup ExceptionsVx_vmorn_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2017,8 +2017,8 @@ covergroup ExceptionsVx_vmorn_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2032,7 +2032,7 @@ covergroup ExceptionsVx_vmsbc_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2055,8 +2055,8 @@ covergroup ExceptionsVx_vmsbc_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2070,7 +2070,7 @@ covergroup ExceptionsVx_vmsbc_vvm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2093,8 +2093,8 @@ covergroup ExceptionsVx_vmsbc_vvm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2108,7 +2108,7 @@ covergroup ExceptionsVx_vmsbc_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2131,8 +2131,8 @@ covergroup ExceptionsVx_vmsbc_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2146,7 +2146,7 @@ covergroup ExceptionsVx_vmsbc_vxm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2169,8 +2169,8 @@ covergroup ExceptionsVx_vmsbc_vxm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2184,7 +2184,7 @@ covergroup ExceptionsVx_vmsbf_m_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2207,8 +2207,8 @@ covergroup ExceptionsVx_vmsbf_m_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2222,7 +2222,7 @@ covergroup ExceptionsVx_vmseq_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2245,8 +2245,8 @@ covergroup ExceptionsVx_vmseq_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2260,7 +2260,7 @@ covergroup ExceptionsVx_vmseq_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2283,8 +2283,8 @@ covergroup ExceptionsVx_vmseq_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2298,7 +2298,7 @@ covergroup ExceptionsVx_vmseq_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2321,8 +2321,8 @@ covergroup ExceptionsVx_vmseq_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2336,7 +2336,7 @@ covergroup ExceptionsVx_vmsgt_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2359,8 +2359,8 @@ covergroup ExceptionsVx_vmsgt_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2374,7 +2374,7 @@ covergroup ExceptionsVx_vmsgt_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2397,8 +2397,8 @@ covergroup ExceptionsVx_vmsgt_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2412,7 +2412,7 @@ covergroup ExceptionsVx_vmsgtu_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2435,8 +2435,8 @@ covergroup ExceptionsVx_vmsgtu_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2450,7 +2450,7 @@ covergroup ExceptionsVx_vmsgtu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2473,8 +2473,8 @@ covergroup ExceptionsVx_vmsgtu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2488,7 +2488,7 @@ covergroup ExceptionsVx_vmsif_m_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2511,8 +2511,8 @@ covergroup ExceptionsVx_vmsif_m_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2526,7 +2526,7 @@ covergroup ExceptionsVx_vmsle_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2549,8 +2549,8 @@ covergroup ExceptionsVx_vmsle_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2564,7 +2564,7 @@ covergroup ExceptionsVx_vmsle_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2587,8 +2587,8 @@ covergroup ExceptionsVx_vmsle_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2602,7 +2602,7 @@ covergroup ExceptionsVx_vmsle_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2625,8 +2625,8 @@ covergroup ExceptionsVx_vmsle_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2640,7 +2640,7 @@ covergroup ExceptionsVx_vmsleu_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2663,8 +2663,8 @@ covergroup ExceptionsVx_vmsleu_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2678,7 +2678,7 @@ covergroup ExceptionsVx_vmsleu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2701,8 +2701,8 @@ covergroup ExceptionsVx_vmsleu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2716,7 +2716,7 @@ covergroup ExceptionsVx_vmsleu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2739,8 +2739,8 @@ covergroup ExceptionsVx_vmsleu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2754,7 +2754,7 @@ covergroup ExceptionsVx_vmslt_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2777,8 +2777,8 @@ covergroup ExceptionsVx_vmslt_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2792,7 +2792,7 @@ covergroup ExceptionsVx_vmslt_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2815,8 +2815,8 @@ covergroup ExceptionsVx_vmslt_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2830,7 +2830,7 @@ covergroup ExceptionsVx_vmsltu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2853,8 +2853,8 @@ covergroup ExceptionsVx_vmsltu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2868,7 +2868,7 @@ covergroup ExceptionsVx_vmsltu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2891,8 +2891,8 @@ covergroup ExceptionsVx_vmsltu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2906,7 +2906,7 @@ covergroup ExceptionsVx_vmsne_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2929,8 +2929,8 @@ covergroup ExceptionsVx_vmsne_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2944,7 +2944,7 @@ covergroup ExceptionsVx_vmsne_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -2967,8 +2967,8 @@ covergroup ExceptionsVx_vmsne_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -2982,7 +2982,7 @@ covergroup ExceptionsVx_vmsne_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3005,8 +3005,8 @@ covergroup ExceptionsVx_vmsne_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3020,7 +3020,7 @@ covergroup ExceptionsVx_vmsof_m_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3043,8 +3043,8 @@ covergroup ExceptionsVx_vmsof_m_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3058,7 +3058,7 @@ covergroup ExceptionsVx_vmul_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3081,8 +3081,8 @@ covergroup ExceptionsVx_vmul_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3096,7 +3096,7 @@ covergroup ExceptionsVx_vmul_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3119,8 +3119,8 @@ covergroup ExceptionsVx_vmul_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3134,7 +3134,7 @@ covergroup ExceptionsVx_vmulh_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3157,8 +3157,8 @@ covergroup ExceptionsVx_vmulh_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3172,7 +3172,7 @@ covergroup ExceptionsVx_vmulh_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3195,8 +3195,8 @@ covergroup ExceptionsVx_vmulh_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3210,7 +3210,7 @@ covergroup ExceptionsVx_vmulhsu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3233,8 +3233,8 @@ covergroup ExceptionsVx_vmulhsu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3248,7 +3248,7 @@ covergroup ExceptionsVx_vmulhsu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3271,8 +3271,8 @@ covergroup ExceptionsVx_vmulhsu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3286,7 +3286,7 @@ covergroup ExceptionsVx_vmulhu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3309,8 +3309,8 @@ covergroup ExceptionsVx_vmulhu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3324,7 +3324,7 @@ covergroup ExceptionsVx_vmulhu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3347,8 +3347,8 @@ covergroup ExceptionsVx_vmulhu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3362,7 +3362,7 @@ covergroup ExceptionsVx_vmv_s_x_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3385,8 +3385,8 @@ covergroup ExceptionsVx_vmv_s_x_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3400,7 +3400,7 @@ covergroup ExceptionsVx_vmv_v_i_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3423,8 +3423,8 @@ covergroup ExceptionsVx_vmv_v_i_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3438,7 +3438,7 @@ covergroup ExceptionsVx_vmv_v_v_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3461,8 +3461,8 @@ covergroup ExceptionsVx_vmv_v_v_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3476,7 +3476,7 @@ covergroup ExceptionsVx_vmv_v_x_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3499,8 +3499,8 @@ covergroup ExceptionsVx_vmv_v_x_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3514,7 +3514,7 @@ covergroup ExceptionsVx_vmv_x_s_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3537,8 +3537,8 @@ covergroup ExceptionsVx_vmv_x_s_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3552,7 +3552,7 @@ covergroup ExceptionsVx_vmv1r_v_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3579,7 +3579,7 @@ covergroup ExceptionsVx_vmv2r_v_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3606,7 +3606,7 @@ covergroup ExceptionsVx_vmv4r_v_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3633,7 +3633,7 @@ covergroup ExceptionsVx_vmv8r_v_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3660,7 +3660,7 @@ covergroup ExceptionsVx_vmxnor_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3683,8 +3683,8 @@ covergroup ExceptionsVx_vmxnor_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3698,7 +3698,7 @@ covergroup ExceptionsVx_vmxor_mm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3721,8 +3721,8 @@ covergroup ExceptionsVx_vmxor_mm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3736,7 +3736,7 @@ covergroup ExceptionsVx_vnclip_wi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3759,8 +3759,8 @@ covergroup ExceptionsVx_vnclip_wi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3774,7 +3774,7 @@ covergroup ExceptionsVx_vnclip_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3797,8 +3797,8 @@ covergroup ExceptionsVx_vnclip_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3812,7 +3812,7 @@ covergroup ExceptionsVx_vnclip_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3835,8 +3835,8 @@ covergroup ExceptionsVx_vnclip_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3850,7 +3850,7 @@ covergroup ExceptionsVx_vnclipu_wi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3873,8 +3873,8 @@ covergroup ExceptionsVx_vnclipu_wi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3888,7 +3888,7 @@ covergroup ExceptionsVx_vnclipu_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3911,8 +3911,8 @@ covergroup ExceptionsVx_vnclipu_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3926,7 +3926,7 @@ covergroup ExceptionsVx_vnclipu_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3949,8 +3949,8 @@ covergroup ExceptionsVx_vnclipu_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -3964,7 +3964,7 @@ covergroup ExceptionsVx_vnmsac_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -3987,8 +3987,8 @@ covergroup ExceptionsVx_vnmsac_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4002,7 +4002,7 @@ covergroup ExceptionsVx_vnmsac_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4025,8 +4025,8 @@ covergroup ExceptionsVx_vnmsac_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4040,7 +4040,7 @@ covergroup ExceptionsVx_vnmsub_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4063,8 +4063,8 @@ covergroup ExceptionsVx_vnmsub_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4078,7 +4078,7 @@ covergroup ExceptionsVx_vnmsub_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4101,8 +4101,8 @@ covergroup ExceptionsVx_vnmsub_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4116,7 +4116,7 @@ covergroup ExceptionsVx_vnsra_wi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4139,8 +4139,8 @@ covergroup ExceptionsVx_vnsra_wi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4154,7 +4154,7 @@ covergroup ExceptionsVx_vnsra_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4177,8 +4177,8 @@ covergroup ExceptionsVx_vnsra_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4192,7 +4192,7 @@ covergroup ExceptionsVx_vnsra_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4215,8 +4215,8 @@ covergroup ExceptionsVx_vnsra_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4230,7 +4230,7 @@ covergroup ExceptionsVx_vnsrl_wi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4253,8 +4253,8 @@ covergroup ExceptionsVx_vnsrl_wi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4268,7 +4268,7 @@ covergroup ExceptionsVx_vnsrl_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4291,8 +4291,8 @@ covergroup ExceptionsVx_vnsrl_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4306,7 +4306,7 @@ covergroup ExceptionsVx_vnsrl_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4329,8 +4329,8 @@ covergroup ExceptionsVx_vnsrl_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4344,7 +4344,7 @@ covergroup ExceptionsVx_vor_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4367,8 +4367,8 @@ covergroup ExceptionsVx_vor_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4382,7 +4382,7 @@ covergroup ExceptionsVx_vor_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4405,8 +4405,8 @@ covergroup ExceptionsVx_vor_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4420,7 +4420,7 @@ covergroup ExceptionsVx_vor_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4443,8 +4443,8 @@ covergroup ExceptionsVx_vor_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4458,7 +4458,7 @@ covergroup ExceptionsVx_vredand_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4481,8 +4481,8 @@ covergroup ExceptionsVx_vredand_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4496,7 +4496,7 @@ covergroup ExceptionsVx_vredmax_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4519,8 +4519,8 @@ covergroup ExceptionsVx_vredmax_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4534,7 +4534,7 @@ covergroup ExceptionsVx_vredmaxu_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4557,8 +4557,8 @@ covergroup ExceptionsVx_vredmaxu_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4572,7 +4572,7 @@ covergroup ExceptionsVx_vredmin_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4595,8 +4595,8 @@ covergroup ExceptionsVx_vredmin_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4610,7 +4610,7 @@ covergroup ExceptionsVx_vredminu_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4633,8 +4633,8 @@ covergroup ExceptionsVx_vredminu_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4648,7 +4648,7 @@ covergroup ExceptionsVx_vredor_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4671,8 +4671,8 @@ covergroup ExceptionsVx_vredor_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4686,7 +4686,7 @@ covergroup ExceptionsVx_vredsum_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4709,8 +4709,8 @@ covergroup ExceptionsVx_vredsum_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4724,7 +4724,7 @@ covergroup ExceptionsVx_vredxor_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4747,8 +4747,8 @@ covergroup ExceptionsVx_vredxor_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4762,7 +4762,7 @@ covergroup ExceptionsVx_vrem_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4785,8 +4785,8 @@ covergroup ExceptionsVx_vrem_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4800,7 +4800,7 @@ covergroup ExceptionsVx_vrem_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4823,8 +4823,8 @@ covergroup ExceptionsVx_vrem_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4838,7 +4838,7 @@ covergroup ExceptionsVx_vremu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4861,8 +4861,8 @@ covergroup ExceptionsVx_vremu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4876,7 +4876,7 @@ covergroup ExceptionsVx_vremu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4899,8 +4899,8 @@ covergroup ExceptionsVx_vremu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4914,7 +4914,7 @@ covergroup ExceptionsVx_vrgather_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4937,8 +4937,8 @@ covergroup ExceptionsVx_vrgather_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4952,7 +4952,7 @@ covergroup ExceptionsVx_vrgather_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -4975,8 +4975,8 @@ covergroup ExceptionsVx_vrgather_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -4990,7 +4990,7 @@ covergroup ExceptionsVx_vrgather_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5013,8 +5013,8 @@ covergroup ExceptionsVx_vrgather_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5028,7 +5028,7 @@ covergroup ExceptionsVx_vrgatherei16_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5051,8 +5051,8 @@ covergroup ExceptionsVx_vrgatherei16_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5066,7 +5066,7 @@ covergroup ExceptionsVx_vrsub_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5089,8 +5089,8 @@ covergroup ExceptionsVx_vrsub_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5104,7 +5104,7 @@ covergroup ExceptionsVx_vrsub_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5127,8 +5127,8 @@ covergroup ExceptionsVx_vrsub_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5142,7 +5142,7 @@ covergroup ExceptionsVx_vsadd_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5165,8 +5165,8 @@ covergroup ExceptionsVx_vsadd_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5180,7 +5180,7 @@ covergroup ExceptionsVx_vsadd_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5203,8 +5203,8 @@ covergroup ExceptionsVx_vsadd_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5218,7 +5218,7 @@ covergroup ExceptionsVx_vsadd_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5241,8 +5241,8 @@ covergroup ExceptionsVx_vsadd_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5256,7 +5256,7 @@ covergroup ExceptionsVx_vsaddu_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5279,8 +5279,8 @@ covergroup ExceptionsVx_vsaddu_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5294,7 +5294,7 @@ covergroup ExceptionsVx_vsaddu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5317,8 +5317,8 @@ covergroup ExceptionsVx_vsaddu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5332,7 +5332,7 @@ covergroup ExceptionsVx_vsaddu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5355,8 +5355,8 @@ covergroup ExceptionsVx_vsaddu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5370,7 +5370,7 @@ covergroup ExceptionsVx_vsbc_vvm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5393,8 +5393,8 @@ covergroup ExceptionsVx_vsbc_vvm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5408,7 +5408,7 @@ covergroup ExceptionsVx_vsbc_vxm_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5431,8 +5431,8 @@ covergroup ExceptionsVx_vsbc_vxm_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5446,7 +5446,7 @@ covergroup ExceptionsVx_vsext_vf2_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5469,8 +5469,8 @@ covergroup ExceptionsVx_vsext_vf2_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5484,7 +5484,7 @@ covergroup ExceptionsVx_vsext_vf4_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5507,8 +5507,8 @@ covergroup ExceptionsVx_vsext_vf4_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5522,7 +5522,7 @@ covergroup ExceptionsVx_vsext_vf8_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5545,8 +5545,8 @@ covergroup ExceptionsVx_vsext_vf8_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5560,7 +5560,7 @@ covergroup ExceptionsVx_vslide1down_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5583,8 +5583,8 @@ covergroup ExceptionsVx_vslide1down_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5598,7 +5598,7 @@ covergroup ExceptionsVx_vslide1up_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5621,8 +5621,8 @@ covergroup ExceptionsVx_vslide1up_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5636,7 +5636,7 @@ covergroup ExceptionsVx_vslidedown_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5659,8 +5659,8 @@ covergroup ExceptionsVx_vslidedown_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5674,7 +5674,7 @@ covergroup ExceptionsVx_vslidedown_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5697,8 +5697,8 @@ covergroup ExceptionsVx_vslidedown_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5712,7 +5712,7 @@ covergroup ExceptionsVx_vslideup_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5735,8 +5735,8 @@ covergroup ExceptionsVx_vslideup_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5750,7 +5750,7 @@ covergroup ExceptionsVx_vslideup_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5773,8 +5773,8 @@ covergroup ExceptionsVx_vslideup_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5788,7 +5788,7 @@ covergroup ExceptionsVx_vsll_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5811,8 +5811,8 @@ covergroup ExceptionsVx_vsll_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5826,7 +5826,7 @@ covergroup ExceptionsVx_vsll_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5849,8 +5849,8 @@ covergroup ExceptionsVx_vsll_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5864,7 +5864,7 @@ covergroup ExceptionsVx_vsll_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5887,8 +5887,8 @@ covergroup ExceptionsVx_vsll_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5902,7 +5902,7 @@ covergroup ExceptionsVx_vsmul_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5925,8 +5925,8 @@ covergroup ExceptionsVx_vsmul_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5940,7 +5940,7 @@ covergroup ExceptionsVx_vsmul_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -5963,8 +5963,8 @@ covergroup ExceptionsVx_vsmul_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -5978,7 +5978,7 @@ covergroup ExceptionsVx_vsra_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6001,8 +6001,8 @@ covergroup ExceptionsVx_vsra_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6016,7 +6016,7 @@ covergroup ExceptionsVx_vsra_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6039,8 +6039,8 @@ covergroup ExceptionsVx_vsra_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6054,7 +6054,7 @@ covergroup ExceptionsVx_vsra_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6077,8 +6077,8 @@ covergroup ExceptionsVx_vsra_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6092,7 +6092,7 @@ covergroup ExceptionsVx_vsrl_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6115,8 +6115,8 @@ covergroup ExceptionsVx_vsrl_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6130,7 +6130,7 @@ covergroup ExceptionsVx_vsrl_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6153,8 +6153,8 @@ covergroup ExceptionsVx_vsrl_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6168,7 +6168,7 @@ covergroup ExceptionsVx_vsrl_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6191,8 +6191,8 @@ covergroup ExceptionsVx_vsrl_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6206,7 +6206,7 @@ covergroup ExceptionsVx_vssra_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6229,8 +6229,8 @@ covergroup ExceptionsVx_vssra_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6244,7 +6244,7 @@ covergroup ExceptionsVx_vssra_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6267,8 +6267,8 @@ covergroup ExceptionsVx_vssra_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6282,7 +6282,7 @@ covergroup ExceptionsVx_vssra_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6305,8 +6305,8 @@ covergroup ExceptionsVx_vssra_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6320,7 +6320,7 @@ covergroup ExceptionsVx_vssrl_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6343,8 +6343,8 @@ covergroup ExceptionsVx_vssrl_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6358,7 +6358,7 @@ covergroup ExceptionsVx_vssrl_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6381,8 +6381,8 @@ covergroup ExceptionsVx_vssrl_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6396,7 +6396,7 @@ covergroup ExceptionsVx_vssrl_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6419,8 +6419,8 @@ covergroup ExceptionsVx_vssrl_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6434,7 +6434,7 @@ covergroup ExceptionsVx_vssub_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6457,8 +6457,8 @@ covergroup ExceptionsVx_vssub_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6472,7 +6472,7 @@ covergroup ExceptionsVx_vssub_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6495,8 +6495,8 @@ covergroup ExceptionsVx_vssub_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6510,7 +6510,7 @@ covergroup ExceptionsVx_vssubu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6533,8 +6533,8 @@ covergroup ExceptionsVx_vssubu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6548,7 +6548,7 @@ covergroup ExceptionsVx_vssubu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6571,8 +6571,8 @@ covergroup ExceptionsVx_vssubu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6586,7 +6586,7 @@ covergroup ExceptionsVx_vsub_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6609,8 +6609,8 @@ covergroup ExceptionsVx_vsub_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6624,7 +6624,7 @@ covergroup ExceptionsVx_vsub_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6647,8 +6647,8 @@ covergroup ExceptionsVx_vsub_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6662,7 +6662,7 @@ covergroup ExceptionsVx_vwadd_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6685,8 +6685,8 @@ covergroup ExceptionsVx_vwadd_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6700,7 +6700,7 @@ covergroup ExceptionsVx_vwadd_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6723,8 +6723,8 @@ covergroup ExceptionsVx_vwadd_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6738,7 +6738,7 @@ covergroup ExceptionsVx_vwadd_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6761,8 +6761,8 @@ covergroup ExceptionsVx_vwadd_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6776,7 +6776,7 @@ covergroup ExceptionsVx_vwadd_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6799,8 +6799,8 @@ covergroup ExceptionsVx_vwadd_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6814,7 +6814,7 @@ covergroup ExceptionsVx_vwaddu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6837,8 +6837,8 @@ covergroup ExceptionsVx_vwaddu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6852,7 +6852,7 @@ covergroup ExceptionsVx_vwaddu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6875,8 +6875,8 @@ covergroup ExceptionsVx_vwaddu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6890,7 +6890,7 @@ covergroup ExceptionsVx_vwaddu_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6913,8 +6913,8 @@ covergroup ExceptionsVx_vwaddu_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6928,7 +6928,7 @@ covergroup ExceptionsVx_vwaddu_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6951,8 +6951,8 @@ covergroup ExceptionsVx_vwaddu_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -6966,7 +6966,7 @@ covergroup ExceptionsVx_vwmacc_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -6989,8 +6989,8 @@ covergroup ExceptionsVx_vwmacc_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7004,7 +7004,7 @@ covergroup ExceptionsVx_vwmacc_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7027,8 +7027,8 @@ covergroup ExceptionsVx_vwmacc_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7042,7 +7042,7 @@ covergroup ExceptionsVx_vwmaccsu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7065,8 +7065,8 @@ covergroup ExceptionsVx_vwmaccsu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7080,7 +7080,7 @@ covergroup ExceptionsVx_vwmaccsu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7103,8 +7103,8 @@ covergroup ExceptionsVx_vwmaccsu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7118,7 +7118,7 @@ covergroup ExceptionsVx_vwmaccu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7141,8 +7141,8 @@ covergroup ExceptionsVx_vwmaccu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7156,7 +7156,7 @@ covergroup ExceptionsVx_vwmaccu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7179,8 +7179,8 @@ covergroup ExceptionsVx_vwmaccu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7194,7 +7194,7 @@ covergroup ExceptionsVx_vwmaccus_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7217,8 +7217,8 @@ covergroup ExceptionsVx_vwmaccus_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7232,7 +7232,7 @@ covergroup ExceptionsVx_vwmul_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7255,8 +7255,8 @@ covergroup ExceptionsVx_vwmul_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7270,7 +7270,7 @@ covergroup ExceptionsVx_vwmul_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7293,8 +7293,8 @@ covergroup ExceptionsVx_vwmul_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7308,7 +7308,7 @@ covergroup ExceptionsVx_vwmulsu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7331,8 +7331,8 @@ covergroup ExceptionsVx_vwmulsu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7346,7 +7346,7 @@ covergroup ExceptionsVx_vwmulsu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7369,8 +7369,8 @@ covergroup ExceptionsVx_vwmulsu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7384,7 +7384,7 @@ covergroup ExceptionsVx_vwmulu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7407,8 +7407,8 @@ covergroup ExceptionsVx_vwmulu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7422,7 +7422,7 @@ covergroup ExceptionsVx_vwmulu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7445,8 +7445,8 @@ covergroup ExceptionsVx_vwmulu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7460,7 +7460,7 @@ covergroup ExceptionsVx_vwredsum_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7483,8 +7483,8 @@ covergroup ExceptionsVx_vwredsum_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7498,7 +7498,7 @@ covergroup ExceptionsVx_vwredsumu_vs_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7521,8 +7521,8 @@ covergroup ExceptionsVx_vwredsumu_vs_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7536,7 +7536,7 @@ covergroup ExceptionsVx_vwsub_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7559,8 +7559,8 @@ covergroup ExceptionsVx_vwsub_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7574,7 +7574,7 @@ covergroup ExceptionsVx_vwsub_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7597,8 +7597,8 @@ covergroup ExceptionsVx_vwsub_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7612,7 +7612,7 @@ covergroup ExceptionsVx_vwsub_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7635,8 +7635,8 @@ covergroup ExceptionsVx_vwsub_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7650,7 +7650,7 @@ covergroup ExceptionsVx_vwsub_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7673,8 +7673,8 @@ covergroup ExceptionsVx_vwsub_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7688,7 +7688,7 @@ covergroup ExceptionsVx_vwsubu_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7711,8 +7711,8 @@ covergroup ExceptionsVx_vwsubu_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7726,7 +7726,7 @@ covergroup ExceptionsVx_vwsubu_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7749,8 +7749,8 @@ covergroup ExceptionsVx_vwsubu_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7764,7 +7764,7 @@ covergroup ExceptionsVx_vwsubu_wv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7787,8 +7787,8 @@ covergroup ExceptionsVx_vwsubu_wv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7802,7 +7802,7 @@ covergroup ExceptionsVx_vwsubu_wx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7825,8 +7825,8 @@ covergroup ExceptionsVx_vwsubu_wx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7840,7 +7840,7 @@ covergroup ExceptionsVx_vxor_vi_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7863,8 +7863,8 @@ covergroup ExceptionsVx_vxor_vi_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7878,7 +7878,7 @@ covergroup ExceptionsVx_vxor_vv_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7901,8 +7901,8 @@ covergroup ExceptionsVx_vxor_vv_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7916,7 +7916,7 @@ covergroup ExceptionsVx_vxor_vx_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7939,8 +7939,8 @@ covergroup ExceptionsVx_vxor_vx_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7954,7 +7954,7 @@ covergroup ExceptionsVx_vzext_vf2_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -7977,8 +7977,8 @@ covergroup ExceptionsVx_vzext_vf2_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -7992,7 +7992,7 @@ covergroup ExceptionsVx_vzext_vf4_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -8015,8 +8015,8 @@ covergroup ExceptionsVx_vzext_vf4_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 
@@ -8030,7 +8030,7 @@ covergroup ExceptionsVx_vzext_vf8_cg with function sample(ins_t ins);
     // cp_vill
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    cp_vill: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins one  = {1};
     }
 
@@ -8053,8 +8053,8 @@ covergroup ExceptionsVx_vzext_vf8_cg with function sample(ins_t ins);
     // cp_vstart_gt_vl
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
+    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) &
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART)){
         bins true = {1};
     }
 

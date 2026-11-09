@@ -6,11 +6,11 @@
     // vzext.vf2: source EEW = SEW/2, source EMUL = LMUL/2
     // Reserved when source EEW < 8 (SEW=8 gives EEW=4) or source EMUL < 1/8 (LMUL=mf8 gives EMUL=1/16)
 
-    sew_reserved_vf2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    sew_reserved_vf2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         bins sew8 = {0};
     }
 
-    lmul_reserved_vf2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    lmul_reserved_vf2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins mf8 = {5};
     }
 

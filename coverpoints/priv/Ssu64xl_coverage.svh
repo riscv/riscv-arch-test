@@ -17,7 +17,7 @@ covergroup Ssu64xl_cg with function sample(ins_t ins);
 
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    sstatus_uxl_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "uxl") {
+    sstatus_uxl_after: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SSTATUS, "uxl") {
         bins uxl_is_10 = {2'b10};
     }
     gpr_bit63: coverpoint ins.current.rd_val[63] {

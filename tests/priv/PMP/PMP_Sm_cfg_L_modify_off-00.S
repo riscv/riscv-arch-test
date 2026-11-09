@@ -50,58 +50,64 @@ RVTEST_BEGIN
   RVTEST_PMP_SET_BACKGROUND x4
 
 // PMP configuration 1: entry 1 = OFF, L = 0, XWR = 0111, pmpaddr1 = 0x100
-  addi x4, x0, 0x100
+  addi x12, x0, 0x100
 PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpaddr1:
-  # Write x4 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpaddr1_str)
-  LI(x4, (((PMP_R | PMP_W | PMP_X) & 0xFF) << PMP1_CFG_SHIFT))
+  # Write x12 to pmpaddr1, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x12, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpaddr1_str)
+  LI(x12, (((PMP_R | PMP_W | PMP_X) & 0xFF) << PMP1_CFG_SHIFT))
 PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpcfg0:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpcfg0_str)
-  addi x5, x4, 7
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpcfg0_str)
+  addi x5, x12, 7
 PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0:
   # Write x5 to pmpcfg0, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0_str)
-  addi x4, x0, -1
+  addi x12, x0, -1
 PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0:
-  # Write x4 to pmpaddr0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0, PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0_str)
+  # Write x12 to pmpaddr0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x12, PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0, PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0_str)
+  mv x12, x0
 PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1:
-  # Write x0 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1_str)
+  # Write x12 to pmpaddr1, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x12, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1_str)
+  mv x12, x0
 PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0:
-  # Write x0 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0_str)
+  mv x12, x0
 PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0:
-  # Write x0 to pmpaddr0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x0, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0_str)
+  # Write x12 to pmpaddr0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x12, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0_str)
+  mv x12, x0
 PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0:
-  # Write x0 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0_str)
 
 // PMP configuration 2: entry 1 = OFF, L = 1, XWR = 1111, pmpaddr1 = 0x100
-  addi x4, x0, 0x100
+  addi x12, x0, 0x100
 PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpaddr1:
-  # Write x4 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpaddr1_str)
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X) & 0xFF) << PMP1_CFG_SHIFT))
+  # Write x12 to pmpaddr1, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x12, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpaddr1_str)
+  LI(x12, (((PMP_L | PMP_R | PMP_W | PMP_X) & 0xFF) << PMP1_CFG_SHIFT))
 PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpcfg0:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpcfg0_str)
-  addi x5, x4, 7
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpcfg0_str)
+  addi x5, x12, 7
 PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0:
   # Write x5 to pmpcfg0, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0_str)
-  addi x4, x0, -1
+  addi x12, x0, -1
 PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0:
-  # Write x4 to pmpaddr0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0, PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0_str)
+  # Write x12 to pmpaddr0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x12, PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0, PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0_str)
+  mv x12, x0
 PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1:
-  # Write x0 to pmpaddr1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1_str)
+  # Write x12 to pmpaddr1, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x12, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1_str)
+  mv x12, x0
 PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0:
-  # Write x0 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0, PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

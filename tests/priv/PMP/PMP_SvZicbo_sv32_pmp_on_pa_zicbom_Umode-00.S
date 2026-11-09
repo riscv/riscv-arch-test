@@ -79,10 +79,10 @@ RVTEST_BEGIN
   csrs menvcfg, x6
   csrs senvcfg, x6
 
-  LI(x4, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0)))
+  LI(x12, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0)))
 PMP_SvZicbo_cg_PMP_perm_pmpcfg0_x:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_SvZicbo_cg_PMP_perm_pmpcfg0_x, PMP_SvZicbo_cg_PMP_perm_pmpcfg0_x_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_SvZicbo_cg_PMP_perm_pmpcfg0_x, PMP_SvZicbo_cg_PMP_perm_pmpcfg0_x_str)
   sfence.vma
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)

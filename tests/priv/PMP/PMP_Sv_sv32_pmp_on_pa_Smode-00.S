@@ -78,10 +78,10 @@ RVTEST_BEGIN
 
   LI(x13, 0x800) // Test signature initialization
 
-  LI(x4, (((PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
+  LI(x12, (((PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
 PMP_Sv_cg_PMP0_PA_pmpcfg0_rx:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sv_cg_PMP0_PA_pmpcfg0_rx, PMP_Sv_cg_PMP0_PA_pmpcfg0_rx_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sv_cg_PMP0_PA_pmpcfg0_rx, PMP_Sv_cg_PMP0_PA_pmpcfg0_rx_str)
   sfence.vma
 
 // Test case 1: translated access with (((PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
@@ -153,10 +153,10 @@ PMP_Sv_cg_pmp0_PA_noexec_s_test2_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sv_cg_pmp0_PA_noexec_s_test2_exec, PMP_Sv_cg_pmp0_PA_noexec_s_test2_exec_str)
 
-  LI(x4, (((PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
+  LI(x12, (((PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
 PMP_Sv_cg_PMP0_PA_pmpcfg0_rw:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sv_cg_PMP0_PA_pmpcfg0_rw, PMP_Sv_cg_PMP0_PA_pmpcfg0_rw_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sv_cg_PMP0_PA_pmpcfg0_rw, PMP_Sv_cg_PMP0_PA_pmpcfg0_rw_str)
   sfence.vma
 
 // Test case 3: translated access with (((PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
@@ -228,10 +228,10 @@ PMP_Sv_cg_pmp0_PA_noexec_s_test4_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sv_cg_pmp0_PA_noexec_s_test4_exec, PMP_Sv_cg_pmp0_PA_noexec_s_test4_exec_str)
 
-  LI(x4, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
+  LI(x12, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
 PMP_Sv_cg_PMP0_PA_pmpcfg0_x:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sv_cg_PMP0_PA_pmpcfg0_x, PMP_Sv_cg_PMP0_PA_pmpcfg0_x_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sv_cg_PMP0_PA_pmpcfg0_x, PMP_Sv_cg_PMP0_PA_pmpcfg0_x_str)
   sfence.vma
 
 // Test case 5: translated access with (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))

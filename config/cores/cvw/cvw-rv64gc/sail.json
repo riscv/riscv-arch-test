@@ -1029,9 +1029,9 @@
     "Svpbmt": {
       "supported": true
     },
-    // Wally's page-table walker caches invalid PTEs in the TLB until SFENCE.VMA, which Svvptc forbids.
+    // Wally's page-table walker does not cache invalid PTEs in the TLB, so Svvptc holds.
     "Svvptc": {
-      "supported": false
+      "supported": true
     },
     "Sdtrig": {
       "supported": false,

@@ -14,4 +14,4 @@ normative_rule_definitions:
   # PTEs are reserved for use by supervisor software and are ignored by the
   # implementation.
   - name: Svrsw60t59b_H_g_stage_reserved_bits
-    coverpoint: ["TODO: test in hypervisor tests"]
+    coverpoint: ["Sv_H_gstage_cg/cp_hgatp_perm"]

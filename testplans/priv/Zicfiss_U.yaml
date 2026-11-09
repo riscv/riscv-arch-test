@@ -97,14 +97,14 @@ coverpoints:
       RV64: SSAMOSWAP.D rd, rs2, (rs1) on an 8-byte-aligned SS address (full 64-bit swap).
       RV64: SSAMOSWAP.W rd, rs2, (rs1) on a 4-byte-aligned SS address, with the loaded word's MSB = 0 and MSB = 1, and with rs2 carrying non-zero bits in [63:32].
       Ordering bits: exercise all four {aq, rl} combinations -- 00, 01, 10, 11 -- on both widths.
-      Register edges: rd = x0 and rd != x0; rs2 = x0 and rs2 != x0; and rd == rs1 (the address register is also the destination).
+      Register edges: rd = x0 and rd != x0; rs2 = x0 and rs2 != x0; rd == rs1 (the address register is also the destination); and rd == rs2.
     expectation: |-
       rd receives the value previously in memory; memory receives rs2. The pair is atomic.
       RV64 SSAMOSWAP.W: rd is the SIGN-EXTENDED 32-bit loaded value (MSB=1 => upper 32 bits all ones), and only rs2[31:0] is stored -- rs2[63:32] is ignored.
       RV32 SSAMOSWAP.W: plain 32-bit swap. No exception on a valid aligned SS address.
       aq/rl do not change the architectural result of a single-hart swap, but all four encodings must decode and execute.
-      rd = x0 discards the loaded value, the memory write still happens. rs2 = x0 stores zero. rd == rs1 must return the loaded value in rd after the address has been consumed.
-    bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x xlen_config {RV32, RV64} x loaded_msb {0, 1} x rs2_upper {zero, nonzero} x {aq,rl} {00, 01, 10, 11} x reg_edge {rd=x0, rs2=x0, rd==rs1, all distinct non-x0}
+      rd = x0 discards the loaded value, the memory write still happens. rs2 = x0 stores zero. rd == rs1 must return the loaded value in rd after the address has been consumed. rd == rs2 stores the original rs2, and rd gets the old memory value.
+    bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x xlen_config {RV32, RV64} x loaded_msb {0, 1} x rs2_upper {zero, nonzero} x {aq,rl} {00, 01, 10, 11} x reg_edge {rd=x0, rs2=x0, rd==rs1, rd==rs2, all distinct non-x0}
   - name: |-
       cp_ss_address_alignment_ssp
       cp_ss_address_alignment_pop
@@ -172,6 +172,16 @@ coverpoints:
       (h) vector stores fault; vector loads follow the ordinary-load rule. An access that starts on an adjacent page must still fault on the element that lands in the SS page.
       (e) the ordinary load succeeds for BOTH MXR values -- the shadow stack is readable by any instruction that only loads, so this must not depend on MXR.
     bins: accessor {ss_store, ordinary_store, ordinary_amo, lr_sc, amocas, cbo, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
+  - name: |-
+      cp_ss_page_access_store_ad
+      cp_ss_page_access_amo_ad
+    goal: Verify an ordinary store or AMO to an SS page raises an access fault whatever pte.A and pte.D are
+    description: |-
+      For each pte.A/D in {00, 01, 10, 11} on the SS page (xwr=010, U=1), from U-mode with Zicfiss active:
+      SB, SH, SW, SD (RV64) and AMOSWAP.W, AMOADD.W, AMOOR.W, AMOSWAP.D, AMOADD.D (RV64) to the page. AMOs record rd.
+    expectation: |-
+      Store/AMO access-fault (cause=7), never a store/AMO page fault: the SS page rule is checked before A and D. rd of an AMO is unchanged.
+    bins: "{ordinary_store, ordinary_amo} x pte.A/D {00, 01, 10, 11}"
   - name: cp_ss_page_fetch
     goal: Verify an instruction fetch from an SS page raises an instruction access fault
     description: "From U-mode with Zicfiss active, jump (jalr) to the shadow stack page (xwr=010, U=1)."

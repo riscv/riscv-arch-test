@@ -85,6 +85,16 @@ coverpoints:
       If the implementation gives address-misaligned exceptions higher priority (MISALIGNED_LDST_EXCEPTION_PRIORITY), the result follows the reference model.
       Memory on the SS page is unchanged.
     bins: store {SB, SH, SW, SD} x addr[2:0] {0..7} x pte.xwr {010}
+  - name: |-
+      cp_ss_page_access_store_ad_s
+      cp_ss_page_access_amo_ad_s
+    goal: Verify an ordinary store or AMO to an SS page raises an access fault from S-mode whatever pte.A and pte.D are
+    description: |-
+      For each pte.A/D in {00, 01, 10, 11} on the SS page (xwr=010, U=0), from S-mode with menvcfg.SSE=1:
+      SB, SH, SW, SD (RV64) and AMOSWAP.W, AMOADD.W, AMOOR.W, AMOSWAP.D, AMOADD.D (RV64) to the page. AMOs record rd.
+    expectation: |-
+      Store/AMO access-fault (cause=7), never a store/AMO page fault: the SS page rule is checked before A and D. rd of an AMO is unchanged.
+    bins: "{ordinary_store, ordinary_amo} x pte.A/D {00, 01, 10, 11}"
   - name: cp_senvcfg_sse_rdonly0_s
     goal: Verify senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0
     description: |-

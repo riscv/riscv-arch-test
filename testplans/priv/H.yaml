@@ -209,8 +209,12 @@ coverpoints:
     bins: 2 modes * 2 instr
   - name: cp_hsv
     goal: Basic store
-    description: "Set up non-identity G and VS-stage page tables. With hstatus.HU = 1, in {HS, U}: hsv.b, hsv.h, hsv.w to scratch, and read scratch through its physical address.  For rv64, also test hsv.d.  Random source and destination registers."
-    expectation: Stores the low bytes of the source register
+    description: |-
+      Set up non-identity G and VS-stage page tables. With hstatus.HU = 1, in {HS, U}, execute
+      hsv.b, hsv.h and hsv.w (also hsv.d on RV64). Read the target through its physical address.
+      Seed the target and adjacent XLEN words with the bitwise complement of the source.
+      Read back all three to catch over-wide writes, including neighboring memory corruption.
+    expectation: Stores exactly the low bytes of the source register; all other bytes remain unchanged
     bins: 2 modes * 3 instr (4 on RV64)
   - name: cp_guest_page_fault
     goal: hlv and hsv guest-page faults record htval and htinst

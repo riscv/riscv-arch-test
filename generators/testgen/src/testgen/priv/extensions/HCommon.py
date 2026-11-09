@@ -360,7 +360,8 @@ def hlv_tests(test_data: TestData, tc: TestChunk, covergroup: str, modes: tuple[
     maps to the superpage of H_hlv_data.  hstatus.HU = 1 throughout, as U-mode needs.  H_hlv_data is written and
     checked through its physical address.
     """
-    tc.raw_data.extend([".p2align 3", "H_hlv_data:", "  .dword 0"])
+    # Reserve adjacent XLEN words for HSV overrun/underrun checks.
+    tc.raw_data.extend([".p2align 3", "  .dword 0", "H_hlv_data:", "  .dword 0", "  .dword 0"])
     va_reg = test_data.int_regs.get_register()
 
     def mappings(g: SvMode, vs: SvMode) -> list[str]:
@@ -429,11 +430,18 @@ def hlv_tests(test_data: TestData, tc: TestChunk, covergroup: str, modes: tuple[
                 lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
         for instr, rv64 in HSV_INSTRS:
             body = [
-                f"SREG x0, 0(x{pa_reg})",
                 *load_data,
+                f"xori x{rd}, x{val_reg}, -1    # seed target and guards with ~source",
+                f"SREG x{rd}, -REGWIDTH(x{pa_reg})",
+                f"SREG x{rd}, 0(x{pa_reg})",
+                f"SREG x{rd}, REGWIDTH(x{pa_reg})",
                 test_data.add_testcase(f"{mode}_{instr}", "cp_hsv", covergroup),
                 f"{instr} x{val_reg}, (x{va_reg})",
                 f"LREG x{rd}, 0(x{pa_reg})",
+                write_sigupd(rd, test_data),
+                f"LREG x{rd}, -REGWIDTH(x{pa_reg})",
+                write_sigupd(rd, test_data),
+                f"LREG x{rd}, REGWIDTH(x{pa_reg})",
                 write_sigupd(rd, test_data),
             ]
             lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))

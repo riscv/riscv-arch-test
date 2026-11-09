@@ -129,7 +129,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // fcsr
     `ifdef ZFINX_SUPPORTED
-        misa_F_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "misa", "exts")[5] {
+        misa_F_clear: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MISA, "exts")[5] {
             bins F_clear = {1'b0};
         }
         fcsr_state: coverpoint {mstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "fcsr", 0), hstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "fcsr", 0), sstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "fcsr")} {
@@ -271,12 +271,12 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         }
         // mstateen0 has only SE0 set, so every other bit of sstateen0 must be read-only zero
         `ifdef UDB_MXLEN_64
-            mstateen0_se0_only: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "mstateen0") {
+            mstateen0_se0_only: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATEEN0) {
                 bins se0_only = {64'h8000_0000_0000_0000};
             }
         `else
-            mstateen0_se0_only: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "mstateen0h"),
-                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "mstateen0")} {
+            mstateen0_se0_only: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATEEN0H),
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATEEN0)} {
                 bins se0_only = {64'h8000_0000_0000_0000};
             }
         `endif

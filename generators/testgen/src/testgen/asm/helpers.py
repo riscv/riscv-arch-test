@@ -38,6 +38,15 @@ def comment_banner(title: str, description: str | None = None) -> str:
     return "\n".join(lines)
 
 
+def load_constant(reg: str, value: str) -> str:
+    """Load a constant into reg. Use LI_FIXED_LEN if the value depends on an RVMODEL_* macro.
+
+    Code that loads a DUT-dependent value must be the same length for every DUT.
+    """
+    macro = "LI_FIXED_LEN" if "RVMODEL_" in value else "LI"
+    return f"{macro}({reg}, {value})"
+
+
 def arch_block(lines: list[str], *extensions: str) -> list[str]:
     """Enable *extensions* around *lines*, or return *lines* unchanged if none are given."""
     if not extensions:

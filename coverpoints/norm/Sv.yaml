@@ -741,8 +741,8 @@ normative_rule_definitions:
   - name: mcause_exccode_priority_misaligned
     coverpoint:
       [
-        "Sv_Exceptions_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
-        "Sv_ExceptionsSm_cg/cp_misaligned_priority_m",
+        "Sv_Exceptions_cg/cp_misaligned_priority_{load, store}_{s, u}",
+        "Sv_ExceptionsSm_cg/cp_misaligned_priority_{load, store}_m",
         "Sv_ExceptionsZaamo_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
         "Sv_ExceptionsZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
       ]
@@ -760,8 +760,8 @@ normative_rule_definitions:
   - name: exc_priority
     coverpoint:
       [
-        "Sv_Exceptions_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u, cp_misaligned_priority_fetch_s, cp_misaligned_priority_fetch_u}",
-        "Sv_ExceptionsSm_cg/cp_misaligned_priority_m",
+        "Sv_Exceptions_cg/cp_misaligned_priority_{load, store, fetch}_{s, u}",
+        "Sv_ExceptionsSm_cg/cp_misaligned_priority_{load, store}_m",
         "Sv_ExceptionsZaamo_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
         "Sv_ExceptionsZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
       ]
@@ -837,7 +837,7 @@ normative_rule_definitions:
         "Sv_H_twostage_cg/cp_twostage_perm",
         "Sv_H_twostage_cg/cp_implicit_gpf",
         "Sv_H_twostage_cg/cp_implicit_mxr",
-        "Sv_H_twostage_cg/cp_twostage_access_fault",
+        "Sv_H_twostage_cg/cp_twostage_access_fault_{load, store, fetch}",
         "Sv_H_hlv_cg/cp_hlv_implicit",
         "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte}",
       ]

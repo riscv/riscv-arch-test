@@ -75,8 +75,8 @@ exclude_extensions:
   # norm:Zicfilp_pelp_trap_return requires xRET to set xPELP to NO_LP_EXPECTED unconditionally, and
   # Sail, Spike, Whisper and QEMU all clear it. Zicfilp_U passes.
   # (fixed in Imperas-HMC101126-eng-build)
-  - Zicfilp_Sm
-  - Zicfilp_S
+  # - Zicfilp_Sm
+  # - Zicfilp_S
   # Zicfiss_{U,S,Sm}, seen on imperas-rv64-max and imperas-rv32gck with ImperasDV
   # Y-2026.03-DEV-20260612. Three model bugs are filed as
   # https://solvnetplus.synopsys.com/s/case/500WQ000028qjufYAA/zicfiss-discrepancies

@@ -21,18 +21,18 @@
 
     // Source EEW unsupported: SEW/N < 8
     // vf2: SEW=8 -> src_EEW=4 (unsupported)
-    sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    sew_8: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         bins e8 = {0};
     }
 
     // vf4: SEW=8 -> src_EEW=2, SEW=16 -> src_EEW=4 (both unsupported)
-    sew_8_or_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    sew_8_or_16: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         bins e8 = {0};
         bins e16 = {1};
     }
 
     // vf8: SEW=8 -> src_EEW=1, SEW=16 -> src_EEW=2, SEW=32 -> src_EEW=4 (all unsupported)
-    sew_8_16_or_32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    sew_8_16_or_32: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         bins e8 = {0};
         bins e16 = {1};
         bins e32 = {2};
@@ -41,13 +41,13 @@
     // Source EMUL too small: LMUL/N < 1/8
     // vf2: LMUL=mf8(5) -> EMUL=1/16
     `ifdef LMULf8_SUPPORTED
-        lmul_mf8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        lmul_mf8: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
             bins mf8 = {5};
         }
     `endif
 
     // vf4: LMUL=mf8(5) -> EMUL=1/32, LMUL=mf4(6) -> EMUL=1/16
-    lmul_mf8_or_mf4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    lmul_mf8_or_mf4: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         `ifdef LMULf8_SUPPORTED
             bins mf8 = {5};
         `endif
@@ -57,7 +57,7 @@
     }
 
     // vf8: LMUL=mf8(5) -> EMUL=1/64, LMUL=mf4(6) -> EMUL=1/32, LMUL=mf2(7) -> EMUL=1/16
-    lmul_mf8_mf4_or_mf2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    lmul_mf8_mf4_or_mf2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         `ifdef LMULf8_SUPPORTED
             bins mf8 = {5};
         `endif

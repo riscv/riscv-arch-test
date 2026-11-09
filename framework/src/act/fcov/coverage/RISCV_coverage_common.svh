@@ -139,8 +139,8 @@
 `define SIGNED_XLEN_BITS  bit signed [`UDB_MXLEN-1:0]
 `define FLEN_BITS         bit        [`FLEN-1:0]
 `define SIGNED_FLEN_BITS  bit signed [`FLEN-1:0]
-`define VLEN_BITS         bit        [`UDB_VLEN-1:0]
-`define SIGNED_VLEN_BITS  bit signed [`UDB_VLEN-1:0]
+`define VLEN_BITS         bit        [VLEN-1:0]
+`define SIGNED_VLEN_BITS  bit signed [VLEN-1:0]
 
 // Instruction operand data structure
 typedef struct {

@@ -395,7 +395,7 @@ chain_store_x0: coverpoint ins.current.insn[24:20] {
     type_option.weight = 0;
     bins x0 = {5'd0};
 }
-chain_store_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins.current.imm) {
+chain_store_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.eff_addr) {
     type_option.weight = 0;
     bins watched = {1'b1};
 }
@@ -409,7 +409,7 @@ priv_bits_sw: coverpoint ins.current.insn iff (
         get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] == 4'd6 &&
         get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "store")[0] &&
         !get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "select")[0] &&
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA2) == ins.current.rs1_val + ins.current.imm) {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA2) == ins.current.eff_addr) {
     type_option.weight = 0;
     wildcard bins sw = {SW};
 }

@@ -106,7 +106,7 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
             wildcard bins fsq = {FSQ};
         `endif
     }
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[3:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[3:0]  {
         // auto fills 0000 through 1111
     }
 
@@ -120,13 +120,13 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:        cross loadops, illegal_address_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_store_access_fault:       cross storeops, illegal_address_store;
@@ -233,7 +233,7 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
             bins straddle64 = {5'b11111};
         }
     `endif
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
     rs1_zero: coverpoint ins.current.insn[19:15] {
@@ -293,30 +293,30 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     // access fault coverpoints
     // Both misaligned and illegal: +1 for lw/sw; +2 for jalr, which clears bit 0 of the target
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
-        illegal_address_misaligned_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_misaligned_fetch: coverpoint ins.current.eff_addr {
             bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH + 2};
         }
         cp_instr_access_fault:                   cross priv_mode_s, jalr, illegal_address_fetch;
         cp_misaligned_priority_fetch:            cross priv_mode_s, jalr, illegal_address_misaligned_fetch;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
-        illegal_address_misaligned_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_misaligned_load: coverpoint ins.current.eff_addr {
             bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 1};
         }
         cp_load_access_fault:                    cross priv_mode_s, loadops, illegal_address_load;
         cp_misaligned_priority_load:             cross priv_mode_s, lw, illegal_address_misaligned_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        illegal_address_misaligned_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_misaligned_store: coverpoint ins.current.eff_addr {
             bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 1};
         }
         cp_store_access_fault:                   cross priv_mode_s, storeops, illegal_address_store;
@@ -417,7 +417,7 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
             bins straddle64 = {5'b11111};
         }
     `endif
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
     rs1_zero: coverpoint ins.current.insn[19:15] {
@@ -469,7 +469,7 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[8] {
             // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
+        jalr_target_bit1: coverpoint ins.current.eff_addr[1] {}
     `endif
 
     // main coverpoints
@@ -503,19 +503,19 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
-        i_phys_adr_misaligned: coverpoint {ins.current.imm + ins.current.rs1_val}[1:0] {
+        i_phys_adr_misaligned: coverpoint ins.current.eff_addr[1:0] {
             bins aligned    = {2'b00};
             bins misaligned = {2'b10};
         }
         `ifdef UDB_MXLEN_64 // RV64 physical addresses have 56 bits; an RV32 address zero-extends into 34
-            i_phys_address_nonexistent: coverpoint ({8'b0, {ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+            i_phys_address_nonexistent: coverpoint ({8'b0, ins.current.eff_addr[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            i_phys_address_nonexistent: coverpoint ({32'b0, {ins.current.imm + ins.current.rs1_val}[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+            i_phys_address_nonexistent: coverpoint ({32'b0, ins.current.eff_addr[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
@@ -526,10 +526,10 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
-        illegal_address_priority_load: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_load: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:                    cross priv_mode_m, loadops, illegal_address_load;
@@ -539,10 +539,10 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        illegal_address_priority_store: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_store: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_store_access_fault:                   cross priv_mode_m, storeops, illegal_address_store;
@@ -648,7 +648,7 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
             bins straddle64 = {5'b11111};
         }
     `endif
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
     rs1_zero: coverpoint ins.current.insn[19:15] {
@@ -692,26 +692,26 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
         cp_instr_access_fault:                   cross priv_mode_u, jalr, illegal_address_fetch;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
-        illegal_address_priority_load: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_load: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:                    cross priv_mode_u, loadops, illegal_address_load;
         cp_misaligned_priority_load:             cross priv_mode_u, loadops, adr_LSBs, illegal_address_priority_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        illegal_address_priority_store: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_store: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_misaligned_priority_store:            cross priv_mode_u, storeops, adr_LSBs, illegal_address_priority_store;
@@ -877,7 +877,7 @@ covergroup Exceptions_Zalrsc_cg with function sample(ins_t ins);
         illegal_address_misaligned: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LRSC + 1};
         }
-        non_illegal_address: coverpoint (64'({{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000}) != `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
+        non_illegal_address: coverpoint (64'({ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000}) != `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
             bins non_illegal = {1};
         }
         cp_load_address_misaligned:                cross lr, adr_LSBs, non_illegal_address;
@@ -957,7 +957,7 @@ covergroup Exceptions_Zc_cg with function sample(ins_t ins);
 
     }
 
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
 
@@ -969,13 +969,13 @@ covergroup Exceptions_Zc_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:                    cross loadops, illegal_address_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_store_access_fault:                   cross storeops, illegal_address_store;
@@ -1422,7 +1422,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     }
 
     // Addresses
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0] {
         // auto fills 000 through 111
     }
 
@@ -1578,7 +1578,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     `endif
     // Misaligned loads and stores trap only when the hart does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        addr_misaligned: coverpoint ({ins.current.rs1_val + ins.current.imm}[1:0] != 2'b00) {
+        addr_misaligned: coverpoint (ins.current.eff_addr[1:0] != 2'b00) {
             bins misaligned = {1};
         }
         cp_xtinst_load_misaligned:  cross priv_mode_vs, lw, addr_misaligned, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
@@ -1596,8 +1596,8 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         jalr: coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        jalr_target_bit1: coverpoint ins.current.eff_addr[1] {}
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
         cp_hedeleg_instr_misaligned_jalr: cross priv_mode_vs_vu, jalr, jalr_target_bit1, medeleg_delegation, hedeleg_walk;
@@ -1607,7 +1607,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         cp_xtinst_instr_access: cross priv_mode_vs, jalr, illegal_address_fetch, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_hedeleg_load_access_fault:     cross priv_mode_vs_vu, loadops, illegal_address_load, medeleg_delegation, hedeleg_walk;
@@ -1627,7 +1627,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         cp_hstatus_gva_hlv: cross priv_mode_s_u, hlv_w, hlv_illegal_address, hstatus_gva_set;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_hedeleg_store_access_fault:    cross priv_mode_vs_vu, storeops, illegal_address_store, medeleg_delegation, hedeleg_walk;
@@ -1734,7 +1734,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     }
 
     // Addresses
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0] {
         // auto fills 000 through 111
     }
     // HLV and HSV have no immediate
@@ -1813,7 +1813,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     `endif
     // Misaligned loads and stores trap only when the hart does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        addr_misaligned: coverpoint ({ins.current.rs1_val + ins.current.imm}[1:0] != 2'b00) {
+        addr_misaligned: coverpoint (ins.current.eff_addr[1:0] != 2'b00) {
             bins misaligned = {1};
         }
         cp_xtinst_load_misaligned:  cross priv_mode_vs, lw, addr_misaligned, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
@@ -1828,8 +1828,8 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         jalr: coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        jalr_target_bit1: coverpoint ins.current.eff_addr[1] {}
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
         cp_hedeleg_instr_misaligned_jalr: cross priv_mode_vs_vu, jalr, jalr_target_bit1, medeleg_delegation, hedeleg_none_all;
@@ -1837,7 +1837,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         cp_xtinst_instr_access: cross priv_mode_vs, jalr, illegal_address_fetch, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         hlv_illegal_address: coverpoint ins.current.rs1_val {
@@ -1855,7 +1855,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         cp_priority_hlv: cross priv_mode_m, hlv_w, hlv_address_legality, hlv_addr_alignment, hstatus_hu;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         hsv_illegal_address: coverpoint ins.current.rs1_val {

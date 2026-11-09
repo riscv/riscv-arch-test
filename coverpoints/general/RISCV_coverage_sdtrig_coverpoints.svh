@@ -234,7 +234,7 @@ tdata1_size: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TD
     `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_5 bins size_5 = {3'd5}; `endif
     `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_6 bins size_6 = {3'd6}; `endif
 }
-tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins.current.imm) {
+tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.eff_addr) {
     type_option.weight = 0;
     bins scratch = {1'b1};
     bins zero    = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);

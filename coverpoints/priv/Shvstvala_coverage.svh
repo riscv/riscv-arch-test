@@ -81,12 +81,12 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
     // vstval holds the load or store address, the jalr target, or the instruction.  The test sets vstval
     // to a random value before each trap.
     vstval_address : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVAL) ==
-                                ins.current.rs1_val + ins.current.imm {
+                                ins.current.eff_addr {
         type_option.weight = 0;
         bins match = {1};
     }
     vstval_target : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVAL) ==
-                               ((ins.current.rs1_val + ins.current.imm) & ~1) {
+                               (ins.current.eff_addr & ~1) {
         type_option.weight = 0;
         bins match = {1};
     }
@@ -141,7 +141,7 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
             type_option.weight = 0;
             wildcard bins sw = {SW};
         }
-        word_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 3 {
+        word_misalignment : coverpoint ins.current.eff_addr & 3 {
             type_option.weight = 0;
             bins offset[] = {[1:3]};
         }
@@ -156,7 +156,7 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 wildcard bins sd = {SD};
             }
-            doubleword_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 7 {
+            doubleword_misalignment : coverpoint ins.current.eff_addr & 7 {
                 type_option.weight = 0;
                 bins offset[] = {[1:7]};
             }

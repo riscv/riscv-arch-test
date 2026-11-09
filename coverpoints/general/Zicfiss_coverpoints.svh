@@ -144,7 +144,7 @@
     }
 
     // Low three bits of an ordinary store's effective address.
-    store_addr_lsb: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    store_addr_lsb: coverpoint ins.current.eff_addr[2:0] {
         type_option.weight = 0;
         // auto fills 000 through 111
     }

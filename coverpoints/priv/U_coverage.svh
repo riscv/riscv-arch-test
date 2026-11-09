@@ -658,11 +658,11 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
     insn_lw: coverpoint ins.current.insn {
         wildcard bins lw = {LW};
     }
-    adr_misaligned_1: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    adr_misaligned_1: coverpoint ins.current.eff_addr[2:0] {
         bins one = {3'b001};  // scratch + 1
     }
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
     `endif

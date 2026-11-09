@@ -14,6 +14,25 @@ coverpoints:
       mhpmcounter is nonzero iff MINH = 0
       mhpmevent reads back the combination, with the bits of unimplemented modes reading 0
     bins: 32 xINH combinations
+  - name: cp_xinh_freeze_holds_count
+    goal: Setting MINH stops counting but keeps the count
+    description: |-
+      In M-mode:
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0, xINH = 00000 (M-mode counts)
+      mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE
+      Set MINH, read mhpmcounter (c2)
+      Run RVMODEL_MHPMEVENT_CODE again, read mhpmcounter (c3)
+    expectation: |-
+      c2 != 0 and c3 == c2. Counts depend on the implementation, so only these two predicates are recorded.
+    bins: "1"
+  - name: cp_mcountinhibit_freeze_holds_count
+    goal: Setting the counter's mcountinhibit bit stops counting but keeps the count
+    description: |-
+      MCOUNTINHIBIT_IMPLEMENTED only. As cp_xinh_freeze_holds_count, but the counter is stopped by setting
+      mcountinhibit[RVMODEL_HPM_COUNTER] while xINH = 00000. mcountinhibit is then cleared again.
+    expectation: |-
+      c2 != 0 and c3 == c2
+    bins: "1"
   - name: cp_of_set_on_overflow
     goal: OF is set when mhpmcounter overflows
     description: |-

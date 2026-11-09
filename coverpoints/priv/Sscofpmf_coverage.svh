@@ -136,6 +136,36 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
     cp_sscofpmf_access:        cross priv_mode_m, csr_access_pattern, hpm_csr_target_m;
     cp_lcofi_m:                cross priv_mode_m, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_set;
     cp_lcofip_priority_m:      cross priv_mode_m, mhpmevent_inhibits_zero_state, mstatus_mie_set, mie_state, lcofi_ip_one, mip_other_pending;
+    // cp_xinh_freeze_holds_count and cp_mcountinhibit_freeze_holds_count: a write that stops a counter that has
+    // counted, by setting MINH or the counter's mcountinhibit bit.
+    `ifdef UDB_MXLEN_64
+        minh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]} {
+            bins m_frozen = {10'b00000_10000};
+        }
+        m_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+            bins m_counts = {5'b00000};
+        }
+    `else
+        minh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]} {
+            bins m_frozen = {10'b00000_10000};
+        }
+        m_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+            bins m_counts = {5'b00000};
+        }
+    `endif
+    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER, `SSCOFPMF_MHPMCOUNTER) != 0) {
+        bins yes = {1};
+    }
+    cp_xinh_freeze_holds_count: cross priv_mode_m, minh_freeze, counter_moved;
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER]} {
+            bins frozen = {2'b01};
+        }
+        cp_mcountinhibit_freeze_holds_count: cross priv_mode_m, mcountinhibit_freeze, m_counts_xinh, counter_moved;
+    `endif
 endgroup
 `endif
 
@@ -270,6 +300,37 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     cp_sscofpmf_access:        cross priv_mode_s, csr_access_pattern, hpm_csr_target;
     cp_lcofi_sip_s:            cross priv_mode_s, prev_mstatus_sie_one, sie_lcofi, sip_lcofi, lcofi_mideleg_one;
     cp_lcofip_priority_s:      cross priv_mode_s, mhpmevent_minh_only_state, prev_mstatus_sie_one, sie_state, lcofi_ip_one, mip_other_pending_s, mideleg_s_ints;
+    // cp_xinh_freeze_holds_count and cp_mcountinhibit_freeze_holds_count: a write that stops a counter that has
+    // counted, by setting SINH or the counter's mcountinhibit bit. The suite reaches the M-level CSRs through T-SBI,
+    // so the write that stops the counter is an M-mode instruction and the crosses have no privilege mode.
+    `ifdef UDB_MXLEN_64
+        sinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]} {
+            bins s_frozen = {10'b10000_11000};
+        }
+        s_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+            bins s_counts = {5'b10000};
+        }
+    `else
+        sinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]} {
+            bins s_frozen = {10'b10000_11000};
+        }
+        s_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+            bins s_counts = {5'b10000};
+        }
+    `endif
+    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER, `SSCOFPMF_MHPMCOUNTER) != 0) {
+        bins yes = {1};
+    }
+    cp_xinh_freeze_holds_count: cross sinh_freeze, counter_moved;
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER]} {
+            bins frozen = {2'b01};
+        }
+        cp_mcountinhibit_freeze_holds_count: cross mcountinhibit_freeze, s_counts_xinh, counter_moved;
+    `endif
 endgroup
 
 covergroup Sscofpmf_U_cg with function sample(ins_t ins);
@@ -362,6 +423,54 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
         cp_lcofi_sip_u: cross priv_mode_u, lcofi_ie, lcofi_ip;
     `endif
 
+
+    // cp_xinh_freeze_holds_count and cp_mcountinhibit_freeze_holds_count: a write that stops a counter that has
+    // counted, by setting UINH or the counter's mcountinhibit bit. The suite reaches the M-level CSRs through T-SBI,
+    // so the write that stops the counter is an M-mode instruction and the crosses have no privilege mode.
+    `ifdef UDB_MXLEN_64
+        uinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]} {
+            `ifdef S_SUPPORTED
+                bins u_frozen = {10'b11000_11100};
+            `else
+                bins u_frozen = {10'b10000_10100};   // SINH is read-only zero without S-mode
+            `endif
+        }
+        u_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+            `ifdef S_SUPPORTED
+                bins u_counts = {5'b11000};
+            `else
+                bins u_counts = {5'b10000};
+            `endif
+        }
+    `else
+        uinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]} {
+            `ifdef S_SUPPORTED
+                bins u_frozen = {10'b11000_11100};
+            `else
+                bins u_frozen = {10'b10000_10100};   // SINH is read-only zero without S-mode
+            `endif
+        }
+        u_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+            `ifdef S_SUPPORTED
+                bins u_counts = {5'b11000};
+            `else
+                bins u_counts = {5'b10000};
+            `endif
+        }
+    `endif
+    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER, `SSCOFPMF_MHPMCOUNTER) != 0) {
+        bins yes = {1};
+    }
+    cp_xinh_freeze_holds_count: cross uinh_freeze, counter_moved;
+    `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER]} {
+            bins frozen = {2'b01};
+        }
+        cp_mcountinhibit_freeze_holds_count: cross mcountinhibit_freeze, u_counts_xinh, counter_moved;
+    `endif
 endgroup
 
 function void sscofpmf_sample(int hart, int issue, ins_t ins);

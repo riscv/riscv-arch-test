@@ -2,7 +2,7 @@
     // cr_vl_lmul_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3) {
+    cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
         // LMUL values for EGS=4, SEW=64 instructions (EGS*SEW = 64 bits per group)
         // LMUL=8/4: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 256 bits
         bins eight  = {3};
@@ -23,7 +23,7 @@
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew64 : cross cp_csr_vtype_lmul_egs4_sew64, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3)  {
+    cr_vl_lmul_egs4_sew64 : cross cp_csr_vtype_lmul_egs4_sew64, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=64
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED

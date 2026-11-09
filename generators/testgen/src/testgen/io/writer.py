@@ -95,8 +95,6 @@ def write_test_file(
         extra_defines.append(f"#define TRAP_SIGUPD_COUNT {trap_sigupd_count}")
     if any("RVTEST_TEST_CSR" in line for tc in test_chunks for line in tc.code):
         extra_defines.append("#define RVTEST_USES_TEST_CSR")
-    if any("RVTEST_CYCLE_CSR" in line for tc in test_chunks for line in tc.code):
-        extra_defines.append("#define RVTEST_USES_CYCLE_CSR")
     if any(_S_PAGE_TABLE_RE.search(line) for tc in test_chunks for line in [*tc.code, *tc.raw_data]):
         extra_defines.append("#define RVTEST_USES_S_PAGE_TABLES")
     if any(

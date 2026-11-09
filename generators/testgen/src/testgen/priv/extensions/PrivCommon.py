@@ -19,8 +19,8 @@ from testgen.data.test_chunk import TestChunk
 
 # Status CSR whose FS and VS fields the tests in each privilege mode check; it also names their
 # coverpoints and testcase labels. U-mode code reaches the fields through T-SBI (see _status_access).
-# VS-mode code reads vsstatus as sstatus and writes it, and reaches the HS-level sstatus, through T-SBI.
-# VU-mode code reaches both through T-SBI.
+# VS-mode code reaches vsstatus as sstatus and the HS-level sstatus through T-SBI. VU-mode code reaches both
+# through T-SBI.
 STATUS_CSR = {"M": "mstatus", "S": "sstatus", "U": "mstatus", "VS": "vsstatus", "VU": "vsstatus"}
 VIRTUAL_MODES = ("VS", "VU")
 
@@ -57,22 +57,18 @@ def hs_note(hs: int | None, field: str = "FS") -> str:
     return "" if hs is None else f" and sstatus.{field}={hs}"
 
 
-def _status_access(priv: str, instr: Callable[[str], str], hs: bool = False, write: bool = False) -> list[str]:
+def _status_access(priv: str, instr: Callable[[str], str], hs: bool = False) -> list[str]:
     """Run instr(csr), an access to the status CSR, from code running in priv ("M", "S", "U", "VS" or "VU").
 
     M- and S-mode access STATUS_CSR[priv] directly. U-mode goes through T-SBI, to sstatus when
-    S-mode is supported and to mstatus otherwise. VS-mode reads vsstatus as sstatus, or with
+    S-mode is supported and to mstatus otherwise. VS-mode accesses vsstatus as sstatus, or with
     hs=True the HS-level sstatus through T-SBI. VU-mode accesses vsstatus, or with hs=True sstatus,
     both through T-SBI.
-
-    VS-mode writes (write=True) to vsstatus also go through T-SBI, which names vsstatus. Sail logs a
-    VS-mode write to sstatus under the sstatus number, so the coverage model would record it as a
-    change to the HS-level sstatus and never see vsstatus leave the value it last saw written by name.
     """
-    if priv == "VU" or (priv == "VS" and (hs or write)):
+    if priv == "VU":
         return [tsbi_call(instr("sstatus" if hs else "vsstatus"))]
     if priv == "VS":
-        return [instr("sstatus")]
+        return [tsbi_call(instr("sstatus")) if hs else instr("sstatus")]
     if priv != "U":  # M- or S-mode
         return [tsbi_call_or_direct(instr(STATUS_CSR[priv]), priv)]
     return ["#ifdef S_SUPPORTED", tsbi_call(instr("sstatus")), "#else", tsbi_call(instr("mstatus")), "#endif"]
@@ -107,9 +103,9 @@ def _set_fields(temp_reg: int, priv: str, fs: int | None, vs: int | None, hs: bo
     where = "HS-level " if hs else ""
     return [
         f"LI(x{temp_reg}, {mask})",
-        *_status_access(priv, lambda csr: f"csrc {csr}, x{temp_reg}  # clear {where}{names}", hs, write=True),
+        *_status_access(priv, lambda csr: f"csrc {csr}, x{temp_reg}  # clear {where}{names}", hs),
         f"LI(x{temp_reg}, {value})",
-        *_status_access(priv, lambda csr: f"csrs {csr}, x{temp_reg}  # {where}{settings}", hs, write=True),
+        *_status_access(priv, lambda csr: f"csrs {csr}, x{temp_reg}  # {where}{settings}", hs),
     ]
 
 

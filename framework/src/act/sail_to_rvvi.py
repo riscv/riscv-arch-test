@@ -168,17 +168,13 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                         walk_pte = walk_pte or ""
                     elif ptw_step := ptw_step_pattern.search(lines[j]):
                         walk_pte = ptw_step.group(1)
-                    elif walk_pte is not None and (
-                        (ptw_end := ptw_end_pattern.search(lines[j])) or trap_pattern.search(lines[j])
-                    ):
-                        # Sail logs no "PTW: Failed" for some faults on a leaf PTE, such as a reserved Svnapot
-                        # encoding, so a trap also ends a walk, which then failed on its last PTE.
+                    elif (ptw_end := ptw_end_pattern.search(lines[j])) and walk_pte is not None:
                         if walk_pte:
                             if walk_access.startswith("X"):
                                 next_pte_i = walk_pte
                             else:
                                 pte_d = walk_pte
-                            if ptw_end and ptw_end.group(2):
+                            if ptw_end.group(2):
                                 ppn = int(ptw_end.group(2), 16)
                                 # A page reached through two different PTEs cannot be attributed on a TLB hit
                                 tlb[ppn] = walk_pte if tlb.get(ppn, walk_pte) == walk_pte else None
@@ -186,8 +182,6 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                             else:
                                 tlb_va.pop(walk_vpn, None)
                         walk_pte = None
-                        if not ptw_end:
-                            continue  # parse the trap line again, now outside the walk
                     elif walk_pte is not None:
                         pass
                     elif mem := mem_pattern.search(lines[j]):

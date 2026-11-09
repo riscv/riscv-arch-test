@@ -490,7 +490,7 @@
       "supported": false
     },
     "Zicbom": {
-      "supported": false
+      "supported": true
     },
     "Zicbop": {
       "supported": false
@@ -778,7 +778,7 @@
       },
       // Each stateen bit is one of CSRBit_Writable,
       // CSRBit_ReadOnlyZero or CSRBit_ReadOnlyOne.
-      // CVA6 cv32a6_imac_sv32 has no Smstateen, so every bit is read-only zero
+      // CVA6 fpga_linux_cv32a6 has no Smstateen, so every bit is read-only zero
       // (replaces the old C_readonly_zero / SE0_readonly_zero: true).
       "mstateen0": {
         "SE0": "CSRBit_ReadOnlyZero",

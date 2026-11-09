@@ -1,0 +1,1 @@
+run-cva6.sh --target fpga_linux_cv32a6 {debug:--trace __TRACEFILE__} --elf

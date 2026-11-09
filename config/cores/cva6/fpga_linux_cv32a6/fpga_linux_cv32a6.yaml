@@ -1,14 +1,14 @@
 # yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
 # Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
-# UDB Architecture Configuration for the CV32A6_IMAC_SV32, a configuration of the CVA6 project.
+# UDB Architecture Configuration for the fpga_linux_cv32a6 target, a configuration of the CVA6 project.
 
 ---
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: cv32a6_imac_sv32
-description: OpenHW Group CVA6 cv32a6_imac_sv32 configuration;
+name: fpga_linux_cv32a6
+description: OpenHW Group CVA6 fpga_linux_cv32a6 configuration;
 implemented_extensions:
   - name: I
     version: = 2.1
@@ -54,6 +54,8 @@ implemented_extensions:
     version: = 2.0
   - name: Zihpm
     version: = 2.0
+  - name: Zicbom
+    version: = 1.0.0
   - name: Zicsr
     version: = 2.0
   - name: Zifencei
@@ -461,3 +463,6 @@ params:
     - true
     - true
   CONFIG_PTR_ADDRESS: 0
+  # Zicbom: one D-cache line (DcacheLineWidth = 128)
+  CACHE_BLOCK_SIZE: 16
+  FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false

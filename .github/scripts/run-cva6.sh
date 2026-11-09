@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # Run one ACT self-checking ELF on an OpenHW CVA6 Verilator testharness.
-# Usage: run-cva6.sh --target <cv32a60x|cv32a65x|...> [--trace FILE] [--timeout SEC] [--keep] --elf <path>
+# Usage: run-cva6.sh --target <cv32a60x|cv32a65x|fpga_linux_cv32a6|...> [--trace FILE] [--timeout SEC] [--keep] --elf <path>
 # Env:   CVA6_TARGET   default target if --target is not given
 #        CVA6_SNAPSHOT install-cva6.sh install directory (default: ~/repos/cva6-builds)
 #        CROSS         toolchain prefix (default: riscv64-unknown-elf)
@@ -51,20 +51,13 @@ done
   exit 2
 }
 
-# ISA string for spike-dasm, chosen by the target's XLEN.
-case "$TARGET" in
-cv32*)
-  SPIKE_ISA="rv32imc_zicsr_zifencei_zcb_zba_zbb_zbc_zbs"
-  ;;
-cv64*)
-  SPIKE_ISA="rv64imafdc_zicsr_zifencei_zba_zbb_zbc_zbs"
-  ;;
-*)
-  echo "$SELF: unknown target '$TARGET' (expected cv32* or cv64*)" >&2
+# ISA string for spike-dasm: the target's march.
+ISA_YML="$SNAPSHOT/cva6/config/target/$TARGET/isa.yml"
+SPIKE_ISA="$(awk '$1 == "march:" { print $2; exit }' "$ISA_YML" 2>/dev/null)"
+[ -n "$SPIKE_ISA" ] || {
+  echo "$SELF: unknown target '$TARGET' (no march in $ISA_YML)" >&2
   exit 2
-  ;;
-esac
-
+}
 [ -n "$ELF" ] || {
   echo "$SELF: no ELF given" >&2
   exit 2

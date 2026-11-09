@@ -1,5 +1,5 @@
 # rvmodel_macros.h
-# RVMODEL macro definitions for the OpenHW CVA6 cv32a65x, cv32a60x, and cv32a6_imac_sv32 cores
+# RVMODEL macro definitions for the OpenHW CVA6 cv32a65x, cv32a60x, and fpga_linux_cv32a6 cores
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H

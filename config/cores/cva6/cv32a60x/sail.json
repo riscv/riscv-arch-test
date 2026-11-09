@@ -128,7 +128,7 @@
     "vmidlen": 7,
     "pmp": {
       "grain": 0,
-      // RTL NrPMPEntries=0 (cv32a60x_config_pkg.sv), so the yaml declares no PMP entries.
+      // RTL NrPMPEntries=0 (config/target/cv32a60x/rtl_cfg_pkg.sv), so the yaml declares no PMP entries.
       "count": 0,
       "usable_count": 0,
       "tor_supported": false,

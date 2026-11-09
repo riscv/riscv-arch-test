@@ -13,8 +13,10 @@ INSTALL_DIR="${1:?Usage: install-cva6.sh <install-dir>}"
 mkdir -p "$INSTALL_DIR/bin"
 INSTALL_DIR="$(cd "$INSTALL_DIR" && pwd)"
 CVA6_REPO="https://github.com/openhwfoundation/cva6.git"
-CVA6_COMMIT="81245a47fad8fe1a5d562d953ef2662e099def76"
-TARGETS="cv32a65x cv32a60x cv32a6_imac_sv32"
+# master_candidate: master is read-only and kept only for legacy integrations.
+CVA6_COMMIT="e9b8e8e7d0093d8fa5e160e23cb68cae65d49f3a"
+# cv32a65x and cv32a60x are OBI targets, which the Verilator testharness does not support.
+TARGETS="fpga_linux_cv32a6"
 
 export NUM_JOBS="${NUM_JOBS:-$(nproc)}"
 export VERILATOR_INSTALL_DIR="$INSTALL_DIR/verilator"
@@ -40,6 +42,16 @@ git init "$INSTALL_DIR/cva6"
   mapfile -t submodules < <(git config -f .gitmodules --get-regexp '\.path$' |
     awk '{ print $2 }' | grep -v -e '^docs/' -e '^verif/sim/dv$')
   git submodule update --init --recursive -- "${submodules[@]}"
+  # Apply the submodule patches CVA6's own flow applies (flows/config/dependencies.yml),
+  # e.g. the HPDcache bufferable attribute the cache adapters depend on.
+  awk '/^submodule_patches:/ { f = 1; next }
+       f && /^[^ #]/ { f = 0 }
+       f && /^  [^ -]/ { path = $1; sub(/:$/, "", path) }
+       f && /^ +- "/ { patch = $0; sub(/^ +- "/, "", patch); sub(/".*/, "", patch); print path, patch }' \
+    flows/config/dependencies.yml |
+    while read -r path patch; do
+      git -C "$path" apply --whitespace=nowarn "$PWD/$patch"
+    done
 )
 
 # 2. Verilator and Spike, at the versions CVA6's own CI uses. The testharness links

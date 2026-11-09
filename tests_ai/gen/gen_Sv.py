@@ -43,6 +43,7 @@ from svlib import (
     PBMTE_BIT,
     PF,
     RWX,
+    S1P12,
     SFENCE,
     SFENCE_INVAL_IR,
     SFENCE_W_INVAL,
@@ -329,7 +330,39 @@ def access(
         raise ValueError(kind)
     if level:
         tval = None
+    # A fault on a non-canonical VA: xtval (and a fetch's xepc) may hold any invalid address instead of the VA
+    # (stval_inv_addr_conv, sepc likewise), so it is checked to be 0 or non-canonical
+    tgt = va + toff
+    nc = ok is False and pt is not None and pt.scheme != "sv32" and canon(tgt, VABITS[pt.scheme]) != tgt
+    if nc:
+        tval = None
+        if kind == "fetch":
+            epc = None
     lab = win(t, pt, mode, lines, exp, desc, tval=tval if exp != "ok" else None, epc=epc)
+    if nc:
+        assert pt is not None
+        sh = 64 - VABITS[pt.scheme]
+
+        def invalid(reg: str) -> None:
+            """x9 = reg is not a canonical address for pt's scheme."""
+            t.emit(f"slli x9, {reg}, {sh}")
+            t.emit(f"srai x9, x9, {sh}")
+            t.emit(f"xor x9, x9, {reg}")
+            t.emit("snez x9, x9")
+
+        t.emit("AI_LOG(x15, TRAPLOG_TVAL)", 10)
+        invalid("x15")
+        t.emit("seqz x15, x15")
+        t.emit("or x15, x15, x9")
+        t.check_bool("x15", lab, f"{desc}: xtval is 0 or an invalid (non-canonical) address")
+        if kind == "fetch":
+            t.emit("AI_LOG(x15, TRAPLOG_EPC)", 10)
+            invalid("x15")
+            t.emit(f"addi x8, x6, {toff}")
+            t.emit("xor x8, x8, x15")
+            t.emit("seqz x8, x8")
+            t.emit("or x15, x8, x9")
+            t.check_bool("x15", lab, f"{desc}: xepc is the fetch target or another invalid (non-canonical) address")
     if level and exp != "ok" and certain:
         # xtval (and, for a fetch, xepc) is 0 / the run-time address
         t.emit("AI_LOG(x15, TRAPLOG_TVAL)", 10)
@@ -1008,7 +1041,7 @@ def sp_va(scheme: str, level: int) -> int:
     """Test VA for a superpage leaf at `level` (1 = 2 MiB / 4 MiB)."""
     if scheme == "sv32":
         return {1: 0x2040_0000}[level]
-    return {1: 0x4020_0000, 2: 0x1_4000_0000, 3: 1 << 39, 4: 1 << 48}[level]
+    return {1: 0x10_4020_0000, 2: 0x11_4000_0000, 3: 1 << 39, 4: 1 << 48}[level]
 
 
 def sp_size(scheme: str, level: int) -> int:
@@ -2856,6 +2889,14 @@ def sch_test(rule: str, scheme: str, text: str, context: str, plan: str, req: li
     return t
 
 
+def image_clear_of_va0(t: SvTest, pt: SvPT, reg: str = "x9") -> None:
+    """reg = 1 if the image's identity superpages leave VA 0's superpage free (a configuration may link the image
+    at PA 0, and mapping VA 0 then replaces the image's own identity leaf)."""
+    t.la(reg, "rvtest_entry_point")
+    t.emit(f"srli {reg}, {reg}, {pt.geo[pt.id_depth][0]}")
+    t.emit(f"snez {reg}, {reg}  // 1: VA 0 is outside the image's superpages")
+
+
 def sch_run(t: SvTest, scheme: str, inner, user: bool = False) -> None:  # noqa: ANN001
     """Run inner(pt) with an identity table of `scheme` (required by the file, so not probed)."""
     with_vm(t, 64, inner, user=user, scheme=scheme, guarded=False, name=f"s{scheme}")
@@ -2886,7 +2927,8 @@ def gen_scheme(sch: str) -> list[SvTest]:
         "at the mapping would succeed on the non-canonical aliases.",
         f"Non-canonical VAs: VA_T with bit {N}, {N + 1 if N < 63 else N}, 62 or 63 set; the top page with "
         f"bit {N - 1}, bit {N} or bit 63 cleared. Each: S-mode lw, sw and fetch and U-mode lw raise page "
-        "faults (13, 15, 12) with xtval 0 or the full address. The canonical VA_T and top page read their "
+        "faults (13, 15, 12) with xtval 0 or an invalid address (the full address, or another non-canonical one "
+        "it was converted to; the fetch's xepc likewise). The canonical VA_T and top page read their "
         "pages from S-mode (and the top page from U-mode).",
     )
     t.page("P")
@@ -2977,7 +3019,9 @@ def gen_scheme(sch: str) -> list[SvTest]:
         f"1. A 4 KiB page through all {levels} levels reads its page.\n"
         f"2. V=0 in the PTE at each depth 0..{levels - 1}: lw page-faults (13); restored, it reads again.\n"
         "3. A pointer (R=W=X=0, V=1) at the last level: lw, sw, fetch page-fault.\n"
-        "4. A pointer with D, A or U set (each alone, at each non-leaf depth): lw page-faults.",
+        "4. A pointer with D, A or U set (each alone, at each non-leaf depth): lw page-faults. A reserved bit "
+        "must page-fault from S 1.12 (a change listed in the privileged spec's preface), so step 4 runs only with "
+        "S1P12P0_OR_LATER_SUPPORTED.",
     )
     t.page("P")
 
@@ -2997,12 +3041,13 @@ def gen_scheme(sch: str) -> list[SvTest]:
             s_load(t, vb, t.page_id("P"), f"V restored at depth {d}")
         for kind in ("load", "store", "fetch"):
             access(t, pt, "S", kind, vlast, False, "pointer at the last level")
-        for d in range(levels - 1):
-            for bit, name in ((D, "D"), (A, "A"), (U, "U")):
-                pt.modify(vb, d, set_bits=bit, note=f"{name}=1 in a pointer")
-                t.emit(SFENCE)
-                access(t, pt, "S", "load", vb, MUT == "nonleaf_adu_ignored", f"pointer at depth {d} with {name}=1")
-                pt.modify(vb, d, clear_bits=bit)
+        with t.only_if(S1P12):  # reserved bits must fault from S 1.12
+            for d in range(levels - 1):
+                for bit, name in ((D, "D"), (A, "A"), (U, "U")):
+                    pt.modify(vb, d, set_bits=bit, note=f"{name}=1 in a pointer")
+                    t.emit(SFENCE)
+                    access(t, pt, "S", "load", vb, MUT == "nonleaf_adu_ignored", f"pointer at depth {d} with {name}=1")
+                    pt.modify(vb, d, clear_bits=bit)
         t.emit(SFENCE)
 
     sch_run(t, sch, lev_body)
@@ -3174,7 +3219,8 @@ def gen_scheme(sch: str) -> list[SvTest]:
         ctx + "Adjacent entries of one leaf table map adjacent VAs; a reserved bit in the upper half of one "
         "PTE (bit 54) affects only that PTE, and only if the walker reads all 8 bytes.",
         "Map VA+1/+2/+3 pages (entries k, k+1, k+2) to P1, P2, P3: each reads its page. Set bit 54 in the "
-        "middle PTE: its lw page-faults; the other two still read their pages.",
+        "middle PTE: its lw page-faults; the other two still read their pages. A reserved bit must page-fault "
+        "from S 1.12, so the bit-54 part runs only with S1P12P0_OR_LATER_SUPPORTED.",
     )
     for n in ("P1", "P2", "P3"):
         t.page(n)
@@ -3186,11 +3232,12 @@ def gen_scheme(sch: str) -> list[SvTest]:
         pt.on()
         for k in (1, 2, 3):
             s_load(t, vb + k * 0x1000, t.page_id(f"P{k}"), f"entry +{k}")
-        pt.modify(vb + 0x2000, levels - 1, set_bits=1 << 54, note="reserved bit 54")
-        t.emit(SFENCE)
-        access(t, pt, "S", "load", vb + 0x2000, MUT == "pte_low_word_only", "bit 54 set in this PTE")
-        for k in (1, 3):
-            s_load(t, vb + k * 0x1000, t.page_id(f"P{k}"), f"entry +{k} unaffected")
+        with t.only_if(S1P12):  # reserved bits must fault from S 1.12
+            pt.modify(vb + 0x2000, levels - 1, set_bits=1 << 54, note="reserved bit 54")
+            t.emit(SFENCE)
+            access(t, pt, "S", "load", vb + 0x2000, MUT == "pte_low_word_only", "bit 54 set in this PTE")
+            for k in (1, 3):
+                s_load(t, vb + k * 0x1000, t.page_id(f"P{k}"), f"entry +{k} unaffected")
 
     sch_run(t, sch, psz_body)
     tests.append(t)
@@ -3210,7 +3257,8 @@ def gen_scheme(sch: str) -> list[SvTest]:
         text,
         ctx + f"The {N}-bit space spans the canonical VAs 0 .. 2^{N - 1}-1 and 2^64-2^{N - 1} .. 2^64-1.",
         "Map the lowest page (VA 0), the highest positive page, the lowest negative page and the highest page "
-        "to four pages: each lw reads its page (S-mode).",
+        "to four pages: each lw reads its page (S-mode). VA 0 is skipped when the image is linked in VA 0's "
+        "superpage (its identity map holds that superpage).",
     )
     for n in ("L", "H", "NL", "NH"):
         t.page(n)
@@ -3218,10 +3266,22 @@ def gen_scheme(sch: str) -> list[SvTest]:
     def vas_body(pt: SvPT) -> None:
         vaddrs = {"L": 0, "H": (1 << (N - 1)) - 0x1000, "NL": canon(1 << (N - 1), N), "NH": (1 << 64) - 0x1000}
         for n, v in vaddrs.items():
-            pt.leaf(v, t.page(n), LEAF)
+            if v == 0:
+                image_clear_of_va0(t, pt)
+                t.either("x9", lambda v=v, n=n: pt.leaf(v, t.page(n), LEAF), lambda: None)
+            else:
+                pt.leaf(v, t.page(n), LEAF)
         pt.on()
         for n, v in vaddrs.items():
-            s_load(t, v, t.page_id(n if not (MUT == "va_space_short" and n == "NL") else "NH"), f"VA {hex(v)}")
+
+            def ld(n: str = n, v: int = v) -> None:
+                s_load(t, v, t.page_id(n if not (MUT == "va_space_short" and n == "NL") else "NH"), f"VA {hex(v)}")
+
+            if v == 0:
+                image_clear_of_va0(t, pt)
+                t.either("x9", ld, lambda: None)
+            else:
+                ld()
 
     sch_run(t, sch, vas_body)
     tests.append(t)
@@ -3285,7 +3345,10 @@ def gen_scheme(sch: str) -> list[SvTest]:
 
 def gen_sv39_rsv() -> list[SvTest]:
     tests = []
-    ctx = "RV64 only; requires Sv39. "
+    ctx = (
+        "RV64 only; requires Sv39. A reserved PTE bit must page-fault from S 1.12 (a change listed in the "
+        "privileged spec's preface), so the cases run only with S1P12P0_OR_LATER_SUPPORTED. "
+    )
 
     def rsv_cases(
         t: SvTest, pt: SvPT, bits: int, note: str, ok: bool = False, pointer: bool = True, leaf4k: bool = True
@@ -3333,13 +3396,14 @@ def gen_sv39_rsv() -> list[SvTest]:
 
     def fr_body(pt: SvPT) -> None:
         pt.on()
-        for b in range(54, 61):
-            ok = MUT == "rsv_bit58_ignored" and b == 58
-            if b >= 59:
-                with t.only_if("!defined(SVRSW60T59B_SUPPORTED)"):
+        with t.only_if(S1P12):
+            for b in range(54, 61):
+                ok = MUT == "rsv_bit58_ignored" and b == 58
+                if b >= 59:
+                    with t.only_if("!defined(SVRSW60T59B_SUPPORTED)"):
+                        rsv_cases(t, pt, 1 << b, f"bit {b}", ok)
+                else:
                     rsv_cases(t, pt, 1 << b, f"bit {b}", ok)
-            else:
-                rsv_cases(t, pt, 1 << b, f"bit {b}", ok)
 
     sch_run(t, "sv39", fr_body)
     tests.append(t)
@@ -3359,8 +3423,9 @@ def gen_sv39_rsv() -> list[SvTest]:
     def pb_body(pt: SvPT) -> None:
         menvcfg_bit(t, 64, PBMTE_BIT, False)
         pt.on()
-        for v in (1, 2, 3):
-            rsv_cases(t, pt, v << 61, f"PBMT={v}, PBMTE=0", MUT == "pbmte_ignored" and v != 3)
+        with t.only_if(S1P12):
+            for v in (1, 2, 3):
+                rsv_cases(t, pt, v << 61, f"PBMT={v}, PBMTE=0", MUT == "pbmte_ignored" and v != 3)
 
     sch_run(t, "sv39", pb_body)
     tests.append(t)
@@ -3382,16 +3447,17 @@ def gen_sv39_rsv() -> list[SvTest]:
     def np_body(pt: SvPT) -> None:
         pt.on()
         va = pt.va_t + 0x47000
-        for low in (0, 1):
-            pt.leaf_napot(va, "ai_pg_P", LEAF | N_BIT, low)
-            t.emit(SFENCE)
-            access(t, pt, "S", "load", va, False, f"N=1, ppn[3:0]={low:04b}")
-        rsv_cases(t, pt, N_BIT, "N=1 (superpage/pointer)", pointer=True, leaf4k=False)
-        with t.only_if("!defined(SVNAPOT_SUPPORTED)"):
-            pt.leaf_napot(va, "ai_pg_P", LEAF | N_BIT, 0b1000)
-            t.emit(SFENCE)
-            for kind in ("load", "store", "fetch"):
-                access(t, pt, "S", kind, va, False, f"no Svnapot: N=1, ppn[3:0]=1000, {kind}")
+        with t.only_if(S1P12):
+            for low in (0, 1):
+                pt.leaf_napot(va, "ai_pg_P", LEAF | N_BIT, low)
+                t.emit(SFENCE)
+                access(t, pt, "S", "load", va, False, f"N=1, ppn[3:0]={low:04b}")
+            rsv_cases(t, pt, N_BIT, "N=1 (superpage/pointer)", pointer=True, leaf4k=False)
+            with t.only_if("!defined(SVNAPOT_SUPPORTED)"):
+                pt.leaf_napot(va, "ai_pg_P", LEAF | N_BIT, 0b1000)
+                t.emit(SFENCE)
+                for kind in ("load", "store", "fetch"):
+                    access(t, pt, "S", kind, va, False, f"no Svnapot: N=1, ppn[3:0]=1000, {kind}")
 
     sch_run(t, "sv39", np_body)
     tests.append(t)
@@ -3402,7 +3468,8 @@ def gen_sv39_rsv() -> list[SvTest]:
         "Sv39 page tables contain 2^9 page table entries (PTEs), eight bytes each.",
         ctx + "Entries 0, 1, 255, 256, 510 and 511 of one leaf table, and the paths of VA 0 (entry 0 at every "
         "level) and the top page (entry 511 at every level), map different pages.",
-        "lw through each of those entries reads its own page.",
+        "lw through each of those entries reads its own page. VA 0 is skipped when the image is linked in VA 0's "
+        "superpage (its identity map holds that superpage).",
     )
     for n in ("E0", "E1", "E255", "E256", "E510", "E511", "Z", "T"):
         t.page(n)
@@ -3413,11 +3480,21 @@ def gen_sv39_rsv() -> list[SvTest]:
         vaddrs["Z"] = 0
         vaddrs["T"] = (1 << 64) - 0x1000
         for n, v in vaddrs.items():
-            pt.leaf(v, t.page(n), LEAF)
+            if v == 0:
+                image_clear_of_va0(t, pt)
+                t.either("x9", lambda v=v, n=n: pt.leaf(v, t.page(n), LEAF), lambda: None)
+            else:
+                pt.leaf(v, t.page(n), LEAF)
         pt.on()
         for n, v in vaddrs.items():
             want = n if not (MUT == "pte_index_8bit" and n == "E256") else "E0"
-            s_load(t, v, t.page_id(want), f"{n}: VA {hex(v)}")
+            if v == 0:
+                image_clear_of_va0(t, pt)
+                t.either(
+                    "x9", lambda v=v, n=n, want=want: s_load(t, v, t.page_id(want), f"{n}: VA {hex(v)}"), lambda: None
+                )
+            else:
+                s_load(t, v, t.page_id(want), f"{n}: VA {hex(v)}")
 
     sch_run(t, "sv39", cnt_body)
     tests.append(t)

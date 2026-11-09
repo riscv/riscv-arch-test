@@ -108,7 +108,8 @@ tables, memory-fault checks).
 - **WFI.** VTSR and VTVM trap at once; VTW traps only after a bounded wait
   ([#1695](https://github.com/riscv/riscv-isa-manual/issues/1695)).
 - **hedeleg.** Bits 18 and 19 must be writable even without the extensions that raise them
-  ([#3347](https://github.com/riscv/riscv-isa-manual/issues/3347)). The reserved high bits are read-only zero
+  ([#3347](https://github.com/riscv/riscv-isa-manual/issues/3347)). Causes 18 and 19 were defined in Sm 1.13, so
+  this is required only with `SM1P13P0_OR_LATER_SUPPORTED`. The reserved high bits are read-only zero
   ([#2191](https://github.com/riscv/riscv-isa-manual/issues/2191)).
 - **GVA.**
   - HLV/HLVX/HSV faults, and MPRV accesses with MPV=1, always set GVA

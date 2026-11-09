@@ -31,8 +31,8 @@ from sxlib import (
     C16,
     CSR_FORMS,
     CSRS,
-    FA,
-    HAS_FA,
+    FA_KIND,
+    HAS_FA_KIND,
     HFENCE_GVMA,
     HFENCE_VVMA,
     HGATP,
@@ -227,7 +227,9 @@ def ebreak_win(t: SvTest, mode: str, k: int, desc: str) -> None:
 
 
 def ssi_win(t: SvTest, k: int, desc: str, mode: str = "S") -> None:
-    """A supervisor software interrupt taken in S-mode (from S or U) must enter trampoline entry k."""
+    """A supervisor software interrupt taken in S-mode (from S or U) must enter trampoline entry k. The rule is
+    not about timing, so the interrupt has a bounded wait to be taken (before Priv-v1.12 it need not be taken
+    right after the enabling write or SRET)."""
     t.emit("csrci sstatus, 2  // SIE = 0 while SSIP is raised")
     t.emit(f"li x7, {SIP_SSIP}")
     t.emit("csrs sie, x7  // SSIE = 1")
@@ -238,10 +240,12 @@ def ssi_win(t: SvTest, k: int, desc: str, mode: str = "S") -> None:
         t.emit(f"{lab}:", 0)
         t.emit("csrsi sstatus, 2  // SIE = 1: the interrupt is taken here")
         t.emit("nop")
+        delay(t, 100)
     else:
         t.enter(mode)
         t.emit(f"{lab}:", 0)
         t.emit("nop")
+        delay(t, 100)
         t.leave()
     t.emit(f"li x7, {SIP_SSIP}")
     t.emit("csrc sip, x7")
@@ -530,8 +534,9 @@ def gen_stvala() -> list[TestFile]:
         "portion that faulted, so any address inside the access). For a misaligned "
         "access that crosses into a faulting page, stval_op_load_store_fault fixes the nonzero value: the address "
         "of the portion that faulted (the page boundary when the second page faults). Access faults use "
-        "RVMODEL_ACCESS_FAULT_ADDRESS, which is 0 on most configurations, so the access-fault cases that prove a "
-        "nonzero stval map a virtual page onto it. Breakpoints that write an address are Sdtrig mcontrol6 "
+        "the configuration's access-fault address for each kind of access (RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, "
+        "_STORE, _FETCH; check_defines.h derives them from RVMODEL_ACCESS_FAULT_ADDRESS), which is 0 on most "
+        "configurations, so the access-fault cases that prove a nonzero stval map a virtual page onto it. Breakpoints that write an address are Sdtrig mcontrol6 "
         "triggers with action 0 (Sdtrig_mcontrol6_faulting_address: the address being accessed); the triggers are "
         "programmed through T-SBI, and the cases run only if tdata1 accepts an mcontrol6 trigger with S=1.",
         plan="1. Bare: misaligned lh/lhu/lw/ld and sh/sw/sd (offsets 1-7) from S, and lw/sw from U: no trap, or "
@@ -620,15 +625,17 @@ def gen_stvala() -> list[TestFile]:
         )
 
     t.comment("2. access faults at RVMODEL_ACCESS_FAULT_ADDRESS, Bare")
-    with t.only_if(HAS_FA):
-        for mode in ("S", "U"):
-            t.emit(f"LI(x6, {FA})", 2)
-            mwin(t, None, mode, ["lw x7, 0(x6)"], LOAD_AF, "lw at the access-fault address", {LOAD_AF: tv_af(FA)})
-            t.emit(f"LI(x6, {FA})", 2)
-            mwin(t, None, mode, ["sw x7, 0(x6)"], STORE_AF, "sw at the access-fault address", {STORE_AF: tv_af(FA)})
-        t.emit(f"LI(x6, {FA})", 2)
+    for mode in ("S", "U"):
+        for kind, ln, c in (("load", "lw x7, 0(x6)", LOAD_AF), ("store", "sw x7, 0(x6)", STORE_AF)):
+            fa = FA_KIND[kind]
+            with t.only_if(HAS_FA_KIND[kind]):
+                t.emit(f"LI(x6, {fa})", 2)
+                mwin(t, None, mode, [ln], c, f"{ln.split()[0]} at the access-fault address", {c: tv_af(fa)})
+    fa = FA_KIND["fetch"]
+    with t.only_if(HAS_FA_KIND["fetch"]):
+        t.emit(f"LI(x6, {fa})", 2)
         mwin(
-            t, None, "S", ["jalr x1, 0(x6)"], INSN_AF, "fetch at the access-fault address", {INSN_AF: tv_af(FA)}, epc=FA
+            t, None, "S", ["jalr x1, 0(x6)"], INSN_AF, "fetch at the access-fault address", {INSN_AF: tv_af(fa)}, epc=fa
         )
 
     t.comment("3. instruction-address-misaligned (no C)")
@@ -656,11 +663,11 @@ def gen_stvala() -> list[TestFile]:
 
     t.comment("4. paging")
 
-    def fa_leaf(pt: SvPT, va: int, perms: int) -> None:
-        """Map va to the page of RVMODEL_ACCESS_FAULT_ADDRESS."""
+    def fa_leaf(pt: SvPT, va: int, perms: int, kind: str) -> None:
+        """Map va to the page of the access-fault address for `kind` (load, store, fetch)."""
         tab = pt.pointer(va, pt.depth(0))
-        t.comment(f"{pt.name}: {hex(va)} -> the page of RVMODEL_ACCESS_FAULT_ADDRESS")
-        t.emit(f"LI(x6, {FA})", 2)
+        t.comment(f"{pt.name}: {hex(va)} -> the page of {FA_KIND[kind]}")
+        t.emit(f"LI(x6, {FA_KIND[kind]})", 2)
         t.emit("srli x6, x6, 12")
         t.emit("slli x6, x6, 10")
         t.emit(f"li x7, {hex(perms)}")
@@ -674,8 +681,8 @@ def gen_stvala() -> list[TestFile]:
                 pt.raw(base, 0, note="invalid")
                 pt.leaf(base + 0x1000, t.page("P"), perms)
                 pt.raw(base + 0x2000, 0, note="invalid")
-                if part == "fa":
-                    fa_leaf(pt, base + 0x3000, perms)
+                if part.startswith("fa_"):
+                    fa_leaf(pt, base + 0x3000, perms, part[3:])
             pt.on()
             for mode, base in (("S", va), ("U", va + 0x8000)):
                 if part == "base":
@@ -759,19 +766,23 @@ def gen_stvala() -> list[TestFile]:
                         {LOAD_PF: tv_pf(base + 0x28, mode)},
                     )
                 else:
-                    fva = f"{hex(base + 0x3000)}+({FA}&0xFFF)"
-                    for ln, c in (("lw x7, 0(x6)", LOAD_AF), ("sw x7, 0(x6)", STORE_AF), ("jalr x1, 0(x6)", INSN_AF)):
-                        t.emit(f"LI(x6, {fva})", 2)
-                        mwin(
-                            t,
-                            pt,
-                            mode,
-                            [ln],
-                            c,
-                            f"{ln.split()[0]} through a page mapped to the access-fault address",
-                            {c: tv_af(fva)},
-                            epc=fva if c == INSN_AF else "insn",
-                        )
+                    ln, c = {
+                        "fa_load": ("lw x7, 0(x6)", LOAD_AF),
+                        "fa_store": ("sw x7, 0(x6)", STORE_AF),
+                        "fa_fetch": ("jalr x1, 0(x6)", INSN_AF),
+                    }[part]
+                    fva = f"{hex(base + 0x3000)}+({FA_KIND[part[3:]]}&0xFFF)"
+                    t.emit(f"LI(x6, {fva})", 2)
+                    mwin(
+                        t,
+                        pt,
+                        mode,
+                        [ln],
+                        c,
+                        f"{ln.split()[0]} through a page mapped to the access-fault address",
+                        {c: tv_af(fva)},
+                        epc=fva if c == INSN_AF else "insn",
+                    )
 
         with_vm(t, xlen, inner, user=True, name=f"p{xlen}{part}")
 
@@ -780,7 +791,7 @@ def gen_stvala() -> list[TestFile]:
         ("base", None),
         ("amo", "defined(ZAAMO_SUPPORTED)"),
         ("lr", "defined(ZALRSC_SUPPORTED)"),
-        ("fa", HAS_FA),
+        *((f"fa_{k}", HAS_FA_KIND[k]) for k in FA_KIND),
     ):
         if cond:
             with t.only_if(cond):
@@ -800,9 +811,17 @@ def gen_stvala() -> list[TestFile]:
             "lw at page+1",
             {LOAD_MIS: tv_mis(mbase, 1, 4), LOAD_AF: tv_amis(mbase, 1, 4)},
         )
-        with t.only_if(HAS_FA):
-            t.emit(f"LI(x6, {FA})", 2)
-            mwin(t, None, "VS", ["lw x7, 0(x6)"], LOAD_AF, "lw at the access-fault address", {LOAD_AF: tv_af(FA)})
+        with t.only_if(HAS_FA_KIND["load"]):
+            t.emit(f"LI(x6, {FA_KIND['load']})", 2)
+            mwin(
+                t,
+                None,
+                "VS",
+                ["lw x7, 0(x6)"],
+                LOAD_AF,
+                "lw at the access-fault address",
+                {LOAD_AF: tv_af(FA_KIND["load"])},
+            )
 
     t.comment("6. Sdtrig mcontrol6 address triggers (action 0)")
     with t.only_if("defined(SDTRIG_SUPPORTED)"):
@@ -947,7 +966,7 @@ def gen_stvala() -> list[TestFile]:
         "page fault with stval = sepc = the instruction.\n"
         "4. The valid page is executable: its stub runs (x7 = its id).",
     )
-    page_fa = "defined(RVMODEL_ACCESS_FAULT_ADDRESS) && ((RVMODEL_ACCESS_FAULT_ADDRESS & 0xFFF) == 0)"
+    page_fa = f"{HAS_FA_KIND['fetch']} && (({FA_KIND['fetch']} & 0xFFF) == 0)"
 
     def var(xlen: int, fa: bool) -> None:
         def inner(pt: SvPT) -> None:
@@ -957,7 +976,7 @@ def gen_stvala() -> list[TestFile]:
                 pt.raw(base, 0, note="invalid")
                 pt.leaf(base + 0x1000, pg, perms)
                 if fa:
-                    fa_leaf(pt, base + 0x2000, perms)
+                    fa_leaf(pt, base + 0x2000, perms, "fetch")
                 else:
                     pt.raw(base + 0x2000, 0, note="invalid")
             pt.on()
@@ -1802,7 +1821,6 @@ def gen_atp_modes() -> list[TestFile]:
     def g_body(xlen: int) -> None:
         for s in SCHEMES[xlen]:
             gs = s + "x4"
-            satp_probe(t, s, "x9")
             g = PT(t, f"g{gs}", gs, xlen)
             g.identity(ULEAF)
             from hmem import GPA_BASE
@@ -1810,6 +1828,7 @@ def gen_atp_modes() -> list[TestFile]:
             hi = (3 << (GBITS[gs] - 2)) | 0x5000
             g.leaf(GPA_BASE[xlen], t.page("A"), ULEAF)
             g.leaf(hi, t.page("B"), ULEAF)
+            satp_probe(t, s, "x9")  # after the G-stage table is built: its builder clobbers x9
             atp_probe(t, HGATP, g, "x1")
             lab = t.label(f"p{gs}")
             t.emit(f"{lab}:", 0)
@@ -1943,10 +1962,10 @@ def gen_atp_modes() -> list[TestFile]:
 
     def vs_body(xlen: int) -> None:
         for s in SCHEMES[xlen]:
-            satp_probe(t, s, "x9")
             v = SvPT(t, f"v{s}", s)
             va = canon(1 << (VABITS[s] - 1), VABITS[s]) + 0x3000 if xlen == 64 else 0xC000_3000
             v.leaf(va, t.page("A"), LEAF)
+            satp_probe(t, s, "x9")  # after the table is built, so no builder clobbers x9
             atp_probe(t, VSATP, v, "x1")
             lab = t.label(f"v{s}")
             t.emit(f"{lab}:", 0)
@@ -2231,10 +2250,11 @@ def gen_shvstvala() -> list[TestFile]:
             {c: vt(f"{mbase}+{off}"), c + 1: ("range", f"{mbase}+{off}", 4) if MUT != "vstval_zero_addr" else 0},
             handler="VS",
         )
-    with t.only_if(HAS_FA):
-        t.emit(f"LI(x6, {FA})", 2)
+    fa = FA_KIND["load"]
+    with t.only_if(HAS_FA_KIND["load"]):
+        t.emit(f"LI(x6, {fa})", 2)
         mwin(
-            t, None, "VS", ["lw x7, 0(x6)"], LOAD_AF, "lw at the access-fault address", {LOAD_AF: vt(FA)}, handler="VS"
+            t, None, "VS", ["lw x7, 0(x6)"], LOAD_AF, "lw at the access-fault address", {LOAD_AF: vt(fa)}, handler="VS"
         )
     for mode, e, note in (
         ("VS", 0x30200073, "mret"),
@@ -2262,8 +2282,8 @@ def gen_shvstvala() -> list[TestFile]:
     def vs_fa_leaf(v: PT, va: int) -> None:
         depth = len(v.geo) - 1
         tab = v.pointer(va, depth)
-        t.comment(f"{v.name}: {hex(va)} -> the page of RVMODEL_ACCESS_FAULT_ADDRESS")
-        t.emit(f"LI(x6, {FA})", 2)
+        t.comment(f"{v.name}: {hex(va)} -> the page of {FA_KIND['load']}")
+        t.emit(f"LI(x6, {FA_KIND['load']})", 2)
         t.emit("srli x6, x6, 12")
         t.emit("slli x6, x6, 10")
         t.emit(f"li x7, {hex(LEAF)}")
@@ -2340,7 +2360,7 @@ def gen_shvstvala() -> list[TestFile]:
                         handler="VS",
                     )
             elif part == "fa":
-                fva = f"{hex(va + 0x3000)}+({FA}&0xFFF)"
+                fva = f"{hex(va + 0x3000)}+({FA_KIND['load']}&0xFFF)"
                 t.emit(f"LI(x6, {fva})", 2)
                 mwin(
                     t,
@@ -2373,7 +2393,7 @@ def gen_shvstvala() -> list[TestFile]:
 
     t.page("P")
     both(t, lambda x: body(x, "base"))
-    with t.only_if(HAS_FA):
+    with t.only_if(HAS_FA_KIND["load"]):
         both(t, lambda x: body(x, "fa"))
     with t.only_if(C16):
         both(t, lambda x: body(x, "c"))
@@ -3559,7 +3579,8 @@ def gen_intro() -> list[TestFile]:
         rule_text="Implementations will not raise an exception on writes of unsupported values to a *WARL* field.",
         context="WARL CSRs written with values whose fields are mostly unsupported (all ones, 0x55.., 0xaa.., a "
         "random value, 0), each followed by a read and a restore of the saved value, with no trap allowed: "
-        "medeleg, mideleg, mie, mcounteren, mcountinhibit, menvcfg (Sm 1.12+), satp, scounteren, senvcfg (S 1.12+), "
+        "medeleg, mideleg, mie, mcounteren, mcountinhibit (optional, so probed with a read that may trap), menvcfg "
+        "(Sm 1.12+), satp, scounteren, senvcfg (S 1.12+), "
         "sie (with S), "
         "hgatp, vsatp, hedeleg, hideleg, hcounteren, henvcfg (with H). mstatus.MIE is 0, so enabling interrupts "
         "in mie takes none in M-mode; no lower mode runs before the restore. Framework-owned CSRs (mtvec, stvec, "
@@ -3614,6 +3635,14 @@ def gen_intro() -> list[TestFile]:
         if cond in (None,) and csr in ("medeleg", "mideleg"):
             with t.only_if("defined(S_SUPPORTED)"):
                 w()
+        elif csr == "mcountinhibit" and cond:
+            with t.only_if(cond):
+                # mcountinhibit is optional (mcountinhibit_not_impl): probe it, x1 = 1 if it reads without a trap
+                t.emit("li x1, -1")
+                t.window("M", ["csrrs x1, mcountinhibit, x0"], ["ok", ILLEGAL], "mcountinhibit probe", [0, 0x320020F3])
+                t.emit("addi x1, x1, 1")
+                t.emit("snez x1, x1")
+                t.either("x1", w, lambda: None)
         elif cond:
             with t.only_if(cond):
                 w()

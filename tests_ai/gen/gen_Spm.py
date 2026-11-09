@@ -2058,20 +2058,32 @@ def gen_ssnpm() -> list[MemTest]:
     pm_off(t, "U")
     tests.append(t)
 
-    t = new(sd(E), "senvcfg_pmm_ssnpm", ["I", "S"], "S", forbidden=[E], suffix="_absent")
+    t = new(sd(E), "senvcfg_pmm_ssnpm", ["I", "S", "Sm"], "M", forbidden=[E], suffix="_absent")
     describe(
         t,
         "senvcfg_pmm_ssnpm",
         context="The read-only-zero half: a hart with S but without Ssnpm. senvcfg.PMM is bits 33:32 on RV64; on RV32 "
-        "senvcfg has no such bits, so the file checks nothing there.",
-        plan="1. RV64: setting senvcfg bits 33:32 leaves them 0, and U-mode ld of page A tagged in the top 7 bits "
-        "raises an access fault.",
+        "senvcfg has no such bits, so the file checks nothing there. The U-mode access is made under Sv39 (when "
+        "supported) with a tagged virtual address, which must page-fault as a non-canonical address when the tag "
+        "is not masked; under Bare a tagged physical address cannot tell masking from a hart that drops the "
+        "unimplemented physical address bits (no rule says what an access to an invalid physical address does). "
+        "U-mode code needs user pages while a trap handler in S-mode would need supervisor ones, so the test boots "
+        "to M-mode (traps from U go to M, which is not translated) and requires Sm. senvcfg exists from S 1.12, so "
+        "the test is empty without S1P12P0_OR_LATER_SUPPORTED.",
+        plan="1. RV64: setting senvcfg bits 33:32 leaves them 0, and with satp Sv39 (user pages), U-mode ld of page "
+        "A tagged in the top 7 bits raises a load page fault.",
     )
-    ro0_case(t, "senvcfg", PMM_M, "Ssnpm not implemented")
-    with t.only_if("defined(U_SUPPORTED)"):
-        csr_op(t, "SET", "senvcfg", imm=PMM_M)
-        access(t, "U", "ld", pa(tag=T7), 0, "senvcfg.PMM is read-only zero")
-        csr_op(t, "CLEAR", "senvcfg", imm=PMM_M)
+    with t.only_if("defined(S1P12P0_OR_LATER_SUPPORTED)"):  # senvcfg exists from S 1.12
+        ro0_case(t, "senvcfg", PMM_M, "Ssnpm not implemented")
+        with t.only_if("defined(U_SUPPORTED)"):
+            csr_op(t, "SET", "senvcfg", imm=PMM_M)
+
+            def body(R: int, vb: int) -> None:
+                a = Addr("A", 0, T7, 7, space="va", vabits=vb, R=R)
+                gated(t, lambda: access(t, "U", "ld", a, 0, "senvcfg.PMM is read-only zero"))
+
+            with_satp(t, "sv39", LEAF | 16, body)
+            csr_op(t, "CLEAR", "senvcfg", imm=PMM_M)
     tests.append(t)
 
     tests.append(b_enc(E, "senvcfg_pmm_enc", "senvcfg", "S", REQ))

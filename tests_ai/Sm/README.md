@@ -93,7 +93,18 @@ misaligned-portion mtval, the variable-length fetch xepc/xtval) and the Smepmp `
 - While mstatus.MBE = 1 no table load may run (AI_LOAD would read big-endian), so the test clears MBE with `li`.
 - Sm 1.11 harts (cv32e40p, VeeR) have no mstatush, menvcfg, MBE/SBE/UBE or mconfigptr: these appeared in Sm 1.12
   (priv preface, "compatible changes since version 1.11"). Tests and cases that use them run only with
-  `SM1P12P0_OR_LATER_SUPPORTED` (the endianness tests, the menvcfg tests that assume U-mode).
+  `SM1P12P0_OR_LATER_SUPPORTED` (the endianness tests, the menvcfg tests that assume U-mode). Rules that first
+  appear in Priv-v1.12 are guarded the same way: MRET and SRET clearing MPRV
+  (`mstatus_mprv_clr_mret_sret_less_priv`; MRET to M keeping MPRV is checked in every version) and interrupts
+  evaluated immediately after a CSR write or xRET (`intr_mip_mie_xret_csrwr`).
+- A CSR that does not exist (medelegh on RV64, menvcfg without U, menvcfgh on RV64, mseccfg without an extension
+  that adds a field to it, mseccfgh on RV64) is reserved (`Zicsr_nonexistent_rsv`): its access may succeed or raise
+  illegal instruction. Ssstrict requires the trap and is tested in its own suite.
+- Access-fault cases use the configuration's address for each kind of access (`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD`,
+  `_STORE`, `_AMO`, `_LRSC`), which check_defines.h derives from `RVMODEL_ACCESS_FAULT_ADDRESS` when only that one
+  is defined. An `sc.w` without a reservation at its access-fault address may raise the store access fault or fail
+  without a trap (rd != 0): whether a failed SC is checked like a store is implementation-defined
+  ([#3350](https://github.com/riscv/riscv-isa-manual/issues/3350)).
 - `mip_meip_rdonly`: several configurations (cv32e40s, spike/qemu RVI20U) define `RVMODEL_SET_MEXT_INT` as an empty
   macro because the platform has no external interrupt source. After raising it the test polls mip.MEIP and runs the
   pending-state checks only if it became 1.

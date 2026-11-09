@@ -10,6 +10,7 @@ Deterministic exceptions used, all with vsatp and hgatp Bare:
 
 from __future__ import annotations
 
+from contextlib import nullcontext
 from typing import TYPE_CHECKING
 
 from aigen import X
@@ -56,8 +57,10 @@ MUTANTS = {
     "vs_trap_writes_sepc": "a trap into VS-mode also writes the HS-level sepc",
 }
 
-FA = "RVMODEL_ACCESS_FAULT_ADDRESS"
-HAS_FA = "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"
+# Per-kind access-fault addresses (check_defines.h derives each from RVMODEL_ACCESS_FAULT_ADDRESS when only that
+# one is defined; some configurations define only these).
+FA_LD, FA_ST, FA_IF = (f"RVMODEL_ACCESS_FAULT_ADDRESS_{k}" for k in ("LOAD", "STORE", "FETCH"))
+HAS_LD, HAS_ST, HAS_IF = (f"defined({a})" for a in (FA_LD, FA_ST, FA_IF))
 HAS_A = "defined(ZALRSC_SUPPORTED) || defined(A_SUPPORTED)"
 EBREAK = 0x00100073
 SIE, SPIE, SPP, SDT = 0x2, 0x20, 0x100, 1 << 24
@@ -164,59 +167,59 @@ def kinds() -> dict[str, Kind]:
     imm = [T_LW | (8 << 20)] if MUT == "tinst_imm_kept" else [0, T_LW]
     k["load"] = Kind(
         "load access fault (lw)",
-        [f"LI(x6, {FA}-8)"],
+        [f"LI(x6, {FA_LD}-8)"],
         ["lw x7, 8(x6)"],
         lambda m: 5,
-        [0, FA],
+        [0, FA_LD],
         imm,
         True,
-        HAS_FA,
+        HAS_LD,
         modes=("S", "U", "VS", "VU", "M"),
     )
     simm = [T_SW | (8 << 7)] if MUT == "tinst_imm_kept" else [0, T_SW]
     k["store"] = Kind(
         "store access fault (sw)",
-        [f"LI(x6, {FA}-8)", "li x7, 0"],
+        [f"LI(x6, {FA_ST}-8)", "li x7, 0"],
         ["sw x7, 8(x6)"],
         lambda m: 7,
-        [0, FA],
+        [0, FA_ST],
         simm,
         True,
-        HAS_FA,
+        HAS_ST,
         modes=("S", "U", "VS", "VU", "M"),
     )
     k["fetch"] = Kind(
         "fetch access fault (jalr)",
-        [f"LI(x6, {FA})"],
+        [f"LI(x6, {FA_IF})"],
         ["jalr ra, 0(x6)"],
         lambda m: 1,
-        [0, FA],
+        [0, FA_IF],
         [0],
         True,
-        HAS_FA,
+        HAS_IF,
         modes=("S", "U", "VS", "VU", "M"),
         epc=False,
     )
     k["hlv"] = Kind(
         "HLV.W access fault",
-        [f"LI(x6, {FA})"],
+        [f"LI(x6, {FA_LD})"],
         [HLVW],
         lambda m: 5,
-        [0, FA],
+        [0, FA_LD],
         [0, T_HLVW],
         True,
-        HAS_FA,
+        HAS_LD,
         modes=("S", "M"),
     )
     k["hsv"] = Kind(
         "HSV.W access fault",
-        [f"LI(x6, {FA})", "li x7, 0"],
+        [f"LI(x6, {FA_ST})", "li x7, 0"],
         [HSVW],
         lambda m: 7,
-        [0, FA],
+        [0, FA_ST],
         [0, T_HSVW],
         True,
-        HAS_FA,
+        HAS_ST,
         modes=("S", "M"),
     )
     return k
@@ -317,7 +320,7 @@ def twin(t: TestFile, mode: str, kind: Kind, desc: str, cause: Expect | None = N
     c = kind.cause(mode) if cause is None else cause
     t.outcome(c, lab, f"{desc}: {kind.name} in {mode}-mode", tval, epc=kind.epc, origin=mode)
     if not kind.epc:
-        logchk(t, "TRAPLOG_EPC", X((1 << 32) - 1, (1 << 64) - 1), FA, lab, f"{desc}: xepc is the faulting address")
+        logchk(t, "TRAPLOG_EPC", X((1 << 32) - 1, (1 << 64) - 1), FA_IF, lab, f"{desc}: xepc is the faulting address")
     return lab
 
 
@@ -365,6 +368,8 @@ def gen() -> list[TestFile]:
 
 # ---------------------------------------------------------------- hedeleg as a CSR
 REQUIRED_W = [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 15, 18, 19]
+NEW_1P13 = [18, 19]  # software-check and hardware-error exceptions are defined from Sm 1.13
+SM1P13 = "defined(SM1P13P0_OR_LATER_SUPPORTED)"
 REQUIRED_0 = [9, 10, 11, 16, 20, 21, 22, 23]
 
 
@@ -380,7 +385,8 @@ def hedeleg_probe(t: TestFile) -> None:
 
 def gen_hedeleg_csr() -> list[TestFile]:
     tests = []
-    req_mask = sum(1 << b for b in REQUIRED_W)
+    req_mask = sum(1 << b for b in REQUIRED_W if b not in NEW_1P13)
+    new_mask = sum(1 << b for b in NEW_1P13)
     ro_mask = sum(1 << b for b in REQUIRED_0)
     if MUT == "hedeleg_required_ro0":
         req_mask &= ~(1 << 3)
@@ -393,7 +399,8 @@ def gen_hedeleg_csr() -> list[TestFile]:
         "<<hedeleg-bits>>.",
         context="Table hedeleg-bits: bits 1-8, 12, 13, 15, 18 and 19 are writable; bits 9, 10, 11, 16 and 20-23 are "
         "read-only 0 (bit 0 is hedeleg_bit0_ialign32). The test writes hedeleg in HS-mode and restores 0; no "
-        "trap is taken while it is nonzero.",
+        "trap is taken while it is nonzero. Causes 18 (software check) and 19 (hardware error) are defined from "
+        "Sm 1.13, so bits 18 and 19 are required only with SM1P13P0_OR_LATER_SUPPORTED.",
         issues=ISSUE_3347,
         plan="1. Write all ones: every required-writable bit reads 1 and every required read-only-0 bit reads 0.\n"
         "2. Write zero: every bit reads 0.\n"
@@ -403,6 +410,8 @@ def gen_hedeleg_csr() -> list[TestFile]:
     t.emit(f"{lab}:", 0)
     hedeleg_probe(t)
     t.check_masked("x8", req_mask, req_mask, lab, "hedeleg: required-writable bits read 1 after writing ones", tmp="x5")
+    with t.only_if(SM1P13):
+        t.check_masked("x8", new_mask, new_mask, lab, "hedeleg: bits 18 and 19 read 1 after writing ones", tmp="x5")
     t.check_masked(
         "x8",
         ro_mask,
@@ -415,11 +424,12 @@ def gen_hedeleg_csr() -> list[TestFile]:
     t.emit("csrr x8, 0x602")
     t.check("x8", 0, lab, "hedeleg reads 0 after writing 0")
     for b in REQUIRED_W:
-        t.li("x7", 1 << b)
-        t.emit("csrw 0x602, x7")
-        t.emit("csrr x8, 0x602")
-        exp = 0 if (MUT == "hedeleg_required_ro0" and b == 3) else 1 << b
-        t.check_masked("x8", 0xFFFFFFFF, exp, lab, f"hedeleg = 1<<{b} reads back 1<<{b}", tmp="x5")
+        with t.only_if(SM1P13) if b in NEW_1P13 else nullcontext():
+            t.li("x7", 1 << b)
+            t.emit("csrw 0x602, x7")
+            t.emit("csrr x8, 0x602")
+            exp = 0 if (MUT == "hedeleg_required_ro0" and b == 3) else 1 << b
+            t.check_masked("x8", 0xFFFFFFFF, exp, lab, f"hedeleg = 1<<{b} reads back 1<<{b}", tmp="x5")
     t.emit("csrw 0x602, x0")
     tests.append(t)
 
@@ -1408,7 +1418,7 @@ def gen_m_writes() -> list[TestFile]:
         "into M-mode writes mstatus.GVA = 0.",
     )
     bare(t)
-    with t.only_if(HAS_FA):
+    with t.only_if(HAS_LD):
         twin(t, "S", K["hlv"], "HLV access fault")
     lab = twin(t, "S", K["ecall"], "ecall from HS-mode")
     gva_zero(t, "M", lab, "ecall from HS-mode")
@@ -1899,7 +1909,7 @@ def gen_tval2_tinst() -> list[TestFile]:
     )
     bare(t)
     for name in ("hlv", "load"):
-        with t.only_if(HAS_FA):
+        with t.only_if(HAS_LD):
             twin(t, "S", K[name], "taken in HS-mode")
         lab = twin(t, "S", K["ecall"], "ecall into M-mode")
         logchk(t, "TRAPLOG_TVAL2", full, 0, lab, "ecall from HS-mode: mtval2 = 0")
@@ -2030,8 +2040,9 @@ def gen_tval2_tinst() -> list[TestFile]:
         "instruction with offset 0.",
     )
     bare(t)
-    with t.only_if(HAS_FA):
-        for name in ("load", "store"):
+    for name in ("load", "store"):
+        cond = K[name].cond
+        with t.only_if(cond) if cond else nullcontext():
             for mode in ("S", "VS"):
                 lab = twin(t, mode, K[name], "aligned")
                 logchk(t, "TRAPLOG_TINST", full, K[name].tinst, lab, f"{K[name].name} from {mode}: offset 0")
@@ -2082,13 +2093,13 @@ def gen_tval2_tinst() -> list[TestFile]:
         "taken in HS-mode, htinst = 0 or 0x0040200F.",
     )
     bare(t)
-    with t.only_if(f"defined(ZICBOZ_SUPPORTED) && {HAS_FA}"):
+    with t.only_if(f"defined(ZICBOZ_SUPPORTED) && {HAS_ST}"):
         k = Kind(
             "CBO.ZERO access fault",
-            [f"LI(x6, {FA})"],
+            [f"LI(x6, {FA_ST})"],
             [f".word {hex(CBO_ZERO)}  // cbo.zero (x6)"],
             lambda m: 7,
-            [0, FA],
+            [0, FA_ST],
             [0, T_CBO_ZERO],
             True,
             modes=("S", "VS"),
@@ -2120,7 +2131,7 @@ def gen_tval2_tinst() -> list[TestFile]:
         "2. M-mode part in H_trap_xtinst_interrupt_Sm (mtinst).",
     )
     bare(t)
-    with t.only_if(HAS_FA):
+    with t.only_if(HAS_LD):
         twin(t, "S", K["hlv"], "an HLV fault may write a nonzero htinst")
     t.load("x7", T_HLVW, "transformed HLV.W")
     t.emit("csrr x1, 0x64A")
@@ -2167,7 +2178,7 @@ def gen_tval2_tinst() -> list[TestFile]:
     bare(t)
     t.li("x7", 2)
     t.emit("csrc mideleg, x7  // SSI not delegated")
-    with t.only_if(HAS_FA):
+    with t.only_if(HAS_LD):
         twin(t, "M", K["hlv"], "an HLV fault may write a nonzero mtinst")
     t.load("x7", T_HLVW, "transformed HLV.W")
     t.emit("csrr x1, 0x34A")
@@ -2226,7 +2237,7 @@ def gen_misc() -> list[TestFile]:
     )
     bare(t)
     hs_bits(t, "hstatus", 0x200, False, "hstatus.HU = 0")
-    with t.only_if(HAS_FA):
+    with t.only_if(f"{HAS_LD} && {HAS_ST}"):
         for name in ("hlv", "hsv"):
             k = K[name]
             for mode in ("VS", "VU", "U"):

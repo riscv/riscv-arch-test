@@ -1728,7 +1728,8 @@ def gen_sip_sie() -> list[TestFile]:
         "4. SRET to S-mode with SPIE=1 (pending, enabled): traps with sepc = the SRET target.\n"
         "5. SRET to U-mode (pending, enabled): traps from U with sepc = the SRET target.\n"
         "6. Ceases to be pending: raised then lowered (sip bit seen 0), enabled; setting SIE takes nothing.\n"
-        "7. Becomes pending in a bounded time: enabled with SIE=1 in S-mode, raised inside the window: taken.",
+        "7. Becomes pending in a bounded time: enabled with SIE=1 in S-mode, raised inside the window: taken.\n"
+        "The rule first appears in Priv-v1.12, so the test is empty without S1P12P0_OR_LATER_SUPPORTED.",
     )
     quiet_sie(t)
 
@@ -1835,8 +1836,9 @@ def gen_sip_sie() -> list[TestFile]:
         )
         L.lower_int(t, src)
 
-    for src in SRC:
-        L.with_src(t, src, lambda src=src: tc(src))
+    with t.only_if(S1P12):
+        for src in SRC:
+            L.with_src(t, src, lambda src=src: tc(src))
     tests.append(t)
     return tests
 
@@ -2800,25 +2802,38 @@ def gen_cause_tval() -> list[TestFile]:
         rule_text="The Exception Code is a WLRL field.",
         context="A WLRL field holds every legal value written to it; writes of illegal values may trap or be "
         "replaced, so only legal values are written. The legal values are the codes of the scause table: "
-        "exceptions 0-9, 12, 13, 15, 18, 19 and interrupts 1, 5, 9, 13.",
+        "exceptions 0-9, 12, 13, 15, 18, 19 and interrupts 1, 5, 9, 13. Before Priv-v1.12 the field need hold "
+        "only the codes the hart supports (bits 4-0 are required from 1.12), so without S1P12P0_OR_LATER_SUPPORTED "
+        "codes 18 and 19 are not written, and interrupt 13 only with Sscofpmf.",
         plan="Each legal code, with the Interrupt bit clear for exceptions and set for interrupts, written with CSRRW "
         "reads back exactly; then the same values through CSRRS/CSRRC from 0.",
     )
-    legal = [c for c in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15, 18, 19)] + [icause(c) for c in (1, 5, 9, 13)]
-    for v in legal:
-        t.load("x6", v, "code")
-        lab = t.label("wl")
-        t.emit(f"{lab}:", 0)
-        t.emit("csrw scause, x6")
-        t.emit("csrr x7, scause")
-        t.check("x7", v, lab, "scause holds a legal value written with CSRRW")
-        t.emit("csrw scause, x0")
-        t.emit("csrs scause, x6")
-        t.emit("csrr x7, scause")
-        t.check("x7", v, lab, "scause holds a legal value written with CSRRS")
-        t.emit("csrc scause, x6")
-        t.emit("csrr x7, scause")
-        t.check("x7", 0, lab, "CSRRC of the same value clears scause")
+    legal: list[tuple[int | X, str | None]] = [(c, None) for c in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15)]
+    legal += [(c, S1P12) for c in (18, 19)]
+    legal += [(icause(c), None) for c in (1, 5, 9)]
+    legal.append((icause(13), f"{S1P12} || defined(SSCOFPMF_SUPPORTED)"))
+    for v, cond in legal:
+
+        def acc(v: int | X = v) -> None:
+            t.load("x6", v, "code")
+            lab = t.label("wl")
+            t.emit(f"{lab}:", 0)
+            t.emit("csrw scause, x6")
+            t.emit("csrr x7, scause")
+            t.check("x7", v, lab, "scause holds a legal value written with CSRRW")
+            t.emit("csrw scause, x0")
+            t.emit("csrs scause, x6")
+            t.emit("csrr x7, scause")
+            t.check("x7", v, lab, "scause holds a legal value written with CSRRS")
+            t.emit("csrc scause, x6")
+            t.emit("csrr x7, scause")
+            t.check("x7", 0, lab, "CSRRC of the same value clears scause")
+
+        if cond:
+            with t.only_if(cond):
+                acc()
+        else:
+            acc()
     tests.append(t)
 
     t = new("scause_exception_code_sz")
@@ -2827,21 +2842,23 @@ def gen_cause_tval() -> list[TestFile]:
         rule_text="It is required to hold the values 0–31 (i.e., bits 4–0 must be implemented), but otherwise it "
         "is only guaranteed to hold supported exception codes.",
         context="The Interrupt bit is a separate read/write field, so the 32 codes are written with it clear and "
-        "with it set.",
+        "with it set. The rule first appears in Priv-v1.12, so the test is empty without "
+        "S1P12P0_OR_LATER_SUPPORTED.",
         plan="scause written with every code 0-31, with the Interrupt bit clear and set, reads back exactly.",
     )
-    for intr in (0, 1):
-        for c in range(32):
-            v = X((1 << 31) | c, (1 << 63) | c) if intr else c
-            t.load("x6", v, "value")
-            lab = t.label("sz")
-            t.emit(f"{lab}:", 0)
-            t.emit("csrw scause, x6")
-            t.emit("csrr x7, scause")
-            exp = v
-            if MUT == "scause_4bit_code" and c >= 16:
-                exp = X((1 << 31) | (c & 15), (1 << 63) | (c & 15)) if intr else c & 15
-            t.check("x7", exp, lab, f"scause holds code {c} with Interrupt={intr}")
+    with t.only_if(S1P12):
+        for intr in (0, 1):
+            for c in range(32):
+                v = X((1 << 31) | c, (1 << 63) | c) if intr else c
+                t.load("x6", v, "value")
+                lab = t.label("sz")
+                t.emit(f"{lab}:", 0)
+                t.emit("csrw scause, x6")
+                t.emit("csrr x7, scause")
+                exp = v
+                if MUT == "scause_4bit_code" and c >= 16:
+                    exp = X((1 << 31) | (c & 15), (1 << 63) | (c & 15)) if intr else c & 15
+                t.check("x7", exp, lab, f"scause holds code {c} with Interrupt={intr}")
     tests.append(t)
 
     # ---- scause_exccode_enc_tbl ----
@@ -3882,34 +3899,41 @@ def gen_xret() -> list[TestFile]:
         "effect on the M-mode accesses around it. The MRET part belongs to a machine-mode suite.",
         plan="1. In M-mode: MPP=M, MPRV=1, SPP=1, sepc = target: SRET lands in S-mode; back in M-mode (T-SBI), "
         "mstatus.MPRV reads 0.\n"
-        "2. The same with SPP=0 (lands in U-mode).",
+        "2. The same with SPP=0 (lands in U-mode).\n"
+        "SRET clears MPRV from Sm 1.12 (a change listed in the privileged spec's preface), so the test is empty "
+        "without SM1P12P0_OR_LATER_SUPPORTED.",
     )
-    for spp, mode in ((1, "S"), (0, "U")):
-        tg = t.label(f"tgt{mode}")
-        t.la("x6", tg)
-        t.emit("csrw sepc, x6")
-        t.li("x6", SPP)
-        t.emit(f"{'csrs' if spp else 'csrc'} mstatus, x6")
-        with t.only_if(H):
-            t.emit("LI(x6, HSTATUS_SPV)", 2)
-            t.emit("csrc CSR_HSTATUS, x6")
-        t.emit("LI(x6, MSTATUS_MPP)", 2)
-        t.emit("csrs mstatus, x6  // MPP = M")
-        t.emit("LI(x6, MSTATUS_MPRV)", 2)
-        t.emit("csrs mstatus, x6")
-        lab = t.label("sret")
-        t.allow(1)
-        t.emit(f"{lab}:", 0)
-        t.emit("sret")
-        t.emit(f"{tg}:", 0)
-        t.emit("RVTEST_TSBI_GOTO_MMODE", 120)
-        t.outcome("ok", lab, f"SRET from M-mode to {mode}-mode", origin="M")
-        t.emit("csrr x7, mstatus")
-        t.emit("LI(x6, MSTATUS_MPRV)", 2)
-        t.emit("csrc mstatus, x6")
-        t.check_masked(
-            "x7", L.MPRV, L.MPRV if MUT == "sret_keeps_mprv" else 0, lab, f"mstatus.MPRV is 0 after SRET to {mode}-mode"
-        )
+    with t.only_if("defined(SM1P12P0_OR_LATER_SUPPORTED)"):
+        for spp, mode in ((1, "S"), (0, "U")):
+            tg = t.label(f"tgt{mode}")
+            t.la("x6", tg)
+            t.emit("csrw sepc, x6")
+            t.li("x6", SPP)
+            t.emit(f"{'csrs' if spp else 'csrc'} mstatus, x6")
+            with t.only_if(H):
+                t.emit("LI(x6, HSTATUS_SPV)", 2)
+                t.emit("csrc CSR_HSTATUS, x6")
+            t.emit("LI(x6, MSTATUS_MPP)", 2)
+            t.emit("csrs mstatus, x6  // MPP = M")
+            t.emit("LI(x6, MSTATUS_MPRV)", 2)
+            t.emit("csrs mstatus, x6")
+            lab = t.label("sret")
+            t.allow(1)
+            t.emit(f"{lab}:", 0)
+            t.emit("sret")
+            t.emit(f"{tg}:", 0)
+            t.emit("RVTEST_TSBI_GOTO_MMODE", 120)
+            t.outcome("ok", lab, f"SRET from M-mode to {mode}-mode", origin="M")
+            t.emit("csrr x7, mstatus")
+            t.emit("LI(x6, MSTATUS_MPRV)", 2)
+            t.emit("csrc mstatus, x6")
+            t.check_masked(
+                "x7",
+                L.MPRV,
+                L.MPRV if MUT == "sret_keeps_mprv" else 0,
+                lab,
+                f"mstatus.MPRV is 0 after SRET to {mode}-mode",
+            )
     tests.append(t)
 
     # ---- mstatus_tw_umode_op ----

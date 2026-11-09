@@ -7,7 +7,7 @@ to HS-mode (the framework clears hedeleg).
 ## How the extension is tested
 
 - `senvcfg_pmm_ssnpm`: U-mode loads, stores, AMOs and LR/SC follow senvcfg.PMM; S-mode does not.
-  `senvcfg_pmm_ssnpm_H` (H): VU-mode does and VS-mode does not. `senvcfg_pmm_ssnpm_absent` (FORBIDDEN Ssnpm): the field is read-only zero.
+  `senvcfg_pmm_ssnpm_H` (H): VU-mode does and VS-mode does not. `senvcfg_pmm_ssnpm_absent` (FORBIDDEN Ssnpm; boots to M-mode): the field is read-only zero, and a U-mode ld of a tagged VA under Sv39 page-faults (under Bare, masking and a hart that drops high physical address bits would read the same page).
 - `senvcfg_pmm_enc`: the WARL encodings and CSR forms.
 - `senvcfg_pmm_immediate`: senvcfg.PMM toggled 00/11/00/10/00 with U (and VU) accesses after each write and no
   SFENCE.VMA anywhere.

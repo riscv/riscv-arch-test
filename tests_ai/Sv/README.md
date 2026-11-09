@@ -114,6 +114,12 @@ all of them. Mutants are named `Sv:<mutant>`.
   - With Svrsw60t59b, bits 60-59 are software bits, so `Sv39_pte_future_rsv` checks them only without it.
   - PBMTE=0 makes bits 62-61 reserved on every hart (`menvcfg_pbmte_op`). `Sv39_pte_Svpbmt_rsv` therefore runs
     everywhere.
+  - A reserved bit must raise a page fault only from S 1.12 (a change listed in the privileged spec's preface), so
+    the reserved-bit cases (`Sv39_pte_*_rsv`, bit 54 in `Sv*_ptesize`, D/A/U in pointers in `Sv*_levels`) run only
+    with `S1P12P0_OR_LATER_SUPPORTED`. menvcfg exists from Sm 1.12; before that the helpers leave it alone and read
+    its fields as 0.
+- **Non-canonical VAs.** A fault on a non-canonical VA may report any other invalid address in xtval (and, for a
+  fetch, xepc) instead of the VA (`stval_inv_addr_conv`), so those cases accept 0 or any non-canonical value.
 - **Execute-only CBM.** A CBM instruction on an execute-only page may be permitted (`cbm_access`). If it is not,
   `cbm_unperm_fault` read literally gives a store access fault, since translation permitted a fetch. Whether "does
   not permit any access" counts fetch is not settled ([#3405](https://github.com/riscv/riscv-isa-manual/issues/3405),
@@ -128,8 +134,11 @@ all of them. Mutants are named `Sv:<mutant>`.
   writable (ADUE with Svadu, PBMTE with Svpbmt).
 - **Console mapping.** The failure reporter prints from the failing mode with satp active. Every table therefore
   also identity-maps the console superpage at 0x10000000 (RW, not X); without it, a failing test hangs on DUTs with
-  an MMIO console.
+  an MMIO console. The mapping is skipped at run time when the image's own identity superpages already hold that
+  address (an image linked at PA 0).
 - **Uncached aliases.** NC/IO pages are never touched through a cacheable alias, except in the fence; cbo.flush;
   fence test.
 - **Image location.** The upper-level paths of the identity map assume the image lies below 2^39, true of every
-  configuration (0x80000000).
+  configuration (most link it at 0x80000000; some, such as OpenC910, at 0). The test VAs on RV64 sit above
+  64 GiB, clear of an image linked anywhere below 4 GiB and of its user alias. VA 0 (`Sv39_pte_count_sz` and
+  the VA-space tests such as `Sv39_sxlen_va_sz`) is skipped when the image lies in VA 0's superpage.

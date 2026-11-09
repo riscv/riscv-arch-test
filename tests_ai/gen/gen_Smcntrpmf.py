@@ -71,9 +71,11 @@ SLOT = {("cycle", "lo"): 0, ("cycle", "hi"): 1, ("instret", "lo"): 2, ("instret"
 COUNT_NOTE = (
     "Counting is measured in M-mode: both counters are zeroed, the block runs in the mode under test, and the "
     "counters are read back. A block in a lower mode is entered with MRET (from M-mode, inhibited, so it is not "
-    "counted) and left with the T-SBI GOTO (li a0 then ecall; the ecall raises an exception and does not retire). "
-    "With only the mode under test counting, instret therefore counts the block plus the li: n+1. Bounds [n, n+3] "
-    "allow for the RV32 two-write zeroing; exact differences between two block lengths fix the per-instruction count."
+    "counted, or counted once if the hart counts an xRET by its target mode, which instret_xret allows) and left "
+    "with the T-SBI GOTO (li a0 then ecall; the ecall raises an exception and does not retire). With only the mode "
+    "under test counting, instret therefore counts the block plus the li: n+1 (n+2 if the MRET counts). Bounds "
+    "[n, n+3] allow for that and the RV32 two-write zeroing; exact differences between two block lengths fix the "
+    "per-instruction count."
 )
 
 
@@ -721,6 +723,42 @@ ILLEGAL = "csrr x7, mhartid  // illegal instruction below M-mode"
 EBREAK = ".word 0x00100073  // ebreak"
 
 
+def counteren(t: TestFile) -> None:
+    """mcounteren/scounteren/hcounteren.CY/TM/IR = 1, so lower modes may read instret."""
+    with t.only_if("defined(U_SUPPORTED)"):
+        t.li("x6", 7)
+        t.emit("csrs mcounteren, x6")
+    with t.only_if("defined(S_SUPPORTED)"):
+        t.emit("csrs scounteren, x6")
+    with t.only_if(H):
+        t.emit("csrs CSR_HCOUNTEREN, x6")
+
+
+def mret_read(t: TestFile, tgt: str, counting: tuple[str, ...]) -> str:
+    """minstret = 0 in M-mode, MRET into tgt, and x7 = instret read as the first instruction there (the count of
+    the MRET alone); back in M-mode through T-SBI. Only the modes in `counting` count. Returns the target label."""
+    cfgs(t, ALLINH, ALLINH & ~inh(*counting))
+    after = t.label(f"to{tgt}")
+    t.la("x14", after)
+    t.emit("csrw mepc, x14")
+    t.emit("LI(x14, MSTATUS_MPP)", 2)
+    t.emit("csrc mstatus, x14")
+    if tgt in ("S", "VS"):
+        t.emit("LI(x14, MPP_SMODE)", 2)
+        t.emit("csrs mstatus, x14")
+    if tgt in ("VS", "VU"):
+        mpv(t, True)
+    t.emit("csrw minstret, x0")
+    with t.rv32_only():
+        t.emit("csrw minstreth, x0")
+        t.emit("csrw minstret, x0")
+    t.emit("mret")
+    t.emit(f"{after}:", 0)
+    t.emit("csrr x7, instret")
+    t.leave()
+    return after
+
+
 def t_instret_exception() -> TestFile:
     t = new("instret_exception")
     t.describe(
@@ -728,20 +766,28 @@ def t_instret_exception() -> TestFile:
         rule_text=rule("instret_exception"),
         context="An instruction that raises a synchronous exception into a more privileged mode does not retire, "
         "so it does not count even in a counting mode. In an M-boot test nothing is delegated, so exceptions from "
-        "S, U, VS and VU go to M-mode (inhibited), and its MRET back originates in M (inhibited). A block with a "
-        "trapping instruction therefore counts exactly as many as the same block without it. " + COUNT_NOTE,
+        "S, U, VS and VU go to M-mode (inhibited), and its MRET back originates in M (inhibited) and returns to the "
+        "counting mode. Whether such an MRET counts is only a recommendation (instret_xret: it 'should' count "
+        "only if the originating mode is not inhibited), so the count v of one MRET from M into the mode is "
+        "measured first (0 or 1). A block with a trapping instruction therefore counts exactly v more than the "
+        "same block without it. " + COUNT_NOTE,
         issues=f'{ISSUE}1730: gfavor: "if an instruction (including ECALL and EBREAK) is faulted such that it is '
         "architecturally considered to have not fully completed execution architecturally (aka retired), then it "
         'must not be counted by minstret."',
         plan="For x = S, U, VS, VU (as implemented), minstretcfg = only x counting:\n"
-        "1. Reference: 10 + 10 nops: instret R.\n"
-        "2. 10 nops, an illegal instruction (csrr of mhartid; cause 2, to M), 10 nops: instret = R exactly.\n"
-        "3. 10 nops, ebreak (cause 3, to M), 10 nops: instret = R exactly.\n"
+        "1. v = instret read first in x after minstret = 0 and an MRET from M into x: 0 or 1.\n"
+        "2. Reference: 10 + 10 nops: instret R.\n"
+        "3. 10 nops, an illegal instruction (csrr of mhartid; cause 2, to M), 10 nops: instret = R + v exactly.\n"
+        "4. 10 nops, ebreak (cause 3, to M), 10 nops: instret = R + v exactly.\n"
         "Each trap is checked in the trap log (cause, epc).",
     )
     setup(t)
+    counteren(t)
 
     def case(x: str) -> None:
+        lab = mret_read(t, x, (x,))
+        t.check("x7", [0, 1], lab, f"instret read first in {x}-mode after MRET from M, only {x} counting")
+        st(t, "x7", 9)
         only = ALLINH & ~INH_HI[x]
         cfgs(t, ALLINH, only)
         block(t, x, nops(20), f"{x}-mode reference, 20 nops")
@@ -762,8 +808,19 @@ def t_instret_exception() -> TestFile:
             t.leave()
             read_store(t)
             t.outcome(cause, lab, f"{name} in {x}-mode", origin=x)
-            chk_diff(
-                t, "instret", 8, 1 if MUT == "exception_retires" else 0, f"{x}-mode block with a {name} vs without"
+            lab = t.label("instretd")
+            t.emit(f"{lab}:", 0)
+            ld(t, "x7", SLOT[("instret", "lo")])
+            ld(t, "x8", 8)
+            t.emit("sub x7, x7, x8")
+            ld(t, "x8", 9)
+            t.emit("sub x7, x7, x8")
+            t.check(
+                "x7",
+                1 if MUT == "exception_retires" else 0,
+                lab,
+                f"instret difference between the two blocks, less v (the MRET back into {x}): {x}-mode block with "
+                f"a {name} vs without",
             )
 
     each_mode(t, case, ("S", "U", "VS", "VU"))
@@ -780,12 +837,15 @@ def t_instret_xret() -> TestFile:
         "(the originating mode) is not inhibited. The test writes minstret = 0 in M-mode, executes the xRET with "
         "nothing else between the write and it in a counting mode, and reads instret as the first instruction in "
         "the target mode (a CSR read returns the value before its own retirement; Zicsr), so the value read is "
-        'exactly the count of the xRET. The xRET retires ("The latter do retire"), so with its originating mode '
-        "counting it reads 1. With only the target mode counting the spec says it 'should' not count (the NOTE's "
-        "example), which is a recommendation, so 0 and 1 are both accepted there. mcounteren/scounteren/"
-        "hcounteren.IR are set so the read is legal.",
-        plan="minstretcfg = only the originating mode counting (expect 1), then only the target mode counting "
-        "(expect 0, recommended, or 1):\n"
+        'exactly the count of the xRET. The xRET retires ("The latter do retire"), but counting it by its '
+        "originating mode is a recommendation ('should'; the NOTE calls the target mode an arguable retirement "
+        "mode), so each case accepts the count under either attribution: by the originating mode (recommended) "
+        "or by the target mode. With both modes counting an MRET reads exactly 1. An SRET case is entered with an "
+        "MRET from M (inhibited) into the SRET's mode, which counts under the target attribution, so there the "
+        "two attributions give 1 and 1 (only the originating mode), 0 and 1 (only the target mode), and 1 and 2 "
+        "(both). mcounteren/scounteren/hcounteren.IR are set so the read is legal.",
+        plan="minstretcfg = only the originating mode counting, only the target mode counting, then both; each "
+        "read is one of the counts under the two attributions (MRET: 0/1, 0/1, 1):\n"
         "1. MRET M -> S and M -> U.\n"
         "2. SRET S -> U (entered with MRET from inhibited M; sepc/SPP preset in M).\n"
         "3. With H: MRET M -> VS and M -> VU (MPV=1); SRET HS -> VS and HS -> VU (hstatus.SPV=1); SRET VS -> VU "
@@ -793,45 +853,33 @@ def t_instret_xret() -> TestFile:
         "Each target leaves through T-SBI; the value read is checked in M-mode.",
     )
     setup(t)
-    with t.only_if("defined(U_SUPPORTED)"):
-        t.li("x6", 7)
-        t.emit("csrs mcounteren, x6")
-    with t.only_if("defined(S_SUPPORTED)"):
-        t.emit("csrs scounteren, x6")
-    with t.only_if(H):
-        t.emit("csrs CSR_HCOUNTEREN, x6")
+    counteren(t)
+    cases = ("orig", "tgt", "both")
 
-    def mret_case(tgt: str, orig_counts: bool) -> None:
+    def counting(frm: str, tgt: str, case: str) -> tuple[str, ...]:
+        return {"orig": (frm,), "tgt": (tgt,), "both": (frm, tgt)}[case]
+
+    def expect(xrets: list[tuple[str, str]], cnt: tuple[str, ...], case: str) -> list[int]:
+        """The counts of the xRETs (originating, target) when each counts by its originating or by its target
+        mode."""
+        exp = sorted({sum(o in cnt for o, _ in xrets), sum(g in cnt for _, g in xrets)})
+        return [0] if MUT == "xret_not_counted" and case == "both" else exp
+
+    def mret_case(tgt: str, case: str) -> None:
         """MRET from M into tgt."""
-        o = "M" if orig_counts else tgt
-        cfgs(t, ALLINH, ALLINH & ~INH_HI[o])
-        after = t.label(f"to{tgt}")
-        t.la("x14", after)
-        t.emit("csrw mepc, x14")
-        t.emit("LI(x14, MSTATUS_MPP)", 2)
-        t.emit("csrc mstatus, x14")
-        if tgt in ("S", "VS"):
-            t.emit("LI(x14, MPP_SMODE)", 2)
-            t.emit("csrs mstatus, x14")
-        if tgt in ("VS", "VU"):
-            mpv(t, True)
-        t.emit("csrw minstret, x0")
-        with t.rv32_only():
-            t.emit("csrw minstreth, x0")
-            t.emit("csrw minstret, x0")
-        t.emit("mret")
-        t.emit(f"{after}:", 0)
-        t.emit("csrr x7, instret")
-        t.leave()
-        exp: list[int] = [1] if orig_counts else [0, 1]
-        if MUT == "xret_not_counted" and orig_counts:
-            exp = [0]
-        t.check("x7", exp, after, f"instret read first in {tgt}-mode after MRET from M, only {o} counting")
+        cnt = counting("M", tgt, case)
+        after = mret_read(t, tgt, cnt)
+        t.check(
+            "x7",
+            expect([("M", tgt)], cnt, case),
+            after,
+            f"instret read first in {tgt}-mode after MRET from M, only {'+'.join(cnt)} counting",
+        )
 
-    def sret_case(frm: str, tgt: str, orig_counts: bool) -> None:
+    def sret_case(frm: str, tgt: str, case: str) -> None:
         """Enter frm (S or VS) from M with MRET (M inhibited), then SRET into tgt."""
-        o = frm if orig_counts else tgt
-        cfgs(t, ALLINH, ALLINH & ~INH_HI[o])
+        cnt = counting(frm, tgt, case)
+        cfgs(t, ALLINH, ALLINH & ~inh(*cnt))
         after, mid = t.label(f"to{tgt}"), t.label(f"in{frm}")
         t.la("x14", after)
         if frm == "S":
@@ -863,24 +911,26 @@ def t_instret_xret() -> TestFile:
         t.emit(f"{after}:", 0)
         t.emit("csrr x7, instret")
         t.leave()
-        exp: list[int] = [1] if orig_counts else [0, 1]
-        if MUT == "xret_not_counted" and orig_counts:
-            exp = [0]
-        t.check("x7", exp, after, f"instret read first in {tgt}-mode after SRET from {frm}, only {o} counting")
+        t.check(
+            "x7",
+            expect([("M", frm), (frm, tgt)], cnt, case),
+            after,
+            f"instret read first in {tgt}-mode after SRET from {frm}, only {'+'.join(cnt)} counting",
+        )
 
     for tgt in ("S", "U"):
-        guard(t, MODE_COND[tgt], lambda tgt=tgt: (mret_case(tgt, True), mret_case(tgt, False)))
+        guard(t, MODE_COND[tgt], lambda tgt=tgt: [mret_case(tgt, c) for c in cases])
     with t.only_if("defined(S_SUPPORTED)"):
-        sret_case("S", "U", True)
-        sret_case("S", "U", False)
+        for c in cases:
+            sret_case("S", "U", c)
     with t.only_if(H):
         for tgt in ("VS", "VU"):
-            mret_case(tgt, True)
-            mret_case(tgt, False)
-            sret_case("S", tgt, True)
-            sret_case("S", tgt, False)
-        sret_case("VS", "VU", True)
-        sret_case("VS", "VU", False)
+            for c in cases:
+                mret_case(tgt, c)
+            for c in cases:
+                sret_case("S", tgt, c)
+        for c in cases:
+            sret_case("VS", "VU", c)
     teardown(t)
     return t
 

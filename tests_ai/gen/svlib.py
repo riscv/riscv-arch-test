@@ -56,7 +56,10 @@ MODE = {"sv32": 1, "sv39": 8, "sv48": 9, "sv57": 10}
 VABITS = {"sv32": 32, "sv39": 39, "sv48": 48, "sv57": 57}
 EXT = {"sv32": "Sv32", "sv39": "Sv39", "sv48": "Sv48", "sv57": "Sv57"}
 BASE = {32: "sv32", 64: "sv39"}  # the scheme scheme-independent tests use (probed at run time)
-VA_T = {32: 0x2000_0000, 64: 0x4000_0000}  # 4 KiB test pages
+VA_T = {
+    32: 0x2000_0000,
+    64: 0x10_4000_0000,
+}  # 4 KiB test pages (RV64: above 64 GiB, clear of an image linked anywhere below 4 GiB and of its user alias)
 DELTA = {32: 0x1000_0000, 64: 1 << 32}  # user alias of the image = PA + DELTA
 IMG = 0x8000_0000  # where every configuration links the image (only the upper-level path assumes it)
 EXEC_OFF = 0x100
@@ -397,7 +400,18 @@ class SvPT:
         self._image_slots(perms, 0, 2, f"identity map the image with two superpages at depth {self.id_depth}")
         # The failure reporter writes the DUT's console from the failing mode, with satp still active; every
         # configuration's console is at 0x10000000-0x1001ffff, so identity-map that superpage (RW, not X).
+        # Skip it when the image's identity superpages already cover the console (an image linked below 2 superpages
+        # up), or the console pointer table would replace the image's identity leaf.
+        shift = self.geo[self.id_depth][0]
+        skip = self.t.label("io_in_image")
+        self.t.la("x6", "rvtest_entry_point")
+        self.t.emit(f"srli x6, x6, {shift}")
+        self.t.emit(f"li x7, {hex(IO_VA >> shift)}")
+        self.t.emit("sub x7, x7, x6")
+        self.t.emit("sltiu x7, x7, 2")
+        self.t.emit(f"bnez x7, {skip}")
         self.leaf(IO_VA, IO_VA, V | R | W | A | D, level=1, note="console MMIO for the failure reporter")
+        self.t.emit(f"{skip}:", 0)
 
     def user_alias(self, perms: int = ULEAF) -> None:
         self._image_slots(perms, self.delta, 2, f"user alias of the image at PA + {hex(self.delta)}")
@@ -469,20 +483,27 @@ def sstatus_bits(t: SvTest, mask: int, on: bool, note: str = "") -> None:
     t.emit(f"{'csrs' if on else 'csrc'} sstatus, x7  // {note or hex(mask)} = {int(on)}")
 
 
+SM1P12 = "defined(SM1P12P0_OR_LATER_SUPPORTED)"  # menvcfg exists from Sm 1.12
+S1P12 = "defined(S1P12P0_OR_LATER_SUPPORTED)"  # reserved PTE bits must page-fault from S 1.12
+
+
 def menvcfg_bit(t: SvTest, xlen: int, bit: int, on: bool) -> None:
-    """T-SBI set/clear of menvcfg bit `bit` (0..63); RV32 uses menvcfgh for bits >= 32."""
+    """T-SBI set/clear of menvcfg bit `bit` (0..63); RV32 uses menvcfgh for bits >= 32. Nothing before Sm 1.12,
+    which has no menvcfg (its fields behave as 0)."""
     op = "SET" if on else "CLEAR"
     t.comment(f"menvcfg bit {bit} = {int(on)}")
-    if xlen == 64 or bit < 32:
-        t.emit(f"li a1, {hex(1 << bit)}")
-        t.tsbi_csr(op, "MENVCFG", "a1")
-    else:
-        t.emit(f"li a1, {hex(1 << (bit - 32))}")
-        t.tsbi_csr(op, "MENVCFGH", "a1")
+    with t.only_if(SM1P12):
+        if xlen == 64 or bit < 32:
+            t.emit(f"li a1, {hex(1 << bit)}")
+            t.tsbi_csr(op, "MENVCFG", "a1")
+        else:
+            t.emit(f"li a1, {hex(1 << (bit - 32))}")
+            t.tsbi_csr(op, "MENVCFGH", "a1")
 
 
 def menvcfg_get(t: SvTest, xlen: int, bit: int, reg: str) -> None:
-    """reg = menvcfg bit `bit` (T-SBI read)."""
+    """reg = menvcfg bit `bit` (T-SBI read); 0 before Sm 1.12 (no menvcfg)."""
+    t.emit(f"#if {SM1P12}", 0)
     if xlen == 64 or bit < 32:
         t.tsbi_csr("READ", "MENVCFG")
         b = bit
@@ -491,6 +512,9 @@ def menvcfg_get(t: SvTest, xlen: int, bit: int, reg: str) -> None:
         b = bit - 32
     t.emit(f"srli {reg}, a0, {b}")
     t.emit(f"andi {reg}, {reg}, 1")
+    t.emit("#else", 0)
+    t.emit(f"li {reg}, 0  // no menvcfg")
+    t.emit("#endif", 0)
 
 
 # ---------------------------------------------------------------- trap windows

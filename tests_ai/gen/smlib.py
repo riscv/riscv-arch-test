@@ -113,10 +113,12 @@ WRITE_FORMS = [f for f in FORMS if not f[4].startswith("read")]
 
 
 def csr_window(t: TestFile, mode: str, csr: int, name: str, form: Form, expect: str, desc: str) -> str:
-    """One CSR instruction (by number) in `mode` in a trap window; expect 'ok' or 'illegal'."""
+    """One CSR instruction (by number) in `mode` in a trap window; expect 'ok', 'illegal', or 'reserved' (a CSR that
+    does not exist: the access is a reserved instruction, so it may succeed or raise illegal instruction; Ssstrict
+    requires the trap and is tested in its own suite)."""
     asm, f3, rd, rs1, kind = form
     tval = None if expect == "ok" else [0, enc_csr(csr, f3, rd, rs1)]
-    cause = "ok" if expect == "ok" else 2
+    cause: str | int | list = {"ok": "ok", "illegal": 2, "reserved": ["ok", 2]}[expect]
     return t.window(mode, [asm.format(c=hex(csr)) + f"  // {name}"], cause, f"{kind} of {name} ({desc})", tval)
 
 

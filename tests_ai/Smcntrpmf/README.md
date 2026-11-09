@@ -26,8 +26,11 @@ for unimplemented modes (run on M-only and M/U harts too).
 ## Subtleties
 
 - `instret_xret`: "should increment instret only if the originating privilege mode is not inhibited" is a
-  recommendation, so an xRET from an inhibited mode into a counting mode may read 0 or 1; with the originating
-  mode counting it must count ("The latter do retire").
+  recommendation, and the NOTE calls the target mode an arguable retirement mode, so each case accepts the count
+  by the originating mode or by the target mode (an xRET from an inhibited mode into a counting mode may read 0
+  or 1, and the reverse too); with both modes counting an MRET must count exactly once ("The latter do retire").
+  `instret_exception` measures the count of one MRET into the mode first, because the handler's MRET back into
+  the trapping mode follows the same choice.
 - `instret_exception`: <https://github.com/riscv/riscv-isa-manual/issues/1730> (gfavor): a faulting instruction,
   ECALL and EBREAK included, does not retire. The test uses a 32-bit illegal instruction (`csrr mhartid` below
   M-mode); `.word 0` is a 16-bit encoding that the handler skips by 2 bytes.

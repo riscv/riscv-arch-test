@@ -40,7 +40,8 @@ SMD = "src/priv/smdbltrp.adoc"
 H = d.H
 S_OK = "defined(S_SUPPORTED)"
 U_OK = "defined(U_SUPPORTED)"
-FA = "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"
+FA_LD = "defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"
+FA_ST = "defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"
 MUT = os.environ.get("AI_MUTANT", "")
 
 MUTANTS = {
@@ -123,8 +124,8 @@ ISSUE_3254 = (
 EBREAK = ".word 0x00100073  // ebreak"
 CLASSES = {
     "ebreak": ([], EBREAK, 3, [0, "LAB"], None),
-    "lw_fault": (["LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"], "lw x7, 0(x6)", 5, [0, "ADDR"], FA),
-    "sw_fault": (["LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"], "sw x7, 0(x6)", 7, [0, "ADDR"], FA),
+    "lw_fault": (["LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"], "lw x7, 0(x6)", 5, [0, "ADDR"], FA_LD),
+    "sw_fault": (["LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"], "sw x7, 0(x6)", 7, [0, "ADDR"], FA_ST),
 }
 MISALIGNED = (["LA(x6, ai_scratch)", "addi x6, x6, 1"], "lw x7, 0(x6)")
 

@@ -226,7 +226,7 @@ Subtleties:
 One test per `norm:` rule in vector-common.adoc "Vector Loads and Stores", "Vector Memory Alignment Constraints" and
 "Vector Memory Consistency Model" (53 files). Tests require V and assemble with `_zve64x` (integer vector
 instructions only). Nothing depends on VLEN: checked elements lie in the first 16 bytes of a register group at
-VLEN=128 (read with `vslidedown`/`vmv.x.s`, 64-bit elements as two words), requested vl never exceeds VLMAX at
+VLEN=128 (read with a whole-register store and a scalar load, or `vmv.x.s` for element 0; 64-bit elements as two words; no slides, so a memory test does not depend on the permutation unit), requested vl never exceeds VLMAX at
 VLEN=128, and register-size-dependent addresses (whole-register transfers) are computed from `vlenb` at run time
 (buffers assume VLEN <= 4096; the test passes trivially above). Destination registers are pre-filled with 0xA5 bytes
 and memory holds pattern bytes in 0x01-0x7e, so undisturbed, loaded and all-ones (agnostic) elements are told apart.

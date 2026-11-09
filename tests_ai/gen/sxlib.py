@@ -36,8 +36,10 @@ INSN_PF, LOAD_PF, STORE_PF = 12, 13, 15
 INSN_GPF, LOAD_GPF, STORE_GPF = 20, 21, 23
 H = "defined(H_SUPPORTED)"
 C16 = "defined(ZCA_SUPPORTED)"
-FA = "RVMODEL_ACCESS_FAULT_ADDRESS"
-HAS_FA = "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"
+# An address that raises an access fault, per kind of access (check_defines.h derives each from the plain
+# RVMODEL_ACCESS_FAULT_ADDRESS when only that one is defined; some configurations define only these).
+FA_KIND = {k: f"RVMODEL_ACCESS_FAULT_ADDRESS_{k.upper()}" for k in ("load", "store", "fetch")}
+HAS_FA_KIND = {k: f"defined({v})" for k, v in FA_KIND.items()}
 
 
 def icause(code: int) -> X:

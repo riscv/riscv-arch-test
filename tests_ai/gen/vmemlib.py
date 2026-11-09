@@ -6,8 +6,10 @@ all supported and VLEN >= 128. Every expectation is VLEN-independent: element po
 the first 16 bytes of a vector register, and anything that depends on VLEN is computed at run time.
 
 - VTest: an SvTest (svlib.py) that also emits named data buffers whose bytes the generator knows.
-- Register checks: an element is read with vslidedown/vmv.x.s (SEW <= 32, so values are sign-extended to XLEN);
-  64-bit elements are read as two 32-bit words.
+- Register checks: an element is read by storing the register group with a whole-register store (vs<n>r.v) and
+  loading the element with a sign-extending scalar load (SEW <= 32), or with vmv.x.s for element 0; 64-bit elements
+  are read as two 32-bit words. No permutation instruction (slide) is used, so a test of a load or store does not
+  depend on the permutation unit.
 - Fault tests boot to S-mode and map two test pages at constant virtual addresses: page A (always valid) and the
   page after it, page B, whose PTE each test chooses (absent, read-only, valid). An element whose address lies in
   page B faults; the scheme is Sv39 (RV64) or Sv32 (RV32), probed at run time.
@@ -75,6 +77,9 @@ def vlmax128(sew: int, lmul: str) -> int:
     return int(128 // sew * LMUL[lmul])
 
 
+VEL_SCR = ["  .p2align 6", "vm_vel_scr:", "  .fill 4096, 1, 0  // vel(): 8 registers at VLEN <= 4096"]
+
+
 class VTest(SvTest):
     """SvTest with named data buffers (bytes known to the generator) and vector check helpers."""
 
@@ -82,6 +87,7 @@ class VTest(SvTest):
         super().__init__(*a, **kw)
         self.bufs: dict[str, tuple[int, bytes]] = {}
         self.lab = "rvtest_entry_point"  # label of the instruction under test, reported on a failed check
+        self.vel_scr = False  # vel() used: emit its scratch buffer
 
     def buf(self, name: str, data: bytes, align: int = 6) -> str:
         lab = f"vm_{name}"
@@ -103,6 +109,7 @@ class VTest(SvTest):
             *self._extra_data(),
             *self._block_data(),
             *self._buf_data(),
+            *(VEL_SCR if self.vel_scr else []),
         ]
         return TestFile.render(self)
 
@@ -153,22 +160,23 @@ class VTest(SvTest):
 
     def vel(self, xr: str, vreg: int, idx: int, sew: int) -> None:
         """xr = element idx (a sew-bit element, sign-extended) of the register group starting at v[vreg]: the
-        element at byte idx*sew/8 of v[vreg], v[vreg+1], ... concatenated, at any VLEN. The group is viewed with
-        the smallest LMUL that holds idx at VLEN=128, through vslidedown into v24. Clobbers v24-v31, vl/vtype
-        (and xr's old value)."""
-        assert sew <= 32 and vreg < 24
+        element at byte idx*sew/8 of v[vreg], v[vreg+1], ... concatenated, at any VLEN. The smallest group that
+        holds idx at VLEN=128 is stored with a whole-register store (registers are laid out contiguously, whatever
+        vtype) and the element is read with a scalar load; element 0 is read with vmv.x.s. No slide is used, so a
+        memory test does not depend on the permutation unit. Clobbers vl/vtype (vsetivli also clears vstart, which
+        a whole-register store honors) and xr's old value."""
+        assert sew <= 32 and vreg < 32
         n = next(n for n in (1, 2, 4, 8) if vreg % n == 0 and idx < 16 * n // (sew // 8))
         assert idx < 16 * n // (sew // 8), f"element {idx} of v{vreg} is not reachable at VLEN=128"
         self.emit(f"vsetivli x0, 1, e{sew}, m{n}, ta, ma")
         if idx == 0:
             self.emit(f"vmv.x.s {xr}, v{vreg}")
             return
-        if idx <= 31:
-            self.emit(f"vslidedown.vi v24, v{vreg}, {idx}")
-        else:
-            self.emit(f"li {xr}, {idx}")
-            self.emit(f"vslidedown.vx v24, v{vreg}, {xr}")
-        self.emit(f"vmv.x.s {xr}, v24")
+        self.vel_scr = True
+        self.la(xr, "vm_vel_scr")
+        self.emit(f"vs{n}r.v v{vreg}, ({xr})")
+        load = {8: "lb", 16: "lh", 32: "lw"}[sew]  # sign-extending, like vmv.x.s
+        self.emit(f"{load} {xr}, {idx * sew // 8}({xr})")
 
     def in_set(self, xr: str, vals: list, desc: str) -> None:
         """Check that xr equals one of vals (any number of values) with a branch-free predicate. Clobbers x8, x9."""

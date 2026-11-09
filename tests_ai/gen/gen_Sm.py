@@ -63,7 +63,6 @@ MUTANTS: dict[str, str] = {
     "deleg_ignored": "medeleg[3] = 1 does not delegate ebreak from S/U",
     "deleg_writes_m_stack": "a trap delegated to S-mode also clears mstatus.MIE",
     "deleg_from_m": "an M-mode ebreak with medeleg[3] = 1 is taken in S-mode",
-    "medelegh_rv64": "medelegh exists on RV64",
     "ecall_cause_u": "ecall from S-mode reports cause 8",
     "mepc_bit0": "mepc keeps bit 0",
     "mepc_bit1_unmasked": "mepc[1] is not masked on reads while IALIGN = 32",
@@ -94,7 +93,6 @@ MUTANTS: dict[str, str] = {
     "minstret_write_counts": "the csrw that writes minstret also increments it",
     "counter_32bit": "mcycle/minstret are 32-bit counters",
     "cycle_writable": "cycle/instret are writable",
-    "menvcfg_no_u_exists": "menvcfg exists without U-mode",
     "envcfg_field_writable": "a menvcfg field of an absent extension is writable",
     "cbo_enable_ignored": "CBO instructions execute below M with their menvcfg enable clear",
     "seed_enable_ignored": "seed stays inaccessible with USEED/SSEED = 1",
@@ -990,7 +988,8 @@ def gen_mstatus(suite: str) -> list[TestFile]:
         plan="1. MRET to U and (with S) to S with MPRV = 1: an ebreak there logs MPRV = 0.\n"
         "2. MRET with MPP = M and MPRV = 1: MPRV stays 1.\n"
         "3. With S-mode, SRET from M-mode to S and to U with MPRV = 1: MPRV = 0 (S: read through T-SBI; U: on "
-        "the next trap).",
+        "the next trap).\nSteps 1 and 3 run only with SM1P12P0_OR_LATER_SUPPORTED: MRET and SRET clear MPRV from "
+        "Sm 1.12 (a change listed in the privileged spec's preface); step 2 holds in every version.",
     )
     for mode in ("U", "S"):
 
@@ -1002,7 +1001,8 @@ def gen_mstatus(suite: str) -> list[TestFile]:
             exp = MPRV if mut() == "mret_keeps_mprv" else 0
             L.check_log(t, "TRAPLOG_STATUS", MPRV, exp, lab, f"MRET to {mode} cleared MPRV")
 
-        L.guard(t, L.MODE_COND[mode], mprv_low)
+        with t.only_if(SM1P12):
+            L.guard(t, L.MODE_COND[mode], mprv_low)
     lab, after = t.label("mretm"), t.label("mretm_to")
     L.csr_bits(t, "mstatus", MPP, True)
     L.csr_bits(t, "mstatus", MPRV, True)
@@ -1014,7 +1014,7 @@ def gen_mstatus(suite: str) -> list[TestFile]:
     t.emit("csrr x7, mstatus")
     L.csr_bits(t, "mstatus", MPRV, False)
     t.check_masked("x7", MPRV, MPRV, lab, "MRET to M-mode keeps MPRV = 1")
-    with t.only_if(S):
+    with t.only_if(f"{S} && {SM1P12}"):
         for spp in (1, 0):
             lab, after = t.label("sret"), t.label("sret_to")
             L.csr_bits(t, "mstatus", SPP, bool(spp))
@@ -1452,12 +1452,12 @@ def gen_traps2(suite: str) -> list[TestFile]:
     t = new(suite, "medelegh_omit_xlen64", [*L.REQ, "S"], rv64=True)
     describe(
         t,
-        context="RV64 only.",
-        plan="1. Every CSR instruction form on 0x312 (medelegh) raises illegal instruction in M-mode.",
+        context="RV64 only. " + RSV,
+        plan="1. Every CSR instruction form on 0x312 (medelegh) succeeds or raises illegal instruction in M-mode.",
     )
     t.li("x6", 0)
     for f in L.FORMS:
-        L.csr_window(t, "M", 0x312, "medelegh", f, "ok" if mut() == "medelegh_rv64" else "illegal", "RV64")
+        L.csr_window(t, "M", 0x312, "medelegh", f, "reserved", "RV64")
     tests.append(t)
 
     t = new(suite, "medeleg_mideleg_mandatory_s_mode", [*L.REQ, "S"])
@@ -1740,17 +1740,31 @@ def gen_trapcsrs(suite: str) -> list[TestFile]:
         if kind == "load":
             plan = (
                 "1. lw and lr.w at a misaligned address (A/Zalrsc): no trap (lw only), load-address-misaligned "
-                "(4) or load-access-fault (5), never a store cause; xtval 0 or the address.\n2. lw and lr.w at "
-                "RVMODEL_ACCESS_FAULT_ADDRESS: load access fault (5)."
+                "(4) or load-access-fault (5), never a store cause; xtval 0 or the address.\n2. lw at "
+                "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD and lr.w at RVMODEL_ACCESS_FAULT_ADDRESS_LRSC: load access fault "
+                "(5)."
             )
         else:
             plan = (
                 "1. sw, sc.w and amoadd.w (Zaamo) at a misaligned address (amoadd.w crossing a 16-byte "
                 "boundary): store-address-misaligned (6) or store-access-fault (7), never a load cause (sw may "
                 "also succeed); xtval 0 or the address.\n2. sw, sc.w and amoadd.w at "
-                "RVMODEL_ACCESS_FAULT_ADDRESS: store/AMO access fault (7)."
+                "RVMODEL_ACCESS_FAULT_ADDRESS_STORE/_LRSC/_AMO: store/AMO access fault (7). The sc.w has no "
+                "reservation, so it fails; whether a failed SC is checked like a store is implementation-defined "
+                "(a failed SC may be treated as a store for memory protection, sc_failed_as_store), so it may "
+                "instead complete without a trap and report failure (rd nonzero)."
             )
-        describe(t, context="Instructions are .word encodings with the address in x8.", plan=plan)
+        describe(
+            t,
+            context="Instructions are .word encodings with the address in x8. Each access-fault case uses the "
+            "configuration's access-fault address for its kind (check_defines.h derives them from "
+            "RVMODEL_ACCESS_FAULT_ADDRESS when only that one is defined).",
+            issues=f"{L.ISSUE}3350: aswaterman: whether a failed (unpaired) sc.w to a faulting address traps is "
+            "implementation-defined."
+            if kind == "store"
+            else "",
+            plan=plan,
+        )
         lr = (0x02 << 27) | (8 << 15) | (2 << 12) | (7 << 7) | 0x2F
         sc = (0x03 << 27) | (6 << 20) | (8 << 15) | (2 << 12) | (7 << 7) | 0x2F
         amo = (6 << 20) | (8 << 15) | (2 << 12) | (7 << 7) | 0x2F
@@ -1758,18 +1772,18 @@ def gen_trapcsrs(suite: str) -> list[TestFile]:
         sw = (6 << 20) | (8 << 15) | (2 << 12) | 0x23
         if kind == "load":
             items = [
-                (lw, "lw x7, 0(x8)", None, ["ok", 4, 5]),
-                (lr, "lr.w x7, (x8)", "defined(ZALRSC_SUPPORTED)", [4, 5]),
+                (lw, "lw x7, 0(x8)", None, ["ok", 4, 5], "LOAD"),
+                (lr, "lr.w x7, (x8)", "defined(ZALRSC_SUPPORTED)", [4, 5], "LRSC"),
             ]
             fa = 5
         else:
             items = [
-                (sw, "sw x6, 0(x8)", None, ["ok", 6, 7]),
-                (sc, "sc.w x7, x6, (x8)", "defined(ZALRSC_SUPPORTED)", [6, 7]),
-                (amo, "amoadd.w x7, x6, (x8)", "defined(ZAAMO_SUPPORTED)", [6, 7]),
+                (sw, "sw x6, 0(x8)", None, ["ok", 6, 7], "STORE"),
+                (sc, "sc.w x7, x6, (x8)", "defined(ZALRSC_SUPPORTED)", [6, 7], "LRSC"),
+                (amo, "amoadd.w x7, x6, (x8)", "defined(ZAAMO_SUPPORTED)", [6, 7], "AMO"),
             ]
             fa = 7
-        for e, note, cond, exp in items:
+        for e, note, cond, exp, _ in items:
 
             def misal(e: int = e, note: str = note, exp: Expect = exp, t: TestFile = t) -> None:
                 t.la("x8", "sm_amo_buf")
@@ -1779,15 +1793,31 @@ def gen_trapcsrs(suite: str) -> list[TestFile]:
                 L.word_window(t, "M", e, note, exp, f"misaligned {note}", [0, "sm_amo_buf+14"])
 
             guard(t, cond, misal)
-        with t.only_if("defined(RVMODEL_ACCESS_FAULT_ADDRESS)"):
-            for e, note, cond, exp in items:
+        for e, note, cond, _, fk in items:
+            addr = f"RVMODEL_ACCESS_FAULT_ADDRESS_{fk}"
 
-                def af(e: int = e, note: str = note, fa: int = fa, t: TestFile = t) -> None:
-                    t.emit("LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)", 2)
-                    L.word_window(
-                        t, "M", e, note, fa, f"{note} at the access-fault address", [0, "RVMODEL_ACCESS_FAULT_ADDRESS"]
-                    )
+            def af(e: int = e, note: str = note, fa: int = fa, addr: str = addr, t: TestFile = t) -> None:
+                sc_ = note.startswith("sc.w")
+                t.emit(f"LI(x8, {addr})", 2)
+                if sc_:
+                    t.li("x7", 0)
+                L.word_window(
+                    t, "M", e, note, ["ok", fa] if sc_ else fa, f"{note} at the access-fault address", [0, addr]
+                )
+                if sc_:
+                    t.emit("addi x9, x14, 1")
+                    t.emit("seqz x9, x9  // 1: no trap")
 
+                    def failed(lab: str = t.label("scfail")) -> None:
+                        t.emit(f"{lab}:", 0)
+                        t.emit("snez x7, x7")
+                        t.check_bool(
+                            "x7", lab, "sc.w without a reservation that does not trap reports failure (rd != 0)"
+                        )
+
+                    L.either(t, "x9", failed, lambda: None)
+
+            with t.only_if(f"defined({addr})"):
                 guard(t, cond, af)
         tests.append(t)
     return tests
@@ -2004,17 +2034,26 @@ def gen_ids(suite: str) -> list[TestFile]:
         t,
         context="Translation is off (Bare), so the virtual address is the physical one. A misaligned access may "
         "succeed, or raise address-misaligned or access-fault.",
-        plan="1. lw/sw at RVMODEL_ACCESS_FAULT_ADDRESS + 4 in M, S and U: access fault with mtval = 0 or the "
-        "address.\n2. Misaligned lw, lh and sw (address = 2 mod 4 and 1 mod 2) in M, S and U: no trap, or a "
+        plan="1. lw at RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 4 and sw at RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 4 in "
+        "M, S and U: access fault with mtval = 0 or the address.\n2. Misaligned lw, lh and sw (address = 2 mod 4 and 1 mod 2) in M, S and U: no trap, or a "
         "misaligned/access-fault exception with mtval = 0 or the address.",
     )
 
     def faults(mode: str) -> None:
-        with t.only_if("defined(RVMODEL_ACCESS_FAULT_ADDRESS)"):
-            t.emit("LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS+4)", 2)
-            af = "RVMODEL_ACCESS_FAULT_ADDRESS" if mut() == "mtval_aligned" else "RVMODEL_ACCESS_FAULT_ADDRESS+4"
+        with t.only_if("defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"):
+            t.emit("LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD+4)", 2)
+            af = "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD" + ("" if mut() == "mtval_aligned" else "+4")
             L.win(t, mode, ["lw x7, 0(x8)"], 5, "lw at the access-fault address", [0, af])
-            L.win(t, mode, ["sw x7, 0(x8)"], 7, "sw at the access-fault address", [0, "RVMODEL_ACCESS_FAULT_ADDRESS+4"])
+        with t.only_if("defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"):
+            t.emit("LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS_STORE+4)", 2)
+            L.win(
+                t,
+                mode,
+                ["sw x7, 0(x8)"],
+                7,
+                "sw at the access-fault address",
+                [0, "RVMODEL_ACCESS_FAULT_ADDRESS_STORE+4"],
+            )
         for insn, off, exp in (
             ("lw x7, 0(x8)", 2, ["ok", 4, 5]),
             ("lh x7, 0(x8)", 5, ["ok", 4, 5]),
@@ -2355,54 +2394,60 @@ def gen_ints(suite: str) -> list[TestFile]:
         "right after MRET. The pending interrupt is set up (and seen in mip) before the enabling instruction.",
         plan="1. SSI (S-mode harts) or MTI/MSI pending and enabled in mie, MIE = 0: csrs mstatus.MIE traps with "
         "mepc = the next instruction.\n2. Pending with MIE = 1 and the mie bit clear: csrs mie traps with mepc = "
-        "the next instruction.\n3. Pending and enabled, MRET to U-mode: taken with mepc = the MRET target.",
+        "the next instruction.\n3. Pending and enabled, MRET to U-mode: taken with mepc = the MRET target.\n"
+        "The rule first appears in Priv-v1.12, so the test is empty without SM1P12P0_OR_LATER_SUPPORTED.",
     )
     srcs = [
         ("SSI", S),
         ("MTI", f"{NO_S} && defined(RVMODEL_MTIMECMP_ADDRESS)"),
         ("MSI", f"{NO_S} && !defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_MSIP_ADDRESS)"),
     ]
-    for src, cond in srcs:
-        with t.only_if(cond):
-            sr = L.SRC[src]
-            for how in ("mstatus", "mie", "mret"):
-                if how == "mret":
-                    t.emit("#ifdef U_SUPPORTED", 0)
-                t.emit("csrci mstatus, 8")
-                t.emit("csrw mie, x0")
-                sr.raise_(t)
-                t.li("x6", 1 << sr.cause)
-                if how != "mie":
-                    t.emit("csrs mie, x6")
-                else:
-                    t.emit("csrsi mstatus, 8")
-                lab, nxt = t.label("wr"), t.label("next")
-                t.allow(1)
-                if how == "mret":
-                    t.enter("U")
-                    t.emit(f"{nxt}:", 0)
-                    t.emit("nop")
-                    t.leave()
-                else:
-                    t.emit(f"{lab}:", 0)
-                    t.emit("csrsi mstatus, 8" if how == "mstatus" else "csrs mie, x6")
-                    t.emit(f"{nxt}:", 0)
-                    t.emit("nop")
-                    t.emit("nop")
+    with t.only_if(SM1P12):
+        for src, cond in srcs:
+            with t.only_if(cond):
+                sr = L.SRC[src]
+                for how in ("mstatus", "mie", "mret"):
+                    if how == "mret":
+                        t.emit("#ifdef U_SUPPORTED", 0)
                     t.emit("csrci mstatus, 8")
-                t.outcome(
-                    L.icause(sr.cause), nxt, f"{src} enabled by {how}", epc=False, origin="U" if how == "mret" else "M"
-                )
-                L.log_word(t, "x7", "TRAPLOG_EPC")
-                t.la("x8", nxt)
-                if mut() == "late_eval":
-                    t.emit("addi x8, x8, 4")
-                t.emit("sub x7, x7, x8")
-                t.check("x7", 0, nxt, f"{src} enabled by {how}: mepc = the next instruction")
-                t.emit("csrw mie, x0")
-                sr.clear(t)
-                if how == "mret":
-                    t.emit("#endif", 0)
+                    t.emit("csrw mie, x0")
+                    sr.raise_(t)
+                    t.li("x6", 1 << sr.cause)
+                    if how != "mie":
+                        t.emit("csrs mie, x6")
+                    else:
+                        t.emit("csrsi mstatus, 8")
+                    lab, nxt = t.label("wr"), t.label("next")
+                    t.allow(1)
+                    if how == "mret":
+                        t.enter("U")
+                        t.emit(f"{nxt}:", 0)
+                        t.emit("nop")
+                        t.leave()
+                    else:
+                        t.emit(f"{lab}:", 0)
+                        t.emit("csrsi mstatus, 8" if how == "mstatus" else "csrs mie, x6")
+                        t.emit(f"{nxt}:", 0)
+                        t.emit("nop")
+                        t.emit("nop")
+                        t.emit("csrci mstatus, 8")
+                    t.outcome(
+                        L.icause(sr.cause),
+                        nxt,
+                        f"{src} enabled by {how}",
+                        epc=False,
+                        origin="U" if how == "mret" else "M",
+                    )
+                    L.log_word(t, "x7", "TRAPLOG_EPC")
+                    t.la("x8", nxt)
+                    if mut() == "late_eval":
+                        t.emit("addi x8, x8, 4")
+                    t.emit("sub x7, x7, x8")
+                    t.check("x7", 0, nxt, f"{src} enabled by {how}: mepc = the next instruction")
+                    t.emit("csrw mie, x0")
+                    sr.clear(t)
+                    if how == "mret":
+                        t.emit("#endif", 0)
     tests.append(t)
     return tests
 
@@ -3431,6 +3476,10 @@ def menvcfg_bits(t: TestFile, on: bool, lo: int = 0, hi: int = 0) -> None:
 
 
 SM1P12 = "defined(SM1P12P0_OR_LATER_SUPPORTED)"
+RSV = (
+    "Accessing a CSR that does not exist is a reserved instruction (Zicsr_nonexistent_rsv), so the access may "
+    "succeed or raise illegal instruction; Ssstrict requires the trap and is tested in its own suite."
+)
 ENVCFG_VER = "menvcfg exists from Sm 1.12 (SM1P12P0_OR_LATER_SUPPORTED); on earlier harts the test is empty."
 
 
@@ -3438,13 +3487,18 @@ def gen_envcfg(suite: str) -> list[TestFile]:
     tests = []
 
     t = new(suite, "menvcfg_menvcfgh_no_u_mode")
-    describe(t, plan="1. Without U-mode: reading or writing menvcfg (and menvcfgh on RV32) raises illegal instruction.")
+    describe(
+        t,
+        context=RSV,
+        plan="1. Without U-mode: reading or writing menvcfg (and menvcfgh on RV32) succeeds or raises illegal "
+        "instruction.",
+    )
     with t.only_if(NO_U):
         t.li("x6", 0)
         for f in (L.FORMS[0], L.FORMS[1]):
-            L.csr_window(t, "M", 0x30A, "menvcfg", f, "ok" if mut() == "menvcfg_no_u_exists" else "illegal", "no U")
+            L.csr_window(t, "M", 0x30A, "menvcfg", f, "reserved", "no U")
             with t.rv32_only():
-                L.csr_window(t, "M", 0x31A, "menvcfgh", f, "illegal", "no U")
+                L.csr_window(t, "M", 0x31A, "menvcfgh", f, "reserved", "no U")
     tests.append(t)
 
     t = new(suite, "menvcfg_mandatory_u_mode", [*L.REQ, "U"])
@@ -3465,15 +3519,15 @@ def gen_envcfg(suite: str) -> list[TestFile]:
     t = new(suite, "menvcfgh_sz_acc_op", [*L.REQ, "U"])
     describe(
         t,
-        context="menvcfg is restored after each write, before any trap. " + ENVCFG_VER,
-        plan="1. RV64: menvcfgh (0x31A) raises illegal instruction for reads and writes.\n2. RV32: a write of all ones "
+        context="menvcfg is restored after each write, before any trap. " + ENVCFG_VER + " " + RSV,
+        plan="1. RV64: reads and writes of menvcfgh (0x31A) succeed or raise illegal instruction.\n2. RV32: a write of all ones "
         "to menvcfgh leaves menvcfg (bits 31:0) unchanged; menvcfgh reads back the same high bits as a second "
         "identical write.",
     )
     with t.rv64_only():
         t.li("x6", 0)
         for f in (L.FORMS[0], L.FORMS[1]):
-            L.csr_window(t, "M", 0x31A, "menvcfgh", f, "illegal", "RV64")
+            L.csr_window(t, "M", 0x31A, "menvcfgh", f, "reserved", "RV64")
     with t.rv32_only(), t.only_if(SM1P12):
         lab = t.label("h")
         t.emit("csrr x8, menvcfg")
@@ -3664,26 +3718,28 @@ def gen_envcfg(suite: str) -> list[TestFile]:
     t = new(suite, "mseccfg_presence")
     describe(
         t,
-        context="mseccfg exists when Zkr, Smmpm, Zicfilp or Smepmp is implemented (MSECCFG_SUPPORTED).",
-        plan="1. With one of them: mseccfg (0x747) reads without a trap.\n2. Without any: reading it raises illegal "
-        "instruction.",
+        context="mseccfg exists when Zkr, Smmpm, Zicfilp or Smepmp is implemented (MSECCFG_SUPPORTED). Otherwise it "
+        "is reserved. " + RSV,
+        plan="1. With one of them: mseccfg (0x747) reads without a trap.\n2. Without any: reading it succeeds or "
+        "raises illegal instruction.",
     )
     with t.only_if("defined(MSECCFG_SUPPORTED)"):
         L.csr_window(t, "M", 0x747, "mseccfg", L.FORMS[0], "ok", "mseccfg present")
     with t.only_if("!defined(MSECCFG_SUPPORTED)"):
-        L.csr_window(t, "M", 0x747, "mseccfg", L.FORMS[0], "illegal", "mseccfg absent")
+        L.csr_window(t, "M", 0x747, "mseccfg", L.FORMS[0], "reserved", "mseccfg absent")
     tests.append(t)
 
     t = new(suite, "mseccfgh_presence")
     describe(
         t,
+        context=RSV,
         plan="1. RV32 with mseccfg: mseccfgh (0x757) reads without a trap.\n2. RV64, or without mseccfg: "
-        "reading 0x757 raises illegal instruction.",
+        "reading 0x757 succeeds or raises illegal instruction.",
     )
     with t.only_if(f"defined(MSECCFG_SUPPORTED) && {RV32}"):
         L.csr_window(t, "M", 0x757, "mseccfgh", L.FORMS[0], "ok", "RV32")
     with t.only_if(f"!defined(MSECCFG_SUPPORTED) || {RV64}"):
-        L.csr_window(t, "M", 0x757, "mseccfgh", L.FORMS[0], "illegal", "absent")
+        L.csr_window(t, "M", 0x757, "mseccfgh", L.FORMS[0], "reserved", "absent")
     tests.append(t)
 
     for rule, bit, name, cond in (

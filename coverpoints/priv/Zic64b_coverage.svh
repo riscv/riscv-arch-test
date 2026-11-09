@@ -20,6 +20,7 @@ covergroup Zic64b_cg with function sample(ins_t ins);
     }
     cbo_zero_offset: coverpoint ins.current.rs1_val[6:0] {
         bins offset_aligned[] = {[7'd0 : 7'd64]} with (item % 4 == 0);
+        bins offset_unaligned = {7'd1};
     }
 
     cp_zic64b: cross cbo_zero, cbo_zero_offset ;

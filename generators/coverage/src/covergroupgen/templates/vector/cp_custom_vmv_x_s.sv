@@ -6,11 +6,11 @@
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    vtype_prev_vill_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_prev_vill_clear: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins vill_not_set = {0};
     }
 
-    vstart_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") {
+    vstart_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) {
         bins target = {0};
     }
 
@@ -18,7 +18,7 @@
         bins true = {1'b1};
     }
 
-    vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
         bins zero = {0};
     }
 
@@ -28,15 +28,15 @@
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
 
 
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {1};
     }
 
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_4: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {2};
     }
 
-    vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_8: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {3};
     }
 

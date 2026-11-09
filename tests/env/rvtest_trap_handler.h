@@ -914,20 +914,22 @@ init_\__MODE__\()scratch:
 #ifdef RVMODEL_MTIMECMP_ADDRESS            // this looks a bit odd to keep it constant size
 init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its address is defined
         LI(  T2,  -1)
-        LI(  T4,  RVMODEL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(T4, RVMODEL_MTIMECMP_ADDRESS)
         SREG T2,  0(T4)
   .if (UDB_MXLEN==32)
         SREG T2,  4(T4)
   .endif
         nop                                       // padding to keep code size constant vs #else branch
 #else
-        nop                                       // no timer: 5 nops to match the #ifdef branch size
-        nop
-        nop
   .if (UDB_MXLEN==32)
+        .rept 6                                   // no timer: nops to match the #ifdef branch size
         nop
+        .endr
+  .else
+        .rept 11
+        nop
+        .endr
   .endif
-        nop
 #endif
 
 //---------- Save and clear exception delegation ----------

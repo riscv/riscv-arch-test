@@ -23,7 +23,7 @@ covergroup Zilx_lxh_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_hword : coverpoint ins.current.mem_addr[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxh"  iff (ins.trap == 0 )  {
@@ -101,7 +101,7 @@ covergroup Zilx_lxhu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_hword : coverpoint ins.current.mem_addr[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxhu"  iff (ins.trap == 0 )  {
@@ -179,7 +179,7 @@ covergroup Zilx_lxsb_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_byte : coverpoint ins.current.mem_addr[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsb"  iff (ins.trap == 0 )  {
@@ -257,7 +257,7 @@ covergroup Zilx_lxsbu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_byte : coverpoint ins.current.mem_addr[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsbu"  iff (ins.trap == 0 )  {
@@ -335,7 +335,7 @@ covergroup Zilx_lxsh_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_hword : coverpoint ins.current.mem_addr[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsh"  iff (ins.trap == 0 )  {
@@ -413,7 +413,7 @@ covergroup Zilx_lxshu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_hword : coverpoint ins.current.mem_addr[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxshu"  iff (ins.trap == 0 )  {
@@ -491,7 +491,7 @@ covergroup Zilx_lxsw_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_word : coverpoint ins.current.mem_addr[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsw"  iff (ins.trap == 0 )  {
@@ -569,7 +569,7 @@ covergroup Zilx_lxw_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_word : coverpoint ins.current.mem_addr[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxw"  iff (ins.trap == 0 )  {
@@ -798,7 +798,7 @@ covergroup Zilx_lxsuwb_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_byte : coverpoint ins.current.mem_addr[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsuwb"  iff (ins.trap == 0 )  {
@@ -876,7 +876,7 @@ covergroup Zilx_lxsuwbu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_byte : coverpoint ins.current.mem_addr[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsuwbu"  iff (ins.trap == 0 )  {
@@ -1029,7 +1029,7 @@ covergroup Zilx_lxsuwh_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_hword : coverpoint ins.current.mem_addr[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsuwh"  iff (ins.trap == 0 )  {
@@ -1107,7 +1107,7 @@ covergroup Zilx_lxsuwhu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_hword : coverpoint ins.current.mem_addr[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsuwhu"  iff (ins.trap == 0 )  {
@@ -1185,7 +1185,7 @@ covergroup Zilx_lxsuww_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_word : coverpoint ins.current.mem_addr[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsuww"  iff (ins.trap == 0 )  {
@@ -1263,7 +1263,7 @@ covergroup Zilx_lxsuwwu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_word : coverpoint ins.current.mem_addr[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxsuwwu"  iff (ins.trap == 0 )  {
@@ -1341,7 +1341,7 @@ covergroup Zilx_lxswu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_word : coverpoint ins.current.mem_addr[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxswu"  iff (ins.trap == 0 )  {
@@ -1419,7 +1419,7 @@ covergroup Zilx_lxwu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_zilx_word : coverpoint ins.current.mem_addr[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lxwu"  iff (ins.trap == 0 )  {

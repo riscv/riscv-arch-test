@@ -16,6 +16,7 @@ from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
+from testgen.instructions.zilx import ZILX_INSTRUCTIONS, indexed_load
 from testgen.priv.extensions.sv.page_tables import RV64_SV_MODES, SV39, PteFlags, create_page_mapping
 
 # ── Constants ──────────────────────────────────────────────────────────────
@@ -779,6 +780,24 @@ def generate_instruction_sweep_tests(
         lines.append(comment_banner(f"{prefix} {CP_MASKING}: tag 0x{upper:04X} -- full instruction sweep"))
         for mn in READS:
             lines.extend(probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg))
+        lines.append("#ifdef ZILX_SUPPORTED")
+        for mn in ZILX_INSTRUCTIONS:
+            addr, base, result, index = test_data.int_regs.get_registers(4)
+            setup, load, cleanup = indexed_load(mn, result, addr, index)
+            lines.extend(
+                [
+                    *_tagged_address(base, addr, "pm_lo_page", upper),
+                    *_seed(base, result),
+                    f"LI(x{result}, {hex(SENTINEL)})",
+                    *setup,
+                    test_data.add_testcase(_binname(prefix, upper, mn), CP_MASKING, cg),
+                    load,
+                    *cleanup,
+                    write_sigupd(result, test_data),
+                ]
+            )
+            test_data.int_regs.return_registers([addr, base, result, index])
+        lines.append("#endif")
         for mn, rb in WRITES:
             lines.extend(probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
 

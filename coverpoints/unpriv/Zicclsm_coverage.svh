@@ -402,6 +402,295 @@ endgroup
 // ---------------------
 `endif
 `endif
+`ifdef ZILX_SUPPORTED
+covergroup ZicclsmZilx_lxh_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxh"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxhu_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxhu"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsh_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsh"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxshu_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxshu"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsw_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsw"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxw_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxw"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+`ifdef UDB_MXLEN_64
+covergroup ZicclsmZilx_lxd_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxd"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsd_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsd"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsuwd_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsuwd"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsuwh_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsuwh"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsuwhu_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsuwhu"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsuww_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsuww"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxsuwwu_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxsuwwu"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxswu_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxswu"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup ZicclsmZilx_lxwu_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "lxwu"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+`endif
+`endif
 function void zicclsm_sample(int hart, int issue, ins_t ins);
     string inst_name = traceDataQ[hart][issue][0].inst_name;
 
@@ -455,6 +744,36 @@ function void zicclsm_sample(int hart, int issue, ins_t ins);
         "lw"     : begin
             Zicclsm_lw_cg.sample(ins);
         end
+`ifdef ZILX_SUPPORTED
+        "lxh"     : begin
+            ZicclsmZilx_lxh_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxhu"     : begin
+            ZicclsmZilx_lxhu_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsh"     : begin
+            ZicclsmZilx_lxsh_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxshu"     : begin
+            ZicclsmZilx_lxshu_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsw"     : begin
+            ZicclsmZilx_lxsw_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxw"     : begin
+            ZicclsmZilx_lxw_cg.sample(ins);
+        end
+`endif
         "sh"     : begin
             Zicclsm_sh_cg.sample(ins);
         end
@@ -488,6 +807,51 @@ function void zicclsm_sample(int hart, int issue, ins_t ins);
         "lwu"     : begin
             Zicclsm_lwu_cg.sample(ins);
         end
+`ifdef ZILX_SUPPORTED
+        "lxd"     : begin
+            ZicclsmZilx_lxd_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsd"     : begin
+            ZicclsmZilx_lxsd_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsuwd"     : begin
+            ZicclsmZilx_lxsuwd_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsuwh"     : begin
+            ZicclsmZilx_lxsuwh_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsuwhu"     : begin
+            ZicclsmZilx_lxsuwhu_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsuww"     : begin
+            ZicclsmZilx_lxsuww_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxsuwwu"     : begin
+            ZicclsmZilx_lxsuwwu_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxswu"     : begin
+            ZicclsmZilx_lxswu_cg.sample(ins);
+        end
+`endif
+`ifdef ZILX_SUPPORTED
+        "lxwu"     : begin
+            ZicclsmZilx_lxwu_cg.sample(ins);
+        end
+`endif
         "sd"     : begin
             Zicclsm_sd_cg.sample(ins);
         end

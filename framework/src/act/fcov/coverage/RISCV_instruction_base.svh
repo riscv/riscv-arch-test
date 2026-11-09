@@ -511,7 +511,7 @@ class RISCV_instruction
 
     index = current.rs1_val;
     if (current.insn[31:27] == 5'b11110) begin
-      index = current.rs1_val[31:0];
+      index = XLEN'(current.rs1_val[31:0]);
     end
     if (current.insn[31:27] != 5'b10010) begin
       index = index << current.insn[13:12];

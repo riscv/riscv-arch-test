@@ -36,7 +36,7 @@ RVTEST_BEGIN
 # Testcase cp_rs1 (Test source rs1 = x0)
   addi x23, x3, 0 # copy target address into base
 Zilx_lxsuwwu_cg_cp_rs1_b0:
-  .insn r 0x2f, 6, 120, x1, x0, x23 # lxsuwwu x1, (x23), x0; load 0x15a744e645669f99
+  lxsuwwu x1, (x23), x0
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x1, Zilx_lxsuwwu_cg_cp_rs1_b0, Zilx_lxsuwwu_cg_cp_rs1_b0_str)
   addi x3, x3, 1*SIG_STRIDE # increment data_ptr
@@ -49,7 +49,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b0:
   slli x7, x7, 2 # scale the index
   sub x9, x9, x7 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b1:
-  .insn r 0x2f, 6, 120, x12, x1, x9 # lxsuwwu x12, (x9), x1; load 0x9dd9217ff8ecf4a1
+  lxsuwwu x12, (x9), x1
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Zilx_lxsuwwu_cg_cp_rs1_b1, Zilx_lxsuwwu_cg_cp_rs1_b1_str)
   addi x3, x3, 1*SIG_STRIDE # increment data_ptr
@@ -63,7 +63,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b1:
   slli x14, x14, 2 # scale the index
   sub x22, x22, x14 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b2:
-  .insn r 0x2f, 6, 120, x24, x2, x22 # lxsuwwu x24, (x22), x2; load 0x6fd54ed8df061ad2
+  lxsuwwu x24, (x22), x2
   # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x24, Zilx_lxsuwwu_cg_cp_rs1_b2, Zilx_lxsuwwu_cg_cp_rs1_b2_str)
   addi x3, x3, 1*SIG_STRIDE # increment data_ptr
@@ -77,7 +77,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b2:
   slli x13, x13, 2 # scale the index
   sub x16, x16, x13 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b3:
-  .insn r 0x2f, 6, 120, x29, x3, x16 # lxsuwwu x29, (x16), x3; load 0xa1d93940bea23ff3
+  lxsuwwu x29, (x16), x3
   # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x29, Zilx_lxsuwwu_cg_cp_rs1_b3, Zilx_lxsuwwu_cg_cp_rs1_b3_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -92,7 +92,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b3:
   slli x16, x16, 2 # scale the index
   sub x10, x10, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b4:
-  .insn r 0x2f, 6, 120, x11, x4, x10 # lxsuwwu x11, (x10), x4; load 0x38f253f20f4d4d8f
+  lxsuwwu x11, (x10), x4
   # Check if x11 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x21, x8, x7, x11, Zilx_lxsuwwu_cg_cp_rs1_b4, Zilx_lxsuwwu_cg_cp_rs1_b4_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -105,7 +105,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b4:
   slli x18, x18, 2 # scale the index
   sub x15, x15, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b5:
-  .insn r 0x2f, 6, 120, x9, x5, x15 # lxsuwwu x9, (x15), x5; load 0x2527c54933603201
+  lxsuwwu x9, (x15), x5
   # Check if x9 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x21, x8, x7, x9, Zilx_lxsuwwu_cg_cp_rs1_b5, Zilx_lxsuwwu_cg_cp_rs1_b5_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -118,7 +118,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b5:
   slli x25, x25, 2 # scale the index
   sub x15, x15, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b6:
-  .insn r 0x2f, 6, 120, x20, x6, x15 # lxsuwwu x20, (x15), x6; load 0x2c4b994088de5de6
+  lxsuwwu x20, (x15), x6
   # Check if x20 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x21, x8, x7, x20, Zilx_lxsuwwu_cg_cp_rs1_b6, Zilx_lxsuwwu_cg_cp_rs1_b6_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -133,7 +133,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b6:
   slli x9, x9, 2 # scale the index
   sub x22, x22, x9 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b7:
-  .insn r 0x2f, 6, 120, x8, x7, x22 # lxsuwwu x8, (x22), x7; load 0x612ddacc7c978c6e
+  lxsuwwu x8, (x22), x7
   # Check if x8 contains the expected result. x21 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x21, x14, x13, x8, Zilx_lxsuwwu_cg_cp_rs1_b7, Zilx_lxsuwwu_cg_cp_rs1_b7_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -146,7 +146,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b7:
   slli x30, x30, 2 # scale the index
   sub x5, x5, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b8:
-  .insn r 0x2f, 6, 120, x7, x8, x5 # lxsuwwu x7, (x5), x8; load 0xfc0e33e1703b829d
+  lxsuwwu x7, (x5), x8
   # Check if x7 contains the expected result. x21 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x21, x14, x13, x7, Zilx_lxsuwwu_cg_cp_rs1_b8, Zilx_lxsuwwu_cg_cp_rs1_b8_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -159,7 +159,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b8:
   slli x31, x31, 2 # scale the index
   sub x29, x29, x31 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b9:
-  .insn r 0x2f, 6, 120, x30, x9, x29 # lxsuwwu x30, (x29), x9; load 0xea304e29a055cfa8
+  lxsuwwu x30, (x29), x9
   # Check if x30 contains the expected result. x21 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x21, x14, x13, x30, Zilx_lxsuwwu_cg_cp_rs1_b9, Zilx_lxsuwwu_cg_cp_rs1_b9_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -172,7 +172,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b9:
   slli x12, x12, 2 # scale the index
   sub x8, x8, x12 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b10:
-  .insn r 0x2f, 6, 120, x16, x10, x8 # lxsuwwu x16, (x8), x10; load 0xf70949fe29eb9e04
+  lxsuwwu x16, (x8), x10
   # Check if x16 contains the expected result. x21 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x21, x14, x13, x16, Zilx_lxsuwwu_cg_cp_rs1_b10, Zilx_lxsuwwu_cg_cp_rs1_b10_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -185,7 +185,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b10:
   slli x19, x19, 2 # scale the index
   sub x18, x18, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b11:
-  .insn r 0x2f, 6, 120, x22, x11, x18 # lxsuwwu x22, (x18), x11; load 0x93c620b0eec162f3
+  lxsuwwu x22, (x18), x11
   # Check if x22 contains the expected result. x21 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x21, x14, x13, x22, Zilx_lxsuwwu_cg_cp_rs1_b11, Zilx_lxsuwwu_cg_cp_rs1_b11_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -198,7 +198,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b11:
   slli x30, x30, 2 # scale the index
   sub x31, x31, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b12:
-  .insn r 0x2f, 6, 120, x22, x12, x31 # lxsuwwu x22, (x31), x12; load 0x8b094bdb38a08c35
+  lxsuwwu x22, (x31), x12
   # Check if x22 contains the expected result. x21 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x21, x14, x13, x22, Zilx_lxsuwwu_cg_cp_rs1_b12, Zilx_lxsuwwu_cg_cp_rs1_b12_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -213,7 +213,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b12:
   slli x29, x29, 2 # scale the index
   sub x2, x2, x29 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b13:
-  .insn r 0x2f, 6, 120, x16, x13, x2 # lxsuwwu x16, (x2), x13; load 0x74e0e7012843c612
+  lxsuwwu x16, (x2), x13
   # Check if x16 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x16, Zilx_lxsuwwu_cg_cp_rs1_b13, Zilx_lxsuwwu_cg_cp_rs1_b13_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -226,7 +226,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b13:
   slli x1, x1, 2 # scale the index
   sub x29, x29, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b14:
-  .insn r 0x2f, 6, 120, x6, x14, x29 # lxsuwwu x6, (x29), x14; load 0x164e2148b43f1d7d
+  lxsuwwu x6, (x29), x14
   # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x6, Zilx_lxsuwwu_cg_cp_rs1_b14, Zilx_lxsuwwu_cg_cp_rs1_b14_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -239,7 +239,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b14:
   slli x22, x22, 2 # scale the index
   sub x19, x19, x22 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b15:
-  .insn r 0x2f, 6, 120, x13, x15, x19 # lxsuwwu x13, (x19), x15; load 0x22094bd591758518
+  lxsuwwu x13, (x19), x15
   # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x13, Zilx_lxsuwwu_cg_cp_rs1_b15, Zilx_lxsuwwu_cg_cp_rs1_b15_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -252,7 +252,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b15:
   slli x29, x29, 2 # scale the index
   sub x2, x2, x29 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b16:
-  .insn r 0x2f, 6, 120, x26, x16, x2 # lxsuwwu x26, (x2), x16; load 0x29e6ca001f99a389
+  lxsuwwu x26, (x2), x16
   # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x26, Zilx_lxsuwwu_cg_cp_rs1_b16, Zilx_lxsuwwu_cg_cp_rs1_b16_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -266,7 +266,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b16:
   slli x25, x25, 2 # scale the index
   sub x12, x12, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b17:
-  .insn r 0x2f, 6, 120, x31, x17, x12 # lxsuwwu x31, (x12), x17; load 0xd252db1760b0ee06
+  lxsuwwu x31, (x12), x17
   # Check if x31 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x31, Zilx_lxsuwwu_cg_cp_rs1_b17, Zilx_lxsuwwu_cg_cp_rs1_b17_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -279,7 +279,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b17:
   slli x23, x23, 2 # scale the index
   sub x2, x2, x23 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b18:
-  .insn r 0x2f, 6, 120, x7, x18, x2 # lxsuwwu x7, (x2), x18; load 0x2c3d14aee5878a3f
+  lxsuwwu x7, (x2), x18
   # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x7, Zilx_lxsuwwu_cg_cp_rs1_b18, Zilx_lxsuwwu_cg_cp_rs1_b18_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -292,7 +292,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b18:
   slli x27, x27, 2 # scale the index
   sub x26, x26, x27 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b19:
-  .insn r 0x2f, 6, 120, x20, x19, x26 # lxsuwwu x20, (x26), x19; load 0x11cc71ad30785c70
+  lxsuwwu x20, (x26), x19
   # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x20, Zilx_lxsuwwu_cg_cp_rs1_b19, Zilx_lxsuwwu_cg_cp_rs1_b19_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -305,7 +305,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b19:
   slli x9, x9, 2 # scale the index
   sub x3, x3, x9 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b20:
-  .insn r 0x2f, 6, 120, x2, x20, x3 # lxsuwwu x2, (x3), x20; load 0x0550e693c77f0018
+  lxsuwwu x2, (x3), x20
   # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x2, Zilx_lxsuwwu_cg_cp_rs1_b20, Zilx_lxsuwwu_cg_cp_rs1_b20_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -319,7 +319,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b20:
   slli x8, x8, 2 # scale the index
   sub x2, x2, x8 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b21:
-  .insn r 0x2f, 6, 120, x7, x21, x2 # lxsuwwu x7, (x2), x21; load 0x5d743be83ad4b6ae
+  lxsuwwu x7, (x2), x21
   # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x7, Zilx_lxsuwwu_cg_cp_rs1_b21, Zilx_lxsuwwu_cg_cp_rs1_b21_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -332,7 +332,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b21:
   slli x12, x12, 2 # scale the index
   sub x14, x14, x12 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b22:
-  .insn r 0x2f, 6, 120, x27, x22, x14 # lxsuwwu x27, (x14), x22; load 0xb3ed1dc93271d332
+  lxsuwwu x27, (x14), x22
   # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x27, Zilx_lxsuwwu_cg_cp_rs1_b22, Zilx_lxsuwwu_cg_cp_rs1_b22_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -345,7 +345,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b22:
   slli x3, x3, 2 # scale the index
   sub x9, x9, x3 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b23:
-  .insn r 0x2f, 6, 120, x14, x23, x9 # lxsuwwu x14, (x9), x23; load 0x207b734b73e12586
+  lxsuwwu x14, (x9), x23
   # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x14, Zilx_lxsuwwu_cg_cp_rs1_b23, Zilx_lxsuwwu_cg_cp_rs1_b23_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -358,7 +358,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b23:
   slli x30, x30, 2 # scale the index
   sub x13, x13, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b24:
-  .insn r 0x2f, 6, 120, x2, x24, x13 # lxsuwwu x2, (x13), x24; load 0x3dfc7a8c56e40e29
+  lxsuwwu x2, (x13), x24
   # Check if x2 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x2, Zilx_lxsuwwu_cg_cp_rs1_b24, Zilx_lxsuwwu_cg_cp_rs1_b24_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -372,7 +372,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b24:
   slli x20, x20, 2 # scale the index
   sub x31, x31, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b25:
-  .insn r 0x2f, 6, 120, x11, x25, x31 # lxsuwwu x11, (x31), x25; load 0xb2747a832ab17206
+  lxsuwwu x11, (x31), x25
   # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x11, Zilx_lxsuwwu_cg_cp_rs1_b25, Zilx_lxsuwwu_cg_cp_rs1_b25_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -385,7 +385,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b25:
   slli x17, x17, 2 # scale the index
   sub x29, x29, x17 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b26:
-  .insn r 0x2f, 6, 120, x7, x26, x29 # lxsuwwu x7, (x29), x26; load 0xa24584148bf628e1
+  lxsuwwu x7, (x29), x26
   # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x7, Zilx_lxsuwwu_cg_cp_rs1_b26, Zilx_lxsuwwu_cg_cp_rs1_b26_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -398,7 +398,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b26:
   slli x16, x16, 2 # scale the index
   sub x18, x18, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b27:
-  .insn r 0x2f, 6, 120, x13, x27, x18 # lxsuwwu x13, (x18), x27; load 0xd383d2a27322db04
+  lxsuwwu x13, (x18), x27
   # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x13, Zilx_lxsuwwu_cg_cp_rs1_b27, Zilx_lxsuwwu_cg_cp_rs1_b27_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -411,7 +411,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b27:
   slli x7, x7, 2 # scale the index
   sub x6, x6, x7 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b28:
-  .insn r 0x2f, 6, 120, x20, x28, x6 # lxsuwwu x20, (x6), x28; load 0xdcb7b3a2b5059fc7
+  lxsuwwu x20, (x6), x28
   # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x20, Zilx_lxsuwwu_cg_cp_rs1_b28, Zilx_lxsuwwu_cg_cp_rs1_b28_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -424,7 +424,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b28:
   slli x19, x19, 2 # scale the index
   sub x20, x20, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b29:
-  .insn r 0x2f, 6, 120, x9, x29, x20 # lxsuwwu x9, (x20), x29; load 0x5f6bd9c701c4efdc
+  lxsuwwu x9, (x20), x29
   # Check if x9 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x9, Zilx_lxsuwwu_cg_cp_rs1_b29, Zilx_lxsuwwu_cg_cp_rs1_b29_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -437,7 +437,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b29:
   slli x31, x31, 2 # scale the index
   sub x29, x29, x31 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b30:
-  .insn r 0x2f, 6, 120, x22, x30, x29 # lxsuwwu x22, (x29), x30; load 0x80bf60e1b587c852
+  lxsuwwu x22, (x29), x30
   # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x22, Zilx_lxsuwwu_cg_cp_rs1_b30, Zilx_lxsuwwu_cg_cp_rs1_b30_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -450,7 +450,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b30:
   slli x19, x19, 2 # scale the index
   sub x6, x6, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_b31:
-  .insn r 0x2f, 6, 120, x15, x31, x6 # lxsuwwu x15, (x6), x31; load 0x926e5afd6457d2f2
+  lxsuwwu x15, (x6), x31
   # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x15, Zilx_lxsuwwu_cg_cp_rs1_b31, Zilx_lxsuwwu_cg_cp_rs1_b31_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -467,7 +467,7 @@ Zilx_lxsuwwu_cg_cp_rs1_b31:
   slli x3, x3, 2 # scale the index
   sub x1, x1, x3 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b1:
-  .insn r 0x2f, 6, 120, x15, x19, x1 # lxsuwwu x15, (x1), x19; load 0xb28c4cda043f571e
+  lxsuwwu x15, (x1), x19
   # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x15, Zilx_lxsuwwu_cg_cp_rs2_nx0_b1, Zilx_lxsuwwu_cg_cp_rs2_nx0_b1_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -480,7 +480,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b1:
   slli x22, x22, 2 # scale the index
   sub x2, x2, x22 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b2:
-  .insn r 0x2f, 6, 120, x12, x31, x2 # lxsuwwu x12, (x2), x31; load 0xfee2d4bddbc176b0
+  lxsuwwu x12, (x2), x31
   # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x12, Zilx_lxsuwwu_cg_cp_rs2_nx0_b2, Zilx_lxsuwwu_cg_cp_rs2_nx0_b2_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -493,7 +493,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b2:
   slli x19, x19, 2 # scale the index
   sub x3, x3, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b3:
-  .insn r 0x2f, 6, 120, x14, x31, x3 # lxsuwwu x14, (x3), x31; load 0x464325fdb88bb276
+  lxsuwwu x14, (x3), x31
   # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x14, Zilx_lxsuwwu_cg_cp_rs2_nx0_b3, Zilx_lxsuwwu_cg_cp_rs2_nx0_b3_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -508,7 +508,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b3:
   slli x16, x16, 2 # scale the index
   sub x4, x4, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b4:
-  .insn r 0x2f, 6, 120, x6, x26, x4 # lxsuwwu x6, (x4), x26; load 0xf378557627ead894
+  lxsuwwu x6, (x4), x26
   # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x23, x8, x7, x6, Zilx_lxsuwwu_cg_cp_rs2_nx0_b4, Zilx_lxsuwwu_cg_cp_rs2_nx0_b4_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -521,7 +521,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b4:
   slli x28, x28, 2 # scale the index
   sub x5, x5, x28 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b5:
-  .insn r 0x2f, 6, 120, x1, x18, x5 # lxsuwwu x1, (x5), x18; load 0xa48b8d8f9a6ad0ed
+  lxsuwwu x1, (x5), x18
   # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x23, x8, x7, x1, Zilx_lxsuwwu_cg_cp_rs2_nx0_b5, Zilx_lxsuwwu_cg_cp_rs2_nx0_b5_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -534,7 +534,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b5:
   slli x20, x20, 2 # scale the index
   sub x6, x6, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b6:
-  .insn r 0x2f, 6, 120, x2, x29, x6 # lxsuwwu x2, (x6), x29; load 0xe855c4f9001aac00
+  lxsuwwu x2, (x6), x29
   # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x23, x8, x7, x2, Zilx_lxsuwwu_cg_cp_rs2_nx0_b6, Zilx_lxsuwwu_cg_cp_rs2_nx0_b6_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -549,7 +549,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b6:
   slli x14, x14, 2 # scale the index
   sub x7, x7, x14 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b7:
-  .insn r 0x2f, 6, 120, x22, x20, x7 # lxsuwwu x22, (x7), x20; load 0x741ed2bf8acf20a9
+  lxsuwwu x22, (x7), x20
   # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x22, Zilx_lxsuwwu_cg_cp_rs2_nx0_b7, Zilx_lxsuwwu_cg_cp_rs2_nx0_b7_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -562,7 +562,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b7:
   slli x26, x26, 2 # scale the index
   sub x8, x8, x26 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b8:
-  .insn r 0x2f, 6, 120, x7, x28, x8 # lxsuwwu x7, (x8), x28; load 0x5f85e8d50f3d5aa1
+  lxsuwwu x7, (x8), x28
   # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x7, Zilx_lxsuwwu_cg_cp_rs2_nx0_b8, Zilx_lxsuwwu_cg_cp_rs2_nx0_b8_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -575,7 +575,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b8:
   slli x3, x3, 2 # scale the index
   sub x9, x9, x3 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b9:
-  .insn r 0x2f, 6, 120, x1, x16, x9 # lxsuwwu x1, (x9), x16; load 0x3053bae06c96ecf8
+  lxsuwwu x1, (x9), x16
   # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x1, Zilx_lxsuwwu_cg_cp_rs2_nx0_b9, Zilx_lxsuwwu_cg_cp_rs2_nx0_b9_str)
   addi x10, x10, 1*SIG_STRIDE # increment data_ptr
@@ -589,7 +589,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b9:
   slli x20, x20, 2 # scale the index
   sub x10, x10, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b10:
-  .insn r 0x2f, 6, 120, x28, x9, x10 # lxsuwwu x28, (x10), x9; load 0xed21b473a4b11f0a
+  lxsuwwu x28, (x10), x9
   # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x28, Zilx_lxsuwwu_cg_cp_rs2_nx0_b10, Zilx_lxsuwwu_cg_cp_rs2_nx0_b10_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -602,7 +602,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b10:
   slli x8, x8, 2 # scale the index
   sub x11, x11, x8 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b11:
-  .insn r 0x2f, 6, 120, x28, x10, x11 # lxsuwwu x28, (x11), x10; load 0x1c18357209686e0d
+  lxsuwwu x28, (x11), x10
   # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x28, Zilx_lxsuwwu_cg_cp_rs2_nx0_b11, Zilx_lxsuwwu_cg_cp_rs2_nx0_b11_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -615,7 +615,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b11:
   slli x25, x25, 2 # scale the index
   sub x12, x12, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b12:
-  .insn r 0x2f, 6, 120, x28, x16, x12 # lxsuwwu x28, (x12), x16; load 0x7f2472579b306ef9
+  lxsuwwu x28, (x12), x16
   # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x28, Zilx_lxsuwwu_cg_cp_rs2_nx0_b12, Zilx_lxsuwwu_cg_cp_rs2_nx0_b12_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -628,7 +628,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b12:
   slli x25, x25, 2 # scale the index
   sub x13, x13, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b13:
-  .insn r 0x2f, 6, 120, x14, x18, x13 # lxsuwwu x14, (x13), x18; load 0x77fa3e94a578ae67
+  lxsuwwu x14, (x13), x18
   # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x14, Zilx_lxsuwwu_cg_cp_rs2_nx0_b13, Zilx_lxsuwwu_cg_cp_rs2_nx0_b13_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -641,7 +641,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b13:
   slli x16, x16, 2 # scale the index
   sub x14, x14, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b14:
-  .insn r 0x2f, 6, 120, x2, x1, x14 # lxsuwwu x2, (x14), x1; load 0x7eb368606bbaa73f
+  lxsuwwu x2, (x14), x1
   # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x2, Zilx_lxsuwwu_cg_cp_rs2_nx0_b14, Zilx_lxsuwwu_cg_cp_rs2_nx0_b14_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -654,7 +654,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b14:
   slli x20, x20, 2 # scale the index
   sub x15, x15, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b15:
-  .insn r 0x2f, 6, 120, x2, x8, x15 # lxsuwwu x2, (x15), x8; load 0x1be502445a9aa6f0
+  lxsuwwu x2, (x15), x8
   # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x2, Zilx_lxsuwwu_cg_cp_rs2_nx0_b15, Zilx_lxsuwwu_cg_cp_rs2_nx0_b15_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -667,7 +667,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b15:
   slli x28, x28, 2 # scale the index
   sub x16, x16, x28 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b16:
-  .insn r 0x2f, 6, 120, x8, x27, x16 # lxsuwwu x8, (x16), x27; load 0xda3805407e3758e8
+  lxsuwwu x8, (x16), x27
   # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x8, Zilx_lxsuwwu_cg_cp_rs2_nx0_b16, Zilx_lxsuwwu_cg_cp_rs2_nx0_b16_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -681,7 +681,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b16:
   slli x10, x10, 2 # scale the index
   sub x17, x17, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b17:
-  .insn r 0x2f, 6, 120, x29, x14, x17 # lxsuwwu x29, (x17), x14; load 0x2fba6a0159dd7b47
+  lxsuwwu x29, (x17), x14
   # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x29, Zilx_lxsuwwu_cg_cp_rs2_nx0_b17, Zilx_lxsuwwu_cg_cp_rs2_nx0_b17_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -694,7 +694,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b17:
   slli x3, x3, 2 # scale the index
   sub x18, x18, x3 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b18:
-  .insn r 0x2f, 6, 120, x25, x11, x18 # lxsuwwu x25, (x18), x11; load 0xd5183c0b88b08e13
+  lxsuwwu x25, (x18), x11
   # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x25, Zilx_lxsuwwu_cg_cp_rs2_nx0_b18, Zilx_lxsuwwu_cg_cp_rs2_nx0_b18_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -707,7 +707,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b18:
   slli x30, x30, 2 # scale the index
   sub x19, x19, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b19:
-  .insn r 0x2f, 6, 120, x2, x25, x19 # lxsuwwu x2, (x19), x25; load 0xcb83c6d9889eafeb
+  lxsuwwu x2, (x19), x25
   # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x2, Zilx_lxsuwwu_cg_cp_rs2_nx0_b19, Zilx_lxsuwwu_cg_cp_rs2_nx0_b19_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -720,7 +720,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b19:
   slli x30, x30, 2 # scale the index
   sub x20, x20, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b20:
-  .insn r 0x2f, 6, 120, x17, x13, x20 # lxsuwwu x17, (x20), x13; load 0xe568f275f02407a1
+  lxsuwwu x17, (x20), x13
   # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x17, Zilx_lxsuwwu_cg_cp_rs2_nx0_b20, Zilx_lxsuwwu_cg_cp_rs2_nx0_b20_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -733,7 +733,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b20:
   slli x13, x13, 2 # scale the index
   sub x21, x21, x13 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b21:
-  .insn r 0x2f, 6, 120, x30, x16, x21 # lxsuwwu x30, (x21), x16; load 0x51d1dc6f5c6610a5
+  lxsuwwu x30, (x21), x16
   # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x30, Zilx_lxsuwwu_cg_cp_rs2_nx0_b21, Zilx_lxsuwwu_cg_cp_rs2_nx0_b21_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -746,7 +746,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b21:
   slli x12, x12, 2 # scale the index
   sub x22, x22, x12 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b22:
-  .insn r 0x2f, 6, 120, x15, x17, x22 # lxsuwwu x15, (x22), x17; load 0x98961b9859cba486
+  lxsuwwu x15, (x22), x17
   # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x23, x5, x4, x15, Zilx_lxsuwwu_cg_cp_rs2_nx0_b22, Zilx_lxsuwwu_cg_cp_rs2_nx0_b22_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -760,7 +760,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b22:
   slli x7, x7, 2 # scale the index
   sub x23, x23, x7 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b23:
-  .insn r 0x2f, 6, 120, x15, x28, x23 # lxsuwwu x15, (x23), x28; load 0x20e3fa1eba7556a8
+  lxsuwwu x15, (x23), x28
   # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x15, Zilx_lxsuwwu_cg_cp_rs2_nx0_b23, Zilx_lxsuwwu_cg_cp_rs2_nx0_b23_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -773,7 +773,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b23:
   slli x18, x18, 2 # scale the index
   sub x24, x24, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b24:
-  .insn r 0x2f, 6, 120, x25, x21, x24 # lxsuwwu x25, (x24), x21; load 0x782fa3441c019c96
+  lxsuwwu x25, (x24), x21
   # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x25, Zilx_lxsuwwu_cg_cp_rs2_nx0_b24, Zilx_lxsuwwu_cg_cp_rs2_nx0_b24_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -786,7 +786,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b24:
   slli x16, x16, 2 # scale the index
   sub x25, x25, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b25:
-  .insn r 0x2f, 6, 120, x12, x15, x25 # lxsuwwu x12, (x25), x15; load 0x11fb27da1c85398e
+  lxsuwwu x12, (x25), x15
   # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x12, Zilx_lxsuwwu_cg_cp_rs2_nx0_b25, Zilx_lxsuwwu_cg_cp_rs2_nx0_b25_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -794,7 +794,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b25:
 # Testcase cp_rs2_nx0 (Test source rs2 = x26)
   addi x26, x1, 0 # copy target address into base
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b26:
-  .insn r 0x2f, 6, 120, x15, x0, x26 # lxsuwwu x15, (x26), x0; load 0x668b6bafedb5ae67
+  lxsuwwu x15, (x26), x0
   # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x15, Zilx_lxsuwwu_cg_cp_rs2_nx0_b26, Zilx_lxsuwwu_cg_cp_rs2_nx0_b26_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -807,7 +807,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b26:
   slli x22, x22, 2 # scale the index
   sub x27, x27, x22 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b27:
-  .insn r 0x2f, 6, 120, x24, x16, x27 # lxsuwwu x24, (x27), x16; load 0x522b9f1eab0f5929
+  lxsuwwu x24, (x27), x16
   # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x24, Zilx_lxsuwwu_cg_cp_rs2_nx0_b27, Zilx_lxsuwwu_cg_cp_rs2_nx0_b27_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -820,7 +820,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b27:
   slli x30, x30, 2 # scale the index
   sub x28, x28, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b28:
-  .insn r 0x2f, 6, 120, x10, x13, x28 # lxsuwwu x10, (x28), x13; load 0x26132d44d15dc948
+  lxsuwwu x10, (x28), x13
   # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x10, Zilx_lxsuwwu_cg_cp_rs2_nx0_b28, Zilx_lxsuwwu_cg_cp_rs2_nx0_b28_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -828,7 +828,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b28:
 # Testcase cp_rs2_nx0 (Test source rs2 = x29)
   addi x29, x1, 0 # copy target address into base
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b29:
-  .insn r 0x2f, 6, 120, x11, x0, x29 # lxsuwwu x11, (x29), x0; load 0x722478aa31ac79ae
+  lxsuwwu x11, (x29), x0
   # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x11, Zilx_lxsuwwu_cg_cp_rs2_nx0_b29, Zilx_lxsuwwu_cg_cp_rs2_nx0_b29_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -841,7 +841,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b29:
   slli x15, x15, 2 # scale the index
   sub x30, x30, x15 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b30:
-  .insn r 0x2f, 6, 120, x25, x6, x30 # lxsuwwu x25, (x30), x6; load 0x024d82cc5c7b35d9
+  lxsuwwu x25, (x30), x6
   # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x25, Zilx_lxsuwwu_cg_cp_rs2_nx0_b30, Zilx_lxsuwwu_cg_cp_rs2_nx0_b30_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -854,7 +854,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b30:
   slli x14, x14, 2 # scale the index
   sub x31, x31, x14 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs2_nx0_b31:
-  .insn r 0x2f, 6, 120, x12, x6, x31 # lxsuwwu x12, (x31), x6; load 0x8e0fe7be5cf80aca
+  lxsuwwu x12, (x31), x6
   # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x12, Zilx_lxsuwwu_cg_cp_rs2_nx0_b31, Zilx_lxsuwwu_cg_cp_rs2_nx0_b31_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -871,7 +871,7 @@ Zilx_lxsuwwu_cg_cp_rs2_nx0_b31:
   slli x9, x9, 2 # scale the index
   sub x17, x17, x9 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b0:
-  .insn r 0x2f, 6, 120, x0, x3, x17 # lxsuwwu x0, (x17), x3; load 0x7510cd5e09765e8c
+  lxsuwwu x0, (x17), x3
   # Check if x0 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x0, Zilx_lxsuwwu_cg_cp_rd_b0, Zilx_lxsuwwu_cg_cp_rd_b0_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -885,7 +885,7 @@ Zilx_lxsuwwu_cg_cp_rd_b0:
   slli x15, x15, 2 # scale the index
   sub x24, x24, x15 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b1:
-  .insn r 0x2f, 6, 120, x1, x11, x24 # lxsuwwu x1, (x24), x11; load 0xccd53acb21889049
+  lxsuwwu x1, (x24), x11
   # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x1, Zilx_lxsuwwu_cg_cp_rd_b1, Zilx_lxsuwwu_cg_cp_rd_b1_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -898,7 +898,7 @@ Zilx_lxsuwwu_cg_cp_rd_b1:
   slli x8, x8, 2 # scale the index
   sub x9, x9, x8 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b2:
-  .insn r 0x2f, 6, 120, x2, x28, x9 # lxsuwwu x2, (x9), x28; load 0xe802eea3210a5cd1
+  lxsuwwu x2, (x9), x28
   # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x2, Zilx_lxsuwwu_cg_cp_rd_b2, Zilx_lxsuwwu_cg_cp_rd_b2_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -911,7 +911,7 @@ Zilx_lxsuwwu_cg_cp_rd_b2:
   slli x1, x1, 2 # scale the index
   sub x31, x31, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b3:
-  .insn r 0x2f, 6, 120, x3, x15, x31 # lxsuwwu x3, (x31), x15; load 0x8797f6ec3c007a34
+  lxsuwwu x3, (x31), x15
   # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x3, Zilx_lxsuwwu_cg_cp_rd_b3, Zilx_lxsuwwu_cg_cp_rd_b3_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -926,7 +926,7 @@ Zilx_lxsuwwu_cg_cp_rd_b3:
   slli x5, x5, 2 # scale the index
   sub x30, x30, x5 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b4:
-  .insn r 0x2f, 6, 120, x4, x26, x30 # lxsuwwu x4, (x30), x26; load 0x426e3a1f20c97e43
+  lxsuwwu x4, (x30), x26
   # Check if x4 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x4, Zilx_lxsuwwu_cg_cp_rd_b4, Zilx_lxsuwwu_cg_cp_rd_b4_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -939,7 +939,7 @@ Zilx_lxsuwwu_cg_cp_rd_b4:
   slli x10, x10, 2 # scale the index
   sub x22, x22, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b5:
-  .insn r 0x2f, 6, 120, x5, x16, x22 # lxsuwwu x5, (x22), x16; load 0x62df2945dcd8a468
+  lxsuwwu x5, (x22), x16
   # Check if x5 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x5, Zilx_lxsuwwu_cg_cp_rd_b5, Zilx_lxsuwwu_cg_cp_rd_b5_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -952,7 +952,7 @@ Zilx_lxsuwwu_cg_cp_rd_b5:
   slli x16, x16, 2 # scale the index
   sub x7, x7, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b6:
-  .insn r 0x2f, 6, 120, x6, x9, x7 # lxsuwwu x6, (x7), x9; load 0x57ea95680ed89991
+  lxsuwwu x6, (x7), x9
   # Check if x6 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x6, Zilx_lxsuwwu_cg_cp_rd_b6, Zilx_lxsuwwu_cg_cp_rd_b6_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -960,7 +960,7 @@ Zilx_lxsuwwu_cg_cp_rd_b6:
 # Testcase cp_rd (Test destination rd = x7)
   addi x26, x20, 0 # copy target address into base
 Zilx_lxsuwwu_cg_cp_rd_b7:
-  .insn r 0x2f, 6, 120, x7, x0, x26 # lxsuwwu x7, (x26), x0; load 0xdb0671061e853d6c
+  lxsuwwu x7, (x26), x0
   # Check if x7 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x7, Zilx_lxsuwwu_cg_cp_rd_b7, Zilx_lxsuwwu_cg_cp_rd_b7_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -973,7 +973,7 @@ Zilx_lxsuwwu_cg_cp_rd_b7:
   slli x28, x28, 2 # scale the index
   sub x29, x29, x28 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b8:
-  .insn r 0x2f, 6, 120, x8, x10, x29 # lxsuwwu x8, (x29), x10; load 0x0007a701a2539ef4
+  lxsuwwu x8, (x29), x10
   # Check if x8 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x8, Zilx_lxsuwwu_cg_cp_rd_b8, Zilx_lxsuwwu_cg_cp_rd_b8_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -986,7 +986,7 @@ Zilx_lxsuwwu_cg_cp_rd_b8:
   slli x17, x17, 2 # scale the index
   sub x10, x10, x17 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b9:
-  .insn r 0x2f, 6, 120, x9, x29, x10 # lxsuwwu x9, (x10), x29; load 0xa54fcda487bb0280
+  lxsuwwu x9, (x10), x29
   # Check if x9 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x9, Zilx_lxsuwwu_cg_cp_rd_b9, Zilx_lxsuwwu_cg_cp_rd_b9_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -999,7 +999,7 @@ Zilx_lxsuwwu_cg_cp_rd_b9:
   slli x18, x18, 2 # scale the index
   sub x26, x26, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b10:
-  .insn r 0x2f, 6, 120, x10, x22, x26 # lxsuwwu x10, (x26), x22; load 0xd160a51f5621a07a
+  lxsuwwu x10, (x26), x22
   # Check if x10 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x10, Zilx_lxsuwwu_cg_cp_rd_b10, Zilx_lxsuwwu_cg_cp_rd_b10_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1012,7 +1012,7 @@ Zilx_lxsuwwu_cg_cp_rd_b10:
   slli x18, x18, 2 # scale the index
   sub x15, x15, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b11:
-  .insn r 0x2f, 6, 120, x11, x7, x15 # lxsuwwu x11, (x15), x7; load 0x45ae1a35494e6bd4
+  lxsuwwu x11, (x15), x7
   # Check if x11 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x11, Zilx_lxsuwwu_cg_cp_rd_b11, Zilx_lxsuwwu_cg_cp_rd_b11_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1025,7 +1025,7 @@ Zilx_lxsuwwu_cg_cp_rd_b11:
   slli x4, x4, 2 # scale the index
   sub x26, x26, x4 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b12:
-  .insn r 0x2f, 6, 120, x12, x2, x26 # lxsuwwu x12, (x26), x2; load 0xbc4ba9a29b234020
+  lxsuwwu x12, (x26), x2
   # Check if x12 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x19, x14, x13, x12, Zilx_lxsuwwu_cg_cp_rd_b12, Zilx_lxsuwwu_cg_cp_rd_b12_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1040,7 +1040,7 @@ Zilx_lxsuwwu_cg_cp_rd_b12:
   slli x6, x6, 2 # scale the index
   sub x31, x31, x6 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b13:
-  .insn r 0x2f, 6, 120, x13, x15, x31 # lxsuwwu x13, (x31), x15; load 0x3a49d785cf2c572d
+  lxsuwwu x13, (x31), x15
   # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x13, Zilx_lxsuwwu_cg_cp_rd_b13, Zilx_lxsuwwu_cg_cp_rd_b13_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1053,7 +1053,7 @@ Zilx_lxsuwwu_cg_cp_rd_b13:
   slli x23, x23, 2 # scale the index
   sub x16, x16, x23 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b14:
-  .insn r 0x2f, 6, 120, x14, x8, x16 # lxsuwwu x14, (x16), x8; load 0x00368d47cc4dc6fa
+  lxsuwwu x14, (x16), x8
   # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x14, Zilx_lxsuwwu_cg_cp_rd_b14, Zilx_lxsuwwu_cg_cp_rd_b14_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1066,7 +1066,7 @@ Zilx_lxsuwwu_cg_cp_rd_b14:
   slli x6, x6, 2 # scale the index
   sub x12, x12, x6 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b15:
-  .insn r 0x2f, 6, 120, x15, x17, x12 # lxsuwwu x15, (x12), x17; load 0xda32fe73f53f7dfc
+  lxsuwwu x15, (x12), x17
   # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x15, Zilx_lxsuwwu_cg_cp_rd_b15, Zilx_lxsuwwu_cg_cp_rd_b15_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1079,7 +1079,7 @@ Zilx_lxsuwwu_cg_cp_rd_b15:
   slli x29, x29, 2 # scale the index
   sub x2, x2, x29 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b16:
-  .insn r 0x2f, 6, 120, x16, x17, x2 # lxsuwwu x16, (x2), x17; load 0x738775c14f179dca
+  lxsuwwu x16, (x2), x17
   # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x16, Zilx_lxsuwwu_cg_cp_rd_b16, Zilx_lxsuwwu_cg_cp_rd_b16_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1092,7 +1092,7 @@ Zilx_lxsuwwu_cg_cp_rd_b16:
   slli x16, x16, 2 # scale the index
   sub x7, x7, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b17:
-  .insn r 0x2f, 6, 120, x17, x27, x7 # lxsuwwu x17, (x7), x27; load 0x8be0eb611c152f06
+  lxsuwwu x17, (x7), x27
   # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x17, Zilx_lxsuwwu_cg_cp_rd_b17, Zilx_lxsuwwu_cg_cp_rd_b17_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1105,7 +1105,7 @@ Zilx_lxsuwwu_cg_cp_rd_b17:
   slli x10, x10, 2 # scale the index
   sub x17, x17, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b18:
-  .insn r 0x2f, 6, 120, x18, x16, x17 # lxsuwwu x18, (x17), x16; load 0xe8d91159ad0db2c4
+  lxsuwwu x18, (x17), x16
   # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x19, x5, x4, x18, Zilx_lxsuwwu_cg_cp_rd_b18, Zilx_lxsuwwu_cg_cp_rd_b18_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1119,7 +1119,7 @@ Zilx_lxsuwwu_cg_cp_rd_b18:
   slli x1, x1, 2 # scale the index
   sub x6, x6, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b19:
-  .insn r 0x2f, 6, 120, x19, x22, x6 # lxsuwwu x19, (x6), x22; load 0x4ae94b60352db86c
+  lxsuwwu x19, (x6), x22
   # Check if x19 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x19, Zilx_lxsuwwu_cg_cp_rd_b19, Zilx_lxsuwwu_cg_cp_rd_b19_str)
   addi x20, x20, 1*SIG_STRIDE # increment data_ptr
@@ -1133,7 +1133,7 @@ Zilx_lxsuwwu_cg_cp_rd_b19:
   slli x10, x10, 2 # scale the index
   sub x24, x24, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b20:
-  .insn r 0x2f, 6, 120, x20, x8, x24 # lxsuwwu x20, (x24), x8; load 0xd6f83023df132843
+  lxsuwwu x20, (x24), x8
   # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x20, Zilx_lxsuwwu_cg_cp_rd_b20, Zilx_lxsuwwu_cg_cp_rd_b20_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1146,7 +1146,7 @@ Zilx_lxsuwwu_cg_cp_rd_b20:
   slli x1, x1, 2 # scale the index
   sub x17, x17, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b21:
-  .insn r 0x2f, 6, 120, x21, x30, x17 # lxsuwwu x21, (x17), x30; load 0xae410b5a88a08a02
+  lxsuwwu x21, (x17), x30
   # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x21, Zilx_lxsuwwu_cg_cp_rd_b21, Zilx_lxsuwwu_cg_cp_rd_b21_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1159,7 +1159,7 @@ Zilx_lxsuwwu_cg_cp_rd_b21:
   slli x31, x31, 2 # scale the index
   sub x7, x7, x31 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b22:
-  .insn r 0x2f, 6, 120, x22, x19, x7 # lxsuwwu x22, (x7), x19; load 0xc980aa169b75d876
+  lxsuwwu x22, (x7), x19
   # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x22, Zilx_lxsuwwu_cg_cp_rd_b22, Zilx_lxsuwwu_cg_cp_rd_b22_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1172,7 +1172,7 @@ Zilx_lxsuwwu_cg_cp_rd_b22:
   slli x11, x11, 2 # scale the index
   sub x29, x29, x11 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b23:
-  .insn r 0x2f, 6, 120, x23, x19, x29 # lxsuwwu x23, (x29), x19; load 0x28882331a9d32750
+  lxsuwwu x23, (x29), x19
   # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x23, Zilx_lxsuwwu_cg_cp_rd_b23, Zilx_lxsuwwu_cg_cp_rd_b23_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1185,7 +1185,7 @@ Zilx_lxsuwwu_cg_cp_rd_b23:
   slli x21, x21, 2 # scale the index
   sub x31, x31, x21 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b24:
-  .insn r 0x2f, 6, 120, x24, x18, x31 # lxsuwwu x24, (x31), x18; load 0x6323b6d9c0812236
+  lxsuwwu x24, (x31), x18
   # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x24, Zilx_lxsuwwu_cg_cp_rd_b24, Zilx_lxsuwwu_cg_cp_rd_b24_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1198,7 +1198,7 @@ Zilx_lxsuwwu_cg_cp_rd_b24:
   slli x29, x29, 2 # scale the index
   sub x17, x17, x29 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b25:
-  .insn r 0x2f, 6, 120, x25, x8, x17 # lxsuwwu x25, (x17), x8; load 0xc0ecfc1306fa035c
+  lxsuwwu x25, (x17), x8
   # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x25, Zilx_lxsuwwu_cg_cp_rd_b25, Zilx_lxsuwwu_cg_cp_rd_b25_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1211,7 +1211,7 @@ Zilx_lxsuwwu_cg_cp_rd_b25:
   slli x1, x1, 2 # scale the index
   sub x18, x18, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b26:
-  .insn r 0x2f, 6, 120, x26, x6, x18 # lxsuwwu x26, (x18), x6; load 0x4954760a592d1bad
+  lxsuwwu x26, (x18), x6
   # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x26, Zilx_lxsuwwu_cg_cp_rd_b26, Zilx_lxsuwwu_cg_cp_rd_b26_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1224,7 +1224,7 @@ Zilx_lxsuwwu_cg_cp_rd_b26:
   slli x24, x24, 2 # scale the index
   sub x23, x23, x24 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b27:
-  .insn r 0x2f, 6, 120, x27, x28, x23 # lxsuwwu x27, (x23), x28; load 0xac182e7845f2a9ea
+  lxsuwwu x27, (x23), x28
   # Check if x27 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x27, Zilx_lxsuwwu_cg_cp_rd_b27, Zilx_lxsuwwu_cg_cp_rd_b27_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1237,7 +1237,7 @@ Zilx_lxsuwwu_cg_cp_rd_b27:
   slli x23, x23, 2 # scale the index
   sub x13, x13, x23 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b28:
-  .insn r 0x2f, 6, 120, x28, x17, x13 # lxsuwwu x28, (x13), x17; load 0xa17277cff80ea14e
+  lxsuwwu x28, (x13), x17
   # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x28, Zilx_lxsuwwu_cg_cp_rd_b28, Zilx_lxsuwwu_cg_cp_rd_b28_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1250,7 +1250,7 @@ Zilx_lxsuwwu_cg_cp_rd_b28:
   slli x25, x25, 2 # scale the index
   sub x7, x7, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b29:
-  .insn r 0x2f, 6, 120, x29, x9, x7 # lxsuwwu x29, (x7), x9; load 0x380036c378dd775e
+  lxsuwwu x29, (x7), x9
   # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x29, Zilx_lxsuwwu_cg_cp_rd_b29, Zilx_lxsuwwu_cg_cp_rd_b29_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1263,7 +1263,7 @@ Zilx_lxsuwwu_cg_cp_rd_b29:
   slli x3, x3, 2 # scale the index
   sub x12, x12, x3 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b30:
-  .insn r 0x2f, 6, 120, x30, x17, x12 # lxsuwwu x30, (x12), x17; load 0x120800da442e62a6
+  lxsuwwu x30, (x12), x17
   # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x30, Zilx_lxsuwwu_cg_cp_rd_b30, Zilx_lxsuwwu_cg_cp_rd_b30_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1276,7 +1276,7 @@ Zilx_lxsuwwu_cg_cp_rd_b30:
   slli x26, x26, 2 # scale the index
   sub x2, x2, x26 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rd_b31:
-  .insn r 0x2f, 6, 120, x31, x18, x2 # lxsuwwu x31, (x2), x18; load 0x31419da70932ecc9
+  lxsuwwu x31, (x2), x18
   # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x31, Zilx_lxsuwwu_cg_cp_rd_b31, Zilx_lxsuwwu_cg_cp_rd_b31_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1293,7 +1293,7 @@ Zilx_lxsuwwu_cg_cp_rd_b31:
   slli x27, x27, 2 # scale the index
   sub x12, x12, x27 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x0:
-  .insn r 0x2f, 6, 120, x30, x9, x12 # lxsuwwu x30, (x12), x9; load 0x59bae7a1deb7f93f
+  lxsuwwu x30, (x12), x9
   # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x30, Zilx_lxsuwwu_cg_cp_rs1_edges_0x0, Zilx_lxsuwwu_cg_cp_rs1_edges_0x0_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1306,7 +1306,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x0:
   slli x22, x22, 2 # scale the index
   sub x7, x7, x22 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x1:
-  .insn r 0x2f, 6, 120, x31, x25, x7 # lxsuwwu x31, (x7), x25; load 0x2870d73843af669d
+  lxsuwwu x31, (x7), x25
   # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x31, Zilx_lxsuwwu_cg_cp_rs1_edges_0x1, Zilx_lxsuwwu_cg_cp_rs1_edges_0x1_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1319,7 +1319,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x1:
   slli x22, x22, 2 # scale the index
   sub x21, x21, x22 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x2:
-  .insn r 0x2f, 6, 120, x18, x10, x21 # lxsuwwu x18, (x21), x10; load 0xd78f7b2573a97a39
+  lxsuwwu x18, (x21), x10
   # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x18, Zilx_lxsuwwu_cg_cp_rs1_edges_0x2, Zilx_lxsuwwu_cg_cp_rs1_edges_0x2_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1332,7 +1332,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x2:
   slli x10, x10, 2 # scale the index
   sub x30, x30, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000000:
-  .insn r 0x2f, 6, 120, x20, x13, x30 # lxsuwwu x20, (x30), x13; load 0xa3138ab950884b13
+  lxsuwwu x20, (x30), x13
   # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x20, Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000000, Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000000_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1345,7 +1345,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000000:
   slli x17, x17, 2 # scale the index
   sub x25, x25, x17 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000001:
-  .insn r 0x2f, 6, 120, x29, x18, x25 # lxsuwwu x29, (x25), x18; load 0xc6a42e4dd2de7c36
+  lxsuwwu x29, (x25), x18
   # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x29, Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000001, Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000001_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1358,7 +1358,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x8000000000000001:
   slli x8, x8, 2 # scale the index
   sub x20, x20, x8 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffffffffffff:
-  .insn r 0x2f, 6, 120, x28, x18, x20 # lxsuwwu x28, (x20), x18; load 0xaff78cf337a46188
+  lxsuwwu x28, (x20), x18
   # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x28, Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffffffffffff, Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffffffffffff_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1371,7 +1371,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffffffffffff:
   slli x25, x25, 2 # scale the index
   sub x21, x21, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x7ffffffffffffffe:
-  .insn r 0x2f, 6, 120, x27, x3, x21 # lxsuwwu x27, (x21), x3; load 0x82cfa461ceac98cb
+  lxsuwwu x27, (x21), x3
   # Check if x27 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x27, Zilx_lxsuwwu_cg_cp_rs1_edges_0x7ffffffffffffffe, Zilx_lxsuwwu_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1384,7 +1384,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x7ffffffffffffffe:
   slli x11, x11, 2 # scale the index
   sub x17, x17, x11 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffffffffffff:
-  .insn r 0x2f, 6, 120, x21, x1, x17 # lxsuwwu x21, (x17), x1; load 0x8c756a4f866bebaf
+  lxsuwwu x21, (x17), x1
   # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x21, Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffffffffffff, Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffffffffffff_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1397,7 +1397,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffffffffffff:
   slli x19, x19, 2 # scale the index
   sub x25, x25, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffffffffffe:
-  .insn r 0x2f, 6, 120, x11, x24, x25 # lxsuwwu x11, (x25), x24; load 0x24d1705813e7dd8b
+  lxsuwwu x11, (x25), x24
   # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x11, Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffffffffffe, Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffffffffffe_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1410,7 +1410,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffffffffffe:
   slli x19, x19, 2 # scale the index
   sub x13, x13, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x5bbc887763ae86f2:
-  .insn r 0x2f, 6, 120, x2, x25, x13 # lxsuwwu x2, (x13), x25; load 0x679900a45f01433c
+  lxsuwwu x2, (x13), x25
   # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x2, Zilx_lxsuwwu_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zilx_lxsuwwu_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1423,7 +1423,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x5bbc887763ae86f2:
   slli x23, x23, 2 # scale the index
   sub x13, x13, x23 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
-  .insn r 0x2f, 6, 120, x28, x2, x13 # lxsuwwu x28, (x13), x2; load 0x44250fd886f9bc3e
+  lxsuwwu x28, (x13), x2
   # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x28, Zilx_lxsuwwu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zilx_lxsuwwu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1436,7 +1436,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
   slli x31, x31, 2 # scale the index
   sub x6, x6, x31 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x5555555555555555:
-  .insn r 0x2f, 6, 120, x14, x30, x6 # lxsuwwu x14, (x6), x30; load 0xd11177884485146f
+  lxsuwwu x14, (x6), x30
   # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x14, Zilx_lxsuwwu_cg_cp_rs1_edges_0x5555555555555555, Zilx_lxsuwwu_cg_cp_rs1_edges_0x5555555555555555_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1449,7 +1449,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x5555555555555555:
   slli x1, x1, 2 # scale the index
   sub x9, x9, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffff:
-  .insn r 0x2f, 6, 120, x29, x27, x9 # lxsuwwu x29, (x9), x27; load 0xc0e050dc41bf69a1
+  lxsuwwu x29, (x9), x27
   # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x29, Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffff, Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffff_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1462,7 +1462,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0xffffffff:
   slli x20, x20, 2 # scale the index
   sub x14, x14, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffe:
-  .insn r 0x2f, 6, 120, x9, x3, x14 # lxsuwwu x9, (x14), x3; load 0x1973be90d4767e55
+  lxsuwwu x9, (x14), x3
   # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x9, Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffe, Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffe_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1475,7 +1475,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0xfffffffe:
   slli x11, x11, 2 # scale the index
   sub x7, x7, x11 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000000:
-  .insn r 0x2f, 6, 120, x24, x20, x7 # lxsuwwu x24, (x7), x20; load 0xa9d202f07d524122
+  lxsuwwu x24, (x7), x20
   # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x24, Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000000, Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000000_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1488,7 +1488,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000000:
   slli x17, x17, 2 # scale the index
   sub x23, x23, x17 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000001:
-  .insn r 0x2f, 6, 120, x11, x8, x23 # lxsuwwu x11, (x23), x8; load 0xdad9409ad83afcad
+  lxsuwwu x11, (x23), x8
   # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x11, Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000001, Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000001_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1501,7 +1501,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x100000001:
   slli x17, x17, 2 # scale the index
   sub x30, x30, x17 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x80000000:
-  .insn r 0x2f, 6, 120, x28, x24, x30 # lxsuwwu x28, (x30), x24; load 0xc0dd900cbf493aad
+  lxsuwwu x28, (x30), x24
   # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x28, Zilx_lxsuwwu_cg_cp_rs1_edges_0x80000000, Zilx_lxsuwwu_cg_cp_rs1_edges_0x80000000_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1514,7 +1514,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x80000000:
   slli x10, x10, 2 # scale the index
   sub x17, x17, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffff:
-  .insn r 0x2f, 6, 120, x22, x25, x17 # lxsuwwu x22, (x17), x25; load 0x3fe29f48c4cde0af
+  lxsuwwu x22, (x17), x25
   # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x22, Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffff, Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffff_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1526,7 +1526,7 @@ Zilx_lxsuwwu_cg_cp_rs1_edges_0x7fffffff:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
   addi x23, x16, 0 # copy target address into base
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b0:
-  .insn r 0x2f, 6, 120, x0, x0, x23 # lxsuwwu x0, (x23), x0; load 0x28bf300bd485b45a
+  lxsuwwu x0, (x23), x0
   # Check if x0 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x0, Zilx_lxsuwwu_cg_cmp_rd_rs1_b0, Zilx_lxsuwwu_cg_cmp_rd_rs1_b0_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1539,7 +1539,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b0:
   slli x18, x18, 2 # scale the index
   sub x25, x25, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b1:
-  .insn r 0x2f, 6, 120, x1, x1, x25 # lxsuwwu x1, (x25), x1; load 0x13dd27eb680ef5ca
+  lxsuwwu x1, (x25), x1
   # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x1, Zilx_lxsuwwu_cg_cmp_rd_rs1_b1, Zilx_lxsuwwu_cg_cmp_rd_rs1_b1_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1552,7 +1552,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b1:
   slli x19, x19, 2 # scale the index
   sub x28, x28, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b2:
-  .insn r 0x2f, 6, 120, x2, x2, x28 # lxsuwwu x2, (x28), x2; load 0x38461f69abeb8637
+  lxsuwwu x2, (x28), x2
   # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x2, Zilx_lxsuwwu_cg_cmp_rd_rs1_b2, Zilx_lxsuwwu_cg_cmp_rd_rs1_b2_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1565,7 +1565,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b2:
   slli x27, x27, 2 # scale the index
   sub x26, x26, x27 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b3:
-  .insn r 0x2f, 6, 120, x3, x3, x26 # lxsuwwu x3, (x26), x3; load 0xf5aaf1073e1f2185
+  lxsuwwu x3, (x26), x3
   # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x3, Zilx_lxsuwwu_cg_cmp_rd_rs1_b3, Zilx_lxsuwwu_cg_cmp_rd_rs1_b3_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1580,7 +1580,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b3:
   slli x1, x1, 2 # scale the index
   sub x14, x14, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b4:
-  .insn r 0x2f, 6, 120, x4, x4, x14 # lxsuwwu x4, (x14), x4; load 0x2a3fddc45b4cefd1
+  lxsuwwu x4, (x14), x4
   # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x4, Zilx_lxsuwwu_cg_cmp_rd_rs1_b4, Zilx_lxsuwwu_cg_cmp_rd_rs1_b4_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1593,7 +1593,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b4:
   slli x24, x24, 2 # scale the index
   sub x29, x29, x24 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b5:
-  .insn r 0x2f, 6, 120, x5, x5, x29 # lxsuwwu x5, (x29), x5; load 0xe5e1c638877fb175
+  lxsuwwu x5, (x29), x5
   # Check if x5 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x5, Zilx_lxsuwwu_cg_cmp_rd_rs1_b5, Zilx_lxsuwwu_cg_cmp_rd_rs1_b5_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1606,7 +1606,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b5:
   slli x30, x30, 2 # scale the index
   sub x13, x13, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b6:
-  .insn r 0x2f, 6, 120, x6, x6, x13 # lxsuwwu x6, (x13), x6; load 0x6384040781c64999
+  lxsuwwu x6, (x13), x6
   # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x6, Zilx_lxsuwwu_cg_cmp_rd_rs1_b6, Zilx_lxsuwwu_cg_cmp_rd_rs1_b6_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1621,7 +1621,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b6:
   slli x5, x5, 2 # scale the index
   sub x3, x3, x5 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b7:
-  .insn r 0x2f, 6, 120, x7, x7, x3 # lxsuwwu x7, (x3), x7; load 0xe9c0da7589479b35
+  lxsuwwu x7, (x3), x7
   # Check if x7 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x15, x14, x13, x7, Zilx_lxsuwwu_cg_cmp_rd_rs1_b7, Zilx_lxsuwwu_cg_cmp_rd_rs1_b7_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1634,7 +1634,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b7:
   slli x12, x12, 2 # scale the index
   sub x9, x9, x12 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b8:
-  .insn r 0x2f, 6, 120, x8, x8, x9 # lxsuwwu x8, (x9), x8; load 0xb79ee05cbc4733bc
+  lxsuwwu x8, (x9), x8
   # Check if x8 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x15, x14, x13, x8, Zilx_lxsuwwu_cg_cmp_rd_rs1_b8, Zilx_lxsuwwu_cg_cmp_rd_rs1_b8_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1647,7 +1647,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b8:
   slli x20, x20, 2 # scale the index
   sub x19, x19, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b9:
-  .insn r 0x2f, 6, 120, x9, x9, x19 # lxsuwwu x9, (x19), x9; load 0x8e7715ea704e6e70
+  lxsuwwu x9, (x19), x9
   # Check if x9 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x15, x14, x13, x9, Zilx_lxsuwwu_cg_cmp_rd_rs1_b9, Zilx_lxsuwwu_cg_cmp_rd_rs1_b9_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1660,7 +1660,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b9:
   slli x9, x9, 2 # scale the index
   sub x20, x20, x9 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b10:
-  .insn r 0x2f, 6, 120, x10, x10, x20 # lxsuwwu x10, (x20), x10; load 0xe245ffe8c8cf3145
+  lxsuwwu x10, (x20), x10
   # Check if x10 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x15, x14, x13, x10, Zilx_lxsuwwu_cg_cmp_rd_rs1_b10, Zilx_lxsuwwu_cg_cmp_rd_rs1_b10_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1673,7 +1673,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b10:
   slli x29, x29, 2 # scale the index
   sub x22, x22, x29 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b11:
-  .insn r 0x2f, 6, 120, x11, x11, x22 # lxsuwwu x11, (x22), x11; load 0xd3f89387dae0821f
+  lxsuwwu x11, (x22), x11
   # Check if x11 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x15, x14, x13, x11, Zilx_lxsuwwu_cg_cmp_rd_rs1_b11, Zilx_lxsuwwu_cg_cmp_rd_rs1_b11_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1686,7 +1686,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b11:
   slli x23, x23, 2 # scale the index
   sub x4, x4, x23 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b12:
-  .insn r 0x2f, 6, 120, x12, x12, x4 # lxsuwwu x12, (x4), x12; load 0x1e3a9b0746945c7a
+  lxsuwwu x12, (x4), x12
   # Check if x12 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x15, x14, x13, x12, Zilx_lxsuwwu_cg_cmp_rd_rs1_b12, Zilx_lxsuwwu_cg_cmp_rd_rs1_b12_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1701,7 +1701,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b12:
   slli x18, x18, 2 # scale the index
   sub x20, x20, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b13:
-  .insn r 0x2f, 6, 120, x13, x13, x20 # lxsuwwu x13, (x20), x13; load 0x8038d008c39e63fa
+  lxsuwwu x13, (x20), x13
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x13, Zilx_lxsuwwu_cg_cmp_rd_rs1_b13, Zilx_lxsuwwu_cg_cmp_rd_rs1_b13_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1714,7 +1714,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b13:
   slli x13, x13, 2 # scale the index
   sub x19, x19, x13 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b14:
-  .insn r 0x2f, 6, 120, x14, x14, x19 # lxsuwwu x14, (x19), x14; load 0x87365889864d5e73
+  lxsuwwu x14, (x19), x14
   # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x14, Zilx_lxsuwwu_cg_cmp_rd_rs1_b14, Zilx_lxsuwwu_cg_cmp_rd_rs1_b14_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1728,7 +1728,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b14:
   slli x25, x25, 2 # scale the index
   sub x1, x1, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b15:
-  .insn r 0x2f, 6, 120, x15, x15, x1 # lxsuwwu x15, (x1), x15; load 0x013cca79be6316c8
+  lxsuwwu x15, (x1), x15
   # Check if x15 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x15, Zilx_lxsuwwu_cg_cmp_rd_rs1_b15, Zilx_lxsuwwu_cg_cmp_rd_rs1_b15_str)
   addi x16, x16, 1*SIG_STRIDE # increment data_ptr
@@ -1742,7 +1742,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b15:
   slli x17, x17, 2 # scale the index
   sub x1, x1, x17 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b16:
-  .insn r 0x2f, 6, 120, x16, x16, x1 # lxsuwwu x16, (x1), x16; load 0x603dd050bf4b01e7
+  lxsuwwu x16, (x1), x16
   # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x16, Zilx_lxsuwwu_cg_cmp_rd_rs1_b16, Zilx_lxsuwwu_cg_cmp_rd_rs1_b16_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1755,7 +1755,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b16:
   slli x6, x6, 2 # scale the index
   sub x31, x31, x6 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b17:
-  .insn r 0x2f, 6, 120, x17, x17, x31 # lxsuwwu x17, (x31), x17; load 0x40388251afb63f72
+  lxsuwwu x17, (x31), x17
   # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x17, Zilx_lxsuwwu_cg_cmp_rd_rs1_b17, Zilx_lxsuwwu_cg_cmp_rd_rs1_b17_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1768,7 +1768,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b17:
   slli x21, x21, 2 # scale the index
   sub x7, x7, x21 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b18:
-  .insn r 0x2f, 6, 120, x18, x18, x7 # lxsuwwu x18, (x7), x18; load 0x0b25e51ab4cde163
+  lxsuwwu x18, (x7), x18
   # Check if x18 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x18, Zilx_lxsuwwu_cg_cmp_rd_rs1_b18, Zilx_lxsuwwu_cg_cmp_rd_rs1_b18_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1781,7 +1781,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b18:
   slli x21, x21, 2 # scale the index
   sub x7, x7, x21 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b19:
-  .insn r 0x2f, 6, 120, x19, x19, x7 # lxsuwwu x19, (x7), x19; load 0xe247fa50744a906d
+  lxsuwwu x19, (x7), x19
   # Check if x19 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x19, Zilx_lxsuwwu_cg_cmp_rd_rs1_b19, Zilx_lxsuwwu_cg_cmp_rd_rs1_b19_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1794,7 +1794,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b19:
   slli x7, x7, 2 # scale the index
   sub x16, x16, x7 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b20:
-  .insn r 0x2f, 6, 120, x20, x20, x16 # lxsuwwu x20, (x16), x20; load 0x5d93356f451964fa
+  lxsuwwu x20, (x16), x20
   # Check if x20 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x20, Zilx_lxsuwwu_cg_cmp_rd_rs1_b20, Zilx_lxsuwwu_cg_cmp_rd_rs1_b20_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1807,7 +1807,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b20:
   slli x18, x18, 2 # scale the index
   sub x14, x14, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b21:
-  .insn r 0x2f, 6, 120, x21, x21, x14 # lxsuwwu x21, (x14), x21; load 0x49f74f94b4162518
+  lxsuwwu x21, (x14), x21
   # Check if x21 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x21, Zilx_lxsuwwu_cg_cmp_rd_rs1_b21, Zilx_lxsuwwu_cg_cmp_rd_rs1_b21_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1820,7 +1820,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b21:
   slli x16, x16, 2 # scale the index
   sub x13, x13, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b22:
-  .insn r 0x2f, 6, 120, x22, x22, x13 # lxsuwwu x22, (x13), x22; load 0xc90ed204498ff758
+  lxsuwwu x22, (x13), x22
   # Check if x22 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x22, Zilx_lxsuwwu_cg_cmp_rd_rs1_b22, Zilx_lxsuwwu_cg_cmp_rd_rs1_b22_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1833,7 +1833,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b22:
   slli x1, x1, 2 # scale the index
   sub x22, x22, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b23:
-  .insn r 0x2f, 6, 120, x23, x23, x22 # lxsuwwu x23, (x22), x23; load 0x3797f55c9a6065aa
+  lxsuwwu x23, (x22), x23
   # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x23, Zilx_lxsuwwu_cg_cmp_rd_rs1_b23, Zilx_lxsuwwu_cg_cmp_rd_rs1_b23_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1846,7 +1846,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b23:
   slli x26, x26, 2 # scale the index
   sub x11, x11, x26 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b24:
-  .insn r 0x2f, 6, 120, x24, x24, x11 # lxsuwwu x24, (x11), x24; load 0x47ff9c0c3bfde64f
+  lxsuwwu x24, (x11), x24
   # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x24, Zilx_lxsuwwu_cg_cmp_rd_rs1_b24, Zilx_lxsuwwu_cg_cmp_rd_rs1_b24_str)
   addi x25, x25, 1*SIG_STRIDE # increment data_ptr
@@ -1860,7 +1860,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b24:
   slli x6, x6, 2 # scale the index
   sub x13, x13, x6 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b25:
-  .insn r 0x2f, 6, 120, x25, x25, x13 # lxsuwwu x25, (x13), x25; load 0x19ec2f264fa75698
+  lxsuwwu x25, (x13), x25
   # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x25, Zilx_lxsuwwu_cg_cmp_rd_rs1_b25, Zilx_lxsuwwu_cg_cmp_rd_rs1_b25_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1873,7 +1873,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b25:
   slli x1, x1, 2 # scale the index
   sub x30, x30, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b26:
-  .insn r 0x2f, 6, 120, x26, x26, x30 # lxsuwwu x26, (x30), x26; load 0xf068be4bf21f028c
+  lxsuwwu x26, (x30), x26
   # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x26, Zilx_lxsuwwu_cg_cmp_rd_rs1_b26, Zilx_lxsuwwu_cg_cmp_rd_rs1_b26_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1886,7 +1886,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b26:
   slli x30, x30, 2 # scale the index
   sub x9, x9, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b27:
-  .insn r 0x2f, 6, 120, x27, x27, x9 # lxsuwwu x27, (x9), x27; load 0x50692e29eeb77793
+  lxsuwwu x27, (x9), x27
   # Check if x27 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x27, Zilx_lxsuwwu_cg_cmp_rd_rs1_b27, Zilx_lxsuwwu_cg_cmp_rd_rs1_b27_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1899,7 +1899,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b27:
   slli x16, x16, 2 # scale the index
   sub x8, x8, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b28:
-  .insn r 0x2f, 6, 120, x28, x28, x8 # lxsuwwu x28, (x8), x28; load 0xd67a88a8213356e9
+  lxsuwwu x28, (x8), x28
   # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x28, Zilx_lxsuwwu_cg_cmp_rd_rs1_b28, Zilx_lxsuwwu_cg_cmp_rd_rs1_b28_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1913,7 +1913,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b28:
   slli x1, x1, 2 # scale the index
   sub x30, x30, x1 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b29:
-  .insn r 0x2f, 6, 120, x29, x29, x30 # lxsuwwu x29, (x30), x29; load 0x15c98b5bff4ecbc6
+  lxsuwwu x29, (x30), x29
   # Check if x29 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x29, Zilx_lxsuwwu_cg_cmp_rd_rs1_b29, Zilx_lxsuwwu_cg_cmp_rd_rs1_b29_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1926,7 +1926,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b29:
   slli x18, x18, 2 # scale the index
   sub x3, x3, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b30:
-  .insn r 0x2f, 6, 120, x30, x30, x3 # lxsuwwu x30, (x3), x30; load 0xb7df5191fe0a46d2
+  lxsuwwu x30, (x3), x30
   # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x30, Zilx_lxsuwwu_cg_cmp_rd_rs1_b30, Zilx_lxsuwwu_cg_cmp_rd_rs1_b30_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1939,7 +1939,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b30:
   slli x30, x30, 2 # scale the index
   sub x7, x7, x30 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs1_b31:
-  .insn r 0x2f, 6, 120, x31, x31, x7 # lxsuwwu x31, (x7), x31; load 0xab0ae8ceb43949a3
+  lxsuwwu x31, (x7), x31
   # Check if x31 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x31, Zilx_lxsuwwu_cg_cmp_rd_rs1_b31, Zilx_lxsuwwu_cg_cmp_rd_rs1_b31_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1956,7 +1956,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs1_b31:
   slli x7, x7, 2 # scale the index
   sub x1, x1, x7 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b1:
-  .insn r 0x2f, 6, 120, x1, x9, x1 # lxsuwwu x1, (x1), x9; load 0x2e3de8a288199131
+  lxsuwwu x1, (x1), x9
   # Check if x1 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x1, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b1, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b1_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1969,7 +1969,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b1:
   slli x10, x10, 2 # scale the index
   sub x2, x2, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b2:
-  .insn r 0x2f, 6, 120, x2, x29, x2 # lxsuwwu x2, (x2), x29; load 0x9349e5e7501ea1ce
+  lxsuwwu x2, (x2), x29
   # Check if x2 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x2, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b2, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b2_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1982,7 +1982,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b2:
   slli x15, x15, 2 # scale the index
   sub x3, x3, x15 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b3:
-  .insn r 0x2f, 6, 120, x3, x11, x3 # lxsuwwu x3, (x3), x11; load 0x0e11121b22a9c2b1
+  lxsuwwu x3, (x3), x11
   # Check if x3 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x3, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b3, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b3_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -1997,7 +1997,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b3:
   slli x12, x12, 2 # scale the index
   sub x4, x4, x12 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b4:
-  .insn r 0x2f, 6, 120, x4, x6, x4 # lxsuwwu x4, (x4), x6; load 0x3fd521c8c6a90710
+  lxsuwwu x4, (x4), x6
   # Check if x4 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x16, x8, x7, x4, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b4, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b4_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2010,7 +2010,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b4:
   slli x20, x20, 2 # scale the index
   sub x5, x5, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b5:
-  .insn r 0x2f, 6, 120, x5, x24, x5 # lxsuwwu x5, (x5), x24; load 0xa42f8661a22cc58a
+  lxsuwwu x5, (x5), x24
   # Check if x5 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x16, x8, x7, x5, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b5, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b5_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2023,7 +2023,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b5:
   slli x19, x19, 2 # scale the index
   sub x6, x6, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b6:
-  .insn r 0x2f, 6, 120, x6, x2, x6 # lxsuwwu x6, (x6), x2; load 0x8246ddc1b0c4a28d
+  lxsuwwu x6, (x6), x2
   # Check if x6 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x16, x8, x7, x6, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b6, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b6_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2038,7 +2038,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b6:
   slli x4, x4, 2 # scale the index
   sub x7, x7, x4 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b7:
-  .insn r 0x2f, 6, 120, x7, x27, x7 # lxsuwwu x7, (x7), x27; load 0xe666c1b6f02fa995
+  lxsuwwu x7, (x7), x27
   # Check if x7 contains the expected result. x16 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x16, x14, x13, x7, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b7, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b7_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2051,7 +2051,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b7:
   slli x5, x5, 2 # scale the index
   sub x8, x8, x5 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b8:
-  .insn r 0x2f, 6, 120, x8, x22, x8 # lxsuwwu x8, (x8), x22; load 0xe1f3bc5af2d9a0f4
+  lxsuwwu x8, (x8), x22
   # Check if x8 contains the expected result. x16 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x16, x14, x13, x8, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b8, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b8_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2064,7 +2064,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b8:
   slli x4, x4, 2 # scale the index
   sub x9, x9, x4 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b9:
-  .insn r 0x2f, 6, 120, x9, x12, x9 # lxsuwwu x9, (x9), x12; load 0x1e6311c5cd8067f4
+  lxsuwwu x9, (x9), x12
   # Check if x9 contains the expected result. x16 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x16, x14, x13, x9, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b9, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b9_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2077,7 +2077,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b9:
   slli x6, x6, 2 # scale the index
   sub x10, x10, x6 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b10:
-  .insn r 0x2f, 6, 120, x10, x1, x10 # lxsuwwu x10, (x10), x1; load 0xcf7ab07922e3e8f4
+  lxsuwwu x10, (x10), x1
   # Check if x10 contains the expected result. x16 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x16, x14, x13, x10, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b10, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b10_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2090,7 +2090,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b10:
   slli x5, x5, 2 # scale the index
   sub x11, x11, x5 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b11:
-  .insn r 0x2f, 6, 120, x11, x18, x11 # lxsuwwu x11, (x11), x18; load 0x4f8591c3dfa2b849
+  lxsuwwu x11, (x11), x18
   # Check if x11 contains the expected result. x16 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x16, x14, x13, x11, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b11, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b11_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2103,7 +2103,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b11:
   slli x9, x9, 2 # scale the index
   sub x12, x12, x9 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b12:
-  .insn r 0x2f, 6, 120, x12, x31, x12 # lxsuwwu x12, (x12), x31; load 0x5221faf2ec19d246
+  lxsuwwu x12, (x12), x31
   # Check if x12 contains the expected result. x16 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x16, x14, x13, x12, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b12, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b12_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2118,7 +2118,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b12:
   slli x15, x15, 2 # scale the index
   sub x13, x13, x15 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b13:
-  .insn r 0x2f, 6, 120, x13, x14, x13 # lxsuwwu x13, (x13), x14; load 0xa0f1dccc249e4159
+  lxsuwwu x13, (x13), x14
   # Check if x13 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x13, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b13, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b13_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2131,7 +2131,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b13:
   slli x7, x7, 2 # scale the index
   sub x14, x14, x7 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b14:
-  .insn r 0x2f, 6, 120, x14, x26, x14 # lxsuwwu x14, (x14), x26; load 0x123ac28a41db99ec
+  lxsuwwu x14, (x14), x26
   # Check if x14 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x14, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b14, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b14_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2144,7 +2144,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b14:
   slli x31, x31, 2 # scale the index
   sub x15, x15, x31 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b15:
-  .insn r 0x2f, 6, 120, x15, x8, x15 # lxsuwwu x15, (x15), x8; load 0xf2cb8ed4235126e3
+  lxsuwwu x15, (x15), x8
   # Check if x15 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x15, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b15, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b15_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2158,7 +2158,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b15:
   slli x29, x29, 2 # scale the index
   sub x16, x16, x29 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b16:
-  .insn r 0x2f, 6, 120, x16, x30, x16 # lxsuwwu x16, (x16), x30; load 0x0c356579a314152a
+  lxsuwwu x16, (x16), x30
   # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x16, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b16, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b16_str)
   addi x17, x17, 1*SIG_STRIDE # increment data_ptr
@@ -2172,7 +2172,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b16:
   slli x21, x21, 2 # scale the index
   sub x17, x17, x21 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b17:
-  .insn r 0x2f, 6, 120, x17, x2, x17 # lxsuwwu x17, (x17), x2; load 0xe0ac5795527e68b4
+  lxsuwwu x17, (x17), x2
   # Check if x17 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x17, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b17, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b17_str)
   addi x18, x18, 1*SIG_STRIDE # increment data_ptr
@@ -2186,7 +2186,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b17:
   slli x10, x10, 2 # scale the index
   sub x18, x18, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b18:
-  .insn r 0x2f, 6, 120, x18, x20, x18 # lxsuwwu x18, (x18), x20; load 0xc0ed270006b3528f
+  lxsuwwu x18, (x18), x20
   # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x18, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b18, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b18_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2199,7 +2199,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b18:
   slli x3, x3, 2 # scale the index
   sub x19, x19, x3 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b19:
-  .insn r 0x2f, 6, 120, x19, x14, x19 # lxsuwwu x19, (x19), x14; load 0x6b4ce187956726c9
+  lxsuwwu x19, (x19), x14
   # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x19, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b19, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b19_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2212,7 +2212,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b19:
   slli x10, x10, 2 # scale the index
   sub x20, x20, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b20:
-  .insn r 0x2f, 6, 120, x20, x21, x20 # lxsuwwu x20, (x20), x21; load 0x7497546a1a9b715d
+  lxsuwwu x20, (x20), x21
   # Check if x20 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x20, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b20, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b20_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2225,7 +2225,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b20:
   slli x11, x11, 2 # scale the index
   sub x21, x21, x11 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b21:
-  .insn r 0x2f, 6, 120, x21, x26, x21 # lxsuwwu x21, (x21), x26; load 0x7828556c879d64dd
+  lxsuwwu x21, (x21), x26
   # Check if x21 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x21, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b21, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b21_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2238,7 +2238,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b21:
   slli x18, x18, 2 # scale the index
   sub x22, x22, x18 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b22:
-  .insn r 0x2f, 6, 120, x22, x19, x22 # lxsuwwu x22, (x22), x19; load 0x1b10edc14739a978
+  lxsuwwu x22, (x22), x19
   # Check if x22 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x22, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b22, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b22_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2251,7 +2251,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b22:
   slli x16, x16, 2 # scale the index
   sub x23, x23, x16 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b23:
-  .insn r 0x2f, 6, 120, x23, x11, x23 # lxsuwwu x23, (x23), x11; load 0xf9f567868bd954dd
+  lxsuwwu x23, (x23), x11
   # Check if x23 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x23, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b23, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b23_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2264,7 +2264,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b23:
   slli x28, x28, 2 # scale the index
   sub x24, x24, x28 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b24:
-  .insn r 0x2f, 6, 120, x24, x2, x24 # lxsuwwu x24, (x24), x2; load 0xcf125ad820f5e08e
+  lxsuwwu x24, (x24), x2
   # Check if x24 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x24, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b24, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b24_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2277,7 +2277,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b24:
   slli x17, x17, 2 # scale the index
   sub x25, x25, x17 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b25:
-  .insn r 0x2f, 6, 120, x25, x3, x25 # lxsuwwu x25, (x25), x3; load 0x33ef93e1044fcee1
+  lxsuwwu x25, (x25), x3
   # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x25, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b25, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b25_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2290,7 +2290,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b25:
   slli x13, x13, 2 # scale the index
   sub x26, x26, x13 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b26:
-  .insn r 0x2f, 6, 120, x26, x29, x26 # lxsuwwu x26, (x26), x29; load 0x68fcfab5ea5866f3
+  lxsuwwu x26, (x26), x29
   # Check if x26 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x26, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b26, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b26_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2303,7 +2303,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b26:
   slli x10, x10, 2 # scale the index
   sub x27, x27, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b27:
-  .insn r 0x2f, 6, 120, x27, x22, x27 # lxsuwwu x27, (x27), x22; load 0x604e6474c2e33898
+  lxsuwwu x27, (x27), x22
   # Check if x27 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x27, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b27, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b27_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2316,7 +2316,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b27:
   slli x23, x23, 2 # scale the index
   sub x28, x28, x23 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b28:
-  .insn r 0x2f, 6, 120, x28, x3, x28 # lxsuwwu x28, (x28), x3; load 0x6011ffaaa33504a2
+  lxsuwwu x28, (x28), x3
   # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x28, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b28, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b28_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2329,7 +2329,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b28:
   slli x27, x27, 2 # scale the index
   sub x29, x29, x27 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b29:
-  .insn r 0x2f, 6, 120, x29, x31, x29 # lxsuwwu x29, (x29), x31; load 0x01b196ac0164d0db
+  lxsuwwu x29, (x29), x31
   # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x29, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b29, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b29_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2342,7 +2342,7 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b29:
   slli x25, x25, 2 # scale the index
   sub x30, x30, x25 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b30:
-  .insn r 0x2f, 6, 120, x30, x16, x30 # lxsuwwu x30, (x30), x16; load 0xa61cacb0512afdba
+  lxsuwwu x30, (x30), x16
   # Check if x30 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x30, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b30, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b30_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2355,39 +2355,39 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b30:
   slli x15, x15, 2 # scale the index
   sub x31, x31, x15 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b31:
-  .insn r 0x2f, 6, 120, x31, x24, x31 # lxsuwwu x31, (x31), x24; load 0x531c9d551d3befb9
+  lxsuwwu x31, (x31), x24
   # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x31, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b31, Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b31_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
-// cp_align_zilx_word
+// cp_align_word
 /////////////////////////////////
 
-# Testcase cp_align_zilx_word (address[2:0] = 000)
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load index: x13 = 0x9aff86f5ac9f0f98
-  addi x11, x1, 0 # copy target address into base
-  slli x16, x13, 32 # discard the upper 32 index bits
-  srli x16, x16, 32 # zero-extend the 32-bit index
-  slli x16, x16, 2 # scale the index
-  sub x11, x11, x16 # choose base so base + index selects test data
-Zilx_lxsuwwu_cg_cp_align_zilx_word_b0:
-  .insn r 0x2f, 6, 120, x14, x13, x11 # lxsuwwu x14, (x11), x13; load 0x1ec2483b2190188e
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zilx_lxsuwwu_cg_cp_align_zilx_word_b0, Zilx_lxsuwwu_cg_cp_align_zilx_word_b0_str)
+# Testcase cp_align_word (address[2:0] = 000)
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load index: x30 = 0x685d98ac9b454932
+  addi x27, x1, 0 # copy target address into base
+  slli x20, x30, 32 # discard the upper 32 index bits
+  srli x20, x20, 32 # zero-extend the 32-bit index
+  slli x20, x20, 2 # scale the index
+  sub x27, x27, x20 # choose base so base + index selects test data
+Zilx_lxsuwwu_cg_cp_align_word_b0:
+  lxsuwwu x15, (x27), x30
+  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x15, Zilx_lxsuwwu_cg_cp_align_word_b0, Zilx_lxsuwwu_cg_cp_align_word_b0_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
 
-# Testcase cp_align_zilx_word (address[2:0] = 100)
-  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load index: x30 = 0x45be32b2f4f22fa1
-  addi x26, x1, 4 # copy target address into base
-  slli x31, x30, 32 # discard the upper 32 index bits
-  srli x31, x31, 32 # zero-extend the 32-bit index
-  slli x31, x31, 2 # scale the index
-  sub x26, x26, x31 # choose base so base + index selects test data
-Zilx_lxsuwwu_cg_cp_align_zilx_word_b4:
-  .insn r 0x2f, 6, 120, x3, x30, x26 # lxsuwwu x3, (x26), x30; load 0x53eb1130fd143ef7
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zilx_lxsuwwu_cg_cp_align_zilx_word_b4, Zilx_lxsuwwu_cg_cp_align_zilx_word_b4_str)
+# Testcase cp_align_word (address[2:0] = 100)
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load index: x31 = 0x66f1cd847318d7c5
+  addi x23, x1, 4 # copy target address into base
+  slli x30, x31, 32 # discard the upper 32 index bits
+  srli x30, x30, 32 # zero-extend the 32-bit index
+  slli x30, x30, 2 # scale the index
+  sub x23, x23, x30 # choose base so base + index selects test data
+Zilx_lxsuwwu_cg_cp_align_word_b4:
+  lxsuwwu x18, (x23), x31
+  # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x18, Zilx_lxsuwwu_cg_cp_align_word_b4, Zilx_lxsuwwu_cg_cp_align_word_b4_str)
   addi x1, x1, 2*SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
@@ -2402,7 +2402,7 @@ Zilx_lxsuwwu_cg_cp_align_zilx_word_b4:
   slli x7, x7, 2 # scale the index
   sub x22, x22, x7 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_memval_word_0x0:
-  .insn r 0x2f, 6, 120, x14, x10, x22 # lxsuwwu x14, (x22), x10; load 0x0000000000000000
+  lxsuwwu x14, (x22), x10
   # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x14, Zilx_lxsuwwu_cg_cp_memval_word_0x0, Zilx_lxsuwwu_cg_cp_memval_word_0x0_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2415,7 +2415,7 @@ Zilx_lxsuwwu_cg_cp_memval_word_0x0:
   slli x15, x15, 2 # scale the index
   sub x13, x13, x15 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_memval_word_0x1:
-  .insn r 0x2f, 6, 120, x19, x12, x13 # lxsuwwu x19, (x13), x12; load 0x0000000000000001
+  lxsuwwu x19, (x13), x12
   # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x19, Zilx_lxsuwwu_cg_cp_memval_word_0x1, Zilx_lxsuwwu_cg_cp_memval_word_0x1_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2428,7 +2428,7 @@ Zilx_lxsuwwu_cg_cp_memval_word_0x1:
   slli x20, x20, 2 # scale the index
   sub x25, x25, x20 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_memval_word_0x7fffffff:
-  .insn r 0x2f, 6, 120, x13, x3, x25 # lxsuwwu x13, (x25), x3; load 0x000000007fffffff
+  lxsuwwu x13, (x25), x3
   # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x13, Zilx_lxsuwwu_cg_cp_memval_word_0x7fffffff, Zilx_lxsuwwu_cg_cp_memval_word_0x7fffffff_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2441,7 +2441,7 @@ Zilx_lxsuwwu_cg_cp_memval_word_0x7fffffff:
   slli x10, x10, 2 # scale the index
   sub x25, x25, x10 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_memval_word_0x80000000:
-  .insn r 0x2f, 6, 120, x29, x19, x25 # lxsuwwu x29, (x25), x19; load 0x0000000080000000
+  lxsuwwu x29, (x25), x19
   # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x29, Zilx_lxsuwwu_cg_cp_memval_word_0x80000000, Zilx_lxsuwwu_cg_cp_memval_word_0x80000000_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2454,7 +2454,7 @@ Zilx_lxsuwwu_cg_cp_memval_word_0x80000000:
   slli x19, x19, 2 # scale the index
   sub x21, x21, x19 # choose base so base + index selects test data
 Zilx_lxsuwwu_cg_cp_memval_word_0xffffffff:
-  .insn r 0x2f, 6, 120, x9, x2, x21 # lxsuwwu x9, (x21), x2; load 0x00000000ffffffff
+  lxsuwwu x9, (x21), x2
   # Check if x9 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x9, Zilx_lxsuwwu_cg_cp_memval_word_0xffffffff, Zilx_lxsuwwu_cg_cp_memval_word_0xffffffff_str)
   addi x1, x1, 1*SIG_STRIDE # increment data_ptr
@@ -2815,11 +2815,11 @@ RVTEST_DATA_BEGIN
 .dword 0xa61cacb0512afdba
 .dword 0x39f2e0be72ffc938
 .dword 0x531c9d551d3befb9
-.dword 0x9aff86f5ac9f0f98
-.dword 0x1ec2483b2190188e
-.dword 0x45be32b2f4f22fa1
-.dword 0x53eb1130fd143ef7
-.dword 0x53eb1130fd143ef7
+.dword 0x685d98ac9b454932
+.dword 0x80e1bd9144dac938
+.dword 0x66f1cd847318d7c5
+.dword 0x6f323dc8273f6a5f
+.dword 0x6f323dc8273f6a5f
 .dword 0x30228e07a8877013
 .dword 0x0000000000000000
 .dword 0x26c906076db368f2
@@ -3008,8 +3008,8 @@ Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b28_str: .string "\"test: 173; cg: Zilx_lxsuwwu_c
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b29_str: .string "\"test: 174; cg: Zilx_lxsuwwu_cg; cp: cmp_rd_rs2_nx0; bin: b29\""
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b30_str: .string "\"test: 175; cg: Zilx_lxsuwwu_cg; cp: cmp_rd_rs2_nx0; bin: b30\""
 Zilx_lxsuwwu_cg_cmp_rd_rs2_nx0_b31_str: .string "\"test: 176; cg: Zilx_lxsuwwu_cg; cp: cmp_rd_rs2_nx0; bin: b31\""
-Zilx_lxsuwwu_cg_cp_align_zilx_word_b0_str: .string "\"test: 177; cg: Zilx_lxsuwwu_cg; cp: cp_align_zilx_word; bin: b0\""
-Zilx_lxsuwwu_cg_cp_align_zilx_word_b4_str: .string "\"test: 178; cg: Zilx_lxsuwwu_cg; cp: cp_align_zilx_word; bin: b4\""
+Zilx_lxsuwwu_cg_cp_align_word_b0_str: .string "\"test: 177; cg: Zilx_lxsuwwu_cg; cp: cp_align_word; bin: b0\""
+Zilx_lxsuwwu_cg_cp_align_word_b4_str: .string "\"test: 178; cg: Zilx_lxsuwwu_cg; cp: cp_align_word; bin: b4\""
 Zilx_lxsuwwu_cg_cp_memval_word_0x0_str: .string "\"test: 179; cg: Zilx_lxsuwwu_cg; cp: cp_memval_word; bin: 0x0\""
 Zilx_lxsuwwu_cg_cp_memval_word_0x1_str: .string "\"test: 180; cg: Zilx_lxsuwwu_cg; cp: cp_memval_word; bin: 0x1\""
 Zilx_lxsuwwu_cg_cp_memval_word_0x7fffffff_str: .string "\"test: 181; cg: Zilx_lxsuwwu_cg; cp: cp_memval_word; bin: 0x7fffffff\""

@@ -4,38 +4,16 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_int_reg, to_hex, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.instructions.zilx import ZILX_INSTRUCTIONS
 
 xl_config = InstructionTypeConfig(
     required_params={"rd", "rs1", "rs1val", "rs2", "temp_reg", "temp_val"},
     instruction_class=["load", "indexed"],
 )
-
-# mnemonic: (funct7, funct3, index scale, zero-extend index from 32 bits)
-_ZILX_ENCODINGS = {
-    "lxh": (0x48, 0b001, 0, False),
-    "lxw": (0x48, 0b010, 0, False),
-    "lxd": (0x48, 0b011, 0, False),
-    "lxhu": (0x48, 0b101, 0, False),
-    "lxwu": (0x48, 0b110, 0, False),
-    "lxsb": (0x68, 0b000, 0, False),
-    "lxsh": (0x68, 0b001, 1, False),
-    "lxsw": (0x68, 0b010, 2, False),
-    "lxsd": (0x68, 0b011, 3, False),
-    "lxsbu": (0x68, 0b100, 0, False),
-    "lxshu": (0x68, 0b101, 1, False),
-    "lxswu": (0x68, 0b110, 2, False),
-    "lxsuwb": (0x78, 0b000, 0, True),
-    "lxsuwh": (0x78, 0b001, 1, True),
-    "lxsuww": (0x78, 0b010, 2, True),
-    "lxsuwd": (0x78, 0b011, 3, True),
-    "lxsuwbu": (0x78, 0b100, 0, True),
-    "lxsuwhu": (0x78, 0b101, 1, True),
-    "lxsuwwu": (0x78, 0b110, 2, True),
-}
 
 
 @add_instruction_formatter("XL", xl_config)
@@ -49,7 +27,7 @@ def format_xl_type(
     assert params.temp_reg is not None and params.temp_val is not None
     assert test_data.test_chunk is not None
 
-    funct7, funct3, scale, unsigned_word_index = _ZILX_ENCODINGS[instr_name]
+    _, scale, unsigned_word_index, _ = ZILX_INSTRUCTIONS[instr_name]
     setup: list[str] = []
     alignment = params.immval or 0
 
@@ -86,13 +64,7 @@ def format_xl_type(
             f"sub x{params.rs2}, x{params.rs2}, x{params.temp_reg} # choose base so base + index selects test data"
         )
 
-    canonical_syntax = f"{instr_name} x{params.rd}, (x{params.rs2}), x{params.rs1}"
-    test = [
-        (
-            f".insn r 0x2f, {funct3}, {funct7}, x{params.rd}, x{params.rs1}, x{params.rs2}"
-            f" # {canonical_syntax}; load {to_hex(params.temp_val, test_data.xlen)}"
-        ),
-    ]
+    test = [f"{instr_name} x{params.rd}, (x{params.rs2}), x{params.rs1}"]
     check = [
         write_sigupd(params.rd, test_data, "int"),
         (

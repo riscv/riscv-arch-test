@@ -126,9 +126,9 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_Sm_cg_cp_priority_off_jalr_entry1_1_jalr_str: .string "\"test: 225; cg: PMP_Sm_cg; cp: cp_priority_off_jalr; bin: entry1_1_jalr\""
-PMP_Sm_cg_cp_priority_off_sw_entry1_2_sw_str: .string "\"test: 226; cg: PMP_Sm_cg; cp: cp_priority_off_sw; bin: entry1_2_sw\""
-PMP_Sm_cg_cp_priority_off_lw_entry1_3_lw_str: .string "\"test: 227; cg: PMP_Sm_cg; cp: cp_priority_off_lw; bin: entry1_3_lw\""
+PMP_Sm_cg_cp_priority_off_jalr_entry1_1_jalr_str: .string "\"test: 339; cg: PMP_Sm_cg; cp: cp_priority_off_jalr; bin: entry1_1_jalr\""
+PMP_Sm_cg_cp_priority_off_sw_entry1_2_sw_str: .string "\"test: 340; cg: PMP_Sm_cg; cp: cp_priority_off_sw; bin: entry1_2_sw\""
+PMP_Sm_cg_cp_priority_off_lw_entry1_3_lw_str: .string "\"test: 341; cg: PMP_Sm_cg; cp: cp_priority_off_lw; bin: entry1_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

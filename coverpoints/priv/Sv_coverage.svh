@@ -704,6 +704,21 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             ignore_bins ig1 = binsof(PTE_canonical_i.leaflvl_s);
         }
     `endif
+    `ifdef ZILX_SUPPORTED
+        zilx_load: coverpoint ins.current.insn {
+            `include "general/RISCV_coverage_zilx_loads.svh"
+        }
+        zilx_permission: coverpoint ins.current.pte_d[3:0] {
+            bins read = {4'b1111};
+            bins execute_only = {4'b1001};
+            bins invalid = {4'b1110};
+        }
+        zilx_priv: coverpoint ins.prev.mode {
+            bins supervisor = {2'b01};
+            bins user = {2'b00};
+        }
+        cp_zilx_permissions: cross zilx_load, zilx_permission, zilx_priv, mode;
+    `endif
 endgroup
 
 covergroup Sv_res_global_pte_cg with function sample(ins_t ins);

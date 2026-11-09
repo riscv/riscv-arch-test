@@ -29,6 +29,7 @@ from testgen.priv.extensions.pmp.helpers import (
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
+    Cross,
     cross_by_access,
     gen_lw_bounds,
     gen_rwx,
@@ -38,6 +39,7 @@ from testgen.priv.extensions.pmp.probes import (
     gen_rwx_napot,
     gen_rwx_tor_bot,
     gen_rwx_tor_zero,
+    gen_zilx,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -736,7 +738,14 @@ def _make_legal_chunk(test_data: TestData, amode: str, part: int | None = None) 
         lw=f"cp_cfg_A_{amode}_r",
         sw=f"cp_cfg_A_{amode}_w",
     )
-    chunk.code.extend(lxwr_walk_body(test_data, cases, amode, generator, crosses, first=first))
+
+    def indexed_probes(data: TestData, case: str, cross: Cross, region: str) -> list[str]:
+        lines = generator(data, case, cross, region)
+        if amode == "napot":
+            lines.extend(gen_zilx(data, case, cross, region))
+        return lines
+
+    chunk.code.extend(lxwr_walk_body(test_data, cases, amode, indexed_probes, crosses, first=first))
     chunk.raw_data.extend(tuple(REGION_BLOBS[amode]))
     return test_data.end_test_chunk()
 

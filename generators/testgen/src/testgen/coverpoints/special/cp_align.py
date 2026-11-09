@@ -23,11 +23,11 @@ from testgen.instructions.params import generate_random_params
 @add_coverpoint_generator("cp_align")
 def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for alignment coverpoints."""
-    if coverpoint in ("cp_align_byte", "cp_align_zilx_byte"):
+    if coverpoint == "cp_align_byte":
         alignments = [0, 1, 2, 3, 4, 5, 6, 7]
-    elif coverpoint in ("cp_align_hword", "cp_align_zilx_hword"):
+    elif coverpoint == "cp_align_hword":
         alignments = [0, 2, 4, 6]
-    elif coverpoint in ("cp_align_word", "cp_align_zilx_word"):
+    elif coverpoint == "cp_align_word":
         alignments = [0, 4]
     else:
         raise ValueError(f"Unknown cp_align coverpoint variant: {coverpoint} for {instr_name}")

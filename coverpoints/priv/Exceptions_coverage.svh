@@ -195,6 +195,7 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
         wildcard bins csrrci = {CSRRCI};
     }
     loadops: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
         wildcard bins lhu = {LHU};
@@ -385,6 +386,7 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         wildcard bins csrrci = {CSRRCI};
     }
     loadops: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
         wildcard bins lhu = {LHU};
@@ -616,6 +618,7 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
         wildcard bins csrrci = {CSRRCI};
     }
     loadops: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
         wildcard bins lhu = {LHU};
@@ -1342,6 +1345,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
     }
     loadops: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
         wildcard bins lhu = {LHU};
@@ -1679,6 +1683,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
     }
     loadops: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
         wildcard bins lw  = {LW};
         wildcard bins lh  = {LH};
         wildcard bins lhu = {LHU};

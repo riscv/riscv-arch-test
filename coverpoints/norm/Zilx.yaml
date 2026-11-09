@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # ISA-manual norm tag to coverpoint mappings for Zilx version 0.8.
 
-normative_rule_definitions:
-  - name: Zilx_no_new_state
-    coverpoint: ["Not tested - no new architectural state"]
+untagged_upstream: Zilx is not yet in riscv/riscv-isa-manual
 
+normative_rule_definitions:
   - name: Zilx_operand_roles
     coverpoint: ["Zilx_lxh_cg/{cp_rs1, cp_rs2_nx0, cp_rd}"]
 
@@ -12,14 +11,14 @@ normative_rule_definitions:
     coverpoint: ["Zilx_lxh_cg/cp_rs1_edges"]
 
   - name: Zilx_unscaled_ea
-    coverpoint: ["Zilx_lxh_cg/{cp_rs1_edges, cp_align_zilx_hword}"]
+    coverpoint: ["Zilx_lxh_cg/{cp_rs1_edges, cp_align_hword}"]
 
   - name: Zilx_scaled_ea
     coverpoint:
       [
-        "Zilx_lxsb_cg/{cp_rs1_edges, cp_align_zilx_byte}",
-        "Zilx_lxsh_cg/{cp_rs1_edges, cp_align_zilx_hword}",
-        "Zilx_lxsw_cg/{cp_rs1_edges, cp_align_zilx_word}",
+        "Zilx_lxsb_cg/{cp_rs1_edges, cp_align_byte}",
+        "Zilx_lxsh_cg/{cp_rs1_edges, cp_align_hword}",
+        "Zilx_lxsw_cg/{cp_rs1_edges, cp_align_word}",
       ]
 
   - name: Zilx_uw_index
@@ -49,7 +48,12 @@ normative_rule_definitions:
       ]
 
   - name: Zilx_exceptions_ordering
-    coverpoint: ["Not tested - unprivileged tests do not install trap handlers"]
+    coverpoint:
+      [
+        "{Exceptions_S_cg, Exceptions_Sm_cg, Exceptions_U_cg}/{cp_load_address_misaligned, cp_load_access_fault}",
+        "Sv_vm_permissions_cg/cp_zilx_permissions",
+        "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_pmlen_masking",
+      ]
 
   - name: Zilx_common_encoding
     coverpoint: ["Zilx_lxh_cg/cp_asm_count"]
@@ -73,15 +77,13 @@ normative_rule_definitions:
     coverpoint: ["Not tested - reserved encodings"]
 
   - name: lxh_op
-    coverpoint:
-      ["Zilx_lxh_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+    coverpoint: ["Zilx_lxh_cg/{cp_rs1_edges, cp_align_hword, cp_memval_hword}"]
 
   - name: lxh_enc
     coverpoint: ["Zilx_lxh_cg/cp_asm_count"]
 
   - name: lxw_op
-    coverpoint:
-      ["Zilx_lxw_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+    coverpoint: ["Zilx_lxw_cg/{cp_rs1_edges, cp_align_word, cp_memval_word}"]
 
   - name: lxw_enc
     coverpoint: ["Zilx_lxw_cg/cp_asm_count"]
@@ -93,36 +95,31 @@ normative_rule_definitions:
     coverpoint: ["Zilx_lxd_cg/cp_asm_count"]
 
   - name: lxhu_op
-    coverpoint:
-      ["Zilx_lxhu_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+    coverpoint: ["Zilx_lxhu_cg/{cp_rs1_edges, cp_align_hword, cp_memval_hword}"]
 
   - name: lxhu_enc
     coverpoint: ["Zilx_lxhu_cg/cp_asm_count"]
 
   - name: lxwu_op
-    coverpoint:
-      ["Zilx_lxwu_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+    coverpoint: ["Zilx_lxwu_cg/{cp_rs1_edges, cp_align_word, cp_memval_word}"]
 
   - name: lxwu_enc
     coverpoint: ["Zilx_lxwu_cg/cp_asm_count"]
 
   - name: lxsb_op
-    coverpoint:
-      ["Zilx_lxsb_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+    coverpoint: ["Zilx_lxsb_cg/{cp_rs1_edges, cp_align_byte, cp_memval_byte}"]
 
   - name: lxsb_enc
     coverpoint: ["Zilx_lxsb_cg/cp_asm_count"]
 
   - name: lxsh_op
-    coverpoint:
-      ["Zilx_lxsh_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+    coverpoint: ["Zilx_lxsh_cg/{cp_rs1_edges, cp_align_hword, cp_memval_hword}"]
 
   - name: lxsh_enc
     coverpoint: ["Zilx_lxsh_cg/cp_asm_count"]
 
   - name: lxsw_op
-    coverpoint:
-      ["Zilx_lxsw_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+    coverpoint: ["Zilx_lxsw_cg/{cp_rs1_edges, cp_align_word, cp_memval_word}"]
 
   - name: lxsw_enc
     coverpoint: ["Zilx_lxsw_cg/cp_asm_count"]
@@ -134,43 +131,39 @@ normative_rule_definitions:
     coverpoint: ["Zilx_lxsd_cg/cp_asm_count"]
 
   - name: lxsbu_op
-    coverpoint:
-      ["Zilx_lxsbu_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+    coverpoint: ["Zilx_lxsbu_cg/{cp_rs1_edges, cp_align_byte, cp_memval_byte}"]
 
   - name: lxsbu_enc
     coverpoint: ["Zilx_lxsbu_cg/cp_asm_count"]
 
   - name: lxshu_op
     coverpoint:
-      ["Zilx_lxshu_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+      ["Zilx_lxshu_cg/{cp_rs1_edges, cp_align_hword, cp_memval_hword}"]
 
   - name: lxshu_enc
     coverpoint: ["Zilx_lxshu_cg/cp_asm_count"]
 
   - name: lxswu_op
-    coverpoint:
-      ["Zilx_lxswu_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+    coverpoint: ["Zilx_lxswu_cg/{cp_rs1_edges, cp_align_word, cp_memval_word}"]
 
   - name: lxswu_enc
     coverpoint: ["Zilx_lxswu_cg/cp_asm_count"]
 
   - name: lxsuwb_op
-    coverpoint:
-      ["Zilx_lxsuwb_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+    coverpoint: ["Zilx_lxsuwb_cg/{cp_rs1_edges, cp_align_byte, cp_memval_byte}"]
 
   - name: lxsuwb_enc
     coverpoint: ["Zilx_lxsuwb_cg/cp_asm_count"]
 
   - name: lxsuwh_op
     coverpoint:
-      ["Zilx_lxsuwh_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+      ["Zilx_lxsuwh_cg/{cp_rs1_edges, cp_align_hword, cp_memval_hword}"]
 
   - name: lxsuwh_enc
     coverpoint: ["Zilx_lxsuwh_cg/cp_asm_count"]
 
   - name: lxsuww_op
-    coverpoint:
-      ["Zilx_lxsuww_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+    coverpoint: ["Zilx_lxsuww_cg/{cp_rs1_edges, cp_align_word, cp_memval_word}"]
 
   - name: lxsuww_enc
     coverpoint: ["Zilx_lxsuww_cg/cp_asm_count"]
@@ -183,21 +176,21 @@ normative_rule_definitions:
 
   - name: lxsuwbu_op
     coverpoint:
-      ["Zilx_lxsuwbu_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+      ["Zilx_lxsuwbu_cg/{cp_rs1_edges, cp_align_byte, cp_memval_byte}"]
 
   - name: lxsuwbu_enc
     coverpoint: ["Zilx_lxsuwbu_cg/cp_asm_count"]
 
   - name: lxsuwhu_op
     coverpoint:
-      ["Zilx_lxsuwhu_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+      ["Zilx_lxsuwhu_cg/{cp_rs1_edges, cp_align_hword, cp_memval_hword}"]
 
   - name: lxsuwhu_enc
     coverpoint: ["Zilx_lxsuwhu_cg/cp_asm_count"]
 
   - name: lxsuwwu_op
     coverpoint:
-      ["Zilx_lxsuwwu_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+      ["Zilx_lxsuwwu_cg/{cp_rs1_edges, cp_align_word, cp_memval_word}"]
 
   - name: lxsuwwu_enc
     coverpoint: ["Zilx_lxsuwwu_cg/cp_asm_count"]

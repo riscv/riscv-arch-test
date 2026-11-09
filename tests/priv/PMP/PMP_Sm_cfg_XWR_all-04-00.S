@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 190
+#define SIGUPD_COUNT 475
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -145,6 +145,201 @@ PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_11_ld, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxh:
+  lxh x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxh, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxh_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxw:
+  lxw x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxw, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxw_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxd:
+  lxd x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxd, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxd_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxhu:
+  lxhu x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxwu:
+  lxwu x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxwu_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsb:
+  lxsb x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsb, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsb_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsh:
+  lxsh x15, (x8), x9
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsh, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsh_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsw:
+  lxsw x15, (x8), x9
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsw, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsd:
+  lxsd x15, (x8), x9
+  addi x8, x8, 8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsd, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsd_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsbu:
+  lxsbu x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsbu_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxshu:
+  lxshu x15, (x8), x9
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxshu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxswu:
+  lxswu x15, (x8), x9
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxswu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwb:
+  lxsuwb x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwb, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwh:
+  lxsuwh x15, (x8), x9
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwh, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuww:
+  lxsuww x15, (x8), x9
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuww, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwd:
+  lxsuwd x15, (x8), x9
+  addi x8, x8, 8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwd, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwbu:
+  lxsuwbu x15, (x8), x9
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwhu:
+  lxsuwhu x15, (x8), x9
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwwu:
+  lxsuwwu x15, (x8), x9
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 47: L = 1 and XWR = 100 on PMP entry 13
   LI(x4, (PMPREGION_XWR_100 << PMP_CFG_SHIFT(13)))
@@ -217,6 +412,201 @@ PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_11_ld:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_11_ld, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_11_ld_str)
+#endif
+#ifdef ZILX_SUPPORTED
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxh:
+  lxh x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxh, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxw:
+  lxw x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxw, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxd:
+  lxd x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxd, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxhu:
+  lxhu x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxwu:
+  lxwu x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxwu_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsb:
+  lxsb x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsb, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsb_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsh:
+  lxsh x9, (x14), x8
+  addi x14, x14, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsh, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsw:
+  lxsw x9, (x14), x8
+  addi x14, x14, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsw, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsd:
+  lxsd x9, (x14), x8
+  addi x14, x14, 8
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsd, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsbu:
+  lxsbu x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsbu_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxshu:
+  lxshu x9, (x14), x8
+  addi x14, x14, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxshu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxswu:
+  lxswu x9, (x14), x8
+  addi x14, x14, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxswu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwb:
+  lxsuwb x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwb, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwh:
+  lxsuwh x9, (x14), x8
+  addi x14, x14, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwh, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuww:
+  lxsuww x9, (x14), x8
+  addi x14, x14, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuww, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwd:
+  lxsuwd x9, (x14), x8
+  addi x14, x14, 8
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwd, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwbu:
+  lxsuwbu x9, (x14), x8
+  addi x14, x14, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwhu:
+  lxsuwhu x9, (x14), x8
+  addi x14, x14, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwwu:
+  lxsuwwu x9, (x14), x8
+  addi x14, x14, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwwu_str)
+#endif
 #endif
 
 // PMP configuration 48: L = 1 and XWR = 000 on PMP entry 12
@@ -291,6 +681,201 @@ PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_11_ld, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxh:
+  lxh x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxh, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxh_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxw:
+  lxw x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxw, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxw_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxd:
+  lxd x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxd, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxd_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxhu:
+  lxhu x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxwu:
+  lxwu x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxwu_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsb:
+  lxsb x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsb, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsb_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsh:
+  lxsh x15, (x8), x13
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsh, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsh_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsw:
+  lxsw x15, (x8), x13
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsw, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsd:
+  lxsd x15, (x8), x13
+  addi x8, x8, 8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsd, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsd_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsbu:
+  lxsbu x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsbu_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxshu:
+  lxshu x15, (x8), x13
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxshu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxswu:
+  lxswu x15, (x8), x13
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxswu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwb:
+  lxsuwb x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwb, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwh:
+  lxsuwh x15, (x8), x13
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwh, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuww:
+  lxsuww x15, (x8), x13
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuww, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x8, x8, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwd:
+  lxsuwd x15, (x8), x13
+  addi x8, x8, 8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwd, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwbu:
+  lxsuwbu x15, (x8), x13
+  addi x8, x8, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwhu:
+  lxsuwhu x15, (x8), x13
+  addi x8, x8, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwwu:
+  lxsuwwu x15, (x8), x13
+  addi x8, x8, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 49: L = 1 and XWR = 111 on PMP entry 11
   LI(x4, (PMPREGION_XWR_111 << PMP_CFG_SHIFT(11)))
@@ -359,6 +944,201 @@ PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_11_ld:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_11_ld, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_11_ld_str)
+#endif
+#ifdef ZILX_SUPPORTED
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxh:
+  lxh x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxh, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxw:
+  lxw x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxw, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxd:
+  lxd x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxd, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxhu:
+  lxhu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxhu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxwu:
+  lxwu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxwu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxwu_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsb:
+  lxsb x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsb, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsb_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsh:
+  lxsh x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsh, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsw:
+  lxsw x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsw, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsd:
+  lxsd x8, (x14), x6
+  addi x14, x14, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsd, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsbu:
+  lxsbu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsbu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsbu_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxshu:
+  lxshu x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxshu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxswu:
+  lxswu x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxswu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwb:
+  lxsuwb x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwb, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwh:
+  lxsuwh x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwh, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuww:
+  lxsuww x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuww, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwd:
+  lxsuwd x8, (x14), x6
+  addi x14, x14, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwd, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwbu:
+  lxsuwbu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwhu:
+  lxsuwhu x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwwu:
+  lxsuwwu x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwwu_str)
+#endif
 #endif
 
 // PMP configuration 50: L = 1 and XWR = 001 on PMP entry 10
@@ -429,6 +1209,201 @@ PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_11_ld, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxh:
+  lxh x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxh, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxh_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxw:
+  lxw x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxw, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxw_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxd:
+  lxd x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxd, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxd_str)
+#endif
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxhu:
+  lxhu x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxwu:
+  lxwu x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxwu_str)
+#endif
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsb:
+  lxsb x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsb, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsb_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsh:
+  lxsh x8, (x15), x13
+  addi x15, x15, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsh, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsh_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsw:
+  lxsw x8, (x15), x13
+  addi x15, x15, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsw, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsd:
+  lxsd x8, (x15), x13
+  addi x15, x15, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsd, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsd_str)
+#endif
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsbu:
+  lxsbu x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsbu_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxshu:
+  lxshu x8, (x15), x13
+  addi x15, x15, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxshu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x1)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxswu:
+  lxswu x8, (x15), x13
+  addi x15, x15, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxswu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwb:
+  lxsuwb x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwb, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwh:
+  lxsuwh x8, (x15), x13
+  addi x15, x15, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwh, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuww:
+  lxsuww x8, (x15), x13
+  addi x15, x15, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuww, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x15, x15, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwd:
+  lxsuwd x8, (x15), x13
+  addi x15, x15, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwd, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwbu:
+  lxsuwbu x8, (x15), x13
+  addi x15, x15, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwhu:
+  lxsuwhu x8, (x15), x13
+  addi x15, x15, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x13, 0x100000001)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwwu:
+  lxsuwwu x8, (x15), x13
+  addi x15, x15, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 51: L = 1 and XWR = 101 on PMP entry 9
   LI(x4, (PMPREGION_XWR_101 << PMP_CFG_SHIFT(9)))
@@ -498,6 +1473,201 @@ PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_11_ld, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxh:
+  lxh x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxh, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxh_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxw:
+  lxw x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxw, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxw_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxd:
+  lxd x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxd, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxd_str)
+#endif
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxhu:
+  lxhu x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxwu:
+  lxwu x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxwu_str)
+#endif
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsb:
+  lxsb x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsb, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsb_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsh:
+  lxsh x9, (x15), x6
+  addi x15, x15, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsh, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsh_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsw:
+  lxsw x9, (x15), x6
+  addi x15, x15, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsw, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsd:
+  lxsd x9, (x15), x6
+  addi x15, x15, 8
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsd, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsd_str)
+#endif
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsbu:
+  lxsbu x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsbu_str)
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxshu:
+  lxshu x9, (x15), x6
+  addi x15, x15, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxshu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxswu:
+  lxswu x9, (x15), x6
+  addi x15, x15, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxswu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwb:
+  lxsuwb x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwb, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwh:
+  lxsuwh x9, (x15), x6
+  addi x15, x15, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwh, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuww:
+  lxsuww x9, (x15), x6
+  addi x15, x15, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuww, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x15, x15, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwd:
+  lxsuwd x9, (x15), x6
+  addi x15, x15, 8
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwd, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x15, x15, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwbu:
+  lxsuwbu x9, (x15), x6
+  addi x15, x15, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x15, x15, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwhu:
+  lxsuwhu x9, (x15), x6
+  addi x15, x15, 2
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x15, TEST_FOR_EXECUTION)
+  LI(x9, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x15, x15, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwwu:
+  lxsuwwu x9, (x15), x6
+  addi x15, x15, 4
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 52: L = 1 and XWR = 001 on PMP entry 8
   LI(x4, (PMPREGION_XWR_001 << PMP_CFG_SHIFT(8)))
@@ -566,6 +1736,201 @@ PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_11_ld:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_11_ld, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_11_ld_str)
+#endif
+#ifdef ZILX_SUPPORTED
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxh:
+  lxh x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxh, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxh_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxw:
+  lxw x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxw, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxw_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxd:
+  lxd x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxd, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxd_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxhu:
+  lxhu x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxwu:
+  lxwu x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxwu_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsb:
+  lxsb x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsb, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsb_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsh:
+  lxsh x13, (x8), x9
+  addi x8, x8, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsh, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsh_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsw:
+  lxsw x13, (x8), x9
+  addi x8, x8, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsw, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsd:
+  lxsd x13, (x8), x9
+  addi x8, x8, 8
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsd, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsd_str)
+#endif
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsbu:
+  lxsbu x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsbu_str)
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxshu:
+  lxshu x13, (x8), x9
+  addi x8, x8, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxshu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxswu:
+  lxswu x13, (x8), x9
+  addi x8, x8, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxswu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwb:
+  lxsuwb x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwb, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwh:
+  lxsuwh x13, (x8), x9
+  addi x8, x8, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwh, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuww:
+  lxsuww x13, (x8), x9
+  addi x8, x8, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuww, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwd:
+  lxsuwd x13, (x8), x9
+  addi x8, x8, 8
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwd, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwbu:
+  lxsuwbu x13, (x8), x9
+  addi x8, x8, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwhu:
+  lxsuwhu x13, (x8), x9
+  addi x8, x8, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x8, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x8, x8, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwwu:
+  lxsuwwu x13, (x8), x9
+  addi x8, x8, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwwu_str)
+#endif
 #endif
 
 // PMP configuration 53: L = 1 and XWR = 100 on PMP entry 7
@@ -640,6 +2005,201 @@ PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_11_ld, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxh:
+  lxh x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxh, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxh_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxw:
+  lxw x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxw, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxw_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxd:
+  lxd x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxd, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxd_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxhu:
+  lxhu x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxwu:
+  lxwu x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxwu_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsb:
+  lxsb x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsb, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsb_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsh:
+  lxsh x14, (x6), x9
+  addi x6, x6, 2
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsh, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsh_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsw:
+  lxsw x14, (x6), x9
+  addi x6, x6, 4
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsw, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsd:
+  lxsd x14, (x6), x9
+  addi x6, x6, 8
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsd, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsd_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsbu:
+  lxsbu x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsbu_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxshu:
+  lxshu x14, (x6), x9
+  addi x6, x6, 2
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxshu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxswu:
+  lxswu x14, (x6), x9
+  addi x6, x6, 4
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxswu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwb:
+  lxsuwb x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwb, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwh:
+  lxsuwh x14, (x6), x9
+  addi x6, x6, 2
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwh, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuww:
+  lxsuww x14, (x6), x9
+  addi x6, x6, 4
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuww, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x6, x6, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwd:
+  lxsuwd x14, (x6), x9
+  addi x6, x6, 8
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwd, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwbu:
+  lxsuwbu x14, (x6), x9
+  addi x6, x6, 1
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwhu:
+  lxsuwhu x14, (x6), x9
+  addi x6, x6, 2
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x14, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwwu:
+  lxsuwwu x14, (x6), x9
+  addi x6, x6, 4
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 54: L = 1 and XWR = 000 on PMP entry 6
   LI(x4, (PMPREGION_XWR_000 << PMP_CFG_SHIFT(6)))
@@ -712,6 +2272,201 @@ PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_11_ld:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_11_ld, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_11_ld_str)
+#endif
+#ifdef ZILX_SUPPORTED
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxh:
+  lxh x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxh, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxw:
+  lxw x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxw, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxd:
+  lxd x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxd, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxhu:
+  lxhu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxwu:
+  lxwu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxwu_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsb:
+  lxsb x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsb, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsb_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsh:
+  lxsh x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsh, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsw:
+  lxsw x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsw, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsd:
+  lxsd x8, (x14), x6
+  addi x14, x14, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsd, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsbu:
+  lxsbu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsbu_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxshu:
+  lxshu x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxshu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxswu:
+  lxswu x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxswu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwb:
+  lxsuwb x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwb, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwh:
+  lxsuwh x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwh, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuww:
+  lxsuww x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuww, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwd:
+  lxsuwd x8, (x14), x6
+  addi x14, x14, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwd, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwbu:
+  lxsuwbu x8, (x14), x6
+  addi x14, x14, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwhu:
+  lxsuwhu x8, (x14), x6
+  addi x14, x14, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x6, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwwu:
+  lxsuwwu x8, (x14), x6
+  addi x14, x14, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwwu_str)
+#endif
 #endif
 
 // PMP configuration 55: L = 1 and XWR = 111 on PMP entry 5
@@ -786,6 +2541,201 @@ PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_11_ld, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxh:
+  lxh x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxh, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxh_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxw:
+  lxw x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxw, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxw_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxd:
+  lxd x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxd, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxd_str)
+#endif
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxhu:
+  lxhu x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxhu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxwu:
+  lxwu x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxwu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxwu_str)
+#endif
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsb:
+  lxsb x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsb, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsb_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsh:
+  lxsh x6, (x9), x14
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsh, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsh_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsw:
+  lxsw x6, (x9), x14
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsw, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -8
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsd:
+  lxsd x6, (x9), x14
+  addi x9, x9, 8
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsd, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsd_str)
+#endif
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsbu:
+  lxsbu x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsbu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsbu_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxshu:
+  lxshu x6, (x9), x14
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxshu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x1)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxswu:
+  lxswu x6, (x9), x14
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxswu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x100000001)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwb:
+  lxsuwb x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwb, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x100000001)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwh:
+  lxsuwh x6, (x9), x14
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwh, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x100000001)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuww:
+  lxsuww x6, (x9), x14
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuww, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x100000001)
+  addi x9, x9, -8
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwd:
+  lxsuwd x6, (x9), x14
+  addi x9, x9, 8
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwd, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x100000001)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwbu:
+  lxsuwbu x6, (x9), x14
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x100000001)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwhu:
+  lxsuwhu x6, (x9), x14
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x14, 0x100000001)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwwu:
+  lxsuwwu x6, (x9), x14
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 56: L = 1 and XWR = 011 on PMP entry 4
   LI(x4, (PMPREGION_XWR_011 << PMP_CFG_SHIFT(4)))
@@ -859,6 +2809,201 @@ PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_11_ld, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxh:
+  lxh x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxh, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxh_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxw:
+  lxw x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxw, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxw_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxd:
+  lxd x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxd, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxd_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxhu:
+  lxhu x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxhu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxwu:
+  lxwu x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxwu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxwu_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsb:
+  lxsb x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsb, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsb_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsh:
+  lxsh x8, (x6), x15
+  addi x6, x6, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsh, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsh_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsw:
+  lxsw x8, (x6), x15
+  addi x6, x6, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsw, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -8
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsd:
+  lxsd x8, (x6), x15
+  addi x6, x6, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsd, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsd_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsbu:
+  lxsbu x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsbu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsbu_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxshu:
+  lxshu x8, (x6), x15
+  addi x6, x6, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxshu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x1)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxswu:
+  lxswu x8, (x6), x15
+  addi x6, x6, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxswu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x100000001)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwb:
+  lxsuwb x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwb, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x100000001)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwh:
+  lxsuwh x8, (x6), x15
+  addi x6, x6, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwh, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x100000001)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuww:
+  lxsuww x8, (x6), x15
+  addi x6, x6, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuww, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x100000001)
+  addi x6, x6, -8
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwd:
+  lxsuwd x8, (x6), x15
+  addi x6, x6, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwd, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x100000001)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwbu:
+  lxsuwbu x8, (x6), x15
+  addi x6, x6, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x100000001)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwhu:
+  lxsuwhu x8, (x6), x15
+  addi x6, x6, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x15, 0x100000001)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwwu:
+  lxsuwwu x8, (x6), x15
+  addi x6, x6, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 57: L = 1 and XWR = 101 on PMP entry 3
   LI(x4, (PMPREGION_XWR_101 << PMP_CFG_SHIFT(3)))
@@ -927,6 +3072,201 @@ PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_11_ld:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_11_ld, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_11_ld_str)
+#endif
+#ifdef ZILX_SUPPORTED
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxh:
+  lxh x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxh, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxh_str)
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxw:
+  lxw x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxw, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxw_str)
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxd:
+  lxd x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxd, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxd_str)
+#endif
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxhu:
+  lxhu x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxwu:
+  lxwu x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxwu_str)
+#endif
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsb:
+  lxsb x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsb, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsb_str)
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsh:
+  lxsh x8, (x13), x9
+  addi x13, x13, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsh, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsh_str)
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsw:
+  lxsw x8, (x13), x9
+  addi x13, x13, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsw, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsd:
+  lxsd x8, (x13), x9
+  addi x13, x13, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsd, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsd_str)
+#endif
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsbu:
+  lxsbu x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsbu_str)
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxshu:
+  lxshu x8, (x13), x9
+  addi x13, x13, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxshu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x13, x13, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxswu:
+  lxswu x8, (x13), x9
+  addi x13, x13, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxswu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwb:
+  lxsuwb x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwb, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x13, x13, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwh:
+  lxsuwh x8, (x13), x9
+  addi x13, x13, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwh, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x13, x13, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuww:
+  lxsuww x8, (x13), x9
+  addi x13, x13, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuww, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x13, x13, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwd:
+  lxsuwd x8, (x13), x9
+  addi x13, x13, 8
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwd, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x13, x13, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwbu:
+  lxsuwbu x8, (x13), x9
+  addi x13, x13, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x13, x13, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwhu:
+  lxsuwhu x8, (x13), x9
+  addi x13, x13, 2
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x13, TEST_FOR_EXECUTION)
+  LI(x8, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x13, x13, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwwu:
+  lxsuwwu x8, (x13), x9
+  addi x13, x13, 4
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwwu_str)
+#endif
 #endif
 
 // PMP configuration 58: L = 1 and XWR = 001 on PMP entry 2
@@ -997,6 +3337,201 @@ PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_11_ld, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxh:
+  lxh x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxh, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxw:
+  lxw x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxw, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxd:
+  lxd x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxd, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxhu:
+  lxhu x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxwu:
+  lxwu x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxwu_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsb:
+  lxsb x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsb, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsb_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsh:
+  lxsh x15, (x14), x9
+  addi x14, x14, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsh, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsh_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsw:
+  lxsw x15, (x14), x9
+  addi x14, x14, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsw, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsd:
+  lxsd x15, (x14), x9
+  addi x14, x14, 8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsd, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsd_str)
+#endif
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsbu:
+  lxsbu x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsbu_str)
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxshu:
+  lxshu x15, (x14), x9
+  addi x14, x14, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxshu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x1)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxswu:
+  lxswu x15, (x14), x9
+  addi x14, x14, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxswu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwb:
+  lxsuwb x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwb, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwh:
+  lxsuwh x15, (x14), x9
+  addi x14, x14, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwh, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuww:
+  lxsuww x15, (x14), x9
+  addi x14, x14, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuww, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x14, x14, -8
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwd:
+  lxsuwd x15, (x14), x9
+  addi x14, x14, 8
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwd, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x14, x14, -1
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwbu:
+  lxsuwbu x15, (x14), x9
+  addi x14, x14, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x14, x14, -2
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwhu:
+  lxsuwhu x15, (x14), x9
+  addi x14, x14, 2
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x14, TEST_FOR_EXECUTION)
+  LI(x15, 0xB0BACAFE)
+  LI(x9, 0x100000001)
+  addi x14, x14, -4
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwwu:
+  lxsuwwu x15, (x14), x9
+  addi x14, x14, 4
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwwu_str)
+#endif
+#endif
 
 // PMP configuration 59: L = 1 and XWR = 100 on PMP entry 1
   LI(x4, (PMPREGION_XWR_100 << PMP_CFG_SHIFT(1)))
@@ -1065,6 +3600,201 @@ PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_11_ld:
   ld a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_11_ld, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_11_ld_str)
+#endif
+#ifdef ZILX_SUPPORTED
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxh:
+  lxh x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxh, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxh_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxw:
+  lxw x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxw, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxw_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxd:
+  lxd x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxd, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxd_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxhu:
+  lxhu x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxwu:
+  lxwu x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxwu_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsb:
+  lxsb x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsb, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsb_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsh:
+  lxsh x13, (x6), x8
+  addi x6, x6, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsh, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsh_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsw:
+  lxsw x13, (x6), x8
+  addi x6, x6, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsw, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsd:
+  lxsd x13, (x6), x8
+  addi x6, x6, 8
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsd, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsd_str)
+#endif
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsbu:
+  lxsbu x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsbu_str)
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxshu:
+  lxshu x13, (x6), x8
+  addi x6, x6, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxshu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxswu:
+  lxswu x13, (x6), x8
+  addi x6, x6, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxswu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwb:
+  lxsuwb x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwb, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwh:
+  lxsuwh x13, (x6), x8
+  addi x6, x6, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwh, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuww:
+  lxsuww x13, (x6), x8
+  addi x6, x6, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuww, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x6, x6, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwd:
+  lxsuwd x13, (x6), x8
+  addi x6, x6, 8
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwd, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x6, x6, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwbu:
+  lxsuwbu x13, (x6), x8
+  addi x6, x6, 1
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x6, x6, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwhu:
+  lxsuwhu x13, (x6), x8
+  addi x6, x6, 2
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x6, TEST_FOR_EXECUTION)
+  LI(x13, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x6, x6, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwwu:
+  lxsuwwu x13, (x6), x8
+  addi x6, x6, 4
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwwu_str)
+#endif
 #endif
 
 // PMP configuration 60: L = 1 and XWR = 000 on PMP entry 0
@@ -1135,6 +3865,201 @@ PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_11_ld:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_11_ld, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_11_ld_str)
 #endif
+#ifdef ZILX_SUPPORTED
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxh:
+  lxh x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxh, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxh_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxw:
+  lxw x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxw, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxw_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxd:
+  lxd x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxd, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxd_str)
+#endif
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxhu:
+  lxhu x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxhu_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxwu:
+  lxwu x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxwu_str)
+#endif
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsb:
+  lxsb x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsb, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsb_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsh:
+  lxsh x6, (x9), x8
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsh, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsh_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsw:
+  lxsw x6, (x9), x8
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsw, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsw_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsd:
+  lxsd x6, (x9), x8
+  addi x9, x9, 8
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsd, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsd_str)
+#endif
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsbu:
+  lxsbu x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsbu_str)
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxshu:
+  lxshu x6, (x9), x8
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxshu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxshu_str)
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x1)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxswu:
+  lxswu x6, (x9), x8
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxswu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxswu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwb:
+  lxsuwb x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwb, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwb_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwh:
+  lxsuwh x6, (x9), x8
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwh, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwh_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuww:
+  lxsuww x6, (x9), x8
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuww, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuww_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x9, x9, -8
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwd:
+  lxsuwd x6, (x9), x8
+  addi x9, x9, 8
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwd, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwd_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x9, x9, -1
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwbu:
+  lxsuwbu x6, (x9), x8
+  addi x9, x9, 1
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwbu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwbu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x9, x9, -2
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwhu:
+  lxsuwhu x6, (x9), x8
+  addi x9, x9, 2
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwhu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwhu_str)
+#endif
+#if __riscv_xlen == 64
+  LA(x9, TEST_FOR_EXECUTION)
+  LI(x6, 0xB0BACAFE)
+  LI(x8, 0x100000001)
+  addi x9, x9, -4
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwwu:
+  lxsuwwu x6, (x9), x8
+  addi x9, x9, 4
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwwu, PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwwu_str)
+#endif
+#endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1166,186 +4091,471 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_Sm_cg_cp_cfg_X0_all_entry14_lxwr001_12_jalr_str: .string "\"test: 701; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry14_lxwr001_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_1_sb_str: .string "\"test: 702; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_1_sb\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_2_sh_str: .string "\"test: 703; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_2_sh\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_3_sw_str: .string "\"test: 704; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_3_sw\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_4_sd_str: .string "\"test: 705; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_5_lb_str: .string "\"test: 706; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_6_lbu_str: .string "\"test: 707; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_7_lh_str: .string "\"test: 708; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_8_lhu_str: .string "\"test: 709; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_9_lw_str: .string "\"test: 710; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_10_lwu_str: .string "\"test: 711; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_11_ld_str: .string "\"test: 712; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_11_ld\""
-PMP_Sm_cg_cp_cfg_X1_all_entry13_lxwr100_12_jalr_str: .string "\"test: 713; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry13_lxwr100_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_1_sb_str: .string "\"test: 714; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_1_sb\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_2_sh_str: .string "\"test: 715; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_2_sh\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_3_sw_str: .string "\"test: 716; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_3_sw\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_4_sd_str: .string "\"test: 717; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_5_lb_str: .string "\"test: 718; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_6_lbu_str: .string "\"test: 719; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_7_lh_str: .string "\"test: 720; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_8_lhu_str: .string "\"test: 721; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_9_lw_str: .string "\"test: 722; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_10_lwu_str: .string "\"test: 723; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_11_ld_str: .string "\"test: 724; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_11_ld\""
-PMP_Sm_cg_cp_cfg_X0_all_entry12_lxwr000_12_jalr_str: .string "\"test: 725; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry12_lxwr000_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_1_sb_str: .string "\"test: 726; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_1_sb\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_2_sh_str: .string "\"test: 727; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_2_sh\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_3_sw_str: .string "\"test: 728; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_3_sw\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_4_sd_str: .string "\"test: 729; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_5_lb_str: .string "\"test: 730; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_6_lbu_str: .string "\"test: 731; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_7_lh_str: .string "\"test: 732; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_8_lhu_str: .string "\"test: 733; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_9_lw_str: .string "\"test: 734; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_10_lwu_str: .string "\"test: 735; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_11_ld_str: .string "\"test: 736; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_11_ld\""
-PMP_Sm_cg_cp_cfg_X1_all_entry11_lxwr111_12_jalr_str: .string "\"test: 737; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry11_lxwr111_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_1_sb_str: .string "\"test: 738; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_1_sb\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_2_sh_str: .string "\"test: 739; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_2_sh\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_3_sw_str: .string "\"test: 740; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_3_sw\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_4_sd_str: .string "\"test: 741; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_5_lb_str: .string "\"test: 742; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_6_lbu_str: .string "\"test: 743; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_7_lh_str: .string "\"test: 744; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_8_lhu_str: .string "\"test: 745; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_9_lw_str: .string "\"test: 746; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_10_lwu_str: .string "\"test: 747; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_11_ld_str: .string "\"test: 748; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_11_ld\""
-PMP_Sm_cg_cp_cfg_X0_all_entry10_lxwr001_12_jalr_str: .string "\"test: 749; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry10_lxwr001_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_1_sb_str: .string "\"test: 750; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_1_sb\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_2_sh_str: .string "\"test: 751; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_2_sh\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_3_sw_str: .string "\"test: 752; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_3_sw\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_4_sd_str: .string "\"test: 753; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_5_lb_str: .string "\"test: 754; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_6_lbu_str: .string "\"test: 755; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_7_lh_str: .string "\"test: 756; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_8_lhu_str: .string "\"test: 757; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_9_lw_str: .string "\"test: 758; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_10_lwu_str: .string "\"test: 759; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_11_ld_str: .string "\"test: 760; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_11_ld\""
-PMP_Sm_cg_cp_cfg_X1_all_entry9_lxwr101_12_jalr_str: .string "\"test: 761; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry9_lxwr101_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_1_sb_str: .string "\"test: 762; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_1_sb\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_2_sh_str: .string "\"test: 763; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_2_sh\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_3_sw_str: .string "\"test: 764; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_3_sw\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_4_sd_str: .string "\"test: 765; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_5_lb_str: .string "\"test: 766; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_6_lbu_str: .string "\"test: 767; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_7_lh_str: .string "\"test: 768; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_8_lhu_str: .string "\"test: 769; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_9_lw_str: .string "\"test: 770; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_10_lwu_str: .string "\"test: 771; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_11_ld_str: .string "\"test: 772; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_11_ld\""
-PMP_Sm_cg_cp_cfg_X0_all_entry8_lxwr001_12_jalr_str: .string "\"test: 773; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry8_lxwr001_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_1_sb_str: .string "\"test: 774; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_1_sb\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_2_sh_str: .string "\"test: 775; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_2_sh\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_3_sw_str: .string "\"test: 776; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_3_sw\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_4_sd_str: .string "\"test: 777; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_5_lb_str: .string "\"test: 778; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_6_lbu_str: .string "\"test: 779; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_7_lh_str: .string "\"test: 780; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_8_lhu_str: .string "\"test: 781; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_9_lw_str: .string "\"test: 782; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_10_lwu_str: .string "\"test: 783; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_11_ld_str: .string "\"test: 784; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_11_ld\""
-PMP_Sm_cg_cp_cfg_X1_all_entry7_lxwr100_12_jalr_str: .string "\"test: 785; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry7_lxwr100_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_1_sb_str: .string "\"test: 786; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_1_sb\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_2_sh_str: .string "\"test: 787; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_2_sh\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_3_sw_str: .string "\"test: 788; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_3_sw\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_4_sd_str: .string "\"test: 789; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_5_lb_str: .string "\"test: 790; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_6_lbu_str: .string "\"test: 791; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_7_lh_str: .string "\"test: 792; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_8_lhu_str: .string "\"test: 793; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_9_lw_str: .string "\"test: 794; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_10_lwu_str: .string "\"test: 795; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_11_ld_str: .string "\"test: 796; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_11_ld\""
-PMP_Sm_cg_cp_cfg_X0_all_entry6_lxwr000_12_jalr_str: .string "\"test: 797; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry6_lxwr000_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_1_sb_str: .string "\"test: 798; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_1_sb\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_2_sh_str: .string "\"test: 799; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_2_sh\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_3_sw_str: .string "\"test: 800; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_3_sw\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_4_sd_str: .string "\"test: 801; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_5_lb_str: .string "\"test: 802; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_6_lbu_str: .string "\"test: 803; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_7_lh_str: .string "\"test: 804; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_8_lhu_str: .string "\"test: 805; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_9_lw_str: .string "\"test: 806; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_10_lwu_str: .string "\"test: 807; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_11_ld_str: .string "\"test: 808; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_11_ld\""
-PMP_Sm_cg_cp_cfg_X1_all_entry5_lxwr111_12_jalr_str: .string "\"test: 809; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry5_lxwr111_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_1_sb_str: .string "\"test: 810; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_1_sb\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_2_sh_str: .string "\"test: 811; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_2_sh\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_3_sw_str: .string "\"test: 812; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_3_sw\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_4_sd_str: .string "\"test: 813; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_5_lb_str: .string "\"test: 814; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_6_lbu_str: .string "\"test: 815; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_7_lh_str: .string "\"test: 816; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_8_lhu_str: .string "\"test: 817; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_9_lw_str: .string "\"test: 818; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_10_lwu_str: .string "\"test: 819; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_11_ld_str: .string "\"test: 820; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_11_ld\""
-PMP_Sm_cg_cp_cfg_X0_all_entry4_lxwr011_12_jalr_str: .string "\"test: 821; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry4_lxwr011_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_1_sb_str: .string "\"test: 822; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_1_sb\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_2_sh_str: .string "\"test: 823; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_2_sh\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_3_sw_str: .string "\"test: 824; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_3_sw\""
-PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_4_sd_str: .string "\"test: 825; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_5_lb_str: .string "\"test: 826; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_6_lbu_str: .string "\"test: 827; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_7_lh_str: .string "\"test: 828; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_8_lhu_str: .string "\"test: 829; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_9_lw_str: .string "\"test: 830; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_10_lwu_str: .string "\"test: 831; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_11_ld_str: .string "\"test: 832; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_11_ld\""
-PMP_Sm_cg_cp_cfg_X1_all_entry3_lxwr101_12_jalr_str: .string "\"test: 833; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry3_lxwr101_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_1_sb_str: .string "\"test: 834; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_1_sb\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_2_sh_str: .string "\"test: 835; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_2_sh\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_3_sw_str: .string "\"test: 836; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_3_sw\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_4_sd_str: .string "\"test: 837; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_5_lb_str: .string "\"test: 838; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_6_lbu_str: .string "\"test: 839; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_7_lh_str: .string "\"test: 840; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_8_lhu_str: .string "\"test: 841; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_9_lw_str: .string "\"test: 842; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_10_lwu_str: .string "\"test: 843; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_11_ld_str: .string "\"test: 844; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_11_ld\""
-PMP_Sm_cg_cp_cfg_X0_all_entry2_lxwr001_12_jalr_str: .string "\"test: 845; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry2_lxwr001_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_1_sb_str: .string "\"test: 846; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_1_sb\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_2_sh_str: .string "\"test: 847; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_2_sh\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_3_sw_str: .string "\"test: 848; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_3_sw\""
-PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_4_sd_str: .string "\"test: 849; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_5_lb_str: .string "\"test: 850; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_6_lbu_str: .string "\"test: 851; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_7_lh_str: .string "\"test: 852; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_8_lhu_str: .string "\"test: 853; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_9_lw_str: .string "\"test: 854; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_10_lwu_str: .string "\"test: 855; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_11_ld_str: .string "\"test: 856; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_11_ld\""
-PMP_Sm_cg_cp_cfg_X1_all_entry1_lxwr100_12_jalr_str: .string "\"test: 857; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry1_lxwr100_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_1_sb_str: .string "\"test: 858; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_1_sb\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_2_sh_str: .string "\"test: 859; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_2_sh\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_3_sw_str: .string "\"test: 860; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_3_sw\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_4_sd_str: .string "\"test: 861; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_5_lb_str: .string "\"test: 862; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_6_lbu_str: .string "\"test: 863; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_7_lh_str: .string "\"test: 864; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_8_lhu_str: .string "\"test: 865; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_9_lw_str: .string "\"test: 866; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_10_lwu_str: .string "\"test: 867; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_11_ld_str: .string "\"test: 868; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_11_ld\""
-PMP_Sm_cg_cp_cfg_X0_all_entry0_lxwr000_12_jalr_str: .string "\"test: 869; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry0_lxwr000_12_jalr\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_1_sb_str: .string "\"test: 870; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_1_sb\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_2_sh_str: .string "\"test: 871; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_2_sh\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_3_sw_str: .string "\"test: 872; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_3_sw\""
-PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_4_sd_str: .string "\"test: 873; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_4_sd\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_5_lb_str: .string "\"test: 874; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_5_lb\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_6_lbu_str: .string "\"test: 875; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_6_lbu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_7_lh_str: .string "\"test: 876; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_7_lh\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_8_lhu_str: .string "\"test: 877; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_8_lhu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_9_lw_str: .string "\"test: 878; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_9_lw\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_10_lwu_str: .string "\"test: 879; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_10_lwu\""
-PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_11_ld_str: .string "\"test: 880; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_11_ld\""
+PMP_Sm_cg_cp_cfg_X0_all_entry14_lxwr001_12_jalr_str: .string "\"test: 1556; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry14_lxwr001_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_1_sb_str: .string "\"test: 1557; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_1_sb\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_2_sh_str: .string "\"test: 1558; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_2_sh\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_3_sw_str: .string "\"test: 1559; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_3_sw\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry14_lxwr001_4_sd_str: .string "\"test: 1560; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry14_lxwr001_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_5_lb_str: .string "\"test: 1561; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_6_lbu_str: .string "\"test: 1562; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_7_lh_str: .string "\"test: 1563; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_8_lhu_str: .string "\"test: 1564; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_9_lw_str: .string "\"test: 1565; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_10_lwu_str: .string "\"test: 1566; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_11_ld_str: .string "\"test: 1567; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxh_str: .string "\"test: 1568; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxw_str: .string "\"test: 1569; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxd_str: .string "\"test: 1570; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxhu_str: .string "\"test: 1571; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxwu_str: .string "\"test: 1572; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsb_str: .string "\"test: 1573; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsh_str: .string "\"test: 1574; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsw_str: .string "\"test: 1575; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsd_str: .string "\"test: 1576; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsbu_str: .string "\"test: 1577; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxshu_str: .string "\"test: 1578; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxswu_str: .string "\"test: 1579; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwb_str: .string "\"test: 1580; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwh_str: .string "\"test: 1581; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuww_str: .string "\"test: 1582; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwd_str: .string "\"test: 1583; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwbu_str: .string "\"test: 1584; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwhu_str: .string "\"test: 1585; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry14_lxwr001_lxsuwwu_str: .string "\"test: 1586; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry14_lxwr001_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X1_all_entry13_lxwr100_12_jalr_str: .string "\"test: 1587; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry13_lxwr100_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_1_sb_str: .string "\"test: 1588; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_1_sb\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_2_sh_str: .string "\"test: 1589; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_2_sh\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_3_sw_str: .string "\"test: 1590; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_3_sw\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry13_lxwr100_4_sd_str: .string "\"test: 1591; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry13_lxwr100_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_5_lb_str: .string "\"test: 1592; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_6_lbu_str: .string "\"test: 1593; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_7_lh_str: .string "\"test: 1594; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_8_lhu_str: .string "\"test: 1595; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_9_lw_str: .string "\"test: 1596; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_10_lwu_str: .string "\"test: 1597; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_11_ld_str: .string "\"test: 1598; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxh_str: .string "\"test: 1599; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxw_str: .string "\"test: 1600; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxd_str: .string "\"test: 1601; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxhu_str: .string "\"test: 1602; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxwu_str: .string "\"test: 1603; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsb_str: .string "\"test: 1604; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsh_str: .string "\"test: 1605; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsw_str: .string "\"test: 1606; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsd_str: .string "\"test: 1607; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsbu_str: .string "\"test: 1608; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxshu_str: .string "\"test: 1609; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxswu_str: .string "\"test: 1610; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwb_str: .string "\"test: 1611; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwh_str: .string "\"test: 1612; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuww_str: .string "\"test: 1613; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwd_str: .string "\"test: 1614; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwbu_str: .string "\"test: 1615; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwhu_str: .string "\"test: 1616; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry13_lxwr100_lxsuwwu_str: .string "\"test: 1617; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry13_lxwr100_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X0_all_entry12_lxwr000_12_jalr_str: .string "\"test: 1618; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry12_lxwr000_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_1_sb_str: .string "\"test: 1619; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_1_sb\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_2_sh_str: .string "\"test: 1620; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_2_sh\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_3_sw_str: .string "\"test: 1621; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_3_sw\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry12_lxwr000_4_sd_str: .string "\"test: 1622; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry12_lxwr000_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_5_lb_str: .string "\"test: 1623; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_6_lbu_str: .string "\"test: 1624; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_7_lh_str: .string "\"test: 1625; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_8_lhu_str: .string "\"test: 1626; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_9_lw_str: .string "\"test: 1627; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_10_lwu_str: .string "\"test: 1628; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_11_ld_str: .string "\"test: 1629; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxh_str: .string "\"test: 1630; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxw_str: .string "\"test: 1631; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxd_str: .string "\"test: 1632; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxhu_str: .string "\"test: 1633; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxwu_str: .string "\"test: 1634; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsb_str: .string "\"test: 1635; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsh_str: .string "\"test: 1636; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsw_str: .string "\"test: 1637; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsd_str: .string "\"test: 1638; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsbu_str: .string "\"test: 1639; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxshu_str: .string "\"test: 1640; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxswu_str: .string "\"test: 1641; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwb_str: .string "\"test: 1642; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwh_str: .string "\"test: 1643; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuww_str: .string "\"test: 1644; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwd_str: .string "\"test: 1645; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwbu_str: .string "\"test: 1646; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwhu_str: .string "\"test: 1647; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry12_lxwr000_lxsuwwu_str: .string "\"test: 1648; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry12_lxwr000_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X1_all_entry11_lxwr111_12_jalr_str: .string "\"test: 1649; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry11_lxwr111_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_1_sb_str: .string "\"test: 1650; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_1_sb\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_2_sh_str: .string "\"test: 1651; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_2_sh\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_3_sw_str: .string "\"test: 1652; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_3_sw\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry11_lxwr111_4_sd_str: .string "\"test: 1653; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry11_lxwr111_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_5_lb_str: .string "\"test: 1654; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_6_lbu_str: .string "\"test: 1655; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_7_lh_str: .string "\"test: 1656; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_8_lhu_str: .string "\"test: 1657; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_9_lw_str: .string "\"test: 1658; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_10_lwu_str: .string "\"test: 1659; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_11_ld_str: .string "\"test: 1660; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxh_str: .string "\"test: 1661; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxw_str: .string "\"test: 1662; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxd_str: .string "\"test: 1663; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxhu_str: .string "\"test: 1664; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxwu_str: .string "\"test: 1665; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsb_str: .string "\"test: 1666; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsh_str: .string "\"test: 1667; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsw_str: .string "\"test: 1668; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsd_str: .string "\"test: 1669; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsbu_str: .string "\"test: 1670; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxshu_str: .string "\"test: 1671; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxswu_str: .string "\"test: 1672; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwb_str: .string "\"test: 1673; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwh_str: .string "\"test: 1674; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuww_str: .string "\"test: 1675; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwd_str: .string "\"test: 1676; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwbu_str: .string "\"test: 1677; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwhu_str: .string "\"test: 1678; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry11_lxwr111_lxsuwwu_str: .string "\"test: 1679; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry11_lxwr111_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X0_all_entry10_lxwr001_12_jalr_str: .string "\"test: 1680; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry10_lxwr001_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_1_sb_str: .string "\"test: 1681; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_1_sb\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_2_sh_str: .string "\"test: 1682; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_2_sh\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_3_sw_str: .string "\"test: 1683; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_3_sw\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry10_lxwr001_4_sd_str: .string "\"test: 1684; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry10_lxwr001_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_5_lb_str: .string "\"test: 1685; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_6_lbu_str: .string "\"test: 1686; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_7_lh_str: .string "\"test: 1687; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_8_lhu_str: .string "\"test: 1688; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_9_lw_str: .string "\"test: 1689; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_10_lwu_str: .string "\"test: 1690; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_11_ld_str: .string "\"test: 1691; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxh_str: .string "\"test: 1692; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxw_str: .string "\"test: 1693; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxd_str: .string "\"test: 1694; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxhu_str: .string "\"test: 1695; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxwu_str: .string "\"test: 1696; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsb_str: .string "\"test: 1697; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsh_str: .string "\"test: 1698; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsw_str: .string "\"test: 1699; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsd_str: .string "\"test: 1700; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsbu_str: .string "\"test: 1701; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxshu_str: .string "\"test: 1702; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxswu_str: .string "\"test: 1703; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwb_str: .string "\"test: 1704; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwh_str: .string "\"test: 1705; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuww_str: .string "\"test: 1706; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwd_str: .string "\"test: 1707; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwbu_str: .string "\"test: 1708; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwhu_str: .string "\"test: 1709; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry10_lxwr001_lxsuwwu_str: .string "\"test: 1710; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry10_lxwr001_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X1_all_entry9_lxwr101_12_jalr_str: .string "\"test: 1711; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry9_lxwr101_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_1_sb_str: .string "\"test: 1712; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_1_sb\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_2_sh_str: .string "\"test: 1713; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_2_sh\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_3_sw_str: .string "\"test: 1714; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_3_sw\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry9_lxwr101_4_sd_str: .string "\"test: 1715; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry9_lxwr101_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_5_lb_str: .string "\"test: 1716; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_6_lbu_str: .string "\"test: 1717; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_7_lh_str: .string "\"test: 1718; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_8_lhu_str: .string "\"test: 1719; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_9_lw_str: .string "\"test: 1720; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_10_lwu_str: .string "\"test: 1721; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_11_ld_str: .string "\"test: 1722; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxh_str: .string "\"test: 1723; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxw_str: .string "\"test: 1724; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxd_str: .string "\"test: 1725; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxhu_str: .string "\"test: 1726; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxwu_str: .string "\"test: 1727; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsb_str: .string "\"test: 1728; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsh_str: .string "\"test: 1729; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsw_str: .string "\"test: 1730; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsd_str: .string "\"test: 1731; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsbu_str: .string "\"test: 1732; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxshu_str: .string "\"test: 1733; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxswu_str: .string "\"test: 1734; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwb_str: .string "\"test: 1735; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwh_str: .string "\"test: 1736; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuww_str: .string "\"test: 1737; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwd_str: .string "\"test: 1738; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwbu_str: .string "\"test: 1739; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwhu_str: .string "\"test: 1740; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry9_lxwr101_lxsuwwu_str: .string "\"test: 1741; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry9_lxwr101_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X0_all_entry8_lxwr001_12_jalr_str: .string "\"test: 1742; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry8_lxwr001_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_1_sb_str: .string "\"test: 1743; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_1_sb\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_2_sh_str: .string "\"test: 1744; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_2_sh\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_3_sw_str: .string "\"test: 1745; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_3_sw\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry8_lxwr001_4_sd_str: .string "\"test: 1746; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry8_lxwr001_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_5_lb_str: .string "\"test: 1747; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_6_lbu_str: .string "\"test: 1748; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_7_lh_str: .string "\"test: 1749; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_8_lhu_str: .string "\"test: 1750; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_9_lw_str: .string "\"test: 1751; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_10_lwu_str: .string "\"test: 1752; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_11_ld_str: .string "\"test: 1753; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxh_str: .string "\"test: 1754; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxw_str: .string "\"test: 1755; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxd_str: .string "\"test: 1756; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxhu_str: .string "\"test: 1757; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxwu_str: .string "\"test: 1758; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsb_str: .string "\"test: 1759; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsh_str: .string "\"test: 1760; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsw_str: .string "\"test: 1761; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsd_str: .string "\"test: 1762; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsbu_str: .string "\"test: 1763; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxshu_str: .string "\"test: 1764; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxswu_str: .string "\"test: 1765; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwb_str: .string "\"test: 1766; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwh_str: .string "\"test: 1767; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuww_str: .string "\"test: 1768; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwd_str: .string "\"test: 1769; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwbu_str: .string "\"test: 1770; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwhu_str: .string "\"test: 1771; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry8_lxwr001_lxsuwwu_str: .string "\"test: 1772; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry8_lxwr001_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X1_all_entry7_lxwr100_12_jalr_str: .string "\"test: 1773; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry7_lxwr100_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_1_sb_str: .string "\"test: 1774; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_1_sb\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_2_sh_str: .string "\"test: 1775; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_2_sh\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_3_sw_str: .string "\"test: 1776; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_3_sw\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry7_lxwr100_4_sd_str: .string "\"test: 1777; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry7_lxwr100_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_5_lb_str: .string "\"test: 1778; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_6_lbu_str: .string "\"test: 1779; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_7_lh_str: .string "\"test: 1780; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_8_lhu_str: .string "\"test: 1781; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_9_lw_str: .string "\"test: 1782; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_10_lwu_str: .string "\"test: 1783; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_11_ld_str: .string "\"test: 1784; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxh_str: .string "\"test: 1785; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxw_str: .string "\"test: 1786; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxd_str: .string "\"test: 1787; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxhu_str: .string "\"test: 1788; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxwu_str: .string "\"test: 1789; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsb_str: .string "\"test: 1790; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsh_str: .string "\"test: 1791; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsw_str: .string "\"test: 1792; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsd_str: .string "\"test: 1793; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsbu_str: .string "\"test: 1794; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxshu_str: .string "\"test: 1795; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxswu_str: .string "\"test: 1796; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwb_str: .string "\"test: 1797; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwh_str: .string "\"test: 1798; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuww_str: .string "\"test: 1799; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwd_str: .string "\"test: 1800; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwbu_str: .string "\"test: 1801; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwhu_str: .string "\"test: 1802; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry7_lxwr100_lxsuwwu_str: .string "\"test: 1803; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry7_lxwr100_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X0_all_entry6_lxwr000_12_jalr_str: .string "\"test: 1804; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry6_lxwr000_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_1_sb_str: .string "\"test: 1805; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_1_sb\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_2_sh_str: .string "\"test: 1806; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_2_sh\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_3_sw_str: .string "\"test: 1807; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_3_sw\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry6_lxwr000_4_sd_str: .string "\"test: 1808; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry6_lxwr000_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_5_lb_str: .string "\"test: 1809; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_6_lbu_str: .string "\"test: 1810; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_7_lh_str: .string "\"test: 1811; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_8_lhu_str: .string "\"test: 1812; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_9_lw_str: .string "\"test: 1813; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_10_lwu_str: .string "\"test: 1814; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_11_ld_str: .string "\"test: 1815; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxh_str: .string "\"test: 1816; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxw_str: .string "\"test: 1817; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxd_str: .string "\"test: 1818; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxhu_str: .string "\"test: 1819; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxwu_str: .string "\"test: 1820; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsb_str: .string "\"test: 1821; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsh_str: .string "\"test: 1822; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsw_str: .string "\"test: 1823; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsd_str: .string "\"test: 1824; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsbu_str: .string "\"test: 1825; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxshu_str: .string "\"test: 1826; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxswu_str: .string "\"test: 1827; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwb_str: .string "\"test: 1828; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwh_str: .string "\"test: 1829; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuww_str: .string "\"test: 1830; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwd_str: .string "\"test: 1831; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwbu_str: .string "\"test: 1832; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwhu_str: .string "\"test: 1833; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry6_lxwr000_lxsuwwu_str: .string "\"test: 1834; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry6_lxwr000_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X1_all_entry5_lxwr111_12_jalr_str: .string "\"test: 1835; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry5_lxwr111_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_1_sb_str: .string "\"test: 1836; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_1_sb\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_2_sh_str: .string "\"test: 1837; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_2_sh\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_3_sw_str: .string "\"test: 1838; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_3_sw\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry5_lxwr111_4_sd_str: .string "\"test: 1839; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry5_lxwr111_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_5_lb_str: .string "\"test: 1840; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_6_lbu_str: .string "\"test: 1841; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_7_lh_str: .string "\"test: 1842; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_8_lhu_str: .string "\"test: 1843; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_9_lw_str: .string "\"test: 1844; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_10_lwu_str: .string "\"test: 1845; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_11_ld_str: .string "\"test: 1846; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxh_str: .string "\"test: 1847; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxw_str: .string "\"test: 1848; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxd_str: .string "\"test: 1849; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxhu_str: .string "\"test: 1850; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxwu_str: .string "\"test: 1851; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsb_str: .string "\"test: 1852; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsh_str: .string "\"test: 1853; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsw_str: .string "\"test: 1854; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsd_str: .string "\"test: 1855; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsbu_str: .string "\"test: 1856; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxshu_str: .string "\"test: 1857; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxswu_str: .string "\"test: 1858; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwb_str: .string "\"test: 1859; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwh_str: .string "\"test: 1860; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuww_str: .string "\"test: 1861; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwd_str: .string "\"test: 1862; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwbu_str: .string "\"test: 1863; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwhu_str: .string "\"test: 1864; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry5_lxwr111_lxsuwwu_str: .string "\"test: 1865; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry5_lxwr111_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X0_all_entry4_lxwr011_12_jalr_str: .string "\"test: 1866; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry4_lxwr011_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_1_sb_str: .string "\"test: 1867; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_1_sb\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_2_sh_str: .string "\"test: 1868; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_2_sh\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_3_sw_str: .string "\"test: 1869; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_3_sw\""
+PMP_Sm_cg_cp_cfg_rW11_all_entry4_lxwr011_4_sd_str: .string "\"test: 1870; cg: PMP_Sm_cg; cp: cp_cfg_rW11_all; bin: entry4_lxwr011_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_5_lb_str: .string "\"test: 1871; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_6_lbu_str: .string "\"test: 1872; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_7_lh_str: .string "\"test: 1873; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_8_lhu_str: .string "\"test: 1874; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_9_lw_str: .string "\"test: 1875; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_10_lwu_str: .string "\"test: 1876; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_11_ld_str: .string "\"test: 1877; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxh_str: .string "\"test: 1878; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxw_str: .string "\"test: 1879; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxd_str: .string "\"test: 1880; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxhu_str: .string "\"test: 1881; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxwu_str: .string "\"test: 1882; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsb_str: .string "\"test: 1883; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsh_str: .string "\"test: 1884; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsw_str: .string "\"test: 1885; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsd_str: .string "\"test: 1886; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsbu_str: .string "\"test: 1887; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxshu_str: .string "\"test: 1888; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxswu_str: .string "\"test: 1889; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwb_str: .string "\"test: 1890; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwh_str: .string "\"test: 1891; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuww_str: .string "\"test: 1892; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwd_str: .string "\"test: 1893; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwbu_str: .string "\"test: 1894; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwhu_str: .string "\"test: 1895; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw11_all_entry4_lxwr011_lxsuwwu_str: .string "\"test: 1896; cg: PMP_Sm_cg; cp: cp_cfg_Rw11_all; bin: entry4_lxwr011_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X1_all_entry3_lxwr101_12_jalr_str: .string "\"test: 1897; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry3_lxwr101_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_1_sb_str: .string "\"test: 1898; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_1_sb\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_2_sh_str: .string "\"test: 1899; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_2_sh\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_3_sw_str: .string "\"test: 1900; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_3_sw\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry3_lxwr101_4_sd_str: .string "\"test: 1901; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry3_lxwr101_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_5_lb_str: .string "\"test: 1902; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_6_lbu_str: .string "\"test: 1903; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_7_lh_str: .string "\"test: 1904; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_8_lhu_str: .string "\"test: 1905; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_9_lw_str: .string "\"test: 1906; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_10_lwu_str: .string "\"test: 1907; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_11_ld_str: .string "\"test: 1908; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxh_str: .string "\"test: 1909; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxw_str: .string "\"test: 1910; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxd_str: .string "\"test: 1911; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxhu_str: .string "\"test: 1912; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxwu_str: .string "\"test: 1913; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsb_str: .string "\"test: 1914; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsh_str: .string "\"test: 1915; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsw_str: .string "\"test: 1916; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsd_str: .string "\"test: 1917; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsbu_str: .string "\"test: 1918; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxshu_str: .string "\"test: 1919; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxswu_str: .string "\"test: 1920; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwb_str: .string "\"test: 1921; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwh_str: .string "\"test: 1922; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuww_str: .string "\"test: 1923; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwd_str: .string "\"test: 1924; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwbu_str: .string "\"test: 1925; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwhu_str: .string "\"test: 1926; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry3_lxwr101_lxsuwwu_str: .string "\"test: 1927; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry3_lxwr101_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X0_all_entry2_lxwr001_12_jalr_str: .string "\"test: 1928; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry2_lxwr001_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_1_sb_str: .string "\"test: 1929; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_1_sb\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_2_sh_str: .string "\"test: 1930; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_2_sh\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_3_sw_str: .string "\"test: 1931; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_3_sw\""
+PMP_Sm_cg_cp_cfg_rW10_all_entry2_lxwr001_4_sd_str: .string "\"test: 1932; cg: PMP_Sm_cg; cp: cp_cfg_rW10_all; bin: entry2_lxwr001_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_5_lb_str: .string "\"test: 1933; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_6_lbu_str: .string "\"test: 1934; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_7_lh_str: .string "\"test: 1935; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_8_lhu_str: .string "\"test: 1936; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_9_lw_str: .string "\"test: 1937; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_10_lwu_str: .string "\"test: 1938; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_11_ld_str: .string "\"test: 1939; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxh_str: .string "\"test: 1940; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxw_str: .string "\"test: 1941; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxd_str: .string "\"test: 1942; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxhu_str: .string "\"test: 1943; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxwu_str: .string "\"test: 1944; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsb_str: .string "\"test: 1945; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsh_str: .string "\"test: 1946; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsw_str: .string "\"test: 1947; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsd_str: .string "\"test: 1948; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsbu_str: .string "\"test: 1949; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxshu_str: .string "\"test: 1950; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxswu_str: .string "\"test: 1951; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwb_str: .string "\"test: 1952; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwh_str: .string "\"test: 1953; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuww_str: .string "\"test: 1954; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwd_str: .string "\"test: 1955; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwbu_str: .string "\"test: 1956; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwhu_str: .string "\"test: 1957; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw10_all_entry2_lxwr001_lxsuwwu_str: .string "\"test: 1958; cg: PMP_Sm_cg; cp: cp_cfg_Rw10_all; bin: entry2_lxwr001_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X1_all_entry1_lxwr100_12_jalr_str: .string "\"test: 1959; cg: PMP_Sm_cg; cp: cp_cfg_X1_all; bin: entry1_lxwr100_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_1_sb_str: .string "\"test: 1960; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_1_sb\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_2_sh_str: .string "\"test: 1961; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_2_sh\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_3_sw_str: .string "\"test: 1962; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_3_sw\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry1_lxwr100_4_sd_str: .string "\"test: 1963; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry1_lxwr100_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_5_lb_str: .string "\"test: 1964; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_6_lbu_str: .string "\"test: 1965; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_7_lh_str: .string "\"test: 1966; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_8_lhu_str: .string "\"test: 1967; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_9_lw_str: .string "\"test: 1968; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_10_lwu_str: .string "\"test: 1969; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_11_ld_str: .string "\"test: 1970; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxh_str: .string "\"test: 1971; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxw_str: .string "\"test: 1972; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxd_str: .string "\"test: 1973; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxhu_str: .string "\"test: 1974; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxwu_str: .string "\"test: 1975; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsb_str: .string "\"test: 1976; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsh_str: .string "\"test: 1977; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsw_str: .string "\"test: 1978; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsd_str: .string "\"test: 1979; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsbu_str: .string "\"test: 1980; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxshu_str: .string "\"test: 1981; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxswu_str: .string "\"test: 1982; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwb_str: .string "\"test: 1983; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwh_str: .string "\"test: 1984; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuww_str: .string "\"test: 1985; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwd_str: .string "\"test: 1986; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwbu_str: .string "\"test: 1987; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwhu_str: .string "\"test: 1988; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry1_lxwr100_lxsuwwu_str: .string "\"test: 1989; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry1_lxwr100_lxsuwwu\""
+PMP_Sm_cg_cp_cfg_X0_all_entry0_lxwr000_12_jalr_str: .string "\"test: 1990; cg: PMP_Sm_cg; cp: cp_cfg_X0_all; bin: entry0_lxwr000_12_jalr\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_1_sb_str: .string "\"test: 1991; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_1_sb\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_2_sh_str: .string "\"test: 1992; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_2_sh\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_3_sw_str: .string "\"test: 1993; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_3_sw\""
+PMP_Sm_cg_cp_cfg_rW00_all_entry0_lxwr000_4_sd_str: .string "\"test: 1994; cg: PMP_Sm_cg; cp: cp_cfg_rW00_all; bin: entry0_lxwr000_4_sd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_5_lb_str: .string "\"test: 1995; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_5_lb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_6_lbu_str: .string "\"test: 1996; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_6_lbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_7_lh_str: .string "\"test: 1997; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_7_lh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_8_lhu_str: .string "\"test: 1998; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_8_lhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_9_lw_str: .string "\"test: 1999; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_9_lw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_10_lwu_str: .string "\"test: 2000; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_10_lwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_11_ld_str: .string "\"test: 2001; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_11_ld\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxh_str: .string "\"test: 2002; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxw_str: .string "\"test: 2003; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxd_str: .string "\"test: 2004; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxhu_str: .string "\"test: 2005; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxwu_str: .string "\"test: 2006; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxwu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsb_str: .string "\"test: 2007; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsh_str: .string "\"test: 2008; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsw_str: .string "\"test: 2009; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsw\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsd_str: .string "\"test: 2010; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsbu_str: .string "\"test: 2011; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxshu_str: .string "\"test: 2012; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxshu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxswu_str: .string "\"test: 2013; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxswu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwb_str: .string "\"test: 2014; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsuwb\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwh_str: .string "\"test: 2015; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsuwh\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuww_str: .string "\"test: 2016; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsuww\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwd_str: .string "\"test: 2017; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsuwd\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwbu_str: .string "\"test: 2018; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsuwbu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwhu_str: .string "\"test: 2019; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsuwhu\""
+PMP_Sm_cg_cp_cfg_Rw00_all_entry0_lxwr000_lxsuwwu_str: .string "\"test: 2020; cg: PMP_Sm_cg; cp: cp_cfg_Rw00_all; bin: entry0_lxwr000_lxsuwwu\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -10,6 +10,8 @@ exclude_extensions:
   # (https://github.com/Wren6991/Hazard3/issues/49)
   - Sm_Zicntr
   - U_Zicntr
+  # pmpcfg stores the reserved R = 0, W = 1 as written: hdl/hazard3_pmp.v#L118-L119
+  - PMP_Sm_pmpcfg_xwr
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-hazard3.sh"

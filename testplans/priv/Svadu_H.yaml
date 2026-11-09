@@ -38,3 +38,8 @@ coverpoints:
     description: In HS-mode with menvcfg.ADUE = 0, then 1, set henvcfg.ADUE (henvcfgh on RV32) and read it back.
     expectation: henvcfg.ADUE reads as zero while menvcfg.ADUE = 0, and reads back as written while menvcfg.ADUE = 1.
     bins: HS x csrrs henvcfg (henvcfgh on RV32) x menvcfg.ADUE {0, 1}
+  - name: cp_hlv_adue
+    goal: henvcfg.ADUE selects Svade or Svadu for the VS-stage accesses of HLV and HSV
+    description: In HS-mode with hstatus.SPVP = 1, vsatp paged and hgatp = Bare, execute hlv.w and hsv.w through a VS-stage leaf with A = D = 0, with (menvcfg.ADUE, henvcfg.ADUE) = (0, 0), (1, 0) and (1, 1).  Read the leaf back.
+    expectation: With henvcfg.ADUE = 0, a load or store page fault and the leaf unchanged.  With henvcfg.ADUE = 1, no fault; hlv.w sets A and hsv.w sets A and D.
+    bins: HS x {hlv.w, hsv.w} x vsatp_mode x hgatp Bare x (menvcfg.ADUE, henvcfg.ADUE) {00, 10, 11}

@@ -4,6 +4,8 @@ source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR
 notes: |
   Record all trap information including xstatus
   add to CTP an assumption that all interrupts are implemented
+  Only cp_vgein_switch_csrrw/csrrs/csrrc and cp_vs_int_alias_vs/hs/m have tests (InterruptsH_vgein and InterruptsH_alias, which boot to HS-mode).
+  They run with hideleg = 0x444, hie = hgeie = 0 and (from boot) henvcfg.STCE = 0, so no VS-level interrupt is pending and enabled where it could be taken.
 coverpoints:
   - heading: Following tests are done in M-mode
   - name: cp_mideleg
@@ -111,7 +113,23 @@ coverpoints:
     description: With 2^3 combinations of hideleg, write 0xFFFF to vsie, read hie
     expectation: delegated bits show up as 1 in hie (shifted)
     bins: "8"
+  - name: |-
+      cp_vs_int_alias_vs
+      cp_vs_int_alias_hs
+      cp_vs_int_alias_m
+    goal: Every copy of VSSIP, VSTIP and VSEIP and of their enables follows a write to any one of them
+    description: With hideleg = 0x444, set (csrrs) and clear (csrrc) each of VSSIP, VSTIP and VSEIP alone in vsip and vsie from VS-mode (written as sip and sie, one bit lower), in hvip, hip and hie from HS-mode, and in mip and mie from M-mode (through T-SBI).  Before a clear, HS-mode sets the bit in hvip or hie.  After each write, read hvip, hip, hie, mip, mie, vsip and vsie.
+    expectation: hvip's three bits, hip.VSSIP, mip.VSSIP and vsip.SSIP are one bit, and hie, mie and vsie are one set of enables.  hip.VSTIP, hip.VSEIP, mip.VSTIP, mip.VSEIP, vsip.STIP and vsip.SEIP are read-only and follow hvip.
+    bins: "VS: 2 ops * 2 CSRs * 3 bits; HS: 2 ops * 3 CSRs * 3 bits; M: 2 ops * 2 CSRs * 3 bits"
   - heading: Following tests are done in HS-mode if GILEN > 0
+  - name: |-
+      cp_vgein_switch_csrrw
+      cp_vgein_switch_csrrs
+      cp_vgein_switch_csrrc
+    goal: hip.VSEIP follows the guest file that hstatus.VGEIN selects after every change of VGEIN
+    description: With GEILEN >= 3, raise guest external interrupt 3 (RVTEST_SET_GUEST_EXT_INT_S) and leave the other guest files idle.  Move VGEIN 3->0, 3->1, 0->3 and 1->3 with csrrw; 0->3, 1->3 and 3->7 with csrrs; 3->0, 3->1 and 7->3 with csrrc (the cases with VGEIN = 7 need GEILEN >= 7).  Read hip after each write.
+    expectation: hip.VSEIP = hgeip[VGEIN] after every write, and 0 when VGEIN = 0.  hip.SGEIP = 0, because hgeie = 0.
+    bins: "csrrw: pending->0, pending->idle, 0->pending, idle->pending; csrrs: 0->pending, idle->pending, pending->idle; csrrc: pending->0, pending->idle, idle->pending"
   - name: cp_hie_gilen
     goal: hie.SGEIE is alias of mie
     description: With mie = 0x1444, read hie

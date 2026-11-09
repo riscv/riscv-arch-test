@@ -250,6 +250,17 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     cp_henvcfg_pmm_rsv: cross priv_mode_hs, henvcfg_csrrw, henvcfg_pmm_rsv_written;
     cp_hstatus_hupmm_rsv: cross priv_mode_hs, hstatus_csrrw, hstatus_hupmm_rsv_written;
+    // MXR is in effect for VS-mode and VU-mode when either vsstatus.MXR or the HS-level sstatus.MXR is 1.
+    // {vsstatus.MXR, sstatus.MXR}; both 0 is cp_vs_pmm and cp_vu_pmm.
+    mxr_pair: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0],
+                          get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0]} {
+        bins vs_only = {2'b10};
+        bins hs_only = {2'b01};
+        bins both    = {2'b11};
+    }
+    cp_vs_mxr_pmm: cross priv_mode_vs, ld_sd, mxr_pair, henvcfg_pmm_enabled, tag, vsatp_bare, hgatp_mode;
+    cp_vu_mxr_pmm: cross priv_mode_vu, ld_sd, mxr_pair, senvcfg_pmm_enabled, tag, vsatp_bare, hgatp_mode;
+
 endgroup
 `endif // H_SUPPORTED
 

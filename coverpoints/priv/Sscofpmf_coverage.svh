@@ -521,10 +521,37 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
     `endif
 endgroup
 
+`ifdef H_SUPPORTED
+// VSINH and VUINH filter events in VS-mode and VU-mode; UINH does not filter VU-mode
+covergroup Sscofpmf_H_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // {MINH, SINH, UINH, VSINH, VUINH}
+    `ifdef UDB_MXLEN_64
+        virt_inh_pattern : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+            bins only_vs = {5'b11101};
+            bins only_vu = {5'b11110};
+            bins only_u  = {5'b11011};
+        }
+    `else
+        virt_inh_pattern : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+            bins only_vs = {5'b11101};
+            bins only_vu = {5'b11110};
+            bins only_u  = {5'b11011};
+        }
+    `endif
+    cp_virt_xinh_filter : cross priv_mode_vs_vu, virt_inh_pattern;
+endgroup
+`endif
+
 function void sscofpmf_sample(int hart, int issue, ins_t ins);
     `ifndef EXCLUDE_SM
         Sscofpmf_Sm_cg.sample(ins);
     `endif
     Sscofpmf_S_cg.sample(ins);
     Sscofpmf_U_cg.sample(ins);
+    `ifdef H_SUPPORTED
+        Sscofpmf_H_cg.sample(ins);
+    `endif
 endfunction

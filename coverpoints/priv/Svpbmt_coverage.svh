@@ -222,6 +222,19 @@ covergroup Svpbmt_H_cg with function sample(ins_t ins);
     }
     // henvcfg.PBMTE is read-only zero while menvcfg.PBMTE = 0
     cp_henvcfg_menvcfg : cross priv_mode_hs, csrrs, henvcfg, menvcfg_pbmte;
+
+    // HLV.W and HSV.W from HS-mode through a VS-stage leaf (hgatp = Bare) with PBMT = 1-3: henvcfg.PBMTE enables
+    // PBMT in the VS-stage for them as for VS-mode accesses, and PBMT = 3 is always reserved
+    hlv_hsv_w : coverpoint ins.current.insn {
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hsv_w = {HSV_W};
+    }
+    vs_leaf_pbmt : coverpoint ins.current.pte_d[62:61] {
+        bins nc  = {2'b01};
+        bins io  = {2'b10};
+        bins rsv = {2'b11};
+    }
+    cp_hlv_pbmt : cross priv_mode_hs, hlv_hsv_w, vsatp_mode, hgatp_bare, henvcfg_pbmte, vs_leaf_pbmt;
 endgroup
 `endif // H_SUPPORTED
 

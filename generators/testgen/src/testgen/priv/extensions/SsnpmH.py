@@ -176,6 +176,37 @@ def _make_ssnpmh(test_data: TestData, g: SvMode) -> list[TestChunk]:
     tc.code.extend(lines)
     end(tc)
 
+    tc = begin(
+        "mxr",
+        "cp_vs_mxr_pmm, cp_vu_mxr_pmm",
+        "With every PMM field enabled, ld and sd in VS-mode and VU-mode at tagged addresses with (vsstatus.MXR,\n"
+        "sstatus.MXR) = (1, 0), (0, 1) and (1, 1).  MXR is in effect when either is 1, which turns masking off, so\n"
+        "each access raises a guest-page fault",
+    )
+    lines = _set_all_pmm(test_data, _OTHER_ON)
+    for vs_mxr, hs_mxr in ((1, 0), (0, 1), (1, 1)):
+        lines.extend(
+            [
+                *csr_op("csrs" if vs_mxr else "csrc", "vsstatus", "SSTATUS_MXR", test_data),
+                *csr_op("csrs" if hs_mxr else "csrc", "sstatus", "SSTATUS_MXR", test_data),
+            ]
+        )
+        for mode in ("VS", "VU"):
+            coverpoint = f"cp_{mode.lower()}_mxr_pmm"
+            for op in ("ld", "sd"):
+                for bit in _tags(g):
+                    name = f"{g.name}_{mode.lower()}_{op}_vsmxr{vs_mxr}_smxr{hs_mxr}_bit{bit}"
+                    lines.extend(_probe(test_data, name, coverpoint, op, bit, mode))
+    lines.extend(
+        [
+            *csr_op("csrc", "sstatus", "SSTATUS_MXR", test_data),
+            *csr_op("csrc", "vsstatus", "SSTATUS_MXR", test_data),
+            *_set_all_pmm(test_data, 0),
+        ]
+    )
+    tc.code.extend(lines)
+    end(tc)
+
     return chunks
 
 

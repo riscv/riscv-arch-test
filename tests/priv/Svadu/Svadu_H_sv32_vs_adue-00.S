@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 21
+#define SIGUPD_COUNT 30
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -32,10 +32,11 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_henvcfg_menvcfg, cp_vsatp_adue
+// cp_henvcfg_menvcfg, cp_vsatp_adue, cp_hlv_adue
 //   In VS-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with A or D clear, with
 //   (menvcfg.ADUE, henvcfg.ADUE) = (0, 1 written), (1, 0) and (1, 1).  Svade raises a page fault; Svadu sets
-//   the bits, which are checked in the PTE
+//   the bits, which are checked in the PTE.  Then hlv.w and hsv.w in HS-mode through a VS-stage leaf with
+//   A = D = 0 with (menvcfg.ADUE, henvcfg.ADUE) = (0, 0), (1, 0) and (1, 1)
 //   In HS-mode, set henvcfg.ADUE with menvcfg.ADUE = 0, where it is read-only zero, and 1
 /////////////////////////////////
 
@@ -321,19 +322,216 @@ Svadu_H_cg_cp_vsatp_adue_madue1_hadue1_a1_d0_store_pte:
   LREG x15, 0(x15)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_H_cg_cp_vsatp_adue_madue1_hadue1_a1_d0_store_pte, Svadu_H_cg_cp_vsatp_adue_madue1_hadue1_a1_d0_store_pte_str)
+  LI(x15, HSTATUS_SPVP)
+  csrc hstatus, x15
+  LI(x15, HSTATUS_SPVP)
+  csrs hstatus, x15
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
+  LI(x15, HENVCFGH_ADUE)
+  csrc henvcfgh, x15
+  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x9, 0x90407000 + 8)
+  LI(x6, 0x113)
+  LI(x6, -1)
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_hlv:
+  hlv.w x6, (x9)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_hlv, Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_hlv_str)
+
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_pte:
+  LREG x14, 0(x14)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_pte, Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_pte_str)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
+  LI(x15, HENVCFGH_ADUE)
+  csrc henvcfgh, x15
+  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x13, 0x90407000 + 8)
+  LI(x9, 0x115)
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hsv_hsv:
+  hsv.w x9, (x13)
+
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hsv_pte:
+  LREG x13, 0(x13)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hsv_pte, Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hsv_pte_str)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
+  RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, MENVCFGH_ADUE)
+  LI(x15, HENVCFGH_ADUE)
+  csrc henvcfgh, x15
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x6)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x6)
+  hfence.vvma
+  hfence.gvma
+  LI(x9, 0x90407000 + 8)
+  LI(x6, 0x117)
+  LI(x6, -1)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_hlv:
+  hlv.w x6, (x9)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_hlv, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_hlv_str)
+
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_pte:
+  LREG x6, 0(x6)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_pte, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_pte_str)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
+  RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, MENVCFGH_ADUE)
+  LI(x15, HENVCFGH_ADUE)
+  csrc henvcfgh, x15
+  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x9, 0x90407000 + 8)
+  LI(x14, 0x119)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hsv_hsv:
+  hsv.w x14, (x9)
+
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hsv_pte:
+  LREG x6, 0(x6)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hsv_pte, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hsv_pte_str)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
+  RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, MENVCFGH_ADUE)
+  LI(x15, HENVCFGH_ADUE)
+  csrc henvcfgh, x15
+  LI(x15, HENVCFGH_ADUE)
+  csrs henvcfgh, x15
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x14, rvtest_vlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x13, PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x14, svh_page)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x13, PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x13
+  SREG x14, 0(x8)
+  hfence.vvma
+  hfence.gvma
+  LI(x14, 0x90407000 + 8)
+  LI(x13, 0x11b)
+  LI(x13, -1)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_hlv:
+  hlv.w x13, (x14)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_hlv, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_hlv_str)
+
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_pte:
+  LREG x6, 0(x6)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_pte, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_pte_str)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
+  RVTEST_TSBI_CSR_SET(CSR_MENVCFGH, MENVCFGH_ADUE)
+  LI(x15, HENVCFGH_ADUE)
+  csrc henvcfgh, x15
+  LI(x15, HENVCFGH_ADUE)
+  csrs henvcfgh, x15
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x13)
+  hfence.vvma
+  hfence.gvma
+  LI(x6, 0x90407000 + 8)
+  LI(x13, 0x11d)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hsv_hsv:
+  hsv.w x13, (x6)
+
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hsv_pte:
+  LREG x13, 0(x13)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hsv_pte, Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hsv_pte_str)
+  LI(x15, HSTATUS_SPVP)
+  csrc hstatus, x15
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
   LA(x6, rvtest_code_begin)
-  LA(x14, Vtramptbl_sv)
-  SREG x6, code_bgn_off(x14)
-  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x15
-  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x15
-  LI(x15, HENVCFGH_ADUE)
-  csrc henvcfgh, x15
+  LA(x15, Vtramptbl_sv)
+  SREG x6, code_bgn_off(x15)
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x13, HENVCFGH_ADUE)
+  csrc henvcfgh, x13
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 
@@ -414,6 +612,18 @@ Svadu_H_cg_cp_vsatp_adue_madue1_hadue1_a0_d0_load_exec_str: .string "\"test: 16;
 Svadu_H_cg_cp_vsatp_adue_madue1_hadue1_a0_d0_load_pte_str: .string "\"test: 17; cg: Svadu_H_cg; cp: cp_vsatp_adue; bin: madue1_hadue1_a0_d0_load_pte\""
 Svadu_H_cg_cp_vsatp_adue_madue1_hadue1_a1_d0_store_store_str: .string "\"test: 18; cg: Svadu_H_cg; cp: cp_vsatp_adue; bin: madue1_hadue1_a1_d0_store_store\""
 Svadu_H_cg_cp_vsatp_adue_madue1_hadue1_a1_d0_store_pte_str: .string "\"test: 19; cg: Svadu_H_cg; cp: cp_vsatp_adue; bin: madue1_hadue1_a1_d0_store_pte\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_hlv_str: .string "\"test: 20; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue0_hadue0_hlv_hlv\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hlv_pte_str: .string "\"test: 21; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue0_hadue0_hlv_pte\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hsv_hsv_str: .string "\"test: 22; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue0_hadue0_hsv_hsv\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue0_hadue0_hsv_pte_str: .string "\"test: 23; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue0_hadue0_hsv_pte\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_hlv_str: .string "\"test: 24; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue0_hlv_hlv\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hlv_pte_str: .string "\"test: 25; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue0_hlv_pte\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hsv_hsv_str: .string "\"test: 26; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue0_hsv_hsv\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue0_hsv_pte_str: .string "\"test: 27; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue0_hsv_pte\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_hlv_str: .string "\"test: 28; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue1_hlv_hlv\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hlv_pte_str: .string "\"test: 29; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue1_hlv_pte\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hsv_hsv_str: .string "\"test: 30; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue1_hsv_hsv\""
+Svadu_H_cg_cp_hlv_adue_hlv_madue1_hadue1_hsv_pte_str: .string "\"test: 31; cg: Svadu_H_cg; cp: cp_hlv_adue; bin: hlv_madue1_hadue1_hsv_pte\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

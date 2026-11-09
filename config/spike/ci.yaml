@@ -31,6 +31,9 @@ exclude_extensions:
   - Sscofpmf_S_shadow
   - Sscofpmf_U_inhibit
   - Sscofpmf_U_overflow
+  # hip.VSEIP stays set after hstatus.VGEIN changes from a pending guest file to 0
+  # (https://github.com/riscv-software-src/riscv-isa-sim/issues/2531).
+  - InterruptsH_vgein
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

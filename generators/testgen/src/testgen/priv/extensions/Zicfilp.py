@@ -1274,32 +1274,41 @@ def _h_async_interrupt_tests(test_data: TestData) -> TestChunk:
 def _h_sstatus_alias_tests(test_data: TestData) -> TestChunk:
     """sstatus.SPELP in VS-mode is vsstatus.SPELP."""
     coverpoint = "cp_vs_sstatus_spelp"
-    temp_reg, mask_reg = test_data.int_regs.get_registers(2)
+    temp_reg, mask_reg, save_reg = test_data.int_regs.get_registers(3)
     tc = test_data.begin_test_chunk(_split(_H_CG))
     lines = [
         comment_banner(
             coverpoint,
-            "In VS-mode, set and then clear sstatus.SPELP and read sstatus back. After each write, HS-mode reads\n"
-            "vsstatus.SPELP, which must hold the value VS-mode wrote.",
+            "With henvcfg.LPE = {0, 1}, in VS-mode set and then clear sstatus.SPELP and read sstatus back. After\n"
+            "each write, HS-mode reads vsstatus.SPELP, which must hold the value VS-mode wrote.",
         ),
-        f"LI(x{mask_reg}, SSTATUS_SPELP)",
+        f"csrr x{save_reg}, henvcfg",
     ]
-    for op in ("csrs", "csrc"):
+    for lpe in (0, 1):
         lines.extend(
             [
-                "",
-                "RVTEST_TSBI_GOTO_VSMODE",
-                test_data.add_testcase(f"{op}_spelp", coverpoint, _H_CG),
-                f"{op} sstatus, x{mask_reg}",
-                f"csrr x{temp_reg}, sstatus",
-                f"and x{temp_reg}, x{temp_reg}, x{mask_reg}",
-                write_sigupd(temp_reg, test_data),
-                "RVTEST_TSBI_GOTO_SMODE",
-                *_record_spelp(test_data, "vsstatus", temp_reg, mask_reg),
+                f"LI(x{mask_reg}, HENVCFG_LPE)",
+                f"{'csrs' if lpe else 'csrc'} henvcfg, x{mask_reg}",
+                f"LI(x{mask_reg}, SSTATUS_SPELP)",
             ]
         )
+        for op in ("csrs", "csrc"):
+            lines.extend(
+                [
+                    "",
+                    "RVTEST_TSBI_GOTO_VSMODE",
+                    test_data.add_testcase(f"{op}_spelp_lpe{lpe}", coverpoint, _H_CG),
+                    f"{op} sstatus, x{mask_reg}",
+                    f"csrr x{temp_reg}, sstatus",
+                    f"and x{temp_reg}, x{temp_reg}, x{mask_reg}",
+                    write_sigupd(temp_reg, test_data),
+                    "RVTEST_TSBI_GOTO_SMODE",
+                    *_record_spelp(test_data, "vsstatus", temp_reg, mask_reg),
+                ]
+            )
+    lines.append(f"csrw henvcfg, x{save_reg}")
     tc.code.extend(lines)
-    test_data.int_regs.return_registers([temp_reg, mask_reg])
+    test_data.int_regs.return_registers([temp_reg, mask_reg, save_reg])
     return test_data.end_test_chunk()
 
 

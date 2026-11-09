@@ -209,7 +209,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SscfgH|Hypervisor Counter Delegation|<<t-SscfgH-coverpoints>>|||||
 |Smdbltrp|Machine Double Trap|<<t-Smdbltrp-coverpoints>>|||||
 |Ssdbltrp|Supervisor Double Trap|<<t-Ssdbltrp-coverpoints>>|||||
-|SsdbltrpH|Hypervisor Double Trap|<<t-SsdbltrpH-coverpoints>>|||||
 |Smnpm|Machine Pointer Masking|<<t-Smnpm_S-coverpoints>>|||||
 |Smmpm|Pointer Masking|<<t-Smmpm-coverpoints>>|||||
 |SmnpmH|Hypervisor Pointer Masking|<<t-SmnpmH-coverpoints>>|||||

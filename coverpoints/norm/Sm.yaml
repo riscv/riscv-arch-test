@@ -1920,11 +1920,16 @@ normative_rule_definitions:
 
   # mstatus.TVM and TSR do not affect VS-mode; TW affects every mode except M-mode
   - names: [mstatus_modes]
-    coverpoint: ["Sm_H_tvm_cg/cp_tvm_vs"]
+    coverpoint: ["Sm_H_tvm_cg/{cp_tvm_vs, cp_tvm_vs_atp, cp_tvm_vu_atp}"]
 
   # hstatus.VTVM traps satp accesses and sfence.vma in VS-mode
   - names: [hstatus_vtvm_op, H_virtinst_vs_sfence_sinval_satp_vtvm1]
-    coverpoint: ["Sm_H_tvm_cg/cp_tvm_vs", "Sm_H_tvm_cg/cp_sfence"]
+    coverpoint:
+      [
+        "Sm_H_tvm_cg/cp_tvm_vs",
+        "Sm_H_tvm_cg/cp_tvm_vs_atp",
+        "Sm_H_tvm_cg/cp_sfence",
+      ]
 
   # hfence.vvma and hfence.gvma are valid in M-mode and HS-mode, and order VS-stage and G-stage translation
   - names: [hfence-vvma_hfence-gvma_op, hfence-vvma_mode]

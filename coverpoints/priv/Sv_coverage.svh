@@ -2404,7 +2404,9 @@ covergroup Sv_H_fence_cg with function sample(ins_t ins);
         bins x0       = {0};
         bins register = {[1:31]};
     }
-    // An ID in rs2: the current vsatp.ASID or hgatp.VMID, or every ASIDMAX or VMIDMAX bit set
+    // An ID in rs2: the current vsatp.ASID or hgatp.VMID, or every ASIDMAX or VMIDMAX bit set.  The tests set every
+    // implemented ID bit, so with ASIDLEN < ASIDMAX or VMIDLEN < VMIDMAX, all_bits is the current ID with the
+    // unimplemented bits MAX-1:LEN also set, which the fence ignores.
     rs2_asid : coverpoint ins.current.rs2_val iff (ins.current.insn[24:20] != 0) {
         bins current  = {[0:$]} iff (ins.current.rs2_val == get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "asid"));
         `ifdef UDB_MXLEN_64

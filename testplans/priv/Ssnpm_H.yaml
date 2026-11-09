@@ -360,7 +360,9 @@ coverpoints:
       PMM 11 when PMLEN 16 is supported, otherwise 10 when PMLEN 7 is supported; each vsatp and hgatp mode only when supported
     rules:
       - pm_mxr_exception
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vs_pmm.
+    notes: |-
+      vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vs_pmm.
+      The test (Ssnpm_H_<hgatp mode>_mxr) runs only with vsatp = Bare and hgatp = Sv57x4 or Sv48x4, and the largest supported PMM in every field; the paged pairs are not yet tested.
   - name: cp_vu_mxr_pmm
     goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns senvcfg.PMM pointer masking off in VU-mode
     description: |-
@@ -373,7 +375,9 @@ coverpoints:
       PMM 11 when PMLEN 16 is supported, otherwise 10 when PMLEN 7 is supported; each vsatp and hgatp mode only when supported
     rules:
       - pm_mxr_exception
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vu_pmm.
+    notes: |-
+      vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vu_pmm.
+      Tested as cp_vs_mxr_pmm.
   - name: cp_vs_pmlen_masking
     goal: henvcfg.PMM ignores the upper PMLEN bits of the address for every kind of memory-accessing instruction in VS-mode
     description: |-

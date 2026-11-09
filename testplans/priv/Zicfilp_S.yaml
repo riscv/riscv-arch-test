@@ -3,6 +3,17 @@ suite: Zicfilp_S
 source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=779370838#gid=779370838
 coverpoints:
   - heading: "In this sheet, all Zicfilp tests from the Zicfilp_common_reference sheet are re-executed in Supervisor Mode (S-mode).\n\nEnvironment:\n- Zicfilp extension enabled, Zicsr enabled.\n- Landing Pad Enabled (LPE) set according to privilege mode.\n- Tests execute in S-mode.\n\nExecution Notes:\n- All indirect branch instructions (JALR, C.JALR, C.JR) are exercised as in the M/U-mode sheet.\n- LPAD behavior, label matching, immediate encoding, and software-check exceptions are tested as per normative rules defined in the spec.\n- Privilege-specific CSRs (SPELP, sstatus) are used for capturing and verifying ELP state in S-mode.\n- Trap entry and return tests replicate M-mode tests but with S-mode as trap target.\n- All other assumptions, instruction types, and execution conditions are identical to the original Zicfilp testplan."
+  - name: cp_pelp_trap_entry_lpe_off
+    goal: Verify that trap entry writes xPELP from ELP even when the trapping mode's xLPE is 0
+    description: |-
+      Test Environment:
+      menvcfg.LPE=0. Software sets sstatus.SPELP = 1. Point stvec at a handler just after an EBREAK, keeping its MODE, and execute the EBREAK in S-mode (the breakpoint is delegated to S-mode).
+      The handler reads sstatus.SPELP, then restores stvec and sstatus. (The framework's trap record does not hold xPELP, and xRET clears it.)
+    expectation: "On trap entry: sstatus.SPELP = NO_LP_EXPECTED, because ELP is NO_LP_EXPECTED while menvcfg.LPE=0."
+    bins: "1"
+    id: Zicfilp_pelp_trap
+    rules:
+      - Zicfilp_pelp_trap
   - name: cp_pelp_trap_entry_zicfilp
     goal: Verify xPELP and ELP on trap entry to S-mode
     description: |-
@@ -58,5 +69,6 @@ coverpoints:
       cp_exception_priority_zicfilp
       cp_lpad_nop_no_lp_expected_zicfilp
       cp_lpad_alignment_exception_zicfilp
+      cp_lpad_near_miss
     goal: Re-run the common Zicfilp coverpoints in S-mode
     description: The coverpoints described in the Zicfilp Common Coverpoints table, executed in S-mode.

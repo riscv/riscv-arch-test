@@ -79,6 +79,12 @@
     not_lpad: coverpoint (ins.current.insn ==? LPAD) {
         bins not_lpad = {1'b0};
     }
+    // Encodings next to LPAD (auipc x0) at the target of an ELP-setting jump
+    lpad_near_miss: coverpoint ins.current.insn {
+        wildcard bins auipc_rd_nonzero = {AUIPC} iff (ins.current.insn[11:7] != 5'd0);
+        wildcard bins lui_rd_x0        = {LUI}   iff (ins.current.insn[11:7] == 5'd0);
+        wildcard bins addi_nop         = {ADDI}  iff (ins.current.insn[31:7] == 25'd0);
+    }
     lpad_lpl_zero: coverpoint ins.current.insn {
         bins lpad_zero = {32'h00000017};
     }

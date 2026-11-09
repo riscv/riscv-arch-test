@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 14
+#define SIGUPD_COUNT 18
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -181,130 +181,146 @@ Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4MB_load:
 Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4MB_exec:
   jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
+  LA(x8, svh_page)
+  lw x14, 8(x8)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4MB_store, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4MB_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4MB_load, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4MB_load_str)
 
-  LI(x8, 0xd0407000)
+  LI(x13, 0xd0407000)
   LA(x14, rvtest_Vroot_pg_tbl + (((0x90400000) >> 22) & 0x3ff) * 4)
-  srli x13, x8, 22
-  slli x13, x13, 20
-  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x6
-  SREG x13, 0(x14)
+  srli x6, x13, 22
+  slli x6, x6, 20
+  LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x14)
   LA(x14, rvtest_Hroot_pg_tbl + (((0xd0407000) >> 22) & 0xfff) * 4)
-  LA(x13, rvtest_hlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x6, PTE_V)
-  or x13, x13, x6
-  SREG x13, 0(x14)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + (((0xd0407000) >> 12) & 0x3ff) * 4)
-  LA(x13, svh_page)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x6
-  SREG x13, 0(x14)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x6, 0x90407000)
-  LI(x14, 0x287)
+  LI(x13, 0x90407000)
+  LI(x8, 0x287)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_store:
-  sw x14, 8(x6)
-  LI(x14, -1)
+  sw x8, 8(x13)
+  LI(x8, -1)
 Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_load:
-  lw x14, 8(x6)
+  lw x8, 8(x13)
 Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_exec:
-  jalr ra, 0(x6)
+  jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_load, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_load_str)
-
-  LI(x13, (0xd0400000 >> 22) << 22)
-  LA(x6, svh_page)
-  slli x6, x6, 10
-  srli x6, x6, 10
-  add x13, x13, x6
-  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x8, rvtest_vlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x6, PTE_V)
-  or x8, x8, x6
-  SREG x8, 0(x14)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  srli x8, x13, 12
-  slli x8, x8, 10
-  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x6
-  SREG x8, 0(x14)
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xd0400000) >> 22) & 0xfff) * 4)
-  LA(x8, svh_page)
-  srli x8, x8, 22
-  slli x8, x8, 20
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x6
-  SREG x8, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x15, 0x90407000)
-  LI(x6, 0x28a)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_store:
-  sw x6, 8(x15)
-  LI(x6, -1)
-Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_load:
-  lw x6, 8(x15)
-Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_exec:
-  jalr ra, 0(x15)
-  RVTEST_TSBI_GOTO_SMODE
+  LA(x9, svh_page)
+  lw x6, 8(x9)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_load, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_store, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_load, Sv_H_twostage_cg_cp_twostage_perm_vs4MB_g4KB_load_str)
 
-  LI(x8, 0xd0407000)
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x15, (0xd0400000 >> 22) << 22)
+  LA(x14, svh_page)
+  slli x14, x14, 10
+  srli x14, x14, 10
+  add x15, x15, x14
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x6, rvtest_vlvl0_pg_tbl)
   srli x6, x6, 12
   slli x6, x6, 10
   LI(x14, PTE_V)
   or x6, x6, x14
-  SREG x6, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  srli x6, x8, 12
+  SREG x6, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  srli x6, x15, 12
   slli x6, x6, 10
   LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x6, x6, x14
-  SREG x6, 0(x13)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0xd0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x14, PTE_V)
-  or x6, x6, x14
-  SREG x6, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0xd0407000) >> 12) & 0x3ff) * 4)
+  SREG x6, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xd0400000) >> 22) & 0xfff) * 4)
   LA(x6, svh_page)
-  srli x6, x6, 12
-  slli x6, x6, 10
+  srli x6, x6, 22
+  slli x6, x6, 20
   LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x6, x6, x14
-  SREG x6, 0(x13)
+  SREG x6, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x9, 0x90407000)
-  LI(x6, 0x28d)
+  LI(x13, 0x90407000)
+  LI(x8, 0x28a)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_store:
+  sw x8, 8(x13)
+  LI(x8, -1)
+Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_load:
+  lw x8, 8(x13)
+Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_exec:
+  jalr ra, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  LA(x14, svh_page)
+  lw x6, 8(x14)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_store, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_load, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4MB_load_str)
+
+  LI(x6, 0xd0407000)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x14, PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  srli x15, x6, 12
+  slli x15, x15, 10
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xd0407000) >> 22) & 0xfff) * 4)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x14, PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xd0407000) >> 12) & 0x3ff) * 4)
+  LA(x15, svh_page)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x8)
+  hfence.vvma
+  hfence.gvma
+  LI(x14, 0x90407000)
+  LI(x9, 0x28d)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_store:
-  sw x6, 8(x9)
-  LI(x6, -1)
+  sw x9, 8(x14)
+  LI(x9, -1)
 Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_load:
-  lw x6, 8(x9)
+  lw x9, 8(x14)
 Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_exec:
-  jalr ra, 0(x9)
+  jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_load, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_load_str)
+  LA(x8, svh_page)
+  lw x15, 8(x8)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_store, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_load, Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_load_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
@@ -313,12 +329,12 @@ Sv_H_twostage_cg_cp_twostage_perm_vs4KB_g4KB_exec:
   LA(x8, rvtest_code_begin)
   LA(x9, Vtramptbl_sv)
   SREG x8, code_bgn_off(x9)
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x6
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x6
-  LI(x6, HENVCFGH_ADUE)
-  csrc henvcfgh, x6
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x13, HENVCFGH_ADUE)
+  csrc henvcfgh, x13
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 

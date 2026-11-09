@@ -75,6 +75,7 @@ coverpoints:
     expectation: |-
       The VS-stage is checked first: a VS-stage denial raises a page fault (12, 13, 15) with htval = 0, and otherwise a G-stage denial raises a guest-page fault (20, 21, 23) for the original access type with htval = the guest physical address >> 2 (or zero).
       Accesses that both stages permit reach the test page: loads return its word, stores update it and fetches execute its ret, for every pair of page sizes.
+      For every page-size pair, an HS-mode physical readback also checks that the guest store updated the intended physical word, not just a location reached by the guest load.
     bins: "{VS, VU} x {sw, lw, jalr} x stage_modes x {no trap, page fault, guest-page fault}"
   - name: cp_twostage_mxr
     goal: vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both stages

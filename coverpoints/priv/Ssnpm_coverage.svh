@@ -24,7 +24,7 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -37,10 +37,10 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0] {}
 
     `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32; checked from S-mode
-        uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
+        uxl_rv32: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "uxl") {
             bins uxl_01 = {2'b01};
         }
     `endif // UDB_UXLEN_32
@@ -74,7 +74,7 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -88,7 +88,7 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef SMMPM_SUPPORTED  // mseccfg.PMM exists only with Smmpm; it must not apply here
-        mseccfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+        mseccfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "pmm") {
             bins pmm_00 = {2'b00};
             `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
                 bins pmm_10 = {2'b10};
@@ -99,11 +99,11 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
-    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
+    mprv_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
-    mpp_field_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    mpp_field_u: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins mpp_u = {2'b00};   // effective privilege = U-mode
     }
 
@@ -212,7 +212,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins t0400 = {16'h0400};
         bins tFFFF = {16'hFFFF};
     }
-    ssp_tag: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[63:48] {
+    ssp_tag: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP, "ssp")[63:48] {
         type_option.weight = 0;
         bins t0000 = {16'h0000};
         bins t0400 = {16'h0400};
@@ -222,8 +222,8 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // ---- Translation modes ----
     // All seven (vsatp.MODE, hgatp.MODE) pairs, each only when supported.  A paged pair needs both its VS-stage and
     // G-stage mode.
-    pair_all: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+    pair_all: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                                  get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
         type_option.weight = 0;
         bins bare_bare = {8'h00};  // vsatp Bare, hgatp Bare
         `ifdef UDB_SV39X4_TRANSLATION
@@ -254,8 +254,8 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // The widest bare pair, then the widest paged pair, the only pairs most coverpoints use.  The bare pair is the
     // first supported of (Bare, Sv57x4), (Bare, Sv48x4), (Bare, Sv39x4), (Bare, Bare).  The paged pair is the first
     // supported of (Sv57, Sv57x4), (Sv48, Sv48x4), (Sv39, Sv39x4), and absent without one.
-    pair_chosen: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+    pair_chosen: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                                  get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
         type_option.weight = 0;
         `ifdef UDB_SV57X4_TRANSLATION
             bins bare_sv57x4 = {8'h0A};  // vsatp Bare, hgatp Sv57x4
@@ -309,8 +309,8 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         `endif
     }
     // The paged pair alone, for the shadow stack coverpoints
-    pair_paged: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+    pair_paged: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                                  get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
         type_option.weight = 0;
         `ifdef UDB_SV57_VSMODE_TRANSLATION
             `ifdef UDB_SV57X4_TRANSLATION
@@ -357,7 +357,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
 
     // ---- PMM fields ----
     // henvcfg.PMM applies to VS-mode, senvcfg.PMM to VU-mode and hstatus.HUPMM to HLV/HSV from U-mode
-    henvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") {
+    henvcfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm") {
         type_option.weight = 0;
         bins disabled = {2'b00};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
@@ -367,7 +367,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {2'b11};
         `endif
     }
-    senvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    senvcfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         type_option.weight = 0;
         bins disabled = {2'b00};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
@@ -377,7 +377,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {2'b11};
         `endif
     }
-    hstatus_hupmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm") {
+    hstatus_hupmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm") {
         type_option.weight = 0;
         bins disabled = {2'b00};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
@@ -388,7 +388,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         `endif
     }
     // henvcfg.PMM = senvcfg.PMM = hstatus.HUPMM, for the HLVX cases
-    pmm_all_same: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")[1:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]} {
+    pmm_all_same: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0], get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm")[1:0], get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm")[1:0]} {
         type_option.weight = 0;
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7 = {6'b10_10_10};
@@ -399,7 +399,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     // henvcfg.PMM and the tag, for the MXR, misaligned and stval/htval cases.  Tags that PMLEN masks in full: PMM 10
     // {0x0000, 0x0400}, PMM 11 {0x0000, 0xFFFF}.
-    pmm_tag_h: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0], 16'(ins.current.eff_addr >> 48)} {
+    pmm_tag_h: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0], 16'(ins.current.eff_addr >> 48)} {
         type_option.weight = 0;
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7_t0000 = {{2'b10, 16'h0000}};
@@ -411,7 +411,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         `endif
     }
     // senvcfg.PMM and the tag, for the MXR, misaligned and stval/htval cases
-    pmm_tag_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")[1:0], 16'(ins.current.eff_addr >> 48)} {
+    pmm_tag_s: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm")[1:0], 16'(ins.current.eff_addr >> 48)} {
         type_option.weight = 0;
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7_t0000 = {{2'b10, 16'h0000}};
@@ -423,26 +423,26 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         `endif
     }
     // vsstatus.MXR and sstatus.MXR: either one is MXR in effect for a guest access
-    mxr_pair: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0]} {
+    mxr_pair: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0]} {
         type_option.weight = 0;
         bins vsstatus_0_sstatus_1 = {2'b01};
         bins vsstatus_1_sstatus_0 = {2'b10};
         bins vsstatus_1_sstatus_1 = {2'b11};
     }
-    spvp_vs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+    spvp_vs: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp") {
         type_option.weight = 0;
         bins vs = {1};
     }
-    spvp_vu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+    spvp_vu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp") {
         type_option.weight = 0;
         bins vu = {0};
     }
-    spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+    spvp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp") {
         type_option.weight = 0;
         bins spvp0 = {0};
         bins spvp1 = {1};
     }
-    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu") {
+    hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu") {
         type_option.weight = 0;
         bins hu = {1};
     }
@@ -456,7 +456,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins senvcfg = {CSR_SENVCFG};
     }
-    senvcfg_pmm_written: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "pmm") {
+    senvcfg_pmm_written: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SENVCFG, "pmm") {
         type_option.weight = 0;
         bins disabled = {2'b00};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
@@ -521,14 +521,14 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     // The cause is sampled only on a trap.  Without the guard, a lw or sw that does not fault would fill a bin with
     // the cause of the previous trap.
-    scause_load_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") iff (ins.current.trap) {
+    scause_load_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.trap) {
         type_option.weight = 0;
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
             bins load_access_fault = {LOAD_ACCESS_FAULT};
         `endif
         bins load_guest_page_fault = {LOAD_GUEST_PAGE_FAULT};
     }
-    scause_store_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") iff (ins.current.trap) {
+    scause_store_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.trap) {
         type_option.weight = 0;
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
             bins store_access_fault = {STORE_AMO_ACCESS_FAULT};
@@ -555,9 +555,9 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     `ifdef UDB_SV57X4_TRANSLATION
         // hgatp.MODE, then henvcfg.PMM before and after a write to henvcfg, sampled on the instruction right after the
         // write.
-        henvcfg_pmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                    get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
-                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
+        henvcfg_pmm_change: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0],
+                                    get_csr_field(ins.hart, ins.issue, 2, CSR_HENVCFG, "pmm")[1:0],
+                                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0]}
                         iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
             type_option.weight = 0;
             `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
@@ -575,9 +575,9 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         }
         // hgatp.MODE, then hstatus.HUPMM before and after a write to hstatus, sampled on the instruction right after
         // the write.
-        hupmm_change: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                    get_csr_val(ins.hart, ins.issue, 2, "hstatus", "hupmm")[1:0],
-                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]}
+        hupmm_change: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0],
+                                    get_csr_field(ins.hart, ins.issue, 2, CSR_HSTATUS, "hupmm")[1:0],
+                                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm")[1:0]}
                         iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HSTATUS)) {
             type_option.weight = 0;
             `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
@@ -599,18 +599,18 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     `ifdef UDB_SV48X4_TRANSLATION
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
             // Case 3: hgatp.MODE = Sv48x4, PMM 00 <-> 11.  Same expression and iff as henvcfg_pmm_change.
-            henvcfg_pmm_change_sv48x4: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                        get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
+            henvcfg_pmm_change_sv48x4: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0],
+                                        get_csr_field(ins.hart, ins.issue, 2, CSR_HENVCFG, "pmm")[1:0],
+                                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0]}
                             iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
                 type_option.weight = 0;
                 bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
                 bins sv48x4_11_to_00 = {{4'h9, 2'b11, 2'b00}};
             }
             // Same expression and iff as hupmm_change
-            hupmm_change_sv48x4: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                        get_csr_val(ins.hart, ins.issue, 2, "hstatus", "hupmm")[1:0],
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0]}
+            hupmm_change_sv48x4: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0],
+                                        get_csr_field(ins.hart, ins.issue, 2, CSR_HSTATUS, "hupmm")[1:0],
+                                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm")[1:0]}
                             iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HSTATUS)) {
                 type_option.weight = 0;
                 bins sv48x4_00_to_11 = {{4'h9, 2'b00, 2'b11}};  // case 3
@@ -624,10 +624,10 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // ---- henvcfg.PMM change with no HFENCE right after it ----
     // The plan's cases: (vsatp, hgatp) = (Bare, Sv39x4), (Bare, Sv48x4) and (Sv57, Sv57x4).  The cross shows that
     // the change was not fenced right away; that no fence came later is checked by the signature.
-    henvcfg_pmm_change_no_fence: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
-                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                             get_csr_val(ins.hart, ins.issue, 2, "henvcfg", "pmm")[1:0],
-                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")[1:0]}
+    henvcfg_pmm_change_no_fence: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0],
+                                             get_csr_field(ins.hart, ins.issue, 2, CSR_HENVCFG, "pmm")[1:0],
+                                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0]}
                     iff ((ins.prev.insn ==? CSRW) && (ins.prev.insn[31:20] == CSR_HENVCFG)) {
         type_option.weight = 0;
         `ifdef UDB_SV39X4_TRANSLATION
@@ -671,9 +671,9 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // Sv57x4 when it is supported.
     `ifdef UDB_SV48X4_TRANSLATION
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
-            hupmm_sv48x4_bit49: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
-                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0],
-                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")[1:0],
+            hupmm_sv48x4_bit49: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                                            get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0],
+                                            get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm")[1:0],
                                             16'(ins.current.eff_addr >> 48)} {
                 type_option.weight = 0;
                 bins pmm00 = {{4'h0, 4'h9, 2'b00, 16'h0002}};  // vsatp Bare, hgatp Sv48x4
@@ -687,7 +687,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // Once the XLEN field is 01 its PMM reads 00, so a later instruction cannot sample PMM 10 or 11 with the field at
     // 01.  The sample is the csrw that sets the field: the PMM before it and the field after it.  That the PMM reads
     // 00 afterwards is checked by the test.
-    pmm_set_henvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") {
+    pmm_set_henvcfg: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm") {
         type_option.weight = 0;
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7 = {2'b10};
@@ -696,7 +696,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {2'b11};
         `endif
     }
-    pmm_set_senvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    pmm_set_senvcfg: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         type_option.weight = 0;
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7 = {2'b10};
@@ -710,7 +710,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             type_option.weight = 0;
             bins hstatus = {CSR_HSTATUS};
         }
-        vsxl_rv32_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "vsxl") {
+        vsxl_rv32_after: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "vsxl") {
             type_option.weight = 0;
             bins vsxl_01 = {2'b01};
         }
@@ -723,7 +723,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins hs_vsstatus = {{3'b001, CSR_VSSTATUS}};
             bins vs_sstatus  = {{3'b101, CSR_SSTATUS}};
         }
-        vsuxl_rv32_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsstatus", "uxl") {
+        vsuxl_rv32_after: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSSTATUS, "uxl") {
             type_option.weight = 0;
             bins uxl_01 = {2'b01};
         }

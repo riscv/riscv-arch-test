@@ -649,24 +649,16 @@ An alternate idiom is to specify bitfields directly. For example, this is necess
 
 #### CSR Values
 
-The preferred idiom to check the value of a CSR bitfield is to use the `get_csr_val` function, specifying the CSR name and bitfield (`mstatus` and `tsr`). `` `SAMPLE_BEFORE `` means to get the value before the instruction retires, while `` `SAMPLE_AFTER `` means to get the value after the instruction retires. The CSR names and fields match the ISA manual, and are listed in `framework/src/act/fcov/coverage/RISCV_coverage_csr.svh`.
+The preferred idiom to check the value of a CSR bitfield is to use the `get_csr_field` function, specifying the CSR address and bitfield (`CSR_MSTATUS` and `tsr`). The `CSR_*` addresses come from the generated decode package. `` `SAMPLE_BEFORE `` means to get the value before the instruction retires, while `` `SAMPLE_AFTER `` means to get the value after the instruction retires. The field names match the ISA manual, and are listed in `framework/src/act/fcov/coverage/RISCV_coverage_csr.svh`.
 
 ```SystemVerilog
-    old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
+    old_mstatus_tsr: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tsr")[0] {
     }
 ```
 
-`get_csr_val` returns an XLEN bit vector with the relevant value in the least significant bits. If you are planning to use implicit bins, make sure to extract the relevant bits so that it doesn't try to fill in bins for all XLEN bits.
+`get_csr_field` returns an XLEN bit vector with the relevant value in the least significant bits. If you are planning to use implicit bins, make sure to extract the relevant bits so that it doesn't try to fill in bins for all XLEN bits.
 
-CSRs with no bitfields can be accessed by passing the CSR name again as the field name.
-
-An alternate idiom is to refer to the RVVI structure, which holds the value of the CSR before (`ins.prev`) or after (`ins.current`) the instruction.
-
-```SystemVerilog
-    mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
-        bins notequal = {1};
-    }
-```
+Use `get_csr_val` with only the CSR address to read the whole CSR, such as `get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEPC)`.
 
 #### Cross-Products
 

@@ -186,7 +186,7 @@
             `endif // ZCMOP_SUPPORTED
         }
         // Tag in bits 63:48 of ssp before the push or pop; same patterns as a_upper_bits.
-        ssp_upper_bits: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") >> 48) {
+        ssp_upper_bits: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP) >> 48) {
             type_option.weight = 0;
             bins upper_0000 = {16'h0000};
             bins upper_0001 = {16'h0001};
@@ -198,7 +198,7 @@
             bins upper_FF00 = {16'hFF00};
         }
         // A shadow-stack instruction always faults with satp Bare, so only translated modes are covered.
-        satp_mode_zicfiss: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+        satp_mode_zicfiss: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
             type_option.weight = 0;
             `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
@@ -216,7 +216,7 @@
          wildcard bins sw  = {SW};
          wildcard bins lw  = {LW};
     }
-    satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+    satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
         type_option.weight = 0;
         bins bare = {4'b0000};
         `ifdef SV39_SUPPORTED
@@ -229,7 +229,7 @@
             bins sv57 = {4'b1010};
         `endif
     }
-    satp_mode_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+    satp_mode_mprv: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
         type_option.weight = 0;
         bins bare = {4'b0000};
         `ifdef SV39_SUPPORTED

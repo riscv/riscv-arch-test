@@ -330,7 +330,8 @@ _L_MODIFY_STEPS = (
     ("write_pmpaddr1", "addi x{r}, x0, 0x100", "pmpaddr1", CSR_CHECK_REG),
     ("write_pmpcfg0", "LI(x{r}, {cfg})", "pmpcfg0", CSR_CHECK_REG),
     ("modify_pmpcfg0", "addi x5, x{r}, 7", "pmpcfg0", 5),
-    ("modify_pmpaddr0", "addi x{r}, x0, -1", "pmpaddr0", CSR_CHECK_REG),
+    # All ones in the implemented address bits only: bits above the physical address width are WARL.
+    ("modify_pmpaddr0", "LI(x{r}, ((1 << (UDB_PHYS_ADDR_WIDTH - 2)) - 1))", "pmpaddr0", CSR_CHECK_REG),
     ("clear_pmpaddr1", "mv x{r}, x0", "pmpaddr1", CSR_CHECK_REG),
     ("clear_pmpcfg0", "mv x{r}, x0", "pmpcfg0", CSR_CHECK_REG),
 )

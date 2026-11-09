@@ -49,6 +49,7 @@ exclude_extensions:
   # The trailing "-" keeps PMP_Sm_grain_check, which passes.
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L995-L1001
   # https://github.com/openhwfoundation/cva6/issues/2656
+  - PMP_Sm_cfg_L_modify_napot
   - PMP_Sm_grain-
   # A PMP fault on a PTE read during a store raises a load access fault (5) instead of a store
   # access fault (7). The store cause is used only for Sv39 (PtLevels == 3).

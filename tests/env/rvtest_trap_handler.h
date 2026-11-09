@@ -1328,6 +1328,11 @@ common_\__MODE__\()entry:                       // common entry for all traps in
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  // save T2 (x7)
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  // save T1 (x6)
         csrr    T5, CSR_XCAUSE                  // T5 = xcause
+        // Keep only the Interrupt bit and cause[11:0]: a CLIC hart (Smclic) reports extra fields
+        // (xinhv, xpp, xpie, xpil) in xcause, which would otherwise index past the dispatch tables
+        // and be logged as unexpected causes. Every standard cause fits in bits 11:0.
+        LI(T4, (1<<(UDB_MXLEN-1))+((1<<12)-1))
+        and     T5, T5, T4
 
   // Route M-mode illegal instructions to the invisible trap handler. Keep this
   // sequence the same size when emulation is disabled. The Sail signature build
@@ -2510,7 +2515,7 @@ common_\__MODE__\()excpt_handler:
 
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
-        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
+        mv      T2, T5                                // breakpoint-trigger epc differs across DUTs (trigger fires
         LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
         beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
 #endif
@@ -2518,7 +2523,7 @@ sv_\__MODE__\()epc:
 skpsv_\__MODE__\()epc:
         csrr    T3, CSR_XEPC                          // reload xEPC (TRAP_SIGUPD may clobber T3 on its failure path)
 
-        csrr    T2, CSR_XCAUSE
+        mv      T2, T5                                // xcause (CLIC fields masked off at entry)
         LI(     T6, CAUSE_FETCH_PAGE_FAULT)
         beq     T2, T6, 1f
         LI(     T6, CAUSE_FETCH_ACCESS)
@@ -2534,7 +2539,7 @@ adj_\__MODE__\()epc_rtn:
         // An itrigger or etrigger on a trap delegated to S fires after that trap is taken and before
         // the first S handler instruction, so xEPC is inside the S trap vector: return there without
         // advancing. A real ebreak lives in test code.
-        csrr    T2, CSR_XCAUSE
+        mv      T2, T5                                // xcause (CLIC fields masked off at entry)
         LI(     T6, CAUSE_BREAKPOINT)
         bne     T2, T6, 3f
         csrr    T2, CSR_STVEC

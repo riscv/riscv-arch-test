@@ -1,6 +1,6 @@
 
-    vtype_lmul_sew_emulf16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
-                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0]} {
+    vtype_lmul_sew_emulf16 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")[1:0]} {
         bins lmulf8_sew32 = {5'b101_10};
         bins lmulf4_sew64 = {5'b110_11};
     }

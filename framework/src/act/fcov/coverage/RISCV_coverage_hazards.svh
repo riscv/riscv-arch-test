@@ -69,16 +69,16 @@ endfunction
 
 function hazards_t check_mem_hazards(int hart, int issue);
   if (traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_category == INST_CAT_LOAD) begin
-    if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_STORE) && (traceDataQ[hart][issue][`SAMPLE_PREV].mem_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr)) begin
+    if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_STORE) && (traceDataQ[hart][issue][`SAMPLE_PREV].eff_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].eff_addr)) begin
       return RAW_HAZARD;
     end else begin
       return NO_HAZARD;
     end
   end
   if (traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_category == INST_CAT_STORE) begin
-    if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_STORE) && (traceDataQ[hart][issue][`SAMPLE_PREV].mem_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr)) begin
+    if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_STORE) && (traceDataQ[hart][issue][`SAMPLE_PREV].eff_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].eff_addr)) begin
       return WAW_HAZARD;
-    end else if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_LOAD) && (traceDataQ[hart][issue][`SAMPLE_PREV].mem_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr)) begin
+    end else if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_LOAD) && (traceDataQ[hart][issue][`SAMPLE_PREV].eff_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].eff_addr)) begin
       return WAR_HAZARD;
     end else begin
       return NO_HAZARD;
@@ -87,11 +87,11 @@ function hazards_t check_mem_hazards(int hart, int issue);
 endfunction
 
 function bit is_unaligned_mem_access(int hart, int issue);
-  if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_name inside {"lwu", "ld", "sd", "c_ld", "c_sd"}) && (traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr % 8 != 0)) begin
+  if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_name inside {"lwu", "ld", "sd", "c_ld", "c_sd"}) && (traceDataQ[hart][issue][`SAMPLE_CURRENT].eff_addr % 8 != 0)) begin
     return 1'b1;
-  end else if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_name inside {"lw", "sw", "c_lw", "c_sw"}) && (traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr % 4 != 0)) begin
+  end else if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_name inside {"lw", "sw", "c_lw", "c_sw"}) && (traceDataQ[hart][issue][`SAMPLE_CURRENT].eff_addr % 4 != 0)) begin
     return 1'b1;
-  end else if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_name inside {"lh", "lhu", "sh"}) && (traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr % 2 != 0)) begin
+  end else if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_name inside {"lh", "lhu", "sh"}) && (traceDataQ[hart][issue][`SAMPLE_CURRENT].eff_addr % 2 != 0)) begin
     return 1'b1;
   end else begin
     return 1'b0;

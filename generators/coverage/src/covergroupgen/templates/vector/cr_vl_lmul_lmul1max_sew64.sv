@@ -2,8 +2,8 @@
     // cr_vl_lmul_lmul1max_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cr_vl_lmul_lmul1max_sew64 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
-                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3)  {
+    cr_vl_lmul_lmul1max_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
         // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
         // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
         // at least 2 for a distinct VLMAX and at least 3 for a value in between.

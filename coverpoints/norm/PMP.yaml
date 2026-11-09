@@ -344,7 +344,8 @@ normative_rule_definitions:
   # The R, W, and X fields form a collective WARL field for which the combinations
   # with R=0 and W=1 are reserved.
   - name: pmp_rwx_warl
-    coverpoint: ["PMP_Sm_cg/cp_pmpcfg_walk"]
+    coverpoint:
+      ["PMP_Sm_cg/{cp_pmpcfg_walk, cp_pmpcfg_xwr_all, cp_pmpcfg_rw01_rsv}"]
 
   # The matching PMP entry must match all bytes of a memory operation, or the
   # operation fails, irrespective of the L, R, W, and X bits.
@@ -354,6 +355,7 @@ normative_rule_definitions:
       [
         "PMP_Zca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}",
         "PMP_Zca_cg/{cp_cret_tor, cp_cret_napot, cp_cret_na4, cp_misaligned_tor}",
+        "{PMP_Sm_cg, PMP_S_cg, PMP_U_cg}/{cp_na4_boundary, cp_tor_boundary}",
       ]
 
   # PMP violations are always trapped precisely at the processor.

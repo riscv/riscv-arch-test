@@ -163,12 +163,12 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store_str: .string "\"test: 73; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_s; bin: test1_store\""
-Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load_str: .string "\"test: 74; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_s; bin: test1_load\""
-Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec_str: .string "\"test: 75; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_s; bin: test1_exec\""
-Sv_vm_permissions_cg_cp_misaligned_write_s_test2_store_str: .string "\"test: 76; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_s; bin: test2_store\""
-Sv_vm_permissions_cg_cp_misaligned_read_s_test2_load_str: .string "\"test: 77; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_s; bin: test2_load\""
-Sv_vm_permissions_cg_cp_misaligned_exec_s_test2_exec_str: .string "\"test: 78; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_s; bin: test2_exec\""
+Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store_str: .string "\"test: 79; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_s; bin: test1_store\""
+Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load_str: .string "\"test: 80; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_s; bin: test1_load\""
+Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec_str: .string "\"test: 81; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_s; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_misaligned_write_s_test2_store_str: .string "\"test: 82; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_s; bin: test2_store\""
+Sv_vm_permissions_cg_cp_misaligned_read_s_test2_load_str: .string "\"test: 83; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_s; bin: test2_load\""
+Sv_vm_permissions_cg_cp_misaligned_exec_s_test2_exec_str: .string "\"test: 84; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_s; bin: test2_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

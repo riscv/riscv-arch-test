@@ -191,7 +191,11 @@ normative_rule_definitions:
   # ASIDLEN<ASIDMAX, the implementation shall ignore bits ASIDMAX-1:ASIDLEN of the value
   # held in rs2.
   - name: sfence_vma_rs2_bits
-    coverpoint: ["TODO: SFENCE.VMA with reserved rs2 bits set is not exercised"]
+    coverpoint:
+      [
+        "Sv_sfence_cg/cp_sfence_asid_len (bits ASIDMAX-1:ASIDLEN, only when ASIDLEN < ASIDMAX)",
+        "Not tested: the reserved bits SXLEN-1:ASIDMAX are a should",
+      ]
 
   # An implicit read of the memory-management data structures may return any translation
   # for an address that was valid at any time since the most recent SFENCE.VMA that

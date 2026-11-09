@@ -268,6 +268,23 @@ def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) 
         test_chunks.append(end_sv_test(test_data, regs))
 
 
+def _sfence_asid_len(test_data: TestData, sv: SvMode, asid: str, name: str) -> list[str]:
+    """sfence.vma with rs2 = the current ASID (in ``asid``) and bits ASIDMAX-1:ASIDLEN set, which it ignores.
+
+    Only when ASIDLEN < ASIDMAX. The fence must act on the current ASID: it does not trap.
+    """
+    asid_max = 9 if sv.xlen == 32 else 16
+    return [
+        f"#if UDB_ASID_WIDTH < {asid_max}",
+        "  // Flush again with the unimplemented ASID bits ASIDMAX-1:ASIDLEN of rs2 set",
+        f"  LI(x{test_data.int_regs.temp_reg}, (((1 << {asid_max}) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)",
+        f"  or {asid}, {asid}, x{test_data.int_regs.temp_reg}",
+        test_data.add_testcase(f"{name}_asid_high_bits", "cp_sfence_asid_len", "Sv_sfence_cg"),
+        f"  sfence.vma x0, {asid}",
+        "#endif",
+    ]
+
+
 def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     left, right = (1, 23) if sv.xlen == 32 else (4, 48)
     for mode in ("Smode", "Umode"):
@@ -305,6 +322,7 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
                     "",
                     *emit_access(test_data, sv, regs, level, "rwx", second_name, "va_data", mode, crosses=crosses),
                     "",
+                    *_sfence_asid_len(test_data, sv, asid, f"test{number}_{mode}"),
                 ]
             )
         chunk.raw_data.extend(sv_data(sv, regs))

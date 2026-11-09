@@ -208,15 +208,15 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store_str: .string "\"test: 292; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test1_store\""
-Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load_str: .string "\"test: 293; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test1_load\""
-Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec_str: .string "\"test: 294; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test1_exec\""
-Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store_str: .string "\"test: 295; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test2_store\""
-Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load_str: .string "\"test: 296; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test2_load\""
-Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec_str: .string "\"test: 297; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test2_exec\""
-Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store_str: .string "\"test: 298; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test3_store\""
-Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load_str: .string "\"test: 299; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test3_load\""
-Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec_str: .string "\"test: 300; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test3_exec\""
+Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store_str: .string "\"test: 298; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test1_store\""
+Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load_str: .string "\"test: 299; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test1_load\""
+Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec_str: .string "\"test: 300; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test1_exec\""
+Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store_str: .string "\"test: 301; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test2_store\""
+Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load_str: .string "\"test: 302; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test2_load\""
+Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec_str: .string "\"test: 303; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test2_exec\""
+Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store_str: .string "\"test: 304; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test3_store\""
+Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load_str: .string "\"test: 305; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test3_load\""
+Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec_str: .string "\"test: 306; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

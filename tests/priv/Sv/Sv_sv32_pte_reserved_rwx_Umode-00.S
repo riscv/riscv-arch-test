@@ -240,18 +240,18 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test1_store_str: .string "\"test: 103; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test1_store\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test1_load_str: .string "\"test: 104; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test1_load\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test1_exec_str: .string "\"test: 105; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test1_exec\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test2_store_str: .string "\"test: 106; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test2_store\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test2_load_str: .string "\"test: 107; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test2_load\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test2_exec_str: .string "\"test: 108; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test2_exec\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test3_store_str: .string "\"test: 109; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test3_store\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test3_load_str: .string "\"test: 110; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test3_load\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test3_exec_str: .string "\"test: 111; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test3_exec\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test4_store_str: .string "\"test: 112; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test4_store\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test4_load_str: .string "\"test: 113; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test4_load\""
-Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test4_exec_str: .string "\"test: 114; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test4_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test1_store_str: .string "\"test: 107; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test1_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test1_load_str: .string "\"test: 108; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test1_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test1_exec_str: .string "\"test: 109; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test2_store_str: .string "\"test: 110; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test2_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test2_load_str: .string "\"test: 111; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test2_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test2_exec_str: .string "\"test: 112; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test2_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test3_store_str: .string "\"test: 113; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test3_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test3_load_str: .string "\"test: 114; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test3_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test3_exec_str: .string "\"test: 115; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test3_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_write_test4_store_str: .string "\"test: 116; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_write; bin: test4_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_d_read_test4_load_str: .string "\"test: 117; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_d_read; bin: test4_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_u_i_exec_test4_exec_str: .string "\"test: 118; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_u_i_exec; bin: test4_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

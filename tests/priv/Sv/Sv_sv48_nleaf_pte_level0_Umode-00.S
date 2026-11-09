@@ -135,9 +135,9 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store_str: .string "\"test: 220; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_write; bin: test1_store\""
-Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load_str: .string "\"test: 221; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_read; bin: test1_load\""
-Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec_str: .string "\"test: 222; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_i_exec; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store_str: .string "\"test: 228; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_write; bin: test1_store\""
+Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load_str: .string "\"test: 229; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_read; bin: test1_load\""
+Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec_str: .string "\"test: 230; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_i_exec; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

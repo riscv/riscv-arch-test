@@ -73,6 +73,16 @@ coverpoints:
     id: satp_op_sfence_vma sfence_vma_op sfence_vma_ordering sfence_vma_invalidation sfence_vma_all_asid_va
     rules:
       - "[norm:satp_op_sfence_vma] [norm:sfence_vma_op] [norm:sfence_vma_ordering] [norm:sfence_vma_invalidation] [norm:sfence_vma_all_asid_va]"
+  - name: cp_sfence_asid_len
+    goal: Verify that SFENCE.VMA ignores rs2 bits ASIDMAX-1:ASIDLEN
+    description: Only when ASIDLEN < ASIDMAX (ASID_WIDTH < 9 on RV32, < 16 on RV64). In the global-PTE test, after the access that follows sfence.vma x0, rs2 with the current ASID, execute sfence.vma x0, rs2 with rs2 = the current ASID with bits ASIDMAX-1:ASIDLEN set.
+    expectation: No exception; the fence acts on the current ASID.
+    bins: |-
+      cp_sfence_asid_len {cur_plus_high}
+      = 1 bin, only when ASIDLEN < ASIDMAX
+    id: sfence_vma_rs2_bits
+    rules:
+      - "[norm:sfence_vma_rs2_bits]"
   - name: Nopagefault
     goal: Verify stval holds 0 while no page fault has been taken
     description: Sampled on every instruction of the Sv tests before a page fault writes stval.

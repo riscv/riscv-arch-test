@@ -16,6 +16,7 @@ implemented_extensions: # VERIFIED — intro.rst: standard extensions table
   - { name: Zmmul, version: "= 1.0.0" } # M requires Zmmul
   - { name: C, version: "= 2.0" } # misa.C=1 (read-only) — control_status_registers.rst:1459
   - { name: Zca, version: "= 1.0.0" } # intro.rst: "C: Standard Extension for Compressed Instructions, 2.0, always enabled" (C = Zca in UDB)
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" } # intro.rst: "Zicsr: Control and Status Register Instructions, 2.0, always enabled"
   - { name: Zifencei, version: "= 2.0" } # intro.rst: "Zifencei: Instruction-Fetch Fence, 2.0, always enabled"
   - { name: Zicntr, version: "= 2.0" } # intro.rst: "Zicount: Performance Counters, 2.0, always enabled" (renamed Zicntr in ratified spec)

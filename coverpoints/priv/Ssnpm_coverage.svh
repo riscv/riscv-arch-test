@@ -24,7 +24,7 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -37,10 +37,10 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0] {}
 
     `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32; checked from S-mode
-        uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
+        uxl_rv32: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "uxl") {
             bins uxl_01 = {2'b01};
         }
     `endif // UDB_UXLEN_32
@@ -58,9 +58,13 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         cp_pmm_uxl_clear: cross priv_mode_s, pmm, uxl_rv32;
     `endif // UDB_UXLEN_32
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_u, satp_mode, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 
 endgroup
@@ -70,7 +74,7 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -84,7 +88,7 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef SMMPM_SUPPORTED  // mseccfg.PMM exists only with Smmpm; it must not apply here
-        mseccfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+        mseccfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "pmm") {
             bins pmm_00 = {2'b00};
             `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
                 bins pmm_10 = {2'b10};
@@ -95,11 +99,11 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
-    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
+    mprv_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
-    mpp_field_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    mpp_field_u: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins mpp_u = {2'b00};   // effective privilege = U-mode
     }
 
@@ -142,27 +146,27 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins pmlen16 = {2'b01};
     }
 
-    vsatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins bare = {0};
     }
     // Guest physical address widths whose top bits (49 or 58) pointer masking can clear
-    hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins sv48x4 = {9};
         bins sv57x4 = {10};
     }
-    spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
-    spvp_vu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+    spvp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0] {}
+    spvp_vu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp") {
         bins vu = {0};
     }
-    spvp_vs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+    spvp_vs: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp") {
         bins vs = {1};
     }
-    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu") {
+    hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu") {
         bins hu = {1};
     }
 
     // PMM fields: henvcfg.PMM applies to VS-mode, senvcfg.PMM to VU-mode and hstatus.HUPMM to HLV/HSV from U-mode
-    henvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") {
+    henvcfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm") {
         bins disabled = {0};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7 = {2};
@@ -171,7 +175,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {3};
         `endif
     }
-    senvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    senvcfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         bins disabled = {0};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7 = {2};
@@ -180,7 +184,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {3};
         `endif
     }
-    hstatus_hupmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm") {
+    hstatus_hupmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm") {
         bins disabled = {0};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7 = {2};
@@ -189,16 +193,16 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {3};
         `endif
     }
-    henvcfg_pmm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") {
+    henvcfg_pmm_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm") {
         bins enabled = {[2:3]};
     }
-    senvcfg_pmm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+    senvcfg_pmm_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") {
         bins enabled = {[2:3]};
     }
-    hstatus_hupmm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm") {
+    hstatus_hupmm_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm") {
         bins enabled = {[2:3]};
     }
-    vsstatus_mxr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
+    vsstatus_mxr: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr") {
         bins mxr = {1};
     }
 

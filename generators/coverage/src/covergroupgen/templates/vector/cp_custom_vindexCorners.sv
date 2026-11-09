@@ -1,14 +1,14 @@
 
     // cp_custom_vindexCorners: vrgather/vslidedown index corner cases
     // Local validity check (std_vec may not be present in isolated covergroups)
-    vindexCorners_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    vindexCorners_valid: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0
     } {
         bins true = {1'b1};
     }
 
-    vtype_sew_elemt_zero_vs1_all_ones : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
+    vtype_sew_elemt_zero_vs1_all_ones : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         `ifdef SEW8_SUPPORTED
         wildcard bins sew8      = {66'b00_????????_????????_????????_????????_????????_????????_????????_11111111};
         `endif
@@ -27,15 +27,15 @@
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    vindexCorners_vl_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    vindexCorners_vl_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
         bins one = {1};
     }
 
-    vindexCorners_vtype_lmul_2 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vindexCorners_vtype_lmul_2 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {1};
     }
 
-    vtype_sew_elemt_zero_vs1_2 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
+    vtype_sew_elemt_zero_vs1_2 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         `ifdef SEW8_SUPPORTED
         wildcard bins sew8      = {66'b00_????????_????????_????????_????????_????????_????????_????????_00000010};
         `endif

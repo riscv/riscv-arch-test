@@ -153,9 +153,9 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-    old_mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
+    old_mstatus_mprv: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0] {
     }
-    old_mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    old_mstatus_mpp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins M_mode = {2'b11};
         `ifdef S_SUPPORTED
             bins S_mode = {2'b01};
@@ -164,18 +164,18 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
             bins U_mode = {2'b00};
         `endif
     }
-    old_mstatus_mpie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie")[0] {
+    old_mstatus_mpie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpie")[0] {
     }
-    old_mstatus_mie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+    old_mstatus_mie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0] {
     }
     `ifdef S_SUPPORTED
-        old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
+        old_mstatus_tsr: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tsr")[0] {
         }
-        old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
+        old_mstatus_spp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "spp")[0] {
         }
-        old_mstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie")[0] {
+        old_mstatus_spie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "spie")[0] {
         }
-        old_mstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
+        old_mstatus_sie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0] {
         }
     `endif
 
@@ -190,11 +190,11 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
 
     `ifdef S_SUPPORTED
         // this version needs to be in Sm because it exercises TSR, which would cause a trap loop if illegal instructions are delegated to S-mode
-        old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
+        old_sstatus_spp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0] {
         }
-        old_sstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] {
+        old_sstatus_spie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spie")[0] {
         }
-        old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
+        old_sstatus_sie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0] {
         }
         cp_sret_s:     cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
 
@@ -211,7 +211,7 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
             sfence: coverpoint ins.current.insn  {
                 wildcard bins sfence_vma = {SFENCE_VMA};
             }
-            old_mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
+            old_mstatus_tvm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm")[0] {
             }
             cp_sfence_tvm: cross priv_mode_m_s, sfence, old_mstatus_tvm;
         `endif
@@ -429,13 +429,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-        old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
+        old_mcountinhibit_cy: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCOUNTINHIBIT, "cy") {
             bins zero = {1'b0};
             `ifdef UDB_COUNTINHIBIT_EN_0
                 bins one = {1'b1}; // only if counter can be inhibited
             `endif
         }
-        old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
+        old_mcountinhibit_ir: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCOUNTINHIBIT, "ir") {
             bins zero = {1'b0};
             `ifdef UDB_COUNTINHIBIT_EN_2
                 bins one = {1'b1}; // only if counter can be inhibited
@@ -601,9 +601,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             wildcard bins csrc_sdt = {CSRC} iff (ins.current.insn[31:20] == CSR_MSTATUS && ins.current.rs1_val[24]);
         }
         `ifdef UDB_MXLEN_32
-            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "dte")[0];
+            old_menvcfg_dte : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "dte")[0];
         `else
-            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "dte")[0];
+            old_menvcfg_dte : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "dte")[0];
         `endif
         cp_mstatus_sdt_dte :    cross priv_mode_m, mstatus_sdt_write, old_menvcfg_dte;
     `endif
@@ -641,10 +641,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             mret_insn : coverpoint ins.current.insn {
                 wildcard bins mret = {MRET};
             }
-            misa_c_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[2] {
+            misa_c_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MISA, "exts")[2] {
                 bins off = {1'b0};
             }
-            mepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mepc", "mepc")[1] {
+            mepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEPC)[1] {
                 bins set = {1'b1};
             }
             cp_mepc_ialign32_read :  cross priv_mode_m, csrr_mepc, misa_c_off, mepc_bit1;
@@ -657,7 +657,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
                 sret_insn : coverpoint ins.current.insn {
                     wildcard bins sret = {SRET};
                 }
-                sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sepc", "sepc")[1] {
+                sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SEPC)[1] {
                     bins set = {1'b1};
                 }
                 cp_sepc_ialign32_read :  cross priv_mode_m_s, csrr_sepc, misa_c_off, sepc_bit1;
@@ -726,15 +726,15 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     `ifdef RVMODEL_MTIME_ADDRESS
         `ifdef UDB_MXLEN_64
-            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+            mtime_address: coverpoint ins.current.eff_addr {
                 bins mtime = {`RVMODEL_MTIME_ADDRESS};
             }
             cp_mtime_wraparound: cross priv_mode_m, sd, mtime_address, rs2_ones;
         `else
-            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+            mtime_address: coverpoint ins.current.eff_addr {
                 bins mtime = {`RVMODEL_MTIME_ADDRESS};
             }
-            mtimeh_address: coverpoint ins.current.rs1_val + ins.current.imm {
+            mtimeh_address: coverpoint ins.current.eff_addr {
                 bins mtimeh = {`RVMODEL_MTIME_ADDRESS + 4};
             }
             cp_mtime_wraparound:  cross priv_mode_m, sw, mtime_address, rs2_ones;
@@ -799,26 +799,26 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // S-level interrupt delegation bits {LCOFI, SEI, STI, SSI}; the VS bits are read-only without H.
         // mideleg.LCOFI is read-only zero unless it is delegatable (with Sscofpmf), so it is left out there.
         `ifdef UDB_MIDELEG_DELEGATABLE_13
-            mideleg_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
+            mideleg_s: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "lcofip")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "seip")[0],
+                                   get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "stip")[0],  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "ssip")[0]} {
                 bins none = {4'b0000};
                 bins all  = {4'b1111};
             }
-            mideleg_s_walking: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
-                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
+            mideleg_s_walking: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "lcofip")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "seip")[0],
+                                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "stip")[0],  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "ssip")[0]} {
                 bins lcofi = {4'b1000};
                 bins sei   = {4'b0100};
                 bins sti   = {4'b0010};
                 bins ssi   = {4'b0001};
             }
         `else
-            mideleg_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
+            mideleg_s: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "seip")[0],
+                                   get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "stip")[0],  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "ssip")[0]} {
                 bins none = {3'b000};
                 bins all  = {3'b111};
             }
-            mideleg_s_walking: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
-                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
+            mideleg_s_walking: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "seip")[0],
+                                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "stip")[0],  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG, "ssip")[0]} {
                 bins sei   = {3'b100};
                 bins sti   = {3'b010};
                 bins ssi   = {3'b001};
@@ -831,7 +831,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         satp : coverpoint ins.current.insn[31:20] {
             bins satp = {CSR_SATP};
         }
-        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
+        mstatus_tvm : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm")[0] {}
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
         cp_scause_from_m :          cross priv_mode_m, csrrw, scause_csr, scause_wlrl_values;
@@ -854,7 +854,7 @@ covergroup Sm_F_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_priv_f_coverpoints.svh"
 
-    mstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
+    mstatus_FS: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs")[1:0] {
         bins off     = {2'b00};
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins initial_state = {2'b01};
@@ -864,7 +864,7 @@ covergroup Sm_F_cg with function sample(ins_t ins);
         `endif
         bins dirty   = {2'b11};
     }
-    mstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
+    mstatus_FS_off_dirty: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs")[1:0] {
         bins off     = {2'b00};
         bins dirty   = {2'b11};
     }
@@ -975,7 +975,7 @@ covergroup Sm_V_cg with function sample(ins_t ins);
 
     // Initial and Clean only when MSTATUS_VS_LEGAL_VALUES includes them (otherwise a write
     // of either reads back as Dirty)
-    mstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+    mstatus_vs_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "vs") {
         `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
             bins first = {1};
         `endif
@@ -985,7 +985,7 @@ covergroup Sm_V_cg with function sample(ins_t ins);
         bins dirty  = {3};
     }
 
-    mstatus_vs_inactive    : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+    mstatus_vs_inactive    : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "vs") {
         bins inactive = {0};
     }
 
@@ -993,12 +993,12 @@ covergroup Sm_V_cg with function sample(ins_t ins);
     cp_mstatus_vs_set_dirty_csr         : cross priv_mode_m, std_vec,        vsetvli_instruction,                    mstatus_vs_on;
     cp_mstatus_vs_set_dirty_vcsr        : cross priv_mode_m, vcsrs_writable, csrops,                                 mstatus_vs_on;
 
-    cp_mstatus_vs_off_arithmetic        : cross priv_mode_m, mstatus_vs_inactive,     vector_vector_arithmetic_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                                                                                                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                                                                                                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 );
-    cp_mstatus_vs_off_csr               : cross priv_mode_m, mstatus_vs_inactive,     vsetvli_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 );
+    cp_mstatus_vs_off_arithmetic        : cross priv_mode_m, mstatus_vs_inactive,     vector_vector_arithmetic_instruction iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                                                                                                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                                                                                                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 );
+    cp_mstatus_vs_off_csr               : cross priv_mode_m, mstatus_vs_inactive,     vsetvli_instruction iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 );
 
 endgroup
 `endif
@@ -1010,10 +1010,10 @@ covergroup Sm_VF_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_priv_vf_coverpoints.svh"
 
     //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero;
-    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+    std_trap_vec : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
+                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "vs") != 0
                     }
     {
         bins true = {1'b1};
@@ -1021,7 +1021,7 @@ covergroup Sm_VF_cg with function sample(ins_t ins);
 
     // Initial and Clean only when MSTATUS_FS_LEGAL_VALUES includes them (otherwise a write
     // of either reads back as Dirty)
-    mstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+    mstatus_fs_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs") {
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins first_state = {1};
         `endif
@@ -1031,7 +1031,7 @@ covergroup Sm_VF_cg with function sample(ins_t ins);
         bins dirty  = {3};
     }
 
-    mstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+    mstatus_fs_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs") {
         bins off = {0};
     }
 
@@ -1053,7 +1053,7 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
         wildcard bins csrr = {CSRR};
         wildcard bins csrw = {CSRW};
     }
-    counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[31:0] } {
+    counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN)[31:0] } {
       bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
       bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
       bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -1434,11 +1434,11 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     `endif
 
     `ifdef S_SUPPORTED
-      mcounteren: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren"){
+      mcounteren: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN){
           bins ones  = {32'b11111111111111111111111111111111};
           bins zeros = {32'b00000000000000000000000000000000};
       }
-      counters_scounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[31:0]} {
+      counters_scounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCOUNTEREN)[31:0]} {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -1829,22 +1829,19 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     insn_lw: coverpoint ins.current.insn {
         wildcard bins lw = {LW};
     }
-    adr_misaligned_1: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    adr_misaligned_1: coverpoint ins.current.eff_addr[2:0] {
         bins one = {3'b001};  // scratch + 1
     }
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        illegal_address: coverpoint ins.current.eff_addr {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
     `endif
     wfi: coverpoint ins.current.insn {
         bins wfi = {WFI};
     }
-    mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+    mstatus_mie_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0] {
         bins zero = {0};
-    }
-    mstatus_mie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
-        bins one = {1};
     }
 
     insn_add: coverpoint ins.current.insn {
@@ -1871,13 +1868,13 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     prev_ecall_li: coverpoint ins.prev.insn {
         bins li_a0 = {32'h07300513};  // addi a0, x0, 0x73 (RVTEST_TSBI_ECALL_TEST)
     }
-    mip_mtip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mtip")[0] {
+    mip_mtip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "mtip")[0] {
         bins one = {1};
     }
-    mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mtie")[0] {
+    mie_mtie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "mtie")[0] {
         bins one = {1};
     }
-    mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[31:0] {
+    mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE)[31:0] {
         bins zero = {0};
     }
 
@@ -1891,7 +1888,7 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     // instructions that trap before retiring
     cp_instret_ecall:  cross priv_mode_m, ecall, prev_ecall_li;
     cp_instret_ebreak: cross priv_mode_m, ebreak, prev_minstret_read;
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         cp_instret_load_access_fault: cross priv_mode_m, insn_lw, illegal_address, prev_minstret_read;
     `endif
     cp_instret_load_misaligned: cross priv_mode_m, insn_lw, adr_misaligned_1, prev_minstret_read;
@@ -1902,7 +1899,6 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
     `endif
     `ifdef UDB_MTI_INTR_IMPL
         cp_instret_wfi_pending: cross priv_mode_m, wfi, mip_mtip_one, mie_mtie_one, mstatus_mie_zero, prev_minstret_read;
-        cp_instret_wfi_taken:   cross priv_mode_m, wfi, mie_mtie_one, mstatus_mie_one;
     `endif
     `ifdef ZAWRS_SUPPORTED
         cp_instret_wrs_nto: cross priv_mode_m, wrs_nto, prev_minstret_read;
@@ -2167,13 +2163,13 @@ covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
             sret_insn : coverpoint ins.current.insn {
                 wildcard bins sret = {SRET};
             }
-            misa_c_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[2] {
+            misa_c_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MISA, "exts")[2] {
                 bins off = {1'b0};
             }
-            vsepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsepc", "vsepc")[1] {
+            vsepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSEPC)[1] {
                 bins set = {1'b1};
             }
-            sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sepc", "sepc")[1] {
+            sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SEPC)[1] {
                 bins set = {1'b1};
             }
             cp_vsepc_ialign32_read :    cross priv_mode_m_s, csrr_vsepc,  misa_c_off, vsepc_bit1;
@@ -2187,8 +2183,8 @@ covergroup Sm_H_tvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {}
-    hstatus_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {}
+    mstatus_tvm : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm")[0] {}
+    hstatus_vtvm : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtvm")[0] {}
     csr_rw : coverpoint ins.current.insn {
         wildcard bins csrr = {CSRR};
         wildcard bins csrw = {CSRW};
@@ -2252,7 +2248,7 @@ covergroup Sm_H_inst_cg with function sample(ins_t ins);
             wildcard bins hlv_w = {HLV_W};
             wildcard bins hsv_w = {HSV_W};
         }
-        vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        vsatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
             bins bare  = {0};
             bins paged = {[1:15]};
         }
@@ -2269,21 +2265,21 @@ covergroup Sm_H_inst_cg with function sample(ins_t ins);
     sret : coverpoint ins.current.insn {
         bins sret = {SRET};
     }
-    old_mpp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    old_mpp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins u = {0};
         bins s = {1};
         bins m = {3};
     }
     `ifdef UDB_MXLEN_64
-        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0] {
+        old_mpv : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0] {
     `else
-        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0] {
+        old_mpv : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0] {
     `endif
     }
-    old_mpie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie")[0] {}
-    old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {}
-    old_spie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie")[0] {}
-    old_spv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv")[0] {}
+    old_mpie : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpie")[0] {}
+    old_spp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "spp")[0] {}
+    old_spie : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "spie")[0] {}
+    old_spv : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spv")[0] {}
 
     cp_mret_m:  cross priv_mode_m, mret, old_mpp, old_mpv, old_mpie;
     cp_sret_m:  cross priv_mode_m, sret, old_spp, old_spv, old_spie;
@@ -2497,7 +2493,7 @@ covergroup Sm_Zicntr_H_cg with function sample(ins_t ins);
     }
 
     // The enable bit of the accessed counter in mcounteren
-    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {}
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN)[int'(ins.current.insn[24:20])] {}
 
     csraccess: coverpoint ins.current.insn {
         wildcard bins csrr = {CSRR};
@@ -2512,9 +2508,9 @@ covergroup Sm_Zicntr_H_cg with function sample(ins_t ins);
         `endif
     }
     `ifdef UDB_MXLEN_64
-        htimedelta: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta") {
+        htimedelta: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTIMEDELTA) {
     `else
-        htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedeltah", "htimedeltah")[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[31:0]} {
+        htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTIMEDELTAH)[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTIMEDELTA)[31:0]} {
     `endif
         bins zero       = {64'h0000000000000000};
         bins pos_2p30   = {64'h0000000040000000};
@@ -2527,10 +2523,10 @@ covergroup Sm_Zicntr_H_cg with function sample(ins_t ins);
 
     // mcounteren, hcounteren and scounteren hold the same enable bit for the accessed counter
     cp_mhscounteren_access_m: cross csraccess, counter, mcounteren_bit, priv_mode_m
-        iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] ==
-                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[int'(ins.current.insn[24:20])] &&
-             get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] ==
-                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[int'(ins.current.insn[24:20])]);
+        iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN)[int'(ins.current.insn[24:20])] ==
+                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HCOUNTEREN)[int'(ins.current.insn[24:20])] &&
+             get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN)[int'(ins.current.insn[24:20])] ==
+                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCOUNTEREN)[int'(ins.current.insn[24:20])]);
     cp_delta_m: cross csrr_time, htimedelta, priv_mode_m;
 endgroup
 `endif

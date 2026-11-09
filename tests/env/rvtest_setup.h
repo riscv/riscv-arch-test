@@ -1565,6 +1565,25 @@
             LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
             csrw hstateen0, t0
           #endif
+          // Setting mstateen1-3.SE above makes machine-level software responsible for initializing
+          // the writable bits of the matching hstateen and sstateen CSRs, whose reset values are
+          // unspecified (norm:hstateen_sstateen_zero_initialization).
+          // hstateen1-3.SE = 1: Enable access to sstateen1-3 from VS-mode, as hstateen0.SE0 does for
+          // sstateen0. Bit 63 (SE) is the only writable bit of hstateen1-3; the rest are reserved.
+          #if __riscv_xlen == 64
+            LI(t0, HSTATEEN_SSTATEEN)
+            csrw hstateen1, t0
+            csrw hstateen2, t0
+            csrw hstateen3, t0
+          #else    // RV32
+            LI(t0, HSTATEENH_SSTATEEN)
+            csrw hstateen1h, t0
+            csrw hstateen2h, t0
+            csrw hstateen3h, t0
+            csrw hstateen1, zero
+            csrw hstateen2, zero
+            csrw hstateen3, zero
+          #endif
         #endif
       #endif // H_SUPPORTED
     #endif // STANDARD_SM_SUPPORTED
@@ -1638,7 +1657,10 @@
   // Keep custom state and reserved bits disabled.
   #ifdef SSSTATEEN_SUPPORTED
     li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
-    csrs sstateen0, t0 // enable access from lower privilege mode
+    csrw sstateen0, t0 // enable access from lower privilege mode; clear the other writable bits
+    csrw sstateen1, zero // keep any writable bits of sstateen1-3 disabled
+    csrw sstateen2, zero
+    csrw sstateen3, zero
   #endif
 
   // Initialize S-mode CSRs

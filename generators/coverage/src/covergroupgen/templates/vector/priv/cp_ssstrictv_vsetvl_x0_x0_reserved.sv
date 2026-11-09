@@ -18,12 +18,12 @@
 
     // Case 2: new SEW/LMUL from rs2 would change VLMAX (vill=0, new vsew or vlmul differs from current)
     new_sew_differs: coverpoint (ins.current.rs2_val[5:3] !=
-                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")) {
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")) {
         bins differs = {1'b1};
     }
 
     new_lmul_differs: coverpoint (ins.current.rs2_val[2:0] !=
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")) {
+                                  get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")) {
         bins differs = {1'b1};
     }
 

@@ -16303,6 +16303,29 @@ covergroup Vls32_vlseg7e8_v_cg with function sample(ins_t ins);
     cr_vl_lmul_e8_emul1max_sew32 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
+        // Value of VTYPE.vlmul (vector register grouping)
+
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL64B_SUPPORTED
+                bins half_one = {6'b111_001};
+            `endif
+            `ifdef ZVL128B_SUPPORTED
+                bins half_vlmax = {6'b111_010};
+            `endif
+            `ifdef ZVL256B_SUPPORTED
+                bins half_legal = {6'b111_011};
+            `endif
+        `endif
+
+        bins one_one = {6'b000_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins one_vlmax = {6'b000_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins one_legal = {6'b000_011};
+        `endif
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16392,197 +16415,6 @@ covergroup Vls32_vlseg7e8ff_v_cg with function sample(ins_t ins);
     }
 
     ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) {
-        bins at_fault_addr = {1'b1};
-    }
-
-    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
-
-    `endif
-
-    //// end cp_custom_ffLS////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ffLS_update_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Fault-only-first load setup: LMUL=2, vl=VLMAX, masked with v0=1
-
-    v0_eq_1: coverpoint unsigned'(ins.current.v0_val) {
-        bins one = {1};
-    }
-
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins unmasked = {1'b0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
-        bins two = {1};
-    }
-
-    vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL)
-                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
-        bins target = {1'b1};
-    }
-
-    cp_custom_ffLS_update_vl : cross std_vec, vtype_lmul_2, vl_max, mask_enabled, v0_eq_1;
-
-    //// end cp_custom_ffLS_update_vl////////////////////////////////////////////////
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
-        // RS1 register assignment (excluding x0)
-        ignore_bins x0 = {x0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd_lte25
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd_lte25 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment excluding bins
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-    }
-
-        //// end cp_vd_lte25////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_e8_emul1max
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_lmul_all_le_8_e8_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
-        // Value of VTYPE.vlmul (vector register grouping)
-
-        `ifdef UDB_ELEN_64
-            `ifdef ZVL64B_SUPPORTED
-                bins half_one = {6'b111_001};
-            `endif
-            `ifdef ZVL128B_SUPPORTED
-                bins half_vlmax = {6'b111_010};
-            `endif
-            `ifdef ZVL256B_SUPPORTED
-                bins half_legal = {6'b111_011};
-            `endif
-        `endif
-
-        bins one_one = {6'b000_001};
-        `ifdef ZVL64B_SUPPORTED
-            bins one_vlmax = {6'b000_010};
-        `endif
-        `ifdef ZVL128B_SUPPORTED
-            bins one_legal = {6'b000_011};
-        `endif
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_e8_emul1max_sew32////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic_e8_emul1max
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic_e8_emul1max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic_e8_emul1max////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vls32_vlseg7e8ff_v_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
-    cp_asm_count : coverpoint ins.ins_str == "vlseg7e8ff.v"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ffLS
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Fault-only-first load: fault on non-first element updates VL without trapping.
-    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
-    // the trap is taken. If an element > 0 raises an exception, the corresponding
-    // trap is not taken, and the vector length vl is reduced to the index of the
-    // element that would have raised an exception."
-    //
-    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
-    // memory. Element 1+ are active and access the fault address region, triggering
-    // the vl-trimming behavior without trapping.
-
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-
-    ffLS_valid: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0
-    } {
-        bins true = {1'b1};
-    }
-
-    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
-        bins two = {2};
-    }
-
-    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    ffLS_vtype_lmul_2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
-        bins two = {1};
-    }
-
-    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL)
-                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
-        bins target = {1'b1};
-    }
-
-    ffLS_rs1_at_fault_addr: coverpoint (ins.current.rs1_val == `UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS)) {
         bins at_fault_addr = {1'b1};
     }
 
@@ -44215,175 +44047,6 @@ covergroup Vls32_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_e16_emul1max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_le_8_e16_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
-        // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_e16_emul1max_sew32 : cross cp_csr_vtype_lmul_all_le_8_e16_emul1max, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
-        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_e16_emul1max_sew32////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic_e16_emul1max
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic_e16_emul1max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic_e16_emul1max////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-`endif
-`ifdef MAXINDEXEEW_GE32
-covergroup Vls32_vsuxseg8ei32_v_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_eew_eq_sew_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_eew_eq_sew_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cmp_vs3_vs2_eew_eq_sew_lte24////////////////////////////////////////////////
-
-    cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei32.v"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_indexed_emul_data_only
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify EMUL*NFIELDS <= 8 constraint applies to data group only, not index group
-    // Test at data LMUL*NFIELDS = 8 boundary; index EMUL*NFIELDS may exceed 8
-    // Combined check: nf_field from insn[31:29] paired with correct LMUL
-    //   NF=2 (nf=001) at LMUL=4 (vlmul=2)
-    //   NF=4 (nf=011) at LMUL=2 (vlmul=1)
-    //   NF=8 (nf=111) at LMUL=1 (vlmul=0)
-
-    nf_lmul_at_boundary: coverpoint {
-        (ins.current.insn[31:29] == 3'b001 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2) |
-        (ins.current.insn[31:29] == 3'b011 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 1) |
-        (ins.current.insn[31:29] == 3'b111 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 0)
-    }
-    {
-        bins boundary_hit = {1'b1};
-    }
-
-    cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
-
-    //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
-        // RS1 register assignment (excluding x0)
-        ignore_bins x0 = {x0};
-    }
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment
-    }
-
-    //// end cp_vs2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_ls
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges_ls : coverpoint vs2_ls_edges_check(ins.hart, ins.issue, ins.current.vs2_val, ins.current.insn) {
-        bins zero   = {zero};
-        bins random = {random_in_range};
-    }
-
-    //// end cp_vs2_edges_ls////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs3_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs3_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.trap == 0 )  {
-        // VD register assignment excluding bins
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cp_vs3_lte24////////////////////////////////////////////////
-
-
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_e32_emul1max
-    //////////////////////////////////////////////////////////////////////////////////
-
     cr_vl_lmul_e16_emul1max_sew32 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
@@ -44420,16 +44083,12 @@ covergroup Vls32_vsuxseg8ei32_v_cg with function sample(ins_t ins);
 
     // _emul*max is an artifact of test generation necessary to specify to ensure instructs that trap aren't generated
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {

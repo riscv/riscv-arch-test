@@ -4874,71 +4874,8 @@ covergroup Vx8_vfirst_m_cg with function sample(ins_t ins);
     cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
         // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vid_v_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    cp_asm_count : coverpoint ins.ins_str == "vid.v"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment
-    }
-
-    //// end cp_vd////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
@@ -4951,121 +4888,9 @@ covergroup Vx8_vid_v_cg with function sample(ins_t ins);
                 bins eighth_legal = {6'b101_011};
             `endif
         `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew8 : cross cp_csr_vtype_lmul_all_sew8_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
-        // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_viota_m_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    cp_asm_count : coverpoint ins.ins_str == "viota.m"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment
-    }
-
-    //// end cp_vd////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment
-    }
-
-    //// end cp_vs2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_eew1
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges_eew1 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "m")  iff (ins.trap == 0 )  {
-        // Edges values of vs2 (eew = 1), assuming vl = 8
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges_eew1////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
-            bins eighth  = {5};
+        bins fourth_one = {6'b110_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins fourth_vlmax = {6'b110_010};
         `endif
         `ifdef ZVL128B_SUPPORTED
             bins fourth_legal = {6'b110_011};
@@ -5097,16 +4922,12 @@ covergroup Vx8_viota_m_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -5206,16 +5027,12 @@ covergroup Vx8_vid_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -13291,184 +13108,6 @@ covergroup Vx8_vmsgt_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
-            bins eighth  = {5};
-        `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew8 : cross cp_csr_vtype_lmul_all_sew8_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
-        // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and RS1 edges
-    }
-
-    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vmsgtu_vi_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
-    cp_asm_count : coverpoint ins.ins_str == "vmsgtu.vi"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_maskwrite_masked
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector mask producing/writing operations where masked CAN be enabled
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    vtype_all_lmulge1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL)
-                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
-        bins target = {1'b1};
-    }
-
-    vd_v0: coverpoint ins.current.insn[11:7] {
-        bins zero = {5'b00000};
-    }
-
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cp_custom_vmask_write_lmulge1:      cross std_vec, vtype_all_lmulge1, vl_max;
-    cp_custom_vmask_write_v0_masked:    cross std_vec, vd_v0, mask_enabled;
-
-    //// end cp_custom_maskwrite_masked ////////////////////////////////////////////////
-
-    cp_imm_5bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins imm[] = {[-16:15]}; // 5 bit signed immediates for vector instructions
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment
-    }
-
-    //// end cp_vd////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment
-    }
-
-    //// end cp_vs2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8
-    //////////////////////////////////////////////////////////////////////////////////
-
     cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
         // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
@@ -13530,16 +13169,12 @@ covergroup Vx8_vmsgtu_vi_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -16327,185 +15962,11 @@ covergroup Vx8_vmsltu_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
-            bins eighth  = {5};
-        `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew8 : cross cp_csr_vtype_lmul_all_sew8_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
+    cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
         // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and RS1 edges
-    }
-
-    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vmsne_vi_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
-                        ins.trap == 0
-                    }
-    {
-    bins true = {1'b1};
-    }
-
-    cp_asm_count : coverpoint ins.ins_str == "vmsne.vi"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_maskwrite_masked
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector mask producing/writing operations where masked CAN be enabled
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    vtype_all_lmulge1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL)
-                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
-        bins target = {1'b1};
-    }
-
-    vd_v0: coverpoint ins.current.insn[11:7] {
-        bins zero = {5'b00000};
-    }
-
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cp_custom_vmask_write_lmulge1:      cross std_vec, vtype_all_lmulge1, vl_max;
-    cp_custom_vmask_write_v0_masked:    cross std_vec, vd_v0, mask_enabled;
-
-    //// end cp_custom_maskwrite_masked ////////////////////////////////////////////////
-
-    cp_imm_5bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins imm[] = {[-16:15]}; // 5 bit signed immediates for vector instructions
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment
-    }
-
-    //// end cp_vd////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment
-    }
-
-    //// end cp_vs2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
@@ -16562,16 +16023,12 @@ covergroup Vx8_vmsne_vi_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -29227,189 +28684,11 @@ covergroup Vx8_vremu_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
-            bins eighth  = {5};
-        `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-        bins eight  = {3};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_sew8 : cross cp_csr_vtype_lmul_all_sew8_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
+    cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
         // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_vs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_vs1_edges : cross cp_vs2_edges,cp_vs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and VS1 edges
-    }
-
-    //// end cr_vs2_vs1_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vremu_vx_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vd_vs2////////////////////////////////////////////////
-
-    cp_asm_count : coverpoint ins.ins_str == "vremu.vx"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
-        // RS1 register assignment
-    }
-
-    cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef UDB_MXLEN_32
-            bins zero     = {0};
-            bins one      = {32'b00000000000000000000000000000001};
-            bins two      = {32'b00000000000000000000000000000010};
-            bins min      = {32'b10000000000000000000000000000000};
-            bins minp1    = {32'b10000000000000000000000000000001};
-            bins max      = {32'b01111111111111111111111111111111};
-            bins maxm1    = {32'b01111111111111111111111111111110};
-            bins ones     = {32'b11111111111111111111111111111111};
-            bins onesm1   = {32'b11111111111111111111111111111110};
-            bins walkodd  = {32'b10101010101010101010101010101010};
-            bins walkeven = {32'b01010101010101010101010101010101};
-            wildcard bins random = {32'b01???????????????????????????010};
-        `else
-            bins zero  = {0};
-            bins one      = {64'b0000000000000000000000000000000000000000000000000000000000000001};
-            bins two      = {64'b0000000000000000000000000000000000000000000000000000000000000010};
-            bins min      = {64'b1000000000000000000000000000000000000000000000000000000000000000};
-            bins minp1    = {64'b1000000000000000000000000000000000000000000000000000000000000001};
-            bins Wmax     = {64'b0000000000000000000000000000000011111111111111111111111111111111};
-            bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
-            bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
-            bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
-            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
-            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
-            bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
-            bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
-            bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
-            bins onesm1   = {64'b1111111111111111111111111111111111111111111111111111111111111110};
-            bins walkodd  = {64'b1010101010101010101010101010101010101010101010101010101010101010};
-            bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
-            wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
-        `endif
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment
-    }
-
-    //// end cp_vd////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment
-    }
-
-    //// end cp_vs2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
@@ -29466,16 +28745,12 @@ covergroup Vx8_vremu_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -32996,133 +32271,6 @@ covergroup Vx8_vslide1up_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vslidedown_vi_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vd_vs2////////////////////////////////////////////////
-
-    cp_asm_count : coverpoint ins.ins_str == "vslidedown.vi"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment
-    }
-
-    //// end cp_vd////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment
-    }
-
-    //// end cp_vs2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
-                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
-        // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and RS1 edges
-    }
-
-    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
-    //////////////////////////////////////////////////////////////////////////////////
-
     cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
     }
@@ -33223,7 +32371,11 @@ covergroup Vx8_vslidedown_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
+    cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
+        // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
@@ -36968,151 +36120,6 @@ covergroup Vx8_vssra_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vxrm_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vxrm : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VCSR, "vxrm")  iff (ins.trap == 0)  {
-        // Value of VCSR.vxrm (vector fixed-point rounding mode)
-        bins rnu  = {2'b00};
-        bins rne  = {2'b01};
-        bins rdn  = {2'b10};
-        bins rod  = {2'b11};
-    }
-
-    cr_vxrm_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges,cp_csr_vxrm  iff (ins.trap == 0 )  {
-        // Cross coverage VS2, RS1, rounding mode
-    }
-
-    //// end cr_vxrm_vs2_rs1_edges////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vssrl_vi_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vd_vs2////////////////////////////////////////////////
-
-    cp_asm_count : coverpoint ins.ins_str == "vssrl.vi"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment
-    }
-
-    //// end cp_vd////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment
-    }
-
-    //// end cp_vs2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
-                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
-        // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and RS1 edges
-    }
-
-    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
-    //////////////////////////////////////////////////////////////////////////////////
-
     cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
     }
@@ -37231,7 +36238,11 @@ covergroup Vx8_vssrl_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
+    cr_vl_lmul_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
+        // Cross coverage all legal LMULs for SEW = 8 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
@@ -40050,217 +39061,6 @@ covergroup Vx8_vwadd_wv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic_lmul4max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vwadd_wx_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vd_vs2_emul2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers, vd only even registers (widen)
-        bins v0  = {v0 };
-        bins v2  = {v2 };
-        bins v4  = {v4 };
-        bins v6  = {v6 };
-        bins v8  = {v8 };
-        bins v10 = {v10};
-        bins v12 = {v12};
-        bins v14 = {v14};
-        bins v16 = {v16};
-        bins v18 = {v18};
-        bins v20 = {v20};
-        bins v22 = {v22};
-        bins v24 = {v24};
-        bins v26 = {v26};
-        bins v28 = {v28};
-        bins v30 = {v30};
-    }
-
-    //// end cmp_vd_vs2_emul2////////////////////////////////////////////////
-
-    cp_asm_count : coverpoint ins.ins_str == "vwadd.wx"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
-        // RS1 register assignment
-    }
-
-    cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef UDB_MXLEN_32
-            bins zero     = {0};
-            bins one      = {32'b00000000000000000000000000000001};
-            bins two      = {32'b00000000000000000000000000000010};
-            bins min      = {32'b10000000000000000000000000000000};
-            bins minp1    = {32'b10000000000000000000000000000001};
-            bins max      = {32'b01111111111111111111111111111111};
-            bins maxm1    = {32'b01111111111111111111111111111110};
-            bins ones     = {32'b11111111111111111111111111111111};
-            bins onesm1   = {32'b11111111111111111111111111111110};
-            bins walkodd  = {32'b10101010101010101010101010101010};
-            bins walkeven = {32'b01010101010101010101010101010101};
-            wildcard bins random = {32'b01???????????????????????????010};
-        `else
-            bins zero  = {0};
-            bins one      = {64'b0000000000000000000000000000000000000000000000000000000000000001};
-            bins two      = {64'b0000000000000000000000000000000000000000000000000000000000000010};
-            bins min      = {64'b1000000000000000000000000000000000000000000000000000000000000000};
-            bins minp1    = {64'b1000000000000000000000000000000000000000000000000000000000000001};
-            bins Wmax     = {64'b0000000000000000000000000000000011111111111111111111111111111111};
-            bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
-            bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
-            bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
-            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
-            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
-            bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
-            bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
-            bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
-            bins onesm1   = {64'b1111111111111111111111111111111111111111111111111111111111111110};
-            bins walkodd  = {64'b1010101010101010101010101010101010101010101010101010101010101010};
-            bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
-            wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
-        `endif
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd_emul2 : coverpoint ins.get_vr_reg(ins.current.vd) iff (ins.trap == 0) {
-        // VD register assignment (widening instruction, excluding odd registers)
-        ignore_bins v1 = {v1};
-        ignore_bins v3 = {v3};
-        ignore_bins v5 = {v5};
-        ignore_bins v7 = {v7};
-        ignore_bins v9 = {v9};
-        ignore_bins v11 = {v11};
-        ignore_bins v13 = {v13};
-        ignore_bins v15 = {v15};
-        ignore_bins v17 = {v17};
-        ignore_bins v19 = {v19};
-        ignore_bins v21 = {v21};
-        ignore_bins v23 = {v23};
-        ignore_bins v25 = {v25};
-        ignore_bins v27 = {v27};
-        ignore_bins v29 = {v29};
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cp_vd_emul2////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges_emul2 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "2")  iff (ins.trap == 0 )  {
-        // Edges values of vs2 (emul = 2), assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges_emul2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_emul2 : coverpoint ins.get_vr_reg(ins.current.vs2) iff (ins.trap == 0) {
-        // VS2 register assignment (widening operand, excluding odd registers)
-        ignore_bins v1 = {v1};
-        ignore_bins v3 = {v3};
-        ignore_bins v5 = {v5};
-        ignore_bins v7 = {v7};
-        ignore_bins v9 = {v9};
-        ignore_bins v11 = {v11};
-        ignore_bins v13 = {v13};
-        ignore_bins v15 = {v15};
-        ignore_bins v17 = {v17};
-        ignore_bins v19 = {v19};
-        ignore_bins v21 = {v21};
-        ignore_bins v23 = {v23};
-        ignore_bins v25 = {v25};
-        ignore_bins v27 = {v27};
-        ignore_bins v29 = {v29};
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cp_vs2_emul2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8_lmul4max
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vl_lmul_lmul4max_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
-                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
-        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_lmul4max_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_vs1_edges_wv
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_vs1_edges_wv : cross cp_vs2_edges_emul2,cp_vs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges (emul = 2) and VS1 edges
-    }
-
-    //// end cr_vs2_vs1_edges_wv////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic_lmul4max
-    //////////////////////////////////////////////////////////////////////////////////
-
     cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
     }
@@ -40445,7 +39245,11 @@ covergroup Vx8_vwadd_wx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew8_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew8_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
+    cr_vl_lmul_lmul4max_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
+        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8, excluding LMUL = 8
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
@@ -47576,236 +46380,11 @@ covergroup Vx8_vwsubu_wv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew8_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew8_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 8, excluding LMUL = 8
-        `ifdef LMULf8_SUPPORTED
-            bins eighth  = {5};
-        `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
-        bins one    = {0};
-        bins two    = {1};
-        bins four   = {2};
-    }
-
-    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
-        // Edges values of VL (vector length)
-        bins one        = {vl_one       };
-        bins vlmax      = {vl_vlmax     };
-        bins legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_lmul4max_sew8 : cross cp_csr_vtype_lmul_all_lmul4max_sew8_lmul_le_4,cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
+    cr_vl_lmul_lmul4max_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                    3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-
-    //// end cr_vl_lmul_lmul4max_sew8////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_vs1_edges_wv
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_vs1_edges_wv : cross cp_vs2_edges_emul2,cp_vs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges (emul = 2) and VS1 edges
-    }
-
-    //// end cr_vs2_vs1_edges_wv////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic_lmul4max
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vta (vector tail agnostic)
-    }
-
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
-        // Value of VTYPE.vma (vector mask agnostic)
-    }
-
-    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
-    }
-
-    cr_vtype_agnostic_lmul4max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
-        // Cross coverage of vector tail and mask agnostic behaviors
-    }
-
-    //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
-
-endgroup
-// ---------------------
-covergroup Vx8_vwsubu_wx_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vd_vs2_emul2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers, vd only even registers (widen)
-        bins v0  = {v0 };
-        bins v2  = {v2 };
-        bins v4  = {v4 };
-        bins v6  = {v6 };
-        bins v8  = {v8 };
-        bins v10 = {v10};
-        bins v12 = {v12};
-        bins v14 = {v14};
-        bins v16 = {v16};
-        bins v18 = {v18};
-        bins v20 = {v20};
-        bins v22 = {v22};
-        bins v24 = {v24};
-        bins v26 = {v26};
-        bins v28 = {v28};
-        bins v30 = {v30};
-    }
-
-    //// end cmp_vd_vs2_emul2////////////////////////////////////////////////
-
-    cp_asm_count : coverpoint ins.ins_str == "vwsubu.wx"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
-
-    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
-        // Edges values of v0 (vector mask register)
-        bins zero           = {mask_zero            };
-        bins ones           = {mask_ones            };
-        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
-        bins random         = {mask_random          };
-    }
-
-    cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
-        // RS1 register assignment
-    }
-
-    cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef UDB_MXLEN_32
-            bins zero     = {0};
-            bins one      = {32'b00000000000000000000000000000001};
-            bins two      = {32'b00000000000000000000000000000010};
-            bins min      = {32'b10000000000000000000000000000000};
-            bins minp1    = {32'b10000000000000000000000000000001};
-            bins max      = {32'b01111111111111111111111111111111};
-            bins maxm1    = {32'b01111111111111111111111111111110};
-            bins ones     = {32'b11111111111111111111111111111111};
-            bins onesm1   = {32'b11111111111111111111111111111110};
-            bins walkodd  = {32'b10101010101010101010101010101010};
-            bins walkeven = {32'b01010101010101010101010101010101};
-            wildcard bins random = {32'b01???????????????????????????010};
-        `else
-            bins zero  = {0};
-            bins one      = {64'b0000000000000000000000000000000000000000000000000000000000000001};
-            bins two      = {64'b0000000000000000000000000000000000000000000000000000000000000010};
-            bins min      = {64'b1000000000000000000000000000000000000000000000000000000000000000};
-            bins minp1    = {64'b1000000000000000000000000000000000000000000000000000000000000001};
-            bins Wmax     = {64'b0000000000000000000000000000000011111111111111111111111111111111};
-            bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
-            bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
-            bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
-            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
-            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
-            bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
-            bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
-            bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
-            bins onesm1   = {64'b1111111111111111111111111111111111111111111111111111111111111110};
-            bins walkodd  = {64'b1010101010101010101010101010101010101010101010101010101010101010};
-            bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
-            wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
-        `endif
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vd_emul2 : coverpoint ins.get_vr_reg(ins.current.vd) iff (ins.trap == 0) {
-        // VD register assignment (widening instruction, excluding odd registers)
-        ignore_bins v1 = {v1};
-        ignore_bins v3 = {v3};
-        ignore_bins v5 = {v5};
-        ignore_bins v7 = {v7};
-        ignore_bins v9 = {v9};
-        ignore_bins v11 = {v11};
-        ignore_bins v13 = {v13};
-        ignore_bins v15 = {v15};
-        ignore_bins v17 = {v17};
-        ignore_bins v19 = {v19};
-        ignore_bins v21 = {v21};
-        ignore_bins v23 = {v23};
-        ignore_bins v25 = {v25};
-        ignore_bins v27 = {v27};
-        ignore_bins v29 = {v29};
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cp_vd_emul2////////////////////////////////////////////////
-
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
-    bins zero = {0};
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges_emul2 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "2")  iff (ins.trap == 0 )  {
-        // Edges values of vs2 (emul = 2), assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges_emul2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_emul2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_emul2 : coverpoint ins.get_vr_reg(ins.current.vs2) iff (ins.trap == 0) {
-        // VS2 register assignment (widening operand, excluding odd registers)
-        ignore_bins v1 = {v1};
-        ignore_bins v3 = {v3};
-        ignore_bins v5 = {v5};
-        ignore_bins v7 = {v7};
-        ignore_bins v9 = {v9};
-        ignore_bins v11 = {v11};
-        ignore_bins v13 = {v13};
-        ignore_bins v15 = {v15};
-        ignore_bins v17 = {v17};
-        ignore_bins v19 = {v19};
-        ignore_bins v21 = {v21};
-        ignore_bins v23 = {v23};
-        ignore_bins v25 = {v25};
-        ignore_bins v27 = {v27};
-        ignore_bins v29 = {v29};
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cp_vs2_emul2////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew8_lmul4max
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_vtype_lmul_all_lmul4max_sew8_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
+        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
+        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8, excluding LMUL = 8
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
@@ -47859,16 +46438,12 @@ covergroup Vx8_vwsubu_wx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {

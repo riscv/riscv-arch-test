@@ -40,6 +40,9 @@ from testgen.priv.extensions.PrivCommon import (
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
+    pmm_access_unchecked,
+    pmm_legal_values,
+    pmm_warl_fields,
     xcause_write_tests,
     xstatus_sd_tests,
     xtval_value_tests,
@@ -517,9 +520,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
-        (0 << 0)  # Smepmp MML not supported TODO: change these to 1 when Sail implements & boot code sets it up
-        | (0 << 1)  # Smepmp MMWP not supported
-        | (0 << 2)  # Smepmp RLB not supported
+        (1 << 0)  # Smepmp MML: read-only zero without Smepmp (MSECCFG_SMEPMP_UNCHECKED)
+        | (1 << 1)  # Smepmp MMWP
+        | (1 << 2)  # Smepmp RLB
         | (1 << 8)  # USEED User mode seed access
         | (1 << 9)  # SSEED Supervisor mode seed access
         | (1 << 10)  # MLPE Machine landing pads enabled
@@ -584,11 +587,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
-    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
-    # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
-    csr_mcountinhibit = ("mcountinhibit", 0b111)
+    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED.  Its writable bits are
+    # the mcountinhibit.writable_bits Sail parameter.
+    csr_mcountinhibit = ("mcountinhibit", None)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
+    # Smepmp's MML and MMWP are sticky and the reference model has no Smepmp, so with Smepmp mseccfg bits 2:0
+    # are neither written nor checked.  Without Smepmp they are read-only zero.
+    mseccfg_unchecked = [(0b111, "SMEPMP_SUPPORTED"), *pmm_access_unchecked("SMMPM")]
+    menvcfg_unchecked = pmm_access_unchecked("SMNPM")
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
@@ -627,11 +634,29 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            unchecked_bits=menvcfg_unchecked,
+        )
+    )
     tc.code.append("#endif")
 
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_mseccfg, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(
+            test_data,
+            csr_mseccfg,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            unchecked_bits=mseccfg_unchecked,
+        )
+    )
     tc.code.append("#endif")
 
     tc.code.append("\n// Read-Only CSRs")
@@ -743,16 +768,31 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=[("cbie", 4, 2, 0b10), *pmm_warl_fields("SMNPM")],
+            maskedwrites=True,
+            legal_values=pmm_legal_values("SMNPM"),
+        )
     )
     tc.code.append("#endif")
 
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    warl_fields = [("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_mseccfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_mseccfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=pmm_warl_fields("SMMPM"),
+            maskedwrites=True,
+            unchecked_bits=[(0b111, "SMEPMP_SUPPORTED")],
+            legal_values=pmm_legal_values("SMMPM"),
+        )
     )
     tc.code.append("#endif")
 
@@ -808,7 +848,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     for csr in S_CSRS:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
+    tc.code.extend(
+        csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, unchecked_bits=pmm_access_unchecked("SSNPM"))
+    )
     tc.code.extend(["", "#endif // S1P12P0_OR_LATER_SUPPORTED"])
 
     ######################################

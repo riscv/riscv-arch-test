@@ -23,6 +23,9 @@ from testgen.priv.extensions.PrivCommon import (
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
+    pmm_access_unchecked,
+    pmm_legal_values,
+    pmm_warl_fields,
     priv_inst_trap_tests,
     xcause_write_tests,
     xstatus_sd_tests,
@@ -190,7 +193,9 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
+    tc.code.extend(
+        csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, unchecked_bits=pmm_access_unchecked("SSNPM"))
+    )
     tc.code.extend(["", "#endif"])
 
     ######################################
@@ -233,11 +238,20 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
-    # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
-    # legalize to any legal value, so those iterations check that the field is legal
-    # instead of exact-matching the reference model.
-    warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
-    tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
+    # values 0b10 and 0b01 respectively, and PMM = 10 and 11 are reserved where the PMLEN is
+    # unsupported. Walk iterations that write a reserved value may legalize to any legal value,
+    # so those iterations check that the field is legal instead of exact-matching the reference model.
+    warl_fields = [("cbie", 4, 2, 0b10), *pmm_warl_fields("SSNPM")]
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            S_CSR_SENVCFG,
+            covergroup,
+            coverpoint,
+            warl_fields=warl_fields,
+            legal_values=pmm_legal_values("SSNPM"),
+        )
+    )
     tc.code.extend(["", "#endif"])
 
     tc = test_data.new_test_chunk(test_chunks, "scsr_addr")

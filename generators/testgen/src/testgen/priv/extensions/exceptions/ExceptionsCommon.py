@@ -13,7 +13,7 @@ A setup argument holds lines emitted before each testcase, such as initializing 
 
 from collections.abc import Mapping, Sequence
 
-from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 
 
@@ -235,19 +235,16 @@ def missing_lpad_tests(
     the next instruction and xRET restores ELP = LP_EXPECTED from xPELP, so that instruction raises a second
     software-check exception, and the lpad after it is where execution resumes.
     """
-    return arch_block(
-        [
-            f"LA(x{jump_reg}, 1f)",
-            test_data.add_testcase(bin_name, coverpoint, covergroup),
-            f"jalr x0, 0(x{jump_reg})  # sets ELP = LP_EXPECTED",
-            ".p2align 2",
-            "1:",
-            "addi x0, x0, 0  # not an lpad: software-check exception",
-            "addi x0, x0, 0  # ELP restored by xRET: software-check exception again",
-            "lpad 0          # resume point",
-        ],
-        "zicfilp",
-    )
+    return [
+        f"LA(x{jump_reg}, 1f)",
+        test_data.add_testcase(bin_name, coverpoint, covergroup),
+        f"jalr x0, 0(x{jump_reg})  # sets ELP = LP_EXPECTED",
+        ".p2align 2",
+        "1:",
+        "addi x0, x0, 0  # not an lpad: software-check exception",
+        "addi x0, x0, 0  # ELP restored by xRET: software-check exception again",
+        "auipc x0, 0     # lpad 0 (spelled as auipc so the test needs no Zicfilp in -march): resume point",
+    ]
 
 
 # The exceptions generate_delegated_fault_tests raises, as named in the medeleg coverpoints

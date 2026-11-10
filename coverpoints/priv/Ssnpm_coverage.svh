@@ -212,7 +212,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins t0400 = {16'h0400};
         bins tFFFF = {16'hFFFF};
     }
-    ssp_tag: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP, "ssp")[63:48] {
+    ssp_tag: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP)[63:48] {
         type_option.weight = 0;
         bins t0000 = {16'h0000};
         bins t0400 = {16'h0400};

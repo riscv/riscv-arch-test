@@ -7,6 +7,7 @@
 ##################################
 
 import random
+from dataclasses import replace
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
@@ -14,6 +15,7 @@ from testgen.asm.vector_helpers import (
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
+    vlmax_store_footprint,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -113,6 +115,12 @@ def format_vssseg_like_type(
         assert params.rs2val != 0, "Stride cannot be zero for strided stores because they are unordered"
 
     setup.append(f"LI (x{params.rs2}, {params.rs2val})")
+    # The length suite checks the store's whole VLMAX footprint, so writes to inactive or tail elements fail
+    footprint = params.vector_suite == "length" and not params.ignore_vector_safety
+    fill, footprint_read_back = (
+        vlmax_store_footprint(params, instr_str, f"(x{params.rs1}), x{params.rs2}") if footprint else ([], [])
+    )
+    setup.extend(fill)
     setup.append(load_test_vtype(params, random_vl_reg))
 
     # We don't need random_vl_reg anymore
@@ -129,8 +137,14 @@ def format_vssseg_like_type(
 
     if params.vector_suite == "length":
         check = [
-            read_back,
-            *write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew),
+            *(footprint_read_back or [read_back]),
+            *write_sigupd_v_len(
+                test_data,
+                replace(params, maskval=None) if footprint else params,
+                emul,
+                segments=segments,
+                sew_override=info.load_store_eew,
+            ),
         ]
     else:
         check = [read_back, *write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]

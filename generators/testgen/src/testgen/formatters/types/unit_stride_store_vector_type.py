@@ -8,6 +8,7 @@
 ##################################
 
 import random
+from dataclasses import replace
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
@@ -15,6 +16,7 @@ from testgen.asm.vector_helpers import (
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
+    vlmax_store_footprint,
     write_sigupd_v,
     write_sigupd_v_len,
     write_sigupd_v_mask_prod,
@@ -120,6 +122,10 @@ def format_vsseg_like_type(
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    # The length suite checks the store's whole VLMAX footprint, so writes to inactive or tail elements fail
+    footprint = params.vector_suite == "length" and not params.ignore_vector_safety
+    fill, footprint_read_back = vlmax_store_footprint(params, instr_str, f"(x{params.rs1})") if footprint else ([], [])
+    setup.extend(fill)
     setup.append(load_test_vtype(params, random_vl_reg))
 
     # We don't need random_vl_reg anymore
@@ -137,10 +143,10 @@ def format_vsseg_like_type(
 
     if params.vector_suite == "length":
         check = [
-            read_back,
+            *(footprint_read_back or [read_back]),
             *write_sigupd_v_len(
                 test_data,
-                params,
+                replace(params, maskval=None) if footprint else params,
                 emul,
                 segments=segments,
                 sew_override=info.load_store_eew,

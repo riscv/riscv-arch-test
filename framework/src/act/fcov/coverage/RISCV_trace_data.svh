@@ -149,7 +149,7 @@ class riscvTraceData
   bit [(XLEN-1):0]          imm;
   bit [(XLEN-1):0]          imm2;
   bit [(XLEN-1):0]          imm3;
-  bit [(XLEN-1):0]          mem_addr;
+  bit [(XLEN-1):0]          eff_addr; // memory access address or jump target
 
   bit [2:0]                 eSEW;
   bit [2:0]                 mLMUL;

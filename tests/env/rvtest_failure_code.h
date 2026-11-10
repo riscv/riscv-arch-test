@@ -2558,9 +2558,9 @@
     regular_sig_offset_header:
         .string "Signature offset mismatch!\n"
     regular_sig_offset_actual_str:
-        .string "RVCP: Actual signature offset:   0x"
+        .string "RVCP: Actual signature offset:   "
     regular_sig_offset_expected_str:
-        .string "\nRVCP: Expected signature offset: 0x"
+        .string "RVCP: Expected signature offset: "
 
     //==========================================================================
     // TRAP DIAGNOSTIC STRINGS

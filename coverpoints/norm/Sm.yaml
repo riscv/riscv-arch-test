@@ -303,7 +303,11 @@ normative_rule_definitions:
   # For RV64 harts, the csr::[sxl] and csr::[uxl] fields are WARL fields that control the
   # value of XLEN for S-mode and U-mode, respectively.
   - name: mstatus_sxl_uxl_warl_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      [
+        "S_sstatus_cg/cp_sxlen_ge_uxlen",
+        "TODO: write mstatus.SXL = 0, 1 and 3 and check that it reads back SXLEN (2 where SXLEN is fixed at 64)",
+      ]
 
   # The encoding of these fields is the same as the csr::[mxl] field of csr:misa[], shown
   # in &lt;&lt;norm:misa_mxl_enc&gt;&gt;.
@@ -313,32 +317,42 @@ normative_rule_definitions:
   # When MXLEN=32, the csr::[sxl] and csr::[uxl] fields do not exist, and SXLEN=32 and
   # UXLEN=32.
   - name: mstatus_sxl_uxl_sxlen_uxlen_mxlen32
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint: ["Definition, checked through UDB"]
 
   # When MXLEN=64, if S-mode is not supported, then SXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of SXLEN.
   - name: mstatus_sxl_acc_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      [
+        "TODO: write mstatus.SXL = 0, 1 and 3 and check that it reads back SXLEN (2 where SXLEN is fixed at 64)",
+      ]
 
   # an implementation may make SXL be a read-only field whose value always ensures
   # that SXLEN=MXLEN.
   - name: mstatus_sxl_rdonly_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      [
+        "TODO: write mstatus.SXL = 0, 1 and 3 and check that it reads back SXLEN (2 where SXLEN is fixed at 64)",
+      ]
 
   # When MXLEN=64, if U-mode is not supported, then UXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of UXLEN.
   - name: mstatus_uxl_acc_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      [
+        "S_sstatus_cg/cp_sxlen_ge_uxlen",
+        "TODO: write mstatus.UXL on an RV64 hart without U-mode and check that it reads 0",
+      ]
 
   # an implementation may make UXL be a read-only field whose value always ensures
   # that UXLEN=MXLEN or UXLEN=SXLEN.
   - name: mstatus_uxl_rdonly_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint: ["S_sstatus_cg/cp_sxlen_ge_uxlen"]
 
   # If S-mode is implemented, the set of legal values that the UXL field may assume
   # excludes those that would cause UXLEN to be greater than SXLEN.
   - name: mstatus_uxl_legal_vals_smode
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint: ["S_sstatus_cg/cp_sxlen_ge_uxlen"]
 
   # When MPRV=0, explicit memory accesses behave as normal, using the translation
   # and protection mechanisms of the current privilege mode. When MPRV=1, load and

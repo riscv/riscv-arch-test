@@ -678,8 +678,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc = test_data.new_test_chunk(test_chunks)
-    # MPP: 0b10 is always reserved; 0b01 (S-mode) is only legal when the config has S-mode
+    # MPP: 0b10 is always reserved; 0b01 (S-mode) is only legal when the config has S-mode.  A reserved write
+    # must leave MPP holding an implemented mode: M, S with S-mode, U with U-mode.
     warl_fields = [("mpp", 11, 2, 0b10), ("mpp", 11, 2, 0b01, "S_SUPPORTED")]
+    mpp_legal = {"mpp": [(0b11, None), (0b01, "S_SUPPORTED"), (0b00, "U_SUPPORTED")]}
     tc.code.extend(
         csr_walk_test(
             test_data,
@@ -688,6 +690,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
+            legal_values=mpp_legal,
         )
     )
 

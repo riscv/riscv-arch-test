@@ -185,13 +185,18 @@ and return the logs.
 
 ## Start with the Hello tests
 
-If this kit includes the `Hello` suite, run those ELFs first. There are seven, they
+If this kit includes the `Hello` suite, run those ELFs first. There are nine, they
 finish in well under a second, and each one checks a single layer of what your
 environment has to provide -- in order: boot and I/O, the signature mechanism, trap
 entry and return, privilege transitions, the software and external interrupt macros,
-the timer device addresses, and the access-fault address. The file that fails names
-the layer to fix. Working through them before launching the full suite turns a
-multi-hour run into a few seconds of feedback.
+the timer device addresses, the access-fault address, the HPM event code (Sscofpmf)
+and the guest external interrupt macros (H). The file that fails names the layer to
+fix. Working through them before launching the full suite turns a multi-hour run into
+a few seconds of feedback.
+
+If it includes `ConfigCheck`, run that next. Each testcase compares one value from
+your UDB config with the hart and prints an `RVCP-CONFIG` line, named after the UDB
+parameter, for each disagreement.
 
 ## What you must provide
 

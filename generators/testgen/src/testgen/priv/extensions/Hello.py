@@ -118,15 +118,19 @@ def _modes(test_data: TestData) -> list[str]:
 def _interrupts(test_data: TestData) -> list[str]:
     """The software and external interrupt entry points, and the in-handler clears.
 
-    Enables only the interrupt under test: unmasking all of mie would let the
-    reference model take a source the DUT has no hardware for, and the run would
-    diverge on a trap the test never asked for.
+    Machine- and supervisor-level, all taken in M-mode (mideleg is zero). Without
+    RVMODEL_SET_SSW_INT or RVMODEL_SET_SEXT_INT the driver raises the S-level ones
+    through mip. Enables only the interrupt under test: unmasking all of mie would
+    let the reference model take a source the DUT has no hardware for, and the run
+    would diverge on a trap the test never asked for.
     """
     r_idle, reg = test_data.int_regs.get_registers(2)
-    lines = [comment_banner("Hello: interrupts", "Software and external interrupt, taken then cleared")]
+    lines = [comment_banner("Hello: interrupts", "Software and external interrupts, taken then cleared")]
     for kind, guard, bit in (
         ("MSW", "UDB_MSI_INTR_IMPL", "MIP_MSIP"),
         ("MEXT", "UDB_MEI_INTR_IMPL", "MIP_MEIP"),
+        ("SSW", "UDB_SSI_INTR_IMPL", "MIP_SSIP"),
+        ("SEXT", "UDB_SEI_INTR_IMPL", "MIP_SEIP"),
     ):
         lines.extend(
             [
@@ -196,6 +200,74 @@ def _access_fault(test_data: TestData) -> list[str]:
     return lines
 
 
+def _hpmevent(test_data: TestData) -> list[str]:
+    """RVMODEL_HPM_COUNTER, RVMODEL_MHPMEVENT_VAL and RVMODEL_MHPMEVENT_CODE (Sscofpmf).
+
+    Selects the event, clears the counter, runs the driver's event code and records
+    whether the counter moved. The reference model counts the fence its driver runs,
+    through the event_selectors entry in sail.json.
+    """
+    addr, reg = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner("Hello: HPM event", "The event code makes the selected counter count"),
+        test_data.add_testcase("rvmodel_mhpmevent_code", "cp_hpmevent", _CG),
+        "#ifdef SSCOFPMF_SUPPORTED",
+        "csrw RVTEST_CSR_MHPMCOUNTER, zero",
+        f"LI_FIXED_LEN(x{reg}, (RVMODEL_MHPMEVENT_VAL) & 0xFFFFFFFF)",
+        f"csrw RVTEST_CSR_MHPMEVENT, x{reg}",
+        "#if __riscv_xlen == 32",
+        "csrw RVTEST_CSR_MHPMCOUNTERH, zero",
+        f"LI_FIXED_LEN(x{reg}, ((RVMODEL_MHPMEVENT_VAL) >> 32) & 0xFFFFFF)",
+        f"csrw RVTEST_CSR_MHPMEVENTH, x{reg}",
+        "#endif",
+        f"LA(x{addr}, scratch)",
+        f"RVTEST_MHPMEVENT_CODE(x{addr})",
+        f"csrr x{reg}, RVTEST_CSR_MHPMCOUNTER",
+        "csrw RVTEST_CSR_MHPMEVENT, zero",
+        f"snez x{reg}, x{reg}",
+        write_sigupd(reg, test_data),
+        "#endif // SSCOFPMF_SUPPORTED",
+    ]
+    test_data.int_regs.return_registers([addr, reg])
+    return lines
+
+
+def _guest(test_data: TestData) -> list[str]:
+    """RVMODEL_SET_GUEST_EXT_INT and RVMODEL_CLR_GUEST_EXT_INT, through hgeip bit 1.
+
+    hgeip is read-only, so the platform alone can set it. Records the bit after the set
+    and after the clear, polling for at most RVMODEL_INTERRUPT_LATENCY reads each.
+    """
+    cnt, reg = test_data.int_regs.get_registers(2)
+
+    def poll(want_set: bool) -> list[str]:
+        return [
+            f"LI(x{cnt}, RVMODEL_INTERRUPT_LATENCY)",
+            "1:",
+            f"csrr x{reg}, CSR_HGEIP",
+            f"andi x{reg}, x{reg}, 2",
+            f"{'bnez' if want_set else 'beqz'} x{reg}, 2f",
+            f"addi x{cnt}, x{cnt}, -1",
+            f"bnez x{cnt}, 1b",
+            "2:",
+            write_sigupd(reg, test_data),
+        ]
+
+    lines = [
+        comment_banner("Hello: guest interrupt", "The platform sets and clears hgeip bit 1"),
+        "#ifdef RVTEST_SGEI_INTR_IMPL",
+        test_data.add_testcase("rvmodel_set_guest_ext_int", "cp_guest", _CG),
+        "RVTEST_SET_GUEST_EXT_INT_M(1)",
+        *poll(True),
+        test_data.add_testcase("rvmodel_clr_guest_ext_int", "cp_guest", _CG),
+        "RVTEST_CLR_GUEST_EXT_INT_M(1)",
+        *poll(False),
+        "#endif // RVTEST_SGEI_INTR_IMPL",
+    ]
+    test_data.int_regs.return_registers([cnt, reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Hello",
     required_extensions=["Sm"],
@@ -212,6 +284,8 @@ def make_hello(test_data: TestData) -> list[TestChunk]:
         ("interrupts", _interrupts),
         ("timer", _timer),
         ("fault", _access_fault),
+        ("hpmevent", _hpmevent),
+        ("guest", _guest),
     ):
         tc = test_data.begin_test_chunk(split_name=name)
         tc.code = body(test_data)

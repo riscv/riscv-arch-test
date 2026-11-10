@@ -80,7 +80,7 @@ Sv_add_feature_cg_cp_svnapot_write_fault_test1_store:
 
 // Load
 Sv_add_feature_cg_cp_svnapot_read_fault_test1_load:
-  lw x14, 20(x9)
+  lw x8, 20(x9)
   nop
 
 // Execute
@@ -90,8 +90,8 @@ Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec:
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_svnapot_write_fault_test1_store, Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec, Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str)
 
@@ -127,9 +127,9 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str: .string "\"test: 307; cg: Sv_add_feature_cg; cp: cp_svnapot_write_fault; bin: test1_store\""
-Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str: .string "\"test: 308; cg: Sv_add_feature_cg; cp: cp_svnapot_read_fault; bin: test1_load\""
-Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str: .string "\"test: 309; cg: Sv_add_feature_cg; cp: cp_svnapot_exec_fault; bin: test1_exec\""
+Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str: .string "\"test: 302; cg: Sv_add_feature_cg; cp: cp_svnapot_write_fault; bin: test1_store\""
+Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str: .string "\"test: 303; cg: Sv_add_feature_cg; cp: cp_svnapot_read_fault; bin: test1_load\""
+Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str: .string "\"test: 304; cg: Sv_add_feature_cg; cp: cp_svnapot_exec_fault; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

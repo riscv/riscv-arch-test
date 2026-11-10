@@ -1424,6 +1424,12 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         wildcard bins sw       = {SW};
         wildcard bins lw       = {LW};
     }
+    lw: coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    sw: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+    }
     jalr: coverpoint ins.prev.insn {
         wildcard bins jalr = {JALR};
     }

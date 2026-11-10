@@ -1011,7 +1011,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             ),
             _gen_misa_dependencies(
                 "0b00000000000000000000000000",
-                "0b00000000000000000000000000",
+                "0b00000000000000000100010000",
                 "i0e0",
                 "I = 0, E = 0",
                 coverpoint,

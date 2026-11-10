@@ -393,6 +393,7 @@ def generate_random_vector_params(
     instruction: str,
     instr_type: str,
     lmul: float,
+    sew: int,
     *,
     additional_no_overlap: set[tuple[str, str]] | None = None,
     masked: bool = False,
@@ -409,6 +410,7 @@ def generate_random_vector_params(
             name of instruction (e.g. index EEWs like in vloxei32)
         instr_type: Instruction type string that gives overlap requirements, and required registers
         lmul: The lmul that the test will be run at. Required for proper alignment
+        sew: The SEW that the tst will be run at
 
     Optional Args:
         additional_no_overlap: Set of pairs of registers that cannot overlap. Used in case where the tests
@@ -419,13 +421,6 @@ def generate_random_vector_params(
     """
 
     test_count = test_data.test_count
-
-    if "sew" in fixed_params and test_data.config.sew is not None:
-        assert test_data.config.sew == fixed_params["sew"], (
-            f"Provided SEW {fixed_params['sew']} and test_config SEW ({test_data.config.sew}) are different"
-        )
-    sew = test_data.config.sew if test_data.config.sew else fixed_params.get("sew")
-    assert sew is not None, "SEW must be set for Vector Instructions"
 
     preset_params = InstructionParams(**fixed_params)
     preset_params.sew = sew

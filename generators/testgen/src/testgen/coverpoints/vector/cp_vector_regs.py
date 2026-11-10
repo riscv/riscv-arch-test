@@ -5,8 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import itertools
+
 from testgen.asm.vector_helpers import get_egs_lmul_for_register
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -20,7 +23,7 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     Generate tests for all valid registers for vs2.
     """
 
-    assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
@@ -35,18 +38,15 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         elif suffix.startswith("egs"):
             egs = int(suffix[len("egs") :])
 
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-
     test_chunks = []
-    for v in range(lower_limit, upper_limit, emul):
-        if egs > 1:
-            lmul = get_egs_lmul_for_register(v, egs)
+    for v, sew in itertools.product(range(lower_limit, upper_limit, emul), sews):
+        lmul = get_egs_lmul_for_register(v, egs) if egs > 1 else get_base_lmul(instr_name, instr_type, sew)
 
         test_data.vec_regs.allocate_operand("vs2", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs2=v)
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs2=v)
 
-        desc = f"cp_vs2 (Test source vs2 = v{v})"
-        bin_name = f"cp_vs2_b{v}"
+        desc = f"cp_vs2 (Test source vs2 = v{v}, sew={sew})"
+        bin_name = f"cp_vs2_b{v}_sew{sew}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
@@ -62,7 +62,7 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     Generate tests for all valid registers for vs1.
     """
 
-    assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
@@ -77,18 +77,15 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         elif suffix.startswith("egs"):
             egs = int(suffix[len("egs") :])
 
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-
     test_chunks = []
-    for v in range(lower_limit, upper_limit, emul):
-        if egs > 1:
-            lmul = get_egs_lmul_for_register(v, egs)
+    for v, sew in itertools.product(range(lower_limit, upper_limit, emul), sews):
+        lmul = get_egs_lmul_for_register(v, egs) if egs > 1 else get_base_lmul(instr_name, instr_type, sew)
 
         test_data.vec_regs.allocate_operand("vs1", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs1=v)
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs1=v)
 
-        desc = f"cp_vs1 (Test source vs1 = v{v})"
-        bin_name = f"cp_vs1_b{v}"
+        desc = f"cp_vs1 (Test source vs1 = v{v}, sew={sew})"
+        bin_name = f"cp_vs1_b{v}_sew{sew}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
@@ -104,7 +101,7 @@ def make_vs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     Generate tests for all valid registers for vs3.
     """
 
-    assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
@@ -118,15 +115,14 @@ def make_vs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         elif suffix.startswith("emul"):
             emul = int(suffix[len("emul") :])
 
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-
     test_chunks = []
-    for v in range(lower_limit, upper_limit, emul):
+    for v, sew in itertools.product(range(lower_limit, upper_limit, emul), sews):
+        lmul = get_base_lmul(instr_name, instr_type, sew)
         test_data.vec_regs.allocate_operand("vs3", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs3=v)
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs3=v)
 
-        desc = "cp_vd (Test destination vs3 = v" + str(v) + ")"
-        bin_name = f"cp_vd_b{v}"
+        desc = f"cp_vd (Test destination vs3 = v{v}, sew={sew})"
+        bin_name = f"cp_vd_b{v}_sew{sew}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
@@ -142,7 +138,7 @@ def make_vd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     Generate tests for all valid registers for vd.
     """
 
-    assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
@@ -159,18 +155,15 @@ def make_vd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         elif suffix.startswith("egs"):
             egs = int(suffix[len("egs") :])
 
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-
     test_chunks = []
-    for v in range(lower_limit, upper_limit, emul):
-        if egs > 1:
-            lmul = get_egs_lmul_for_register(v, egs)
+    for v, sew in itertools.product(range(lower_limit, upper_limit, emul), sews):
+        lmul = get_egs_lmul_for_register(v, egs) if egs > 1 else get_base_lmul(instr_name, instr_type, sew)
 
         test_data.vec_regs.allocate_operand("vd", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vd=v)
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vd=v)
 
-        desc = "cp_vd (Test destination vd = v" + str(v) + ")"
-        bin_name = f"cp_vd_b{v}"
+        desc = f"cp_vd (Test destination vd = v{v}, sew={sew})"
+        bin_name = f"cp_vd_b{v}_sew{sew}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 

@@ -14,6 +14,15 @@
 `define COVER_ZVFHMIN
 covergroup Zvfhmin_vfncvt_f_f_w_sew16_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -42,6 +51,24 @@ covergroup Zvfhmin_vfncvt_f_f_w_sew16_cg with function sample(ins_t ins);
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
     }
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfncvt_rup_overflow
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Rounding mode = RUP (round up, frm=3)
+    frm_rup: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm") {
+        bins rup = {3};
+    }
+
+    // Overflow flag set after execution (fflags bit 2 = OF)
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
+        bins overflow = {1'b1};
+    }
+
+    cp_custom_vfncvt_rup_overflow: cross std_vec, frm_rup, fflags_of;
+
+//// end cp_custom_vfncvt_rup_overflow ///////////////////////////////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)

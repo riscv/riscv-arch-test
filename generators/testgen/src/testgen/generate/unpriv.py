@@ -8,7 +8,6 @@
 
 """Unprivileged test generation from CSV testplans."""
 
-import re
 from pathlib import Path
 
 from testgen.constants import INDENT, TESTCASES_PER_FILE, VLEN_MAX, get_flen_for_extensions
@@ -17,8 +16,6 @@ from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, split_test_chunks
-from testgen.formatters.registry import get_instruction_type_config
-from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.templates import canonicalize_extensions
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
@@ -58,17 +55,7 @@ def generate_unpriv_extension_tests(
         is_vector: Set in vector test suites
     """
     # Read testplan for this testsuite
-    if is_vector:
-        match = re.search(r"([^0-9]*)\d*$", testsuite)
-        assert match is not None, f"Unable to Parse Vector Extension {testsuite} into a Testplan and SEW Pair"
-
-        testplan = match.group(1)
-        sew = _detect_sew(testsuite)
-    else:
-        testplan = testsuite
-        sew = None  # Not relevant in non-vector cases
-
-    instructions = read_testplan(testplan_dir / f"{testplan}.csv")
+    instructions = read_testplan(testplan_dir / f"{testsuite}.csv")
     if testsuite == "I" and E_ext:
         testsuite = "E"
 
@@ -81,15 +68,12 @@ def generate_unpriv_extension_tests(
     # file/covergroup name prefix, header requirements, and FLEN, but stays in this testsuite's directory.
     test_configs: dict[tuple[str, ...], TestConfig] = {}
     for extra_extensions in {instr_data.extra_extensions for instr_data in instructions}:
-        ext_components, _ = canonicalize_extensions(
-            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extensions=extra_extensions
-        )
+        ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, extra_extensions=extra_extensions)
         test_configs[extra_extensions] = TestConfig(
             xlen=xlen,
             flen=get_flen_for_extensions(ext_components),
             testsuite=testsuite,
             E_ext=E_ext,
-            sew=sew,
             extra_extensions=extra_extensions,
         )
 
@@ -97,9 +81,6 @@ def generate_unpriv_extension_tests(
     for instr_data in instructions:
         # Skip instructions not valid for this xlen
         if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
-            continue
-
-        if is_vector and sew not in instr_data.sews_supported:
             continue
 
         generated_files.update(
@@ -115,29 +96,6 @@ def generate_unpriv_extension_tests(
 
     for stale_file in set(output_dir.glob("*.S")) - generated_files:
         stale_file.unlink()
-
-
-def _detect_sew(testsuite: str) -> int:
-    """
-    Extracts the SEW from a testsuite name
-        e.g. _detect_sew("Vx64") = 64
-    """
-
-    for pattern, sew in [
-        (r"Zvfbfmin$", 16),
-        (r"Zvfhmin$", 16),
-        (r"Zvfbfwma$", 16),
-        (r"Zvk(g|nha|ned|sed|sh)$", 32),  # codespell:ignore ned
-    ]:
-        match = re.search(pattern, testsuite)
-        if match:
-            return sew
-
-    match = re.search(r"(\d+)$", testsuite)
-    if match:
-        return int(match.group(1))
-
-    return 8
 
 
 def _generate_unpriv_tests_for_instruction(
@@ -167,7 +125,7 @@ def _generate_unpriv_tests_for_instruction(
     # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
         # Skip cp_asm_count and std_vec if mixed with other coverpoints
-        if coverpoint in ["cp_asm_count", "std_vec"] and len(coverpoints) > 1:
+        if coverpoint.startswith(("cp_asm_count", "std_vec")) and len(coverpoints) > 1:
             continue
 
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
@@ -177,30 +135,17 @@ def _generate_unpriv_tests_for_instruction(
     for file_idx, test_file_chunks in enumerate(test_files):
         _append_sig_reg_reset(test_file_chunks)
         if is_vector:
-            assert test_config.sew is not None, "SEW must be set for vector tests"
-            sew = test_config.sew
-
-            info = parse_vector_instruction_info(instr_name, instr_type)
-            instr_type_config = get_instruction_type_config(instr_type)
-            assert instr_type_config.vector_data is not None, "vector_data must be provided for all vector instructions"
-
-            vdsew = sew
-            if "vd" in instr_type_config.vector_data.widened_regs:
-                vdsew *= 2
-            elif info.load_store_eew == 64:
-                vdsew = 64
             extra_defines = [
                 "#define RVTEST_VECTOR",
-                f"#define RVTEST_SEW {sew}",
-                f"#define VDSEW {vdsew}",
+                "#define RVTEST_SEW 64",
+                "#define VDSEW 64",
                 f"#define RVTEST_VLEN_MAX {VLEN_MAX}",
             ]
         else:
             extra_defines = []
-            vdsew = 0
 
         generated_files.add(
-            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines, vdsew=vdsew)
+            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines)
         )
 
     # Clean up (make sure all registers were returned)

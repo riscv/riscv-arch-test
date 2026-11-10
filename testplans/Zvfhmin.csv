@@ -1,3 +1,3 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_vd,cp_vs2,cp_vs2_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,cp_csr_fflags,cp_csr_frm
-vfwcvt.f.f.v,FWV,x,x,16,emul2_16,16,f_16,16,lmul4max_16,lmul4max_16,16,v_16,
-vfncvt.f.f.w,FVW,x,x,16,16,emul2_16,f_emul2_16,16,lmul4max_16,lmul4max_16,16,voun_16,v_16
+Instruction,Type,RV32,RV64,cp_asm_count,cp_vd,cp_vs2,cp_vs2_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,cp_csr_fflags,cp_csr_frm,std_vec,cp_custom_vfncvt_rup_overflow
+vfwcvt.f.f.v,FWV,x,x,16,emul2_16,16,f_16,16,lmul4max_16,lmul4max_16,16,v_16,,,
+vfncvt.f.f.w,FVW,x,x,16,16,emul2_16,f_emul2_16,16,lmul4max_16,lmul4max_16,16,voun_16,v_16,16,16

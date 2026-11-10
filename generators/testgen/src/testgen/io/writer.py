@@ -53,7 +53,6 @@ def write_test_file(
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
     split_name: str | None = None,
-    vdsew: int = 0,
 ) -> Path:
     """
     Write a single test file and return its path.
@@ -104,7 +103,7 @@ def write_test_file(
     test_file_relative = Path(arch_dir) / testsuite / filename
 
     # Test header
-    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines, instr_name)
+    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
 
     # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation
@@ -124,7 +123,12 @@ def write_test_file(
     body = "".join(body_parts)
 
     # Test footer
-    test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen, vdsew)
+    test_data_section = generate_test_data_section(
+        data_values,
+        test_config.xlen,
+        test_config.flen,
+        any("#define RVTEST_VECTOR" in define for define in extra_defines),
+    )
     vector_data_section = generate_vector_data_section(vector_data_labels)
     if test_data_section != "" and vector_data_section != "":
         test_data_section += "\n"

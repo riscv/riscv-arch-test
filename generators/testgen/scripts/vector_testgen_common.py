@@ -2569,11 +2569,11 @@ def loadVxsatMode(*scalar_registers_used):
 def getLMULIfdef(lmul):
   ifdef = ""
   if (lmul == 0.5):
-    ifdef = "TEST_LMULf2_SUPPORTED"
+    ifdef = "LMULf2_SUPPORTED"
   elif (lmul == 0.25):
-    ifdef = "TEST_LMULf4_SUPPORTED"
+    ifdef = "LMULf4_SUPPORTED"
   elif (lmul == 0.125):
-    ifdef = "TEST_LMULf8_SUPPORTED"
+    ifdef = "LMULf8_SUPPORTED"
   return ifdef
 
 def getELENIfdef(instruction):

@@ -1002,7 +1002,11 @@ normative_rule_definitions:
   # are wider than XLEN, the least-significant XLEN bits are used in the address
   # calculation.
   - name: vector_ls_xlen_dep
-    coverpoint: ["Vls16_vloxei64_v_cg/cp_custom_ls_indexed_truncated"]
+    coverpoint:
+      [
+        "Vls16_vloxei16_v_cg/cp_vs2_edges_ls",
+        "Second half uncovered: no vector extension supports index widths greater than XLEN",
+      ]
 
   # If the implementation does not support the EEW of the offset elements, the
   # instruction is reserved.

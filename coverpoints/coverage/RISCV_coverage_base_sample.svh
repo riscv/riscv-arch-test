@@ -373,20 +373,11 @@
     `ifdef COVER_ZMMUL
         zmmul_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVBB16
-        zvbb16_sample(hart, issue, ins);
+    `ifdef COVER_ZVBB
+        zvbb_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVBB32
-        zvbb32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVBB64
-        zvbb64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVBB8
-        zvbb8_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVBC64
-        zvbc64_sample(hart, issue, ins);
+    `ifdef COVER_ZVBC
+        zvbc_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZVE32F
         zve32f_sample(hart, issue, ins);
@@ -415,17 +406,8 @@
     `ifdef COVER_ZVFHMIN
         zvfhmin_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVKB16
-        zvkb16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKB32
-        zvkb32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKB64
-        zvkb64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKB8
-        zvkb8_sample(hart, issue, ins);
+    `ifdef COVER_ZVKB
+        zvkb_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZVKG
         zvkg_sample(hart, issue, ins);
@@ -436,11 +418,8 @@
     `ifdef COVER_ZVKNHA
         zvknha_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVKNHB32
-        zvknhb32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKNHB64
-        zvknhb64_sample(hart, issue, ins);
+    `ifdef COVER_ZVKNHB
+        zvknhb_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZVKSED
         zvksed_sample(hart, issue, ins);

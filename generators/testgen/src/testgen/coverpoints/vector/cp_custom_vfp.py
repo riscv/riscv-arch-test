@@ -7,11 +7,13 @@
 
 from testgen.asm.tsbi import tsbi_call
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.cp_custom_mask_and_reduction import make_voffgroup_vd, make_voffgroup_vs2
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.params import PresetMask
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_instruction, format_single_testcase, get_instruction_type_config
-from testgen.instructions.vector import get_base_lmul, get_legal_lmuls
+from testgen.instructions.vector import get_base_lmul
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -33,32 +35,37 @@ def cp_custom_vfp_NaN_input(instr_name: str, instr_type: str, coverpoint: str, t
         },
     }
 
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    if test_data.config.sew > test_data.config.flen:
-        return []
+    instr_type_config = get_instruction_type_config(instr_type)
+    assert instr_type_config.vector_data is not None, "Vector data must be provided for vector instructions"
 
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
     test_chunks = []
-    for nan_type in ["sNaN", "qNaN"]:  # Due problems with the trace, we need to emit sNaN first
-        label = f"cp_custom_vfp_NaN_input_{nan_type}"
+    for sew in sews:
+        lmul = get_base_lmul(instr_name, instr_type, sew)
+        eew = sew * 2 if "vs2" in instr_type_config.vector_data.widened_regs else sew
 
-        instr_type_config = get_instruction_type_config(instr_type)
-        assert instr_type_config.vector_data is not None, "Vector data must be provided for vector instructions"
-        eew = test_data.config.sew * 2 if "vs2" in instr_type_config.vector_data.widened_regs else test_data.config.sew
+        for nan_type in ["sNaN", "qNaN"]:  # Due problems with the trace, we need to emit sNaN first
+            label = f"cp_custom_vfp_NaN_input_{nan_type}_sew{sew}"
 
-        val = NAN_VALUES[eew][nan_type]
-        test_data.register_vector_data(label, eew, elements=[val])
+            val = NAN_VALUES[eew][nan_type]
+            test_data.register_vector_data(label, eew, elements=[val])
 
-        params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul, vs2_val_pointer=label, additional_no_overlap={("vs2", "vs1")}
-        )
-        desc = f"NaN Input: {nan_type}"
-        bin_name = nan_type
+            params = generate_random_vector_params(
+                test_data,
+                instr_name,
+                instr_type,
+                lmul,
+                sew,
+                vs2_val_pointer=label,
+                additional_no_overlap={("vs2", "vs1")},
+            )
+            desc = f"NaN Input: {nan_type} (sew={sew})"
+            bin_name = f"{nan_type}_sew{sew}"
 
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            return_testcase_registers(test_data, params)
+            test_chunks.append(tc)
 
     return test_chunks
 
@@ -75,51 +82,52 @@ def cp_custom_vfp_state(instr_name: str, instr_type: str, coverpoint: str, test_
     lockstep reference model can verify the FS=Dirty transition. mstatus.FS is forced to Clean
     immediately before the test instruction, after any setup code (register loads, etc.) has run.
     """
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    label = "cp_custom_vfp_state_pos1"
-    test_data.register_vector_data(label, sew, elements=[_POS_ONE[sew]])
-    params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vs2_val_pointer=label)
+    test_chunks = []
+    for sew in sews:
+        label = f"cp_custom_vfp_state_pos1_sew{sew}"
+        test_data.register_vector_data(label, sew, elements=[_POS_ONE[sew]])
+        params = generate_random_vector_params(test_data, instr_name, instr_type, 1, sew, vs2_val_pointer=label)
 
-    tc = test_data.begin_test_chunk()
-    label_line = test_data.add_testcase("", coverpoint)
-    setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
+        tc = test_data.begin_test_chunk()
+        label_line = test_data.add_testcase(f"sew{sew}", coverpoint)
+        setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
 
-    reg = params.temp_reg
-    force_fs_clean = "\n".join(
-        [
-            "# Clear mstatus.fs",
-            f"li x{reg}, 0x6000",
-            tsbi_call(f"csrc mstatus, x{reg}"),
-            "# Set mstatus.fs = clean",
-            f"li x{reg}, 0x4000",
-            tsbi_call(f"csrs mstatus, x{reg}"),
-        ]
-    )
+        reg = params.temp_reg
+        force_fs_clean = "\n".join(
+            [
+                "# Clear mstatus.fs",
+                f"li x{reg}, 0x6000",
+                tsbi_call(f"csrc mstatus, x{reg}"),
+                "# Set mstatus.fs = clean",
+                f"li x{reg}, 0x4000",
+                tsbi_call(f"csrs mstatus, x{reg}"),
+            ]
+        )
 
-    tc.code.extend([f"# {coverpoint} (FS=Clean pre-instruction)", setup, force_fs_clean, label_line, test, check])
-    tc = test_data.end_test_chunk()
-    return_testcase_registers(test_data, params)
+        tc.code.extend(
+            [f"# {coverpoint} (FS=Clean pre-instruction, sew={sew})", setup, force_fs_clean, label_line, test, check]
+        )
+        tc = test_data.end_test_chunk()
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
 
-    return [tc]
+    return test_chunks
 
 
-_NCVT_FLOAT_TO_FLOAT = {"vfncvt.f.f.w", "vfncvt.rod.f.f.w"}
+_NCVT_FLOAT_TO_FLOAT = {"vfncvt.f.f.w", "vfncvt.rod.f.f.w", "vfncvtbf16.f.f.w"}
 _NCVT_INT_TO_FLOAT = {"vfncvt.f.x.w", "vfncvt.f.xu.w"}
-_NCVT_FLOAT_TO_INT = {"vfncvt.xu.f.w", "vfncvt.x.f.w", "vfncvt.rtz.xu.f.w", "vfncvt.rtz.x.f.w"}
 
-# 64-bit double values exceeding float32 max range (~3.4028235e38)
-_NCVT_POS_OVERFLOW_F64 = 0x47F0000000000000
-_NCVT_NEG_OVERFLOW_F64 = 0xC7F0000000000000
-_NCVT_LARGE_INT64 = 0x0000000100000000  # 2^32, doesn't overflow float32 but exercises the path
-_NCVT_LARGE_FLOAT_FOR_INT = 0x41F0000000000000  # 2^32 as a double, exceeds int32/uint32 range
+# Source values (positive, negative) keyed by destination SEW. Each exceeds the destination's range:
+# binary64 values exceed binary32, and binary32 values exceed both binary16 and bf16.
+_NCVT_FLOAT_OVERFLOW = {
+    16: (0x7F7FF800, 0xFF7FF800),
+    32: (0x47F0000000000000, 0xC7F0000000000000),
+}
 
-# 32-bit single precision values exceeding bf16 range
-_NCVT_POS_OVERFLOW_F32 = 0x7F7FF800
-_NCVT_NEG_OVERFLOW_F32 = 0xFF7FF800
+# Largest positive value valid as both int32 and uint32. It exceeds the binary16 range.
+_NCVT_INT32_OVERFLOW = 0x7FFFFFFF
 
 
 @add_coverpoint_generator("cp_custom_vfncvt_rup_overflow")
@@ -127,38 +135,36 @@ def cp_custom_vfncvt_rup_overflow(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """
-    Confirm overflow is recognized when narrowing with round-up (frm=RUP), at SEW=32: source is
-    64-bit, destination is 32-bit single-precision.
+    Confirm overflow is recognized when narrowing with round-up (frm=RUP).
 
-    Only the float-to-float narrowing variants can actually set fflags.OF here: int64 can't exceed
-    the float32 range, and float-to-int overflow sets NV rather than OF. Every variant still gets a
-    test so coverage stays uniform, even though only float-to-float can hit the OF bin.
+    fflags.OF is reachable for float-to-float narrowing at SEW=16 and SEW=32, and for integer-to-float
+    narrowing at SEW=16 only: int64 cannot exceed the binary32 range. Float-to-integer overflow sets
+    NV rather than OF, so those instructions are not supported here.
     """
-    if test_data.config.sew != 32 and not ("bf16" in instr_name and test_data.config.sew == 16):
-        return []
-
-    if instr_name in _NCVT_FLOAT_TO_FLOAT:
-        values = [(_NCVT_POS_OVERFLOW_F64, "positive_overflow"), (_NCVT_NEG_OVERFLOW_F64, "negative_overflow")]
-    elif instr_name in _NCVT_INT_TO_FLOAT:
-        values = [(_NCVT_LARGE_INT64, "large_integer")]
-    elif instr_name in _NCVT_FLOAT_TO_INT:
-        values = [(_NCVT_LARGE_FLOAT_FOR_INT, "large_float_for_int")]
-    elif instr_name == "vfncvtbf16.f.f.w":
-        values = [(_NCVT_POS_OVERFLOW_F32, "positive_overflow"), (_NCVT_NEG_OVERFLOW_F32, "negative_overflow")]
-    else:
-        raise ValueError("Unsupported Instruction for cp_custom_vfncvt_rup_overflow")
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     test_chunks = []
-    for val, bin_name in values:
-        label = f"cp_custom_vfncvt_rup_overflow_{bin_name}"
-        test_data.register_vector_data(label, 2 * test_data.config.sew, elements=[val])
-        params = generate_random_vector_params(
-            test_data, instr_name, instr_type, 1, vs2_val_pointer=label, csr_frm_val=3
-        )
-        desc = f"cp_custom_vfncvt_rup_overflow ({bin_name}, frm=RUP)"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+    for sew in sews:
+        if instr_name in _NCVT_FLOAT_TO_FLOAT:
+            pos_val, neg_val = _NCVT_FLOAT_OVERFLOW[sew]
+            values = [(pos_val, "positive_overflow"), (neg_val, "negative_overflow")]
+        elif instr_name in _NCVT_INT_TO_FLOAT and sew == 16:
+            values = [(_NCVT_INT32_OVERFLOW, "large_integer")]
+        else:
+            raise ValueError(f"cp_custom_vfncvt_rup_overflow cannot set OF for {instr_name} at SEW {sew}")
+
+        for val, bin_name in values:
+            label = f"cp_custom_vfncvt_rup_overflow_{bin_name}_sew{sew}"
+            test_data.register_vector_data(label, 2 * sew, elements=[val])
+            params = generate_random_vector_params(
+                test_data, instr_name, instr_type, 1, sew, vs2_val_pointer=label, csr_frm_val=3
+            )
+            desc = f"cp_custom_vfncvt_rup_overflow ({bin_name}, frm=RUP, sew={sew})"
+            tc = format_single_testcase(
+                instr_name, instr_type, test_data, params, desc, f"{bin_name}_sew{sew}", coverpoint
+            )
+            return_testcase_registers(test_data, params)
+            test_chunks.append(tc)
 
     return test_chunks
 
@@ -169,21 +175,24 @@ def cp_custom_vfncvt_rod_overflow(
 ) -> list[TestChunk]:
     """
     Confirm vfncvt.rod.f.f.w saturates to the destination format's largest finite value (not
-    infinity) when the source exceeds the destination range. SEW=32 only: narrowing 64-bit double
-    to 32-bit float.
+    infinity) when the source exceeds the destination range. Applies at SEW=16 and SEW=32, the only
+    SEWs with both a floating-point destination and a double-width floating-point source.
     """
-    if test_data.config.sew != 32:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     test_chunks = []
-    for val, bin_name in [(_NCVT_POS_OVERFLOW_F64, "positive_overflow"), (_NCVT_NEG_OVERFLOW_F64, "negative_overflow")]:
-        label = f"cp_custom_vfncvt_rod_overflow_{bin_name}"
-        test_data.register_vector_data(label, 64, elements=[val])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vs2_val_pointer=label)
-        desc = f"cp_custom_vfncvt_rod_overflow ({bin_name})"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+    for sew in sews:
+        pos_val, neg_val = _NCVT_FLOAT_OVERFLOW[sew]
+        for val, bin_name in [(pos_val, "positive_overflow"), (neg_val, "negative_overflow")]:
+            label = f"cp_custom_vfncvt_rod_overflow_{bin_name}_sew{sew}"
+            test_data.register_vector_data(label, 2 * sew, elements=[val])
+            params = generate_random_vector_params(test_data, instr_name, instr_type, 1, sew, vs2_val_pointer=label)
+            desc = f"cp_custom_vfncvt_rod_overflow ({bin_name}, sew={sew})"
+            tc = format_single_testcase(
+                instr_name, instr_type, test_data, params, desc, f"{bin_name}_sew{sew}", coverpoint
+            )
+            return_testcase_registers(test_data, params)
+            test_chunks.append(tc)
 
     return test_chunks
 
@@ -215,21 +224,21 @@ def cp_custom_fp_recsqrt_est_edges(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Confirm all 128 possible 7-bit significand lookups into vfrsqrt7.v produce correct results."""
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    lmul = get_base_lmul(instr_name, instr_type, sew)
     test_chunks = []
-    for i in range(128):
-        label = f"cp_custom_FpRecSqrtEst_edges_sig{i:03d}"
-        test_data.register_vector_data(label, sew, elements=[_make_rsqrt_estimate_value(sew, i)])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2_val_pointer=label)
-        desc = f"cp_custom_FpRecSqrtEst_edges (sig={i:03d})"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"sig{i:03d}", coverpoint)
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+    for sew in sews:
+        lmul = get_base_lmul(instr_name, instr_type, sew)
+        for i in range(128):
+            label = f"cp_custom_FpRecSqrtEst_edges_sig{i:03d}_sew{sew}"
+            test_data.register_vector_data(label, sew, elements=[_make_rsqrt_estimate_value(sew, i)])
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs2_val_pointer=label)
+            desc = f"cp_custom_FpRecSqrtEst_edges (sig={i:03d}, sew={sew})"
+            tc = format_single_testcase(
+                instr_name, instr_type, test_data, params, desc, f"sig{i:03d}_sew{sew}", coverpoint
+            )
+            return_testcase_registers(test_data, params)
+            test_chunks.append(tc)
 
     return test_chunks
 
@@ -252,21 +261,21 @@ def cp_custom_fp_recip_est_edges(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Confirm all 128 possible 7-bit significand lookups into vfrec7.v produce correct results."""
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    lmul = get_base_lmul(instr_name, instr_type, sew)
     test_chunks = []
-    for i in range(128):
-        label = f"cp_custom_FpRecipEst_edges_sig{i:03d}"
-        test_data.register_vector_data(label, sew, elements=[_make_recip_estimate_value(sew, i)])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2_val_pointer=label)
-        desc = f"cp_custom_FpRecipEst_edges (sig={i:03d})"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"sig{i:03d}", coverpoint)
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+    for sew in sews:
+        lmul = get_base_lmul(instr_name, instr_type, sew)
+        for i in range(128):
+            label = f"cp_custom_FpRecipEst_edges_sig{i:03d}_sew{sew}"
+            test_data.register_vector_data(label, sew, elements=[_make_recip_estimate_value(sew, i)])
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs2_val_pointer=label)
+            desc = f"cp_custom_FpRecipEst_edges (sig={i:03d}, sew={sew})"
+            tc = format_single_testcase(
+                instr_name, instr_type, test_data, params, desc, f"sig{i:03d}_sew{sew}", coverpoint
+            )
+            return_testcase_registers(test_data, params)
+            test_chunks.append(tc)
 
     return test_chunks
 
@@ -289,51 +298,49 @@ def cp_custom_fp_recsqrt_est_flag_edges(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Confirm all FP flags are correctly set for vfrsqrt7.v across its FP edge-case inputs."""
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
-
-    lmul = get_base_lmul(instr_name, instr_type, sew)
-    spacer_label = "cp_custom_FpRecSqrtEst_flag_edges_spacer"
-    test_data.register_vector_data(spacer_label, sew, elements=[_RSQRT_FLAG_SPACER[sew]])
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     test_chunks = []
-    for desc, values, sets_flags in _RSQRT_FLAG_EDGES:
-        bin_name = desc.split()[0]
-        label = f"cp_custom_FpRecSqrtEst_flag_edges_{bin_name}"
-        test_data.register_vector_data(label, sew, elements=[values[sew]])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2_val_pointer=label)
-        tc = format_single_testcase(
-            instr_name,
-            instr_type,
-            test_data,
-            params,
-            f"cp_custom_FpRecSqrtEst_flag_edges ({desc})",
-            bin_name,
-            coverpoint,
-        )
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+    for sew in sews:
+        lmul = get_base_lmul(instr_name, instr_type, sew)
+        spacer_label = f"cp_custom_FpRecSqrtEst_flag_edges_spacer_sew{sew}"
+        test_data.register_vector_data(spacer_label, sew, elements=[_RSQRT_FLAG_SPACER[sew]])
 
-        # RVVI CSR mirror workaround: the check reads fcsr, so stale flags from a previous flag-setting
-        # vfrsqrt7/vfrec7 persist unless cleared. A spacer with a no-flags input (vfrsqrt7(+inf)=+0,
-        # vfrec7(-inf)=+0) follows every flag-setting input so each test starts from fflags=0.
-        if sets_flags:
-            params = generate_random_vector_params(
-                test_data, instr_name, instr_type, lmul, vs2_val_pointer=spacer_label
-            )
+        for desc, values, sets_flags in _RSQRT_FLAG_EDGES:
+            bin_name = desc.split()[0]
+            label = f"cp_custom_FpRecSqrtEst_flag_edges_{bin_name}_sew{sew}"
+            test_data.register_vector_data(label, sew, elements=[values[sew]])
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs2_val_pointer=label)
             tc = format_single_testcase(
                 instr_name,
                 instr_type,
                 test_data,
                 params,
-                f"cp_custom_FpRecSqrtEst_flag_edges (spacer after {desc})",
-                f"{bin_name}_spacer",
+                f"cp_custom_FpRecSqrtEst_flag_edges ({desc}, sew={sew})",
+                f"{bin_name}_sew{sew}",
                 coverpoint,
             )
             return_testcase_registers(test_data, params)
             test_chunks.append(tc)
+
+            # RVVI CSR mirror workaround: the check reads fcsr, so stale flags from a previous flag-setting
+            # vfrsqrt7/vfrec7 persist unless cleared. A spacer with a no-flags input (vfrsqrt7(+inf)=+0,
+            # vfrec7(-inf)=+0) follows every flag-setting input so each test starts from fflags=0.
+            if sets_flags:
+                params = generate_random_vector_params(
+                    test_data, instr_name, instr_type, lmul, sew, vs2_val_pointer=spacer_label
+                )
+                tc = format_single_testcase(
+                    instr_name,
+                    instr_type,
+                    test_data,
+                    params,
+                    f"cp_custom_FpRecSqrtEst_flag_edges (spacer after {desc}, sew={sew})",
+                    f"{bin_name}_spacer_sew{sew}",
+                    coverpoint,
+                )
+                return_testcase_registers(test_data, params)
+                test_chunks.append(tc)
 
     return test_chunks
 
@@ -399,48 +406,46 @@ def cp_custom_fp_recip_est_flag_edges(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Confirm all FP flags are correctly set for vfrec7.v across its FP edge-case inputs."""
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
-
-    lmul = get_base_lmul(instr_name, instr_type, sew)
-    spacer_label = "cp_custom_FpRecSqrtEst_flag_edges_spacer"
-    test_data.register_vector_data(spacer_label, sew, elements=[_RECIP_FLAG_SPACER[sew]])
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     test_chunks = []
-    for val, bin_name, sets_flags in _RECIP_FLAG_EDGES.get(sew, []):
-        label = f"cp_custom_FpRecipEst_flag_edges_{bin_name}"
-        test_data.register_vector_data(label, sew, elements=[val])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2_val_pointer=label)
-        tc = format_single_testcase(
-            instr_name,
-            instr_type,
-            test_data,
-            params,
-            f"cp_custom_FpRecipEst_flag_edges ({bin_name})",
-            bin_name,
-            coverpoint,
-        )
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+    for sew in sews:
+        lmul = get_base_lmul(instr_name, instr_type, sew)
+        spacer_label = f"cp_custom_FpRecipEst_flag_edges_spacer_sew{sew}"
+        test_data.register_vector_data(spacer_label, sew, elements=[_RECIP_FLAG_SPACER[sew]])
 
-        # Work around for limitations in the sail trace
-        if sets_flags:
-            params = generate_random_vector_params(
-                test_data, instr_name, instr_type, lmul, vs2_val_pointer=spacer_label
-            )
+        for val, bin_name, sets_flags in _RECIP_FLAG_EDGES.get(sew, []):
+            label = f"cp_custom_FpRecipEst_flag_edges_{bin_name}_sew{sew}"
+            test_data.register_vector_data(label, sew, elements=[val])
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs2_val_pointer=label)
             tc = format_single_testcase(
                 instr_name,
                 instr_type,
                 test_data,
                 params,
-                f"cp_custom_FpRecipEst_flag_edges (spacer after {bin_name})",
-                f"{bin_name}_spacer",
+                f"cp_custom_FpRecipEst_flag_edges ({bin_name}, sew={sew})",
+                f"{bin_name}_sew{sew}",
                 coverpoint,
             )
             return_testcase_registers(test_data, params)
             test_chunks.append(tc)
+
+            # Work around for limitations in the sail trace
+            if sets_flags:
+                params = generate_random_vector_params(
+                    test_data, instr_name, instr_type, lmul, sew, vs2_val_pointer=spacer_label
+                )
+                tc = format_single_testcase(
+                    instr_name,
+                    instr_type,
+                    test_data,
+                    params,
+                    f"cp_custom_FpRecipEst_flag_edges (spacer after {bin_name}, sew={sew})",
+                    f"{bin_name}_spacer_sew{sew}",
+                    coverpoint,
+                )
+                return_testcase_registers(test_data, params)
+                test_chunks.append(tc)
 
     return test_chunks
 
@@ -489,21 +494,21 @@ _CLASSIFY_INPUTS = {
 @add_coverpoint_generator("cp_custom_vfclass_onehot")
 def cp_custom_vfclass_onehot(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Confirm all 10 classify cases (RISC-V spec vfclass.v result bits) are correctly handled."""
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    lmul = get_base_lmul(instr_name, instr_type, sew)
     test_chunks = []
-    for val, bin_name in _CLASSIFY_INPUTS.get(sew, []):
-        label = f"cp_custom_vfclass_onehot_{bin_name}"
-        test_data.register_vector_data(label, sew, elements=[val])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2_val_pointer=label)
-        desc = f"cp_custom_vfclass_onehot ({bin_name})"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
+    for sew in sews:
+        lmul = get_base_lmul(instr_name, instr_type, sew)
+        for val, bin_name in _CLASSIFY_INPUTS.get(sew, []):
+            label = f"cp_custom_vfclass_onehot_{bin_name}_sew{sew}"
+            test_data.register_vector_data(label, sew, elements=[val])
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vs2_val_pointer=label)
+            desc = f"cp_custom_vfclass_onehot ({bin_name}, sew={sew})"
+            tc = format_single_testcase(
+                instr_name, instr_type, test_data, params, desc, f"{bin_name}_sew{sew}", coverpoint
+            )
+            return_testcase_registers(test_data, params)
+            test_chunks.append(tc)
 
     return test_chunks
 
@@ -521,32 +526,36 @@ def cp_custom_vfredosum_ordered_sum(
     (catastrophic-cancellation) sum would give. Needs vl >= 2 and lmul = 2 so the reduction walks
     two elements.
     """
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    vs1_label = "cp_custom_vfredosum_ordered_sum_maxnorm"
-    test_data.register_vector_data(vs1_label, sew, elements=[_REDOSUM_MAX_NORM[sew]])
+    test_chunks = []
+    for sew in sews:
+        vs1_label = f"cp_custom_vfredosum_ordered_sum_maxnorm_sew{sew}"
+        test_data.register_vector_data(vs1_label, sew, elements=[_REDOSUM_MAX_NORM[sew]])
 
-    vs2_label = "cp_custom_vfredosum_ordered_sum_negmaxnorm_small"
-    test_data.register_vector_data(vs2_label, sew, elements=[_REDOSUM_NEG_MAX_NORM[sew], _POS_ONE[sew]])
+        vs2_label = f"cp_custom_vfredosum_ordered_sum_negmaxnorm_small_sew{sew}"
+        test_data.register_vector_data(vs2_label, sew, elements=[_REDOSUM_NEG_MAX_NORM[sew], _POS_ONE[sew]])
 
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        lmul=2,
-        vl=2,
-        suite="length",
-        vs1_val_pointer=vs1_label,
-        vs2_val_pointer=vs2_label,
-    )
-    desc = "cp_custom_vfredosum_ordered_sum (maxNorm + (-maxNorm) + small)"
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, "ordered_sum", coverpoint)
-    return_testcase_registers(test_data, params)
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            2,
+            sew,
+            additional_no_overlap={("vs1", "vs2")},
+            vl=2,
+            suite="length",
+            vs1_val_pointer=vs1_label,
+            vs2_val_pointer=vs2_label,
+        )
+        desc = f"cp_custom_vfredosum_ordered_sum (maxNorm + (-maxNorm) + small, sew={sew})"
+        tc = format_single_testcase(
+            instr_name, instr_type, test_data, params, desc, f"ordered_sum_sew{sew}", coverpoint
+        )
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
 
-    return [tc]
+    return test_chunks
 
 
 _REDOSUM_QNAN = {16: 0x7E00, 32: 0x7FC00000, 64: 0x7FF8000000000000}
@@ -557,111 +566,58 @@ def cp_custom_vfredosum_nan_vl0(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Confirm that with vl=0, vs1[0] is passed through untouched and not canonicalized, even a qNaN."""
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-    if sew > test_data.config.flen:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     type_config = get_instruction_type_config(instr_type)
     assert type_config.vector_data is not None, "Vector data must be provided for all vector instruction types"
-    vs1_sew = sew * 2 if "vs1" in type_config.vector_data.widened_regs else sew
 
-    qnan = _REDOSUM_QNAN.get(vs1_sew)
-    if qnan is None:
-        raise ValueError(f"Unsupported SEW {sew} for cp_custom_vfredosum_NAN_vl0")
+    test_chunks = []
+    for sew in sews:
+        vs1_sew = sew * 2 if "vs1" in type_config.vector_data.widened_regs else sew
 
-    label = f"cp_custom_vfredosum_NAN_vl0_sew{vs1_sew}"
-    test_data.register_vector_data(label, vs1_sew, elements=[qnan])
+        qnan = _REDOSUM_QNAN.get(vs1_sew)
+        if qnan is None:
+            raise ValueError(f"Unsupported SEW {sew} for cp_custom_vfredosum_NAN_vl0")
 
-    params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vl=0, vs1_val_pointer=label)
-    desc = f"cp_custom_vfredosum_NAN_vl0 ({instr_name}, vl=0, vs1[0]=qNaN retained)"
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, "vl0_qnan", coverpoint)
-    return_testcase_registers(test_data, params)
+        label = f"cp_custom_vfredosum_NAN_vl0_sew{vs1_sew}"
+        test_data.register_vector_data(label, vs1_sew, elements=[qnan])
 
-    return [tc]
+        params = generate_random_vector_params(test_data, instr_name, instr_type, 1, sew, vl=0, vs1_val_pointer=label)
+        desc = f"cp_custom_vfredosum_NAN_vl0 ({instr_name}, vl=0, vs1[0]=qNaN retained, sew={sew})"
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"vl0_qnan_sew{sew}", coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_fmv_sf_vd_all_lmul")
 def cp_custom_fmv_sf_vd_all_lmul(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
-    """
-    Confirm vfmv.s.f ignores LMUL for the destination register: LMUL=1 exercises all 32 vd values,
-    every other legal LMUL exercises vd=v1. vd is a scalar register for this instruction, so it
-    always occupies exactly one physical register regardless of LMUL.
-    """
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-
-    if sew > test_data.config.flen:
-        return []
-
-    test_chunks = []
-    for exponent in get_legal_lmuls(sew):
-        lmul = 2.0**exponent
-
-        # TODO: Come back to this coverpoint definition. It seems flawed
-        # LMUL=1: all 32 regs (covers vd_all_regs cross). Others: just vd=1 (covers LMUL cross).
-        vd_values = range(32) if lmul == 1.0 else [1]
-
-        for vd in vd_values:
-            test_data.vec_regs.allocate_operand("vd", vd, 1)
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vd=vd)
-            desc = f"cp_custom_fmv_sf_vd_all_lmul (vd=v{vd}, lmul={lmul})"
-            bin_name = f"vd{vd}_lmul{lmul}"
-            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-            return_testcase_registers(test_data, params)
-            test_chunks.append(tc)
-
-    return test_chunks
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    return (
+        make_voffgroup_vd(instr_name, instr_type, "voffgroup_lmul2_" + "_".join(str(sew) for sew in sews), test_data)
+        + make_voffgroup_vd(instr_name, instr_type, "voffgroup_lmul4_" + "_".join(str(sew) for sew in sews), test_data)
+        + make_voffgroup_vd(instr_name, instr_type, "voffgroup_lmul8_" + "_".join(str(sew) for sew in sews), test_data)
+    )
 
 
 @add_coverpoint_generator("cp_custom_fmv_fs_vs2_all_lmul")
 def cp_custom_fmv_fs_vs2_all_lmul(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
-    """
-    Confirm vfmv.f.s ignores LMUL for the source register: LMUL=1 exercises all 32 vs2 values, every
-    other legal LMUL exercises vs2=v1. vs2 is a scalar register for this instruction, so it always
-    occupies exactly one physical register regardless of LMUL.
-    """
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-
-    if sew > test_data.config.flen:
-        return []
-
-    test_chunks = []
-    for exponent in get_legal_lmuls(sew):
-        lmul = 2.0**exponent
-
-        # TODO: Come back to this coverpoint and get better coverage of what actually matters
-        vs2_values = range(32) if lmul == 1 else [1]
-
-        for vs2 in vs2_values:
-            test_data.vec_regs.allocate_operand("vs2", vs2, 1)
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2=vs2)
-            desc = f"cp_custom_fmv_fs_vs2_all_lmul (vs2=v{vs2}, lmul={lmul})"
-            bin_name = f"vs2{vs2}_lmul{lmul}"
-            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-            return_testcase_registers(test_data, params)
-            test_chunks.append(tc)
-
-    return test_chunks
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    return (
+        make_voffgroup_vs2(instr_name, instr_type, "voffgroup_lmul2_" + "_".join(str(sew) for sew in sews), test_data)
+        + make_voffgroup_vs2(instr_name, instr_type, "voffgroup_lmul4_" + "_".join(str(sew) for sew in sews), test_data)
+        + make_voffgroup_vs2(instr_name, instr_type, "voffgroup_lmul8_" + "_".join(str(sew) for sew in sews), test_data)
+    )
 
 
 ##################################
 # cp_custom_vfp_flags / cp_custom_vfp_flags_inactive_not_set
 ##################################
-
-
-@add_coverpoint_generator("cp_custom_vfp_flags")
-def cp_custom_vfp_flags(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    """VFP flags currently has no generation as it is covered by other test generation"""
-
-    # Currently this coverpoint's generation is disabled. The values of fflags are reached in the other testgen
-    # and it is unclear as to how it is different than cp_csr_fflags.
-    return []
 
 
 _VFP_FLAGS_TV: dict[int, dict[str, int]] = {
@@ -706,51 +662,53 @@ def cp_custom_vfp_flags_inactive_not_set(
     Confirm a masked-off element does not get its flags set: vfrsqrt7.v(0.0) would set DZ if active,
     so mask it off and confirm fflags stays clean.
     """
-    assert test_data.config.sew is not None, "SEW must be provided for vector tests"
-    sew = test_data.config.sew
-
-    if sew > test_data.config.flen:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     if instr_name != "vfrsqrt7.v":
         raise ValueError("cp_custom_vfp_flags_inactive_not_set is only defined for vfrsqrt7.v")
 
-    t = _VFP_FLAGS_TV[sew]
-    spacer_label = f"custom_flag_one_sew{sew}"
-    test_data.register_vector_data(spacer_label, sew, elements=[t["ONE"]])
-    spacer_params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vs2_val_pointer=spacer_label)
-    spacer = format_single_testcase(
-        instr_name,
-        instr_type,
-        test_data,
-        spacer_params,
-        "cp_custom_vfp_flags_inactive_not_set spacer (clears stale fcsr)",
-        "spacer",
-        coverpoint,
-    )
-    return_testcase_registers(test_data, spacer_params)
+    test_chunks = []
+    for sew in sews:
+        t = _VFP_FLAGS_TV[sew]
+        spacer_label = f"custom_flag_one_sew{sew}"
+        test_data.register_vector_data(spacer_label, sew, elements=[t["ONE"]])
+        spacer_params = generate_random_vector_params(
+            test_data, instr_name, instr_type, 1, sew, vs2_val_pointer=spacer_label
+        )
+        spacer = format_single_testcase(
+            instr_name,
+            instr_type,
+            test_data,
+            spacer_params,
+            f"cp_custom_vfp_flags_inactive_not_set spacer (clears stale fcsr, sew={sew})",
+            f"spacer_sew{sew}",
+            coverpoint,
+        )
+        return_testcase_registers(test_data, spacer_params)
 
-    zero_label = f"custom_flag_zero_sew{sew}"
-    test_data.register_vector_data(zero_label, sew, elements=[0])
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        1,
-        masked=True,
-        vs2_val_pointer=zero_label,
-        maskval=PresetMask.ZEROS,
-        additional_no_overlap={("vs2", "v0"), ("vd", "v0")},
-    )
-    tc = format_single_testcase(
-        instr_name,
-        instr_type,
-        test_data,
-        params,
-        "cp_custom_vfp_flags_inactive_not_set (vfrsqrt7.v vs2=0, masked)",
-        "masked",
-        coverpoint,
-    )
-    return_testcase_registers(test_data, params)
+        zero_label = f"custom_flag_zero_sew{sew}"
+        test_data.register_vector_data(zero_label, sew, elements=[0])
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            1,
+            sew,
+            masked=True,
+            vs2_val_pointer=zero_label,
+            maskval=PresetMask.ZEROS,
+            additional_no_overlap={("vs2", "v0"), ("vd", "v0")},
+        )
+        tc = format_single_testcase(
+            instr_name,
+            instr_type,
+            test_data,
+            params,
+            f"cp_custom_vfp_flags_inactive_not_set (vfrsqrt7.v vs2=0, masked, sew={sew})",
+            f"masked_sew{sew}",
+            coverpoint,
+        )
+        return_testcase_registers(test_data, params)
+        test_chunks.extend([spacer, tc])
 
-    return [spacer, tc]
+    return test_chunks

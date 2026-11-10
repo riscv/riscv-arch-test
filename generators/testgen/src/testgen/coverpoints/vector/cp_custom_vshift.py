@@ -8,6 +8,7 @@
 import math
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -35,34 +36,38 @@ def _make_shift_upperbits_test(
     Generate a test ensuring that only the bottom log2(SEW) bits are used to control the shift amount
     """
 
-    sew = test_data.config.sew
-    assert sew is not None, "SEW must be set for vector tests"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     xlen = test_data.config.xlen
 
-    # For a narrow shift (VWV), the valid shift-amount bits are log2(2*SEW).
-    # Upper bits above that boundary should be ignored; set them to 1 to verify.
-    effective_sew = 2 * sew if narrow else sew
-    element_val = _shift_upper_bits_mask(xlen, effective_sew) & ((1 << sew) - 1)
+    test_chunks = []
+    for sew in sews:
+        # For a narrow shift (VWV), the valid shift-amount bits are log2(2*SEW).
+        # Upper bits above that boundary should be ignored; set them to 1 to verify.
+        effective_sew = 2 * sew if narrow else sew
+        element_val = _shift_upper_bits_mask(xlen, effective_sew) & ((1 << sew) - 1)
 
-    label = f"vs1_shift_upperbits{'n' if narrow else ''}_sew{sew}"
-    test_data.register_vector_data(label, sew, elements=[element_val])
+        label = f"vs1_shift_upperbits{'n' if narrow else ''}_sew{sew}"
+        test_data.register_vector_data(label, sew, elements=[element_val])
 
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        lmul=1,
-        vs1_val_pointer=label,
-    )
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            1,
+            sew,
+            vs1_val_pointer=label,
+        )
 
-    suffix = "n" if narrow else ""
-    desc = f"cp_custom_vshift{suffix}_upperbits_vs1_ones (upper shift bits in vs1 = ones)"
-    bin_name = f"cp_custom_vshift{suffix}_upperbits_vs1_ones"
+        suffix = "n" if narrow else ""
+        desc = f"cp_custom_vshift{suffix}_upperbits_vs1_ones (upper shift bits in vs1 = ones, sew={sew})"
+        bin_name = f"cp_custom_vshift{suffix}_upperbits_vs1_ones_sew{sew}"
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return [tc]
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_vshift_upperbits_vs1_ones")
@@ -94,29 +99,33 @@ def _make_shift_upperbits_rs1_test(
     """
     Generate a test ensuring that only the bottom log2(SEW) bits control the shift amount.
     """
-    sew = test_data.config.sew
-    assert sew is not None, "SEW must be provided for vector tests"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     xlen = test_data.config.xlen
 
-    effective_sew = 2 * sew if narrow else sew
-    rs1val = _shift_upper_bits_mask(xlen, effective_sew)
+    test_chunks = []
+    for sew in sews:
+        effective_sew = 2 * sew if narrow else sew
+        rs1val = _shift_upper_bits_mask(xlen, effective_sew)
 
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        lmul=1,
-        rs1val=rs1val,
-    )
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            1,
+            sew,
+            rs1val=rs1val,
+        )
 
-    suffix = "n" if narrow else ""
-    desc = f"cp_custom_vshift{suffix}_upperbits_rs1_ones (upper shift bits in rs1 = ones)"
-    bin_name = f"cp_custom_vshift{suffix}_upperbits_rs1_ones"
+        suffix = "n" if narrow else ""
+        desc = f"cp_custom_vshift{suffix}_upperbits_rs1_ones (upper shift bits in rs1 = ones, sew={sew})"
+        bin_name = f"cp_custom_vshift{suffix}_upperbits_rs1_ones_sew{sew}"
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return [tc]
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_vshift_upperbits_rs1_ones")

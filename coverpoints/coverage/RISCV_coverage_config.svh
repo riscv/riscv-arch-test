@@ -374,20 +374,11 @@
 `ifdef ZMMUL_COVERAGE
   `include "Zmmul_coverage.svh"
 `endif
-`ifdef ZVBB16_COVERAGE
-  `include "Zvbb16_coverage.svh"
+`ifdef ZVBB_COVERAGE
+  `include "Zvbb_coverage.svh"
 `endif
-`ifdef ZVBB32_COVERAGE
-  `include "Zvbb32_coverage.svh"
-`endif
-`ifdef ZVBB64_COVERAGE
-  `include "Zvbb64_coverage.svh"
-`endif
-`ifdef ZVBB8_COVERAGE
-  `include "Zvbb8_coverage.svh"
-`endif
-`ifdef ZVBC64_COVERAGE
-  `include "Zvbc64_coverage.svh"
+`ifdef ZVBC_COVERAGE
+  `include "Zvbc_coverage.svh"
 `endif
 `ifdef ZVE32F_COVERAGE
   `include "Zve32f_coverage.svh"
@@ -416,17 +407,8 @@
 `ifdef ZVFHMIN_COVERAGE
   `include "Zvfhmin_coverage.svh"
 `endif
-`ifdef ZVKB16_COVERAGE
-  `include "Zvkb16_coverage.svh"
-`endif
-`ifdef ZVKB32_COVERAGE
-  `include "Zvkb32_coverage.svh"
-`endif
-`ifdef ZVKB64_COVERAGE
-  `include "Zvkb64_coverage.svh"
-`endif
-`ifdef ZVKB8_COVERAGE
-  `include "Zvkb8_coverage.svh"
+`ifdef ZVKB_COVERAGE
+  `include "Zvkb_coverage.svh"
 `endif
 `ifdef ZVKG_COVERAGE
   `include "Zvkg_coverage.svh"
@@ -437,11 +419,8 @@
 `ifdef ZVKNHA_COVERAGE
   `include "Zvknha_coverage.svh"
 `endif
-`ifdef ZVKNHB32_COVERAGE
-  `include "Zvknhb32_coverage.svh"
-`endif
-`ifdef ZVKNHB64_COVERAGE
-  `include "Zvknhb64_coverage.svh"
+`ifdef ZVKNHB_COVERAGE
+  `include "Zvknhb_coverage.svh"
 `endif
 `ifdef ZVKSED_COVERAGE
   `include "Zvksed_coverage.svh"

@@ -11,6 +11,7 @@
 ##################################
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -25,9 +26,17 @@ def make_gpr_writing_vstart_eq_vl(
     Generates a test for instructions writing to GPRs, ensure that at even vl = 0 (where vstart = vl), the
     instruction still executes correctly.
     """
-    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=1, suite="length", vl=0, vstart=0)
-    desc = "cp_custom_gprWriting_vstart_eq_vl (vstart=vl=0)"
-    bin_name = "cp_custom_gprWriting_vstart_eq_vl"
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return [tc]
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+
+    test_chunks = []
+    for sew in sews:
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, 1, sew, suite="length", vl=0, vstart=0
+        )
+        desc = f"cp_custom_gprWriting_vstart_eq_vl (vstart=vl=0, sew={sew})"
+        bin_name = f"cp_custom_gprWriting_vstart_eq_vl_sew{sew}"
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks

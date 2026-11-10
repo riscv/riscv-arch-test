@@ -12,7 +12,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKSH
-covergroup Zvksh_vsm3c_vi_sew32_cg with function sample(ins_t ins);
+`ifdef ZVE32X_SUPPORTED
+covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsm3c.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -268,7 +269,7 @@ covergroup Zvksh_vsm3c_vi_sew32_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvksh_vsm3me_vv_sew32_cg with function sample(ins_t ins);
+covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_egs8
@@ -659,6 +660,7 @@ covergroup Zvksh_vsm3me_vv_sew32_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 function void zvksh_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
@@ -684,12 +686,16 @@ function void zvksh_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
+`ifdef ZVE32X_SUPPORTED
         "vsm3c.vi"     : begin
-            Zvksh_vsm3c_vi_sew32_cg.sample(ins);
+            ZvkshZve32x_vsm3c_vi_sew32_cg.sample(ins);
         end
+`endif
+`ifdef ZVE32X_SUPPORTED
         "vsm3me.vv"     : begin
-            Zvksh_vsm3me_vv_sew32_cg.sample(ins);
+            ZvkshZve32x_vsm3me_vv_sew32_cg.sample(ins);
         end
+`endif
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

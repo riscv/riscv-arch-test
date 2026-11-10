@@ -5,12 +5,14 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import itertools
 import math
 import re
 
 from testgen.asm.helpers import write_sigupd
 from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_instruction, format_single_testcase, get_instruction_type_config
@@ -28,12 +30,7 @@ def make_cp_custom_ffLS_update_vl(
     The test achieves this by running a load at rs1=0x0, with element 0 masked so that a trap is not taken.
     """
 
-    suffix = coverpoint[len("cp_custom_ffLS_update_vl") :]
-    min_sew = int(suffix[len("_sew_ge") :]) if suffix.startswith("_sew_ge") else 0
-
-    assert test_data.config.sew is not None, "SEW must be provided for vector instructions"
-    if test_data.config.sew < min_sew:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     # Use LMUL=2 (while ensuring EMUL does not exceed 8)
     lmul = 2
@@ -41,22 +38,28 @@ def make_cp_custom_ffLS_update_vl(
     info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
-    emul = eew * lmul / test_data.config.sew
 
-    assert emul * info.segments <= 8, f"Cannot cover {coverpoint} for {instr_name}, given instruction constraints"
+    test_chunks = []
+    for sew in sews:
+        emul = eew * lmul / sew
 
-    mask_label = "ffLS_update_vl_mask"
-    mask_elements = [0 for _ in range(math.ceil(VLEN_MAX / test_data.config.sew))]
-    mask_elements[0] = 1
-    test_data.register_vector_data(mask_label, test_data.config.sew, elements=mask_elements)
-    params = generate_random_vector_params(
-        test_data, instr_name, instr_type, lmul, masked=True, maskval=mask_label, vl="vlmax", suite="length"
-    )
+        assert emul * info.segments <= 8, f"Cannot cover {coverpoint} for {instr_name}, given instruction constraints"
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, "ffLS update vl", "", coverpoint)
-    return_testcase_registers(test_data, params)
+        mask_label = f"ffLS_update_vl_mask_sew{sew}"
+        mask_elements = [0 for _ in range(math.ceil(VLEN_MAX / sew))]
+        mask_elements[0] = 1
+        test_data.register_vector_data(mask_label, sew, elements=mask_elements)
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul, sew, masked=True, maskval=mask_label, vl="vlmax", suite="length"
+        )
 
-    return [tc]
+        tc = format_single_testcase(
+            instr_name, instr_type, test_data, params, f"ffLS update vl (sew={sew})", f"sew{sew}", coverpoint
+        )
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_ffLS")
@@ -67,68 +70,66 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     The test achieves this by running a load at rs1=0x0, with element 0 masked so that a trap is not taken.
     """
 
-    suffix = coverpoint[len("cp_custom_ffLS_update_vl") :]
-    min_sew = int(suffix[len("_sew_ge") :]) if suffix.startswith("_sew_ge") else 0
-
-    assert test_data.config.sew is not None, "SEW must be provided for vector instructions"
-    if test_data.config.sew < min_sew:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
 
-    # Use LMUL=2 (while ensuring EMUL does not exceed 8)
-    lmul = 2
-    emul = eew * lmul / test_data.config.sew
-    while emul * info.segments > 8:
-        lmul /= 2
-        emul = eew * lmul / test_data.config.sew
+    test_chunks = []
+    for sew in sews:
+        # Use LMUL=2 (while ensuring EMUL does not exceed 8)
+        lmul = 2
+        emul = eew * lmul / sew
+        while emul * info.segments > 8:
+            lmul /= 2
+            emul = eew * lmul / sew
 
-    # We might need an ifdef if lmul <= 1 because we require a vl of at least 2. We have small lmuls when
-    # sew < eew, so the constraint is that we can fit 2 eew elements in a vector register
-    ifdef = f"ZVL{eew * 2}B_SUPPORTED" if lmul <= 1 and eew * 2 > max(32, test_data.config.sew) else ""
+        # We might need an ifdef if lmul <= 1 because we require a vl of at least 2. We have small lmuls when
+        # sew < eew, so the constraint is that we can fit 2 eew elements in a vector register
+        ifdef = f"ZVL{eew * 2}B_SUPPORTED" if lmul <= 1 and eew * 2 > max(32, sew) else ""
 
-    mask_label = "ffLS_mask"
-    mask_elements = [0 for _ in range(math.ceil(VLEN_MAX / test_data.config.sew))]
-    mask_elements[0] = 2
-    test_data.register_vector_data(mask_label, test_data.config.sew, elements=mask_elements)
-    params = generate_random_vector_params(
-        test_data, instr_name, instr_type, lmul, masked=True, maskval=mask_label, vl="vlmax", suite="length"
-    )
+        mask_label = f"ffLS_mask_sew{sew}"
+        mask_elements = [0 for _ in range(math.ceil(VLEN_MAX / sew))]
+        mask_elements[0] = 2
+        test_data.register_vector_data(mask_label, sew, elements=mask_elements)
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul, sew, masked=True, maskval=mask_label, vl="vlmax", suite="length"
+        )
 
-    # Do the test chunk manually as we need to override the check
-    tc = test_data.begin_test_chunk()
-    tc.code.append("# Testcase fault-only-first updates vl")
+        # Do the test chunk manually as we need to override the check
+        tc = test_data.begin_test_chunk()
+        tc.code.append(f"# Testcase fault-only-first updates vl (sew={sew})")
 
-    label_line = test_data.add_testcase("", coverpoint)
+        label_line = test_data.add_testcase(f"sew{sew}", coverpoint)
 
-    # Add test and signature update lines
-    setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-    needs_endif = "#endif" in check
+        # Add test and signature update lines
+        setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
+        needs_endif = "#endif" in check
 
-    tc.sigupd_count = 1
-    check_reg = test_data.int_regs.get_register(exclude_regs=[0])
-    check = "\n".join([f"csrr x{check_reg}, vl", write_sigupd(check_reg, test_data, "int")])
-    if needs_endif:
-        check += "\n#endif"
+        tc.sigupd_count = 1
+        check_reg = test_data.int_regs.get_register(exclude_regs=[0])
+        check = "\n".join([f"csrr x{check_reg}, vl", write_sigupd(check_reg, test_data, "int")])
+        if needs_endif:
+            check += "\n#endif"
 
-    setup += f"\nLI (x{params.rs1}, RVMODEL_ACCESS_FAULT_ADDRESS)"  # Hardcode the load
+        setup += f"\nLI (x{params.rs1}, RVMODEL_ACCESS_FAULT_ADDRESS)"  # Hardcode the load
 
-    tc.code.extend([setup, label_line, test, check])
+        tc.code.extend([setup, label_line, test, check])
 
-    if ifdef != "":
-        tc.code.insert(0, f"#ifdef {ifdef}")
+        if ifdef != "":
+            tc.code.insert(0, f"#ifdef {ifdef}")
+            tc.code.append("#endif")
+        tc.code.insert(0, "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
         tc.code.append("#endif")
-    tc.code.insert(0, "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
-    tc.code.append("#endif")
 
-    tc = test_data.end_test_chunk()
+        tc = test_data.end_test_chunk()
 
-    test_data.int_regs.return_register(check_reg)
-    return_testcase_registers(test_data, params)
+        test_data.int_regs.return_register(check_reg)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
 
-    return [tc]
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_ls_indexed_truncated")
@@ -142,6 +143,8 @@ def make_cp_custom_ls_indexed_truncated(
     if test_data.xlen != 32:
         return []
 
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+
     info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.index_eew
 
@@ -151,22 +154,26 @@ def make_cp_custom_ls_indexed_truncated(
     label = "custom_idx_trunc_eew64"
     test_data.register_vector_data(label, 64, elements=[0xFFFF_FFFF_0000_0000])
 
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        1,
-        additional_no_overlap={("vd", "vs2")},
-        vs2_val_pointer=label,
-        ignore_vector_safety=True,
-    )
-    desc = "Index Value Truncation"
-    bin_name = "truncate_xlen32_eew64"
+    test_chunks = []
+    for sew in sews:
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            1,
+            sew,
+            additional_no_overlap={("vd", "vs2")},
+            vs2_val_pointer=label,
+            ignore_vector_safety=True,
+        )
+        desc = f"Index Value Truncation (sew={sew})"
+        bin_name = f"truncate_xlen32_eew64_sew{sew}"
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
 
-    return [tc]
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_indexed_overlap")
@@ -198,11 +205,10 @@ def make_cp_custom_indexed_overlap(
             f"Extracted incorrect eew {index_eew} from {instr_name} for coverpoint {coverpoint}"
         )
 
-    result_eew = test_data.config.sew
-    assert result_eew is not None, "SEW must be provided for vector instructions"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     test_chunks = []
-    for lmul in (1, 2, 4, 8):
+    for lmul, result_eew in itertools.product((1, 2, 4, 8), sews):
         data_emul = lmul
         index_emul = lmul * (index_eew / result_eew)
         if index_emul > 8:
@@ -214,14 +220,18 @@ def make_cp_custom_indexed_overlap(
                 if "store" in config.instruction_class:
                     test_data.vec_regs.allocate_operand("vs3", reg, lmul)
                     test_data.vec_regs.allocate_operand("vs2", reg, lmul, suppress_overlap=True)
-                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs3=reg, vs2=reg)
+                    params = generate_random_vector_params(
+                        test_data, instr_name, instr_type, lmul, result_eew, vs3=reg, vs2=reg
+                    )
                 else:
                     test_data.vec_regs.allocate_operand("vd", reg, lmul)
                     test_data.vec_regs.allocate_operand("vs2", reg, lmul, suppress_overlap=True)
-                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vd=reg, vs2=reg)
+                    params = generate_random_vector_params(
+                        test_data, instr_name, instr_type, lmul, result_eew, vd=reg, vs2=reg
+                    )
 
-                desc = "Index Register Overlap"
-                bin_name = f"_v{reg}_lmul{lmul}"
+                desc = f"Index Register Overlap (sew={result_eew})"
+                bin_name = f"_v{reg}_lmul{lmul}_sew{result_eew}"
                 test_chunks.append(
                     format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 )
@@ -235,10 +245,12 @@ def make_cp_custom_indexed_overlap(
             for reg in range(0, test_data.vec_regs.reg_count, alignment):
                 test_data.vec_regs.allocate_operand("vd", reg, data_emul)
                 test_data.vec_regs.allocate_operand("vs2", reg, int(max(index_emul, 1)), suppress_overlap=True)
-                params = generate_random_vector_params(test_data, instr_name, instr_type, data_emul, vd=reg, vs2=reg)
+                params = generate_random_vector_params(
+                    test_data, instr_name, instr_type, data_emul, result_eew, vd=reg, vs2=reg
+                )
 
-                desc = "Index Register Overlap"
-                bin_name = f"_v{reg}_lmul{lmul}"
+                desc = f"Index Register Overlap (sew={result_eew})"
+                bin_name = f"_v{reg}_lmul{lmul}_sew{result_eew}"
                 test_chunks.append(
                     format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 )
@@ -258,11 +270,11 @@ def make_cp_custom_indexed_overlap(
                 test_data.vec_regs.allocate_operand("vd", reg, data_emul)
                 test_data.vec_regs.allocate_operand("vs2", vs2_reg, int(max(index_emul, 1)), suppress_overlap=True)
                 params = generate_random_vector_params(
-                    test_data, instr_name, instr_type, data_emul, vd=reg, vs2=vs2_reg
+                    test_data, instr_name, instr_type, data_emul, result_eew, vd=reg, vs2=vs2_reg
                 )
 
-                desc = "Index Register Overlap"
-                bin_name = f"_vd_{reg}_vs2_{vs2_reg}_lmul{lmul}"
+                desc = f"Index Register Overlap (sew={result_eew})"
+                bin_name = f"_vd_{reg}_vs2_{vs2_reg}_lmul{lmul}_sew{result_eew}"
                 test_chunks.append(
                     format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 )
@@ -280,14 +292,7 @@ def make_cp_custom_indexed_emul_data_only(
     to the data register and not to the index register.
     """
 
-    min_sew = 0
-    if res := re.search(r"sew_ge(\d+)", coverpoint):
-        min_sew = int(res.group(1))
-
-    sew = test_data.config.sew
-    assert sew is not None, "SEW must be provided for vector instructions"
-    if sew < min_sew:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     info = parse_vector_instruction_info(instr_name, instr_type)
     segments = info.segments
@@ -302,18 +307,21 @@ def make_cp_custom_indexed_emul_data_only(
     index_eew = info.index_eew
     assert index_eew is not None, f"Unable to extract index eew from {instr_name}"
 
-    index_emul = index_eew * lmul // sew
-    if index_emul > 8:
-        return []  # This is just an illegal instruction
+    test_chunks = []
+    for sew in sews:
+        index_emul = index_eew * lmul // sew
+        if index_emul > 8:
+            continue  # This is just an illegal instruction
 
-    desc = "EMUl x NF Constraint Only Applies to Data Register"
-    bin_name = f"lmul_{lmul}"
-    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul)
+        desc = f"EMUl x NF Constraint Only Applies to Data Register (sew={sew})"
+        bin_name = f"lmul_{lmul}_sew{sew}"
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew)
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
 
-    return [tc]
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_ordered_index_overlap")
@@ -324,21 +332,26 @@ def make_cp_custom_ordered_index_overlap(
     Tests a data overlap in the index register for the ordered case.
     """
 
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+
     index_eew = parse_vector_instruction_info(instr_name, instr_type).index_eew
     assert index_eew is not None, f"Could not extract index EEW from {instr_name}"
     # vs2 is loaded with the index EEW, so the data must be index-EEW wide and aligned
     label = "custom_index_overlap"
     test_data.register_vector_data(label, index_eew, elements=[0, 0])
 
-    desc = "Data Overlap of Index Elements"
-    bin_name = "zeros"
-    params = generate_random_vector_params(
-        test_data, instr_name, instr_type, 1, vl=2, suite="length", vs2_val_pointer=label
-    )
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
+    test_chunks = []
+    for sew in sews:
+        desc = f"Data Overlap of Index Elements (sew={sew})"
+        bin_name = f"zeros_sew{sew}"
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, 1, sew, vl=2, suite="length", vs2_val_pointer=label
+        )
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
 
-    return [tc]
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_vwholeRegLS_vill")
@@ -349,38 +362,44 @@ def make_cp_custom_vwholeRegLS_vill(
     Checks that whole register load/store operations are unaffected by the vill bit
     """
 
-    desc = "Whole Register Load Store (vill=1)"
-    bin_name = "1"
-    params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vl=2, suite="length")
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    # Write the test manually so we can insert
-    tc = test_data.begin_test_chunk()
-    tc.code.append("# Testcase fault-only-first updates vl")
+    test_chunks = []
+    for sew in sews:
+        desc = f"Whole Register Load Store (vill=1, sew={sew})"
+        bin_name = f"1_sew{sew}"
 
-    label_line = test_data.add_testcase(bin_name, coverpoint)
+        params = generate_random_vector_params(test_data, instr_name, instr_type, 1, sew, vl=2, suite="length")
 
-    # Add test and signature update lines
-    setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
+        # Write the test manually so we can insert
+        tc = test_data.begin_test_chunk()
+        tc.code.append(f"# Testcase fault-only-first updates vl (sew={sew})")
 
-    vl_reg, vtype_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-    force_vill = "\n".join(
-        [
-            "# Force a vector configuration with vill = 1",
-            f"csrr x{vl_reg}, vl",
-            f"csrr x{vtype_reg}, vtype",
-            f"LI (x{params.temp_reg}, {1 << (test_data.xlen - 1)})",
-            f"vsetvl x0, x0, x{params.temp_reg}",
-        ]
-    )
-    reset_vtype = f"vsetvl x0, x{vl_reg}, x{vtype_reg}"
+        label_line = test_data.add_testcase(bin_name, coverpoint)
 
-    tc.code.extend([f"# {desc}", setup, force_vill, label_line, test, reset_vtype, check])
+        # Add test and signature update lines
+        setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
 
-    test_data.int_regs.return_registers([vl_reg, vtype_reg])
-    tc = test_data.end_test_chunk()
-    return_testcase_registers(test_data, params)
+        vl_reg, vtype_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+        force_vill = "\n".join(
+            [
+                "# Force a vector configuration with vill = 1",
+                f"csrr x{vl_reg}, vl",
+                f"csrr x{vtype_reg}, vtype",
+                f"LI (x{params.temp_reg}, {1 << (test_data.xlen - 1)})",
+                f"vsetvl x0, x0, x{params.temp_reg}",
+            ]
+        )
+        reset_vtype = f"vsetvl x0, x{vl_reg}, x{vtype_reg}"
 
-    return [tc]
+        tc.code.extend([f"# {desc}", setup, force_vill, label_line, test, reset_vtype, check])
+
+        test_data.int_regs.return_registers([vl_reg, vtype_reg])
+        tc = test_data.end_test_chunk()
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_vwholeRegLS_lmul")
@@ -391,11 +410,13 @@ def make_cp_custom_vwholeRegLS_lmul(
     Check that while register load/stores work regardless of LMUL with vl == VLMAX
     """
 
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+
     test_chunks = []
-    for lmul in (1, 2, 4, 8):
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, suite="length", vl="vlmax")
-        desc = f"Whole Register Load/Store lmul={lmul}"
-        bin_name = f"lmul_{lmul}"
+    for lmul, sew in itertools.product((1, 2, 4, 8), sews):
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, suite="length", vl="vlmax")
+        desc = f"Whole Register Load/Store lmul={lmul} (sew={sew})"
+        bin_name = f"lmul_{lmul}_sew{sew}"
 
         test_chunks.append(
             format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
@@ -411,14 +432,13 @@ def make_cp_custom_maskLS(instr_name: str, instr_type: str, coverpoint: str, tes
     Generates a cross of lmuls > 1 and sews > 8 to cover EMUL >= 16 cases for mask load/stores.
     """
 
-    if test_data.config.sew == 8:
-        return []
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     test_chunks = []
-    for lmul in (2, 4, 8):
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vl="vlmax", suite="length")
-        desc = f"Mask LS lmul={lmul}"
-        bin_name = f"lmul_{lmul}"
+    for lmul, sew in itertools.product((2, 4, 8), sews):
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, vl="vlmax", suite="length")
+        desc = f"Mask LS lmul={lmul} (sew={sew})"
+        bin_name = f"lmul_{lmul}_sew{sew}"
 
         test_chunks.append(
             format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)

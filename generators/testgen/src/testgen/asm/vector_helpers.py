@@ -698,11 +698,11 @@ def handle_parameter_exclusions(
 
     match lmul:
         case 0.5:
-            parameters_needed.append("defined(TEST_LMULf2_SUPPORTED)")
+            parameters_needed.append("defined(LMULf2_SUPPORTED)")
         case 0.25:
-            parameters_needed.append("defined(TEST_LMULf4_SUPPORTED)")
+            parameters_needed.append("defined(LMULf4_SUPPORTED)")
         case 0.125:
-            parameters_needed.append("defined(TEST_LMULf8_SUPPORTED)")
+            parameters_needed.append("defined(LMULf8_SUPPORTED)")
 
     if encoded_eew is not None:
         parameters_needed.append(f"(UDB_ELEN >= {encoded_eew})")

@@ -10,6 +10,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zvksed_vsm4k_vi_sew32_cg = new(); Zvksed_vsm4k_vi_sew32_cg.set_inst_name("obj_Zvksed_vsm4k_vi_sew32");
-    Zvksed_vsm4r_vs_sew32_cg = new(); Zvksed_vsm4r_vs_sew32_cg.set_inst_name("obj_Zvksed_vsm4r_vs_sew32");
-    Zvksed_vsm4r_vv_sew32_cg = new(); Zvksed_vsm4r_vv_sew32_cg.set_inst_name("obj_Zvksed_vsm4r_vv_sew32");
+`ifdef ZVE32X_SUPPORTED
+    ZvksedZve32x_vsm4k_vi_sew32_cg = new(); ZvksedZve32x_vsm4k_vi_sew32_cg.set_inst_name("obj_ZvksedZve32x_vsm4k_vi_sew32");
+    ZvksedZve32x_vsm4r_vs_sew32_cg = new(); ZvksedZve32x_vsm4r_vs_sew32_cg.set_inst_name("obj_ZvksedZve32x_vsm4r_vs_sew32");
+    ZvksedZve32x_vsm4r_vv_sew32_cg = new(); ZvksedZve32x_vsm4r_vv_sew32_cg.set_inst_name("obj_ZvksedZve32x_vsm4r_vv_sew32");
+`endif

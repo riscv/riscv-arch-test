@@ -9,9 +9,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import itertools
 import random
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -27,6 +29,7 @@ def _make_vext_overlap_test(
     vs2: int,
     vs2_emul: int,
     lmul: int,
+    sew: int,
     desc: str,
     bin_name: str,
     coverpoint: str,
@@ -34,9 +37,6 @@ def _make_vext_overlap_test(
     """
     Generate a test with vd and vs2 having the given preset values and random val_pointers.
     """
-
-    sew = test_data.config.sew
-    assert sew is not None, "SEW must be set for vector tests"
 
     test_data.vec_regs.allocate_operand("vd", vd, vd_emul, suppress_overlap=True)
     test_data.vec_regs.allocate_operand("vs2", vs2, vs2_emul, suppress_overlap=True)
@@ -69,17 +69,18 @@ def _make_vext_overlaps(
     Generate tests where the vext instruction has a valid overlap: vs2 is placed on top of vd's register group.
     """
     test_chunks = []
-    for lmul in lmul_list:
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    for lmul, sew in itertools.product(lmul_list, sews):
         vs2_emul = max(1, lmul // vext_factor)
         vd = random.choice(range(0, test_data.vec_regs.reg_count, lmul))
         vs2 = vd + (lmul - vs2_emul)
 
-        desc = f"cp_custom_vext{vext_factor}_overlapping_vd_vs2 (lmul={lmul}, vd=v{vd}, vs2=v{vs2})"
-        bin_name = f"cp_custom_vext{vext_factor}_overlapping_vd_vs2_lmul{lmul}"
+        desc = f"cp_custom_vext{vext_factor}_overlapping_vd_vs2 (lmul={lmul}, vd=v{vd}, vs2=v{vs2}, sew={sew})"
+        bin_name = f"cp_custom_vext{vext_factor}_overlapping_vd_vs2_lmul{lmul}_sew{sew}"
 
         test_chunks.append(
             _make_vext_overlap_test(
-                test_data, instr_name, instr_type, vd, lmul, vs2, vs2_emul, lmul, desc, bin_name, coverpoint
+                test_data, instr_name, instr_type, vd, lmul, vs2, vs2_emul, lmul, sew, desc, bin_name, coverpoint
             )
         )
     return test_chunks

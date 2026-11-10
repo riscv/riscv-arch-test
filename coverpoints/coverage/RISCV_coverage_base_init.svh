@@ -494,25 +494,13 @@
         `cover_info("//      Zmmul - Enabled");
         `include "Zmmul_coverage_init.svh"
     `endif
-    `ifdef COVER_ZVBB16
-        `cover_info("//      Zvbb16 - Enabled");
-        `include "Zvbb16_coverage_init.svh"
+    `ifdef COVER_ZVBB
+        `cover_info("//      Zvbb - Enabled");
+        `include "Zvbb_coverage_init.svh"
     `endif
-    `ifdef COVER_ZVBB32
-        `cover_info("//      Zvbb32 - Enabled");
-        `include "Zvbb32_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZVBB64
-        `cover_info("//      Zvbb64 - Enabled");
-        `include "Zvbb64_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZVBB8
-        `cover_info("//      Zvbb8 - Enabled");
-        `include "Zvbb8_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZVBC64
-        `cover_info("//      Zvbc64 - Enabled");
-        `include "Zvbc64_coverage_init.svh"
+    `ifdef COVER_ZVBC
+        `cover_info("//      Zvbc - Enabled");
+        `include "Zvbc_coverage_init.svh"
     `endif
     `ifdef COVER_ZVE32F
         `cover_info("//      Zve32f - Enabled");
@@ -550,21 +538,9 @@
         `cover_info("//      Zvfhmin - Enabled");
         `include "Zvfhmin_coverage_init.svh"
     `endif
-    `ifdef COVER_ZVKB16
-        `cover_info("//      Zvkb16 - Enabled");
-        `include "Zvkb16_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZVKB32
-        `cover_info("//      Zvkb32 - Enabled");
-        `include "Zvkb32_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZVKB64
-        `cover_info("//      Zvkb64 - Enabled");
-        `include "Zvkb64_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZVKB8
-        `cover_info("//      Zvkb8 - Enabled");
-        `include "Zvkb8_coverage_init.svh"
+    `ifdef COVER_ZVKB
+        `cover_info("//      Zvkb - Enabled");
+        `include "Zvkb_coverage_init.svh"
     `endif
     `ifdef COVER_ZVKG
         `cover_info("//      Zvkg - Enabled");
@@ -578,13 +554,9 @@
         `cover_info("//      Zvknha - Enabled");
         `include "Zvknha_coverage_init.svh"
     `endif
-    `ifdef COVER_ZVKNHB32
-        `cover_info("//      Zvknhb32 - Enabled");
-        `include "Zvknhb32_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZVKNHB64
-        `cover_info("//      Zvknhb64 - Enabled");
-        `include "Zvknhb64_coverage_init.svh"
+    `ifdef COVER_ZVKNHB
+        `cover_info("//      Zvknhb - Enabled");
+        `include "Zvknhb_coverage_init.svh"
     `endif
     `ifdef COVER_ZVKSED
         `cover_info("//      Zvksed - Enabled");

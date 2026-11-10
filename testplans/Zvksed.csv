@@ -1,4 +1,4 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_vd,cp_vs2,cp_imm_5bit,cmp_vd_vs2,cp_vs2_edges,cp_vd_edges,cr_vs2_vd_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0
-vsm4k.vi,VVI_EGS4,x,x,32,egs4_32,egs4_32,u_32,egs4_32,egs4_subbytes_sm_32,,,egs4_32,egs4_32,egs4_32
-vsm4r.vv,VV_EGS4,x,x,32,egs4_32,egs4_32,,egs4_32,egs4_32,egs4_subbytes_sm_32,egs4_subbytes_sm_32,egs4_32,egs4_32,
-vsm4r.vs,VS_EGS4,x,x,32,egs4_32,egs4_32,,,egs4_32,egs4_subbytes_sm_32,egs4_subbytes_sm_32,egs4_32,egs4_32,
+Instruction,Type,RV32,RV64,ExtraExtensions,cp_asm_count,cp_vd,cp_vs2,cp_imm_5bit,cmp_vd_vs2,cp_vs2_edges,cp_vd_edges,cr_vs2_vd_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0
+vsm4k.vi,VVI_EGS4,x,x,Zve32x,32,egs4_32,egs4_32,u_32,egs4_32,egs4_subbytes_sm_32,,,egs4_32,egs4_32,egs4_32
+vsm4r.vv,VV_EGS4,x,x,Zve32x,32,egs4_32,egs4_32,,egs4_32,egs4_32,egs4_subbytes_sm_32,egs4_subbytes_sm_32,egs4_32,egs4_32,
+vsm4r.vs,VS_EGS4,x,x,Zve32x,32,egs4_32,egs4_32,,,egs4_32,egs4_subbytes_sm_32,egs4_subbytes_sm_32,egs4_32,egs4_32,

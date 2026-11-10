@@ -9,9 +9,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import itertools
 import random
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -33,22 +35,27 @@ def make_vd_overlap_top_vs2(instr_name: str, instr_type: str, coverpoint: str, t
     """
     Generate a test where vs2 overlaps the top of vd
     """
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
     lmul = _parse_lmul(coverpoint)
     emul = 2 * lmul
 
-    vd = random.choice(range(0, 32, emul))
-    vs2 = vd + lmul
+    chunks = []
+    for sew in sews:
+        vd = random.choice(range(0, 32, emul))
+        vs2 = vd + lmul
 
-    desc = f"cp_custom_vdOverlapTopVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2})"
-    bin_name = f"cp_custom_vdOverlapTopVs2_vd_vs2_lmul{lmul}"
+        desc = f"cp_custom_vdOverlapTopVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2}, sew={sew})"
+        bin_name = f"cp_custom_vdOverlapTopVs2_vd_vs2_lmul{lmul}_sew{sew}"
 
-    params = generate_random_vector_params(
-        test_data, instr_name, instr_type, lmul, vd=vd, vs2=vs2, additional_no_overlap={("vd", "vs1")}
-    )
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul, sew, vd=vd, vs2=vs2, additional_no_overlap={("vd", "vs1")}
+        )
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return [tc]
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        chunks.append(tc)
+
+    return chunks
 
 
 @add_coverpoint_generator("cp_custom_allVdOverlapTopVs2_vd_vs2")
@@ -58,17 +65,18 @@ def make_all_vd_overlap_top_vs2(
     """
     Generate tests for all possible vs2 overlaps on top of vd
     """
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
     lmul = _parse_lmul(coverpoint)
     emul = 2 * lmul
 
     chunks = []
-    for vd in range(0, 32, emul):
+    for vd, sew in itertools.product(range(0, 32, emul), sews):
         vs2 = vd + lmul
-        desc = f"cp_custom_allVdOverlapTopVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2})"
-        bin_name = f"cp_custom_allVdOverlapTopVs2_vd_vs2_lmul{lmul}_vd_v{vd}_vs2_v{vs2}"
+        desc = f"cp_custom_allVdOverlapTopVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2}, sew={sew})"
+        bin_name = f"cp_custom_allVdOverlapTopVs2_vd_vs2_lmul{lmul}_vd_v{vd}_vs2_v{vs2}_sew{sew}"
 
         params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul, vd=vd, vs2=vs2, additional_no_overlap={("vd", "vs1")}
+            test_data, instr_name, instr_type, lmul, sew, vd=vd, vs2=vs2, additional_no_overlap={("vd", "vs1")}
         )
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
@@ -89,23 +97,27 @@ def make_vd_overlap_top_vs1(instr_name: str, instr_type: str, coverpoint: str, t
     """
     Generate a test where vs1 overlaps the top of vd
     """
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
     lmul = _parse_lmul(coverpoint)
     emul = 2 * lmul
 
-    vd = random.choice(range(0, 32, emul))
-    vs1 = vd + lmul
+    chunks = []
+    for sew in sews:
+        vd = random.choice(range(0, 32, emul))
+        vs1 = vd + lmul
 
-    desc = f"cp_custom_vdOverlapTopVs1_vd_vs1_lmul{lmul} (vd=v{vd}, vs1=v{vs1})"
-    bin_name = f"cp_custom_vdOverlapTopVs1_vd_vs1_lmul{lmul}"
+        desc = f"cp_custom_vdOverlapTopVs1_vd_vs1_lmul{lmul} (vd=v{vd}, vs1=v{vs1}, sew={sew})"
+        bin_name = f"cp_custom_vdOverlapTopVs1_vd_vs1_lmul{lmul}_sew{sew}"
 
-    params = generate_random_vector_params(
-        test_data, instr_name, instr_type, lmul, vd=vd, vs1=vs1, additional_no_overlap={("vd", "vs2")}
-    )
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul, sew, vd=vd, vs1=vs1, additional_no_overlap={("vd", "vs2")}
+        )
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        chunks.append(tc)
 
-    return [tc]
+    return chunks
 
 
 @add_coverpoint_generator("cp_custom_allVdOverlapTopVs1_vd_vs1")
@@ -115,18 +127,19 @@ def make_all_vd_overlap_top_vs1(
     """
     Generate tests where all possible vs1 overlaps on top of vd are exercised
     """
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
     lmul = _parse_lmul(coverpoint)
     emul = 2 * lmul
 
     chunks = []
-    for vd in range(0, 32, emul):
+    for vd, sew in itertools.product(range(0, 32, emul), sews):
         vs1 = vd + lmul
 
-        desc = f"cp_custom_allVdOverlapTopVs1_vd_vs1_lmul{lmul} (vd=v{vd}, vs1=v{vs1})"
-        bin_name = f"cp_custom_allVdOverlapTopVs1_vd_vs1_lmul{lmul}_vd_v{vd}_vs1_v{vs1}"
+        desc = f"cp_custom_allVdOverlapTopVs1_vd_vs1_lmul{lmul} (vd=v{vd}, vs1=v{vs1}, sew={sew})"
+        bin_name = f"cp_custom_allVdOverlapTopVs1_vd_vs1_lmul{lmul}_vd_v{vd}_vs1_v{vs1}_sew{sew}"
 
         params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul, vd=vd, vs1=vs1, additional_no_overlap={("vd", "vs2")}
+            test_data, instr_name, instr_type, lmul, sew, vd=vd, vs1=vs1, additional_no_overlap={("vd", "vs2")}
         )
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
@@ -147,24 +160,28 @@ def make_vd_overlap_btm_vs2(instr_name: str, instr_type: str, coverpoint: str, t
     """
     Generate a test where vd overlaps the bottom of vs2
     """
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
     lmul = _parse_lmul(coverpoint)
     emul = 2 * lmul
 
-    # vd must be aligned to emul because vs2 = vd and vs2 needs emul alignment.
-    vd = random.choice(range(0, 32, emul))
-    vs2 = vd  # bottom overlap: vs2 starts at the same register as vd
+    chunks = []
+    for sew in sews:
+        # vd must be aligned to emul because vs2 = vd and vs2 needs emul alignment.
+        vd = random.choice(range(0, 32, emul))
+        vs2 = vd  # bottom overlap: vs2 starts at the same register as vd
 
-    desc = f"cp_custom_vdOverlapBtmVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2})"
-    bin_name = f"cp_custom_vdOverlapBtmVs2_vd_vs2_lmul{lmul}"
+        desc = f"cp_custom_vdOverlapBtmVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2}, sew={sew})"
+        bin_name = f"cp_custom_vdOverlapBtmVs2_vd_vs2_lmul{lmul}_sew{sew}"
 
-    params = generate_random_vector_params(
-        test_data, instr_name, instr_type, lmul, vd=vd, vs2=vs2, additional_no_overlap={("vs1", "vs2")}
-    )
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul, sew, vd=vd, vs2=vs2, additional_no_overlap={("vs1", "vs2")}
+        )
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        chunks.append(tc)
 
-    return [tc]
+    return chunks
 
 
 @add_coverpoint_generator("cp_custom_allVdOverlapBtmVs2_vd_vs2")
@@ -174,17 +191,18 @@ def make_all_vd_overlap_btm_vs2(
     """
     Generate tests where all possible combinations of vd and vs2, where vd overlaps the bottom of vs2 are exercised
     """
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
     lmul = _parse_lmul(coverpoint)
     emul = 2 * lmul
 
     chunks = []
-    for vd in range(0, 32, emul):
+    for vd, sew in itertools.product(range(0, 32, emul), sews):
         vs2 = vd  # bottom overlap
-        desc = f"cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2})"
-        bin_name = f"cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul{lmul}_vd_v{vd}_vs2_v{vs2}"
+        desc = f"cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul{lmul} (vd=v{vd}, vs2=v{vs2}, sew={sew})"
+        bin_name = f"cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul{lmul}_vd_v{vd}_vs2_v{vs2}_sew{sew}"
 
         params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul, vd=vd, vs2=vs2, additional_no_overlap={("vs1", "vs2")}
+            test_data, instr_name, instr_type, lmul, sew, vd=vd, vs2=vs2, additional_no_overlap={("vs1", "vs2")}
         )
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)

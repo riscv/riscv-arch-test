@@ -7,7 +7,10 @@
 
 """Register coverpoint handlers (cp_rd, cp_rs1, cp_rs2)"""
 
+import itertools
+
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.random import random_range
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -42,6 +45,12 @@ def get_zacas_mask(instr_name: str, instr_type: str, test_data: TestData) -> int
 @add_coverpoint_generator("cp_rd")
 def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for destination register coverpoints covering both matching and non-matching states."""
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    else:
+        sews = [None]
+
     reg_is_pair = False
     if coverpoint == "cp_rd":
         rd_regs = list(range(test_data.int_regs.reg_count))
@@ -61,15 +70,8 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     equal_cases = [True, False] if is_zacas else [None]
     all_ones = get_zacas_mask(instr_name, instr_type, test_data)
 
-    is_vector = instr_name.lower().startswith("v")
-    if is_vector:
-        assert test_data.config.sew is not None, "SEW must be set for vector tests"
-        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-    else:
-        lmul = 1  # Placeholder to keep the type-checker happy
-
     # Generate both matching and non-matching tests for every register
-    for rd in rd_regs:
+    for rd, sew in itertools.product(rd_regs, sews):
         for equal_case in equal_cases:
             if reg_is_pair:
                 asm_setup = test_data.int_regs.consume_register_pair(rd)
@@ -102,11 +104,15 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
                 bin_name = f"b{rd}_{bin_suffix}"
             else:
                 if is_vector:
-                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rd=rd)
+                    assert sew is not None
+                    lmul = get_base_lmul(instr_name, instr_type, sew)
+                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, rd=rd)
                 else:
                     params = generate_random_params(test_data, instr_type, rd=rd)
-                desc = f"{coverpoint} (Test destination rd = x{rd})"
-                bin_name = f"b{rd}"
+                sew_desc = f", sew={sew}" if sew is not None else ""
+                sew_bin = f"_sew{sew}" if sew is not None else ""
+                desc = f"{coverpoint} (Test destination rd = x{rd}{sew_desc})"
+                bin_name = f"b{rd}{sew_bin}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
@@ -121,6 +127,12 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 @add_coverpoint_generator("cp_rs1")
 def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for source register 1 coverpoints covering both matching and non-matching states."""
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    else:
+        sews = [None]
+
     if coverpoint == "cp_rs1":
         rs1_regs = list(range(test_data.int_regs.reg_count))
     elif coverpoint == "cp_rs1_nx0":
@@ -139,14 +151,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     equal_cases = [True, False] if is_zacas else [None]
     all_ones = get_zacas_mask(instr_name, instr_type, test_data)
 
-    is_vector = instr_name.lower().startswith("v")
-    if is_vector:
-        assert test_data.config.sew is not None, "SEW must be set for vector tests"
-        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-    else:
-        lmul = 1  # Placeholder to keep the type-checker happy
-
-    for rs1 in rs1_regs:
+    for rs1, sew in itertools.product(rs1_regs, sews):
         for equal_case in equal_cases:
             asm_setup = test_data.int_regs.consume_registers([rs1])
 
@@ -176,11 +181,15 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 bin_name = f"b{rs1}_{bin_suffix}"
             else:
                 if is_vector:
-                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rs1=rs1)
+                    assert sew is not None
+                    lmul = get_base_lmul(instr_name, instr_type, sew)
+                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, rs1=rs1)
                 else:
                     params = generate_random_params(test_data, instr_type, rs1=rs1)
-                desc = f"{coverpoint} (Test source rs1 = x{rs1})"
-                bin_name = f"b{rs1}"
+                sew_desc = f", sew={sew}" if sew is not None else ""
+                sew_bin = f"_sew{sew}" if sew is not None else ""
+                desc = f"{coverpoint} (Test source rs1 = x{rs1}{sew_desc})"
+                bin_name = f"b{rs1}{sew_bin}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             if asm_setup:
@@ -194,6 +203,12 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 @add_coverpoint_generator("cp_rs2")
 def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for source register 2 coverpoints covering both matching and non-matching states."""
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    else:
+        sews = [None]
+
     reg_is_pair = False
     if coverpoint == "cp_rs2":
         rs2_regs = list(range(test_data.int_regs.reg_count))
@@ -213,14 +228,7 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     equal_cases = [True, False] if is_zacas else [None]
     all_ones = get_zacas_mask(instr_name, instr_type, test_data)
 
-    is_vector = instr_name.lower().startswith("v")
-    if is_vector:
-        assert test_data.config.sew is not None, "SEW must be set for vector tests"
-        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-    else:
-        lmul = 1  # Placeholder to keep the type-checker happy
-
-    for rs2 in rs2_regs:
+    for rs2, sew in itertools.product(rs2_regs, sews):
         for equal_case in equal_cases:
             if reg_is_pair:
                 asm_setup = test_data.int_regs.consume_register_pair(rs2)
@@ -253,11 +261,15 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 bin_name = f"b{rs2}_{bin_suffix}"
             else:
                 if is_vector:
-                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rs2=rs2)
+                    assert sew is not None
+                    lmul = get_base_lmul(instr_name, instr_type, sew)
+                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, rs2=rs2)
                 else:
                     params = generate_random_params(test_data, instr_type, rs2=rs2)
-                desc = f"{coverpoint} (Test source rs2 = x{rs2})"
-                bin_name = f"b{rs2}"
+                sew_desc = f", sew={sew}" if sew is not None else ""
+                sew_bin = f"_sew{sew}" if sew is not None else ""
+                desc = f"{coverpoint} (Test source rs2 = x{rs2}{sew_desc})"
+                bin_name = f"b{rs2}{sew_bin}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 

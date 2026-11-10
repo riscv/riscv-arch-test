@@ -65,43 +65,9 @@ def _load_testgen_script(filename: str) -> ModuleType:
     return module
 
 
-def _load_ssstrictv_skip_combinations() -> dict[str, set[str]]:
-    """Load the SsstrictV (column, instruction) skip table as ``{column: {instrs}}``."""
-    module = _load_testgen_script("ssstrictv_skip_combinations.py")
-    raw: dict[str, list[str]] = module.SKIP_COMBINATIONS
-    return {col: set(instrs) for col, instrs in raw.items()}
-
-
 # Loaded once at import; both are large testgen modules consulted per instruction.
 _VECTOR_TESTGEN_COMMON = _load_testgen_script("vector_testgen_common.py")
 
-
-SSSTRICTV_SKIP_COMBINATIONS = _load_ssstrictv_skip_combinations()
-
-
-# Coverpoints whose template name depends on the SEW (element width).
-SEW_DEPENDENT_CPS = {
-    "cp_vs2_edges_f",
-    "cp_vs1_edges_f",
-    "cp_custom_shift_wv",
-    "cp_custom_shift_wx",
-    "cp_custom_shift_vv",
-    "cp_custom_shift_vx",
-    "cp_custom_shift_vi",
-    "cp_custom_vindexVV",
-    "cp_custom_vindexVX",
-    "cp_custom_vindexCorners",
-    "cr_vs2_vs1_edges_f",
-    "cp_fs1_edges_v",
-    "cr_vs2_fs1_edges",
-    "cr_vl_lmul",
-}
-
-# Coverpoints whose template name would otherwise match SEW_DEPENDENT_CPS, but are not
-SEW_INDEPENDENT_CPS = {
-    "cp_custom_vindexCorners_ei16",
-    "cp_custom_vindexVV_ei16",
-}
 
 # Vector extension prefixes used to identify vector architectures.
 VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv", "SsstrictV", "SsstrictZv")
@@ -110,30 +76,6 @@ VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv", "SsstrictV", "Ssstr
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
 PRIV_VECTOR_PREFIXES = ("ExceptionsZv", "ExceptionsV", "SsstrictV", "SsstrictZv")
-
-# Subset of vector prefixes that support widening instructions.
-VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")
-
-
-def _sew_variants_for(arch: str) -> list[str] | None:
-    """Return the SEW suffixes *arch* expands into (e.g. Vx → 8/16/32/64), or None.
-
-    A vector testplan is duplicated into one variant per returned SEW, replacing
-    the base entry.
-    """
-    if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb")):
-        return ["8", "16", "32", "64"]
-    if arch == "Vf":
-        # SEW=8 has only Zvfh's conversions between 8-bit integers and binary16
-        return ["8", "16", "32", "64"]
-    if "Vf" in arch:
-        return ["16", "32", "64"]  # SEW 8 is not supported for vector floating point
-    if "Zvknhb" in arch:
-        return ["32", "64"]
-    if "Zvbc" in arch:
-        return ["64"]
-    return None
-
 
 # Map instruction Type code → (has_vd_reg_group, has_vs1_reg_group, has_vs2_reg_group).
 # Used to suppress per-operand off_group / overlap crosses for instructions whose
@@ -328,8 +270,6 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, d
     keyed by that entry. Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
     Some extensions are expanded:
       - "I" is duplicated as "E"
-      - Vector extensions are expanded into per-SEW variants (e.g. Vx → Vx8/16/32/64);
-        see _sew_variants_for for the exact prefix → SEW mapping.
     """
     testplans: dict[str, Testplan] = {}
     extra_testplans: dict[str, dict[tuple[str, ...], Testplan]] = {}
@@ -337,7 +277,7 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, d
     for csv_path in testplan_dir.glob("*.csv"):
         arch = csv_path.stem
         groups = _parse_testplan_groups(csv_path)
-        tp = groups.pop(())
+        tp = groups.pop((), {})
         testplans[arch] = tp
         if groups:
             extra_testplans[arch] = groups
@@ -345,13 +285,6 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, d
         # Duplicate I testplan for E
         if arch == "I":
             testplans["E"] = tp
-
-        # Expand vector extensions into per-SEW variants, replacing the base entry
-        sew_variants = _sew_variants_for(arch)
-        if sew_variants is not None:
-            for sew in sew_variants:
-                testplans[f"{arch}{sew}"] = tp
-            del testplans[arch]
 
     return testplans, extra_testplans
 
@@ -455,42 +388,6 @@ def _any_xlen_exclusion(
 ) -> bool:
     """Check if any instruction lacks the given RV marker (meaning it's XLEN-specific)."""
     return any(rv_marker not in tp[key] for key in instr_keys)
-
-
-_VLS_PER_SEW_ARCHES = {"Vls8", "Vls16", "Vls32", "Vls64"}
-
-
-def _indexed_ls_eew(instr: str) -> int | None:
-    """Return the index EEW if *instr* is an indexed load/store, else None.
-
-    Matches vluxeiN, vsuxeiN, vloxsegMeiN, vsoxsegMeiN. Does NOT match
-    vrgatherei16 (not a load/store).
-    """
-    m = re.match(r"v[sl](ox|ux)(seg\d+)?ei(\d+)\.", instr)
-    return int(m.group(3)) if m else None
-
-
-def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
-    """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
-
-    Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}. Priv MisalignV / ExceptionsVls covergroups gate
-    behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
-    (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
-    EEW=64 indexed LS while other sims take a load access fault, producing
-    mismatched mcause in the signature). Vx (vrgather) never gates.
-    """
-    eew = _indexed_ls_eew(instr)
-    if not eew or eew <= 8:
-        return None
-    if arch in _VLS_PER_SEW_ARCHES:
-        return (eew, "MAXINDEXEEW_GE")
-    if arch in ("MisalignV", "ExceptionsVls"):
-        # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
-        if eew >= 64:
-            return (eew, "XLEN")
-        return None
-    return None
 
 
 def _ffLS_feasible(instr: str, sew: int) -> bool:
@@ -609,18 +506,6 @@ def _gen_instrs(
         sews = [None] if not is_vector else _get_test_sews(cps)
 
         for sew in sews:
-            # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
-            # Vls{N} arches, and by XLEN for priv MisalignV / ExceptionsVls.
-            # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
-            # takes illegal-instruction on EEW=64 indexed LS while other sims
-            # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
-            # never gates.
-            gate = _should_gate_maxindexeew(arch, instr)
-            if gate:
-                idx_eew, macro_prefix = gate
-                covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
-                init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
-
             # Instruction header
             if is_vector:
                 covergroup_lines.append(
@@ -663,10 +548,6 @@ def _gen_instrs(
 
             # Instruction footer
             covergroup_lines.append(customize_template(templates, "endgroup", name, instr))
-
-            if gate:
-                covergroup_lines.append("`endif\n")
-                init_lines.append("`endif\n")
 
     return "".join(covergroup_lines), "".join(init_lines)
 
@@ -726,16 +607,8 @@ def _gen_covergroup_samples(
                 lines.append(_gen_sample_arm(templates, instr, base_calls + guarded_calls))
             continue
 
-        gate = _should_gate_maxindexeew(arch, instr)
-        if gate:
-            idx_eew, macro_prefix = gate
-            lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
-
         call = customize_template(templates, template, arch, instr, effew=effew)
         lines.append(_gen_sample_arm(templates, instr, [call]))
-
-        if gate:
-            lines.append("`endif\n")
 
     return "".join(lines)
 
@@ -816,17 +689,23 @@ def _write_extension_files(
         all_sews = [8, 16, 32, 64]
         for sew in all_sews:
             relevant_instrs = [instr for instr, cps in all_rows.items() if sew in _get_test_sews(cps)]
+            relevant_extras = {
+                extensions: {instr: cps for instr, cps in group.items() if sew in _get_test_sews(cps)}
+                for extensions, group in extras.items()
+            }
 
             lines.append(customize_template(templates, "covergroup_case_header_vector", arch, effew=str(sew)))
             lines.append(
-                _gen_covergroup_samples(relevant_instrs, templates, tp, arch, True, True, extras=extras, effew=str(sew))
+                _gen_covergroup_samples(
+                    relevant_instrs, templates, tp, arch, True, True, extras=relevant_extras, effew=str(sew)
+                )
             )
             for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
                 if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
                     lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
                     lines.append(
                         _gen_covergroup_samples(
-                            relevant_instrs, templates, tp, arch, rv32, rv64, extras=extras, effew=str(sew)
+                            relevant_instrs, templates, tp, arch, rv32, rv64, extras=relevant_extras, effew=str(sew)
                         )
                     )
                     lines.append(customize_template(templates, "end", arch))
@@ -912,12 +791,7 @@ def _merge_instruction_testplans(
     instruction_formats: dict[tuple[str, str], list[str]],
     extra_testplans: dict[str, dict[tuple[str, ...], Testplan]],
 ) -> dict[tuple[str, str], list[str]]:
-    """Merge testplan and extra instruction formats into a single mapping with unique instruction entries.
-
-    Vector extensions are SEW-expanded (e.g. Vx → Vx8/16/32/64), so the same
-    instruction appears in multiple testplan variants.  Merging first-occurrence-wins
-    collapses those duplicates before the instruction sample file is generated.
-    """
+    """Merge testplan and extra instruction formats into a single mapping with unique instruction entries."""
     merged = dict(instruction_formats)
     for arch in sorted(test_plans.keys()):
         if arch == "E":
@@ -926,11 +800,20 @@ def _merge_instruction_testplans(
         for key in sorted(tp.keys()):
             if key not in merged:
                 merged[key] = tp[key]
+            elif "RV32" not in merged[key] and "RV32" in tp[key]:
+                merged[key].append("RV32")
+            elif "RV64" not in merged[key] and "RV64" in tp[key]:
+                merged[key].append("RV64")
     # Instructions that appear only in ExtraExtensions rows
     for arch in sorted(extra_testplans):
         for _, group in sorted(extra_testplans[arch].items()):
             for key in sorted(group):
-                merged.setdefault(key, group[key])
+                if key not in merged:
+                    merged[key] = group[key]
+                elif "RV32" not in merged[key] and "RV32" in group[key]:
+                    merged[key].append("RV32")
+                elif "RV64" not in merged[key] and "RV64" in group[key]:
+                    merged[key].append("RV64")
     return merged
 
 
@@ -987,17 +870,6 @@ def _plan_priv_jobs(
     priv_output_dir.mkdir(parents=True, exist_ok=True)
 
     priv_plans = {csv_path.stem: _parse_testplan_groups(csv_path)[()] for csv_path in priv_plan_dir.glob("*.csv")}
-
-    # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
-    # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
-    # per non-reserved vector-FP SEW). Per-instruction filtering is driven by
-    # the EFFEW{N} columns in the testplan via _get_sorted_instr_keys, so this
-    # block doesn't need to drop any rows itself.
-    if "ExceptionsVf" in priv_plans:
-        ex_vf_tp = priv_plans["ExceptionsVf"]
-        for effew in ("16", "32", "64"):
-            priv_plans[f"ExceptionsVf{effew}"] = ex_vf_tp
-        del priv_plans["ExceptionsVf"]
 
     if extensions != "all" or exclude != "":
         priv_plans = _filter_testplans(priv_plans, extensions, exclude)

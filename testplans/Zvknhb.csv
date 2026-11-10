@@ -1,4 +1,7 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_vd,cp_vs2,cp_vs1,cmp_vs1_vs2,cp_vs2_edges,cp_vs1_edges,cp_vd_edges,cr_vs2_vs1_edges,cr_vs2_vd_edges,cr_vs1_vd_edges,cr_vl_lmul,cr_vtype_agnostic,cp_custom
-vsha2ms.vv,VVV_SHA_EGS4,x,x,32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,nist_sha_32_64
-vsha2ch.vv,VVV_SHA_EGS4,x,x,32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,nist_sha_32_64
-vsha2cl.vv,VVV_SHA_EGS4,x,x,32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,egs4_32_64,nist_sha_32_64
+Instruction,Type,RV32,RV64,ExtraExtensions,cp_asm_count,cp_vd,cp_vs2,cp_vs1,cmp_vs1_vs2,cp_vs2_edges,cp_vs1_edges,cp_vd_edges,cr_vs2_vs1_edges,cr_vs2_vd_edges,cr_vs1_vd_edges,cr_vl_lmul,cr_vtype_agnostic,cp_custom
+vsha2ms.vv,VVV_SHA_EGS4,x,x,Zve32x,32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,nist_sha_32
+vsha2ms.vv,VVV_SHA_EGS4,x,x,Zve64x,64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,nist_sha_64
+vsha2ch.vv,VVV_SHA_EGS4,x,x,Zve32x,32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,nist_sha_32
+vsha2ch.vv,VVV_SHA_EGS4,x,x,Zve64x,64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,nist_sha_64
+vsha2cl.vv,VVV_SHA_EGS4,x,x,Zve32x,32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,egs4_32,nist_sha_32
+vsha2cl.vv,VVV_SHA_EGS4,x,x,Zve64x,64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,egs4_64,nist_sha_64

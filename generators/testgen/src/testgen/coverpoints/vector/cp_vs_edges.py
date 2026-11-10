@@ -9,7 +9,7 @@ import re
 
 from testgen.asm.vector_helpers import get_lmul_flag
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.helpers import make_and_register_edge_label
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews, make_and_register_edge_label
 from testgen.data.edges import VECTOR_EDGES
 from testgen.data.random import random_int
 from testgen.data.state import TestData, return_testcase_registers
@@ -28,13 +28,11 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     Generate edge values in any vector register. Supports integer, load-store, and fp edges.
     """
 
-    assert test_data.config.sew is not None, "SEW must be set for vector tests"
-    sew = test_data.config.sew
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     edges = VECTOR_EDGES.vx_edges
     suffix = ""
     vl = 1
-    lmul = get_base_lmul(instr_name, instr_type, sew)
     register = coverpoint.split("_")[1]
     ignore_vector_safety = False
 
@@ -42,64 +40,68 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     assert type_config.vector_data is not None, "Vector data must be provided for all vector instruction types"
     additional_no_overlap = {("vs3", "vs2")} if "store" in type_config.instruction_class else set()
 
-    if coverpoint.startswith(f"cp_{register}_edges_"):
-        suffix = coverpoint[len(f"cp_{register}_edges_") :]
-        if suffix.startswith("f"):
-            edges = VECTOR_EDGES.vf_edges
-        elif suffix.startswith("ls"):
-            edges = VECTOR_EDGES.vls_edges
-            info = parse_vector_instruction_info(instr_name, instr_type)
-            multiplier = info.get_size_multiplier(register, sew, type_config.vector_data)
-
-            suffix += f"_emul{get_lmul_flag(multiplier)}"
-        elif suffix == "eew1":
-            vl = 8
-        elif "subbytes_sm" in suffix:
-            raise NotImplementedError(
-                f"ShangMi Subbytes Edges Need to Go Through Their Own Generator, got {coverpoint}"
-            )
-        elif suffix == "egs4_subbytes":
-            edges = VECTOR_EDGES.v_aes_edges
-            lmul = 4
-            vl = 4
-            suffix += "_emul4"
-        elif suffix.startswith("egs"):
-            edges = VECTOR_EDGES.v_crypto_edges
-            egs_match = re.match(r"egs(\d+)", suffix)
-            assert egs_match is not None, f"EGS must be passed in the form egsN where N is the size, got {suffix}"
-            lmul = int(egs_match.group(1))
-            vl = int(egs_match.group(1))
-            suffix += f"_emul{lmul}"
-        elif suffix == "eew16" and register == "vs1":
-            suffix += f"_emul{get_lmul_flag(16 / test_data.config.sew)}"
-            ignore_vector_safety = True
-
     test_chunks = []
-    for edge in edges:
-        label = make_and_register_edge_label(register, edge, suffix, test_data)
 
-        presets = {f"{register}_val_pointer": label}
+    for sew in sews:
+        lmul = get_base_lmul(instr_name, instr_type, sew)
+        if coverpoint.startswith(f"cp_{register}_edges_"):
+            suffix = coverpoint[len(f"cp_{register}_edges_") :]
+            if suffix.startswith("f"):
+                edges = VECTOR_EDGES.vf_edges
+            elif suffix.startswith("ls"):
+                edges = VECTOR_EDGES.vls_edges
+                info = parse_vector_instruction_info(instr_name, instr_type)
+                multiplier = info.get_size_multiplier(register, sew, type_config.vector_data)
 
-        params = generate_random_vector_params(
-            test_data,
-            instr_name,
-            instr_type,
-            lmul=lmul,
-            vl=vl,
-            additional_no_overlap=additional_no_overlap,
-            masked=False,
-            suite="base",
-            ignore_vector_safety=ignore_vector_safety,
-            **presets,
-        )
+                suffix += f"_emul{get_lmul_flag(multiplier)}"
+            elif suffix == "eew1":
+                vl = 8
+            elif "subbytes_sm" in suffix:
+                raise NotImplementedError(
+                    f"ShangMi Subbytes Edges Need to Go Through Their Own Generator, got {coverpoint}"
+                )
+            elif suffix == "egs4_subbytes":
+                edges = VECTOR_EDGES.v_aes_edges
+                lmul = 4
+                vl = 4
+                suffix += "_emul4"
+            elif suffix.startswith("egs"):
+                edges = VECTOR_EDGES.v_crypto_edges
+                egs_match = re.match(r"egs(\d+)", suffix)
+                assert egs_match is not None, f"EGS must be passed in the form egsN where N is the size, got {suffix}"
+                lmul = int(egs_match.group(1))
+                vl = int(egs_match.group(1))
+                suffix += f"_emul{lmul}"
+            elif suffix == "eew16" and register == "vs1":
+                suffix += f"_emul{get_lmul_flag(16 / sew)}"
+                ignore_vector_safety = True
 
-        desc = f"cp_{register}_edges (Test source {register} value = {edge})"
-        bin_name = f"cp_{register}_edges_b{edge}"
+        for edge in edges:
+            label = make_and_register_edge_label(register, edge, suffix, test_data, sew)
 
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            presets = {f"{register}_val_pointer": label}
 
-        test_chunks.append(tc)
-        return_testcase_registers(test_data, params)
+            params = generate_random_vector_params(
+                test_data,
+                instr_name,
+                instr_type,
+                lmul,
+                sew,
+                vl=vl,
+                additional_no_overlap=additional_no_overlap,
+                masked=False,
+                suite="base",
+                ignore_vector_safety=ignore_vector_safety,
+                **presets,
+            )
+
+            desc = f"cp_{register}_edges (Test source {register} value = {edge}, sew={sew})"
+            bin_name = f"cp_{register}_edges_b{edge}_sew{sew}"
+
+            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+
+            test_chunks.append(tc)
+            return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -109,6 +111,9 @@ def make_vd_edges_egs4_subbytes(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Hit all SM4 S-Box Values for the VD register"""
+
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    assert sews == [32], f"ShangMi vector crypto instructions only run at SEW=32, got {sews}"
 
     test_chunks: list[TestChunk] = []
 
@@ -143,13 +148,14 @@ def make_vd_edges_egs4_subbytes(
         test_data.register_vector_data(vs2_val_ptr, 32, elements=vs2_val)
         test_data.register_vector_data(vd_val_ptr, 32, elements=vd_val)
 
-        desc = "Test source targeting value = " + hex(target)
-        bin_name = f"b{target:08x}"
+        desc = f"Test source targeting value = {target:#x} (sew=32)"
+        bin_name = f"b{target:08x}_sew32"
         params = generate_random_vector_params(
             test_data,
             instr_name,
             instr_type,
             lmul=4,
+            sew=32,
             additional_no_overlap={("vs2", "vd")},
             vs2_val_pointer=vs2_val_ptr,
             vd_val_pointer=vd_val_ptr,
@@ -168,6 +174,9 @@ def make_vs2_edges_egs4_subbytes(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Hit all SM4 S-Box Values for the VS2 register"""
+
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    assert sews == [32], f"ShangMi vector crypto instructions only run at SEW=32, got {sews}"
 
     test_chunks: list[TestChunk] = []
 
@@ -237,13 +246,14 @@ def make_vs2_edges_egs4_subbytes(
         vs2_val_ptr = f"vs_corner_sm_vs2_subbytes_{edges_num}_vs2"
         test_data.register_vector_data(vs2_val_ptr, 32, elements=vs2_val)
 
-        desc = "Test source targeting value = " + hex(target)
-        bin_name = f"b{target:08x}"
+        desc = f"Test source targeting value = {target:#x} (sew=32)"
+        bin_name = f"b{target:08x}_sew32"
         params = generate_random_vector_params(
             test_data,
             instr_name,
             instr_type,
             lmul=4,
+            sew=32,
             additional_no_overlap={("vs2", "vd")},
             vs2_val_pointer=vs2_val_ptr,
             immval=imm_val,

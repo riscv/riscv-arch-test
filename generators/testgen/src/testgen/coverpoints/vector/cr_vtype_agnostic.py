@@ -10,6 +10,7 @@ import random
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.params import PresetMask
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -25,8 +26,7 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
     """
     Generate length-suite tests crossing all tail and mask agnostic/undisturbed policies.
     """
-    sew = test_data.config.sew
-    assert sew is not None
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     eew = None
     max_emul = 8
@@ -52,50 +52,52 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
         if egs_match:
             egs = int(egs_match.group(1))
 
-    # Determine maximum supported lmul
-    if eew is None:
-        max_lmul = max_emul
-    elif eew / sew > 1:
-        max_lmul = max_emul / (eew / sew)
-    else:
-        max_lmul = max_emul
-
-    max_lmul = int(math.log2(max_lmul))
-    min_lmul = min(get_legal_lmuls(sew))
-
-    if egs != 1:
-        # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs
-        # We have to do this because it is chosen at random
-        min_lmul = max(min_lmul, math.ceil(math.log2(egs)))
-
-    lmul_exponents = list(range(min_lmul, max_lmul + 1))
-
     test_chunks = []
-    for vta in [0, 1]:
-        for vma in [0, 1]:
-            lmul = 2.0 ** random.choice(lmul_exponents)
+    for sew in sews:
+        # Determine maximum supported lmul
+        if eew is None:
+            max_lmul = max_emul
+        elif eew / sew > 1:
+            max_lmul = max_emul / (eew / sew)
+        else:
+            max_lmul = max_emul
 
-            params = generate_random_vector_params(
-                test_data,
-                instr_name,
-                instr_type,
-                lmul,
-                suite="length",
-                masked=masked,
-                additional_no_overlap=_NO_OVERLAP_MASKED,
-                maskval=PresetMask.VLMAX_M1_ONES if masked else None,
-                vl="random",
-                ta=vta,
-                ma=vma,
-                egs=egs,
-            )
+        max_lmul = int(math.log2(max_lmul))
+        min_lmul = min(get_legal_lmuls(sew))
 
-            desc = f"cr_vtype_agnostic (Test vta = {vta}, vma = {vma})"
-            bin_name = f"cp_vtype_agnostic_vta_{vta}_vma_{vma}"
+        if egs != 1:
+            # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs
+            # We have to do this because it is chosen at random
+            min_lmul = max(min_lmul, math.ceil(math.log2(egs)))
 
-            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        lmul_exponents = list(range(min_lmul, max_lmul + 1))
 
-            test_chunks.append(tc)
-            return_testcase_registers(test_data, params)
+        for vta in [0, 1]:
+            for vma in [0, 1]:
+                lmul = 2.0 ** random.choice(lmul_exponents)
+
+                params = generate_random_vector_params(
+                    test_data,
+                    instr_name,
+                    instr_type,
+                    lmul,
+                    sew,
+                    suite="length",
+                    masked=masked,
+                    additional_no_overlap=_NO_OVERLAP_MASKED,
+                    maskval=PresetMask.VLMAX_M1_ONES if masked else None,
+                    vl="random",
+                    ta=vta,
+                    ma=vma,
+                    egs=egs,
+                )
+
+                desc = f"cr_vtype_agnostic (Test vta = {vta}, vma = {vma}, sew={sew})"
+                bin_name = f"cp_vtype_agnostic_vta_{vta}_vma_{vma}_sew{sew}"
+
+                tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+
+                test_chunks.append(tc)
+                return_testcase_registers(test_data, params)
 
     return test_chunks

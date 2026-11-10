@@ -10,5 +10,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zvksh_vsm3c_vi_sew32_cg = new(); Zvksh_vsm3c_vi_sew32_cg.set_inst_name("obj_Zvksh_vsm3c_vi_sew32");
-    Zvksh_vsm3me_vv_sew32_cg = new(); Zvksh_vsm3me_vv_sew32_cg.set_inst_name("obj_Zvksh_vsm3me_vv_sew32");
+`ifdef ZVE32X_SUPPORTED
+    ZvkshZve32x_vsm3c_vi_sew32_cg = new(); ZvkshZve32x_vsm3c_vi_sew32_cg.set_inst_name("obj_ZvkshZve32x_vsm3c_vi_sew32");
+    ZvkshZve32x_vsm3me_vv_sew32_cg = new(); ZvkshZve32x_vsm3me_vv_sew32_cg.set_inst_name("obj_ZvkshZve32x_vsm3me_vv_sew32");
+`endif

@@ -4,7 +4,7 @@
 
 
     // Widening with vs2 == vs1: same register read at different EEWs, must trap
-    vtype_lmul_widen_src: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_widen_src: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins half = {7};
         bins one  = {0};
         bins two  = {1};

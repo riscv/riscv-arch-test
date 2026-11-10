@@ -246,6 +246,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
+- `RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD,STORE,FETCH,AMO,LRSC}` (default to `RVMODEL_ACCESS_FAULT_ADDRESS`; define one to override the address for that type of access, or define only some to test only those types of access)
 - `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
 - `RVMODEL_FENCEI` (can be omitted to use `fence.i`, or `nop` without Zifencei)
 - `RVMODEL_BOOT_TO_MMODE` (omit unless the DUT has a custom M-mode that cannot run the default M-mode boot)
@@ -356,9 +357,8 @@ The following variables can be set on the command line to customize the build (e
 | `EXCLUDE_EXTENSIONS`             | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                                                                                                  |
 | `CERTIFICATE`                    | _(empty)_                                       | Certificate name. Only include tests that apply to the specified certificate. Skips M-mode tests and tests for implemented extensions that are not part of the profile.                                                               |
 | `ENABLE_EXPERIMENTAL_EXTENSIONS` | _(empty)_                                       | Set to `True` to compile tests for unratified extensions. These tests are excluded by default.                                                                                                                                        |
-| `DEBUG`                          | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`.                                                                      |
+| `DEBUG`                          | _(empty)_                                       | Set to `True` to enable debug output (ELF objdumps, trace files, and trap report). Significantly slows down ELF generation.                                                                                                           |
 | `VERBOSE`                        | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                                                                                           |
-| `FAST`                           | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                                                                                       |
 | `CLEAN_INTERMEDIATES`            | _(empty)_                                       | Set to `True` to delete each config's intermediate `build/` directory (`.sig.elf`/`.sig`/`.results`/logs) after a successful build, keeping only the ELFs. Saves disk space (useful for CI caching). Mutually exclusive with `DEBUG`. |
 | `JOBS`                           | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                                                                                              |
 
@@ -393,7 +393,7 @@ For any test that fails, additional debug information will be printed including:
 - Expected value
 - Actual value
 
-Debugging a failing test typically involves examining the object dump (.elf.objdump) file to understand the failing test. Search for the failing PC and review the test. If the actual value appears to be wrong, it is likely a bug in the DUT. If the expected value appears to be wrong, it is likely due to a configuration mismatch (see below). If it is not a configuration mismatch, then it may be a bug in the ACTs themselves, such as testing a feature whose behavior should be UNSPECIFIED and thus legitimately different between the DUT and reference model. If you believe there is a bug in the ACTs themselves, please [open an issue](https://github.com/riscv/riscv-arch-test/issues/new).
+Debugging a failing test typically involves examining the object dump (.elf.objdump) file to understand the failing test. Rebuild with `DEBUG=True` to generate it. Search for the failing PC and review the test. If the actual value appears to be wrong, it is likely a bug in the DUT. If the expected value appears to be wrong, it is likely due to a configuration mismatch (see below). If it is not a configuration mismatch, then it may be a bug in the ACTs themselves, such as testing a feature whose behavior should be UNSPECIFIED and thus legitimately different between the DUT and reference model. If you believe there is a bug in the ACTs themselves, please [open an issue](https://github.com/riscv/riscv-arch-test/issues/new).
 
 A common source of errors is configuration mismatches, so ensure that:
 
@@ -418,10 +418,11 @@ Each of these repositories is maintained by volunteers. If you are seeking comme
 
 If the standard debug information is insufficient, use the `DEBUG=True` flag to generate additional artifacts alongside each test that aid in debugging:
 
+- **Object dumps** (`.elf.objdump` in `$WORKDIR/<config_name>/elfs` and `.sig.elf.objdump` in `$WORKDIR/<config_name>/build`) — Disassembly, symbol table, and section contents of the final and signature-generation ELFs.
 - **Sail trace files** (`.sig.log`) — Instruction-by-instruction trace from the Sail reference model. Useful for understanding the expected execution flow.
 - **Trap report** (`.sig.trap_report`) — Human-readable summary of every trap recorded in the trap signature region. Shows cause, mode, xepc, xtval, and status bits for each trap.
 
-These files are generated in the `$WORKDIR/<config_name>/build` directory alongside the `.sig` and `.sig.elf` files. Note that `DEBUG=True` significantly slows down ELF generation and is mutually exclusive with `FAST`. It is recommended to only enable `DEBUG` for an individual extension that is failing (use the `EXTENSIONS` variable).
+The trace files and trap reports are generated in the `$WORKDIR/<config_name>/build` directory alongside the `.sig` and `.sig.elf` files. Note that `DEBUG=True` significantly slows down ELF generation. It is recommended to only enable `DEBUG` for an individual extension that is failing (use the `EXTENSIONS` variable).
 
 ## Contributing
 

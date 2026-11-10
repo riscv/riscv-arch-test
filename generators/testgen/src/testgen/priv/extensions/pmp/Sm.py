@@ -240,6 +240,80 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
 
 
 # ---------------------------------------------------------------------------
+# cfg_A_unsupported: an unsupported A mode is not stored
+# ---------------------------------------------------------------------------
+
+
+def _bytes(value: int, xlen: int) -> str:
+    """``value`` in every byte of an XLEN-bit register."""
+    return hex(int.from_bytes(bytes([value]) * (xlen // 8), "little"))
+
+
+def _li_xlen(reg: int, value: int) -> list[str]:
+    """Load ``value`` repeated in every byte of ``reg``."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"LI(x{reg}, {_bytes(value, 64)})",
+        "#else",
+        f"LI(x{reg}, {_bytes(value, 32)})",
+        "#endif",
+    ]
+
+
+def _make_a_unsupported_chunk(test_data: TestData, name: str, amode: int) -> TestChunk:
+    """Write the unsupported address-matching mode ``name`` (A = ``amode``) into every pmpcfg byte."""
+    chunk = test_data.begin_test_chunk(f"Sm_cfg_A_{name.lower()}_unsupported")
+    chunk.section_header = comment_banner(
+        f"cp_cfg_A_{name.lower()}_unsupported",
+        f"{name} is not supported. Write every byte of every pmpcfg CSR with L = 0, XWR = 111 and A = OFF,\n"
+        f"then with the same bytes and A = {name}, and read the CSR back. A is WARL, so it may read back\n"
+        f"any supported mode: the test records only whether some byte reads A = {name}. The other bits\n"
+        "are checked exactly; they read XWR = 111 whether the second write updates them or is ignored.",
+    )
+    chunk.code.extend(zero_pmp_regs())
+    xwr = 0x07  # L = 0, A = OFF, XWR = 111
+    rd = CSR_CHECK_REG
+
+    def csr_checks(csrs: tuple[int, ...]) -> None:
+        for csr in csrs:
+            chunk.code.extend(
+                [
+                    "",
+                    f"// pmpcfg{csr}: XWR = 111 with A = OFF, then with A = {name}",
+                    *_li_xlen(13, xwr),
+                    f"csrw pmpcfg{csr}, x13",
+                    *_li_xlen(13, xwr | amode),
+                    *_li_xlen(14, 0xFF & ~0x18),
+                    test_data.add_testcase(f"pmpcfg{csr}", f"cp_cfg_A_{name.lower()}_unsupported", "PMP_Sm_cg"),
+                    f"csrrw x0, pmpcfg{csr}, x13",
+                    f"csrr x{rd}, pmpcfg{csr}",
+                    f"and x14, x{rd}, x14  // every bit but A, checked exactly",
+                    write_sigupd(14, test_data),
+                    f"xor x{rd}, x{rd}, x13  // the A bits of a byte become 00 where it reads A = {name}",
+                    *_li_xlen(15, 0x18),
+                    f"and x{rd}, x{rd}, x15",
+                    f"srli x15, x{rd}, 1",
+                    f"or x{rd}, x{rd}, x15",
+                    *_li_xlen(15, 0x08),
+                    f"and x{rd}, x{rd}, x15",
+                    f"xor x{rd}, x{rd}, x15  // 0 unless some byte reads A = {name}",
+                    write_sigupd(rd, test_data),
+                    f"csrw pmpcfg{csr}, x0",
+                ]
+            )
+
+    csr_checks((0, 2))
+    chunk.code.append("#if __riscv_xlen == 32")
+    csr_checks((1, 3))
+    chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64"])
+    csr_checks((4, 6, 8, 10, 12, 14))
+    chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
+    csr_checks((5, 7, 9, 11, 13, 15))
+    chunk.code.append("#endif")
+    return test_data.end_test_chunk()
+
+
+# ---------------------------------------------------------------------------
 # cfg_A_off_all: A=OFF never matches
 # ---------------------------------------------------------------------------
 
@@ -1041,6 +1115,27 @@ def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
         _make_amode_all_chunk(test_data, "na4"),
         _make_legal_chunk(test_data, "na4"),
     ]
+
+
+# NA4 is not selectable when G >= 1, so PMP_NA4_SUPPORTED is false there too.
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: false"],
+)
+def make_pmpsm_no_na4(test_data: TestData) -> list[TestChunk]:
+    return [_make_a_unsupported_chunk(test_data, "NA4", 0x10)]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: false"],
+)
+def make_pmpsm_no_tor(test_data: TestData) -> list[TestChunk]:
+    return [_make_a_unsupported_chunk(test_data, "TOR", 0x08)]
 
 
 @add_priv_test_generator(

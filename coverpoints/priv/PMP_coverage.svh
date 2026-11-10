@@ -1377,6 +1377,31 @@ covergroup PMP_Sm_cg with function sample(
     `endif
   }
   `endif
+
+  legal_pmpcfg_csrs: coverpoint ins.current.insn[31:20] {   // Every pmpcfg CSR of this XLEN
+    bins pmpcfg0   = {CSR_PMPCFG0};
+    bins pmpcfg2   = {CSR_PMPCFG2};
+    `ifdef UDB_MXLEN_32
+      bins pmpcfg1   = {CSR_PMPCFG1};
+      bins pmpcfg3   = {CSR_PMPCFG3};
+    `endif
+    `ifdef UDB_NUM_PMP_ENTRIES_64
+      bins pmpcfg4   = {CSR_PMPCFG4};
+      bins pmpcfg6   = {CSR_PMPCFG6};
+      bins pmpcfg8   = {CSR_PMPCFG8};
+      bins pmpcfg10  = {CSR_PMPCFG10};
+      bins pmpcfg12  = {CSR_PMPCFG12};
+      bins pmpcfg14  = {CSR_PMPCFG14};
+      `ifdef UDB_MXLEN_32
+        bins pmpcfg5   = {CSR_PMPCFG5};
+        bins pmpcfg7   = {CSR_PMPCFG7};
+        bins pmpcfg9   = {CSR_PMPCFG9};
+        bins pmpcfg11  = {CSR_PMPCFG11};
+        bins pmpcfg13  = {CSR_PMPCFG13};
+        bins pmpcfg15  = {CSR_PMPCFG15};
+      `endif
+    `endif
+  }
 //-------------------------------------------------------
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
@@ -1544,6 +1569,31 @@ covergroup PMP_Sm_cg with function sample(
   cp_cfg_A_all_even: cross priv_mode_m, rs1_val_for_pmpcfg_A, csrrw, legal_pmpcfg_entries_even ;
   `ifdef UDB_MXLEN_32
     cp_cfg_A_all_odd: cross priv_mode_m, rs1_val_for_pmpcfg_A, csrrw, legal_pmpcfg_entries_odd ;
+  `endif
+
+  // cp_cfg_A_na4_unsupported and cp_cfg_A_tor_unsupported: csrrw of each pmpcfg CSR with L = 0, XWR = 111
+  // and an unsupported A in every byte
+  `ifndef UDB_PMP_NA4_SUPPORTED
+    rs1_val_pmpcfg_na4_xwr: coverpoint ins.current.rs1_val {
+      `ifdef UDB_MXLEN_32
+        bins na4_xwr = {32'h17171717};
+      `endif
+      `ifdef UDB_MXLEN_64
+        bins na4_xwr = {64'h1717171717171717};
+      `endif
+    }
+    cp_cfg_A_na4_unsupported: cross priv_mode_m, rs1_val_pmpcfg_na4_xwr, csrrw, legal_pmpcfg_csrs ;
+  `endif
+  `ifndef UDB_PMP_TOR_SUPPORTED
+    rs1_val_pmpcfg_tor_xwr: coverpoint ins.current.rs1_val {
+      `ifdef UDB_MXLEN_32
+        bins tor_xwr = {32'h0f0f0f0f};
+      `endif
+      `ifdef UDB_MXLEN_64
+        bins tor_xwr = {64'h0f0f0f0f0f0f0f0f};
+      `endif
+    }
+    cp_cfg_A_tor_unsupported: cross priv_mode_m, rs1_val_pmpcfg_tor_xwr, csrrw, legal_pmpcfg_csrs ;
   `endif
 
   cp_cfg_A_OFF_all_read : cross priv_mode_m, pmpcfgA_OFF, read_instr_lw, addr_in_region;

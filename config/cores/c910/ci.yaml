@@ -62,6 +62,8 @@ exclude_extensions:
   # minstret counts ECALL, which does not retire (rtu/rtl/ct_rtu_retire.v#L1768-L1769).
   - S_Zicntr
   - U_Zicntr
+  # pmpcfg.A stores NA4, which is not selectable with G = 10 (pmp/rtl/ct_pmp_regs.v#L162).
+  - PMP_Sm_cfg_A_na4_unsupported
 
 apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache patch"
 install_script: ".github/scripts/install-c910.sh"

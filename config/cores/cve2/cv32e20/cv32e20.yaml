@@ -16,6 +16,7 @@ implemented_extensions:
   - { name: Zmmul, version: "= 1.0.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Sm, version: "= 1.12.0" }
@@ -124,16 +125,16 @@ params:
       false,
       false, # 24..31
     ]
-  HPM_COUNTER3_WIDTH: 64
-  HPM_COUNTER4_WIDTH: 64
-  HPM_COUNTER5_WIDTH: 64
-  HPM_COUNTER6_WIDTH: 64
-  HPM_COUNTER7_WIDTH: 64
-  HPM_COUNTER8_WIDTH: 64
-  HPM_COUNTER9_WIDTH: 64
-  HPM_COUNTER10_WIDTH: 64
-  HPM_COUNTER11_WIDTH: 64
-  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER3_WIDTH: 40
+  HPM_COUNTER4_WIDTH: 40
+  HPM_COUNTER5_WIDTH: 40
+  HPM_COUNTER6_WIDTH: 40
+  HPM_COUNTER7_WIDTH: 40
+  HPM_COUNTER8_WIDTH: 40
+  HPM_COUNTER9_WIDTH: 40
+  HPM_COUNTER10_WIDTH: 40
+  HPM_COUNTER11_WIDTH: 40
+  HPM_COUNTER12_WIDTH: 40
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
@@ -210,10 +211,10 @@ params:
 # Device addresses and timings baked into test objects. The objects are built
 # without rvmodel_macros.h, and the reference model needs the same values.
 dut_environment:
+  # CLINT machine timer in mm_ram at Sail's CLINT base (matches sail_macros.h).
   RVMODEL_MTIME_ADDRESS: 0x0200BFF8
   RVMODEL_MTIMECMP_ADDRESS: 0x02004000
   RVMODEL_INTERRUPT_LATENCY: 10
   RVMODEL_TIMER_INT_SOON_DELAY: 10000
-  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
   STANDARD_SM_SUPPORTED: true
   # Not set: RVMODEL_ACCESS_FAULT_ADDRESS. This DUT does not generate access faults.

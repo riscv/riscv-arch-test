@@ -145,12 +145,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.14.1 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.16 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.16/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 > [!NOTE]
@@ -242,12 +242,15 @@ dut_environment:
   RVMODEL_MTIMECMP_ADDRESS: 0x02004000
   RVMODEL_INTERRUPT_LATENCY: 10
   RVMODEL_TIMER_INT_SOON_DELAY: 1000
-  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
+  RVMODEL_HPM_COUNTER: 3
+  RVMODEL_MHPMEVENT_VAL: 0x1
   STANDARD_SM_SUPPORTED: true
 ```
 
 - `RVMODEL_INTERRUPT_LATENCY` and `RVMODEL_TIMER_INT_SOON_DELAY` are required.
-- Omit `RVMODEL_ACCESS_FAULT_ADDRESS` if the DUT does not generate some/all access faults, `RVMODEL_MTIME_ADDRESS`/`RVMODEL_MTIMECMP_ADDRESS` if MTIME is not implemented, and `RVMODEL_MSIP_ADDRESS` if MSIP is not memory-mapped (required only for Sm version 1.13 and above). `RVMODEL_MAX_CYCLES_PER_TIMER_TICK` defaults to 1.
+- Omit `RVMODEL_ACCESS_FAULT_ADDRESS` if the DUT does not generate some/all access faults. `RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD,STORE,FETCH,AMO,LRSC}` default to it; set one to use a different address for that type of access, or set only some to test only those types.
+- `RVMODEL_MTIME_ADDRESS` is required if machine timer interrupts are implemented, or if Sstc is implemented without Zicntr. `RVMODEL_MTIMECMP_ADDRESS` is required if machine timer interrupts are implemented. Omit `RVMODEL_MSIP_ADDRESS` if MSIP is not memory-mapped (required only for Sm version 1.13 and above).
+- `RVMODEL_HPM_COUNTER` (3 to 31) and `RVMODEL_MHPMEVENT_VAL` are required with Sscofpmf: the counter the tests use, and the `mhpmevent` selector that makes `RVMODEL_MHPMEVENT_CODE` count.
 - `STANDARD_SM_SUPPORTED: true` declares a standard M-mode: the framework installs its trap handlers and boots through M-mode. Leave it out for a DUT without standard M-mode, such as an RVI20 core.
 - `INVISIBLE_TRAP_HANDLER: true` declares that `rvmodel_macros.h` defines `RVMODEL_INVISIBLE_TRAP_HANDLER`.
 
@@ -275,13 +278,14 @@ Only the driver library is built from `rvmodel_macros.h`: the framework assemble
 - `RVMODEL_BOOT` (can be omitted if not needed)
 - `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions; when defined, set `INVISIBLE_TRAP_HANDLER: true` in the `dut_environment` block)
 
-**Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. _M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the _M flavor is identical to the regular flavor, it does not need to be defined.
+**Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. \_M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the \_M flavor is identical to the regular flavor, it does not need to be defined.
 
 - `RVMODEL_SET_MEXT_INT(_R1, _R2)`
 - `RVMODEL_SET_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_MSW_INT(_R1, _R2)`
+- `RVMODEL_SET_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SEXT_INT(_R1, _R2)`
@@ -289,10 +293,19 @@ Only the driver library is built from `rvmodel_macros.h`: the framework assemble
 - `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SSW_INT(_R1, _R2)`
+- `RVMODEL_SET_SSW_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_SSW_INT_M(_R1, _R2)`
+- `RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)` (sets `hgeip` bit \_GEI, a register; required when H is supported with GEILEN > 0)
+- `RVMODEL_SET_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
+- `RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)` (clears `hgeip` bit \_GEI; required with `RVMODEL_SET_GUEST_EXT_INT`)
+- `RVMODEL_CLR_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
 
 `RVMODEL_FENCEI` and `RVMODEL_BOOT_TO_MMODE`/`SMODE`/`UMODE` are not supported: they would expand inside the test object, which the reference model also runs. Put DUT-specific boot code in `RVMODEL_BOOT`, and leave `STANDARD_SM_SUPPORTED` out of the `dut_environment` block if the DUT has no standard M-mode.
+
+**Sscofpmf Macro**: Required if Sscofpmf is supported. The counter and its event selector (`RVMODEL_HPM_COUNTER`, `RVMODEL_MHPMEVENT_VAL`) are values in the `dut_environment` block.
+
+- `RVMODEL_MHPMEVENT_CODE(_R1, _R2)` (makes the selected counter count in the current privilege mode; \_R1 holds a scratch address the code may load from)
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).
 
@@ -309,6 +322,10 @@ A linker script is needed to place the code and data regions in the appropriate 
 - There must be `.rodata`, `.data`, and `.bss` output sections. The `.bss` section must define `__bss_start` and `__bss_end` for C test startup.
 - The linker script must define `__stack_bottom` and `__stack_top`, using `__stack_size * __num_harts` bytes of stack space.
 - There must be a `.text.rvmodel` output section for the driver and other DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel . : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) } > ram`). This **must** follow the data and stack sections so that the driver, which differs in size between the DUT and the reference model, does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
+- On DUTs that support virtual memory, the test image must lie in a range the virtual memory tests leave mapped. 0x8000_0000 works for both RV32 and RV64. The safe ranges are:
+  - RV32: 0x0140_0000–0x03FF_FFFF, 0x0440_0000–0x2FFF_FFFF, 0x3040_0000–0x8FFF_FFFF and 0x90C0_0000–0xFFBF_FFFF.
+  - RV64: 0x4000_0000–0xBFFF_FFFF and 0x2_0000_0000–0x3F_FFFF_FFFF. The image must fit in the Sv39 address space, even on Sv48 or Sv57 harts.
+  - The image must also fit inside one aligned 4 MiB (RV32) or 1 GiB (RV64) superpage. For the reasons, see the Linker Script section of the [CTP](./docs/ctp/src/abstraction.adoc#linker-script).
 
 For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). Most users should only need to modify the variables at the top of the sample linker script, before the `/* Most users should not need to modify anything below this line. */` comment:
 
@@ -352,7 +369,7 @@ The following variables can be set on the command line to customize the build (e
 
 | Variable                         | Default                                         | Description                                                                                                                                                                                                                                       |
 | -------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CONFIG_FILES`                   | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                                                                                                               |
+| `CONFIG_FILES`                   | _(required)_                                    | Space-separated list of `test_config.yaml` paths to build ELFs for. `make coverage` defaults to the Sail rv32/rv64 max configs when unset.                                                                                                        |
 | `RVMODEL_DIR`                    | _(empty — each config's `dut_include_dir`)_     | Directory containing the DUT's `rvmodel_macros.h`. Without one, the build stops at the certified objects.                                                                                                                                         |
 | `KIT_DIR`                        | `$WORKDIR/kits`                                 | Output directory for `make kit`.                                                                                                                                                                                                                  |
 | `WORKDIR`                        | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                                                                                                         |
@@ -360,9 +377,8 @@ The following variables can be set on the command line to customize the build (e
 | `EXCLUDE_EXTENSIONS`             | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                                                                                                              |
 | `CERTIFICATE`                    | _(empty)_                                       | Certificate name. Only include tests that apply to the specified certificate. Skips M-mode tests and tests for implemented extensions that are not part of the profile.                                                                           |
 | `ENABLE_EXPERIMENTAL_EXTENSIONS` | _(empty)_                                       | Set to `True` to compile tests for unratified extensions. These tests are excluded by default.                                                                                                                                                    |
-| `DEBUG`                          | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`.                                                                                  |
+| `DEBUG`                          | _(empty)_                                       | Set to `True` to enable debug output (ELF objdumps, trace files, and trap report). Significantly slows down ELF generation.                                                                                                                       |
 | `VERBOSE`                        | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                                                                                                       |
-| `FAST`                           | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                                                                                                   |
 | `CLEAN_INTERMEDIATES`            | _(empty)_                                       | Set to `True` to delete each config's intermediate `build/` directory (`.sig.elf`/`.sig`/`.results`/logs) after a successful build, keeping only the objects and ELFs. Saves disk space (useful for CI caching). Mutually exclusive with `DEBUG`. |
 | `JOBS`                           | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                                                                                                          |
 
@@ -441,7 +457,7 @@ For any test that fails, additional debug information will be printed including:
 - Expected value
 - Actual value
 
-Debugging a failing test typically involves examining the object dump (.elf.objdump) file to understand the failing test. Search for the failing PC and review the test. If the actual value appears to be wrong, it is likely a bug in the DUT. If the expected value appears to be wrong, it is likely due to a configuration mismatch (see below). If it is not a configuration mismatch, then it may be a bug in the ACTs themselves, such as testing a feature whose behavior should be UNSPECIFIED and thus legitimately different between the DUT and reference model. If you believe there is a bug in the ACTs themselves, please [open an issue](https://github.com/riscv/riscv-arch-test/issues/new).
+Debugging a failing test typically involves examining the object dump (.elf.objdump) file to understand the failing test. Rebuild with `DEBUG=True` to generate it. Search for the failing PC and review the test. If the actual value appears to be wrong, it is likely a bug in the DUT. If the expected value appears to be wrong, it is likely due to a configuration mismatch (see below). If it is not a configuration mismatch, then it may be a bug in the ACTs themselves, such as testing a feature whose behavior should be UNSPECIFIED and thus legitimately different between the DUT and reference model. If you believe there is a bug in the ACTs themselves, please [open an issue](https://github.com/riscv/riscv-arch-test/issues/new).
 
 A common source of errors is configuration mismatches, so ensure that:
 
@@ -466,10 +482,11 @@ Each of these repositories is maintained by volunteers. If you are seeking comme
 
 If the standard debug information is insufficient, use the `DEBUG=True` flag to generate additional artifacts alongside each test that aid in debugging:
 
+- **Object dumps** (`.elf.objdump` in `$WORKDIR/<config_name>/elfs` and `.sig.elf.objdump` in `$WORKDIR/<config_name>/build`) — Disassembly, symbol table, and section contents of the final and signature-generation ELFs.
 - **Sail trace files** (`.sig.log`) — Instruction-by-instruction trace from the Sail reference model. Useful for understanding the expected execution flow.
 - **Trap report** (`.sig.trap_report`) — Human-readable summary of every trap recorded in the trap signature region. Shows cause, mode, xepc, xtval, and status bits for each trap.
 
-These files are generated in the `$WORKDIR/<config_name>/build` directory alongside the `.sig` and `.sig.elf` files. Note that `DEBUG=True` significantly slows down ELF generation and is mutually exclusive with `FAST`. It is recommended to only enable `DEBUG` for an individual extension that is failing (use the `EXTENSIONS` variable).
+The trace files and trap reports are generated in the `$WORKDIR/<config_name>/build` directory alongside the `.sig` and `.sig.elf` files. Note that `DEBUG=True` significantly slows down ELF generation. It is recommended to only enable `DEBUG` for an individual extension that is failing (use the `EXTENSIONS` variable).
 
 ## Contributing
 

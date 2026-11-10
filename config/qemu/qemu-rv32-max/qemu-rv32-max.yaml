@@ -49,7 +49,6 @@ implemented_extensions:
   - { name: Sstvecd, version: "= 1.0.0" }
   - { name: Sstvecv, version: "= 1.0.0" }
   - { name: Ssu32xl, version: "= 1.0.0" }
-  - { name: Ssube, version: "= 1.0.0" }
   - { name: Sv32, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
@@ -144,11 +143,147 @@ implemented_extensions:
   - { name: Zvl128b, version: "= 1.0.0" }
 
 params:
+  # Trap delegation: the writable medeleg and mideleg bits (sail.json base.medeleg and
+  # base.mideleg delegatable_bits; with H, VSSI, VSTI, VSEI and SGEI are always delegated)
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
-  MISALIGNED_AMO: false
+  MISALIGNED_AMO: true
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
-  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_FAIL_ON_VA_SYNONYM: true
   LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
   LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
@@ -165,7 +300,7 @@ params:
   # C params
   MUTABLE_MISA_C: false
   # B params
-  MUTABLE_MISA_B: true
+  MUTABLE_MISA_B: false
   # V params
   #MUTABLE_MISA_V: false
   #HW_MSTATUS_VS_DIRTY_UPDATE: precise
@@ -177,7 +312,7 @@ params:
   # U params
   WFI_U_MODE: false
   MUTABLE_MISA_U: false
-  U_MODE_ENDIANNESS: dynamic
+  U_MODE_ENDIANNESS: little
   UXLEN: [32]
   TRAP_ON_ECALL_FROM_U: true
   # S params
@@ -186,7 +321,7 @@ params:
   STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 9
-  S_MODE_ENDIANNESS: dynamic
+  S_MODE_ENDIANNESS: little
   SXLEN: [32]
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
@@ -247,21 +382,20 @@ params:
   MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x24
-  MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0x100
-  VENDOR_ID_BANK: 0xC
-  VENDOR_ID_OFFSET: 0x2
+  ARCH_ID_VALUE: 42
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
-  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+  MISALIGNED_SPLIT_STRATEGY: custom
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
   TRAP_ON_UNIMPLEMENTED_CSR: true
@@ -278,14 +412,14 @@ params:
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3
   PHYS_ADDR_WIDTH: 34
-  M_MODE_ENDIANNESS: dynamic
+  M_MODE_ENDIANNESS: little
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  NUM_PMP_ENTRIES: 16
+  NUM_PMP_ENTRIES: 64
   PMP_GRANULARITY: 2
   NUM_USABLE_PMP_ENTRIES: 16
   PMP_NA4_SUPPORTED: true
@@ -437,15 +571,15 @@ params:
   SEW_MIN: 8
   SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
   VILL_SET_ON_RESERVED_VTYPE: true
-  RESERVED_VSET_X0X0_VILL_SET: "always"
-  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
+  RESERVED_VSET_X0X0_VILL_SET: never
+  RESERVED_VSET_X0X0_VLMAX_CHANGE: never
   VECTOR_LS_INDEX_MAX_EEW: "XLEN"
   VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
   VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
   VECTOR_LS_MISALIGNED_LEGAL: true
   VECTOR_LOAD_PAST_TRAP: false
   VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
-  VECTOR_LS_SEG_PARTIAL_ACCESS: false
+  VECTOR_LS_SEG_PARTIAL_ACCESS: true
   LEGAL_VSTART: "1_stride"
   VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
   VSSTATUS_VS_EXISTS: true
@@ -456,9 +590,6 @@ params:
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
-  VSEI_INTR_IMPL: false
-  VSSI_INTR_IMPL: false
-  VSTI_INTR_IMPL: true
   MUTABLE_MISA_H: false
   VSXLEN: [32]
   VUXLEN: [32]
@@ -470,7 +601,8 @@ params:
   VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 31
+  # GEILEN is 7: run_cmd.txt selects aia=aplic-imsic,aia-guests=7, the most QEMU's virt machine allows
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 7
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
@@ -490,19 +622,21 @@ params:
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
   SV32_VSMODE_TRANSLATION: true
   SV32X4_TRANSLATION: true
+  # QEMU writes the transformed instruction for load, store and AMO faults (riscv_transformed_insn in
+  # target/riscv/tcg/cpu_helper.c), except zero for CBOs, which these parameters cannot express
   TINST_VALUE_ON_BREAKPOINT: "always zero"
   TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always transformed standard instruction"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_MCALL: "always zero"
   TINST_VALUE_ON_SCALL: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always transformed standard instruction"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_UCALL: "always zero"
   TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
   TINST_VALUE_ON_VSCALL: "always zero"
@@ -551,18 +685,18 @@ params:
   REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   # Sdtrig params
-  DBG_HCONTEXT_WIDTH: 14
+  DBG_HCONTEXT_WIDTH: 7
   DBG_SCONTEXT_WIDTH: 32
   DCSR_MPRVEN_TYPE: rw
   DCSR_STEPIE_TYPE: rw
   DCSR_STOPCOUNT_TYPE: rw
   DCSR_STOPTIME_TYPE: rw
-  HCONTEXT_AVAILABLE: true
-  HSTATEEN_CONTEXT_TYPE: rw
-  MCONTEXT_AVAILABLE: true
+  HCONTEXT_IMPLEMENTED: false
+  HSTATEEN_CONTEXT_TYPE: read-only-0
+  MCONTEXT_IMPLEMENTED: true
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
-  MSTATEEN_CONTEXT_TYPE: rw
+  MSTATEEN_CONTEXT_TYPE: read-only-0
   # Csrind params
   HSTATEEN_CSRIND_TYPE: rw
   MSTATEEN_CSRIND_TYPE: rw
@@ -592,6 +726,37 @@ params:
   MCTRCTL_TRETINH_IMPLEMENTED: true
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true
+  # Sdtrig and Zkr seed parameters added for riscv-unified-db#2069 (values from sail.json)
+  SSEED_READ_ONLY_ZERO: false
+  USEED_READ_ONLY_ZERO: false
+  SDTRIG_NUM_TRIGGERS: 2
+  SDTRIG_BREAKPOINT_REENTRANCY: No_reentrancy_support
+  TCONTROL_IMPLEMENTED: false
+  TDATA2_IMPLEMENTED: true
+  TDATA3_IMPLEMENTED: true
+  SDTRIG_M_WRITABLE: true
+  SDTRIG_S_WRITABLE: true
+  SDTRIG_U_WRITABLE: true
+  SDTRIG_VS_WRITABLE: true
+  SDTRIG_VU_WRITABLE: true
+  SCONTEXT_IMPLEMENTED: false
+  SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS: [true, true]
+  SDTRIG_ICOUNT_SUPPORTED_TRIGGERS: [false, false]
+  SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS: [false, false]
+  SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS: [false, false]
+  SDTRIG_MCONTROL6_MASKMAX6: 31
+  SDTRIG_MAX_CHAIN_LENGTH: 1
+  SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES: [0]
+  SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES: [0, 1, 2, 3, 5]
+  SDTRIG_MCONTROL6_SELECT_WRITABLE: false
+  SDTRIG_MCONTROL6_EXECUTE_WRITABLE: true
+  SDTRIG_MCONTROL6_LOAD_WRITABLE: true
+  SDTRIG_MCONTROL6_STORE_WRITABLE: true
+  SDTRIG_TEXTRA_MHVALUE_LEN: 6
+  SDTRIG_TEXTRA_SVALUE_LEN: 0
+  SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH: true
+  SDTRIG_TEXTRA_MHSELECT_VMID_MATCH: false
+  SDTRIG_TEXTRA_SSELECT_ASID_MATCH: false
 
 # Device addresses and timings baked into test objects. The objects are built
 # without rvmodel_macros.h, and the reference model needs the same values.
@@ -602,5 +767,10 @@ dut_environment:
   RVMODEL_MTIMECMP_ADDRESS: 0x02004000
   RVMODEL_INTERRUPT_LATENCY: 10
   RVMODEL_TIMER_INT_SOON_DELAY: 1000
-  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 50
+  RVMODEL_HPM_COUNTER: 3
+  # Selector 2 is QEMU's instructions-retired event (RISCV_PMU_EVENT_HW_INSTRUCTIONS), so any
+  # instruction counts, including the nop below. sail.json maps EV_FENCE to the same selector and
+  # the Sail reference counts the fence that its build runs in place of RVMODEL_MHPMEVENT_CODE.
+  # The tests check only whether the counter moved and whether it overflowed, not by how much.
+  RVMODEL_MHPMEVENT_VAL: 2
   STANDARD_SM_SUPPORTED: true

@@ -1,0 +1,8 @@
+name: picorv32-rv32imc
+compiler_exe: riscv64-unknown-elf-gcc # executable name on $PATH or full path to executable
+objdump_exe: riscv64-unknown-elf-objdump # executable name on $PATH or full path to executable, optional
+ref_model_exe: sail_riscv_sim # executable name on $PATH or full path to executable
+udb_config: picorv32-rv32imc.yaml
+linker_script: link.ld
+dut_include_dir: . # Directory containing DUT specific model_test.h header
+include_priv_tests: False # PicoRV32 implements no CSRs and no privileged state

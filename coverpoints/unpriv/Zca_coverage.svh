@@ -26,7 +26,7 @@ covergroup Zca_c_add_cg with function sample(ins_t ins);
 
     // c.add with rd = 0, rs2 != 0 is a hint
     cp_c_hint_add : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
-        bins rs2 = {[x1:x31]}; // rs2 != 0
+        ignore_bins x0 = {x0}; // rd = rs2 = x0 encodes c.ebreak
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -126,7 +126,7 @@ covergroup Zca_c_addi_cg with function sample(ins_t ins);
 
     // c.addi with rd != 0, imm = 0 is a hint
     cp_c_hint_addi : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0 && ins.current.imm == 0) {
-        bins rd[] = {[x1:x31]}; // rd != x0
+        ignore_bins x0 = {x0}; // rd = x0 with imm = 0 is c.nop
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -200,7 +200,7 @@ covergroup Zca_c_addi16sp_cg with function sample(ins_t ins);
     cp_imm_mul_addi16sp : coverpoint signed'(ins.current.imm) iff (ins.trap == 0) {
         // Immediate Multiples of 16
         bins offset[] = {[-512:496]} with (item % 16 == 0);
-        ignore_bins zero = {0};
+        ignore_bins zero = {0}; // imm = 0 is reserved
     }
 
 endgroup
@@ -414,10 +414,8 @@ covergroup Zca_c_beqz_cg with function sample(ins_t ins);
         bins b_m256 = {-256};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -488,10 +486,8 @@ covergroup Zca_c_bnez_cg with function sample(ins_t ins);
         bins b_m256 = {-256};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -569,10 +565,8 @@ covergroup Zca_c_j_cg with function sample(ins_t ins);
         bins b_m2048 = {-2048};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
 endgroup
@@ -584,10 +578,8 @@ covergroup Zca_c_jalr_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_offset : coverpoint signed'(ins.current.rs1_val) - ins.get_pc() iff (ins.trap == 0 )  {
-        // c.jalr / c.jr destination in rs1
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint {ins.current.rs1_val - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
+        // c.jalr / c.jr destination in rs1 is forward/backward
     }
     cp_offset_lsbs : coverpoint ins.current.rs1_val[1:0]  iff (ins.trap == 0 )  {
         // c.jalr / c.jr destination is a multiple of 4 + 0/1/2/3
@@ -607,10 +599,8 @@ covergroup Zca_c_jr_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_offset : coverpoint signed'(ins.current.rs1_val) - ins.get_pc() iff (ins.trap == 0 )  {
-        // c.jalr / c.jr destination in rs1
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint {ins.current.rs1_val - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
+        // c.jalr / c.jr destination in rs1 is forward/backward
     }
     cp_offset_lsbs : coverpoint ins.current.rs1_val[1:0]  iff (ins.trap == 0 )  {
         // c.jalr / c.jr destination is a multiple of 4 + 0/1/2/3
@@ -668,7 +658,7 @@ covergroup Zca_c_lui_cg with function sample(ins_t ins);
     // c.lui with rd = 0, imm != 0 is a hint
     cp_c_hint_lui : coverpoint signed'(ins.current.imm) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
         bins imm[] = {[-32:31]};
-        ignore_bins zero = {0};
+        ignore_bins zero = {0}; // imm = 0 is reserved
     }
 
     cp_imm_edges_6bit_n0 : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
@@ -769,7 +759,7 @@ covergroup Zca_c_mv_cg with function sample(ins_t ins);
 
     // c.mv with rd = 0, rs2 != 0 is a hint
     cp_c_hint_mv : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
-        bins rs2[] = {[x1:x31]}; // rs2 != 0
+        ignore_bins x0 = {x0}; // rd = rs2 = x0 is reserved
     }
 
     cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
@@ -830,7 +820,7 @@ covergroup Zca_c_nop_cg with function sample(ins_t ins);
     // c.nop with imm != 0 is a hint
     cp_c_hint_nop : coverpoint signed'(ins.current.imm) iff (ins.trap == 0) {
         bins imm[] = {[-32:31]};
-        ignore_bins zero = {0};
+        ignore_bins zero = {0}; // c.nop with imm = 0 is not a HINT
     }
 
 endgroup
@@ -1504,10 +1494,8 @@ covergroup Zca_c_jal_cg with function sample(ins_t ins);
         bins b_m2048 = {-2048};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
 endgroup
@@ -1952,8 +1940,9 @@ endgroup
 // ---------------------
 `endif
 function void zca_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "c.add"     : begin
             Zca_c_add_cg.sample(ins);
         end
@@ -2057,5 +2046,6 @@ function void zca_sample(int hart, int issue, ins_t ins);
             Zca_c_subw_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

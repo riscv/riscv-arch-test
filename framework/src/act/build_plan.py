@@ -18,7 +18,7 @@ from pathlib import Path
 import pyjson5
 
 from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
+from act.config import Config, CoverageSimulator, RefModelType
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
@@ -31,12 +31,9 @@ from act.trap_report import generate_trap_report
 # -d: disassemble executable sections
 # -S: intermix original source lines with each disassembled instruction (requires DWARF debug info)
 # -M no-aliases,numeric: suppress pseudo-instructions; use numeric register names (x0–x31, f0–f31)
-_OBJDUMP_FLAGS_COMMON = ["-x", "-d", "-S", "-M", "no-aliases,numeric"]
-
-# Extra flags added in debug mode:
 # -t: print the full symbol table
 # -s: print a full hex+ASCII dump of every section
-_OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
+_OBJDUMP_FLAGS = ["-x", "-d", "-S", "-M", "no-aliases,numeric", "-t", "-s"]
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -103,13 +100,6 @@ def _ref_model_sig_cmd(
             cmd.append("--trace")
             cmd.extend(["--trace-output", str(sig_trace_file)])
         cmd.extend(["--config", str(sail_config_path)])
-        cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
-        cmd.append(str(sig_elf))
-        return cmd
-    if config.ref_model_type == RefModelType.SPIKE:
-        cmd = [str(config.ref_model_exe), f"--isa={spike_isa_string(xlen)}"]
-        if debug:
-            cmd.extend(["-l", "--log-commits", f"--log={sig_trace_file}"])
         cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
         cmd.append(str(sig_elf))
         return cmd
@@ -215,6 +205,7 @@ class TestOutputs:
     march: str
     mabi: str
     flen: str
+    link_flags: tuple[str, ...]  # beyond the linker script and ABI; a kit links with the same
 
 
 def write_sigdigest_header(results: Path, out: Path) -> None:
@@ -239,7 +230,6 @@ def gen_compile_tasks(
     ref_model_inputs: tuple[Path, ...] = (),
     kit_stamp: Path | None = None,
     debug: bool = False,
-    fast: bool = False,
     enable_experimental_extensions: bool = False,
 ) -> tuple[list[BuildTask], TestOutputs]:
     """Generate BuildTasks for the compilation pipeline of a single test.
@@ -265,8 +255,7 @@ def gen_compile_tasks(
         c_runtime_sources: Runtime sources compiled into C tests.
         ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
         kit_stamp: Header force-included into the certified object (act-package only).
-        debug: Whether to generate debug output (signature objdump and trace files).
-        fast: Whether to disable objdump generation for faster builds.
+        debug: Whether to generate debug output (objdumps, trace files, and trap reports).
     """
     tasks: list[BuildTask] = []
 
@@ -295,6 +284,9 @@ def gen_compile_tasks(
     c_compile_flags = (
         ["-ffreestanding", "-fno-builtin", "-msmall-data-limit=0", "-std=gnu99"] if test_metadata.is_c_test else []
     )
+    # Assembly tests set up their own sp; only C tests need the linker script's stack.
+    # 128 bytes rather than 0 leaves room for RVMODEL macros that use the stack.
+    stack_flags = [] if test_metadata.is_c_test else ["-Wl,--defsym=__stack_size=128"]
 
     # Compilation sources and inputs. A C test and its runtime are partially linked
     # (-r) into one relocatable object, so every test is exactly one certified object.
@@ -319,11 +311,14 @@ def gen_compile_tasks(
         f"-DTEST_FLEN={test_flen}",
         f'-DTEST_FILE="{test_name.name}"',
     ]
+    if enable_experimental_extensions:
+        object_prefix.append("-DENABLE_EXPERIMENTAL_EXTENSIONS")
     link_prefix = [
         *toolchain.compile_prefix(xlen),
         f"-T{config.linker_script.absolute()}",
         "-nostdlib",
         "-mcmodel=medany",
+        *stack_flags,
         *march_flags,
         f"-mabi={mabi}",
     ]
@@ -362,7 +357,7 @@ def gen_compile_tasks(
                     outputs=(objdump_file,),
                     deps=(sig_elf,),
                     action=SubprocessAction(
-                        cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS_DEBUG, str(sig_elf)],
+                        cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS, str(sig_elf)],
                         stdout_file=objdump_file,
                     ),
                 )
@@ -455,16 +450,15 @@ def gen_compile_tasks(
             )
         )
 
-        # 6a. final.elf.objdump (optional, not in fast mode)
-        if not fast and config.objdump_exe is not None:
+        # 6a. final.elf.objdump (optional, debug only)
+        if debug and config.objdump_exe is not None:
             objdump_file = Path(f"{final_elf}.objdump")
-            objdump_flags = _OBJDUMP_FLAGS_DEBUG if debug else _OBJDUMP_FLAGS_COMMON
             tasks.append(
                 BuildTask(
                     outputs=(objdump_file,),
                     deps=(final_elf,),
                     action=SubprocessAction(
-                        cmd=[str(config.objdump_exe), *objdump_flags, str(final_elf)],
+                        cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS, str(final_elf)],
                         stdout_file=objdump_file,
                     ),
                 )
@@ -478,6 +472,7 @@ def gen_compile_tasks(
         march=test_metadata.march.replace("${XLEN}", str(xlen)),
         mabi=mabi,
         flen=test_flen,
+        link_flags=tuple(stack_flags),
     )
     return tasks, outputs
 
@@ -487,7 +482,7 @@ def gen_rvvi_tasks(
     base_dir: Path,
     config: Config,
     ref_model_inputs: tuple[Path, ...] = (),
-    fast: bool = False,
+    debug: bool = False,
     enable_experimental_extensions: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for RVVI trace generation (coverage pipeline).
@@ -512,7 +507,7 @@ def gen_rvvi_tasks(
     rvvi_trace = coverage_dir / test_name.with_suffix(".rvvi")
 
     # Symlink objdump into coverage dir
-    if not fast and config.objdump_exe is not None:
+    if debug and config.objdump_exe is not None:
         objdump_orig_file = Path(f"{elf}.objdump")
         tasks.append(
             BuildTask(
@@ -529,6 +524,7 @@ def gen_rvvi_tasks(
     sail_cmd.extend(
         [
             "--trace",
+            "--trace-ptw",
             "--trace-output",
             str(sail_trace),
             "--config",
@@ -570,10 +566,16 @@ def gen_coverage_tasks(
     verbose: bool = False,
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
+    exclude_sm: bool = False,
+    jobs: int = 1,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
     coverage_reports: list[Path] = []
+    # Split this config's job share across its Verilator builds so the total stays near jobs.
+    simulator_build_env: tuple[tuple[str, str], ...] = ()
+    if coverage_simulator == CoverageSimulator.VERILATOR:
+        simulator_build_env = (("VERILATOR_BUILD_JOBS", str(max(1, jobs // len(coverage_targets)))),)
 
     # Resolve package resources once for use in commands and dependency tracking.
     # Uses importlib.resources.files() which returns a real filesystem path when the
@@ -582,29 +584,55 @@ def gen_coverage_tasks(
     # a context that spans task execution.
     act_resources = importlib.resources.files("act")
     fcov_path = Path(str(act_resources / "fcov")).absolute()
-    script_name = "riscv-arch-test.do" if coverage_simulator == CoverageSimulator.QUESTA else "riscv-arch-test-vcs.sh"
+    script_name = {
+        CoverageSimulator.QUESTA: "riscv-arch-test.do",
+        CoverageSimulator.VCS: "riscv-arch-test-vcs.sh",
+        CoverageSimulator.VERILATOR: "riscv-arch-test-verilator.sh",
+    }[coverage_simulator]
     sim_script = Path(str(act_resources / script_name)).absolute()
 
-    # Collect file dependencies for staleness checking.
-    # Coverage simulation depends on coverpoints, fcov infrastructure, generated DUT
-    # config header (in udb_header_dir), and the simulator script.
-    coverpoint_files = tuple(sorted(p.absolute() for p in coverpoint_dir.rglob("*") if p.is_file()))
+    # Collect shared file dependencies for staleness checking. Extension-specific
+    # coverpoints are added to each coverage task below so changing one extension
+    # does not invalidate every coverage group.
+    shared_coverpoint_files = tuple(
+        sorted(
+            p.absolute()
+            for path in (coverpoint_dir, coverpoint_dir / "coverage", coverpoint_dir / "general")
+            for p in path.iterdir()
+            if p.is_file()
+        )
+    )
     fcov_files = tuple(sorted(p.absolute() for p in fcov_path.rglob("*") if p.is_file()))
     udb_svh_files = tuple(sorted(p.absolute() for p in udb_header_dir.iterdir() if p.suffix == ".svh"))
     env_svh_files = tuple(sorted(p.absolute() for p in env_header_dir.iterdir() if p.suffix == ".svh"))
-    coverage_inputs = (*coverpoint_files, *fcov_files, *udb_svh_files, *env_svh_files, sim_script)
+    shared_coverage_inputs = (*shared_coverpoint_files, *fcov_files, *udb_svh_files, *env_svh_files, sim_script)
 
     for coverage_group, traces in sorted(coverage_targets.items()):
         # Paths
         coverage_dir = base_dir / coverage_group
         base_name = coverage_dir / coverage_group.stem
         tracelist_file = base_name.with_suffix(".tracelist")
-        coverage_db_ext = "ucdb" if coverage_simulator == CoverageSimulator.QUESTA else "vdb"
+        coverage_db_ext = {
+            CoverageSimulator.QUESTA: "ucdb",
+            CoverageSimulator.VCS: "vdb",
+            CoverageSimulator.VERILATOR: "dat",
+        }[coverage_simulator]
         simulator_artifact = base_name.with_suffix(f".{coverage_db_ext}")
         simulator_log = base_name.with_suffix(f".{coverage_db_ext}.log")
         work_dir = base_name.parent / f"{coverage_db_ext}_work"
         report_file_base = config_report_dir / coverage_group.stem
         summary_file = Path(f"{report_file_base}_summary.txt")
+
+        coverpoint_kind = "priv" if coverage_group.parts[0] == "priv" else "unpriv"
+        group_coverpoint_dir = coverpoint_dir / coverpoint_kind
+        group_coverpoint_files = (
+            (group_coverpoint_dir / f"{coverage_group.stem}_coverage.svh").absolute(),
+            (group_coverpoint_dir / f"{coverage_group.stem}_coverage_init.svh").absolute(),
+        )
+        coverage_inputs = (
+            *shared_coverage_inputs,
+            *group_coverpoint_files,
+        )
 
         # Write tracelist file, but only when its contents actually change so its mtime
         # reflects real changes. This lets us include it in extra_inputs below without
@@ -626,6 +654,8 @@ def gen_coverage_tasks(
             coverage_define_list.append("FCOV_VERBOSE")
         if enable_experimental_extensions:
             coverage_define_list.append("ENABLE_EXPERIMENTAL_EXTENSIONS")
+        if exclude_sm:
+            coverage_define_list.append("EXCLUDE_SM")
         coverage_defines = " ".join(coverage_define_list)
         if coverage_simulator == CoverageSimulator.QUESTA:
             do_script = (
@@ -663,7 +693,9 @@ def gen_coverage_tasks(
                 outputs=(simulator_artifact,),
                 deps=rvvi_deps,
                 extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
-                action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
+                action=SubprocessAction(
+                    cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir, env=simulator_build_env
+                ),
                 intermediate=True,
                 timeout=COVERAGE_STEP_TIMEOUT_SECONDS,
             )
@@ -700,6 +732,9 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
+# Bring-up suites: they check the DUT environment and its config, not architectural behavior.
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset({Path("priv/Hello"), Path("priv/ConfigCheck")})
+
 
 def find_rvmodel_dir(config: Config, override: Path | None = None) -> Path | None:
     """Directory holding the DUT's rvmodel_macros.h, or None when there is none.
@@ -720,10 +755,11 @@ def generate_build_plan(
     coverage_enabled: bool,
     coverage_simulator: CoverageSimulator,
     debug: bool = False,
-    fast: bool = False,
     verbose: bool = False,
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
+    exclude_sm: bool = False,
+    jobs: int = 1,
     rvmodel_dir: Path | None = None,
     out_dir: Path | None = None,
     kit_stamp: Path | None = None,
@@ -751,8 +787,8 @@ def generate_build_plan(
     tasks: list[BuildTask] = []
     outputs: list[TestOutputs] = []
 
-    header_dir = workdir / config.name
-    config_wkdir = out_dir if out_dir is not None else header_dir
+    header_dir = workdir / config.name / "env"
+    config_wkdir = out_dir if out_dir is not None else workdir / config.name
     config_coverage_dir = config_wkdir / "coverage"
     config_report_dir = config_wkdir / "reports"
 
@@ -768,7 +804,7 @@ def generate_build_plan(
     udb_headers = tuple(sorted(p.absolute() for p in header_dir.iterdir() if p.suffix == ".h"))
     compile_inputs = (*env_files, *udb_headers)
 
-    # Sail config affects reference model output (Spike has no equivalent file).
+    # Sail config affects reference model output.
     ref_model_inputs: tuple[Path, ...] = ()
     # sail_macros.h is included by every signature build, so the platform defines are
     # needed whatever the reference model is; only the model's own inputs are Sail-specific.
@@ -812,7 +848,6 @@ def generate_build_plan(
             ref_model_inputs,
             kit_stamp,
             debug,
-            fast,
             enable_experimental_extensions,
         )
         tasks.extend(test_tasks)
@@ -823,15 +858,31 @@ def generate_build_plan(
             trace_name = test_name.with_suffix(".rvvi")
             trace_path = config_coverage_dir / trace_name
             coverage_group_dir = trace_path.parent.relative_to(config_coverage_dir)
-            coverage_targets[coverage_group_dir].append(trace_path.absolute())
+            coverpoint_kind = "priv" if coverage_group_dir.parts[0] == "priv" else "unpriv"
+            coverage_file = coverpoint_dir / coverpoint_kind / f"{coverage_group_dir.stem}_coverage.svh"
 
+            if coverage_group_dir in _COVERAGE_GROUPS_WITHOUT_COVERPOINTS:
+                if coverage_file.is_file():
+                    raise ValueError(
+                        f"Coverage group '{coverage_group_dir}' is listed as having no coverpoints, "
+                        f"but '{coverage_file}' exists"
+                    )
+                continue
+
+            if not coverage_file.is_file():
+                raise FileNotFoundError(
+                    f"Coverage group '{coverage_group_dir}' has no coverpoint file at '{coverage_file}'. "
+                    "Add coverpoints or list the group in _COVERAGE_GROUPS_WITHOUT_COVERPOINTS."
+                )
+
+            coverage_targets[coverage_group_dir].append(trace_path.absolute())
             tasks.extend(
                 gen_rvvi_tasks(
                     test_name,
                     config_wkdir,
                     config,
                     ref_model_inputs,
-                    fast,
+                    debug,
                     enable_experimental_extensions,
                 )
             )
@@ -850,6 +901,8 @@ def generate_build_plan(
                 verbose,
                 dry_run,
                 enable_experimental_extensions,
+                exclude_sm,
+                jobs,
             )
         )
 

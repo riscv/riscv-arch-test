@@ -80,6 +80,9 @@ class IMMEDIATE_EDGES:
     # 5-bit Unsigned Immediates (Vector Instructions)
     imm_5bit_u = (0, 1, 2, 15, 16, 30, 31)
 
+    # 5-bit Zibi immediate edges (the all-zero cimm field encodes -1)
+    imm_5bit_u_n0 = (-1, 1, 2, 3, 4, 8, 16, 30, 31)
+
 
 # ==============================================================================
 # Integer Register Values
@@ -751,7 +754,9 @@ def get_vector_edge(edge: str, suffix: str, sew: int) -> int:
             raise ValueError(f"Unsupported Floating Point SEW={sew}")
 
     if suffix == "f_emul2":
-        if sew == 16:
+        if sew == 8:
+            return VECTOR_EDGES.f16[edge]
+        elif sew == 16:
             return VECTOR_EDGES.f32[edge]
         elif sew == 32:
             return VECTOR_EDGES.f64[edge]

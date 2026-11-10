@@ -802,6 +802,7 @@ Zfhmin_flh_cg_cp_fd_b31:
 /////////////////////////////////
 
 # Testcase cp_NaNBox_S_H (Test NaN-Boxed inputs)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x2, f25) # load fd (improperly boxed): f25 = 0x89abcdef
   fsflagsi 0b00000 # clear all fflags
   addi x17, x2, 1097 # copy data_ptr to rs1 and adjust for offset
 Zfhmin_flh_cg_cp_NaNBox_S_H_NaNBox:
@@ -1158,6 +1159,7 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffd56e94de
 .dword 0x00000000028f160c
 .dword 0x000000004f251278
+.dword 0x0000000089abcdef
 .dword 0xffffffffded8bc21
 .dword 0x0000000000000000
 .dword 0x0000000000008000

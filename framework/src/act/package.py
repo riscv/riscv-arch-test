@@ -139,10 +139,11 @@ done
 
 echo "==> Linking certified tests against your driver"
 fail=0; n=0
-while IFS=$'\\t' read -r name obj mabi; do
+while IFS=$'\\t' read -r name obj mabi ldflags; do
   out="$OUTDIR/$(basename "$name").elf"
   base="rv${XLEN}i"; case "$mabi" in *e) base="rv${XLEN}e" ;; esac
-  if "$CC" -T"$KIT/link.ld" -nostdlib -mcmodel=medany -march="$base" -mabi="$mabi" \\
+  # shellcheck disable=SC2086  # ldflags: the reference ELF's link flags, one word each
+  if "$CC" -T"$KIT/link.ld" -nostdlib -mcmodel=medany -march="$base" -mabi="$mabi" $ldflags \\
         -Wl,--no-warn-rwx-segments -o "$out" "$KIT/$obj" \\
         -L"$OUTDIR/.work/$mabi" -Wl,--whole-archive -lrvmodel -Wl,--no-whole-archive; then
     n=$((n+1))
@@ -153,7 +154,7 @@ done < <(python3 -c "
 import json
 m=json.load(open('$KIT/manifest.json'))
 for t in m['tests']:
-    print('\\t'.join([t['name'],t['object'],t['mabi']]))
+    print('\\t'.join([t['name'],t['object'],t['mabi'],' '.join(t.get('link_flags',[]))]))
 ")
 
 echo
@@ -293,6 +294,7 @@ def _write_kit_files(
                 "suite": str(Path(t.name).parent),
                 "march": t.march,
                 "mabi": t.mabi,
+                "link_flags": list(t.link_flags),
                 "xlen": xlen,
                 "flen": t.flen,
                 "sha256": _sha256(dest),
@@ -472,8 +474,8 @@ def make_kit(
     )
     # Kit objects get their own build area, so a kit build never reuses objects
     # stamped for another kit, nor disturbs the unstamped ones from `make`.
-    header_dir = workdir / config.name
-    out_dir = header_dir / "kit"
+    header_dir = workdir / config.name / "env"
+    out_dir = workdir / config.name / "kit"
     out_dir.mkdir(parents=True, exist_ok=True)
     stamp_h = out_dir / "kit_stamp.h"
     stamp_h.write_text(stamp.header_text())

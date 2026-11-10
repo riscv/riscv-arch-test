@@ -19,8 +19,8 @@ if udb_local_path && !udb_local_path.empty?
 else
   # Pin to the latest published versions so every contributor pulls the same
   # gem versions. Bump these in lockstep with Gemfile.lock when upgrading.
-  gem "udb",         "0.1.17"
-  gem "udb-gen",     "0.1.16"
+  gem "udb",         "0.1.18"
+  gem "udb-gen",     "0.1.17"
   gem "udb_helpers", "0.1.4"
   gem "idlc",        "0.1.8"
 end

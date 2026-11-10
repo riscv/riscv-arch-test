@@ -12,7 +12,9 @@ coverpoints:
       = 15 bins on RV64 (RV64 only)
     id: Svpbmt_nonleaf_pte_pbmt_must_be_zero menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_nonleaf_pte_pbmt_must_be_zero
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: nonleaf_PTE_pbmt_exec_u
     goal: Verify PBMT set in a non-leaf PTE raises an instruction page fault on an instruction fetch from U-mode
     description: "U-mode: menvcfg.PBMTE=1 (set through T-SBI). Non-leaf PTE with PBMT = 1, 2 and 3 above a valid leaf with PTE.U=1. Jump (jalr) into the page through va_data."
@@ -22,7 +24,9 @@ coverpoints:
       = 15 bins on RV64 (RV64 only)
     id: Svpbmt_nonleaf_pte_pbmt_must_be_zero menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_nonleaf_pte_pbmt_must_be_zero
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: nonleaf_PTE_pbmt_read_s
     goal: Verify PBMT set in a non-leaf PTE raises a load page fault on a load from S-mode
     description: "S-mode: menvcfg.PBMTE=1 (set through T-SBI). Non-leaf PTE with PBMT = 1, 2 and 3 above a valid leaf with PTE.U=0. Load (lw) from the page through va_data."
@@ -32,7 +36,9 @@ coverpoints:
       = 15 bins on RV64 (RV64 only)
     id: Svpbmt_nonleaf_pte_pbmt_must_be_zero menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_nonleaf_pte_pbmt_must_be_zero
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: nonleaf_PTE_pbmt_read_u
     goal: Verify PBMT set in a non-leaf PTE raises a load page fault on a load from U-mode
     description: "U-mode: menvcfg.PBMTE=1 (set through T-SBI). Non-leaf PTE with PBMT = 1, 2 and 3 above a valid leaf with PTE.U=1. Load (lw) from the page through va_data."
@@ -42,7 +48,9 @@ coverpoints:
       = 15 bins on RV64 (RV64 only)
     id: Svpbmt_nonleaf_pte_pbmt_must_be_zero menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_nonleaf_pte_pbmt_must_be_zero
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: nonleaf_PTE_pbmt_write_s
     goal: Verify PBMT set in a non-leaf PTE raises a store/AMO page fault on a store from S-mode
     description: "S-mode: menvcfg.PBMTE=1 (set through T-SBI). Non-leaf PTE with PBMT = 1, 2 and 3 above a valid leaf with PTE.U=0. Store (sw) to the page through va_data."
@@ -52,7 +60,9 @@ coverpoints:
       = 15 bins on RV64 (RV64 only)
     id: Svpbmt_nonleaf_pte_pbmt_must_be_zero menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_nonleaf_pte_pbmt_must_be_zero
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: nonleaf_PTE_pbmt_write_u
     goal: Verify PBMT set in a non-leaf PTE raises a store/AMO page fault on a store from U-mode
     description: "U-mode: menvcfg.PBMTE=1 (set through T-SBI). Non-leaf PTE with PBMT = 1, 2 and 3 above a valid leaf with PTE.U=1. Store (sw) to the page through va_data."
@@ -62,7 +72,9 @@ coverpoints:
       = 15 bins on RV64 (RV64 only)
     id: Svpbmt_nonleaf_pte_pbmt_must_be_zero menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_nonleaf_pte_pbmt_must_be_zero
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_exec_s
     goal: Verify an instruction fetch through a leaf PTE with PBMT = NC or IO succeeds from S-mode
     description: "S-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 1 (NC) and 2 (IO) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
@@ -72,7 +84,9 @@ coverpoints:
       = 14 bins on RV64 (RV64 only)
     id: Svpbmt_depends_Sv39 menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_depends_Sv39] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_depends_Sv39
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_exec_u
     goal: Verify an instruction fetch through a leaf PTE with PBMT = NC or IO succeeds from U-mode
     description: "U-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 1 (NC) and 2 (IO) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
@@ -82,7 +96,9 @@ coverpoints:
       = 14 bins on RV64 (RV64 only)
     id: Svpbmt_depends_Sv39 menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_depends_Sv39] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_depends_Sv39
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_read_s
     goal: Verify a load through a leaf PTE with PBMT = NC or IO succeeds from S-mode
     description: "S-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 1 (NC) and 2 (IO) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
@@ -92,7 +108,9 @@ coverpoints:
       = 14 bins on RV64 (RV64 only)
     id: Svpbmt_depends_Sv39 menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_depends_Sv39] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_depends_Sv39
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_read_u
     goal: Verify a load through a leaf PTE with PBMT = NC or IO succeeds from U-mode
     description: "U-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 1 (NC) and 2 (IO) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
@@ -102,7 +120,9 @@ coverpoints:
       = 14 bins on RV64 (RV64 only)
     id: Svpbmt_depends_Sv39 menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_depends_Sv39] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_depends_Sv39
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_write_s
     goal: Verify a store through a leaf PTE with PBMT = NC or IO succeeds from S-mode
     description: "S-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 1 (NC) and 2 (IO) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
@@ -112,7 +132,9 @@ coverpoints:
       = 14 bins on RV64 (RV64 only)
     id: Svpbmt_depends_Sv39 menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_depends_Sv39] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_depends_Sv39
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_write_u
     goal: Verify a store through a leaf PTE with PBMT = NC or IO succeeds from U-mode
     description: "U-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 1 (NC) and 2 (IO) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
@@ -122,7 +144,9 @@ coverpoints:
       = 14 bins on RV64 (RV64 only)
     id: Svpbmt_depends_Sv39 menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_depends_Sv39] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_depends_Sv39
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_reserved_enc_exec_s
     goal: Verify PBMT = 3 in a leaf PTE raises an instruction page fault on an instruction fetch from S-mode
     description: "S-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 3 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
@@ -132,7 +156,9 @@ coverpoints:
       = 7 bins on RV64 (RV64 only)
     id: Svpbmt_leaf_pte_pbmt_reserved_3_fault menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_leaf_pte_pbmt_reserved_3_fault] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_leaf_pte_pbmt_reserved_3_fault
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_reserved_enc_exec_u
     goal: Verify PBMT = 3 in a leaf PTE raises an instruction page fault on an instruction fetch from U-mode
     description: "U-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 3 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
@@ -142,7 +168,9 @@ coverpoints:
       = 7 bins on RV64 (RV64 only)
     id: Svpbmt_leaf_pte_pbmt_reserved_3_fault menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_leaf_pte_pbmt_reserved_3_fault] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_leaf_pte_pbmt_reserved_3_fault
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_reserved_enc_read_s
     goal: Verify PBMT = 3 in a leaf PTE raises a load page fault on a load from S-mode
     description: "S-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 3 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
@@ -152,7 +180,9 @@ coverpoints:
       = 7 bins on RV64 (RV64 only)
     id: Svpbmt_leaf_pte_pbmt_reserved_3_fault menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_leaf_pte_pbmt_reserved_3_fault] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_leaf_pte_pbmt_reserved_3_fault
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_reserved_enc_read_u
     goal: Verify PBMT = 3 in a leaf PTE raises a load page fault on a load from U-mode
     description: "U-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 3 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
@@ -162,7 +192,9 @@ coverpoints:
       = 7 bins on RV64 (RV64 only)
     id: Svpbmt_leaf_pte_pbmt_reserved_3_fault menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_leaf_pte_pbmt_reserved_3_fault] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_leaf_pte_pbmt_reserved_3_fault
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_reserved_enc_write_s
     goal: Verify PBMT = 3 in a leaf PTE raises a store/AMO page fault on a store from S-mode
     description: "S-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 3 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
@@ -172,7 +204,9 @@ coverpoints:
       = 7 bins on RV64 (RV64 only)
     id: Svpbmt_leaf_pte_pbmt_reserved_3_fault menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_leaf_pte_pbmt_reserved_3_fault] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_leaf_pte_pbmt_reserved_3_fault
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence
   - name: leaf_PTE_pbmt_reserved_enc_write_u
     goal: Verify PBMT = 3 in a leaf PTE raises a store/AMO page fault on a store from U-mode
     description: "U-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 3 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
@@ -182,4 +216,6 @@ coverpoints:
       = 7 bins on RV64 (RV64 only)
     id: Svpbmt_leaf_pte_pbmt_reserved_3_fault menvcfg_pbmte_op menvcfg_pbmte_fence
     rules:
-      - "[norm:Svpbmt_leaf_pte_pbmt_reserved_3_fault] [norm:menvcfg_pbmte_op] [norm:menvcfg_pbmte_fence]"
+      - Svpbmt_leaf_pte_pbmt_reserved_3_fault
+      - menvcfg_pbmte_op
+      - menvcfg_pbmte_fence

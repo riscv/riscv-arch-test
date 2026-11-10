@@ -19,11 +19,11 @@ from rich import print as rprint
 from act.build import build, prune_empty_dirs
 from act.build_plan import find_rvmodel_dir, generate_build_plan
 from act.build_types import BuildTask
-from act.certificate_tests import certificate_exists
+from act.certificate_tests import certificate_exists, get_certificate_extensions
 from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
-from act.select_tests import prepare_configs_and_select_tests
+from act.select_tests import prepare_configs_and_select_tests, write_test_list
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -72,8 +72,7 @@ def run_act(
     ] = None,
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
-    debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
-    fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    debug: Annotated[bool, typer.Option(help="Enable debug output (objdumps, trace files, and trap reports)")] = False,
     clean_intermediates: Annotated[bool, typer.Option(help="Delete intermediate build/ dirs")] = False,
     verbose: Annotated[
         bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
@@ -97,9 +96,6 @@ def run_act(
         debug = True
         jobs = 1
 
-    if debug and fast:
-        raise typer.BadParameter("--debug and --fast cannot be used together")
-
     if debug and clean_intermediates:
         raise typer.BadParameter("--debug and --clean-intermediates cannot be used together")
 
@@ -109,6 +105,7 @@ def run_act(
     if jobs <= 0:
         jobs = os.cpu_count() or 1
 
+    exclude_sm = False
     if certificate:
         if not certificate_exists(certificate):
             raise typer.BadParameter(f"Unknown certificate '{certificate}'.", param_hint="--certificate")
@@ -116,6 +113,8 @@ def run_act(
             "[bold yellow]Certification mode:[/] "
             f"selected certificate [bold]{certificate}[/]. M-mode tests and extensions that are not part of the certificate will not be run."
         )
+        # Coverage for a certificate without machine mode skips Sm coverpoints
+        exclude_sm = "Sm" not in get_certificate_extensions(certificate)
 
     # Resolve paths
     test_dir = test_dir.absolute()
@@ -157,6 +156,10 @@ def run_act(
             # build no longer has; don't leave them around to be run.
             if not dry_run:
                 shutil.rmtree(workdir / config.name / "elfs", ignore_errors=True)
+        if not dry_run:
+            test_list_file = workdir / config.name / "test_list.md"
+            write_test_list(config.name, selected_tests, test_list_file)
+            rprint(f"[bold cyan]Selected test list:[/] {test_list_file}")
         try:
             config_tasks, _ = generate_build_plan(
                 config,
@@ -168,10 +171,11 @@ def run_act(
                 coverage,
                 coverage_simulator,
                 debug,
-                fast,
                 verbose,
                 dry_run,
                 enable_experimental_extensions,
+                exclude_sm,
+                max(1, jobs // len(config_files)),
                 rvmodel_dir=config_rvmodel_dir,
             )
         except ValueError as e:

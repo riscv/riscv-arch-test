@@ -1,0 +1,28 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Ziccamoc extension is implemented, then main memory regions with both the
+  # coherence and cacheability PMAs must provide AMOCASQ-level PMA support.
+  - name: Ziccamoc_casq_pma
+    # Atomicity is not observable with a single hart
+    # Ziccamoc_cg is the direct test; the Zacas coverpoints add supplementary coverage
+    coverpoint:
+      [
+        "Ziccamoc_cg/cp_ziccamoc",
+        "Zacas_amocas_w_cg/cp_asm_count",
+        "Zacas_amocas_d_cg/cp_asm_count",
+        "Zacas_amocas_q_cg/cp_asm_count",
+      ]
+
+  # The Ziccamoc extension requires AMOCASQ-level support to main memory regions with both the
+  # coherence and cacheability PMAs.
+  - name: Ziccamoc_pma_amo_req
+    # Ziccamoc_cg is the direct test; the Zacas coverpoints add supplementary coverage
+    coverpoint:
+      [
+        "Ziccamoc_cg/cp_ziccamoc",
+        "Zacas_amocas_w_cg/cp_asm_count",
+        "Zacas_amocas_d_cg/cp_asm_count",
+        "Zacas_amocas_q_cg/cp_asm_count",
+      ]

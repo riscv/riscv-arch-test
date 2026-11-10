@@ -51,6 +51,142 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
 params:
+  # Trap delegation: the writable medeleg and mideleg bits (sail.json base.medeleg and
+  # base.mideleg delegatable_bits, without LCOFI when Sscofpmf is absent; with H, VSSI, VSTI, VSEI are always delegated)
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
@@ -70,7 +206,7 @@ params:
   # C params
   MUTABLE_MISA_C: false
   # B params
-  MUTABLE_MISA_B: true
+  MUTABLE_MISA_B: false
   # V params
   #MUTABLE_MISA_V: false
   #HW_MSTATUS_VS_DIRTY_UPDATE: precise
@@ -157,12 +293,10 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
-  MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x24
-  MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0x100
-  VENDOR_ID_BANK: 0xC
-  VENDOR_ID_OFFSET: 0x2
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
@@ -342,5 +476,8 @@ dut_environment:
   RVMODEL_MTIMECMP_ADDRESS: 0x02004000
   RVMODEL_INTERRUPT_LATENCY: 1
   RVMODEL_TIMER_INT_SOON_DELAY: 5000
-  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
+  RVMODEL_HPM_COUNTER: 3
+  # Selector 1 is mapped to EV_FENCE by base.event_selectors in sail.json. A fence raises
+  # the event in every privilege mode and never traps.
+  RVMODEL_MHPMEVENT_VAL: 1
   STANDARD_SM_SUPPORTED: true

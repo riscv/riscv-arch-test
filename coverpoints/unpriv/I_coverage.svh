@@ -467,16 +467,14 @@ covergroup I_beq_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -582,16 +580,14 @@ covergroup I_bge_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -697,16 +693,14 @@ covergroup I_bgeu_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -812,16 +806,14 @@ covergroup I_blt_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -927,16 +919,14 @@ covergroup I_bltu_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -1042,16 +1032,14 @@ covergroup I_bne_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -1150,7 +1138,7 @@ covergroup I_fence_cg with function sample(ins_t ins);
     // Custom coverpoints for fence
 
     // Encodings with a nonzero fm, rd or rs1 field. fm = 0, rd = rs1 = x0 is cp_custom_fence_pred_succ.
-    cp_custom_fence_reserved : coverpoint ins.current.insn  {
+    cp_custom_fence_reserved : coverpoint ins.current.insn  iff (ins.trap == 0 )  {
         bins fence_tso_rw_rw  = {32'h8330000f}; // fence.tso
         bins fence_nonzerors1 = {32'h0331000f}; // nonzero rs should behave as fence
         bins fence_nonzerord  = {32'h0330008f}; // nonzero rd should behave as fence
@@ -1159,7 +1147,7 @@ covergroup I_fence_cg with function sample(ins_t ins);
         bins fence_hint0b     = {32'h0301000f}; // fence with rd = x0, rs1 != x0, fm = 0, succ = 0 is a hint
         bins fence_hint1a     = {32'h0030008f}; // fence with rd != x0, rs1 = x0, fm = 0, pred = 0 is a hint
         bins fence_hint1b     = {32'h0300008f}; // fence with rd != x0, rs1 = x0, fm = 0, succ = 0 is a hint
-        bins fence_tso_r_r    = {32'h8110000f}; // fence.tso with r, r should behave as fence
+        bins fence_tso_w_w    = {32'h8110000f}; // fm = 1000 with pred = succ = W is reserved and should behave as fence
     }
 
     // Every pred x succ combination with fm = 0 and rd = rs1 = x0.
@@ -1208,10 +1196,8 @@ covergroup I_jal_cg with function sample(ins_t ins);
         bins b_m8192 = {-8192};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -1255,10 +1241,8 @@ covergroup I_jalr_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_offset : coverpoint signed'(ins.current.rs1_val) + signed'(ins.current.imm) - ins.get_pc()  iff (ins.trap == 0 )  {
+    cp_offset : coverpoint {ins.current.eff_addr - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
         // jalr destination in rs1+imm is forward/backward
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
     }
     cp_offset_lsbs : coverpoint {ins.current.rs1_val[0], ins.current.imm[0]}  iff (ins.trap == 0 )  {
         // jalr destination is a multiple of 4 + 0/1.  Only check for the +0/1, with each lsb of rs1 and imm
@@ -1282,7 +1266,7 @@ covergroup I_lb_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lb"  iff (ins.trap == 0 )  {
@@ -1339,7 +1323,7 @@ covergroup I_lbu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lbu"  iff (ins.trap == 0 )  {
@@ -1396,7 +1380,7 @@ covergroup I_lh_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lh"  iff (ins.trap == 0 )  {
@@ -1453,7 +1437,7 @@ covergroup I_lhu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lhu"  iff (ins.trap == 0 )  {
@@ -1554,7 +1538,7 @@ covergroup I_lw_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lw"  iff (ins.trap == 0 )  {
@@ -1812,7 +1796,7 @@ endgroup
 // ---------------------
 covergroup I_sb_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sb"  iff (ins.trap == 0 )  {
@@ -1892,7 +1876,7 @@ endgroup
 // ---------------------
 covergroup I_sh_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sh"  iff (ins.trap == 0 )  {
@@ -3073,7 +3057,7 @@ endgroup
 // ---------------------
 covergroup I_sw_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sw"  iff (ins.trap == 0 )  {
@@ -3607,7 +3591,7 @@ covergroup I_lwu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lwu"  iff (ins.trap == 0 )  {
@@ -4410,8 +4394,9 @@ endgroup
 // ---------------------
 `endif
 function void i_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "add"     : begin
             I_add_cg.sample(ins);
         end
@@ -4567,5 +4552,6 @@ function void i_sample(int hart, int issue, ins_t ins);
             I_subw_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

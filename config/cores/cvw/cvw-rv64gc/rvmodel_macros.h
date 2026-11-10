@@ -17,6 +17,7 @@
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 //#define RVMODEL_BOOT
+
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
@@ -81,14 +82,6 @@
   addi _STR_PTR, _STR_PTR, 1 ;/* Next char */        \
   j 1b                       ;/* Loop */             \
 3:
-
-##### Machine Timer #####
-
-// Wally's mtime advances one tick per core clock, and the code between arming
-// mtimecmp and reaching the lower privilege mode (three CLINT stores plus
-// RVTEST_GOTO_LOWER_MODE) can take well over 100 cycles on a pipelined core
-// with caches.  With a delay of 100 the timer interrupt fires while still in
-// M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
 
 ##### Machine Interrupts #####
 

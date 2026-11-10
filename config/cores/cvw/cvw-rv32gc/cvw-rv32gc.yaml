@@ -63,6 +63,7 @@ implemented_extensions:
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
+  - { name: Svvptc, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
 params:
@@ -71,7 +72,7 @@ params:
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access" # XLEN size reservation
   LRSC_FAIL_ON_VA_SYNONYM: false
-  LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception" # no Zicclsm: raised before translation (mmu.sv)
   LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
   # M params
@@ -92,9 +93,9 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
-  WFI_U_MODE: true
+  WFI_U_MODE: false
   MUTABLE_MISA_U: false
-  U_MODE_ENDIANNESS: dynamic
+  U_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   UXLEN: [32]
   TRAP_ON_ECALL_FROM_U: true
   # S params
@@ -103,7 +104,7 @@ params:
   STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 9
-  S_MODE_ENDIANNESS: dynamic
+  S_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   SXLEN: [32]
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
@@ -164,7 +165,7 @@ params:
   MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -193,7 +194,7 @@ params:
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3 # Not explicit in config
   PHYS_ADDR_WIDTH: 34
-  M_MODE_ENDIANNESS: dynamic
+  M_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
@@ -342,6 +343,141 @@ params:
       true,
       true,
     ]
+  # instruction-address-misaligned cannot occur with Zca, so medeleg[0] is read-only zero (csrm.sv MEDELEG_MASK)
+  MEDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
 
 # Device addresses and timings baked into test objects. The objects are built
 # without rvmodel_macros.h, and the reference model needs the same values.
@@ -351,5 +487,10 @@ dut_environment:
   RVMODEL_MTIME_ADDRESS: 0x0200BFF8
   RVMODEL_MTIMECMP_ADDRESS: 0x02004000
   RVMODEL_INTERRUPT_LATENCY: 10
+  # Wally's mtime advances one tick per core clock, and the code between arming
+  # mtimecmp and reaching the lower privilege mode (three CLINT stores plus
+  # T-SBI mode switch) can take well over 100 cycles on a pipelined core
+  # with caches.  With a delay of 100 the timer interrupt fires while still in
+  # M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
   RVMODEL_TIMER_INT_SOON_DELAY: 10000
   STANDARD_SM_SUPPORTED: true

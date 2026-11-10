@@ -31,13 +31,14 @@
 
 - `make help`: list supported targets and variables.
 - `make tests`: generate assembly tests and coverpoints without compiling them.
-- `make`: generate tests and build ELFs for the default Spike RV32 and RV64 configurations.
+- `CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml make`: build tests, certified objects and ELFs for one or more configs. `CONFIG_FILES` is required for `make`. A config without `rvmodel_macros.h` stops at the objects.
+- `make coverage` uses `CONFIG_FILES` if set. Otherwise it uses the Sail rv32/rv64 max configs.
 - `RVMODEL_DIR=<dir> make`: take `rvmodel_macros.h` from `<dir>` instead of each config's `dut_include_dir`.
 - `CONFIG_FILES=<config>/test_config.yaml make kit`: package the certified objects as a certification kit in `work/kits/`.
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build tests for one DUT configuration.
 - `make <config-target>`: build and run one or more configurations discovered from `run_cmd.txt`.
 - `EXTENSIONS=I,M make tests` or `EXTENSIONS=I make <config-target>`: restrict work to selected suites. `EXCLUDE_EXTENSIONS=Sm` applies a negative filter.
-- `FAST=True make`: omit objdump output. `DEBUG=True make EXTENSIONS=<suite>`: emit signature objdumps, reference-model traces, and trap reports. `VERBOSE=True` also serializes the build.
+- `DEBUG=True make EXTENSIONS=<suite>`: emit ELF and signature objdumps, reference-model traces, and trap reports. Objdumps are not generated without `DEBUG`. `VERBOSE=True` also serializes the build.
 - Let the project select parallelism for normal work. Use `JOBS=1` only to debug a hang or another parallel execution problem.
 - `make coverage EXTENSIONS=<suite>`: run focused coverage. Full `make coverage` is expensive.
 - Build CTP or CRD documentation from its directory. The builds use the `docs/docs-resources` submodule and Docker unless `SKIP_DOCKER=true`.
@@ -48,7 +49,7 @@
 - Privileged test generators are under `generators/testgen/src/testgen/priv/extensions/`. They write assembly under `tests/priv/`. Handwritten privileged functional coverage is under `coverpoints/priv/`.
 - A testcase checks one coverpoint bin. A `TestChunk` is an unsplittable group of testcases. A test file is one `.S` or `.c` file. A test suite is one extension directory.
 - Test headers are strict YAML between `START_TEST_CONFIG` and `END_TEST_CONFIG`. Supported keys are `REQUIRED_EXTENSIONS`, `FORBIDDEN_EXTENSIONS`, `MARCH`, `NEEDS_SIGNATURE`, `MIN_HARTS`, and `params`. Unknown keys fail validation.
-- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
+- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by an optional `ExtraExtensions` column (see `docs/DeveloperGuide.md`) and the coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
 - Registry modules are discovered automatically. Use the registry decorators and do not add manual imports. Files with names that start with `_` are not discovered.
 
 | Subsystem              | Decorator                                    | Directory                                          |
@@ -58,12 +59,13 @@
 | Privileged generators  | `@add_priv_test_generator("Suite", ...)`     | `generators/testgen/src/testgen/priv/extensions/`  |
 
 - Keep expected architectural behavior explicit. Each generated testcase must map to meaningful functional coverage.
+- Use `ignore_bins` only for bins that are architecturally unreachable. When a test skips a legal case because a reference model or tool does not support it yet, leave the bins in place so coverage reports them as missing until a test hits them.
 - The framework installs trap handlers for unprivileged tests when standard machine mode is available. Unexpected traps fail the test.
 - Privileged tests should boot into their intended mode. Use T-SBI calls for operations that require a higher privilege level. Use `tsbi_call()` for supported CSR or memory instructions and `RVTEST_TSBI_GOTO_*` for mode changes.
 - Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool so they are never allocated.
 - In generated assembly, use Python loops to emit repeated code. Avoid assembly loops so testcase labels and debug strings stay unique.
 - Do not use the target-dependent `.align` directive in assembly. Use `.p2align` or `.balign`.
-- Do not use the `la` or `li` pseduoinstructions. Use the `LA()` and `LI()` macros.
+- Do not use the `la` or `li` pseudoinstructions. Use `LA()` for labels and `LI()` for constants. Use `LI_FIXED_LEN()` for values that come from `RVMODEL_*` macros, so code size does not depend on the DUT. In generators, `load_constant()` selects `LI()` or `LI_FIXED_LEN()`.
 - Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
 
 ## Configurations And CI
@@ -90,7 +92,7 @@
 
 - Run summaries are in `work/<config>/summary.log`. Simulator logs are in `work/<config>/logs/`.
 - Passing tests print `RVCP-SUMMARY: TEST PASSED - Test File "<test_name>"`. Failures print `TEST FAILED`. `SIGRUN` means the ELF is not self-checking.
-- `DEBUG=True` adds `.sig.elf.objdump`, `.sig.log`, and `.sig.trap_report` files under `work/<config>/build/`.
+- `DEBUG=True` adds `.elf.objdump` files under `work/<config>/elfs/` and `.sig.elf.objdump`, `.sig.log`, and `.sig.trap_report` files under `work/<config>/build/`.
 - Triage failures in this order: UDB and DUT configuration, reference-model configuration, generated objdump and trace, then DUT behavior.
 - By default, ACT stops after the first failed build task and cancels active tasks. The `succeeded` value counts DAG tasks, not tests. Use `-k` to continue independent tasks.
 - To test one suite across simulators, use `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. Each failing simulator log names the first divergent testcase on its `bin:` line.

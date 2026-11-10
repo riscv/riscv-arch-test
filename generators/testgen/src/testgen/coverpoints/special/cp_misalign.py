@@ -7,7 +7,7 @@
 
 """cp_misalign coverpoint generator."""
 
-from testgen.asm.helpers import load_float_reg, load_int_reg, write_sigupd
+from testgen.asm.helpers import check_store_target, fill_store_target, load_float_reg, load_int_reg, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
@@ -119,15 +119,15 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     )
                     test_data.int_regs.return_registers([2])
     elif instr_type in {"S", "FS", "CS", "CSS"}:
-        # bytes to store all differ from values placed in the window.  A store's result does not depend
-        # on the sign of the bytes it overwrites, so stores need only the one pattern.
-        val = 0x0F1E2D3C4B5A6978 if max(test_data.xlen, test_data.flen) == 64 else 0x0F1E2D3C
+        # The window is filled with STORE_CANARY. No byte to store matches a canary byte, so every byte the store
+        # writes changes. A store's result does not depend on the sign of the bytes it overwrites.
+        val = 0x0F1F2D3C4B5A6879 if max(test_data.xlen, test_data.flen) == 64 else 0x0F1F2D3C
         for alignment in _OFFSETS:
             tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (scratch+{base} window, offset {alignment})",
                     *set_base(f"x{r1}"),
-                    *_fill_window(r1, r2, _PATTERN, test_data),
+                    *fill_store_target(r1, r2, test_data, area_bytes=16),
                 ]
             )
             if instr_type == "S":
@@ -169,10 +169,13 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     ]
                 )
                 test_data.int_regs.return_registers([2])
-            tc.code.append(f"{INDENT}# Check all 16 bytes of the window as signature")
-            for off in range(0, 16, test_data.xlen // 8):
-                tc.code.extend([f"LREG x{r2}, {off}(x{r1})", write_sigupd(r2, test_data, "int")])
-            tc.code.append("")
+            tc.code.extend(
+                [
+                    f"{INDENT}# Check all 16 bytes of the window as signature",
+                    *check_store_target(r1, r2, test_data, area_bytes=16),
+                    "",
+                ]
+            )
     else:
         raise ValueError(f"Unknown instruction type: {instr_type} for cp_misalign.")
 

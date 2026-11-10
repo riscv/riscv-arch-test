@@ -23,7 +23,7 @@ def format_cr_type(
     if instr_name in ["c.add", "c.mv"] and params.rs2 == 0:
         test_data.int_regs.return_register(params.rs2)
         params.rs2 = test_data.int_regs.get_register(exclude_regs=[0])
-    setup = [
+    setup: list[str] = [
         load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data),
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
     ]

@@ -140,6 +140,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose
     tasks: list[BuildTask] = []
     for cfg in configs:
         config_dir = workdir / cfg.name
+        env_dir = config_dir / "env"
         src = cfg.udb_config
         marker = config_dir / ".validated"
 
@@ -158,19 +159,19 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose
         # the validate marker and stale vs. the source UDB yaml.
         udb_outputs: list[tuple[Path, PythonAction]] = [
             (
-                config_dir / "rvtest_config.h",
-                PythonAction(_generate_one_dut_header, (src, config_dir / "rvtest_config.h", "cfg-c-header")),
+                env_dir / "rvtest_config.h",
+                PythonAction(_generate_one_dut_header, (src, env_dir / "rvtest_config.h", "cfg-c-header")),
             ),
             (
-                config_dir / "rvtest_config.svh",
-                PythonAction(_generate_one_dut_header, (src, config_dir / "rvtest_config.svh", "cfg-svh-header")),
+                env_dir / "rvtest_config.svh",
+                PythonAction(_generate_one_dut_header, (src, env_dir / "rvtest_config.svh", "cfg-svh-header")),
             ),
-            (config_dir / "extensions.txt", PythonAction(generate_extension_list, (src, config_dir))),
+            (env_dir / "extensions.txt", PythonAction(generate_extension_list, (src, env_dir))),
             # dut_environment is an ACT-specific top-level block. UDB validates it
             # happily but udb-gen does not emit it, so ACT generates this one itself.
             (
-                config_dir / "dut_environment.h",
-                PythonAction(generate_dut_environment_header, (src, config_dir / "dut_environment.h")),
+                env_dir / "dut_environment.h",
+                PythonAction(generate_dut_environment_header, (src, env_dir / "dut_environment.h")),
             ),
         ]
         for out, action in udb_outputs:
@@ -179,8 +180,8 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose
         # rvmodel_macros.svh mirrors the dut_environment block for coverage.
         tasks.append(
             BuildTask(
-                outputs=(config_dir / "rvmodel_macros.svh",),
-                action=PythonAction(generate_rvmodel_svh, (src, config_dir)),
+                outputs=(env_dir / "rvmodel_macros.svh",),
+                action=PythonAction(generate_rvmodel_svh, (src, env_dir)),
                 extra_inputs=(src,),
                 deps=(marker,),
             )
@@ -220,8 +221,8 @@ def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
     _bundle_exec(generate_cmd, check=True, capture_output=True)
 
 
-def get_implemented_extensions(extension_list_file: Path) -> set[str]:
-    return set(extension_list_file.read_text().splitlines())
+def get_implemented_extensions(extension_list_file: Path) -> frozenset[str]:
+    return frozenset(extension_list_file.read_text().splitlines())
 
 
 def _generate_one_dut_header(udb_config_file: Path, output_file: Path, subcommand: str) -> None:

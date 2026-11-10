@@ -11,6 +11,10 @@
 # IDE settings
 .vscode/
 
+# Local AI files
+CLAUDE.local.md
+AGENTS.local.md
+
 # virtualenv
 .venv
 
@@ -40,7 +44,6 @@ tests/priv/**/*.S
 !tests/priv/*Sv*/**/*.S
 
 # docs
-docs/ctp/mismatch_report.txt
 docs/crd/build
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new

@@ -50,6 +50,7 @@ PMM_CONFIGS = [
     (0b10, 7, "pmm10"),
     (0b11, 16, "pmm11"),
 ]
+PMLEN_BY_PMM = {pmm: pmlen for pmm, pmlen, _ in PMM_CONFIGS}
 
 # Values used to seed memory, write new data, and detect an unexpected load result.
 VALUE_OLD = 0xABCD_1234_ABCD_1234
@@ -86,8 +87,15 @@ ZCA_WRITES_SP = [("c.swsp", "lw"), ("c.sdsp", "ld")]
 # Cache-block and prefetch operations use rs1 as their address.
 ZICBOM_OPS = ["cbo.clean", "cbo.flush", "cbo.inval"]
 ZICBOP_OPS = ["prefetch.r", "prefetch.w", "prefetch.i"]
-# TODO: Add the remaining Zicfiss load, store, and AMO instructions.
-ZICFISS_AMOS: list[tuple[str, str]] = []
+# Zicfiss instructions target SS_PAGE , used only by the suites
+# that probe below M-mode under S-mode (Ssnpm, SmnpmS``). AMO entries contain (mnemonic, readback instruction).
+ZICFISS_AMOS = [("ssamoswap.w", "lw"), ("ssamoswap.d", "ld")]
+# Push and pop entries contain (mnemonic, link register, is compressed). They address memory through ssp.
+ZICFISS_PUSHES = [("sspush", 1, False), ("sspush", 5, False), ("c.sspush", 1, True)]
+ZICFISS_POPS = [("sspopchk", 1, False), ("sspopchk", 5, False), ("c.sspopchk", 5, True)]
+SS_PAGE = "pm_ss_page"
+# Tables of the 4 KiB identity map of the test image, which holds the SS_PAGE leaf.
+IMAGE_TABLES = "pm_img_slvl{}_pg_tbl"
 
 # Vector entries contain (instruction, SEW, assembly template).
 VEC_READS = [
@@ -144,8 +152,10 @@ HIGH_VA = {
 MODES = ["bare", "sv39", "sv48", "sv57"]
 MODE_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
 
-# PMM field bit position (common across mseccfg/menvcfg/senvcfg)
+# PMM field bit position (common across mseccfg/menvcfg/henvcfg/senvcfg)
 _PMM_SHIFT = 32
+# PMM fields that are not <CSR>_PMM at _PMM_SHIFT: the field and its position
+_PMM_FIELDS = {"hstatus": ("HSTATUS_HUPMM", 48)}
 
 # Smaller tag set used by the MPRV coverage points.
 _MPRV_UPPER_PATTERNS = [0x0000, 0x0001, 0x0200]
@@ -194,14 +204,21 @@ def csr_op(op: str, csr: str, value: str, test_data: TestData, tsbi: bool = Fals
     return lines
 
 
-def set_pmm_field(csr: str, val: int, pmlen: int, test_data: TestData, tsbi: bool = False) -> list[str]:
-    """Clear then set the 2-bit PMM field in *csr*."""
+def set_pmm_field(csr: str, val: int | str, pmlen: int | None, test_data: TestData, tsbi: bool = False) -> list[str]:
+    """Clear then set the 2-bit PMM field in *csr* (hstatus.HUPMM for hstatus).
+
+    *val* is a PMM encoding, or an assembler expression for one, whose PMLEN is then *pmlen* = None.
+    """
+    field, shift = _PMM_FIELDS.get(csr, (f"{csr.upper()}_PMM", _PMM_SHIFT))
+    name = f"{csr}.{field.split('_')[1]}"
     lines = [
-        f"# {csr}.PMM={val:#04b} PMLEN={pmlen}",
-        *csr_op("csrc", csr, f"{csr.upper()}_PMM", test_data, tsbi),
+        f"# {name}={val:#04b} PMLEN={pmlen}" if isinstance(val, int) else f"# {name}={val}",
+        *csr_op("csrc", csr, field, test_data, tsbi),
     ]
-    if val:
-        lines.extend(csr_op("csrs", csr, hex(val << _PMM_SHIFT), test_data, tsbi))
+    if isinstance(val, str):
+        lines.extend(csr_op("csrs", csr, f"({val}) << {shift}", test_data, tsbi))
+    elif val:
+        lines.extend(csr_op("csrs", csr, hex(val << shift), test_data, tsbi))
     return lines
 
 
@@ -248,6 +265,21 @@ def data_page(label: str, value: int = VALUE_OLD) -> list[str]:
     ]
 
 
+def ss_data_page(image_mode: str | None = None) -> list[str]:
+    """The page probed by the Zicfiss instructions, plus the IMAGE_TABLES pages for *image_mode*."""
+    tables = data_slvl_tables(image_mode, IMAGE_TABLES) if image_mode else []
+    return _ifdef("ZICFISS_SUPPORTED", [*data_page(SS_PAGE), *tables])
+
+
+def set_sse(csr: str, enable: bool, test_data: TestData, tsbi: bool = False) -> list[str]:
+    """Set or clear the shadow-stack enable (SSE) in menvcfg or senvcfg."""
+    op = "csrs" if enable else "csrc"
+    return _ifdef(
+        "ZICFISS_SUPPORTED",
+        [f"# {csr}.SSE = {int(enable)}", *csr_op(op, csr, f"{csr.upper()}_SSE", test_data, tsbi)],
+    )
+
+
 def data_slvl_tables(mode: str, table_label: str = "rvtest_slvl{}_pg_tbl") -> list[str]:
     """Zero-filled page-table pages below the root for *mode*, named by *table_label*."""
     lines: list[str] = []
@@ -269,7 +301,12 @@ def mprv_data_section() -> list[str]:
 
 
 def build_4k_image_map(
-    mode: str, table_label: str, user_ranges: list[tuple[str, str | int]], test_data: TestData
+    mode: str,
+    table_label: str,
+    user_ranges: list[tuple[str, str | int]],
+    test_data: TestData,
+    *,
+    ss_page_user: bool | None = None,
 ) -> list[str]:
     """Map the 2 MiB region containing rvtest_code_begin as 512 identity 4 KiB leaves.
 
@@ -277,6 +314,7 @@ def build_4k_image_map(
     PTE_U when its base lies inside one of *user_ranges*, each a (begin label, end label or byte size)
     pair; everything else, such as the S-mode trap handler, stays supervisor-only.
     All 512 leaves are written supervisor-only first; a second pass sets PTE_U on each range's pages.
+    With Zicfiss, *ss_page_user* also makes SS_PAGE a shadow-stack page (xwr=010), with PTE_U if true.
     """
     tables = [table_label.format(level) for level in SV_MODES[mode].levels_desc[1:]]
     (r0,) = test_data.int_regs.get_registers(1)
@@ -335,6 +373,19 @@ def build_4k_image_map(
                 f"bltu x{s1}, x{s2}, 2b",
             ]
         )
+    if ss_page_user is not None:
+        ss_leaf = [
+            f"# {SS_PAGE}: shadow-stack leaf (xwr=010)",
+            f"LA(x{s1}, {SS_PAGE})",
+            f"sub  x{count}, x{s1}, x{r0}",
+            f"srli x{count}, x{count}, 9             # leaf offset = page index * 8",
+            f"add  x{count}, x{count}, x{r1}",
+            f"srli x{s1}, x{s1}, 12",
+            f"slli x{s1}, x{s1}, 10",
+            f"ori  x{s1}, x{s1}, ({PteFlags(read=False, execute=False, user=ss_page_user)})",
+            f"sd   x{s1}, 0(x{count})",
+        ]
+        lines.extend(_ifdef("ZICFISS_SUPPORTED", ss_leaf))
     test_data.int_regs.return_registers([r0, r1, count, perms, s1, s2])
     return lines
 
@@ -393,6 +444,21 @@ def _ifdef(guard: str, body: list[str]) -> list[str]:
     return [f"#ifdef {guard}", *body, f"#endif // {guard}"]
 
 
+# Extension that owns the PMM field of each CSR.
+_PMM_EXTENSION = {"mseccfg": "SMMPM", "menvcfg": "SMNPM", "senvcfg": "SSNPM", "henvcfg": "SSNPM", "hstatus": "SSNPM"}
+
+
+def pmm_ifdef(csr: str, pmlen: int, body: list[str]) -> list[str]:
+    """Wrap *body* in the guard for PMLEN *pmlen* of the PMM field in *csr*.
+
+    The config defines UDB_SUPPORTED_PMLEN_<EXT>_<N> for each supported PMLEN. PMLEN 0 (PMM=00,
+    no masking) is always legal, so it is not guarded.
+    """
+    if pmlen == 0:
+        return body
+    return _ifdef(f"UDB_SUPPORTED_PMLEN_{_PMM_EXTENSION[csr]}_{pmlen}", body)
+
+
 def _access(
     instr: str,
     addr: int,
@@ -402,8 +468,18 @@ def _access(
     covergroup: str,
     via_sp: bool,
     arch_extensions: tuple[str, ...],
+    mode: str | None = None,
 ) -> list[str]:
-    """Emit the testcase label and ``instr, 0(addr)``, addressed through sp for c.*sp forms."""
+    """Emit the testcase label and ``instr, 0(addr)``, addressed through sp for c.*sp forms.
+
+    With *mode* (VS, VU or U), the access runs in that mode, entered from and returning to S-mode through T-SBI.
+    """
+    if mode is not None:
+        return [
+            f"RVTEST_TSBI_GOTO_{mode}MODE",
+            *_access(instr, addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions),
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
     if not via_sp:
         return [
             test_data.add_testcase(bin_name, coverpoint, covergroup),
@@ -421,7 +497,7 @@ def _access(
     return lines
 
 
-def _probe_load(
+def probe_load(
     mnemonic: str,
     upper_tag: int,
     bin_name: str,
@@ -435,12 +511,14 @@ def _probe_load(
     via_sp: bool = False,
     float_load: bool = False,
     arch_extensions: tuple[str, ...] = (),
+    mode: str | None = None,
 ) -> list[str]:
     """Generate one load probe and record the loaded value.
 
     ``compressed`` restricts address and result registers to x8-x15.
     ``via_sp`` uses the stack pointer as the address register.
     ``float_load`` records the result with the floating-point signature helper.
+    ``mode`` runs the load in that mode (see _access).
     """
     reg_range = _COMPRESSED_REGS if compressed else None
     addr, scratch = test_data.int_regs.get_registers(2, reg_range=reg_range)
@@ -456,7 +534,17 @@ def _probe_load(
     if not float_load:
         lines.append(f"LI(x{result}, {hex(SENTINEL)})")
     lines.extend(
-        _access(f"{mnemonic} {destination}", addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions)
+        _access(
+            f"{mnemonic} {destination}",
+            addr,
+            bin_name,
+            test_data,
+            coverpoint,
+            covergroup,
+            via_sp,
+            arch_extensions,
+            mode,
+        )
     )
     lines.append(write_sigupd(result, test_data, sig_type="float" if float_load else "int"))
 
@@ -466,7 +554,7 @@ def _probe_load(
     return lines
 
 
-def _probe_store(
+def probe_store(
     mnemonic: str,
     readback_mnemonic: str,
     upper_tag: int,
@@ -481,8 +569,9 @@ def _probe_store(
     via_sp: bool = False,
     fp_move_mnemonic: str | None = None,
     arch_extensions: tuple[str, ...] = (),
+    mode: str | None = None,
 ) -> list[str]:
-    """Generate one store probe, then read the untagged address back."""
+    """Generate one store probe, then read the untagged address back.  ``mode`` runs the store in that mode."""
     reg_range = _COMPRESSED_REGS if compressed else None
     addr, value = test_data.int_regs.get_registers(2, reg_range=reg_range)
     base_reg = test_data.int_regs.get_register()
@@ -497,7 +586,9 @@ def _probe_store(
     if fp_move_mnemonic is not None:
         lines.append(f"{fp_move_mnemonic} {source}, x{value}")
     lines.extend(
-        _access(f"{mnemonic} {source}", addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions)
+        _access(
+            f"{mnemonic} {source}", addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions, mode
+        )
     )
     lines.extend([f"{readback_mnemonic} x{value}, 0(x{base_reg})", write_sigupd(value, test_data)])
 
@@ -531,6 +622,57 @@ def _probe_amo(
     ]
     test_data.int_regs.return_registers([base_reg, addr, value, result])
     return lines
+
+
+def _probe_ssamoswap(
+    mnemonic: str, readback_mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData, covergroup: str
+) -> list[str]:
+    """Generate one SSAMOSWAP probe on SS_PAGE and record both its result and memory value.
+
+    An ordinary store to a shadow-stack page faults, so the page is seeded with SSAMOSWAP.D
+    through the untagged address.
+    """
+    base_reg, addr, value, result = test_data.int_regs.get_registers(4)
+    lines = [
+        *_tagged_address(base_reg, addr, SS_PAGE, upper_tag),
+        f"LI(x{value}, {hex(VALUE_OLD)})",
+        f"ssamoswap.d x0, x{value}, (x{base_reg})",
+        f"LI(x{value}, {hex(VALUE_NEW)})",
+        f"LI(x{result}, {hex(SENTINEL)})",
+        test_data.add_testcase(bin_name, "cp_pmlen_zicfiss_amo", covergroup),
+        f"{mnemonic} x{result}, x{value}, (x{addr})",
+        write_sigupd(result, test_data),
+        f"{readback_mnemonic} x{result}, 0(x{base_reg})",
+        write_sigupd(result, test_data),
+    ]
+    test_data.int_regs.return_registers([base_reg, addr, value, result])
+    return lines
+
+
+def _probe_ssp(
+    mnemonic: str, link: int, compressed: bool, push: bool, upper_tag: int, bin_name: str, test_data: TestData, cg: str
+) -> list[str]:
+    """Generates a shadow-stack push or pop probe using a tagged ssp, with SSPUSH storing the link register at ssp-8
+    and SSPOPCHK loading and validating it from ssp.
+    Records the resulting ssp on successful access and the memory value for pushes, using x1 or x5 as the link register.
+    """
+    base_reg, addr, value = test_data.int_regs.get_registers(3)
+    lines = [
+        *_tagged_address(base_reg, addr, SS_PAGE, upper_tag),
+        f"LI(x{value}, {hex(VALUE_OLD)})",
+        f"ssamoswap.d x0, x{value}, (x{base_reg})",
+        *([f"addi x{addr}, x{addr}, 8"] if push else []),
+        f"csrw CSR_SSP, x{addr}",
+        f"LI(x{link}, {hex(VALUE_NEW if push else VALUE_OLD)})",
+        test_data.add_testcase(bin_name, "cp_pmlen_zicfiss_ssp", cg),
+        *arch_block([f"{mnemonic} x{link}"], *(("zca", "zcmop") if compressed else ())),
+        f"csrr x{value}, CSR_SSP",
+        write_sigupd(value, test_data),
+    ]
+    if push:
+        lines.extend([f"ld x{value}, 0(x{base_reg})", write_sigupd(value, test_data)])
+    test_data.int_regs.return_registers([base_reg, addr, value])
+    return _ifdef("ZCMOP_SUPPORTED", lines) if compressed else lines
 
 
 def _probe_zacas(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData, covergroup: str) -> list[str]:
@@ -636,9 +778,9 @@ def generate_instruction_sweep_tests(
     for upper in uppers:
         lines.append(comment_banner(f"{prefix} {CP_MASKING}: tag 0x{upper:04X} -- full instruction sweep"))
         for mn in READS:
-            lines.extend(_probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg))
+            lines.extend(probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg))
         for mn, rb in WRITES:
-            lines.extend(_probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
+            lines.extend(probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
 
         amos = []
         for mn, rb in RV64A_AMOS:
@@ -661,14 +803,14 @@ def generate_instruction_sweep_tests(
             lines.extend(
                 _ifdef(
                     guard,
-                    [*_probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg, float_load=True)],
+                    [*probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg, float_load=True)],
                 )
             )
         for mn, rb, guard, mv in FP_WRITES:
             lines.extend(
                 _ifdef(
                     guard,
-                    [*_probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg, fp_move_mnemonic=mv)],
+                    [*probe_store(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg, fp_move_mnemonic=mv)],
                 )
             )
 
@@ -676,7 +818,7 @@ def generate_instruction_sweep_tests(
         zca_lines = []
         for mn in ZCA_READS_CL:
             zca_lines.extend(
-                _probe_load(
+                probe_load(
                     mn,
                     upper,
                     _binname(prefix, upper, mn),
@@ -688,7 +830,7 @@ def generate_instruction_sweep_tests(
             )
         for mn, rb in ZCA_WRITES_CS:
             zca_lines.extend(
-                _probe_store(
+                probe_store(
                     mn,
                     rb,
                     upper,
@@ -701,7 +843,7 @@ def generate_instruction_sweep_tests(
             )
         for mn in ZCA_READS_SP:
             zca_lines.extend(
-                _probe_load(
+                probe_load(
                     mn,
                     upper,
                     _binname(prefix, upper, mn),
@@ -713,7 +855,7 @@ def generate_instruction_sweep_tests(
             )
         for mn, rb in ZCA_WRITES_SP:
             zca_lines.extend(
-                _probe_store(
+                probe_store(
                     mn,
                     rb,
                     upper,
@@ -730,21 +872,14 @@ def generate_instruction_sweep_tests(
             _ifdef(
                 "ZCD_SUPPORTED",
                 [
-                    *_probe_load("c.fldsp", upper, _binname(prefix, upper, "c.fldsp"), test_data, cg, **zcd_load),
-                    *_probe_store(
+                    *probe_load("c.fldsp", upper, _binname(prefix, upper, "c.fldsp"), test_data, cg, **zcd_load),
+                    *probe_store(
                         "c.fsdsp", "ld", upper, _binname(prefix, upper, "c.fsdsp"), test_data, cg, **zcd_store
                     ),
                 ],
             )
         )
         lines.extend(_ifdef("ZCA_SUPPORTED", zca_lines))
-
-        zicfiss = []
-        for mn, rb in ZICFISS_AMOS:
-            zicfiss.extend(
-                _probe_amo(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg, arch_extensions=("zicfiss",))
-            )
-        lines.extend(_ifdef("ZICFISS_SUPPORTED", zicfiss))
 
         for guard, ops in (("ZICBOZ", ["cbo.zero"]), ("ZICBOM", ZICBOM_OPS), ("ZICBOP", ZICBOP_OPS)):
             cbo = []
@@ -766,6 +901,24 @@ def generate_instruction_sweep_tests(
     return lines
 
 
+def generate_zicfiss_tests(prefix: str, test_data: TestData, cg: str, uppers: list[int]) -> list[str]:
+    """Exercise the Zicfiss shadow-stack instructions through each tagged address pattern.
+
+    They access memory only below M-mode with S-mode implemented, shadow stacks enabled by set_sse,
+    and SS_PAGE mapped as a shadow-stack page.
+    """
+    lines = []
+    for upper in uppers:
+        lines.append(comment_banner(f"{prefix} Zicfiss shadow-stack instructions: tag 0x{upper:04X}"))
+        for mn, rb in ZICFISS_AMOS:
+            lines.extend(_probe_ssamoswap(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
+        for push, forms in ((True, ZICFISS_PUSHES), (False, ZICFISS_POPS)):
+            for mn, link, compressed in forms:
+                bin_name = _binname(prefix, upper, f"{mn}_x{link}")
+                lines.extend(_probe_ssp(mn, link, compressed, push, upper, bin_name, test_data, cg))
+    return _ifdef("ZICFISS_SUPPORTED", lines) if lines else []
+
+
 def _load_store_sweep(
     prefix: str,
     load: str,
@@ -783,7 +936,7 @@ def _load_store_sweep(
     for upper in UPPER_PATTERNS:
         lines.extend(
             [
-                *_probe_load(
+                *probe_load(
                     load,
                     upper,
                     _binname(prefix, upper, load),
@@ -793,7 +946,7 @@ def _load_store_sweep(
                     base_address=base,
                     offset=offset,
                 ),
-                *_probe_store(
+                *probe_store(
                     store,
                     readback,
                     upper,
@@ -898,28 +1051,31 @@ def generate_fault_address_tests(prefix: str, test_data: TestData, cg: str) -> l
     """Check that masking also applies before the model access-fault address is used."""
     cp = "cp_hardware_csr_writes_fault"
     base, a, data, chk = test_data.int_regs.get_registers(4)
-    lines = [
-        comment_banner(f"{prefix}: masked address resolves to the model's access-fault address"),
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-        f"LI(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-    ]
+    lines = [comment_banner(f"{prefix}: masked address resolves to the model's access-fault address")]
     for upper in UPPER_PATTERNS:
         lines.extend(
             [
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+                f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
                 f"LI(x{a}, {hex(upper << 48)})",
                 f"xor x{a}, x{a}, x{base}",
                 f"LI(x{chk}, {hex(SENTINEL)})",
-                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "lw"), cp, cg),
+                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "lw"), f"{cp}_load", cg),
                 f"lw x{chk}, 0(x{a})",
                 write_sigupd(chk, test_data),
+                "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+                f"LI_FIXED_LEN(x{base}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
+                f"LI(x{a}, {hex(upper << 48)})",
+                f"xor x{a}, x{a}, x{base}",
                 f"LI(x{data}, {hex(VALUE_NEW)})",
                 f"LI(x{chk}, {hex(SENTINEL)})",
-                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "sw"), cp, cg),
+                test_data.add_testcase(_binname(f"{prefix}_flt", upper, "sw"), f"{cp}_store", cg),
                 f"sw x{data}, 0(x{a})",
                 write_sigupd(chk, test_data),
+                "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
             ]
         )
-    lines.append("#endif // RVMODEL_ACCESS_FAULT_ADDRESS")
     test_data.int_regs.return_registers([base, a, data, chk])
     return lines
 
@@ -1113,10 +1269,14 @@ def generate_mprv_mpp_m_tests(test_data: TestData, cg: str) -> list[str]:
     for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
         prefix = f"mprv_mseccfg{mseccfg_pmm:02b}_nosatp_mppm"
         lines.extend(
-            [
-                *set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data),
-                *_mprv_lw_sw_probe("PRV_M", "cp_pm_mprv_mpp_m", prefix, test_data, cg),
-            ]
+            pmm_ifdef(
+                "mseccfg",
+                mseccfg_pmlen,
+                [
+                    *set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data),
+                    *_mprv_lw_sw_probe("PRV_M", "cp_pm_mprv_mpp_m", prefix, test_data, cg),
+                ],
+            )
         )
     lines.extend([*set_pmm_field("mseccfg", 0b00, 0, test_data), *mprv_teardown(test_data, sum_bit=False)])
     return lines
@@ -1158,10 +1318,10 @@ def generate_mprv_lower_mode_tests(
 
         # mseccfg.PMM only exists with Smmpm; without it the sweep collapses to one pass.
         for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
-            lines.extend(_ifdef("SMMPM_SUPPORTED", set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data)))
+            mseccfg_body = _ifdef("SMMPM_SUPPORTED", set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data))
 
             for pmm, pmlen, _ in PMM_CONFIGS:
-                lines.extend(set_pmm_field(pmm_csr, pmm, pmlen, test_data))
+                pmm_body = set_pmm_field(pmm_csr, pmm, pmlen, test_data)
 
                 for satp_mode in ["bare", "sv39"] if s_mode else ["bare"]:
                     cfg = f"mseccfg{mseccfg_pmm:02b}_{pmm_csr}{pmm:02b}"
@@ -1171,8 +1331,11 @@ def generate_mprv_lower_mode_tests(
                         probe = _ifdef(
                             "SV39_SUPPORTED", [SV39.satp_setup, "sfence.vma", *probe, "csrwi satp, 0", "sfence.vma"]
                         )
-                    lines.extend(probe)
+                    pmm_body.extend(probe)
 
+                mseccfg_body.extend(pmm_ifdef(pmm_csr, pmlen, pmm_body))
+
+            lines.extend(pmm_ifdef("mseccfg", mseccfg_pmlen, mseccfg_body))
     lines.extend(
         [
             *_ifdef("SMMPM_SUPPORTED", set_pmm_field("mseccfg", 0b00, 0, test_data)),

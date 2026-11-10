@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXPERIMENTAL_EXTENSIONS, EXTENSION_PARAM_MAP
+from testgen.constants import EXPERIMENTAL_EXTENSIONS
 from testgen.data.config import TestConfig
 
 
@@ -53,7 +53,9 @@ def insert_header_template(
     required_extensions = (
         None if required_extensions is None else [ext for ext in required_extensions if isinstance(ext, str)]
     )
-    ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions, sew, instr_name)
+    ext_components, params = canonicalize_extensions(
+        testsuite, xlen, E_ext, required_extensions, sew, instr_name, test_config.extra_extensions
+    )
     extension_requirements = [*ext_components, *alternative_extensions]
     flat_ext_components = ext_components + [ext for alternatives in alternative_extensions for ext in alternatives]
     if test_config.extra_params:
@@ -98,6 +100,7 @@ def canonicalize_extensions(
     required_extensions: list[str] | None = None,
     sew: int | None = None,
     instr_name: str | None = None,
+    extra_extensions: tuple[str, ...] = (),
 ) -> tuple[list[str], list[str]]:
     """Canonicalize extension string.
 
@@ -108,20 +111,18 @@ def canonicalize_extensions(
         required_extensions: If provided, use these extensions instead of parsing from testsuite.
         sew: Optional. Used in vector suites to determine the base extension
         instr_name: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
+        extra_extensions: Optional. Extensions a testplan row requires beyond the testsuite's own.
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = (
         required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z]*", testsuite)
     )
+    ext_components.extend(extra_extensions)
 
     # Extract parameters
     params: list[str] = []
     if xlen > 0:
         params.append(f"MXLEN: {xlen}")
-    for ext in ext_components:
-        if ext in EXTENSION_PARAM_MAP:
-            params.append(EXTENSION_PARAM_MAP[ext])
-            ext_components.remove(ext)
 
     # Canonicize extensions
     if "I" not in ext_components and "E" not in ext_components:
@@ -168,6 +169,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Vls32": ["Zve32x"],
         "Vx64": ["Zve64x"],
         "Vls64": ["Zve64x"],
+        "Vf8": ["Zvfh", "Zfhmin", "F"],
         "Vf16": ["Zvfh", "Zfhmin", "F"],
         "Vf32": ["Zve32f", "F"],
         "Vf64": ["Zve64d", "F", "D"],
@@ -177,6 +179,17 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
     }
 
     mapped = vector_map[testsuite] if testsuite in vector_map else [f"Zve{max(sew, 32)}x"]
+
+    if testsuite == "Vf16" and instr_name in [
+        "vfwcvt.f.x.v",
+        "vfwcvt.f.xu.v",
+        "vfncvt.x.f.w",
+        "vfncvt.xu.f.w",
+        "vfncvt.rtz.x.f.w",
+        "vfncvt.rtz.xu.f.w",
+    ]:
+        # At SEW=16 these convert between 16-bit integers and binary32, so Zve32f provides them without Zvfh.
+        mapped = ["Zve32f", "F"]
 
     for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
         # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),
@@ -200,26 +213,23 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
 
         # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
         # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
-        # those with EEW=64 floating-point operands.
-        # The first part of this requirement is handled by placing those operands into Vf.
-        if (
-            zve_ext in mapped
-            and instr_name in ["vfmv.f.s", "vfmv.s.f", "vfslide1up.vf", "vfslide1down.vf"]
-            and sew == 64
-        ):
-            mapped.remove(zve_ext)
-            mapped.append("V")
+        # those with EEW=64 floating-point operands.  Placing floating-point operands in Vf, and EEW=64 ones in Vf64,
+        # which needs Zve64d, handles both: Zve64d includes them (zve64d.adoc, Zve64d_instr_perm).
 
-    if "Zve32x" in mapped and instr_name.startswith(("vw", "vn")) and sew == 32:
-        # Zve32x allows for an ELEN of 32, so a widening instruction at sew = 32 would widen to an eew of 64, which
-        # requires Zve64x.
+    if "Zve32x" in mapped and instr_name.startswith(("vw", "vnsr", "vnclip")) and sew == 32:
+        # Zve32x allows for an ELEN of 32, so a widening or narrowing instruction at sew = 32 has an operand with
+        # eew = 64, which requires Zve64x.  vnmsac and vnmsub are not narrowing.
         mapped.remove("Zve32x")
         mapped.append("Zve64x")
 
     if "Zve32f" in mapped and instr_name.startswith(("vfw", "vfncvt")) and sew == 32:
-        # Same logic for floating point
+        # Same logic for floating point. The wide operands have EEW=64. Zve64f supports them only as integers
+        # (vfwcvt.x[u].f.v, vfwcvt.rtz.x[u].f.v, vfncvt.f.x[u].w); 64-bit floating-point operands need Zve64d.
         mapped.remove("Zve32f")
-        mapped.append("Zve64f")
+        if instr_name.startswith(("vfwcvt.x", "vfwcvt.rtz.x", "vfncvt.f.x")):
+            mapped.append("Zve64f")
+        else:
+            mapped.extend(["Zve64d", "D"])
 
     if "Zve32x" in mapped and "64" in instr_name:
         # This is an unsupported EEW (happens for vle64.v)

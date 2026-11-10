@@ -6,7 +6,8 @@
 #include "rvtest_config.h"
 #include "derived_config.h"
 #include "encoding.h"
-#ifdef RVTEST_EXPERIMENTAL
+#include "tsbi.h"
+#ifdef ENABLE_EXPERIMENTAL_EXTENSIONS
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"
@@ -30,9 +31,6 @@
 #endif
 #ifdef RVTEST_VECTOR
   #include "rvtest_macros_vector.h"
-#endif
-#ifdef H_SUPPORTED
-  #include "rvtest_macros_hypervisor.h"
 #endif
 #include "rvtest_trap_handler.h"
 #include "rvtest_invisible_trap_handler.h"

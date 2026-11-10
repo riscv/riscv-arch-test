@@ -1,7 +1,0 @@
-# Mapping of normative rules to coverpoints for a test suite
-
-normative_rule_definitions:
-  - name: c-zext-w_op
-    coverpoint:
-      ["ZcbZba_c_zext_w_cg/{cp_rs1_p, cp_rs1_edges}"]
-      # zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.

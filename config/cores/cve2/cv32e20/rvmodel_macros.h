@@ -65,9 +65,6 @@
   j 1b                       ; /* Loop */             \
 3:
 
-##### Machine Timer #####
-
-// CLINT machine timer in mm_ram at Sail's CLINT base (matches sail_macros.h).
 ##### Machine Interrupts #####
 
 // Drive cv32e20 core irq pins via the cv32e20-dv mm_ram Sail-protocol

@@ -79,39 +79,48 @@
 /**** - Include headers that contain code (not macros) that would throw off the address ****/
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
 /*******************************************************************************************/
+// Turn off M-mode landing pads (mseccfg.MLPE) on the way out of a test. The end-of-test
+// and failure code, the epilogs and rvmodel_halt_fail are not written with landing pads,
+// so an indirect jump among them (such as jr T1 to rvmodel_halt_fail) would otherwise
+// raise a software-check exception when a test left MLPE set.
+.macro RVTEST_MLPE_OFF
+  #if defined(ZICFILP_SUPPORTED) && defined(STANDARD_SM_SUPPORTED) // runs in M-mode only with the T-SEE
+    LI(     T1, MSECCFG_MLPE)
+    csrc    mseccfg, T1
+  #endif
+.endm
+
 .macro RVTEST_CODE_END
   // Disable assembler/linker optimizations for RVTEST_CODE_END
   .option push
   .option norvc
   .global rvtest_code_end       // define the label and make it available
-  .global cleanup_epilogs       // ****ALERT: tests must populate x1 with a point to the end of regular sig area TODO: Is this still true?
   /**** MPRV must be clear here !!! ****/
 
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
   // invoked unless there is STANDARD_SM_SUPPORTED.  A user with custom M-mode will need
   // to reimplement many parts of this macro.
+  // Start the end-of-test code and the trap handlers that follow it on a fresh page, so a
+  // test can map its own code for U-mode while keeping the handlers supervisor-only.
+  // Jump over the alignment padding rather than executing it.
+  j rvtest_code_end
+  .p2align 12
   rvtest_code_end:
+  // The default unexpected-interrupt handlers reach rvtest_code_end and
+  // rvtest_code_end_mmode with jr T1, which sets ELP when Zicfilp is enabled in that
+  // mode, so both start with a 4-byte-aligned lpad 0 (a no-op otherwise).
+    auipc   x0, 0                     // lpad 0
 
-  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
-  // The RVTEST_GOTO_MMODE sits BELOW the cleanup_epilogs label (not at rvtest_code_end)
-  // because cleanup_epilogs is also reached from abort_test and from the default
-  // unexpected-interrupt handlers, which can run in S/U/VS/VU mode. The epilogs read
-  // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
-  cleanup_epilogs:
+  // The checks and epilogs read M-mode CSRs. The test body and the default
+  // unexpected-interrupt handlers can reach this point in any mode. Callers in
+  // the M-mode trap handler use the _mmode entry (see rvtest_fail_epilogs).
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
-      #ifdef S_SUPPORTED
-        // Exact reverse of the prolog order (M, S, V).
-        #ifdef H_SUPPORTED
-          RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-        #endif
-        RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
-      #endif
-      RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
-      LA(T1, rvtest_trap_prolog_error)
-      LREG T1, 0(T1)
-      bnez T1, rvtest_trap_setup_failed
     #endif
+  .p2align 2
+  rvtest_code_end_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
 
   #ifdef RVTEST_CONFIG_CHECKS
     RVTEST_CONFIG_CHECK_VERDICT
@@ -121,14 +130,14 @@
     // Check the regular signature offset to make sure the correct number of
     // signature updates occurred.
     check_regular_sig_offset:
-      LA(     T1, signature_base)
-      sub     T1, DEFAULT_SIG_REG, T1
+      LA(     T4, signature_base)       // T4, not T1: rvmodel_io_write_str clobbers T1-T3
+      sub     T4, DEFAULT_SIG_REG, T4
       LA(     T3, final_sig_offset)
     #ifdef RVTEST_SELFCHECK
       LREG    DEFAULT_TEMP_REG, 0(T3)
-      beq     DEFAULT_TEMP_REG, T1, check_regular_sig_offset_done
+      beq     DEFAULT_TEMP_REG, T4, check_regular_sig_offset_done
     #else
-      SREG    T1, 0(T3)
+      SREG    T4, 0(T3)
       beq     x0, x0, check_regular_sig_offset_done
     #endif
 
@@ -141,7 +150,7 @@
       call rvmodel_io_write_str
       LA(a0, regular_sig_offset_actual_str)
       call rvmodel_io_write_str
-      mv      a0, T1
+      mv      a0, T4
       li      a1, UDB_MXLEN
       jal     ra, failedtest_hex_to_str
       LA(a0, ascii_buffer)
@@ -156,7 +165,7 @@
       call rvmodel_io_write_str
       LA(a0, endstr)
       call rvmodel_io_write_str
-      call rvmodel_halt_fail
+      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
     check_regular_sig_offset_done:
   #endif
 
@@ -172,7 +181,7 @@
       call rvmodel_io_write_str
       LA(a0, endstr)
       call rvmodel_io_write_str
-      call rvmodel_halt_fail
+      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
 
     // Check trap signature offset to make sure the correct number of traps occurred.
     // This is a trap-framework diagnostic, not a normal signature check. Pass the
@@ -199,12 +208,57 @@
 
     check_abort_test:
       LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, exit_cleanup
+      bne     T4, T5, run_epilogs
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR abort_test
       RVTEST_WORD_PTR abortstr
       .word   CSR_MEPC
   #endif
+
+  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
+  run_epilogs:
+    LI(T5, 0)                         // normal termination
+    j   run_epilogs_body
+
+  // Failure reporting reaches this entry after printing its diagnostic. Run the epilogs
+  // before the failure halt. With Smdbltrp, an ecall to switch to M-mode is a double trap
+  // when mstatus.MDT=1 in M-mode. Callers in an M-mode trap handler use the _mmode entry.
+  // An M-mode test body can also set MDT, so skip the switch if the last T-SBI mode
+  // change was to M-mode.
+  // The failure paths in the trap handlers reach both entries with jr T1, which sets ELP
+  // when Zicfilp is enabled in that mode, so each starts with a 4-byte-aligned lpad 0.
+  .p2align 2
+  rvtest_fail_epilogs:
+    auipc   x0, 0                     // lpad 0
+    #ifdef STANDARD_SM_SUPPORTED
+      LA(T1, rvtest_current_mode)
+      LREG T1, 0(T1)
+      beqz T1, rvtest_fail_epilogs_mmode
+      RVTEST_TSBI_GOTO_MMODE
+    #endif
+  .p2align 2
+  rvtest_fail_epilogs_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
+    LI(T5, 1)
+
+  run_epilogs_body:
+    #ifdef STANDARD_SM_SUPPORTED
+      #ifdef S_SUPPORTED
+        // Exact reverse of the prolog order (M, S, V).
+        #ifdef H_SUPPORTED
+          RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
+        #endif
+        RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
+      #endif
+      RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
+      LA(T1, rvtest_trap_prolog_error)
+      LREG T1, 0(T1)
+      bnez T1, rvtest_trap_setup_failed
+    #endif
+    beqz T5, exit_cleanup
+    LA(T1, rvmodel_halt_fail)
+    jr T1
 
   // Terminate test with passing status
   exit_cleanup:
@@ -252,25 +306,39 @@
   rvtest_fail_summary:
     LA(a0, failstr)
     call rvmodel_io_write_str
-    call rvmodel_halt_fail
+    j       rvtest_fail_epilogs
 
-  rvtest_trap_setup_failed:
+  rvtest_fail_summary_mmode:
     LA(a0, failstr)
     call rvmodel_io_write_str
+    j       rvtest_fail_epilogs_mmode
+
+  rvtest_trap_setup_failed:
+    bnez T5, 1f                       // failure path already printed failstr
+    LA(a0, failstr)
+    call rvmodel_io_write_str
+1:
     LA(a0, rvtest_trap_prolog_error)
     LREG a0, 0(a0)
     call rvmodel_io_write_str
-    call rvmodel_halt_fail
+    LA(T1, rvmodel_halt_fail)
+    jr T1
 
   // Terminate the test with a failure message indicating the trap signature overflowed
   trap_sig_overflow:
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
+  trap_sig_overflow_mmode:
+    LA(T5, trap_sig_overflow)
+    j       rvtest_code_end_mmode
 
   // Terminate test with a failure message
   abort_test:
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
+  abort_test_mmode:
+    LI(     T5, 0xBAD0DEAD)
+    j       rvtest_code_end_mmode
 
   // Instantiate trap handlers for each priv mode
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
@@ -308,27 +376,10 @@
   #endif
 
   // Model specific boot code, in the driver (rvtest_driver.h). ra is dead here
-  // (rvmodel_boot ends with `jr T1`), so `call` is free to clobber it.
+  // (rvmodel_boot ends with `jr T2`), so `call` is free to clobber it.
   rvmodel_boot:
     call rvmodel_dut_boot
     call rvmodel_dut_io_init
-
-    // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
-    RVTEST_BOOT_TO_MMODE
-    // The BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
-    // Otherwise continue to a lower privilege mode (if one exists) depending on the type of test
-    #ifndef BOOT_TO_MMODE
-      #ifdef S_SUPPORTED
-        RVTEST_BOOT_TO_SMODE
-      #endif
-      // The BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
-      // Otherwise continue to U-mode if U-mode supported
-      #ifndef BOOT_TO_SMODE
-        #ifdef U_SUPPORTED
-          RVTEST_BOOT_TO_UMODE
-        #endif
-      #endif
-    #endif
 
     #ifdef S_SUPPORTED
       rvtest_identity_map:
@@ -336,6 +387,9 @@
         // Sv39 gigapage, Sv48 terapage and Sv57 petapage.
         // This allows the S-mode trap handler and save area to be accessed
         // without requiring prior page table entries setup.
+        // The map is written in M-mode before the boot mode switch, so sfence.vma can legally
+        // order the stores before the implicit page-table reads of later translations.
+        // The fence is needed even on harts without PMP, where boot does no other sfence.vma.
         LA(T1, rvtest_Sroot_pg_tbl)
         LA(T2, rvtest_data_begin)
         #if __riscv_xlen == 32
@@ -359,6 +413,24 @@
             sd   T4, 0(T3)
           .endr
         #endif
+        RVTEST_SFENCE_VMA_IF_SUPPORTED
+    #endif
+
+    // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
+    RVTEST_BOOT_TO_MMODE
+    // The BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
+    // Otherwise continue to a lower privilege mode (if one exists) depending on the type of test
+    #ifndef BOOT_TO_MMODE
+      #ifdef S_SUPPORTED
+        RVTEST_BOOT_TO_SMODE
+      #endif
+      // The BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
+      // Otherwise continue to U-mode if U-mode supported
+      #ifndef BOOT_TO_SMODE
+        #ifdef U_SUPPORTED
+          RVTEST_BOOT_TO_UMODE
+        #endif
+      #endif
     #endif
 
     // Clear the global trap counter at the end of boot code
@@ -367,8 +439,8 @@
 
     RVTEST_INIT_REGS // Put deterministic values in each register
 
-    LA (T1, rvtest_code_begin)
-    jr T1                         // Jump back to the start of the test
+    LA (T2, rvtest_code_begin)
+    jr T2                         // Jump back to the start of the test; x7 does not set ELP (Zicfilp)
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -388,11 +460,20 @@
 /**** - Save areas for each priv mode trap handler                                      ****/
 /**** - Defines the start of the test data region                                       ****/
 /*******************************************************************************************/
+// Size of the scratch region in bytes. The default 264 bytes = 33 doublewords is enough for
+// atomic reservation tests with offsets up to 256 bytes. A test that loads or stores at larger
+// offsets defines SCRATCH_SIZE before including riscv_arch_test.h.
+#ifndef SCRATCH_SIZE
+  #define SCRATCH_SIZE 264
+#endif
+#if SCRATCH_SIZE < 264
+  #error "SCRATCH_SIZE must be at least 264"
+#endif
+
 .macro RVTEST_DATA_BEGIN
   // Scratch region of memory for tests (ie for loads/stores that are not part of signature)
-  // Initialized with distinct values so tests can detect unintended zeroing or aliasing,
-  // while remaining obviously recognizable as uninitialized scratch defaults.
-  // 264 bytes = 33 doublewords (needed for atomic reservation tests with offsets up to 256 bytes)
+  // The first 264 bytes are initialized with distinct values so tests can detect unintended
+  // zeroing or aliasing, while remaining obviously recognizable as uninitialized scratch defaults.
   .data
   .p2align 8
   scratch:
@@ -413,6 +494,7 @@
     .dword 0xDEAD001DFFE2BEEF, 0xDEAD001EFFE1BEEF
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
+    .fill SCRATCH_SIZE - 264, 1, 0 // rest of a larger SCRATCH_SIZE
 
   // Temporary memory for RVTEST_SIGUPD_F.
   .p2align 4
@@ -426,6 +508,11 @@
   .p2align 3
   .global rvtest_trap_count
   rvtest_trap_count:
+    .dword 0
+
+  // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
+  .p2align 3
+  rvtest_current_mode:
     .dword 0
 
   .p2align 4
@@ -707,6 +794,19 @@
         LI(t0, MSTATEEN0_JVT | MSTATEEN0_FCSR)
         csrw mstateen0, t0
       #endif
+
+      // mstateen1-3.SE = 1: Enable access to sstateen1-3. Bit 63 is their only writable bit.
+      #if __riscv_xlen == 64
+        LI(t0, MSTATEEN_HSTATEEN)
+        csrw mstateen1, t0
+        csrw mstateen2, t0
+        csrw mstateen3, t0
+      #else    // RV32
+        LI(t0, MSTATEENH_HSTATEEN)
+        csrw mstateen1h, t0
+        csrw mstateen2h, t0
+        csrw mstateen3h, t0
+      #endif
     #endif
 
     // Enable all performance counters if they exist.
@@ -716,7 +816,8 @@
       csrw mcountinhibit, zero
     #endif
 
-    // Initialize counter event selectors to 0.  They must be implemented.
+    // Initialize counter event selectors to 0.  All counters should be implemented, but a legal
+    // implementation is to make both the counter and its corresponding event selector be read-only 0.
     csrw mhpmevent3, zero
     csrw mhpmevent4, zero
     csrw mhpmevent5, zero
@@ -784,13 +885,13 @@
 
     #ifdef RVMODEL_MTIMECMP_ADDRESS
       // Initialize mtimecmp to all 1s so that it does not generate a timer interrupt prematurely
-      LA(t0, RVMODEL_MTIMECMP_ADDRESS)
+      LI_FIXED_LEN(t0, RVMODEL_MTIMECMP_ADDRESS)
       addi t1, zero, -1
       sw t1, 0(t0)
       sw t1, 4(t0)
     #elif !defined(RVTEST_SELFCHECK)
       // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
-      LA(t0, SAIL_MTIMECMP_ADDRESS)
+      LI_FIXED_LEN(t0, SAIL_MTIMECMP_ADDRESS)
       addi t1, zero, -1
       sw t1, 0(t0)
       sw t1, 4(t0)
@@ -798,7 +899,7 @@
 
     #ifdef RVMODEL_MSIP_ADDRESS
       // Initialize msip to 0 to avoid generating a software interrupt prematurely
-      LA(t0, RVMODEL_MSIP_ADDRESS)
+      LI_FIXED_LEN(t0, RVMODEL_MSIP_ADDRESS)
       sw zero, 0(t0)
     #endif
 
@@ -843,6 +944,108 @@
         sfence.vma
       #endif // SV32 or SV39
     #endif // PMP
+
+    #ifdef H_SUPPORTED
+      // Initialize the HS-mode CSRs, whose reset values are UNSPECIFIED, and the CSRs that grant
+      // VS/VU-mode access (hcounteren, henvcfg and hstateen0). This runs for every test, including
+      // those that stay in M-mode: M-mode tests enter VS/VU-mode directly through T-SBI, so the
+      // VS/VU permissions are set here rather than in RVTEST_BOOT_TO_SMODE beside their S-mode
+      // counterparts. Tests that need other values set them themselves.
+      // hstatus: every field zero except VSXL = 64 on RV64 (HUPMM exists only on RV64).
+      LI(t0, HSTATUS_VSBE | HSTATUS_GVA | HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | \
+             HSTATUS_VGEIN | HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_HUKTE)
+      csrc hstatus, t0
+      #if __riscv_xlen == 64
+        csrr t1, hstatus
+        LI(t0, ~(HSTATUS_VSXL | HSTATUS_HUPMM))
+        and t1, t1, t0
+        LI(t0, 0x0000000200000000)  // VSXL = 2
+        or t1, t1, t0
+        csrw hstatus, t1
+      #endif
+
+      // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
+      li t0, 0
+      #if __riscv_xlen == 64
+        LI(t0, 0x0000000200000000)  // UXL = 2
+      #endif
+      #ifdef F_SUPPORTED
+        LI(t1, SSTATUS_FS)
+        or t0, t0, t1
+      #endif
+      #ifdef ZVL32B_SUPPORTED
+        LI(t1, SSTATUS_VS)
+        or t0, t0, t1
+      #endif
+      csrw vsstatus, t0
+
+      csrw htimedelta, zero
+      #if __riscv_xlen == 32
+        csrw htimedeltah, zero
+      #endif
+
+      // No pending virtual interrupts and no guest external interrupts enabled.
+      // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
+      csrw hvip, zero
+      csrw hgeie, zero
+
+      // Make counters accessible from VS/VU-mode
+      li t0, -1
+      csrw hcounteren, t0
+
+      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
+      #ifdef S1P12P0_OR_LATER_SUPPORTED
+        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+        csrw henvcfg, t0
+      #endif
+
+      // hstateen0 enables VS/VU-mode access to standard state, matching mstateen0 above.
+      // hstateen0.SE0 = 1: Enable access to sstateen0
+      // hstateen0.ENVCFG = 1: Enable access to senvcfg
+      // hstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+      // hstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+      // hstateen0.IMSIC = 1: Enable access to IMSIC state
+      // hstateen0.SCONTEXT = 1: Enable access to scontext
+      // hstateen0.CTR = 1: Enable access to control transfer record state
+      // hstateen0.JVT = 1: Enable access to jvt for Zcmt
+      // hstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+      // Keep custom state and reserved bits disabled. hstateen0 has no P1P13 or SRMCFG
+      // bit; that state is M-level only. A bit whose feature is not implemented reads
+      // as zero, so enabling the whole set costs nothing on a smaller hart.
+      #ifdef SSSTATEEN_SUPPORTED
+        #if __riscv_xlen == 64
+          LI(t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_CSRIND | HSTATEEN0_AIA | \
+                 HSTATEEN0_IMSIC | HSTATEEN0_SCONTEXT | HSTATEEN0_CTR | HSTATEEN0_JVT | \
+                 HSTATEEN0_FCSR)
+          csrw hstateen0, t0
+        #else    // RV32
+          LI(t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG | HSTATEEN0H_CSRIND | HSTATEEN0H_AIA | \
+                 HSTATEEN0H_IMSIC | HSTATEEN0H_SCONTEXT | HSTATEEN0H_CTR)
+          csrw hstateen0h, t0
+          LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
+          csrw hstateen0, t0
+        #endif
+        // Setting mstateen1-3.SE above makes machine-level software responsible for initializing
+        // the writable bits of the matching hstateen and sstateen CSRs, whose reset values are
+        // unspecified (norm:hstateen_sstateen_zero_initialization).
+        // hstateen1-3.SE = 1: Enable access to sstateen1-3 from VS-mode, as hstateen0.SE0 does for
+        // sstateen0. Bit 63 (SE) is the only writable bit of hstateen1-3; the rest are reserved.
+        #if __riscv_xlen == 64
+          LI(t0, HSTATEEN_SSTATEEN)
+          csrw hstateen1, t0
+          csrw hstateen2, t0
+          csrw hstateen3, t0
+        #else    // RV32
+          LI(t0, HSTATEENH_SSTATEEN)
+          csrw hstateen1h, t0
+          csrw hstateen2h, t0
+          csrw hstateen3h, t0
+          csrw hstateen1, zero
+          csrw hstateen2, zero
+          csrw hstateen3, zero
+        #endif
+      #endif
+    #endif // H_SUPPORTED
   #endif // STANDARD_SM_SUPPORTED
 
   // Init floating-point and vector state if necessary, even if the rest of M-mode is not implemented
@@ -854,13 +1057,11 @@
 /**** Switch into S-mode                                                                ****/
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_SMODE
-  // We start in M-mode after initial boot but cannot assume it is standard
-  // so access to M-mode features must be through a SBI
-
+  // Runs in M-mode at boot, as the reference T-SEE's M-level setup for S-mode: it writes the
+  // M-mode delegation CSRs directly, initializes the S-mode CSRs, and enters S-mode through
+  // T-SBI. The M-mode boot already set up the S, HS and VS trap handlers if applicable. A DUT
+  // with a nonstandard M-mode replaces the T-SEE rather than this macro.
   rvtest_boot_to_smode:
-  // Default implementation assumes standard M-mode
-  // We are in M-mode now at initial boot time
-  // The M-mode boot already set up S, HS, VS trap handlers if applicable.
 
   // Delegate exceptions to S-mode, except those that must be directed to M-mode
   // medeleg[0] = 1: delegate instruction address misaligned exception
@@ -914,7 +1115,10 @@
   // Keep custom state and reserved bits disabled.
   #ifdef SSSTATEEN_SUPPORTED
     li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
-    csrs sstateen0, t0 // enable access from lower privilege mode
+    csrw sstateen0, t0 // enable access from lower privilege mode; clear the other writable bits
+    csrw sstateen1, zero // keep any writable bits of sstateen1-3 disabled
+    csrw sstateen2, zero
+    csrw sstateen3, zero
   #endif
 
   // Initialize S-mode CSRs
@@ -938,86 +1142,6 @@
     csrw senvcfg, t0
   #endif
 
-  #ifdef H_SUPPORTED
-    // Initialize HS-mode CSRs.
-    // hstatus: every field zero except VSXL = 64 on RV64.
-    // Tests that need other values set them themselves.
-    LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
-           HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
-    csrc hstatus, t0
-    #if __riscv_xlen == 64
-      csrr t1, hstatus
-      LI(t0, ~HSTATUS_VSXL)
-      and t1, t1, t0
-      LI(t0, 0x0000000200000000)  // VSXL = 2
-      or t1, t1, t0
-      csrw hstatus, t1
-    #endif
-
-    // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
-    li t0, 0
-    #if __riscv_xlen == 64
-      LI(t0, 0x0000000200000000)  // UXL = 2
-    #endif
-    #ifdef F_SUPPORTED
-      LI(t1, SSTATUS_FS)
-      or t0, t0, t1
-    #endif
-    #ifdef ZVL32B_SUPPORTED
-      LI(t1, SSTATUS_VS)
-      or t0, t0, t1
-    #endif
-    csrw vsstatus, t0
-
-    csrw htimedelta, zero
-    #if __riscv_xlen == 32
-      csrw htimedeltah, zero
-    #endif
-
-    // No pending virtual interrupts and no guest external interrupts enabled.
-    // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
-    csrw hvip, zero
-    csrw hgeie, zero
-
-    // Make counters accessible from VS/VU-mode
-    li t0, -1
-    csrw hcounteren, t0
-
-    // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
-    #ifdef S1P12P0_OR_LATER_SUPPORTED
-      li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
-      csrw henvcfg, t0
-    #endif
-
-    // Enable access to standard state from VS/VU-mode, matching mstateen0 above.
-    // hstateen0.SE0 = 1: Enable access to sstateen0
-    // hstateen0.ENVCFG = 1: Enable access to senvcfg
-    // hstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
-    // hstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
-    // hstateen0.IMSIC = 1: Enable access to IMSIC state
-    // hstateen0.SCONTEXT = 1: Enable access to scontext
-    // hstateen0.CTR = 1: Enable access to control transfer record state
-    // hstateen0.JVT = 1: Enable access to jvt for Zcmt
-    // hstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
-    // Keep custom state and reserved bits disabled. hstateen0 has no P1P13 or SRMCFG
-    // bit; that state is M-level only. A bit whose feature is not implemented reads
-    // as zero, so enabling the whole set costs nothing on a smaller hart.
-    #ifdef SSSTATEEN_SUPPORTED
-      #if __riscv_xlen == 64
-        LI(t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_CSRIND | HSTATEEN0_AIA | \
-               HSTATEEN0_IMSIC | HSTATEEN0_SCONTEXT | HSTATEEN0_CTR | HSTATEEN0_JVT | \
-               HSTATEEN0_FCSR)
-        csrw hstateen0, t0
-      #else    // RV32
-        LI(t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG | HSTATEEN0H_CSRIND | HSTATEEN0H_AIA | \
-               HSTATEEN0H_IMSIC | HSTATEEN0H_SCONTEXT | HSTATEEN0H_CTR)
-        csrw hstateen0h, t0
-        LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
-        csrw hstateen0, t0
-      #endif
-    #endif
-  #endif // H_SUPPORTED
-
   // Boot into S-mode
   RVTEST_TSBI_GOTO_SMODE
 .endm
@@ -1027,10 +1151,8 @@
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
-
   rvtest_boot_to_umode:
-  // Boot into U-mode
-  RVTEST_TSBI_GOTO_UMODE
+  RVTEST_TSBI_GOTO_UMODE // Boot into U-mode
   nop
 .endm
 

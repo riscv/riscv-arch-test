@@ -735,8 +735,9 @@ endgroup
 // ---------------------
 `endif
 function void zknd_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
 `ifdef UDB_MXLEN_32
         "aes32dsi"     : begin
             Zknd_aes32dsi_cg.sample(ins);
@@ -762,5 +763,6 @@ function void zknd_sample(int hart, int issue, ins_t ins);
             Zknd_aes64ks2_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

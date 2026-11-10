@@ -79,8 +79,6 @@ TRAP_CANARY_32 = 0xD3A91F6C
 TRAP_CANARY_64 = 0xD3A91F6C8B47E25D
 END_CANARY_32 = 0x6F5CA309
 END_CANARY_64 = 0x6F5CA309E7D4B281
-DEADBEEF_32 = 0xDEADBEEF
-DEADBEEF_64 = 0xDEADBEEFDEADBEEF
 
 
 @dataclass(frozen=True)
@@ -95,7 +93,6 @@ class TrapEntry:
     xepc: int | None
     xip: int | None
     xtval: int | None
-    int_id: int | None
     mtval2: int | None
     xtinst: int | None
     xstatus_bits: int
@@ -161,9 +158,8 @@ def _parse_trap_words(sig_path: Path, xlen: int) -> list[int] | None:
         return None
 
     # Extract words after trap canary, up to end canary or end of file.
-    # Note: deadbeef values may appear as unfilled padding within valid entries
-    # (e.g., the 4th word of a timer interrupt entry), so we cannot stop at deadbeef.
-    # Instead, stop at the end canary or when only deadbeef values remain.
+    # Note: a recorded word can equal the deadbeef fill pattern, so we cannot stop
+    # at deadbeef. Instead, stop at the end canary.
     raw_region = values[trap_start + 1 :]
 
     # Find end canary
@@ -173,10 +169,9 @@ def _parse_trap_words(sig_path: Path, xlen: int) -> list[int] | None:
     except ValueError:
         raise ValueError("End canary not found in trap signature region")
 
-    # Do not strip trailing deadbeef here: it can be a legitimate padding word
-    # inside the last entry (e.g. word 3 of a 4-word interrupt entry with no
-    # IntID). The decode loop already rejects a standalone deadbeef as word0
-    # via its entry_size check.
+    # Do not strip trailing deadbeef here: the last entry can record that value.
+    # The decode loop already rejects a standalone deadbeef as word0 via its
+    # entry_size check.
 
     return raw_region
 
@@ -188,7 +183,6 @@ def _decode_all_traps(
     symbols: dict[int, str],
 ) -> list[TrapEntry]:
     """Walk through raw trap signature words and decode each variable-length entry."""
-    deadbeef = DEADBEEF_32 if xlen == 32 else DEADBEEF_64
     entries: list[TrapEntry] = []
     pos = 0
     index = 0
@@ -208,9 +202,9 @@ def _decode_all_traps(
 
         mode = MODE_NAMES.get(mode_raw, f"Unknown({mode_raw})")
 
-        # Entry size should be 3, 4, 5, or 6 REGWIDTH words, and an exact multiple of
+        # Entry size should be 4 or 6 REGWIDTH words, and an exact multiple of
         # REGWIDTH: the deadbeef fill pattern otherwise truncates to a valid size.
-        if entry_bytes % regwidth or entry_size not in (3, 4, 5, 6):
+        if entry_bytes % regwidth or entry_size not in (4, 6):
             break
         if pos + entry_size > len(raw_words):
             break
@@ -223,26 +217,21 @@ def _decode_all_traps(
         xepc: int | None = None
         xip_val: int | None = None
         xtval: int | None = None
-        int_id: int | None = None
         mtval2: int | None = None
         xtinst: int | None = None
         test_label: str | None = None
 
         if is_interrupt:
             xip_val = raw_words[pos + 2]
-            # IntID only for external interrupts; skip deadbeef padding
-            if entry_size >= 4 and raw_words[pos + 3] != deadbeef:
-                int_id = raw_words[pos + 3]
         else:
             # XEPC is recorded raw by the trap handler
             xepc = raw_words[pos + 2]
             test_label = _find_nearest_label(xepc, sorted_addrs, symbols)
-            if entry_size >= 4:
-                xtval = raw_words[pos + 3]
-            if entry_size >= 5:
-                mtval2 = raw_words[pos + 4]
-            if entry_size >= 6:
-                xtinst = raw_words[pos + 5]
+        # Words 3-5 are the same for interrupts and exceptions
+        xtval = raw_words[pos + 3]
+        if entry_size == 6:
+            mtval2 = raw_words[pos + 4]
+            xtinst = raw_words[pos + 5]
 
         entries.append(
             TrapEntry(
@@ -254,7 +243,6 @@ def _decode_all_traps(
                 xepc=xepc,
                 xip=xip_val,
                 xtval=xtval,
-                int_id=int_id,
                 mtval2=mtval2,
                 xtinst=xtinst,
                 xstatus_bits=xstatus_bits,
@@ -285,7 +273,8 @@ def _decode_xstatus(status_bits: int, mode: str) -> str:
     word0 bits [28:27] (xstatus 15:14). In the S/HS handler on a hypervisor build,
     hstatus[8:6] (SPVP, SPV, GVA) are OR'd into word0 bits [29:27] (xstatus 16:14).
     Bit 15 is therefore MPV on an M-mode entry and SPV on an S/HS one; ``mode`` is
-    the entry's MODE_NAMES string.
+    the entry's MODE_NAMES string. A VS-mode entry holds vsstatus, which has only the
+    supervisor fields.
     """
     # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1
@@ -296,6 +285,8 @@ def _decode_xstatus(status_bits: int, mode: str) -> str:
     # Skip UBE bit 6 (not relevant to trap)
     mpie = (status_bits >> 7) & 1
     spp = (status_bits >> 8) & 1
+    if mode == "VS":
+        return f"SIE={sie}, SPIE={spie}, SPP={spp}"
     # Skip VS bits 9-10 (not relevant to trap)
     mpp = (status_bits >> 11) & 0x3
     # Skip FS bits 13-14 (not relevant to trap)
@@ -337,8 +328,6 @@ def _format_trap_report(entries: list[TrapEntry], test_name: str, xlen: int) -> 
             lines.append(f"  XTVAL:   {_format_hex(entry.xtval, xlen)}")
         if entry.xip is not None:
             lines.append(f"  XIP:     {_format_hex(entry.xip, xlen)}")
-        if entry.int_id is not None:
-            lines.append(f"  IntID:   {_format_hex(entry.int_id, xlen)}")
         if entry.mtval2 is not None:
             # Word 4 is mtval2 in an M-mode entry and htval in an S/HS one.
             label = "MTVAL2" if entry.mode == "M" else "HTVAL "

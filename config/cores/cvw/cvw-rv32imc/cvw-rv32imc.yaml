@@ -35,7 +35,7 @@ params:
   MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -80,61 +80,36 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   HPM_COUNTER3_WIDTH: 64
   HPM_COUNTER4_WIDTH: 64
   HPM_COUNTER5_WIDTH: 64
   HPM_COUNTER6_WIDTH: 64
-  HPM_COUNTER7_WIDTH: 64
-  HPM_COUNTER8_WIDTH: 64
-  HPM_COUNTER9_WIDTH: 64
-  HPM_COUNTER10_WIDTH: 64
-  HPM_COUNTER11_WIDTH: 64
-  HPM_COUNTER12_WIDTH: 64
-  HPM_COUNTER13_WIDTH: 64
-  HPM_COUNTER14_WIDTH: 64
-  HPM_COUNTER15_WIDTH: 64
-  HPM_COUNTER16_WIDTH: 64
-  HPM_COUNTER17_WIDTH: 64
-  HPM_COUNTER18_WIDTH: 64
-  HPM_COUNTER19_WIDTH: 64
-  HPM_COUNTER20_WIDTH: 64
-  HPM_COUNTER21_WIDTH: 64
-  HPM_COUNTER22_WIDTH: 64
-  HPM_COUNTER23_WIDTH: 64
-  HPM_COUNTER24_WIDTH: 64
-  HPM_COUNTER25_WIDTH: 64
-  HPM_COUNTER26_WIDTH: 64
-  HPM_COUNTER27_WIDTH: 64
-  HPM_COUNTER28_WIDTH: 64
-  HPM_COUNTER29_WIDTH: 64
-  HPM_COUNTER30_WIDTH: 64
-  HPM_COUNTER31_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
@@ -146,31 +121,31 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   MCOUNTENABLE_EN:
     [
@@ -181,31 +156,31 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   NUM_PMP_ENTRIES: 0
 
@@ -217,5 +192,10 @@ dut_environment:
   RVMODEL_MTIME_ADDRESS: 0x0200BFF8
   RVMODEL_MTIMECMP_ADDRESS: 0x02004000
   RVMODEL_INTERRUPT_LATENCY: 10
+  # Wally's mtime advances one tick per core clock, and the code between arming
+  # mtimecmp and reaching the lower privilege mode (three CLINT stores plus
+  # T-SBI mode switch) can take well over 100 cycles on a pipelined core
+  # with caches.  With a delay of 100 the timer interrupt fires while still in
+  # M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
   RVMODEL_TIMER_INT_SOON_DELAY: 10000
   STANDARD_SM_SUPPORTED: true

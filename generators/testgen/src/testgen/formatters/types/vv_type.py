@@ -20,7 +20,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 from testgen.instructions.vector import parse_vector_instruction_info
 
-vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
+vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(maskable=False))
 vext_config = InstructionTypeConfig(
     required_params={"vd", "vs2"},
     vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}),
@@ -31,12 +31,16 @@ vm_config = InstructionTypeConfig(
         mask_regs={"vs2"},
         overlap_constraints={("vd", "vs2")},
         masked_constraints={("vd", "v0")},
+        require_zero_vstart=True,
     ),
 )
 vv_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
-vv_egs4_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(egs=4))
+vv_egs4_config = InstructionTypeConfig(
+    required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(egs=4, maskable=False)
+)
 vs_egs4_config = InstructionTypeConfig(
-    required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=4)
+    required_params={"vd", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=4, maskable=False),
 )
 
 
@@ -106,9 +110,7 @@ def format_vv_like_type(
     )
     assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
     assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
-    assert params.lmul is not None or lmul_override is not None, (
-        f"lmul must be provided for {type_name}-type instructions"
-    )
+    assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
     assert not isinstance(params.vl, int) or params.vl % egs == 0, (
         f"params.vl must be a multiple of {egs} for EGS={egs} instruction, got: {params.vl}"
     )
@@ -131,9 +133,9 @@ def format_vv_like_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
+    # The register group size: for VMVR it is the register count encoded in the instruction,
+    # otherwise it is the LMUL in vtype
     lmul = lmul_override if lmul_override is not None else params.lmul
-    # This must be true because above we asserted, params.lmul is not None or lmul_override is not None
-    assert lmul is not None
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
     vd_lmul = lmul if "vd" not in widened_regs else lmul * 2
@@ -172,6 +174,7 @@ def format_vv_like_type(
         test_data.vec_regs.return_register(0)
 
     min_vlen = compute_egs_vlen(params.sew, lmul, egs)
-    handle_parameter_exclusions(lmul, setup, check, min_vlen=min_vlen)
+    # Guard on the LMUL in vtype, which differs from the lmul variable for VMVR
+    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

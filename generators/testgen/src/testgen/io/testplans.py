@@ -27,14 +27,9 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 
 def expand_vector_extension(extension: str) -> list[str]:
     """Expands a vector extension by adding SEW suffixes."""
-
-    if not extension.startswith(("Vx", "Vls", "Vf", "Zvf", "Zvbb", "Zvbc", "Zvk")):
-        # Only unprivileged vector is supported for now
-        return []
-
-    if extension in ["Vx", "Vls", "Zvbb", "Zvkb"]:
+    if extension in ["Vx", "Vls", "Vf", "Zvbb", "Zvkb"]:
         return [extension + effew for effew in ["8", "16", "32", "64"]]
-    elif extension in ["ExceptionsVf", "Vf"]:
+    elif extension == "ExceptionsVf":
         return [extension + effew for effew in ["16", "32", "64"]]
     elif extension == "Zvknhb":
         return [extension + effew for effew in ["32", "64"]]
@@ -53,14 +48,24 @@ class TestPlanData:
     rv32: bool
     rv64: bool
     sews_supported: list[int]
+    extra_extensions: tuple[str, ...]
     coverpoints: list[str]
 
 
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
     """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
     # Columns that are parsed separately and should not be treated as coverpoints
-    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64", "EFFEW8", "EFFEW16", "EFFEW32", "EFFEW64"}
-
+    non_coverpoint_columns = {
+        "Instruction",
+        "Type",
+        "RV32",
+        "RV64",
+        "ExtraExtensions",
+        "EFFEW8",
+        "EFFEW16",
+        "EFFEW32",
+        "EFFEW64",
+    }
     instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)
@@ -84,6 +89,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
                 )
                 raise
+            extra_extensions = tuple(ext.strip() for ext in row.get("ExtraExtensions", "").split(":") if ext.strip())
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             sews = []
@@ -110,6 +116,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     rv32=rv32,
                     rv64=rv64,
                     sews_supported=sews,
+                    extra_extensions=extra_extensions,
                     coverpoints=coverpoints,
                 )
             )
@@ -175,6 +182,10 @@ def expand_coverpoints(coverpoints: list[str]) -> list[str]:
         ],
         "cp_custom_shift_wi_all": [],  # Generates unique coverage, but not unique testgen
         "cp_custom_vindexVV": ["cp_custom_vindexedges_index_ge_vlmax", "cp_custom_vindexedges_index_gt_vl_lt_vlmax"],
+        "cp_custom_vindexVV_ei16": [
+            "cp_custom_vindexedges_index_ge_vlmax",
+            "cp_custom_vindexedges_index_gt_vl_lt_vlmax",
+        ],
         "cp_custom_vindexVX": [],  # Edge cases for VX-type gather/slide are covered by cp_rs1_edges.
         "cp_custom_maskwrite_masked": ["cp_custom_vmask_write_lmulge1", "cp_custom_vmask_write_v0_masked"],
         "cp_custom_maskwrite_unmasked": ["cp_custom_vmask_write_lmulge1"],

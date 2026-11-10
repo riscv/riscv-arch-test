@@ -22,6 +22,7 @@ implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: Zcmp, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction
   - { name: Zcmt, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction
   - { name: Zkt, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
@@ -98,7 +99,7 @@ params:
   MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED -- User Manual, Exceptions and Interrupts: "All exceptions are precise"
   MARCHID_IMPLEMENTED: true # VERIFIED -- marchid CSR (0xF12) in CSR map
   MIMPID_IMPLEMENTED: true # VERIFIED -- mimpid CSR (0xF13) in CSR map
@@ -229,11 +230,11 @@ params:
 # Device addresses and timings baked into test objects. The objects are built
 # without rvmodel_macros.h, and the reference model needs the same values.
 dut_environment:
+  # CLINT machine timer in mm_ram at Sail's CLINT base (matches sail.json).
   RVMODEL_MTIME_ADDRESS: 0x0200BFF8
   RVMODEL_MTIMECMP_ADDRESS: 0x02004000
   RVMODEL_INTERRUPT_LATENCY: 10
   RVMODEL_TIMER_INT_SOON_DELAY: 10000
-  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
   STANDARD_SM_SUPPORTED: true
   # Not set: RVMODEL_ACCESS_FAULT_ADDRESS. CV32E40X raises access fault only for
   # misaligned accesses in I/O regions (PMA controlled). With PMA_NUM_REGIONS=0, no

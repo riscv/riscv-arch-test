@@ -62,10 +62,14 @@ Pull requests are the best way to propose changes to the codebase. We actively w
 4. If you have added or modified coverpoints or test generators, refer to the [Developer's Guide](./docs/DeveloperGuide.md) for the expected workflow.
 5. If you have updated the docs, ensure that they render correctly in the respective format.
 6. Include a comment with the SPDX license identifier in all source files, for example:
-   ```
-   // SPDX-License-Identifier: Apache-2.0
-   ```
-7. Issue the pull request with a clear description of the changes and the motivation behind them.
+
+```
+// SPDX-License-Identifier: Apache-2.0
+```
+
+7. Sign off every commit (see [Developer Certificate of Origin (DCO)](#developer-certificate-of-origin-dco))
+8. Cryptographically sign every commit (see [Commit signing](#commit-signing))
+9. Issue the pull request with a clear description of the changes and the motivation behind them.
 
 ## Licensing
 
@@ -89,3 +93,34 @@ We use GitHub issues to track bugs. Report a bug by [opening a new issue](https:
 - What you expected would happen
 - What actually happens
 - Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+
+## Developer Certificate of Origin (DCO)
+
+`riscv-arch-test` uses the [Developer Certificate of Origin (DCO)](https://developercertificate.org/) to confirm that contributors have the right to submit their work under the project's license. The DCO is a short statement, not a separate agreement to sign. By adding a `Signed-off-by` line to a commit, you certify that you wrote the contribution or otherwise have the right to submit it under the project's license.
+
+Every commit in a Pull Request must carry a `Signed-off-by` line, in this form:
+
+```
+Signed-off-by: Jane Developer <jane@example.com>
+```
+
+The name and email must be your real name and the email address configured in git.
+
+### Adding the sign-off
+
+Git adds the line for you when you pass `-s` (`--signoff`):
+
+```bash
+git config --global user.name "Jane Developer"
+git config --global user.email "jane@example.com"
+
+git commit -s -m "Add tests for Zmmul extension"
+```
+
+> [!NOTE]
+>
+> The DCO sign-off (`Signed-off-by`) is a line of text in the commit message. It is different from a cryptographic signature (see [Commit signing](#commit-signing)). Both are required.
+
+## Commit signing
+
+All commits must be cryptographically signed so that GitHub shows them as _Verified_. You can sign with an SSH key or a GPG key; see GitHub's documentation on [managing commit signature verification](https://docs.github.com/en/authentication/managing-commit-signature-verification) for how to set one up. The email address on your commits (`git config user.email`) must match a verified email address on your GitHub account. To sign a commit, pass `-S` to `git commit` (or set `commit.gpgsign` to `true`), and check the result with `git log --show-signature -1`.

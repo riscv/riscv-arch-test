@@ -88,9 +88,6 @@
 
 ##### Machine Interrupts #####
 
-// Spike ticks the CLINT timer every 100 instructions (default --insns-per-tick).
-// Define a 100x multiplier to convert between timer tick and processor cycle count.
-
 #define CLINT_BASE_ADDRESS 0x02000000
 #define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 

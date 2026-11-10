@@ -57,10 +57,6 @@
 // User Manual csr-mtvec: "always aligned to 128 bytes." RTL CSR_BASIC_MTVEC_MASK=0xFFFFFF81 (bit 7 writable).
 #define RVMODEL_MTVEC_ALIGN 7
 
-##### Machine Timer #####
-
-// CLINT machine timer in mm_ram at Sail's CLINT base (matches sail.json).
-
 ##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \

@@ -23,7 +23,7 @@ cbs_config = InstructionTypeConfig(
 def format_cbs_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    """Format CBP-type instruction."""
+    """Format CBS-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
     assert params.immval is not None
     setup = [

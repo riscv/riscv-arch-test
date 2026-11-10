@@ -10,35 +10,31 @@
 # at the objects (work/<config>/objects), and `make kit` packages them for the DUT owner.
 
 ########## Runtime Options ##########
-# CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
-# COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
-CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
-COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
+# CONFIG_FILES is required when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
+# `make coverage` uses CONFIG_FILES if set, otherwise it defaults to the Sail max configs.
+CONFIG_FILES ?=
 
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # CERTIFICATE limits the selected tests to those relevant to the specified certificate.
 # ENABLE_EXPERIMENTAL_EXTENSIONS enables tests for extensions that are not ratified.
-# Default exclusion reasons:
-#  - Sm: Insufficient WARL configuration options.
+# Each simulator's config/<sim>/ci.yaml lists the extensions its CI skips, with the reasons.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
+EXCLUDE_EXTENSIONS ?=
 CERTIFICATE ?=
 ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 
-# DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
+# DEBUG, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
-# DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
-# FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
+# DEBUG enables debug output (ELF objdumps, trace files, and trap report). This will slow down ELF generation significantly.
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
-# CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs/objdumps are kept).
+# CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs are kept).
 DEBUG       ?=
-FAST        ?=
 VERBOSE     ?=
 CLEAN_INTERMEDIATES ?=
 
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
-COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa, vcs, or verilator
 
 # RVMODEL_DIR is a directory holding the DUT's rvmodel_macros.h. It overrides each config's
 # dut_include_dir. When neither has rvmodel_macros.h, the build stops at the certified objects.
@@ -143,7 +139,7 @@ help:
 	  'kit'                 'Package the certified objects of each $$(CONFIG_FILES) config into $$(KIT_DIR)' \
 	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
 	  'vector-tests'        'Generate vector test sources' \
-	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
+	  'coverage'            'Build with coverage instrumentation for $$(CONFIG_FILES) (default: Sail max)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
 	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
 	@printf '\n\033[1mGenerators:\033[0m\n'
@@ -163,7 +159,7 @@ help:
 	@printf '    %s\n' $(ALL_RUN_TARGETS) | fold -s -w 76 | sed 's/^/  /'
 	@printf '\n\033[1mCommon variables:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
-	  'CONFIG_FILES'        'Configs for the default elfs target' \
+	  'CONFIG_FILES'        'Configs to build (required; coverage defaults to Sail max)' \
 	  'RVMODEL_DIR'         'Directory with rvmodel_macros.h (default: each config'"'"'s dut_include_dir)' \
 	  'KIT_DIR'             'Output directory for make kit' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
@@ -172,15 +168,14 @@ help:
 	  'ENABLE_EXPERIMENTAL_EXTENSIONS' 'Enable tests for unratified extensions' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
-	  'FAST'                'Skip objdump for faster ELF builds' \
 	  'CLEAN_INTERMEDIATES' 'Delete intermediate build/ dirs after build (saves disk)' \
 	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
-	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)'
+	  'COVERAGE_SIMULATOR'  'questa, vcs, or verilator (used with make coverage)'
 	@printf '\n\033[1mExamples:\033[0m\n'
-	@printf '  make                                 # default: spike rv32+rv64\n'
+	@printf '  make CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml  # build ELFs for one config\n'
 	@printf '  make spike-rv64-max                  # build & run a single config\n'
 	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
-	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
+	@printf '  make EXCLUDE_EXTENSIONS=Exceptions_Sm # skip an extension\n'
 	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
 	@printf '  make coverage                        # coverage build\n'
 	@printf '  make kit CONFIG_FILES=<cfg>/test_config.yaml  # kit for a DUT owner\n'
@@ -189,8 +184,15 @@ help:
 
 ########## Test compilation ##########
 .DEFAULT_GOAL := elfs
+.PHONY: check-config-files
+check-config-files:
+	@if [ -z "$(strip $(CONFIG_FILES))" ]; then \
+		echo "error: CONFIG_FILES is not set. Example: CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml make" >&2; \
+		exit 1; \
+	fi
+
 .PHONY: elfs
-elfs: tests
+elfs: check-config-files tests
 	@$(UV_RUN) act $(CONFIG_FILES) \
 		--workdir $(WORKDIR) \
 		--test-dir $(TESTDIR) \
@@ -200,7 +202,6 @@ elfs: tests
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
 		$(if $(DEBUG),--debug) \
-		$(if $(FAST),--fast) \
 		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
 		$(if $(VERBOSE),--verbose) \
 		$(if $(RVMODEL_DIR),--rvmodel-dir $(RVMODEL_DIR)) \
@@ -246,11 +247,8 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	@touch $@
 
 .PHONY: vector-testgen
-vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp $(STAMP_DIR)/vector-testgen-priv.stamp
+vector-testgen: $(STAMP_DIR)/vector-testgen-priv.stamp
 
-$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	@$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
-	@touch $@
 # Note: EXTENSIONS / EXCLUDE_EXTENSIONS only filter unpriv generation and
 # run-time test selection. The priv vector generator does not accept these
 # flags; priv vector tests are always generated.
@@ -270,7 +268,7 @@ vector-tests: covergroupgen vector-testgen
 # Just sets some variables and then runs the standard elfs target
 .PHONY: coverage
 coverage: COVERAGE := True
-coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
+coverage: CONFIG_FILES := $(or $(CONFIG_FILES),config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml)
 coverage: elfs
 
 
@@ -307,13 +305,6 @@ RUN_CMD_FILES := $(shell find config -name run_cmd.txt)
 $(foreach f,$(RUN_CMD_FILES),\
   $(foreach d,$(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f)))),\
     $(eval _TARGETS_$(d) += $(f))))
-
-# Keep spike-reference comparison configs available as explicit targets, but
-# exclude them from the aggregate `make whisper` target.
-WHISPER_RUN_TARGET_EXCLUDES := \
-  config/whisper/whisper-rv32-max-spike-ref/run_cmd.txt \
-  config/whisper/whisper-rv64-max-spike-ref/run_cmd.txt
-_TARGETS_whisper := $(filter-out $(WHISPER_RUN_TARGET_EXCLUDES),$(_TARGETS_whisper))
 
 # Collect all unique target names
 ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\

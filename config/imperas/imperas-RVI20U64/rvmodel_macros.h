@@ -73,8 +73,6 @@
 
 ##### Machine Interrupts #####
 
-// Interrupt latency configuration
-
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, 1;               \

@@ -2484,8 +2484,9 @@ endgroup
 // ---------------------
 `endif
 function void zbb_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "andn"     : begin
             Zbb_andn_cg.sample(ins);
         end
@@ -2560,5 +2561,6 @@ function void zbb_sample(int hart, int issue, ins_t ins);
             Zbb_rorw_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

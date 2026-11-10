@@ -32,7 +32,7 @@ Any additional DUT-specific data sections (such as `.tohost` for HTIF) are emitt
 
 `rvtest_entry_point` is the first symbol in the `.text.init` section (which is the first section), so its address is set by `TEST_BASE` at the top of the linker script. For most DUTs, `TEST_BASE` is the same as `RAM_ORIGIN` and should be set to the reset vector of your processor. Advanced users can set the starting address to a different address, run a custom bootloader, and then jump to `rvtest_entry_point` to start the test. When `RAM_ORIGIN` differs from `TEST_BASE`, the `.text.init` output section uses an explicit `TEST_BASE` address so the linker does not start it at the beginning of the `MEMORY` region.
 
-The sample linker scripts also define `RAM_ORIGIN`, `RAM_LENGTH`, and `NUM_HARTS` as user-editable variables above the `/* Most users should not need to modify anything below this line. */` comment. `RAM_ORIGIN` and `RAM_LENGTH` define the `ram` linker `MEMORY` region and should match the corresponding RISC-V Sail `memory.regions` entry in `sail.json`. The scripts assert that `TEST_BASE` is within `ram` and that the ELF fits in `ram`; if those assertions fail, update `link.ld` and the matching `sail.json` memory region. `STACK_SIZE` defaults to `0x20000` bytes per hart below that comment. `NUM_HARTS` and `STACK_SIZE` are provided to the ACT runtime as `__num_harts` and `__stack_size`.
+The sample linker scripts also define `RAM_ORIGIN`, `RAM_LENGTH`, and `NUM_HARTS` as user-editable variables above the `/* Most users should not need to modify anything below this line. */` comment. `RAM_ORIGIN` and `RAM_LENGTH` define the `ram` linker `MEMORY` region and should match the corresponding RISC-V Sail `memory.regions` entry in `sail.json`. The scripts assert that `TEST_BASE` is within `ram` and that the ELF fits in `ram`; if those assertions fail, update `link.ld` and the matching `sail.json` memory region. `STACK_SIZE` defaults to `0x20000` bytes per hart below that comment. `NUM_HARTS` and `STACK_SIZE` are provided to the ACT runtime as `__num_harts` and `__stack_size`. Only C tests use the stack, so the framework links assembly tests with `--defsym=__stack_size=128`; this override works because the scripts set `__stack_size` with `PROVIDE`, so keep it that way. A DUT whose RVMODEL macros need more stack than that can instead set `__stack_size = STACK_SIZE;` without `PROVIDE`, which overrides the `--defsym`.
 
 Additional details on what each section contains and why each section is needed are provided below.
 
@@ -46,17 +46,17 @@ Additional details on what each section contains and why each section is needed 
 
 ## `.text.rvtest` Section Layout
 
-| Symbol / Region               | Purpose                                                                       |
-| ----------------------------- | ----------------------------------------------------------------------------- |
-| `rvtest_init`                 | Trap prologs, PMP setup, and register initialization.                         |
-| `rvtest_code_begin`           | Start of the test body (signature pointer initialized here).                  |
-| _(test code)_                 | The actual test, generated between `RVTEST_CODE_BEGIN` and `RVTEST_CODE_END`. |
-| `rvtest_code_end`             | End of the test body. Switches back to M-mode.                                |
-| `cleanup_epilogs`             | Trap epilogs (restore xTVEC, trampoline, and saved registers per mode).       |
-| `exit_cleanup` / `abort_test` | Test termination paths (calls `rvmodel_halt_pass` or `rvmodel_halt_fail`).    |
-| Trap handlers                 | One handler per privilege mode (`RVTEST_TRAP_HANDLER`).                       |
-| Failure code                  | Failure detection and diagnostic reporting (`RVTEST_FAILURE_CODE`).           |
-| `rvtest_identity_map`         | Forms identity-mapped superpages for S-mode trap handler access.              |
+| Symbol / Region               | Purpose                                                                          |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| `rvtest_init`                 | Trap prologs, PMP setup, and register initialization.                            |
+| `rvtest_code_begin`           | Start of the test body (signature pointer initialized here).                     |
+| _(test code)_                 | The actual test, generated between `RVTEST_CODE_BEGIN` and `RVTEST_CODE_END`.    |
+| `rvtest_code_end`             | End of the test body. Switches back to M-mode, runs final checks, and cleans up. |
+| `run_epilogs`                 | Trap epilogs (restore xTVEC, trampoline, and saved registers per mode).          |
+| `exit_cleanup` / `abort_test` | Test termination paths (calls `rvmodel_halt_pass` or `rvmodel_halt_fail`).       |
+| Trap handlers                 | One handler per privilege mode (`RVTEST_TRAP_HANDLER`).                          |
+| Failure code                  | Failure detection and diagnostic reporting (`RVTEST_FAILURE_CODE`).              |
+| `rvtest_identity_map`         | Forms identity-mapped superpages for S-mode trap handler access.                 |
 
 `.text.rvtest` contains all of the actual test code that is common across all DUTs. For any DUT-specific operations, the DUT jumps to a function in the `.text.rvmodel` section to ensure the `.text.rvtest` section remains constant length.
 

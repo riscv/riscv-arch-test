@@ -24,6 +24,7 @@
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 // #define RVMODEL_BOOT
+
 ##### TERMINATION #####
 
 // SAIL uses HTIF (Host-Target Interface) to terminate simulation.
@@ -77,8 +78,6 @@
 
 ##### Machine Interrupts #####
 
-// Interrupt latency configuration
-
 #define SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 11);               \
@@ -111,5 +110,24 @@
   li _R1, (1 << 1);               \
   li _R2, SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
+
+##### Guest External Interrupts #####
+
+// hgeip bits 1 to GEILEN (sail.json extensions.H.geilen) are set through the simple interrupt generator
+#define SIG_GUEST_ADDRESS  (0xC000000 + 0x8)
+#define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (1 << 31);               \
+  or _R1, _R1, _GEI;               \
+  li _R2, SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
+
+#define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R2, SIG_GUEST_ADDRESS;    \
+  sw _GEI, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
+
+##### Sscofpmf #####
+
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
+    fence
 
 #endif // _RVMODEL_MACROS_H

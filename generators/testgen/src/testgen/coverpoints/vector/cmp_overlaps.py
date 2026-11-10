@@ -103,9 +103,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             no_overlap,
             lmul,
             test_data.config.sew,
-            instr_type_config.vector_data.scalar_regs,
-            instr_type_config.vector_data.mask_regs,
-            instr_type_config.vector_data.widened_regs,
+            instr_type_config.vector_data,
         ):
             continue
 

@@ -57,6 +57,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit        [4:0]  uimm5    = instr[19:15];
   automatic bit        [5:0]  uimm6_v  = {instr[26], instr[19:15]};
   automatic bit signed [4:0]  imm5     = instr[19:15];
+  automatic int cimm5 = (instr[24:20] == 0) ? -1 : int'(instr[24:20]);
 
   // Compressed immediates
   automatic bit signed [5:0]  immCIType     = {instr[12], instr[6:2]};
@@ -73,7 +74,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit signed [8:0]  immCBType     = {instr[12], instr[6:5], instr[2], instr[11:10], instr[4:3], 1'b0};
   automatic bit        [5:0]  immCBpType    = {instr[12], instr[6:2]};
   automatic bit signed [11:0] immCJType     = {instr[12], instr[8], instr[10:9], instr[6], instr[7], instr[2], instr[11], instr[5:3], 1'b0};
-  automatic bit        [8:0]  immCSSType    = {instr[8:7], instr[12:9], 2'b0};
+  automatic bit        [7:0]  immCSSType    = {instr[8:7], instr[12:9], 2'b0};
 
   // Other fields
   automatic bit     [2:0] frm  = instr[14:12];
@@ -92,18 +93,17 @@ function string disassemble (logic [31:0] instrRaw);
     PAUSE:   $sformat(decoded, "pause");
   `endif
   `ifdef ZICBOP_COVERAGE
-    // Zicbop Extension (note these are hints)
-    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immIType, rs1);
-    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
-    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
+    // Zicbop Extension (note these are hints). Bits 24:20 select the prefetch, and the offset is bits
+    // 31:25 shifted left by 5, which is immSType as rd = 0.
+    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immSType, rs1);
+    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immSType, rs1);
+    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immSType, rs1);
   `endif
   `ifdef ZIHINTNTL_COVERAGE
     NTL_ALL: $sformat(decoded, "ntl.all");
     NTL_PALL:$sformat(decoded, "ntl.pall");
     NTL_P1:  $sformat(decoded, "ntl.p1");
     NTL_S1:  $sformat(decoded, "ntl.s1");
-  `endif
-  `ifdef ZIHINTNTLZCA_COVERAGE
     C_NTL_ALL: $sformat(decoded, "c.ntl.all");
     C_NTL_PALL: $sformat(decoded, "c.ntl.pall");
     C_NTL_P1: $sformat(decoded, "c.ntl.p1");
@@ -294,6 +294,9 @@ function string disassemble (logic [31:0] instrRaw);
     CSRRCI: $sformat(decoded, "csrrci %s, %0d, %0d", rd, csr, rs1Bits);
     // Zifencei Extension
     FENCE_I: $sformat(decoded, "fence.i");
+    // Zibi Extension
+    BEQI: $sformat(decoded, "beqi %s, %0d, %0d", rs1, cimm5, immBType);
+    BNEI: $sformat(decoded, "bnei %s, %0d, %0d", rs1, cimm5, immBType);
     // M Extension
     MUL:    $sformat(decoded, "mul %s, %s, %s", rd, rs1, rs2);
     MULH:   $sformat(decoded, "mulh %s, %s, %s", rd, rs1, rs2);

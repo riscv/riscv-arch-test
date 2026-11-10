@@ -14,3 +14,9 @@
     Zihintntl_ntl_p1_cg = new(); Zihintntl_ntl_p1_cg.set_inst_name("obj_Zihintntl_ntl_p1");
     Zihintntl_ntl_pall_cg = new(); Zihintntl_ntl_pall_cg.set_inst_name("obj_Zihintntl_ntl_pall");
     Zihintntl_ntl_s1_cg = new(); Zihintntl_ntl_s1_cg.set_inst_name("obj_Zihintntl_ntl_s1");
+`ifdef ZCA_SUPPORTED
+    ZihintntlZca_c_ntl_all_cg = new(); ZihintntlZca_c_ntl_all_cg.set_inst_name("obj_ZihintntlZca_c_ntl_all");
+    ZihintntlZca_c_ntl_p1_cg = new(); ZihintntlZca_c_ntl_p1_cg.set_inst_name("obj_ZihintntlZca_c_ntl_p1");
+    ZihintntlZca_c_ntl_pall_cg = new(); ZihintntlZca_c_ntl_pall_cg.set_inst_name("obj_ZihintntlZca_c_ntl_pall");
+    ZihintntlZca_c_ntl_s1_cg = new(); ZihintntlZca_c_ntl_s1_cg.set_inst_name("obj_ZihintntlZca_c_ntl_s1");
+`endif

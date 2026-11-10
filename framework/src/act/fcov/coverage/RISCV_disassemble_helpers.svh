@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Integer register number to string
-function string get_gpr_name(int key);
+function string get_gpr_name(bit [4:0] key);
   case(key)
 `ifndef ABI_REG_NAMES
     0: return "x0";
@@ -87,7 +87,7 @@ function string get_gpr_name(int key);
 endfunction
 
 // Floating point register number to string
-function string get_fpr_name(int key);
+function string get_fpr_name(bit [4:0] key);
   case(key)
     0: return "f0";
     1: return "f1";
@@ -129,7 +129,7 @@ function string get_fpr_name(int key);
 endfunction
 
 // Vector register number to string
-function string get_vr_name(int key);
+function string get_vr_name(bit [4:0] key);
   case(key)
     0: return "v0";
     1: return "v1";
@@ -171,7 +171,7 @@ function string get_vr_name(int key);
 endfunction
 
 // Compressed integer register number to string
-function string get_c_gpr_name(int key);
+function string get_c_gpr_name(bit [2:0] key);
   case(key)
 `ifndef ABI_REG_NAMES
     0: return "x8";
@@ -200,7 +200,7 @@ function string get_c_gpr_name(int key);
 endfunction
 
 // Compressed floating point register number to string
-function string get_c_fpr_name(int key);
+function string get_c_fpr_name(bit [2:0] key);
   case(key)
     0: return "f8";
     1: return "f9";
@@ -218,7 +218,7 @@ function string get_c_fpr_name(int key);
 endfunction
 
 // Floating point rounding mode number to string
-function string get_frm_string(int key);
+function string get_frm_string(bit [2:0] key);
   case(key)
     3'b000: return "rne";
     3'b001: return "rtz";
@@ -234,7 +234,7 @@ function string get_frm_string(int key);
 endfunction
 
 //Vector vsetvli parameters
-function string get_vtype_eSEW_name(int eSEW);
+function string get_vtype_eSEW_name(bit [2:0] eSEW);
   case(eSEW)
     3'b000: return "e8";
     3'b001: return "e16";
@@ -245,7 +245,7 @@ function string get_vtype_eSEW_name(int eSEW);
   endcase
 endfunction
 
-function string get_vtype_mLMUL_name(int mLMUL);
+function string get_vtype_mLMUL_name(bit [2:0] mLMUL);
   case(mLMUL)
     3'b101: return "mf8";
     3'b110: return "mf4";
@@ -259,14 +259,14 @@ function string get_vtype_mLMUL_name(int mLMUL);
   endcase
 endfunction
 
-function string get_vtype_ta_name(int ta);
+function string get_vtype_ta_name(bit ta);
   case(ta)
     1'b1: return "ta";
     1'b0: return "tu";
   endcase
 endfunction
 
-function string get_vtype_ma_name(int ma);
+function string get_vtype_ma_name(bit ma);
   case(ma)
     1'b1: return "ma";
     1'b0: return "mu";
@@ -275,7 +275,7 @@ endfunction
 
 
 // CSR number to string
-function string get_csr_name(int key);
+function string get_csr_name(bit [11:0] key);
   import RISCV_decode_pkg::*;
   case(key)
     CSR_FFLAGS: return "fflags";

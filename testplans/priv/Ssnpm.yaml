@@ -42,26 +42,68 @@ coverpoints:
        If Zicbop: perform {PREFETCH.R, PREFETCH.W, PREFETCH.I} at A, then do a normal load/store at Scratch to observe cache effect.
 
       (VECTOR OPS): If ZVL32b/RVV 1.0,  Reads: {vleXX.v, vlseXX.v, vluxeiXX.v, vloxeiXX.v, vlsegNfXX.v, vl1r.v, vleXXff.v} from A, sigupd. Writes: {vseXX.v, vsseXX.v, vsuxeiXX.v, vsoxeiXX.v, vssegNfXX.v, vs1r.v} to A, read back from scratch sigupd(value) +  record any traps.
-
-      (SHADOW STACK : Zicfiss): Writes/AMOs: SSPUSH/C.SSPUSH at A, then SSPOPCHK/C.SSPOPCHK from scratch to verify. SSAMOSWAP.W/D at A, read back from scratch.
     expectation: "When PMM=10/11: all 8 A patterns whose upper bits fall within PMLEN resolve to scratch , reads return known value_old, write readbacks return known value_new. When PMM=00: masking disabled : only A=0x0000 resolves to scratch; all other patterns either access a different location (returning old/unrelated value) or cause a trap."
-    bins: "3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57) × [Base: 4r×4w] + [RV64A if implemented: 9 AMO variants × 2 widths] + [Zacas if implemented: 3] + [Zabha if implemented: 9 AMO variants × 2 widths] + [FP if implemented: per F/D/Q] + [Zca if implemented: 4r×4w regular + 4r×4w SP-relative] + [Zcd if implemented: 1r×1w SP-relative] + [RVV if implemented: vector load/store variants] + [Zicfiss if implemented: SSPUSH, SSPOPCHK, SSAMOSWAP.W/D] + [Zicbom if implemented: CBO.CLEAN, CBO.FLUSH, CBO.INVAL] + [Zicboz if implemented: CBO.ZERO] + [Zicbop if implemented: PREFETCH.R, PREFETCH.W, PREFETCH.I]"
+    bins: "3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57) × [Base: 4r×4w] + [RV64A if implemented: 9 AMO variants × 2 widths] + [Zacas if implemented: 3] + [Zabha if implemented: 9 AMO variants × 2 widths] + [FP if implemented: per F/D/Q] + [Zca if implemented: 4r×4w regular + 4r×4w SP-relative] + [Zcd if implemented: 1r×1w SP-relative] + [RVV if implemented: vector load/store variants] + [Zicbom if implemented: CBO.CLEAN, CBO.FLUSH, CBO.INVAL] + [Zicboz if implemented: CBO.ZERO] + [Zicbop if implemented: PREFETCH.R, PREFETCH.W, PREFETCH.I]"
     rules:
       - pm_ignore_upper_bits
       - pm_deterministic_effect
       - ssnpm_definition
-      - pm_all_priv_modes
       - pm_per_mode_control
       - pm_config_next_higher
       - pm_apply_explicit
       - pm_cpu_only
       - pm_mode_only_dependency
-      - "UPDATED WITH CTP :"
       - pm_rv64_only
       - pmlen_supported_values
       - pmlen_mode_depend
       - pm_ignore_va
       - pm_ignore_pa
+    notes: |-
+      pm_all_priv_modes ("Such tools can be applied in all privilege modes (U, S, and M).") is no longer a tagged rule in the ISA manual.
+      UPDATED WITH CTP : pm_rv64_only, pmlen_supported_values, pmlen_mode_depend, pm_ignore_va, pm_ignore_pa
+  - name: cp_pmlen_zicfiss_amo
+    goal: Verify that upper PMLEN bits are ignored for the Zicfiss shadow stack AMO instructions when pointer masking is enabled
+    description: |-
+      If pointer masking is enabled, SSAMOSWAP.W/D addresses differing only in upper PMLEN bits access the same shadow stack location.
+      SSAMOSWAP accesses memory only with shadow stacks enabled and an address in a shadow stack page, so Bare mode is not tested: there it always raises a store/AMO access fault.
+
+      Test Environment:
+       If Zicfiss: In S-mode set menvcfg.SSE=1 and senvcfg.SSE=1, and senvcfg.PMM={00 (PMLEN=0), 10(PMLEN=7), 11(PMLEN=16)}.
+       Let A' = ss_page (upper bits = 0x0000), identity-mapped as a user shadow stack page (pte.xwr = 010).
+       Switch to U-mode and execute the following loop:
+      For each PMM in {00, 10, 11} under SAT.MODES = { Sv39, Sv48, Sv57 } :
+      For each A_upper_bits in {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00}:
+      Set A = A' with upper bits replaced by A_upper_bits
+      Place known value_old in ss_page with SSAMOSWAP.D at A' (an ordinary store to a shadow stack page faults).
+      For each of {SSAMOSWAP.W, SSAMOSWAP.D}: swap unique known value_new at A, sigupd(rd), then read back from ss_page (A'), sigupd(value) +  record any traps.
+    expectation: "When PMM=10/11: all A patterns whose upper bits fall within PMLEN resolve to ss_page , rd returns known value_old, readback returns known value_new. When PMM=00: masking disabled : only A=0x0000 resolves to ss_page; all other patterns cause a store/AMO page fault, rd is unchanged and readback returns value_old."
+    bins: "3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Sv39, Sv48, Sv57) × [Zicfiss if implemented: SSAMOSWAP.W, SSAMOSWAP.D]"
+    rules:
+      - pm_ignore_upper_bits
+      - pm_apply_explicit
+      - pm_ignore_va
+  - name: cp_pmlen_zicfiss_ssp
+    goal: Verify that upper PMLEN bits are ignored for the Zicfiss shadow stack push and pop instructions when pointer masking is enabled
+    description: |-
+      SSPUSH and SSPOPCHK address memory through the ssp CSR instead of rs1. If pointer masking is enabled, ssp values differing only in upper PMLEN bits access the same shadow stack location.
+      Pushes and pops access memory only with shadow stacks enabled and an address in a shadow stack page, so Bare mode is not tested: there they always raise a store/AMO access fault.
+
+      Test Environment:
+       If Zicfiss: In S-mode set menvcfg.SSE=1 and senvcfg.SSE=1, and senvcfg.PMM={00 (PMLEN=0), 10(PMLEN=7), 11(PMLEN=16)}.
+       Let A' = ss_page (upper bits = 0x0000), identity-mapped as a user shadow stack page (pte.xwr = 010).
+       Switch to U-mode and execute the following loop:
+      For each PMM in {00, 10, 11} under SAT.MODES = { Sv39, Sv48, Sv57 } :
+      For each A_upper_bits in {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00}:
+      Set A = A' with upper bits replaced by A_upper_bits
+      Place known value_old in ss_page with SSAMOSWAP.D at A'.
+      For each push {SSPUSH x1, SSPUSH x5, C.SSPUSH x1 (if Zcmop)}: set ssp = A + 8 and link register = value_new, push, sigupd(ssp), then read back from ss_page (A'), sigupd(value) +  record any traps.
+      For each pop {SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5 (if Zcmop)}: set ssp = A and link register = value_old, pop, sigupd(ssp) +  record any traps.
+    expectation: "When PMM=10/11: all A patterns whose upper bits fall within PMLEN resolve to ss_page , a push writes value_new and leaves ssp = A, a pop matches value_old and leaves ssp = A + 8. When PMM=00: masking disabled : only A=0x0000 resolves to ss_page; all other patterns cause a store/AMO page fault, ssp is unchanged and readback returns value_old."
+    bins: "3 PMM × 8 ssp variants × 1 mode (U) × satp supported modes (Sv39, Sv48, Sv57) × [Zicfiss if implemented: SSPUSH x1, SSPUSH x5, SSPOPCHK x1, SSPOPCHK x5] + [Zcmop if implemented: C.SSPUSH x1, C.SSPOPCHK x5]"
+    rules:
+      - pm_ignore_upper_bits
+      - pm_apply_explicit
+      - pm_ignore_va
   - name: |-
       cp_pmm_mxr
       cp_pmm_jalr
@@ -108,21 +150,39 @@ coverpoints:
     bins: 1 PMM × 2 address variants (upper 7 bits = 0/1) × 1 misaligned write (sw) × 1 misaligned read (lw) × 1 mode (U) ×
     rules:
       - pm_misaligned_equivalence
-  - name: cp_hardware_csr_writes_fault
+  - name: cp_hardware_csr_writes_fault_load
     goal: |-
       Verify pointer masking is applied to hardware-written CSR address values.
-      Verify that stval contains the masked effective address when a fault occurs on a pointer-masked access.
+      Verify that stval contains the masked effective address when a fault occurs on a pointer-masked load.
     description: |-
       When a fault occurs on an explicit memory access under pointer masking, the hardware-written stval reflects the masked effective address, not the raw tagged address.
       Test Environment:
       In S-mode set senvcfg.PMM={10(PMLEN=7), 11(PMLEN=16)}.
       Set medeleg[12,13,15]=1 to delegate U-mode load/store/access faults to S-mode.
-      If RVMODEL_ACCESS_FAULT_ADDRESS is defined, use it as the base illegal address across all modes. Construct addresses by applying upper-16-bit patterns {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00} to this illegal base address.
+      If RVMODEL_ACCESS_FAULT_ADDRESS_LOAD is defined, use it as the base illegal address across all modes. Construct addresses by applying upper-16-bit patterns {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00} to this illegal base address.
       Switch to U-mode.
-       Perform one lw and one sw to each constructed illegal address under satp.MODE={Bare, Sv39, Sv48, Sv57}.
+       Perform one lw to each constructed illegal address under satp.MODE={Bare, Sv39, Sv48, Sv57}.
       In the S-mode trap handler, read stval and verify it contains the correctly masked effective address.
     expectation: Fault is taken; stval written by hardware contains the masked effective address (upper PMLEN bits correctly zeroed in bare mode or sign-extended in VA modes), not the original unmasked address used by the program.
-    bins: 2 PMM × 8 address patterns × 1 lw × 1 sw × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57)
+    bins: 2 PMM × 8 address patterns × 1 lw × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57)
+    rules:
+      - pm_csr_hw_apply
+      - pm_no_trap_vector_mask
+  - name: cp_hardware_csr_writes_fault_store
+    goal: |-
+      Verify pointer masking is applied to hardware-written CSR address values.
+      Verify that stval contains the masked effective address when a fault occurs on a pointer-masked store.
+    description: |-
+      When a fault occurs on an explicit memory access under pointer masking, the hardware-written stval reflects the masked effective address, not the raw tagged address.
+      Test Environment:
+      In S-mode set senvcfg.PMM={10(PMLEN=7), 11(PMLEN=16)}.
+      Set medeleg[12,13,15]=1 to delegate U-mode load/store/access faults to S-mode.
+      If RVMODEL_ACCESS_FAULT_ADDRESS_STORE is defined, use it as the base illegal address across all modes. Construct addresses by applying upper-16-bit patterns {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00} to this illegal base address.
+      Switch to U-mode.
+       Perform one sw to each constructed illegal address under satp.MODE={Bare, Sv39, Sv48, Sv57}.
+      In the S-mode trap handler, read stval and verify it contains the correctly masked effective address.
+    expectation: Fault is taken; stval written by hardware contains the masked effective address (upper PMLEN bits correctly zeroed in bare mode or sign-extended in VA modes), not the original unmasked address used by the program.
+    bins: 2 PMM × 8 address patterns × 1 sw × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57)
     rules:
       - pm_csr_hw_apply
       - pm_no_trap_vector_mask

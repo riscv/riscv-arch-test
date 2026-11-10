@@ -20,7 +20,7 @@ cis_config = InstructionTypeConfig(
 
 
 @add_instruction_formatter("CIS", cis_config)
-def format_ci_type(
+def format_cis_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CIS-type instruction."""

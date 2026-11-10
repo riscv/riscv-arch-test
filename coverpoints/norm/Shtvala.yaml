@@ -1,0 +1,38 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Shtvala extension is implemented, htval must be written with the faulting guest
+  # physical address in all circumstances permitted by the ISA: that of the final access, which
+  # corresponds to the virtual address in stval, or that of an implicit VS-stage PTE read, for
+  # which htinst holds a pseudoinstruction, for guest loads, stores, fetches, AMOs and LR and for
+  # HLV and HSV in HS-mode and U-mode.
+  - names:
+      [
+        Shtvala_htval_faulting_gpa,
+        htval_trapval,
+        mtval2_htval_virtaddr,
+        H_trap_xtinst_guestpage,
+      ]
+    coverpoint:
+      [
+        "Shtvala_cg/cp_load_guest_page_fault",
+        "Shtvala_cg/cp_store_guest_page_fault",
+        "Shtvala_cg/cp_instr_guest_page_fault",
+        "Shtvala_cg/cp_amo_guest_page_fault",
+        "Shtvala_cg/cp_lr_guest_page_fault",
+        "Shtvala_cg/cp_hlv_guest_page_fault",
+        "Shtvala_cg/cp_hlvx_guest_page_fault",
+        "Shtvala_cg/cp_hsv_guest_page_fault",
+      ]
+
+  # A misaligned guest load or store, or a fetch of a 32-bit instruction, whose second part has an unmapped
+  # guest physical address reports the faulting part: stval holds the page-boundary address and htval its guest
+  # physical address.  For loads and stores, htinst's Addr. Offset is the distance from the original address.
+  - names: [H_straddle, H_tinst_addr_offset, stval_op_load_store_fault]
+    coverpoint:
+      [
+        "Shtvala_cg/{cp_load_straddle_guest_page_fault,cp_store_straddle_guest_page_fault}",
+        "Shtvala_cg/{cp_hlv_straddle_guest_page_fault,cp_hsv_straddle_guest_page_fault}",
+        "Shtvala_cg/cp_instr_straddle_guest_page_fault",
+      ]

@@ -29,15 +29,28 @@ from ruamel.yaml import YAML
 # instead of silently leaving a constant undefined.
 _INT_KEYS: tuple[str, ...] = (
     "RVMODEL_ACCESS_FAULT_ADDRESS",
+    # Per access type; each defaults to RVMODEL_ACCESS_FAULT_ADDRESS (check_defines.h).
+    "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+    "RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+    "RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
+    "RVMODEL_ACCESS_FAULT_ADDRESS_AMO",
+    "RVMODEL_ACCESS_FAULT_ADDRESS_LRSC",
     "RVMODEL_MSIP_ADDRESS",
     "RVMODEL_MTIME_ADDRESS",
     "RVMODEL_MTIMECMP_ADDRESS",
     "RVMODEL_INTERRUPT_LATENCY",
     "RVMODEL_TIMER_INT_SOON_DELAY",
-    "RVMODEL_MAX_CYCLES_PER_TIMER_TICK",
+    # Sscofpmf: the HPM counter the tests use, and the mhpmevent selector that makes the
+    # driver's rvmodel_mhpmevent_code (RVMODEL_MHPMEVENT_CODE) increment it.
+    "RVMODEL_HPM_COUNTER",
+    "RVMODEL_MHPMEVENT_VAL",
 )
 
-# Every config needs these; check_defines.h would stop each test on its own otherwise.
+# Emitted in decimal: check_defines.h pastes them into a define name.
+_DECIMAL_KEYS: frozenset[str] = frozenset({"RVMODEL_HPM_COUNTER"})
+
+# A config with a standard M-mode needs these. check_defines.h would stop each test on its
+# own otherwise; it also covers a DUT with S-mode but no standard M-mode.
 _REQUIRED_KEYS: tuple[str, ...] = ("RVMODEL_INTERRUPT_LATENCY", "RVMODEL_TIMER_INT_SOON_DELAY")
 
 # Boolean flags: emitted as a bare #define of the mapped name when true, omitted when false.
@@ -73,7 +86,7 @@ def _int_lines(name: str, value: object) -> list[str]:
         raise TypeError(f"dut_environment.{name} must be an integer, got {value!r}")
     cfg_name = f"ACT_CFG_{name}"
     return [
-        f"#define {cfg_name} {value:#x}",
+        f"#define {cfg_name} {value if name in _DECIMAL_KEYS else f'{value:#x}'}",
         f"#ifdef {name}",
         f"  #if ({name}) != ({cfg_name})",
         f'    #error "{name} in rvmodel_macros.h disagrees with dut_environment in the UDB config"',
@@ -88,7 +101,7 @@ def _int_lines(name: str, value: object) -> list[str]:
 def generate_dut_environment_header(udb_config_file: Path, output_file: Path) -> None:
     """Write dut_environment.h for one config."""
     block = read_dut_environment(udb_config_file)
-    missing = [key for key in _REQUIRED_KEYS if key not in block]
+    missing = [key for key in _REQUIRED_KEYS if key not in block] if block.get("STANDARD_SM_SUPPORTED") else []
     if missing:
         raise ValueError(
             f"{udb_config_file} has no {', '.join(missing)} in its dut_environment block. Test objects "

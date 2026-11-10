@@ -44,7 +44,7 @@ coverpoints:
     expectation: "0x0000"
     bins: "1"
     rules:
-      - A bit in hie shall be writable if the corresponding interrupt can ever become pending in hip. Bits of hie that are not writable shall be read-only zero.
+      - hie_acc
   - heading: Following tests are done in HS-mode
   - name: cp_trigger_vsei
     goal: trigger HS-mode VSEI

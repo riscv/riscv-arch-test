@@ -459,6 +459,13 @@ def pmm_ifdef(csr: str, pmlen: int, body: list[str]) -> list[str]:
     return _ifdef(f"UDB_SUPPORTED_PMLEN_{_PMM_EXTENSION[csr]}_{pmlen}", body)
 
 
+def _in_mode(mode: str | None, lines: list[str]) -> list[str]:
+    """Run *lines* in *mode* (VS, VU or U), entered from and returning to S-mode through T-SBI, or in place for None."""
+    if mode is None:
+        return lines
+    return [f"RVTEST_TSBI_GOTO_{mode}MODE", *lines, "RVTEST_TSBI_GOTO_SMODE"]
+
+
 def _access(
     instr: str,
     addr: int,
@@ -475,11 +482,9 @@ def _access(
     With *mode* (VS, VU or U), the access runs in that mode, entered from and returning to S-mode through T-SBI.
     """
     if mode is not None:
-        return [
-            f"RVTEST_TSBI_GOTO_{mode}MODE",
-            *_access(instr, addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions),
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
+        return _in_mode(
+            mode, _access(instr, addr, bin_name, test_data, coverpoint, covergroup, via_sp, arch_extensions)
+        )
     if not via_sp:
         return [
             test_data.add_testcase(bin_name, coverpoint, covergroup),
@@ -598,7 +603,7 @@ def probe_store(
     return lines
 
 
-def _probe_amo(
+def probe_amo(
     mnemonic: str,
     readback_mnemonic: str,
     upper_tag: int,
@@ -606,16 +611,24 @@ def _probe_amo(
     test_data: TestData,
     covergroup: str,
     arch_extensions: tuple[str, ...] = (),
+    *,
+    coverpoint: str = CP_MASKING,
+    mode: str | None = None,
 ) -> list[str]:
-    """Generate one AMO probe and record both its result and memory value."""
+    """Generate one AMO probe and record both its result and memory value.  ``mode`` runs the AMO in that mode."""
     base_reg, addr, value, result = test_data.int_regs.get_registers(4)
     lines = [
         *_tagged_address(base_reg, addr, "pm_lo_page", upper_tag),
         *_seed(base_reg, value),
         f"LI(x{value}, {hex(VALUE_NEW)})",
         f"LI(x{result}, {hex(SENTINEL)})",
-        test_data.add_testcase(bin_name, CP_MASKING, covergroup),
-        *arch_block([f"{mnemonic} x{result}, x{value}, (x{addr})"], *arch_extensions),
+        *_in_mode(
+            mode,
+            [
+                test_data.add_testcase(bin_name, coverpoint, covergroup),
+                *arch_block([f"{mnemonic} x{result}, x{value}, (x{addr})"], *arch_extensions),
+            ],
+        ),
         write_sigupd(result, test_data),
         f"{readback_mnemonic} x{result}, 0(x{base_reg})",
         write_sigupd(result, test_data),
@@ -675,8 +688,17 @@ def _probe_ssp(
     return _ifdef("ZCMOP_SUPPORTED", lines) if compressed else lines
 
 
-def _probe_zacas(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData, covergroup: str) -> list[str]:
-    """Generate an AMOCAS probe, using register pairs for AMOCAS.Q."""
+def probe_zacas(
+    mnemonic: str,
+    upper_tag: int,
+    bin_name: str,
+    test_data: TestData,
+    covergroup: str,
+    *,
+    coverpoint: str = CP_MASKING,
+    mode: str | None = None,
+) -> list[str]:
+    """Generate an AMOCAS probe, using register pairs for AMOCAS.Q.  ``mode`` runs the AMOCAS in that mode."""
     if mnemonic == "amocas.q":
         comparand = test_data.int_regs.get_register_pair()
         replacement = test_data.int_regs.get_register_pair()
@@ -689,8 +711,13 @@ def _probe_zacas(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestDa
             f"LI(x{comparand + 1}, 0)                  # comparand.hi matches the seeded value",
             f"LI(x{replacement}, {hex(VALUE_NEW)})",
             f"LI(x{replacement + 1}, {hex(VALUE_NEW)})",
-            test_data.add_testcase(bin_name, CP_MASKING, covergroup),
-            f"{mnemonic} x{comparand}, x{replacement}, (x{addr})",
+            *_in_mode(
+                mode,
+                [
+                    test_data.add_testcase(bin_name, coverpoint, covergroup),
+                    f"{mnemonic} x{comparand}, x{replacement}, (x{addr})",
+                ],
+            ),
             f"ld x{comparand}, 0(x{base_reg})",
             f"ld x{comparand + 1}, 8(x{base_reg})",
             write_sigupd(comparand, test_data),
@@ -707,8 +734,13 @@ def _probe_zacas(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestDa
         *_seed(base_reg, comparand),
         f"LI(x{comparand}, {hex(VALUE_OLD)})   # comparand matches the seeded value",
         f"LI(x{replacement}, {hex(VALUE_NEW)})",
-        test_data.add_testcase(bin_name, CP_MASKING, covergroup),
-        f"{mnemonic} x{comparand}, x{replacement}, (x{addr})",
+        *_in_mode(
+            mode,
+            [
+                test_data.add_testcase(bin_name, coverpoint, covergroup),
+                f"{mnemonic} x{comparand}, x{replacement}, (x{addr})",
+            ],
+        ),
         f"ld x{comparand}, 0(x{base_reg})",
         write_sigupd(comparand, test_data),
     ]
@@ -716,8 +748,17 @@ def _probe_zacas(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestDa
     return lines
 
 
-def _probe_cbo(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData, covergroup: str) -> list[str]:
-    """Generate one cache-block operation probe.
+def probe_cbo(
+    mnemonic: str,
+    upper_tag: int,
+    bin_name: str,
+    test_data: TestData,
+    covergroup: str,
+    *,
+    coverpoint: str = CP_MASKING,
+    mode: str | None = None,
+) -> list[str]:
+    """Generate one cache-block operation probe.  ``mode`` runs the operation in that mode.
 
     CBO.INVAL has no reliable readback, so only its trap signature is checked.
     """
@@ -725,8 +766,7 @@ def _probe_cbo(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData
     lines = [
         *_tagged_address(base_reg, addr, "pm_lo_page", upper_tag),
         *_seed(base_reg, readback_reg),
-        test_data.add_testcase(bin_name, CP_MASKING, covergroup),
-        f"{mnemonic} 0(x{addr})",
+        *_in_mode(mode, [test_data.add_testcase(bin_name, coverpoint, covergroup), f"{mnemonic} 0(x{addr})"]),
     ]
     if mnemonic != "cbo.inval":
         lines.extend([f"ld x{readback_reg}, 0(x{base_reg})", write_sigupd(readback_reg, test_data)])
@@ -734,7 +774,7 @@ def _probe_cbo(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData
     return lines
 
 
-def _probe_vec(
+def probe_vec(
     sew: int,
     instruction_template: str,
     readback_mnemonic: str | None,
@@ -742,8 +782,11 @@ def _probe_vec(
     bin_name: str,
     test_data: TestData,
     covergroup: str,
+    *,
+    coverpoint: str = CP_MASKING,
+    mode: str | None = None,
 ) -> list[str]:
-    """Generate a two-element vector load or store probe."""
+    """Generate a two-element vector load or store probe.  ``mode`` runs the vector access in that mode."""
     base_reg, addr, value = test_data.int_regs.get_registers(3)
     is_load = readback_mnemonic is None
     initial_value = SENTINEL if is_load else VALUE_NEW
@@ -755,8 +798,9 @@ def _probe_vec(
         f"vsetivli x0, 2, e{sew}, m1, ta, ma",
         "vmv.v.i v4, 0   # zero index vector: indexed probes address the base itself",
         f"vmv.v.x v2, x{value}",
-        test_data.add_testcase(bin_name, CP_MASKING, covergroup),
-        instruction_template.format(a=addr),
+        *_in_mode(
+            mode, [test_data.add_testcase(bin_name, coverpoint, covergroup), instruction_template.format(a=addr)]
+        ),
     ]
     if is_load:
         lines.extend([f"vmv.x.s x{value}, v2", "csrw vstart, x0"])
@@ -784,13 +828,13 @@ def generate_instruction_sweep_tests(
 
         amos = []
         for mn, rb in RV64A_AMOS:
-            amos.extend(_probe_amo(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
+            amos.extend(probe_amo(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
         zabha = []
         for mn, rb in ZABHA_AMOS:
-            zabha.extend(_probe_amo(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
+            zabha.extend(probe_amo(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
         zacas = []
         for mn in ZACAS_AMOS:
-            zacas.extend(_probe_zacas(mn, upper, _binname(prefix, upper, mn), test_data, cg))
+            zacas.extend(probe_zacas(mn, upper, _binname(prefix, upper, mn), test_data, cg))
         lines.extend(
             [
                 *_ifdef("ZAAMO_SUPPORTED", amos),
@@ -884,7 +928,7 @@ def generate_instruction_sweep_tests(
         for guard, ops in (("ZICBOZ", ["cbo.zero"]), ("ZICBOM", ZICBOM_OPS), ("ZICBOP", ZICBOP_OPS)):
             cbo = []
             for mn in ops:
-                cbo.extend(_probe_cbo(mn, upper, _binname(prefix, upper, mn), test_data, cg))
+                cbo.extend(probe_cbo(mn, upper, _binname(prefix, upper, mn), test_data, cg))
             lines.extend(_ifdef(f"{guard}_SUPPORTED", cbo))
 
         # EEW <= 32 needs only Zve32x (ZVL32B marks any vector support); EEW = 64 needs Zve64x.
@@ -892,10 +936,10 @@ def generate_instruction_sweep_tests(
             vector = []
             for mn, sew, template in VEC_READS:
                 if (sew > 32) == wide:
-                    vector.extend(_probe_vec(sew, template, None, upper, _binname(prefix, upper, mn), test_data, cg))
+                    vector.extend(probe_vec(sew, template, None, upper, _binname(prefix, upper, mn), test_data, cg))
             for mn, sew, template, rb in VEC_WRITES:
                 if (sew > 32) == wide:
-                    vector.extend(_probe_vec(sew, template, rb, upper, _binname(prefix, upper, mn), test_data, cg))
+                    vector.extend(probe_vec(sew, template, rb, upper, _binname(prefix, upper, mn), test_data, cg))
             lines.extend(_ifdef(f"{guard}_SUPPORTED", vector))
 
     return lines

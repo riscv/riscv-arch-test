@@ -10,7 +10,7 @@
     }
 
 `ifndef COVER_VFCUSTOM64
-    vtype_all_lmul: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmul: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         `ifdef COVER_VFCUSTOM16
             `ifdef LMULf4_SUPPORTED
                 bins fourth = {6};
@@ -29,7 +29,7 @@
     cp_custom_fmv_fs_vs2_all_lmul_lmuls: cross std_vec, vtype_all_lmul;
 `else
     `ifdef D_SUPPORTED
-    vtype_all_lmul: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmul: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};

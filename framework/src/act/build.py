@@ -110,6 +110,7 @@ def execute_task(
                 stderr=subprocess.PIPE,
                 text=True,
                 cwd=action.cwd,
+                env={**os.environ, **dict(action.env)} if action.env else None,
                 start_new_session=True,  # own process group so killpg reaches children
             )
             pgid = proc.pid  # start_new_session=True makes the child its own group leader

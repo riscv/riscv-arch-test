@@ -68,6 +68,7 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
+  - { name: Svvptc, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
 params:
@@ -99,7 +100,7 @@ params:
   # U params
   WFI_U_MODE: false
   MUTABLE_MISA_U: false
-  U_MODE_ENDIANNESS: dynamic
+  U_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
   # S params
@@ -108,7 +109,7 @@ params:
   STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 16
-  S_MODE_ENDIANNESS: dynamic
+  S_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   SXLEN: [64]
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
@@ -200,7 +201,7 @@ params:
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3 # Not explicit in config
   PHYS_ADDR_WIDTH: 56
-  M_MODE_ENDIANNESS: dynamic
+  M_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
@@ -349,9 +350,10 @@ params:
       true,
       true,
     ]
+  # instruction-address-misaligned cannot occur with Zca, so medeleg[0] is read-only zero (csrm.sv MEDELEG_MASK)
   MEDELEG_DELEGATABLE:
     [
-      true,
+      false,
       true,
       true,
       true,

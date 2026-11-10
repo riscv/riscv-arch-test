@@ -9,3 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     Svadu_cg = new(); Svadu_cg.set_inst_name("obj_Svadu");
+`ifdef H_SUPPORTED
+    Svadu_H_cg = new(); Svadu_H_cg.set_inst_name("obj_Svadu_H");
+`endif

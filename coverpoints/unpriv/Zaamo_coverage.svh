@@ -33,7 +33,7 @@ covergroup Zaamo_amoadd_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amoadd.w"  iff (ins.trap == 0 )  {
@@ -125,7 +125,7 @@ covergroup Zaamo_amoand_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amoand.w"  iff (ins.trap == 0 )  {
@@ -217,7 +217,7 @@ covergroup Zaamo_amomax_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amomax.w"  iff (ins.trap == 0 )  {
@@ -313,7 +313,7 @@ covergroup Zaamo_amomaxu_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amomaxu.w"  iff (ins.trap == 0 )  {
@@ -409,7 +409,7 @@ covergroup Zaamo_amomin_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amomin.w"  iff (ins.trap == 0 )  {
@@ -505,7 +505,7 @@ covergroup Zaamo_amominu_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amominu.w"  iff (ins.trap == 0 )  {
@@ -601,7 +601,7 @@ covergroup Zaamo_amoor_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amoor.w"  iff (ins.trap == 0 )  {
@@ -693,7 +693,7 @@ covergroup Zaamo_amoswap_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amoswap.w"  iff (ins.trap == 0 )  {
@@ -785,7 +785,7 @@ covergroup Zaamo_amoxor_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amoxor.w"  iff (ins.trap == 0 )  {
@@ -1676,8 +1676,9 @@ endgroup
 // ---------------------
 `endif
 function void zaamo_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "amoadd.w"     : begin
             Zaamo_amoadd_w_cg.sample(ins);
         end

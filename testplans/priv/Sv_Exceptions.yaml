@@ -13,7 +13,10 @@ coverpoints:
   - name: cp_store_page_fault_s
     goal: Store Page Fault
     description: store to address that causes store page fault
-  - name: cp_misaligned_priority_s
+  - name: |-
+      cp_misaligned_priority_load_s
+      cp_misaligned_priority_store_s
+      cp_misaligned_priority_fetch_s
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
   - name: cp_misaligned_load_page_fault_s
@@ -56,7 +59,10 @@ coverpoints:
   - name: cp_store_page_fault_u
     goal: Store Page Fault
     description: store to address that causes store page fault
-  - name: cp_misaligned_priority_u
+  - name: |-
+      cp_misaligned_priority_load_u
+      cp_misaligned_priority_store_u
+      cp_misaligned_priority_fetch_u
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
   - name: cp_misaligned_load_page_fault_u

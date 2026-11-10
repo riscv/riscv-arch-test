@@ -89,6 +89,24 @@ coverpoints:
     description: Write 1 and 0 to SD with FS/VS/XS all 0.  Write cross-product of all bits of SD/ FS/ VS/XS.  128 bins of writes.
     expectation: FS =1 iff any of FS/VS/XS are dirty.
     bins: 2 SD * 4 FS * 4 VS * 4 XS = 128
+  - name: cp_mstatus_sxl
+    goal: mstatus.SXL is read-only zero without S-mode, and otherwise a WARL field encoding SXLEN
+    description: On RV64, from M-mode, write mstatus.SXL = (0, 1, 2, 3) and read SXL back
+    expectation: SXL reads 0 without S-mode, 2 when SXLEN is fixed at 64, and 1 or 2 otherwise
+    bins: "4"
+    rules:
+      - mstatus_sxl_uxl_warl_op
+      - mstatus_sxl_acc_mxlen64
+      - mstatus_sxl_rdonly_mxlen64
+  - name: cp_mstatus_uxl
+    goal: mstatus.UXL is read-only zero without U-mode, and otherwise a WARL field encoding UXLEN
+    description: On RV64, from M-mode, write mstatus.UXL = (0, 1, 2, 3) and read UXL back
+    expectation: UXL reads 0 without U-mode, 2 when UXLEN is fixed at 64, and 1 or 2 otherwise
+    bins: "4"
+    rules:
+      - mstatus_sxl_uxl_warl_op
+      - mstatus_uxl_acc_mxlen64
+      - mstatus_uxl_rdonly_mxlen64
   - name: cp_mprivinst
     goal: ecall and ebreak cause traps
     description: Execute ecall and ebreak in machine mode

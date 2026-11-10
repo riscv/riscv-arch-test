@@ -306,7 +306,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "S_sstatus_cg/cp_sxlen_ge_uxlen",
-        "TODO: write mstatus.SXL = 0, 1 and 3 and check that it reads back SXLEN (2 where SXLEN is fixed at 64)",
+        "Sm_mstatus_cg/cp_mstatus_sxl",
+        "Sm_mstatus_cg/cp_mstatus_uxl",
       ]
 
   # The encoding of these fields is the same as the csr::[mxl] field of csr:misa[], shown
@@ -322,32 +323,24 @@ normative_rule_definitions:
   # When MXLEN=64, if S-mode is not supported, then SXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of SXLEN.
   - name: mstatus_sxl_acc_mxlen64
-    coverpoint:
-      [
-        "TODO: write mstatus.SXL = 0, 1 and 3 and check that it reads back SXLEN (2 where SXLEN is fixed at 64)",
-      ]
+    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sxl"]
 
   # an implementation may make SXL be a read-only field whose value always ensures
   # that SXLEN=MXLEN.
   - name: mstatus_sxl_rdonly_mxlen64
-    coverpoint:
-      [
-        "TODO: write mstatus.SXL = 0, 1 and 3 and check that it reads back SXLEN (2 where SXLEN is fixed at 64)",
-      ]
+    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sxl"]
 
   # When MXLEN=64, if U-mode is not supported, then UXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of UXLEN.
   - name: mstatus_uxl_acc_mxlen64
     coverpoint:
-      [
-        "S_sstatus_cg/cp_sxlen_ge_uxlen",
-        "TODO: write mstatus.UXL on an RV64 hart without U-mode and check that it reads 0",
-      ]
+      ["S_sstatus_cg/cp_sxlen_ge_uxlen", "Sm_mstatus_cg/cp_mstatus_uxl"]
 
   # an implementation may make UXL be a read-only field whose value always ensures
   # that UXLEN=MXLEN or UXLEN=SXLEN.
   - name: mstatus_uxl_rdonly_mxlen64
-    coverpoint: ["S_sstatus_cg/cp_sxlen_ge_uxlen"]
+    coverpoint:
+      ["S_sstatus_cg/cp_sxlen_ge_uxlen", "Sm_mstatus_cg/cp_mstatus_uxl"]
 
   # If S-mode is implemented, the set of legal values that the UXL field may assume
   # excludes those that would cause UXLEN to be greater than SXLEN.

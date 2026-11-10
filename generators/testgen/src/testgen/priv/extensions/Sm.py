@@ -1820,6 +1820,54 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _mstatus_xl_tests(test_data: TestData) -> list[str]:
+    """RV64: from M-mode write mstatus.SXL and mstatus.UXL = 0 through 3 and check that each reads back a legal value
+    (cp_mstatus_sxl, cp_mstatus_uxl)."""
+    covergroup = "Sm_mstatus_cg"
+    save_reg, val_reg, tmp_reg = test_data.int_regs.get_registers(3)
+    lines = [
+        "",
+        "#if __riscv_xlen == 64",
+        comment_banner(
+            "cp_mstatus_sxl, cp_mstatus_uxl",
+            "From M-mode write mstatus.SXL and mstatus.UXL = 0, 1, 2 and 3 and read the field back.  Each is read-only\n"
+            "zero without its mode, and otherwise a WARL field encoding SXLEN or UXLEN: 2 where that XLEN is fixed\n"
+            "at 64, and 1 or 2 where it may be 32.",
+        ),
+        f"csrr x{save_reg}, mstatus",
+    ]
+    for field, shift, mode_define, xlen in (("sxl", 34, "S_SUPPORTED", "SXLEN"), ("uxl", 32, "U_SUPPORTED", "UXLEN")):
+        coverpoint = f"cp_mstatus_{field}"
+        for value in range(4):
+            lines.extend(
+                [
+                    "",
+                    f"LI(x{tmp_reg}, {~(3 << shift) & 0xFFFFFFFFFFFFFFFF})  # clear {field.upper()}",
+                    f"and x{val_reg}, x{save_reg}, x{tmp_reg}",
+                    f"LI(x{tmp_reg}, {value << shift})",
+                    f"or x{val_reg}, x{val_reg}, x{tmp_reg}    # {field.upper()} = {value}",
+                    test_data.add_testcase(f"{field}_write_{value}", coverpoint, covergroup),
+                    f"csrw mstatus, x{val_reg}",
+                    f"csrr x{val_reg}, mstatus",
+                    f"csrw mstatus, x{save_reg}    # restore mstatus",
+                    f"srli x{val_reg}, x{val_reg}, {shift}",
+                    f"andi x{val_reg}, x{val_reg}, 3    # {field.upper()}",
+                    f"#if !defined({mode_define})",
+                    f"# Without the mode, {field.upper()} is read-only zero",
+                    f"#elif defined(UDB_{xlen}_64) && !defined(UDB_{xlen}_32)",
+                    f"# {xlen} is fixed at 64, so {field.upper()} reads 2",
+                    "#else",
+                    f"addi x{val_reg}, x{val_reg}, -1",
+                    f"sltiu x{val_reg}, x{val_reg}, 2    # 1 if {field.upper()} is 1 or 2",
+                    "#endif",
+                    write_sigupd(val_reg, test_data),
+                ]
+            )
+    lines.append("#endif // __riscv_xlen == 64")
+    test_data.int_regs.return_registers([save_reg, val_reg, tmp_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Sm",
     required_extensions=["Sm"],
@@ -1835,6 +1883,10 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.begin_test_chunk("mstatus_sd")
     tc.code.extend(xstatus_sd_tests(test_data, "mstatus", "Sm_mstatus_cg", "cp_mstatus_sd_write"))
+    test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("mstatus_xl")
+    tc.code.extend(_mstatus_xl_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("inst")

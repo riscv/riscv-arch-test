@@ -137,6 +137,24 @@ covergroup Sm_mstatus_cg with function sample(ins_t ins);
         bins mstatus = {CSR_MSTATUS};
     }
     cp_mstatus_sd_write: cross priv_mode_m, csrrw, mstatus, cp_mstatus_sd, cp_mstatus_fs, cp_mstatus_vs, cp_mstatus_xs;
+
+    `ifdef UDB_MXLEN_64
+        // Write SXL and UXL = 0..3; each must read back 0 without its mode, else a legal SXLEN/UXLEN
+        sxl_write: coverpoint ins.current.rs1_val[35:34] {
+            bins write_0 = {2'b00};
+            bins write_1 = {2'b01};
+            bins write_2 = {2'b10};
+            bins write_3 = {2'b11};
+        }
+        uxl_write: coverpoint ins.current.rs1_val[33:32] {
+            bins write_0 = {2'b00};
+            bins write_1 = {2'b01};
+            bins write_2 = {2'b10};
+            bins write_3 = {2'b11};
+        }
+        cp_mstatus_sxl: cross priv_mode_m, csrrw, mstatus, sxl_write;
+        cp_mstatus_uxl: cross priv_mode_m, csrrw, mstatus, uxl_write;
+    `endif // UDB_MXLEN_64
 endgroup
 
 covergroup Sm_mprivinst_cg with function sample(ins_t ins);

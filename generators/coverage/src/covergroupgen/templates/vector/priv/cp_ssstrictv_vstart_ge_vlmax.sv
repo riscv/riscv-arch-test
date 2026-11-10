@@ -4,12 +4,12 @@
 
 
     // vstart >= VLMAX is reserved (out of bounds for current vtype)
-    vstart_ge_vlmax: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+    vstart_ge_vlmax: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) >=
+                                 `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins true = {1'b1};
     }
 
-    vtype_valid_8f65a1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_8f65a1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins valid = {1'b0};
     }
 

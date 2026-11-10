@@ -12,7 +12,7 @@
     }
 
 
-    vstart_zero_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstart", "vstart") {
+    vstart_zero_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTART) {
         bins zero = {0};
     }
 

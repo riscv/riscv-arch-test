@@ -473,10 +473,8 @@ covergroup I_beq_cg with function sample(ins_t ins);
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -588,10 +586,8 @@ covergroup I_bge_cg with function sample(ins_t ins);
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -703,10 +699,8 @@ covergroup I_bgeu_cg with function sample(ins_t ins);
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -818,10 +812,8 @@ covergroup I_blt_cg with function sample(ins_t ins);
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -933,10 +925,8 @@ covergroup I_bltu_cg with function sample(ins_t ins);
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -1048,10 +1038,8 @@ covergroup I_bne_cg with function sample(ins_t ins);
         bins b_m4096 = {-4096};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -1208,10 +1196,8 @@ covergroup I_jal_cg with function sample(ins_t ins);
         bins b_m8192 = {-8192};
     }
 
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -1255,10 +1241,8 @@ covergroup I_jalr_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_offset : coverpoint signed'(ins.current.rs1_val) + signed'(ins.current.imm) - ins.get_pc()  iff (ins.trap == 0 )  {
+    cp_offset : coverpoint {ins.current.eff_addr - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
         // jalr destination in rs1+imm is forward/backward
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
     }
     cp_offset_lsbs : coverpoint {ins.current.rs1_val[0], ins.current.imm[0]}  iff (ins.trap == 0 )  {
         // jalr destination is a multiple of 4 + 0/1.  Only check for the +0/1, with each lsb of rs1 and imm
@@ -1282,7 +1266,7 @@ covergroup I_lb_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lb"  iff (ins.trap == 0 )  {
@@ -1339,7 +1323,7 @@ covergroup I_lbu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lbu"  iff (ins.trap == 0 )  {
@@ -1396,7 +1380,7 @@ covergroup I_lh_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lh"  iff (ins.trap == 0 )  {
@@ -1453,7 +1437,7 @@ covergroup I_lhu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lhu"  iff (ins.trap == 0 )  {
@@ -1554,7 +1538,7 @@ covergroup I_lw_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lw"  iff (ins.trap == 0 )  {
@@ -1812,7 +1796,7 @@ endgroup
 // ---------------------
 covergroup I_sb_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sb"  iff (ins.trap == 0 )  {
@@ -1892,7 +1876,7 @@ endgroup
 // ---------------------
 covergroup I_sh_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sh"  iff (ins.trap == 0 )  {
@@ -3073,7 +3057,7 @@ endgroup
 // ---------------------
 covergroup I_sw_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sw"  iff (ins.trap == 0 )  {
@@ -3607,7 +3591,7 @@ covergroup I_lwu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lwu"  iff (ins.trap == 0 )  {
@@ -4410,8 +4394,9 @@ endgroup
 // ---------------------
 `endif
 function void i_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "add"     : begin
             I_add_cg.sample(ins);
         end

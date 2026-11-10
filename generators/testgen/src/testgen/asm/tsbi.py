@@ -197,6 +197,8 @@ _CSR_ALIASES = {
     "hstatus": 0x600,
     "hie": 0x604,
     "hcounteren": 0x606,
+    "henvcfg": 0x60A,
+    "henvcfgh": 0x61A,
     "hip": 0x644,
     "hcontext": 0x6A8,
     "mseccfg": 0x747,

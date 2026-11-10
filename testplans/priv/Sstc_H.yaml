@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sstc_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1537373133#gid=1537373133
+notes: |-
+  The suite boots to HS-mode and writes menvcfg and mcounteren through T-SBI.
+  An access that menvcfg.STCE or mcounteren.TM forbids raises illegal instruction; one that only henvcfg.STCE or hcounteren.TM forbids raises virtual instruction.
+  henvcfg.STCE = 1 with menvcfg.STCE = 0 is skipped in every cross because henvcfg.STCE is read-only zero then.
+  time has no reset value, so a check whose result depends on time compares hip.VSTIP with the comparison computed from a read of time, after waiting RVMODEL_INTERRUPT_LATENCY for a change of the comparison to reach hip.VSTIP.
+  Sstc_HSm repeats cp_vstip and cp_htimedelta from M-mode and adds the M-mode vstimecmp accesses.
+  H cp_hcsrwalk walks vstimecmp and vstimecmph.
+coverpoints:
+  - heading: In HS-Mode
+  - name: cp_hs_vstimecmp_accessible
+    goal: TM and STCE control access depending on priv level
+    description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph
+    expectation: illegal instruction if menvcfg.STCE = 0 or mcounteren.TM = 0
+    bins: 3 STCE * 2 mTM * 2 hTM * up to 2 regs
+  - name: cp_hs_vstimecmp_accesses
+    goal: All types of access
+    description: With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 1, hcounteren.TM = 0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
+    expectation: success
+    bins: 5 accesses * up to 2 regs
+  - name: cp_vstip
+    goal: OR of vstimecmp and hvip
+    description: Cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1}, hvip.VSTIP = {0/1}, htimedelta = 0, vstimecmp = {0, all 1s}.  Check hip.VSTIP.  henvcfg.STCE = 1 with menvcfg.STCE = 0 is skipped because henvcfg.STCE is read-only zero then.  For RV32, htimedeltah and vstimecmph are also written.
+    expectation: If both STCE = 1 and vstimecmp = 0, hip.VSTIP = 1.  Else hip.VSTIP = hvip.VSTIP.
+    bins: 3 STCE * 2 hvip * 2 vstimecmp
+  - name: cp_htimedelta
+    goal: htimedelta affects vstimecmp
+    description: menvcfg.STCE = 1, henvcfg.STCE = 1, hvip.VSTIP = 0, htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, vstimecmp = {0, 2^29, 2^31, 2^61, -2^29, -2^31, -2^61}.  Check hip.VSTIP against the value computed from a read of time.  For RV32, htimedeltah and vstimecmph are involved; htimedelta = 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap.
+    expectation: hip.VSTIP = ((time + htimedelta) mod 2^64 >= vstimecmp), unsigned
+    bins: 7 htimedelta * 7 vstimecmp
+  - heading: In VS-Mode
+  - name: cp_vs_stimecmp_accessible
+    goal: TM and STCE control access depending on priv level
+    description: Put different values in stimecmp and vstimecmp. With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read stimecmp (not vstimecmp).  For RV32, also stimecmph
+    expectation: illegal instruction if menvcfg.STCE = 0 or mcounteren.TM = 0.  virtual instruction trap if menvcfg.STCE = mcounteren.TM = 1 but henvcfg.STCE = 0 or hcounteren.TM = 0.  Otherwise the read returns vstimecmp.
+    bins: 3 STCE * 2 mTM * 2 hTM * up to 2 regs
+  - name: cp_vs_stimecmp_accesses
+    goal: All types of access
+    description: Put different values in stimecmp and vstimecmp before entering VS-mode. With cross of menvcfg.STCE = 1, henvcfg.STCE = 1 mcounteren.TM = 1, hcounteren.TM = 1, read/write (0s,1s)/set/clear stimecmp.  For RV32, also stimecmph.  Then write stimecmp and check from HS-mode that the writes are reflected in vstimecmp/vstimecmph but not stimecmp/h.
+    expectation: Changes should show up in vstimecmp/h
+    bins: 5 accesses * up to 2 regs, and the HS-mode check
+  - name: cp_vs_vstimecmp_inaccessible
+    description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read vstimecmp.  For RV32, also vstimecmph
+    expectation: Illegal instruction when HS-mode could not access it (menvcfg.STCE = 0 or mcounteren.TM = 0), else virtual instruction
+    bins: 3 STCE * 2 mTM * 2 hTM * up to 2 regs
+  - heading: In VU-Mode
+  - name: cp_vu_timecmp_inaccessible
+    description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
+    expectation: Illegal instruction when HS-mode could not access them (menvcfg.STCE = 0 or mcounteren.TM = 0), else virtual instruction
+    bins: 3 STCE * 2 mTM * 2 hTM * up to 4 regs
+  - heading: In U-Mode
+  - name: cp_u_timecmp_inaccessible
+    description: With cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1} mcounteren.TM = {0/1}, hcounteren.TM = {0/1} read stimecmp, vstimecmp.  For RV32, also stimecmph, vstimecmph
+    expectation: Illegal instruction trap
+    bins: 3 STCE * 2 mTM * 2 hTM * up to 4 regs
+  - heading: Without Sstc
+  - goal: henvcfg.STCE is read-only zero when Sstc is not implemented
+    description: On an H implementation without Sstc, write henvcfg.STCE = 1 and read it
+    expectation: henvcfg.STCE reads 0
+    rules:
+      - henvcfg_stce_rdonly0
+    status: Not tested
+    notes: |-
+      Sstc_H requires Sstc, and every configuration with H also implements Sstc.
+      The check belongs in the H suite's henvcfg walk on a configuration without Sstc.

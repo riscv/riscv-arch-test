@@ -57,7 +57,7 @@ RVTEST_BEGIN
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  LI(x8, 0x800) // Test signature initialization
+  LI(x14, 0x800) // Test signature initialization
 
 
 // 4MB page at level 1
@@ -66,34 +66,34 @@ RVTEST_BEGIN
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x14, (va_data >> 22) << 22)
-  LA(x9, rvtest_data_1)
-  slli x9, x9, 10
-  srli x9, x9, 10
-  add x14, x14, x9
-  addi x8, x8, 16
+  LI(x8, (va_data >> 22) << 22)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 10
+  srli x13, x13, 10
+  add x8, x8, x13
+  addi x14, x14, 16
 
 // Store
 Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store:
-  sw x8, 20(x14)
+  sw x14, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load:
-  lw x13, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store, Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load, Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store, Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec, Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load, Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec, Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -109,7 +109,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi x15, x8, 4
+  addi x9, x14, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -123,9 +123,9 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store_str: .string "\"test: 41; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_s; bin: test1_store\""
-Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load_str: .string "\"test: 42; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_s; bin: test1_load\""
-Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec_str: .string "\"test: 43; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_s; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_misaligned_write_s_test1_store_str: .string "\"test: 38; cg: Sv_vm_permissions_cg; cp: cp_misaligned_write_s; bin: test1_store\""
+Sv_vm_permissions_cg_cp_misaligned_read_s_test1_load_str: .string "\"test: 39; cg: Sv_vm_permissions_cg; cp: cp_misaligned_read_s; bin: test1_load\""
+Sv_vm_permissions_cg_cp_misaligned_exec_s_test1_exec_str: .string "\"test: 40; cg: Sv_vm_permissions_cg; cp: cp_misaligned_exec_s; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

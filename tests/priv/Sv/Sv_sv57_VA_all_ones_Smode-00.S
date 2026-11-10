@@ -58,7 +58,7 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(x9, 0x12) // Test signature initialization
+  LI(x15, 0x12) // Test signature initialization
 
 
 // 4KB page at level 0
@@ -72,17 +72,17 @@ RVTEST_BEGIN
   sfence.vma
 
   LI(x8, va_data_rw)
-  addi x9, x9, 16
+  addi x15, x15, 16
 Sv_VA_cg_cp_VA_d_mode_test1_store:
-  sb x9, 0(x8)
+  sb x15, 0(x8)
   nop
 Sv_VA_cg_cp_VA_d_mode_test1_load:
-  lbu x13, 0(x8)
+  lbu x14, 0(x8)
   nop
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_VA_cg_cp_VA_d_mode_test1_store, Sv_VA_cg_cp_VA_d_mode_test1_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_VA_cg_cp_VA_d_mode_test1_load, Sv_VA_cg_cp_VA_d_mode_test1_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_VA_cg_cp_VA_d_mode_test1_store, Sv_VA_cg_cp_VA_d_mode_test1_store_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_VA_cg_cp_VA_d_mode_test1_load, Sv_VA_cg_cp_VA_d_mode_test1_load_str)
 
 
 // 4KB page at level 0
@@ -99,8 +99,8 @@ Sv_VA_cg_cp_VA_d_mode_test1_load:
 Sv_VA_cg_cp_VA_i_mode_test2_exec:
   jalr ra, x8, 0
   nop
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_VA_cg_cp_VA_i_mode_test2_exec, Sv_VA_cg_cp_VA_i_mode_test2_exec_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_VA_cg_cp_VA_i_mode_test2_exec, Sv_VA_cg_cp_VA_i_mode_test2_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -116,7 +116,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1_l0_rw:
   nop
-  addi x15, x9, REGWIDTH
+  addi x13, x15, REGWIDTH
   jr ra
   nop
   .word 0xbeefcaf1          // Random word
@@ -127,7 +127,7 @@ rvtest_data_1_l0_rw:
   .p2align 12
 rvtest_data_1_l0_x:
   nop
-  addi x15, x9, REGWIDTH
+  addi x13, x15, REGWIDTH
   jr ra
   nop
   .word 0xbeefcaf1          // Random word
@@ -150,9 +150,9 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_VA_cg_cp_VA_d_mode_test1_store_str: .string "\"test: 716; cg: Sv_VA_cg; cp: cp_VA_d_mode; bin: test1_store\""
-Sv_VA_cg_cp_VA_d_mode_test1_load_str: .string "\"test: 717; cg: Sv_VA_cg; cp: cp_VA_d_mode; bin: test1_load\""
-Sv_VA_cg_cp_VA_i_mode_test2_exec_str: .string "\"test: 718; cg: Sv_VA_cg; cp: cp_VA_i_mode; bin: test2_exec\""
+Sv_VA_cg_cp_VA_d_mode_test1_store_str: .string "\"test: 707; cg: Sv_VA_cg; cp: cp_VA_d_mode; bin: test1_store\""
+Sv_VA_cg_cp_VA_d_mode_test1_load_str: .string "\"test: 708; cg: Sv_VA_cg; cp: cp_VA_d_mode; bin: test1_load\""
+Sv_VA_cg_cp_VA_i_mode_test2_exec_str: .string "\"test: 709; cg: Sv_VA_cg; cp: cp_VA_i_mode; bin: test2_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

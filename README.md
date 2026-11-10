@@ -408,6 +408,7 @@ uv run act-verify-logs <kit>/manifest.json <returned logs dir> --kit-dir <kit>
 ```
 
 This reports any test that failed, did not run, or ran against different expected results, and any log that does not carry this kit's id.
+With `--kit-dir` it first re-hashes the manifest, the archives and every object against the digests the kit records. Each check names what it compares with what (the log, the manifest field, the file) and prints sample rows with both values; `--details` lists every test.
 
 ### Running Certification Tests
 

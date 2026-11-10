@@ -73,24 +73,6 @@ covergroup Zvfh_vfadd_vf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -349,24 +331,6 @@ covergroup Zvfh_vfadd_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -1088,24 +1052,6 @@ covergroup Zvfh_vfcvt_rtz_x_f_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -1279,24 +1225,6 @@ covergroup Zvfh_vfcvt_rtz_xu_f_v_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -1481,24 +1409,6 @@ covergroup Zvfh_vfcvt_x_f_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -1681,24 +1591,6 @@ covergroup Zvfh_vfcvt_xu_f_v_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -1894,24 +1786,6 @@ covergroup Zvfh_vfdiv_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -2182,24 +2056,6 @@ covergroup Zvfh_vfdiv_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -2436,24 +2292,6 @@ covergroup Zvfh_vfmacc_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -2716,24 +2554,6 @@ covergroup Zvfh_vfmacc_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -2970,24 +2790,6 @@ covergroup Zvfh_vfmadd_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -3250,24 +3052,6 @@ covergroup Zvfh_vfmadd_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -3489,24 +3273,6 @@ covergroup Zvfh_vfmax_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -3753,24 +3519,6 @@ covergroup Zvfh_vfmax_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -4204,24 +3952,6 @@ covergroup Zvfh_vfmin_vf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -4468,24 +4198,6 @@ covergroup Zvfh_vfmin_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -4722,24 +4434,6 @@ covergroup Zvfh_vfmsac_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -5002,24 +4696,6 @@ covergroup Zvfh_vfmsac_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -5256,24 +4932,6 @@ covergroup Zvfh_vfmsub_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -5536,24 +5194,6 @@ covergroup Zvfh_vfmsub_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -5790,24 +5430,6 @@ covergroup Zvfh_vfmul_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -6069,24 +5691,6 @@ covergroup Zvfh_vfmul_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -6840,6 +6444,24 @@ covergroup Zvfh_vfncvt_f_x_w_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfncvt_rup_overflow
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Rounding mode = RUP (round up, frm=3)
+    frm_rup: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm") {
+        bins rup = {3};
+    }
+
+    // Overflow flag set after execution (fflags bit 2 = OF)
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
+        bins overflow = {1'b1};
+    }
+
+    cp_custom_vfncvt_rup_overflow: cross std_vec, frm_rup, fflags_of;
+
+//// end cp_custom_vfncvt_rup_overflow ///////////////////////////////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -7058,6 +6680,24 @@ covergroup Zvfh_vfncvt_f_xu_w_sew16_cg with function sample(ins_t ins);
     cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
 
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfncvt_rup_overflow
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Rounding mode = RUP (round up, frm=3)
+    frm_rup: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm") {
+        bins rup = {3};
+    }
+
+    // Overflow flag set after execution (fflags bit 2 = OF)
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
+        bins overflow = {1'b1};
+    }
+
+    cp_custom_vfncvt_rup_overflow: cross std_vec, frm_rup, fflags_of;
+
+//// end cp_custom_vfncvt_rup_overflow ///////////////////////////////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -7325,24 +6965,6 @@ covergroup Zvfh_vfncvt_rod_f_f_w_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -7575,24 +7197,6 @@ covergroup Zvfh_vfncvt_rtz_x_f_w_sew8_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -7829,24 +7433,6 @@ covergroup Zvfh_vfncvt_rtz_xu_f_w_sew8_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -8093,24 +7679,6 @@ covergroup Zvfh_vfncvt_x_f_w_sew8_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -8356,24 +7924,6 @@ covergroup Zvfh_vfncvt_xu_f_w_sew8_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -8578,24 +8128,6 @@ covergroup Zvfh_vfnmacc_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -8858,24 +8390,6 @@ covergroup Zvfh_vfnmacc_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -9112,24 +8626,6 @@ covergroup Zvfh_vfnmadd_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -9392,24 +8888,6 @@ covergroup Zvfh_vfnmadd_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -9646,24 +9124,6 @@ covergroup Zvfh_vfnmsac_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -9926,24 +9386,6 @@ covergroup Zvfh_vfnmsac_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -10180,24 +9622,6 @@ covergroup Zvfh_vfnmsub_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -10460,24 +9884,6 @@ covergroup Zvfh_vfnmsub_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -10722,24 +10128,6 @@ covergroup Zvfh_vfrdiv_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -11026,24 +10414,6 @@ covergroup Zvfh_vfrec7_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -11245,24 +10615,6 @@ covergroup Zvfh_vfredmax_vs_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -11515,24 +10867,6 @@ covergroup Zvfh_vfredmin_vs_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -11798,24 +11132,6 @@ covergroup Zvfh_vfredosum_vs_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
 
     // Positive qNaN range: sign=0, exponent all 1s, mantissa MSB=1
@@ -12142,24 +11458,6 @@ covergroup Zvfh_vfredusum_vs_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -12480,24 +11778,6 @@ covergroup Zvfh_vfrsqrt7_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_inactive_not_set////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -12682,24 +11962,6 @@ covergroup Zvfh_vfrsub_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -14682,24 +13944,6 @@ covergroup Zvfh_vfsqrt_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -14884,24 +14128,6 @@ covergroup Zvfh_vfsub_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -15162,24 +14388,6 @@ covergroup Zvfh_vfsub_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -15402,24 +14610,6 @@ covergroup Zvfh_vfwadd_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4
@@ -15732,24 +14922,6 @@ covergroup Zvfh_vfwadd_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
@@ -16137,24 +15309,6 @@ covergroup Zvfh_vfwadd_wf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -16428,24 +15582,6 @@ covergroup Zvfh_vfwadd_wv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
@@ -17074,24 +16210,6 @@ covergroup Zvfh_vfwcvt_rtz_x_f_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17270,24 +16388,6 @@ covergroup Zvfh_vfwcvt_rtz_xu_f_v_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -17477,24 +16577,6 @@ covergroup Zvfh_vfwcvt_x_f_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17683,24 +16765,6 @@ covergroup Zvfh_vfwcvt_xu_f_v_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17888,24 +16952,6 @@ covergroup Zvfh_vfwmacc_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -18149,24 +17195,6 @@ covergroup Zvfh_vfwmacc_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -18404,24 +17432,6 @@ covergroup Zvfh_vfwmsac_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -18665,24 +17675,6 @@ covergroup Zvfh_vfwmsac_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -18918,24 +17910,6 @@ covergroup Zvfh_vfwmul_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4
@@ -19246,24 +18220,6 @@ covergroup Zvfh_vfwmul_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
@@ -19625,24 +18581,6 @@ covergroup Zvfh_vfwnmacc_vf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -19885,24 +18823,6 @@ covergroup Zvfh_vfwnmacc_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20140,24 +19060,6 @@ covergroup Zvfh_vfwnmsac_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -20400,24 +19302,6 @@ covergroup Zvfh_vfwnmsac_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20682,24 +19566,6 @@ covergroup Zvfh_vfwredosum_vs_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
 
     // Positive qNaN range: sign=0, exponent all 1s, mantissa MSB=1
@@ -21115,24 +19981,6 @@ covergroup Zvfh_vfwredusum_vs_sew16_cg with function sample(ins_t ins);
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_wred
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -21485,24 +20333,6 @@ covergroup Zvfh_vfwsub_vf_sew16_cg with function sample(ins_t ins);
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -21813,24 +20643,6 @@ covergroup Zvfh_vfwsub_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
@@ -22218,24 +21030,6 @@ covergroup Zvfh_vfwsub_wf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -22509,24 +21303,6 @@ covergroup Zvfh_vfwsub_wv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
@@ -22853,24 +21629,6 @@ covergroup Zvfh_vmfeq_vf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -23087,24 +21845,6 @@ covergroup Zvfh_vmfeq_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23317,24 +22057,6 @@ covergroup Zvfh_vmfge_vf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -23541,24 +22263,6 @@ covergroup Zvfh_vmfgt_vf_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -23764,24 +22468,6 @@ covergroup Zvfh_vmfle_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -23999,24 +22685,6 @@ covergroup Zvfh_vmfle_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24228,24 +22896,6 @@ covergroup Zvfh_vmflt_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -24463,24 +23113,6 @@ covergroup Zvfh_vmflt_vv_sew16_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24692,24 +23324,6 @@ covergroup Zvfh_vmfne_vf_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -24926,24 +23540,6 @@ covergroup Zvfh_vmfne_vv_sew16_cg with function sample(ins_t ins);
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_flags_set
-    // Universal flag-set check: every flag-setting FP instruction can raise NV
-    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_csr_fflags_vdoun_set : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
-    } iff (ins.trap == 0 )  {
-        wildcard bins NV   = {10'b0????_1????};
-        wildcard bins NV1  = {10'b1????_1????};
-    }
-
-    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
-
-    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)

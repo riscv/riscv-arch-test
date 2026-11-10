@@ -11,7 +11,7 @@
 // list.
 
 
-    vtype_valid_0293c6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_0293c6: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins valid = {1'b0};
     }
 

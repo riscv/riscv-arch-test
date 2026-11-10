@@ -66,9 +66,20 @@ SM_VADDR_CSRS = {
 
 
 def _gen_misa_dependencies(
-    misa: str, mask: str, cpbin: str, comment: str, coverpoint: str, covergroup: str, test_data: TestData
+    misa: str,
+    mask: str,
+    cpbin: str,
+    comment: str,
+    coverpoint: str,
+    covergroup: str,
+    test_data: TestData,
+    fail: str | None = None,
 ) -> str:
-    """Generate tests for misa dependencies."""
+    """Generate tests for misa dependencies.
+
+    Write *misa*, read it back and record 1 if the readback masked by *mask* equals *fail* (by default the written
+    value), which is an illegal outcome.
+    """
     r1, rmask, rfail, rorig = test_data.int_regs.get_registers(4)
     lines = [
         f"# Write {comment}. Error if this reads back the same.",
@@ -79,6 +90,7 @@ def _gen_misa_dependencies(
         f"csrw misa, x{rfail} # attempt to write misa",
         f"csrr x{r1}, misa # read back",
         f"csrw misa, x{rorig} # restore original value of misa",
+        *([f"LI(x{rfail}, {fail}) # Illegal combination of the checked bits"] if fail is not None else []),
         f"and x{r1}, x{r1}, x{rmask} # Mask off don't care bits",
         f"xor x{r1}, x{r1}, x{rfail} # Zero result means failing condition observed",
         f"seqz x{r1}, x{r1}  # 1 indicates illegal outcome.  Ref model should always produce 0",
@@ -1047,12 +1059,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             ),
             _gen_misa_dependencies(
                 "0b00000101000000000010010000",
-                "0b00000101000000000010010000",
+                "0b00000000000000000010010000",
                 "h1e1",
-                "H = 1, E = 1 (S = 1, U = 1)",
+                "H = 1, E = 1 (S = 1, U = 1 so that H may be kept)",
                 coverpoint,
                 covergroup,
                 test_data,
+                fail="0b00000000000000000010010000",
             ),
             _gen_misa_dependencies(
                 "0b00000000000000000000000000",

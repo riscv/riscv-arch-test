@@ -30,7 +30,7 @@ coverpoints:
       Attempt to write S = 1, U = 0.  S should read 0 if U = 0
       Attempt to write H = 1, S = 0.  H should read 0 if S = 0
       Attempt to write H = 1, S = 1, U = 0.  H should read 0 if U = 0
-      Attempt to write H = 1, E = 1, S = 1, U = 1.  H requires the I base, so these should not all read 1
+      Attempt to write H = 1, E = 1, S = 1, U = 1.  H requires the I base, so H and E should not both read 1
     expectation: See tests
     bins: "8"
   - name: cp_misa_clear_c

@@ -170,7 +170,8 @@ def format_vsxseg_like_type(
         safety_params = replace(params, vl="vlmax") if params.vector_suite == "length" else params
         setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, safety_params))
 
-    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    offset = f"{params.rs1val_pointer_offset:+d}" if params.rs1val_pointer_offset else ""
+    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer}{offset})")
     # The length suite checks the store's whole VLMAX footprint, so writes to inactive or tail elements fail
     footprint = params.vector_suite == "length" and not params.ignore_vector_safety
     fill, footprint_read_back = (

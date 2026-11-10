@@ -17,8 +17,9 @@ exclude_extensions:
   - Sm_shadow
   - Sm_xret
   # QEMU accepts mstatus.SXL = 1 and UXL = 1 although the configs declare SXLEN and UXLEN fixed at 64 (Sail
-  # cannot model a writable SXL or UXL yet), and it sets SXL and UXL to 2 at reset even without S- or U-mode
-  # (qemu-rv64-m)
+  # cannot model a writable SXL or UXL yet, https://github.com/riscv/sail-riscv/issues/1150; QEMU also lets
+  # UXL exceed SXL, https://gitlab.com/qemu-project/qemu/-/work_items/4821), and it sets SXL and UXL to 2 at
+  # reset even without S- or U-mode (qemu-rv64-m, https://gitlab.com/qemu-project/qemu/-/work_items/4456)
   - Sm_mstatus_xl
   # QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
   - S-

@@ -811,6 +811,28 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_scause_from_m :          cross priv_mode_m, csrrw, scause_csr, scause_wlrl_values;
         cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
         cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
+        // satp written from M-mode with a MODE the hart cannot hold: reserved, or a standard mode it does not support
+        `ifdef UDB_MXLEN_64
+            satp_mode_unsupported : coverpoint ins.current.rs1_val[63:60] {
+                bins reserved[] = {[1:7], [11:13]};
+                `ifndef SV39_SUPPORTED
+                    bins sv39 = {8};
+                `endif
+                `ifndef SV48_SUPPORTED
+                    bins sv48 = {9};
+                `endif
+                `ifndef SV57_SUPPORTED
+                    bins sv57 = {10};
+                `endif
+            }
+            cp_satp_mode_unsupported :  cross priv_mode_m, csrrw, satp, satp_mode_unsupported;
+        `elsif SV32_SUPPORTED
+        `else
+            satp_mode_unsupported : coverpoint ins.current.rs1_val[31] {
+                bins sv32 = {1'b1};
+            }
+            cp_satp_mode_unsupported :  cross priv_mode_m, csrrw, satp, satp_mode_unsupported;
+        `endif
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
         // sip/sie alias mip/mie only for delegated interrupts
         cp_shadow_deleg :           cross priv_mode_m, shadow_int, csrw_prev, csrr, mideleg_s;

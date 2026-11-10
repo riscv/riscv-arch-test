@@ -119,6 +119,15 @@ coverpoints:
     expectation: shouldn't trap on either TVM.  Value is not predictable.
   - name: cp_satp_from_s
     description: If S is supported, read satp with mstatus.TVM=0/1 from S mode
+  - name: cp_satp_mode_unsupported
+    goal: Verify that a write of satp with an unsupported MODE has no effect.
+    description: "If S is supported, from M-mode set satp to Sv39 with ASID = 1 and PPN = 1 (Bare when Sv39 is not supported), then write satp with ASID = 2, PPN = 2 and each MODE the hart cannot hold, and read satp back. SXLEN = 64: the reserved MODEs 1-7 and 11-13, and Sv39, Sv48 or Sv57 when not supported. SXLEN = 32: Sv32 when not supported. The custom MODEs 14 and 15 are not written."
+    expectation: satp reads back unchanged; no field is modified.
+    bins: "SXLEN = 64: 10 reserved, plus 1 for each unsupported mode of Sv39, Sv48 and Sv57; SXLEN = 32: 1 without Sv32, else none"
+    rules:
+      - satp_mode_op_unsupported
+      - satp_mode_sxlen64
+      - satp_mode_enc
   - name: cp_shadow
     goal: Check subset
     description: |-

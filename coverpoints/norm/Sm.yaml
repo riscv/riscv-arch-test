@@ -459,8 +459,7 @@ normative_rule_definitions:
   - name: mstatus_mstatush_xbe_warl
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus",
-        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatush",
+        "TODO: write MBE, SBE and UBE and check that they read back a supported endianness (0 on little-endian harts)",
       ]
 
   # The TVM (Trap Virtual Memory) bit is a WARL field that supports intercepting
@@ -1300,7 +1299,11 @@ normative_rule_definitions:
   # csr:mhpmevent3[]&amp;#8205;&amp;#8211;&amp;#8205;csr:mhpmevent31[], are 64-bit WARL
   # registers that control which event causes the corresponding counter to increment.
   - name: mhpmevent_sz_warl_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access",
+        "Not tested: the value read back; the reference model has no parameter for the legal event selectors",
+      ]
 
   # The meaning of these events is defined by the platform, but event 0 is defined
   # to mean "no event."
@@ -1442,7 +1445,9 @@ normative_rule_definitions:
   # other invalid address that mepc is capable of holding.
   - name: mepc_inv_addr_conv
     coverpoint:
-      ["Sm_mcsr_cg/cp_mepc_vaddr_walk1", "Sm_mcsr_cg/cp_mepc_vaddr_walk0"]
+      [
+        "TODO: write invalid (non-canonical) addresses to mepc and check that it reads back an invalid address",
+      ]
 
   - name: mepc_enc_img
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
@@ -1540,7 +1545,9 @@ normative_rule_definitions:
   # other invalid address that mtval is capable of holding.
   - name: mtval_inv_addr_conv
     coverpoint:
-      ["Sm_mcsr_cg/cp_mtval_vaddr_walk1", "Sm_mcsr_cg/cp_mtval_vaddr_walk0"]
+      [
+        "TODO: write invalid (non-canonical) addresses to mtval and check that it reads back an invalid address",
+      ]
 
   # The mconfigptr register is an MXLEN-bit read-only CSR formatted as shown in mconfigptr_enc_img
   - name: mconfigptr_sz_acc

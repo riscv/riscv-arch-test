@@ -179,6 +179,7 @@ normative_rule_definitions:
         "U_V_cg/cp_sew_lmul_vsetvl",
         "S_V_cg/cp_sew_lmul_vsetvl",
         "H_V_cg/cp_sew_lmul_vsetvl",
+        "TODO: vsetvl with each reserved vtype bit XLEN-2:8 set (cp_vtype_walking1s has no generator)",
       ]
 
   # The value in vsew sets the dynamic selected element width (SEW). By default, a
@@ -819,6 +820,7 @@ normative_rule_definitions:
         "U_V_cg/cp_vill_vsetvl",
         "S_V_cg/cp_vill_vsetvl",
         "H_V_cg/cp_vill_vsetvl",
+        "TODO: vsetvl with reserved vtype bits XLEN-2:8, vsew 4-7 or vlmul 4 (cp_vtype_walking1s has no generator)",
       ]
 
   # When rs1 is not x0, the AVL is an unsigned integer held in the x register specified by

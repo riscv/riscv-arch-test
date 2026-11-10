@@ -46,27 +46,6 @@
     `ifdef COVER_EXCEPTIONSV
         exceptionsv_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_EXCEPTIONSZVE32F
-        exceptionszve32f_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZVE32X
-        exceptionszve32x_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZVE64D
-        exceptionszve64d_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZVE64F
-        exceptionszve64f_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZVE64X
-        exceptionszve64x_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZVFH
-        exceptionszvfh_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZVFHMIN
-        exceptionszvfhmin_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif

@@ -47,27 +47,6 @@
 `ifdef EXCEPTIONSV_COVERAGE
   `include "ExceptionsV_coverage.svh"
 `endif
-`ifdef EXCEPTIONSZVE32F_COVERAGE
-  `include "ExceptionsZve32f_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZVE32X_COVERAGE
-  `include "ExceptionsZve32x_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZVE64D_COVERAGE
-  `include "ExceptionsZve64d_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZVE64F_COVERAGE
-  `include "ExceptionsZve64f_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZVE64X_COVERAGE
-  `include "ExceptionsZve64x_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZVFH_COVERAGE
-  `include "ExceptionsZvfh_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZVFHMIN_COVERAGE
-  `include "ExceptionsZvfhmin_coverage.svh"
-`endif
 `ifdef F_COVERAGE
   `include "F_coverage.svh"
 `endif

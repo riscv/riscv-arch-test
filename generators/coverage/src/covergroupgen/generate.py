@@ -72,10 +72,8 @@ _VECTOR_TESTGEN_COMMON = _load_testgen_script("vector_testgen_common.py")
 # Vector extension prefixes used to identify vector architectures.
 VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv", "SsstrictV", "SsstrictZv")
 
-# Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
-# These priv testplans use the same vector helpers as unpriv vector covergroups
-# but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsZv", "ExceptionsV", "SsstrictV", "SsstrictZv")
+# Priv tests that are driven by csvs (only for Vector Priv)
+PRIV_TESTPLAN_PREFIXES = ("Exceptions", "Ssstrict")
 
 # Map instruction Type code → (has_vd_reg_group, has_vs1_reg_group, has_vs2_reg_group).
 # Used to suppress per-operand off_group / overlap crosses for instructions whose
@@ -274,8 +272,11 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, d
     testplans: dict[str, Testplan] = {}
     extra_testplans: dict[str, dict[tuple[str, ...], Testplan]] = {}
 
-    for csv_path in testplan_dir.glob("*.csv"):
+    for csv_path in testplan_dir.glob("**/*.csv"):
         arch = csv_path.stem
+        if arch == "instruction_formats":
+            continue
+
         groups = _parse_testplan_groups(csv_path)
         tp = groups.pop((), {})
         testplans[arch] = tp
@@ -369,9 +370,9 @@ def _is_vector(arch: str) -> bool:
     return arch.startswith(VECTOR_PREFIXES)
 
 
-def _is_priv_vector(arch: str) -> bool:
+def _is_priv(arch: str) -> bool:
     """Priv testplans whose covergroups need vector helpers but no SEW expansion."""
-    return arch.startswith(PRIV_VECTOR_PREFIXES)
+    return arch.startswith(PRIV_TESTPLAN_PREFIXES)
 
 
 def _matches_xlen(cps: list[str], has_rv32: bool, has_rv64: bool) -> bool:
@@ -735,7 +736,7 @@ class _CovergroupJob:
     extras: dict[tuple[str, ...], Testplan]
 
 
-def _plan_unpriv_jobs(
+def _plan_coverage_jobs(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     output_dir: Path,
     extra_testplans: dict[str, dict[tuple[str, ...], Testplan]],
@@ -743,8 +744,12 @@ def _plan_unpriv_jobs(
     """Collect the unpriv per-extension covergroup jobs (writes go in output_dir/unpriv)."""
     unpriv_dir = output_dir / "unpriv"
     unpriv_dir.mkdir(parents=True, exist_ok=True)
+    priv_dir = output_dir / "priv"
+    priv_dir.mkdir(parents=True, exist_ok=True)
     return [
-        _CovergroupJob(arch, tp, unpriv_dir, _is_vector(arch), extra_testplans.get(arch, {}))
+        _CovergroupJob(
+            arch, tp, (priv_dir if _is_priv(arch) else unpriv_dir), _is_vector(arch), extra_testplans.get(arch, {})
+        )
         for arch, tp in test_plans.items()
     ]
 
@@ -850,33 +855,6 @@ def write_instruction_sample_file(
     _write_if_changed(coverage_dir / "RISCV_instruction_sample.svh", "".join(lines))
 
 
-def _plan_priv_jobs(
-    testplan_dir: Path,
-    output_dir: Path,
-    extensions: str = "all",
-    exclude: str = "",
-) -> list[_CovergroupJob]:
-    """Collect the priv per-instruction covergroup jobs from testplans/priv/*.csv.
-
-    Reads CSVs from testplan_dir / "priv"; writes go in output_dir / "priv".
-    Extensions with handwritten coverage files are skipped. Returns [] when
-    there is no priv testplan directory.
-    """
-    priv_plan_dir = testplan_dir / "priv"
-    if not priv_plan_dir.exists():
-        return []
-
-    priv_output_dir = output_dir / "priv"
-    priv_output_dir.mkdir(parents=True, exist_ok=True)
-
-    priv_plans = {csv_path.stem: _parse_testplan_groups(csv_path)[()] for csv_path in priv_plan_dir.glob("*.csv")}
-
-    if extensions != "all" or exclude != "":
-        priv_plans = _filter_testplans(priv_plans, extensions, exclude)
-
-    return [_CovergroupJob(arch, tp, priv_output_dir, _is_priv_vector(arch), {}) for arch, tp in priv_plans.items()]
-
-
 ##################################
 # Entry point
 ##################################
@@ -893,8 +871,7 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
     templates = read_covergroup_templates()
     instruction_formats = _parse_testplan_groups(testplan_dir / "coverage" / "instruction_formats.csv")[()]
 
-    jobs = _plan_unpriv_jobs(test_plans, output_dir, extra_testplans)
-    jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)
+    jobs = _plan_coverage_jobs(test_plans, output_dir, extra_testplans)
     with _progress("Generating covergroups...") as progress:
         task_id = progress.add_task("covergroups", total=len(jobs))
         for job in jobs:

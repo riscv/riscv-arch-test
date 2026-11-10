@@ -64,6 +64,8 @@ exclude_extensions:
   - U_Zicntr
   # pmpcfg.A stores NA4, which is not selectable with G = 10 (pmp/rtl/ct_pmp_regs.v#L162).
   - PMP_Sm_cfg_A_na4_unsupported
+  # A satp write with a reserved MODE still writes ASID and PPN (mmu/rtl/ct_mmu_regs.v#L629-L650).
+  - Sm_satp_mode_unsupported
 
 apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache patch"
 install_script: ".github/scripts/install-c910.sh"

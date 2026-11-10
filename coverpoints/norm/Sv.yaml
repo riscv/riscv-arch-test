@@ -55,14 +55,17 @@ normative_rule_definitions:
   # a later version of this specification. The remaining MODE settings are reserved for
   # future use and may define different interpretations of the other fields in satp.
   - name: satp_mode_sxlen64
-    coverpoint: ["Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}"]
+    coverpoint:
+      [
+        "Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}",
+        "Sm_mcsr_cg/cp_satp_mode_unsupported",
+      ]
 
   # Implementations are not required to support all MODE settings, and if satp is
   # written with an unsupported MODE, the entire write has no effect; no fields in satp
   # are modified.
   - name: satp_mode_op_unsupported
-    coverpoint:
-      ["TODO: write an unsupported satp.MODE and check that satp is unchanged"]
+    coverpoint: ["Sm_mcsr_cg/cp_satp_mode_unsupported"]
 
   # The number of ASID bits is UNSPECIFIED and may be zero.
   - name: asidlen
@@ -89,7 +92,7 @@ normative_rule_definitions:
       [
         "Sv_VA_cg/mode_supported",
         "Svbare_cg/{satp_bare, cp_satp_bare_load, cp_satp_bare_store, cp_satp_bare_exec}",
-        "TODO: write reserved and custom MODE values (see satp_mode_op_unsupported)",
+        "Sm_mcsr_cg/cp_satp_mode_unsupported",
       ]
 
   # The satp CSR is considered active when the effective privilege mode is S-mode or

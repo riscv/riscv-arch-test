@@ -480,6 +480,44 @@ def _add_deleg_alias(r1: int, r2: int, coverpoint: str, covergroup: str, test_da
     return lines
 
 
+#: satp.MODE values that no write may store, with the macro that makes a standard mode supported.
+#: SXLEN = 64: 1-7 and 11-13 are reserved, Sv39/Sv48/Sv57 are 8/9/10; 14 and 15 are custom.
+_SATP64_UNSUPPORTED_MODES = (
+    *((mode, None) for mode in range(1, 8)),
+    (8, "SV39_SUPPORTED"),
+    (9, "SV48_SUPPORTED"),
+    (10, "SV57_SUPPORTED"),
+    *((mode, None) for mode in range(11, 14)),
+)
+
+
+def _satp_mode_unsupported_tests(test_data: TestData, coverpoint: str, covergroup: str) -> list[str]:
+    """Write satp from M-mode with each MODE the hart cannot hold and check that satp is unchanged."""
+    start_reg, val_reg, check_reg = test_data.int_regs.get_registers(3)
+    start, val = f"x{start_reg}", f"x{val_reg}"
+
+    def write(name: str, value: str) -> list[str]:
+        return [
+            f"LI({val}, {value})",
+            f"csrw satp, {start}",
+            test_data.add_testcase(name, coverpoint, covergroup),
+            f"csrw satp, {val}",
+            gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
+        ]
+
+    lines = ["#ifdef S_SUPPORTED", "#if __riscv_xlen == 64", "#ifdef SV39_SUPPORTED"]
+    # M-mode is not translated, so satp may point anywhere.
+    lines.extend([f"LI({start}, (SATP_MODE_SV39 << 60) | (1 << 44) | 1)", "#else", f"li {start}, 0", "#endif"])
+    for mode, supported in _SATP64_UNSUPPORTED_MODES:
+        body = write(f"mode{mode}", f"({mode} << 60) | (2 << 44) | 2")
+        lines.extend([f"#ifndef {supported}", *body, "#endif"] if supported else body)
+    lines.extend(["#else", "#ifndef SV32_SUPPORTED", f"li {start}, 0"])
+    lines.extend(write("sv32", "(SATP_MODE_SV32 << 31) | (2 << 22) | 2"))
+    lines.extend(["#endif", "#endif", "csrw satp, zero", "#endif // S_SUPPORTED"])
+    test_data.int_regs.return_registers([start_reg, val_reg, check_reg])
+    return lines
+
+
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -899,6 +937,19 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
     test_data.int_regs.return_registers([temp_reg, tvm_reg])
+
+    ######################################
+    coverpoint = "cp_satp_mode_unsupported"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "satp_mode_unsupported")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "From M-mode, write satp with each reserved MODE and each standard MODE the hart does not\n"
+        "support, with an ASID and PPN that differ from satp's.  The whole write has no effect, so satp\n"
+        "reads back unchanged: Sv39 with ASID = 1 and PPN = 1 when Sv39 is supported, else Bare (0).\n"
+        "MODE 14 and 15 are designated for custom use and are not written.",
+    )
+    tc.code.extend(_satp_mode_unsupported_tests(test_data, coverpoint, covergroup))
 
     ######################################
     coverpoint = "cp_shadow"

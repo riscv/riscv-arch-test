@@ -17,7 +17,7 @@ are in the HSm group.
 from collections.abc import Sequence
 
 from testgen.asm.csr import gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, gated, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, load_constant, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
@@ -237,7 +237,7 @@ def guest_access(
     if sv is not None:
         address = virtual_address(sv, va, level, destination=va_reg, physical_address="svh_page", scratch=data)
     else:
-        address = [f"{'LA' if va_is_label else 'LI'}(x{va_reg}, {va})"]
+        address = [f"LA(x{va_reg}, {va})" if va_is_label else load_constant(f"x{va_reg}", va)]
     lines = [*setup, *address, f"LI(x{data}, {0x100 + test_data.test_count:#x})"]
     if mode is not None:
         lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")

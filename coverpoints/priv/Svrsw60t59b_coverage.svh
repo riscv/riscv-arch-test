@@ -41,7 +41,7 @@ covergroup Svrsw60t59b_cg with function sample(ins_t ins);
         wildcard bins jalr = {JALR};
     }
 
-    satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+    satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
         bins sv39 = {4'b1000};
         `ifdef SV48_SUPPORTED
             bins sv48 = {4'b1001};
@@ -87,7 +87,7 @@ covergroup Svrsw60t59b_H_cg with function sample(ins_t ins);
         wildcard bins jalr = {JALR};
     }
 
-    vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         `ifdef UDB_SV39_VSMODE_TRANSLATION
             bins sv39 = {8};
         `endif
@@ -98,7 +98,7 @@ covergroup Svrsw60t59b_H_cg with function sample(ins_t ins);
             bins sv57 = {10};
         `endif
     }
-    hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         `ifdef UDB_SV39X4_TRANSLATION
             bins sv39x4 = {8};
         `endif
@@ -109,10 +109,10 @@ covergroup Svrsw60t59b_H_cg with function sample(ins_t ins);
             bins sv57x4 = {10};
         `endif
     }
-    vsatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins bare = {0};
     }
-    hgatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare = {0};
     }
 

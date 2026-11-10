@@ -68,7 +68,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zknh|SHA2 Hashing|<<t-Zknh-coverpoints>>|||o||
 |Zksed|SM4 Cipher|<<t-Zksed-coverpoints>>|||o||
 |Zksh|SM3 Hashing|<<t-Zksh-coverpoints>>|||o||
-|Zkt|Data-Independent Latency|<<t-Zkt-coverpoints>>|||x|x|x
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
@@ -169,7 +168,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Shvstvala|vstval Addresses|<<t-Shvstvala-coverpoints>>|||o|o|x
 |Shtvala|htval Addresses|<<t-Shtvala-coverpoints>>|||o|o|x
 |Shlcofideleg|Counter Overflow Delegation|<<t-Shlcofideleg-coverpoints>>|||o|o|x
-|ZkrH|Hypervisor Entropy|<<t-ZkrH-coverpoints>>|||o|o|x
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x
@@ -235,7 +233,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 
 === Out-of-Scope Extensions
 
-<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
+<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  Measuring the latency of an instruction with a cycle counter is unreliable because instruction fetch, branch prediction, superscalar issue, and out-of-order execution make the count depend on where the instruction is and what surrounds it, not only on its operand data.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
 
 [[t-untested]]
 .Extensions Lacking Architectural Visibility for Certification Testing
@@ -244,6 +242,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 [%AUTOWIDTH]
 |===
 |Coverage File|Description|RVI20|uController|RVA22S64|RVB23S64|RVA23S64
+|Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |===
 

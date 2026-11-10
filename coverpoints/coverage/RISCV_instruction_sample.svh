@@ -31,151 +31,181 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoadd.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoadd.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.b"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.h"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "and"     : begin
             ins.add_rd(0);
@@ -323,28 +353,28 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fldsp"     : begin
             ins.add_fd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fsd"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fsdsp"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.j"     : begin
             ins.add_imm_addr(0);
@@ -352,30 +382,32 @@
         "c.jalr"     : begin
             ins.add_rd_ra();
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "c.jr"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "c.lbu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.lh"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.lhu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.li"     : begin
             ins.add_rd(0);
@@ -392,14 +424,14 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.lwsp"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.mop.1"     : begin
             ins.add_imm(0);
@@ -472,7 +504,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.sext.b"     : begin
             ins.add_rd(0);
@@ -487,7 +519,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.slli"     : begin
             ins.add_rd(0);
@@ -520,14 +552,14 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.swsp"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.xor"     : begin
             ins.add_rd(0);
@@ -544,15 +576,19 @@
         end
         "cbo.clean"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "cbo.flush"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "cbo.inval"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "cbo.zero"     : begin
             ins.add_rs1(0);
+            ins.add_eff_addr();
         end
         "clmul"     : begin
             ins.add_rd(0);
@@ -788,7 +824,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fle.d"     : begin
             ins.add_rd(0);
@@ -825,7 +861,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fli.d"     : begin
             ins.add_fd(0);
@@ -871,7 +907,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fmadd.d"     : begin
             ins.add_fd(0);
@@ -1065,7 +1101,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fsgnj.d"     : begin
             ins.add_fd(0);
@@ -1117,7 +1153,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "fsqrt.d"     : begin
             ins.add_fd(0);
@@ -1151,7 +1187,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "hfence.gvma"     : begin
             ins.add_rs1(0);
@@ -1172,45 +1208,55 @@
         "hlv.b"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.bu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.h"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.hu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.w"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlvx.hu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlvx.wu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hsv.b"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "hsv.h"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "hsv.w"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "jal"     : begin
             ins.add_rd(0);
@@ -1220,34 +1266,35 @@
             ins.add_rd(0);
             ins.add_imm_addr(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "lb"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lbu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lh"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lhu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lpad"     : begin
             ins.add_imm(0);
@@ -1255,6 +1302,7 @@
         "lr.w"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "lui"     : begin
             ins.add_rd(0);
@@ -1265,7 +1313,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "max"     : begin
             ins.add_rd(0);
@@ -1539,14 +1587,17 @@
         "prefetch.i"     : begin
             ins.add_imm(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "prefetch.r"     : begin
             ins.add_imm(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "prefetch.w"     : begin
             ins.add_imm(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "rem"     : begin
             ins.add_rd(0);
@@ -1582,13 +1633,14 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "sc.w"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "sext.b"     : begin
             ins.add_rd(0);
@@ -1611,7 +1663,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "sh1add"     : begin
             ins.add_rd(0);
@@ -1722,6 +1774,7 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "sspopchk"     : begin
             ins.add_rs1(0);
@@ -1742,7 +1795,7 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "vaadd.vv"     : begin
             ins.add_vd(0);
@@ -2677,118 +2730,143 @@
         "vl1re16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl1re32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl1re64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl1re8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl2re16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl2re32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl2re64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl2re8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl4re16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl4re32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl4re64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl4re8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl8re16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl8re32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl8re64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vl8re8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vle16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vle16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vle32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vle32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vle64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vle64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vle8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vle8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlm.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vloxei16.v"     : begin
             ins.add_vd(0);
@@ -2796,6 +2874,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxei32.v"     : begin
             ins.add_vd(0);
@@ -2803,6 +2882,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxei64.v"     : begin
             ins.add_vd(0);
@@ -2810,6 +2890,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxei8.v"     : begin
             ins.add_vd(0);
@@ -2817,6 +2898,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg2ei16.v"     : begin
             ins.add_vd(0);
@@ -2824,6 +2906,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg2ei32.v"     : begin
             ins.add_vd(0);
@@ -2831,6 +2914,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg2ei64.v"     : begin
             ins.add_vd(0);
@@ -2838,6 +2922,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg2ei8.v"     : begin
             ins.add_vd(0);
@@ -2845,6 +2930,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg3ei16.v"     : begin
             ins.add_vd(0);
@@ -2852,6 +2938,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg3ei32.v"     : begin
             ins.add_vd(0);
@@ -2859,6 +2946,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg3ei64.v"     : begin
             ins.add_vd(0);
@@ -2866,6 +2954,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg3ei8.v"     : begin
             ins.add_vd(0);
@@ -2873,6 +2962,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg4ei16.v"     : begin
             ins.add_vd(0);
@@ -2880,6 +2970,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg4ei32.v"     : begin
             ins.add_vd(0);
@@ -2887,6 +2978,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg4ei64.v"     : begin
             ins.add_vd(0);
@@ -2894,6 +2986,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg4ei8.v"     : begin
             ins.add_vd(0);
@@ -2901,6 +2994,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg5ei16.v"     : begin
             ins.add_vd(0);
@@ -2908,6 +3002,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg5ei32.v"     : begin
             ins.add_vd(0);
@@ -2915,6 +3010,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg5ei64.v"     : begin
             ins.add_vd(0);
@@ -2922,6 +3018,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg5ei8.v"     : begin
             ins.add_vd(0);
@@ -2929,6 +3026,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg6ei16.v"     : begin
             ins.add_vd(0);
@@ -2936,6 +3034,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg6ei32.v"     : begin
             ins.add_vd(0);
@@ -2943,6 +3042,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg6ei64.v"     : begin
             ins.add_vd(0);
@@ -2950,6 +3050,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg6ei8.v"     : begin
             ins.add_vd(0);
@@ -2957,6 +3058,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg7ei16.v"     : begin
             ins.add_vd(0);
@@ -2964,6 +3066,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg7ei32.v"     : begin
             ins.add_vd(0);
@@ -2971,6 +3074,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg7ei64.v"     : begin
             ins.add_vd(0);
@@ -2978,6 +3082,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg7ei8.v"     : begin
             ins.add_vd(0);
@@ -2985,6 +3090,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg8ei16.v"     : begin
             ins.add_vd(0);
@@ -2992,6 +3098,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg8ei32.v"     : begin
             ins.add_vd(0);
@@ -2999,6 +3106,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg8ei64.v"     : begin
             ins.add_vd(0);
@@ -3006,6 +3114,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vloxseg8ei8.v"     : begin
             ins.add_vd(0);
@@ -3013,6 +3122,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlse16.v"     : begin
             ins.add_vd(0);
@@ -3020,6 +3130,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlse32.v"     : begin
             ins.add_vd(0);
@@ -3027,6 +3138,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlse64.v"     : begin
             ins.add_vd(0);
@@ -3034,6 +3146,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlse8.v"     : begin
             ins.add_vd(0);
@@ -3041,342 +3154,399 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg2e8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg3e8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg4e8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg5e8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg6e8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg7e8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e16ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e32ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e64ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlseg8e8ff.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg2e16.v"     : begin
             ins.add_vd(0);
@@ -3384,6 +3554,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg2e32.v"     : begin
             ins.add_vd(0);
@@ -3391,6 +3562,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg2e64.v"     : begin
             ins.add_vd(0);
@@ -3398,6 +3570,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg2e8.v"     : begin
             ins.add_vd(0);
@@ -3405,6 +3578,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg3e16.v"     : begin
             ins.add_vd(0);
@@ -3412,6 +3586,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg3e32.v"     : begin
             ins.add_vd(0);
@@ -3419,6 +3594,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg3e64.v"     : begin
             ins.add_vd(0);
@@ -3426,6 +3602,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg3e8.v"     : begin
             ins.add_vd(0);
@@ -3433,6 +3610,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg4e16.v"     : begin
             ins.add_vd(0);
@@ -3440,6 +3618,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg4e32.v"     : begin
             ins.add_vd(0);
@@ -3447,6 +3626,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg4e64.v"     : begin
             ins.add_vd(0);
@@ -3454,6 +3634,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg4e8.v"     : begin
             ins.add_vd(0);
@@ -3461,6 +3642,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg5e16.v"     : begin
             ins.add_vd(0);
@@ -3468,6 +3650,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg5e32.v"     : begin
             ins.add_vd(0);
@@ -3475,6 +3658,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg5e64.v"     : begin
             ins.add_vd(0);
@@ -3482,6 +3666,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg5e8.v"     : begin
             ins.add_vd(0);
@@ -3489,6 +3674,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg6e16.v"     : begin
             ins.add_vd(0);
@@ -3496,6 +3682,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg6e32.v"     : begin
             ins.add_vd(0);
@@ -3503,6 +3690,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg6e64.v"     : begin
             ins.add_vd(0);
@@ -3510,6 +3698,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg6e8.v"     : begin
             ins.add_vd(0);
@@ -3517,6 +3706,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg7e16.v"     : begin
             ins.add_vd(0);
@@ -3524,6 +3714,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg7e32.v"     : begin
             ins.add_vd(0);
@@ -3531,6 +3722,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg7e64.v"     : begin
             ins.add_vd(0);
@@ -3538,6 +3730,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg7e8.v"     : begin
             ins.add_vd(0);
@@ -3545,6 +3738,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg8e16.v"     : begin
             ins.add_vd(0);
@@ -3552,6 +3746,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg8e32.v"     : begin
             ins.add_vd(0);
@@ -3559,6 +3754,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg8e64.v"     : begin
             ins.add_vd(0);
@@ -3566,6 +3762,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vlsseg8e8.v"     : begin
             ins.add_vd(0);
@@ -3573,6 +3770,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxei16.v"     : begin
             ins.add_vd(0);
@@ -3580,6 +3778,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxei32.v"     : begin
             ins.add_vd(0);
@@ -3587,6 +3786,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxei64.v"     : begin
             ins.add_vd(0);
@@ -3594,6 +3794,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxei8.v"     : begin
             ins.add_vd(0);
@@ -3601,6 +3802,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg2ei16.v"     : begin
             ins.add_vd(0);
@@ -3608,6 +3810,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg2ei32.v"     : begin
             ins.add_vd(0);
@@ -3615,6 +3818,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg2ei64.v"     : begin
             ins.add_vd(0);
@@ -3622,6 +3826,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg2ei8.v"     : begin
             ins.add_vd(0);
@@ -3629,6 +3834,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg3ei16.v"     : begin
             ins.add_vd(0);
@@ -3636,6 +3842,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg3ei32.v"     : begin
             ins.add_vd(0);
@@ -3643,6 +3850,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg3ei64.v"     : begin
             ins.add_vd(0);
@@ -3650,6 +3858,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg3ei8.v"     : begin
             ins.add_vd(0);
@@ -3657,6 +3866,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg4ei16.v"     : begin
             ins.add_vd(0);
@@ -3664,6 +3874,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg4ei32.v"     : begin
             ins.add_vd(0);
@@ -3671,6 +3882,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg4ei64.v"     : begin
             ins.add_vd(0);
@@ -3678,6 +3890,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg4ei8.v"     : begin
             ins.add_vd(0);
@@ -3685,6 +3898,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg5ei16.v"     : begin
             ins.add_vd(0);
@@ -3692,6 +3906,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg5ei32.v"     : begin
             ins.add_vd(0);
@@ -3699,6 +3914,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg5ei64.v"     : begin
             ins.add_vd(0);
@@ -3706,6 +3922,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg5ei8.v"     : begin
             ins.add_vd(0);
@@ -3713,6 +3930,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg6ei16.v"     : begin
             ins.add_vd(0);
@@ -3720,6 +3938,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg6ei32.v"     : begin
             ins.add_vd(0);
@@ -3727,6 +3946,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg6ei64.v"     : begin
             ins.add_vd(0);
@@ -3734,6 +3954,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg6ei8.v"     : begin
             ins.add_vd(0);
@@ -3741,6 +3962,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg7ei16.v"     : begin
             ins.add_vd(0);
@@ -3748,6 +3970,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg7ei32.v"     : begin
             ins.add_vd(0);
@@ -3755,6 +3978,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg7ei64.v"     : begin
             ins.add_vd(0);
@@ -3762,6 +3986,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg7ei8.v"     : begin
             ins.add_vd(0);
@@ -3769,6 +3994,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg8ei16.v"     : begin
             ins.add_vd(0);
@@ -3776,6 +4002,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg8ei32.v"     : begin
             ins.add_vd(0);
@@ -3783,6 +4010,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg8ei64.v"     : begin
             ins.add_vd(0);
@@ -3790,6 +4018,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vluxseg8ei8.v"     : begin
             ins.add_vd(0);
@@ -3797,6 +4026,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vmacc.vv"     : begin
             ins.add_vd(0);
@@ -4626,18 +4856,22 @@
         "vs1r.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vs2r.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vs4r.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vs8r.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vsadd.vi"     : begin
             ins.add_vd(0);
@@ -4700,24 +4934,37 @@
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vse32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vse64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vse8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
+        end
+        "vsetvl"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+            ins.add_rs2(2);
+        end
+        "vsetvli"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
         end
         "vsext.vf2"     : begin
             ins.add_vd(0);
@@ -4818,6 +5065,7 @@
         "vsm.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "vsm3c.vi"     : begin
             ins.add_vd(0);
@@ -4862,6 +5110,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxei32.v"     : begin
             ins.add_vs3(0);
@@ -4869,6 +5118,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxei64.v"     : begin
             ins.add_vs3(0);
@@ -4876,6 +5126,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxei8.v"     : begin
             ins.add_vs3(0);
@@ -4883,6 +5134,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg2ei16.v"     : begin
             ins.add_vs3(0);
@@ -4890,6 +5142,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg2ei32.v"     : begin
             ins.add_vs3(0);
@@ -4897,6 +5150,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg2ei64.v"     : begin
             ins.add_vs3(0);
@@ -4904,6 +5158,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg2ei8.v"     : begin
             ins.add_vs3(0);
@@ -4911,6 +5166,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg3ei16.v"     : begin
             ins.add_vs3(0);
@@ -4918,6 +5174,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg3ei32.v"     : begin
             ins.add_vs3(0);
@@ -4925,6 +5182,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg3ei64.v"     : begin
             ins.add_vs3(0);
@@ -4932,6 +5190,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg3ei8.v"     : begin
             ins.add_vs3(0);
@@ -4939,6 +5198,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg4ei16.v"     : begin
             ins.add_vs3(0);
@@ -4946,6 +5206,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg4ei32.v"     : begin
             ins.add_vs3(0);
@@ -4953,6 +5214,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg4ei64.v"     : begin
             ins.add_vs3(0);
@@ -4960,6 +5222,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg4ei8.v"     : begin
             ins.add_vs3(0);
@@ -4967,6 +5230,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg5ei16.v"     : begin
             ins.add_vs3(0);
@@ -4974,6 +5238,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg5ei32.v"     : begin
             ins.add_vs3(0);
@@ -4981,6 +5246,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg5ei64.v"     : begin
             ins.add_vs3(0);
@@ -4988,6 +5254,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg5ei8.v"     : begin
             ins.add_vs3(0);
@@ -4995,6 +5262,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg6ei16.v"     : begin
             ins.add_vs3(0);
@@ -5002,6 +5270,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg6ei32.v"     : begin
             ins.add_vs3(0);
@@ -5009,6 +5278,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg6ei64.v"     : begin
             ins.add_vs3(0);
@@ -5016,6 +5286,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg6ei8.v"     : begin
             ins.add_vs3(0);
@@ -5023,6 +5294,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg7ei16.v"     : begin
             ins.add_vs3(0);
@@ -5030,6 +5302,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg7ei32.v"     : begin
             ins.add_vs3(0);
@@ -5037,6 +5310,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg7ei64.v"     : begin
             ins.add_vs3(0);
@@ -5044,6 +5318,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg7ei8.v"     : begin
             ins.add_vs3(0);
@@ -5051,6 +5326,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg8ei16.v"     : begin
             ins.add_vs3(0);
@@ -5058,6 +5334,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg8ei32.v"     : begin
             ins.add_vs3(0);
@@ -5065,6 +5342,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg8ei64.v"     : begin
             ins.add_vs3(0);
@@ -5072,6 +5350,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsoxseg8ei8.v"     : begin
             ins.add_vs3(0);
@@ -5079,6 +5358,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsra.vi"     : begin
             ins.add_vd(0);
@@ -5128,6 +5408,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsse32.v"     : begin
             ins.add_vs3(0);
@@ -5135,6 +5416,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsse64.v"     : begin
             ins.add_vs3(0);
@@ -5142,6 +5424,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsse8.v"     : begin
             ins.add_vs3(0);
@@ -5149,174 +5432,203 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg2e16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg2e32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg2e64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg2e8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg3e16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg3e32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg3e64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg3e8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg4e16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg4e32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg4e64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg4e8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg5e16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg5e32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg5e64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg5e8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg6e16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg6e32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg6e64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg6e8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg7e16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg7e32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg7e64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg7e8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg8e16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg8e32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg8e64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsseg8e8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vm(2);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssra.vi"     : begin
             ins.add_vd(0);
@@ -5366,6 +5678,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg2e32.v"     : begin
             ins.add_vs3(0);
@@ -5373,6 +5686,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg2e64.v"     : begin
             ins.add_vs3(0);
@@ -5380,6 +5694,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg2e8.v"     : begin
             ins.add_vs3(0);
@@ -5387,6 +5702,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg3e16.v"     : begin
             ins.add_vs3(0);
@@ -5394,6 +5710,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg3e32.v"     : begin
             ins.add_vs3(0);
@@ -5401,6 +5718,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg3e64.v"     : begin
             ins.add_vs3(0);
@@ -5408,6 +5726,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg3e8.v"     : begin
             ins.add_vs3(0);
@@ -5415,6 +5734,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg4e16.v"     : begin
             ins.add_vs3(0);
@@ -5422,6 +5742,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg4e32.v"     : begin
             ins.add_vs3(0);
@@ -5429,6 +5750,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg4e64.v"     : begin
             ins.add_vs3(0);
@@ -5436,6 +5758,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg4e8.v"     : begin
             ins.add_vs3(0);
@@ -5443,6 +5766,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg5e16.v"     : begin
             ins.add_vs3(0);
@@ -5450,6 +5774,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg5e32.v"     : begin
             ins.add_vs3(0);
@@ -5457,6 +5782,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg5e64.v"     : begin
             ins.add_vs3(0);
@@ -5464,6 +5790,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg5e8.v"     : begin
             ins.add_vs3(0);
@@ -5471,6 +5798,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg6e16.v"     : begin
             ins.add_vs3(0);
@@ -5478,6 +5806,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg6e32.v"     : begin
             ins.add_vs3(0);
@@ -5485,6 +5814,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg6e64.v"     : begin
             ins.add_vs3(0);
@@ -5492,6 +5822,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg6e8.v"     : begin
             ins.add_vs3(0);
@@ -5499,6 +5830,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg7e16.v"     : begin
             ins.add_vs3(0);
@@ -5506,6 +5838,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg7e32.v"     : begin
             ins.add_vs3(0);
@@ -5513,6 +5846,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg7e64.v"     : begin
             ins.add_vs3(0);
@@ -5520,6 +5854,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg7e8.v"     : begin
             ins.add_vs3(0);
@@ -5527,6 +5862,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg8e16.v"     : begin
             ins.add_vs3(0);
@@ -5534,6 +5870,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg8e32.v"     : begin
             ins.add_vs3(0);
@@ -5541,6 +5878,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg8e64.v"     : begin
             ins.add_vs3(0);
@@ -5548,6 +5886,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssseg8e8.v"     : begin
             ins.add_vs3(0);
@@ -5555,6 +5894,7 @@
             ins.add_rs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vssub.vv"     : begin
             ins.add_vd(0);
@@ -5604,6 +5944,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxei32.v"     : begin
             ins.add_vs3(0);
@@ -5611,6 +5952,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxei64.v"     : begin
             ins.add_vs3(0);
@@ -5618,6 +5960,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxei8.v"     : begin
             ins.add_vs3(0);
@@ -5625,6 +5968,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg2ei16.v"     : begin
             ins.add_vs3(0);
@@ -5632,6 +5976,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg2ei32.v"     : begin
             ins.add_vs3(0);
@@ -5639,6 +5984,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg2ei64.v"     : begin
             ins.add_vs3(0);
@@ -5646,6 +5992,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg2ei8.v"     : begin
             ins.add_vs3(0);
@@ -5653,6 +6000,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg3ei16.v"     : begin
             ins.add_vs3(0);
@@ -5660,6 +6008,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg3ei32.v"     : begin
             ins.add_vs3(0);
@@ -5667,6 +6016,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg3ei64.v"     : begin
             ins.add_vs3(0);
@@ -5674,6 +6024,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg3ei8.v"     : begin
             ins.add_vs3(0);
@@ -5681,6 +6032,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg4ei16.v"     : begin
             ins.add_vs3(0);
@@ -5688,6 +6040,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg4ei32.v"     : begin
             ins.add_vs3(0);
@@ -5695,6 +6048,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg4ei64.v"     : begin
             ins.add_vs3(0);
@@ -5702,6 +6056,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg4ei8.v"     : begin
             ins.add_vs3(0);
@@ -5709,6 +6064,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg5ei16.v"     : begin
             ins.add_vs3(0);
@@ -5716,6 +6072,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg5ei32.v"     : begin
             ins.add_vs3(0);
@@ -5723,6 +6080,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg5ei64.v"     : begin
             ins.add_vs3(0);
@@ -5730,6 +6088,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg5ei8.v"     : begin
             ins.add_vs3(0);
@@ -5737,6 +6096,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg6ei16.v"     : begin
             ins.add_vs3(0);
@@ -5744,6 +6104,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg6ei32.v"     : begin
             ins.add_vs3(0);
@@ -5751,6 +6112,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg6ei64.v"     : begin
             ins.add_vs3(0);
@@ -5758,6 +6120,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg6ei8.v"     : begin
             ins.add_vs3(0);
@@ -5765,6 +6128,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg7ei16.v"     : begin
             ins.add_vs3(0);
@@ -5772,6 +6136,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg7ei32.v"     : begin
             ins.add_vs3(0);
@@ -5779,6 +6144,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg7ei64.v"     : begin
             ins.add_vs3(0);
@@ -5786,6 +6152,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg7ei8.v"     : begin
             ins.add_vs3(0);
@@ -5793,6 +6160,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg8ei16.v"     : begin
             ins.add_vs3(0);
@@ -5800,6 +6168,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg8ei32.v"     : begin
             ins.add_vs3(0);
@@ -5807,6 +6176,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg8ei64.v"     : begin
             ins.add_vs3(0);
@@ -5814,6 +6184,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vsuxseg8ei8.v"     : begin
             ins.add_vs3(0);
@@ -5821,6 +6192,7 @@
             ins.add_vs2(2);
             ins.add_vm(3);
             ins.add_v0();
+            ins.add_eff_addr();
         end
         "vwadd.vv"     : begin
             ins.add_vd(0);
@@ -6159,34 +6531,35 @@
             ins.add_rd_pair(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "c.flw"     : begin
             ins.add_fd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.flwsp"     : begin
             ins.add_fd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fsw"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.fswsp"     : begin
             ins.add_fs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.jal"     : begin
             ins.add_rd_ra();
@@ -6293,56 +6666,67 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoand.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amocas.q"     : begin
             ins.add_rd_pair(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomax.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomaxu.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amomin.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amominu.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoor.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoswap.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "amoxor.d"     : begin
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "c.addiw"     : begin
             ins.add_rd(0);
@@ -6359,28 +6743,28 @@
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.ldsp"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.sd"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.sdsp"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1_sp();
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "c.subw"     : begin
             ins.add_rd(0);
@@ -6472,33 +6856,37 @@
         "hlv.d"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hlv.wu"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "hsv.d"     : begin
             ins.add_rs2(0);
             ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "ld"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "lr.d"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
+            ins.add_eff_addr();
         end
         "lwu"     : begin
             ins.add_rd(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_LOAD;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "mulw"     : begin
             ins.add_rd(0);
@@ -6540,13 +6928,14 @@
             ins.add_rs2(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
+            ins.add_eff_addr();
         end
         "sd"     : begin
             ins.add_rs2(0);
             ins.add_mem_offset(1);
             ins.add_rs1(2);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
+            ins.add_eff_addr();
         end
         "sh1add.uw"     : begin
             ins.add_rd(0);
@@ -6618,6 +7007,7 @@
             ins.add_rd(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
+            ins.add_eff_addr();
         end
         "subw"     : begin
             ins.add_rd(0);
@@ -6625,13 +7015,4 @@
             ins.add_rs2(2);
         end
 `endif
-        "vsetvl"    : begin
-            ins.add_rd(0);
-            ins.add_rs1(1);
-            ins.add_rs2(2);
-        end
-        "vsetvli"   : begin
-            ins.add_rd(0);
-            ins.add_rs1(1);
-        end
     endcase

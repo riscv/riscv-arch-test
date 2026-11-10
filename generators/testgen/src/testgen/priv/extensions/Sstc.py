@@ -362,8 +362,44 @@ def make_sstch(test_data: TestData) -> list[TestChunk]:
     tc = test_data.new_test_chunk(test_chunks, "H_vstip")
     tc.code.extend([*_vstip_tests(test_data, _CG_H, "supervisor"), *_htimedelta_tests(test_data, _CG_H, "supervisor")])
 
+    tc = test_data.new_test_chunk(test_chunks, "H_henvcfg_stce")
+    tc.code.extend(_henvcfg_stce_tests(test_data))
+
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+
+
+def _henvcfg_stce_tests(test_data: TestData) -> list[str]:
+    """From HS-mode, set henvcfg.STCE with menvcfg.STCE = 0, where it is read-only zero, and with menvcfg.STCE = 1,
+    and read it back (henvcfgh.STCE on RV32)."""
+    val_reg, check_reg = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner(
+            "cp_henvcfg_stce",
+            "With menvcfg.STCE = 0 and 1, set henvcfg.STCE from HS-mode and read it back.\n"
+            "henvcfg.STCE is read-only zero while menvcfg.STCE = 0",
+        ),
+        *write_stce(test_data, False, "S", henvcfg=True),
+    ]
+    for m_stce in (0, 1):
+        lines.extend(write_stce(test_data, bool(m_stce), "S"))
+        for xlen, csr in ((64, "henvcfg"), (32, "henvcfgh")):
+            lines.extend(
+                [
+                    f"#if __riscv_xlen == {xlen}",
+                    f"LI(x{val_reg}, {csr.upper()}_STCE)",
+                    test_data.add_testcase(f"mstce{m_stce}{'_rv32' if xlen == 32 else ''}", "cp_henvcfg_stce", _CG_H),
+                    f"csrs {csr}, x{val_reg}",
+                    f"csrr x{check_reg}, {csr}",
+                    f"and x{check_reg}, x{check_reg}, x{val_reg}    # keep STCE",
+                    write_sigupd(check_reg, test_data),
+                    "#endif",
+                ]
+            )
+        lines.extend(write_stce(test_data, False, "S", henvcfg=True))
+    lines.extend(write_stce(test_data, False, "S"))
+    test_data.int_regs.return_registers([val_reg, check_reg])
+    return lines
 
 
 # hip.VSTIP tests, run from HS-mode in the H group and from M-mode in the HSm group.  time has no reset value, so a

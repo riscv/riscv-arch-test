@@ -39,9 +39,9 @@ normative_rule_definitions:
   - name: zibi_misaligned_exception
     coverpoint:
       [
-        "ExceptionsSm_cg/{cp_instr_adr_misaligned_zibi_branch, cp_instr_adr_misaligned_zibi_branch_nottaken}",
-        "ExceptionsS_cg/{cp_instr_adr_misaligned_zibi_branch, cp_instr_adr_misaligned_zibi_branch_nottaken}",
-        "ExceptionsU_cg/{cp_instr_adr_misaligned_zibi_branch, cp_instr_adr_misaligned_zibi_branch_nottaken}",
+        "Exceptions_Sm_cg/{cp_instr_adr_misaligned_zibi_branch, cp_instr_adr_misaligned_zibi_branch_nottaken}",
+        "Exceptions_S_cg/{cp_instr_adr_misaligned_zibi_branch, cp_instr_adr_misaligned_zibi_branch_nottaken}",
+        "Exceptions_U_cg/{cp_instr_adr_misaligned_zibi_branch, cp_instr_adr_misaligned_zibi_branch_nottaken}",
       ]
 
   # BEQI branches when rs1 equals the XLEN-bit comparison constant decoded

@@ -6,4 +6,4 @@ normative_rule_definitions:
   # in size, naturally aligned in the address space.
   - name: Zic64b_cache_block_size
     # Checks the extent of cbo.zero only; nothing ties the cbo.clean/flush/inval extent to 64 bytes
-    coverpoint: ["Zic64bZicboz_cg/cp_zic64b"]
+    coverpoint: ["Zic64b_cg/cp_zic64b"]

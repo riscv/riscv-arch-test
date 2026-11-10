@@ -97,8 +97,52 @@ normative_rule_definitions:
       [
         "Sm_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "Sm_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
         "S_V_cg/cp_sstatus_vs_set_dirty_arithmetic",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_arithmetic",
         "U_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
       ]
+
+  # controls the availability of the hardware performance-monitoring counters to the
+  # next-lower privileged mode.
+  - name: mcounteren_op
+    coverpoint:
+      [
+        "S_Zicntr_cg/cp_mcounteren_access_s",
+        "U_Zicntr_cg/cp_mcounteren_access_u",
+        "Sm_Zicntr_cg/cp_mcounteren_access_m",
+        "H_Zicntr_cg/cp_mcounteren_access_vs",
+      ]
+
+  # The settings in this register only control accessibility. The act of reading or
+  # writing this register does not affect the underlying counters, which continue to
+  # increment even when not accessible.
+  - name: mcounteren_inc_inaccessible
+    coverpoint: ["U_Zicntr_cg/cp_mcounter_inc_inaccessible"]
+
+  # When the CY, TM, IR, or HPMn bit in the mcounteren register is clear, attempts
+  # to read the cycle, time, instret, or hpmcountern register while executing in
+  # S-mode or U-mode will cause an illegal-instruction exception.
+  - name: mcounteren_clr_ill_inst_exc
+    coverpoint:
+      [
+        "S_Zicntr_cg/cp_mcounteren_access_s",
+        "U_Zicntr_cg/cp_mcounteren_access_u",
+      ]
+
+  # When one of these bits is set, access to the corresponding register is permitted
+  # in the next implemented privilege mode (S-mode if implemented, otherwise
+  # U-mode).
+  - name: mcounteren_set_nxt_priv
+    coverpoint:
+      [
+        "S_Zicntr_cg/cp_mcounteren_access_s",
+        "U_Zicntr_cg/cp_mcounteren_access_u",
+      ]
+
+  # As ECALL and EBREAK cause synchronous exceptions, they are not considered to
+  # retire, and should not increment the minstret CSR.
+  - name: ecall_ebreak_no_minstret_inc
+    coverpoint: ["U_Zicntr_cg/{cp_instret_ecall, cp_instret_ebreak}"]

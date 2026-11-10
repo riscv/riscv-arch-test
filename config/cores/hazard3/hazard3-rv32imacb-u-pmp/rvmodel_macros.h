@@ -33,7 +33,15 @@
   sw   t1, H3_IO_GLOBMON_EN(t0)           ;
 
 // The testbench returns a bus error for every address outside RAM and the IO window.
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x90000000
+// LR/SC is not defined: an sc.w with no reservation fails inside the core without a bus
+// access, so it gets no bus error and no access fault. This is legal: bus errors are
+// implementation-defined (https://github.com/riscv/riscv-isa-manual/issues/3350,
+// https://github.com/Wren6991/Hazard3/issues/53).
+//   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/bus_behaviour.adoc#L63
+#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0x90000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0x90000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0x90000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_AMO   0x90000000
 
 ##### TERMINATION #####
 
@@ -69,9 +77,6 @@
 #define RVMODEL_INTERRUPT_LATENCY 10
 
 ##### Machine Timer #####
-
-// The testbench's mtime advances once per cycle.
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 // From U-mode, RVTEST_SET_MTIME_INT_SOON_U makes several T-SBI calls of about 900 cycles
 // each, and the interrupt must not fire before the last one returns.

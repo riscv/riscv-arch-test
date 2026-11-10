@@ -13,7 +13,7 @@ CORE_TILE_REPO="https://github.com/bsc-loca/core_tile.git"
 # bsc-loca/sargantana 403975c8a3c64c8eb369021a1ac2a374e5df441b (v3.0-47-g403975c).
 CORE_TILE_COMMIT="2528e7df6507fa06d372f001e55cfd46efae4a4b"
 # README: "| Verilator | 5.004 |" is the documented minimum.
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 
 mkdir -p "$INSTALL_DIR/bin"
 

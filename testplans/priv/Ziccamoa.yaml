@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ziccamoa
+description: Ziccamoa requires main memory regions with the coherence and cacheability PMAs to provide AMOArithmetic-level PMA support.
+notes: These tests run on a single hart, so they cannot check atomicity, which is only observable when another hart or agent accesses the same memory concurrently. They show basic functionality of the extension and are largely redundant with the Zaamo and Zabha suites.
+coverpoints:
+  - name: cp_ziccamoa
+    goal: AMOArithmetic-level AMOs on main memory
+    description: For each op in {amoswap, amoadd, amoand, amoor, amoxor, amomin, amomax, amominu, amomaxu}, in .w, .d (RV64) and .b/.h (Zabha) forms, run the AMO once on scratch holding a nonzero pattern with a different source value
+    expectation: The AMO returns the old memory value and leaves the expected result in memory
+    bins: "9 (RV32), 18 (RV64), +18 with Zabha"

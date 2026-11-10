@@ -94,12 +94,14 @@
 # The SoC's AXI interconnect routes 0x0200_0000-0x0FFF_FFFF to an error responder that
 # returns SLVERR.  0x0200_0000 is outside every sail.json memory region too.
 #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/axi/axi_interconnect128.v#L362-L363
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x02000000
+# Loads, stores and LR/SC are not tested: a load bus error is an imprecise access fault
+# (user manual 5.2.3), and a store bus error raises no fault.
+#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0x02000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_AMO   0x02000000
 
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 ##### Machine Timer #####
 

@@ -19,3 +19,6 @@
 `ifdef ZVE32F_SUPPORTED
     U_VF_cg = new();           U_VF_cg.set_inst_name("obj_U_VF");
 `endif
+`ifdef ZICNTR_SUPPORTED
+    U_Zicntr_cg = new();   U_Zicntr_cg.set_inst_name("obj_U_Zicntr");
+`endif

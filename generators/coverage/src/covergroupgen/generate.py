@@ -757,7 +757,7 @@ def _gen_covergroup_samples(
                 lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
         elif vector_sample:
             lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
-        elif arch != "E":  # E currently breaks coverage
+        else:
             call = customize_template(templates, "covergroup_case_sample", arch, instr)
             lines.append(_gen_sample_arm(templates, instr, [call]))
 

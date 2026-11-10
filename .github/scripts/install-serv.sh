@@ -14,7 +14,7 @@ SERV_COMMIT="f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8"
 # when the MDU define is set; SERV's own compliance flow adds the same library.
 MDU_REPO="https://github.com/zeeshanrafique23/mdu.git"
 MDU_COMMIT="8016099f24422e62fdd32c6f684a54cf4e4d868b"
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 
 mkdir -p "$INSTALL_DIR/bin"
 

@@ -9,7 +9,7 @@
         bins vlmax = {vred_vl_vlmax};
     }
 
-    vfredusum_det_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm") {
+    vfredusum_det_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
         bins rne = {3'b000};
         bins rdn = {3'b010};
         bins rup = {3'b011};

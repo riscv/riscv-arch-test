@@ -157,10 +157,7 @@ class RISCV_instruction
     return 0;
   endfunction
 
-  // Lookup vector register value.  These helpers expand UDB_VLEN, which the configuration only
-  // defines when the DUT implements the vector extension, so guard them with ZVL32B_SUPPORTED,
-  // the extension every vector configuration carries, as the rest of the vector code does.
-`ifdef ZVL32B_SUPPORTED
+  // Lookup vector register value
   function `SIGNED_VLEN_BITS get_vr_val(int hart, int issue, string key, int prev);
     int idx = get_vr_num(key);
     if (idx >= 0) begin
@@ -169,7 +166,7 @@ class RISCV_instruction
     return 0;
   endfunction
 
-  function bit[`UDB_VLEN*4-1:0] get_vr_val_lmul4(string key);
+  function bit[VLEN*4-1:0] get_vr_val_lmul4(string key);
     case (key)
       "v0" : return prev.v_wdata[3:0];   // { v3,  v2,  v1,  v0  };
       "v4" : return prev.v_wdata[7:4];   // { v7,  v6,  v5,  v4  };
@@ -186,7 +183,7 @@ class RISCV_instruction
     endcase
   endfunction
 
-  function bit[`UDB_VLEN*8-1:0] get_vr_val_lmul8(string key);
+  function bit[VLEN*8-1:0] get_vr_val_lmul8(string key);
     case (key)
       "v0" : return prev.v_wdata[7:0];   // { v7,  v6,  v5,  v4,  v3,  v2,  v1,  v0  };
       "v8" : return prev.v_wdata[15:8];  // { v15, v14, v13, v12, v11, v10, v9,  v8  };
@@ -198,7 +195,6 @@ class RISCV_instruction
       end
     endcase
   endfunction
-`endif // ZVL32B_SUPPORTED
 
   function `SIGNED_XLEN_BITS get_pc();
     return current.pc_rdata;
@@ -239,7 +235,7 @@ class RISCV_instruction
       "a4": return x14;
       "x15": return x15;
       "a5": return x15;
-`ifndef COVER_E
+`ifndef E_SUPPORTED
       "x16": return x16;
       "a6": return x16;
       "x17": return x17;
@@ -506,8 +502,8 @@ class RISCV_instruction
     current.imm = XLEN'(get_imm(ops[offset].key));
   endfunction
 
-  virtual function void add_mem_address();
-    current.mem_addr = current.rs1_val + current.imm;
+  virtual function void add_eff_addr();
+    current.eff_addr = current.rs1_val + current.imm;
   endfunction
 
   virtual function void add_fd(int offset, bit finx=0);

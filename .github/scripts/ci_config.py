@@ -26,6 +26,9 @@ so generated (not checked-in) tests exist and are weighted correctly.
 
 Usage:
     .github/scripts/ci_config.py    # JSON matrix for GitHub Actions
+    .github/scripts/ci_config.py --exclusions config/qemu/ci.yaml
+        # that ci.yaml's exclude_extensions as one comma-separated string, e.g. for
+        # make EXCLUDE_EXTENSIONS="$(.github/scripts/ci_config.py --exclusions config/qemu/ci.yaml)"
 """
 
 import hashlib
@@ -33,7 +36,7 @@ import heapq
 import json
 import os
 import sys
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from functools import cache
 from pathlib import Path
 
@@ -121,6 +124,20 @@ def load_simulator_ci_yaml(ci_yaml_path: Path) -> dict:
     return data if data else {}
 
 
+def exclude_extensions_string(sim_config: Mapping, ci_yaml_path: Path) -> str:
+    """Return a ci.yaml's exclude_extensions list as the comma-separated string that EXCLUDE_EXTENSIONS takes."""
+    value = sim_config.get("exclude_extensions") or []
+    if isinstance(value, str) or not isinstance(value, Sequence):
+        raise TypeError(
+            f"{ci_yaml_path}: 'exclude_extensions' must be a YAML list with one entry per line, "
+            f"got {type(value).__name__}"
+        )
+    for extension in value:
+        if not isinstance(extension, str) or not extension.strip() or "," in extension:
+            raise TypeError(f"{ci_yaml_path}: each 'exclude_extensions' entry must be one name, got {extension!r}")
+    return ",".join(extension.strip() for extension in value)
+
+
 def file_hash(path: Path) -> str:
     """Return the first 12 hex chars of the SHA-256 hash of a file's contents."""
     return hashlib.sha256(path.read_bytes()).hexdigest()[:12]
@@ -170,7 +187,7 @@ def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict
             continue
 
         # Extract settings from ci.yaml
-        exclude_extensions = sim_config.get("exclude_extensions", "")
+        exclude_extensions = exclude_extensions_string(sim_config, sim_ci_yaml)
         install_script = sim_config.get("install_script", "")
         apt_packages = sim_config.get("apt_packages", "")
         setup_script = sim_config.get("setup_script", "")
@@ -256,6 +273,14 @@ def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict
 
 
 def main() -> int:
+    if len(sys.argv) == 3 and sys.argv[1] == "--exclusions":
+        ci_yaml_path = Path(sys.argv[2])
+        print(exclude_extensions_string(load_simulator_ci_yaml(ci_yaml_path), ci_yaml_path))
+        return 0
+    if len(sys.argv) != 1:
+        print(f"Usage: {sys.argv[0]} [--exclusions <ci.yaml>]", file=sys.stderr)
+        return 1
+
     config_dir = Path("config")
     if not config_dir.is_dir():
         print("Error: config/ directory not found. Run from repo root.", file=sys.stderr)

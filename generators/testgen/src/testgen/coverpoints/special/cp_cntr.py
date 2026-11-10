@@ -22,34 +22,39 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     r1, r2, r3 = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     if coverpoint == "cp_cntr":
-        tc.code.extend(
-            [
-                gen_cntr_test(instr_name, "cycle", r1, r2, r3, coverpoint, test_data),
-                gen_cntr_test(instr_name, "time", r1, r2, r3, coverpoint, test_data),
-                gen_cntr_test(instr_name, "instret", r1, r2, r3, coverpoint, test_data),
-                "#if __riscv_xlen == 32\n",
-                gen_cntr_test(instr_name, "cycleh", r1, r2, r3, coverpoint, test_data),
-                gen_cntr_test(instr_name, "timeh", r1, r2, r3, coverpoint, test_data),
-                gen_cntr_test(instr_name, "instreth", r1, r2, r3, coverpoint, test_data),
-                "#endif\n",
-            ]
-        )
+        # With U-mode, a counter is readable only if mcounteren (and scounteren with S-mode) can
+        # delegate it, so only those counters are read.
+        counters = ["cycle", "time", "instret"]
+        for bit, cntr in enumerate(counters):
+            tc.code.extend(
+                [
+                    f"#if {cntr_readable(bit)}\n",
+                    gen_cntr_test(instr_name, cntr, r1, r2, r3, coverpoint, test_data),
+                    "#endif\n",
+                ]
+            )
+        tc.code.append("#if __riscv_xlen == 32\n")
+        for bit, cntr in enumerate(counters):
+            tc.code.extend(
+                [
+                    f"#if {cntr_readable(bit)}\n",
+                    gen_cntr_test(instr_name, f"{cntr}h", r1, r2, r3, coverpoint, test_data),
+                    "#endif\n",
+                ]
+            )
+        tc.code.append("#endif\n")
     elif coverpoint == "cp_cntr_hpm":
-        # hpmcounter3 through hpmcounter31, each guarded by whether the configuration implements
-        # it. Zihpm permits any subset of the counters to be implemented, and accessing one that
-        # is not implemented is implementation-defined: norm:hpm_unimplemented_counter_access says
-        # it "may cause an illegal-instruction exception or may return a constant value". Both
-        # responses are conformant, so no single reference signature can describe them, and only
-        # the counters the configuration implements are read.
-        # UDB_HPM_COUNTER_EN_<n> comes from the HPM_COUNTER_EN parameter of the UDB config.
+        # hpmcounter3 through hpmcounter31, each read only if the configuration implements it and
+        # the test's mode can access it. Accessing an unimplemented counter may trap or return a
+        # constant (norm:hpm_unimplemented_counter_access), so no single signature covers it.
         for hpm in range(3, 32):
-            tc.code.append(f"#ifdef UDB_HPM_COUNTER_EN_{hpm}\n")
+            tc.code.append(f"#if defined(UDB_HPM_COUNTER_EN_{hpm}) && {cntr_readable(hpm)}\n")
             tc.code.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, coverpoint, test_data))
             tc.code.append("#endif\n")
         tc.code.append("#if __riscv_xlen == 32\n")
         # hpmcounter3h through hpmcounter31h
         for hpm in range(3, 32):
-            tc.code.append(f"#ifdef UDB_HPM_COUNTER_EN_{hpm}\n")
+            tc.code.append(f"#if defined(UDB_HPM_COUNTER_EN_{hpm}) && {cntr_readable(hpm)}\n")
             tc.code.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, coverpoint, test_data))
             tc.code.append("#endif\n")
         tc.code.append("#endif\n")
@@ -59,6 +64,14 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     test_data.int_regs.return_registers([r1, r2, r3])
 
     return [test_data.end_test_chunk()]
+
+
+def cntr_readable(bit: int) -> str:
+    """Preprocessor condition that counter `bit` is readable from the mode unprivileged tests run in."""
+    return (
+        f"(!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_{bit}) && "
+        f"(!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_{bit}))))"
+    )
 
 
 def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, coverpoint: str, test_data: TestData) -> str:

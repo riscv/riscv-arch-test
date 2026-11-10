@@ -30,11 +30,9 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_ad_update
+// Abit_unset_write_u, Abit_unset_read_u, Abit_unset_exec_u, Dbit_unset_write_u
 /////////////////////////////////
 
-
-main:
 
 // Virtual addresses for code and test regions
 
@@ -52,18 +50,19 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(t0, MENVCFG_ADUE)
-  # T-SBI call to execute instruction: csrc menvcfg, t0
-  mv a1, x5
+  LI(x6, MENVCFG_ADUE)
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  mv a1, x6
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x9, 0x800) // Test signature initialization
 
 
 // 256TB page at level 4
@@ -72,145 +71,145 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x15, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test1_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test1_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test1_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test1_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test1_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test1_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test1_store, Svade_cp_sv57_Svade_Umode_test1_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test1_load, Svade_cp_sv57_Svade_Umode_test1_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test1_store, Svade_cg_Dbit_unset_write_u_test1_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test1_exec, Svade_cp_sv57_Svade_Umode_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test1_load, Svade_cg_Abit_unset_read_u_test1_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test1_exec, Svade_cg_Abit_unset_exec_u_test1_exec_str)
 
 // Test case 2: Both PTE.D and PTE.A set
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x15, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test2_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test2_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test2_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test2_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test2_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test2_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test2_store, Svade_cp_sv57_Svade_Umode_test2_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test2_load, Svade_cp_sv57_Svade_Umode_test2_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test2_store, Svade_cg_Dbit_unset_write_u_test2_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test2_exec, Svade_cp_sv57_Svade_Umode_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test2_load, Svade_cg_Abit_unset_read_u_test2_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test2_exec, Svade_cg_Abit_unset_exec_u_test2_exec_str)
 
 // Test case 3: PTE.D set and PTE.A unset
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x15, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test3_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test3_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test3_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test3_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test3_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test3_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test3_store, Svade_cp_sv57_Svade_Umode_test3_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test3_load, Svade_cp_sv57_Svade_Umode_test3_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test3_store, Svade_cg_Abit_unset_write_u_test3_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test3_exec, Svade_cp_sv57_Svade_Umode_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test3_load, Svade_cg_Abit_unset_read_u_test3_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test3_exec, Svade_cg_Abit_unset_exec_u_test3_exec_str)
 
 // Test case 4: Both PTE.D and PTE.A unset
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x15, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test4_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test4_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test4_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test4_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test4_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test4_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test4_store, Svade_cp_sv57_Svade_Umode_test4_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test4_load, Svade_cp_sv57_Svade_Umode_test4_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test4_store, Svade_cg_Abit_unset_write_u_test4_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test4_exec, Svade_cp_sv57_Svade_Umode_test4_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test4_load, Svade_cg_Abit_unset_read_u_test4_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test4_exec, Svade_cg_Abit_unset_exec_u_test4_exec_str)
 
 
 // 512GB page at level 3
@@ -220,148 +219,148 @@ Svade_cp_sv57_Svade_Umode_test4_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x15, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test5_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test5_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test5_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test5_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test5_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test5_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test5_store, Svade_cp_sv57_Svade_Umode_test5_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test5_load, Svade_cp_sv57_Svade_Umode_test5_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test5_store, Svade_cg_Dbit_unset_write_u_test5_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test5_exec, Svade_cp_sv57_Svade_Umode_test5_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test5_load, Svade_cg_Abit_unset_read_u_test5_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test5_exec, Svade_cg_Abit_unset_exec_u_test5_exec_str)
 
 // Test case 6: Both PTE.D and PTE.A set
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x15, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test6_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test6_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test6_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test6_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test6_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test6_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test6_store, Svade_cp_sv57_Svade_Umode_test6_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test6_load, Svade_cp_sv57_Svade_Umode_test6_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test6_store, Svade_cg_Dbit_unset_write_u_test6_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test6_exec, Svade_cp_sv57_Svade_Umode_test6_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test6_load, Svade_cg_Abit_unset_read_u_test6_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test6_exec, Svade_cg_Abit_unset_exec_u_test6_exec_str)
 
 // Test case 7: PTE.D set and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x15, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test7_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test7_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test7_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test7_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test7_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test7_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test7_store, Svade_cp_sv57_Svade_Umode_test7_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test7_load, Svade_cp_sv57_Svade_Umode_test7_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test7_store, Svade_cg_Abit_unset_write_u_test7_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test7_exec, Svade_cp_sv57_Svade_Umode_test7_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test7_load, Svade_cg_Abit_unset_read_u_test7_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test7_exec, Svade_cg_Abit_unset_exec_u_test7_exec_str)
 
 // Test case 8: Both PTE.D and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x15, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test8_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test8_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test8_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test8_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test8_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test8_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test8_store, Svade_cp_sv57_Svade_Umode_test8_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test8_load, Svade_cp_sv57_Svade_Umode_test8_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test8_store, Svade_cg_Abit_unset_write_u_test8_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test8_exec, Svade_cp_sv57_Svade_Umode_test8_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test8_load, Svade_cg_Abit_unset_read_u_test8_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test8_exec, Svade_cg_Abit_unset_exec_u_test8_exec_str)
 
 
 // 1GB page at level 2
@@ -372,37 +371,37 @@ Svade_cp_sv57_Svade_Umode_test8_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x15, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test9_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test9_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test9_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test9_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test9_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test9_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test9_store, Svade_cp_sv57_Svade_Umode_test9_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test9_load, Svade_cp_sv57_Svade_Umode_test9_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test9_store, Svade_cg_Dbit_unset_write_u_test9_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test9_exec, Svade_cp_sv57_Svade_Umode_test9_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test9_load, Svade_cg_Abit_unset_read_u_test9_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test9_exec, Svade_cg_Abit_unset_exec_u_test9_exec_str)
 
 // Test case 10: Both PTE.D and PTE.A set
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -410,37 +409,37 @@ Svade_cp_sv57_Svade_Umode_test9_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x15, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test10_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test10_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test10_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test10_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test10_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test10_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test10_store, Svade_cp_sv57_Svade_Umode_test10_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test10_load, Svade_cp_sv57_Svade_Umode_test10_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test10_store, Svade_cg_Dbit_unset_write_u_test10_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test10_exec, Svade_cp_sv57_Svade_Umode_test10_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test10_load, Svade_cg_Abit_unset_read_u_test10_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test10_exec, Svade_cg_Abit_unset_exec_u_test10_exec_str)
 
 // Test case 11: PTE.D set and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -448,37 +447,37 @@ Svade_cp_sv57_Svade_Umode_test10_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x15, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test11_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test11_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test11_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test11_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test11_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test11_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test11_store, Svade_cp_sv57_Svade_Umode_test11_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test11_load, Svade_cp_sv57_Svade_Umode_test11_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test11_store, Svade_cg_Abit_unset_write_u_test11_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test11_exec, Svade_cp_sv57_Svade_Umode_test11_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test11_load, Svade_cg_Abit_unset_read_u_test11_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test11_exec, Svade_cg_Abit_unset_exec_u_test11_exec_str)
 
 // Test case 12: Both PTE.D and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -486,37 +485,37 @@ Svade_cp_sv57_Svade_Umode_test11_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x15, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test12_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test12_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test12_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test12_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test12_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test12_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test12_store, Svade_cp_sv57_Svade_Umode_test12_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test12_load, Svade_cp_sv57_Svade_Umode_test12_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test12_store, Svade_cg_Abit_unset_write_u_test12_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test12_exec, Svade_cp_sv57_Svade_Umode_test12_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test12_load, Svade_cg_Abit_unset_read_u_test12_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test12_exec, Svade_cg_Abit_unset_exec_u_test12_exec_str)
 
 
 // 2MB page at level 1
@@ -528,37 +527,37 @@ Svade_cp_sv57_Svade_Umode_test12_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x15, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test13_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test13_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test13_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test13_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test13_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test13_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test13_store, Svade_cp_sv57_Svade_Umode_test13_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test13_load, Svade_cp_sv57_Svade_Umode_test13_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test13_store, Svade_cg_Dbit_unset_write_u_test13_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test13_exec, Svade_cp_sv57_Svade_Umode_test13_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test13_load, Svade_cg_Abit_unset_read_u_test13_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test13_exec, Svade_cg_Abit_unset_exec_u_test13_exec_str)
 
 // Test case 14: Both PTE.D and PTE.A set
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -567,37 +566,37 @@ Svade_cp_sv57_Svade_Umode_test13_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x15, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test14_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test14_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test14_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test14_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test14_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test14_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test14_store, Svade_cp_sv57_Svade_Umode_test14_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test14_load, Svade_cp_sv57_Svade_Umode_test14_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test14_store, Svade_cg_Dbit_unset_write_u_test14_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test14_exec, Svade_cp_sv57_Svade_Umode_test14_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test14_load, Svade_cg_Abit_unset_read_u_test14_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test14_exec, Svade_cg_Abit_unset_exec_u_test14_exec_str)
 
 // Test case 15: PTE.D set and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -606,37 +605,37 @@ Svade_cp_sv57_Svade_Umode_test14_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x15, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test15_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test15_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test15_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test15_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test15_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test15_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test15_store, Svade_cp_sv57_Svade_Umode_test15_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test15_load, Svade_cp_sv57_Svade_Umode_test15_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test15_store, Svade_cg_Abit_unset_write_u_test15_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test15_exec, Svade_cp_sv57_Svade_Umode_test15_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test15_load, Svade_cg_Abit_unset_read_u_test15_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test15_exec, Svade_cg_Abit_unset_exec_u_test15_exec_str)
 
 // Test case 16: Both PTE.D and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -645,37 +644,37 @@ Svade_cp_sv57_Svade_Umode_test15_exec:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x15, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test16_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test16_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test16_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test16_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test16_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test16_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test16_store, Svade_cp_sv57_Svade_Umode_test16_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test16_load, Svade_cp_sv57_Svade_Umode_test16_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test16_store, Svade_cg_Abit_unset_write_u_test16_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test16_exec, Svade_cp_sv57_Svade_Umode_test16_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test16_load, Svade_cg_Abit_unset_read_u_test16_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test16_exec, Svade_cg_Abit_unset_exec_u_test16_exec_str)
 
 
 // 4KB page at level 0
@@ -688,37 +687,37 @@ Svade_cp_sv57_Svade_Umode_test16_exec:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x15, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test17_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test17_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test17_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test17_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test17_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test17_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test17_store, Svade_cp_sv57_Svade_Umode_test17_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test17_load, Svade_cp_sv57_Svade_Umode_test17_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test17_store, Svade_cg_Dbit_unset_write_u_test17_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test17_exec, Svade_cp_sv57_Svade_Umode_test17_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test17_load, Svade_cg_Abit_unset_read_u_test17_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test17_exec, Svade_cg_Abit_unset_exec_u_test17_exec_str)
 
 // Test case 18: Both PTE.D and PTE.A set
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -728,37 +727,37 @@ Svade_cp_sv57_Svade_Umode_test17_exec:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x15, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test18_store:
-  sw a2, 20(a5)
+Svade_cg_Dbit_unset_write_u_test18_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test18_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test18_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test18_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test18_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test18_store, Svade_cp_sv57_Svade_Umode_test18_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test18_load, Svade_cp_sv57_Svade_Umode_test18_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Dbit_unset_write_u_test18_store, Svade_cg_Dbit_unset_write_u_test18_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test18_exec, Svade_cp_sv57_Svade_Umode_test18_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test18_load, Svade_cg_Abit_unset_read_u_test18_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test18_exec, Svade_cg_Abit_unset_exec_u_test18_exec_str)
 
 // Test case 19: PTE.D set and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -768,37 +767,37 @@ Svade_cp_sv57_Svade_Umode_test18_exec:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x15, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test19_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test19_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test19_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test19_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test19_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test19_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test19_store, Svade_cp_sv57_Svade_Umode_test19_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test19_load, Svade_cp_sv57_Svade_Umode_test19_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test19_store, Svade_cg_Abit_unset_write_u_test19_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test19_exec, Svade_cp_sv57_Svade_Umode_test19_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test19_load, Svade_cg_Abit_unset_read_u_test19_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test19_exec, Svade_cg_Abit_unset_exec_u_test19_exec_str)
 
 // Test case 20: Both PTE.D and PTE.A unset
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -808,37 +807,37 @@ Svade_cp_sv57_Svade_Umode_test19_exec:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x15, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x15, x15, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x9, x9, 16
 
 // Store
-Svade_cp_sv57_Svade_Umode_test20_store:
-  sw a2, 20(a5)
+Svade_cg_Abit_unset_write_u_test20_store:
+  sw x9, 20(x15)
   nop
 
 // Load
-Svade_cp_sv57_Svade_Umode_test20_load:
-  lw a3, 20(a5)
+Svade_cg_Abit_unset_read_u_test20_load:
+  lw x14, 20(x15)
   nop
 
 // Execute
-Svade_cp_sv57_Svade_Umode_test20_exec:
-  jalr ra, a5, 0
+Svade_cg_Abit_unset_exec_u_test20_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svade_cp_sv57_Svade_Umode_test20_store, Svade_cp_sv57_Svade_Umode_test20_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cp_sv57_Svade_Umode_test20_load, Svade_cp_sv57_Svade_Umode_test20_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svade_cg_Abit_unset_write_u_test20_store, Svade_cg_Abit_unset_write_u_test20_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cp_sv57_Svade_Umode_test20_exec, Svade_cp_sv57_Svade_Umode_test20_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svade_cg_Abit_unset_read_u_test20_load, Svade_cg_Abit_unset_read_u_test20_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svade_cg_Abit_unset_exec_u_test20_exec, Svade_cg_Abit_unset_exec_u_test20_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -854,7 +853,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x13, x9, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -877,66 +876,66 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svade_cp_sv57_Svade_Umode_test1_store_str: .string "\"test: 61; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test1_store\""
-Svade_cp_sv57_Svade_Umode_test1_load_str: .string "\"test: 62; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test1_load\""
-Svade_cp_sv57_Svade_Umode_test1_exec_str: .string "\"test: 63; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test1_exec\""
-Svade_cp_sv57_Svade_Umode_test2_store_str: .string "\"test: 64; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test2_store\""
-Svade_cp_sv57_Svade_Umode_test2_load_str: .string "\"test: 65; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test2_load\""
-Svade_cp_sv57_Svade_Umode_test2_exec_str: .string "\"test: 66; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test2_exec\""
-Svade_cp_sv57_Svade_Umode_test3_store_str: .string "\"test: 67; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test3_store\""
-Svade_cp_sv57_Svade_Umode_test3_load_str: .string "\"test: 68; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test3_load\""
-Svade_cp_sv57_Svade_Umode_test3_exec_str: .string "\"test: 69; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test3_exec\""
-Svade_cp_sv57_Svade_Umode_test4_store_str: .string "\"test: 70; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test4_store\""
-Svade_cp_sv57_Svade_Umode_test4_load_str: .string "\"test: 71; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test4_load\""
-Svade_cp_sv57_Svade_Umode_test4_exec_str: .string "\"test: 72; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test4_exec\""
-Svade_cp_sv57_Svade_Umode_test5_store_str: .string "\"test: 73; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test5_store\""
-Svade_cp_sv57_Svade_Umode_test5_load_str: .string "\"test: 74; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test5_load\""
-Svade_cp_sv57_Svade_Umode_test5_exec_str: .string "\"test: 75; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test5_exec\""
-Svade_cp_sv57_Svade_Umode_test6_store_str: .string "\"test: 76; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test6_store\""
-Svade_cp_sv57_Svade_Umode_test6_load_str: .string "\"test: 77; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test6_load\""
-Svade_cp_sv57_Svade_Umode_test6_exec_str: .string "\"test: 78; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test6_exec\""
-Svade_cp_sv57_Svade_Umode_test7_store_str: .string "\"test: 79; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test7_store\""
-Svade_cp_sv57_Svade_Umode_test7_load_str: .string "\"test: 80; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test7_load\""
-Svade_cp_sv57_Svade_Umode_test7_exec_str: .string "\"test: 81; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test7_exec\""
-Svade_cp_sv57_Svade_Umode_test8_store_str: .string "\"test: 82; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test8_store\""
-Svade_cp_sv57_Svade_Umode_test8_load_str: .string "\"test: 83; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test8_load\""
-Svade_cp_sv57_Svade_Umode_test8_exec_str: .string "\"test: 84; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test8_exec\""
-Svade_cp_sv57_Svade_Umode_test9_store_str: .string "\"test: 85; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test9_store\""
-Svade_cp_sv57_Svade_Umode_test9_load_str: .string "\"test: 86; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test9_load\""
-Svade_cp_sv57_Svade_Umode_test9_exec_str: .string "\"test: 87; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test9_exec\""
-Svade_cp_sv57_Svade_Umode_test10_store_str: .string "\"test: 88; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test10_store\""
-Svade_cp_sv57_Svade_Umode_test10_load_str: .string "\"test: 89; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test10_load\""
-Svade_cp_sv57_Svade_Umode_test10_exec_str: .string "\"test: 90; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test10_exec\""
-Svade_cp_sv57_Svade_Umode_test11_store_str: .string "\"test: 91; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test11_store\""
-Svade_cp_sv57_Svade_Umode_test11_load_str: .string "\"test: 92; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test11_load\""
-Svade_cp_sv57_Svade_Umode_test11_exec_str: .string "\"test: 93; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test11_exec\""
-Svade_cp_sv57_Svade_Umode_test12_store_str: .string "\"test: 94; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test12_store\""
-Svade_cp_sv57_Svade_Umode_test12_load_str: .string "\"test: 95; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test12_load\""
-Svade_cp_sv57_Svade_Umode_test12_exec_str: .string "\"test: 96; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test12_exec\""
-Svade_cp_sv57_Svade_Umode_test13_store_str: .string "\"test: 97; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test13_store\""
-Svade_cp_sv57_Svade_Umode_test13_load_str: .string "\"test: 98; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test13_load\""
-Svade_cp_sv57_Svade_Umode_test13_exec_str: .string "\"test: 99; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test13_exec\""
-Svade_cp_sv57_Svade_Umode_test14_store_str: .string "\"test: 100; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test14_store\""
-Svade_cp_sv57_Svade_Umode_test14_load_str: .string "\"test: 101; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test14_load\""
-Svade_cp_sv57_Svade_Umode_test14_exec_str: .string "\"test: 102; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test14_exec\""
-Svade_cp_sv57_Svade_Umode_test15_store_str: .string "\"test: 103; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test15_store\""
-Svade_cp_sv57_Svade_Umode_test15_load_str: .string "\"test: 104; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test15_load\""
-Svade_cp_sv57_Svade_Umode_test15_exec_str: .string "\"test: 105; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test15_exec\""
-Svade_cp_sv57_Svade_Umode_test16_store_str: .string "\"test: 106; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test16_store\""
-Svade_cp_sv57_Svade_Umode_test16_load_str: .string "\"test: 107; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test16_load\""
-Svade_cp_sv57_Svade_Umode_test16_exec_str: .string "\"test: 108; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test16_exec\""
-Svade_cp_sv57_Svade_Umode_test17_store_str: .string "\"test: 109; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test17_store\""
-Svade_cp_sv57_Svade_Umode_test17_load_str: .string "\"test: 110; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test17_load\""
-Svade_cp_sv57_Svade_Umode_test17_exec_str: .string "\"test: 111; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test17_exec\""
-Svade_cp_sv57_Svade_Umode_test18_store_str: .string "\"test: 112; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test18_store\""
-Svade_cp_sv57_Svade_Umode_test18_load_str: .string "\"test: 113; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test18_load\""
-Svade_cp_sv57_Svade_Umode_test18_exec_str: .string "\"test: 114; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test18_exec\""
-Svade_cp_sv57_Svade_Umode_test19_store_str: .string "\"test: 115; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test19_store\""
-Svade_cp_sv57_Svade_Umode_test19_load_str: .string "\"test: 116; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test19_load\""
-Svade_cp_sv57_Svade_Umode_test19_exec_str: .string "\"test: 117; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test19_exec\""
-Svade_cp_sv57_Svade_Umode_test20_store_str: .string "\"test: 118; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test20_store\""
-Svade_cp_sv57_Svade_Umode_test20_load_str: .string "\"test: 119; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test20_load\""
-Svade_cp_sv57_Svade_Umode_test20_exec_str: .string "\"test: 120; cg: Svade; cp: cp_sv57_Svade_Umode; bin: test20_exec\""
+Svade_cg_Dbit_unset_write_u_test1_store_str: .string "\"test: 61; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test1_store\""
+Svade_cg_Abit_unset_read_u_test1_load_str: .string "\"test: 62; cg: Svade_cg; cp: Abit_unset_read_u; bin: test1_load\""
+Svade_cg_Abit_unset_exec_u_test1_exec_str: .string "\"test: 63; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test1_exec\""
+Svade_cg_Dbit_unset_write_u_test2_store_str: .string "\"test: 64; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test2_store\""
+Svade_cg_Abit_unset_read_u_test2_load_str: .string "\"test: 65; cg: Svade_cg; cp: Abit_unset_read_u; bin: test2_load\""
+Svade_cg_Abit_unset_exec_u_test2_exec_str: .string "\"test: 66; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test2_exec\""
+Svade_cg_Abit_unset_write_u_test3_store_str: .string "\"test: 67; cg: Svade_cg; cp: Abit_unset_write_u; bin: test3_store\""
+Svade_cg_Abit_unset_read_u_test3_load_str: .string "\"test: 68; cg: Svade_cg; cp: Abit_unset_read_u; bin: test3_load\""
+Svade_cg_Abit_unset_exec_u_test3_exec_str: .string "\"test: 69; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test3_exec\""
+Svade_cg_Abit_unset_write_u_test4_store_str: .string "\"test: 70; cg: Svade_cg; cp: Abit_unset_write_u; bin: test4_store\""
+Svade_cg_Abit_unset_read_u_test4_load_str: .string "\"test: 71; cg: Svade_cg; cp: Abit_unset_read_u; bin: test4_load\""
+Svade_cg_Abit_unset_exec_u_test4_exec_str: .string "\"test: 72; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test4_exec\""
+Svade_cg_Dbit_unset_write_u_test5_store_str: .string "\"test: 73; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test5_store\""
+Svade_cg_Abit_unset_read_u_test5_load_str: .string "\"test: 74; cg: Svade_cg; cp: Abit_unset_read_u; bin: test5_load\""
+Svade_cg_Abit_unset_exec_u_test5_exec_str: .string "\"test: 75; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test5_exec\""
+Svade_cg_Dbit_unset_write_u_test6_store_str: .string "\"test: 76; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test6_store\""
+Svade_cg_Abit_unset_read_u_test6_load_str: .string "\"test: 77; cg: Svade_cg; cp: Abit_unset_read_u; bin: test6_load\""
+Svade_cg_Abit_unset_exec_u_test6_exec_str: .string "\"test: 78; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test6_exec\""
+Svade_cg_Abit_unset_write_u_test7_store_str: .string "\"test: 79; cg: Svade_cg; cp: Abit_unset_write_u; bin: test7_store\""
+Svade_cg_Abit_unset_read_u_test7_load_str: .string "\"test: 80; cg: Svade_cg; cp: Abit_unset_read_u; bin: test7_load\""
+Svade_cg_Abit_unset_exec_u_test7_exec_str: .string "\"test: 81; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test7_exec\""
+Svade_cg_Abit_unset_write_u_test8_store_str: .string "\"test: 82; cg: Svade_cg; cp: Abit_unset_write_u; bin: test8_store\""
+Svade_cg_Abit_unset_read_u_test8_load_str: .string "\"test: 83; cg: Svade_cg; cp: Abit_unset_read_u; bin: test8_load\""
+Svade_cg_Abit_unset_exec_u_test8_exec_str: .string "\"test: 84; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test8_exec\""
+Svade_cg_Dbit_unset_write_u_test9_store_str: .string "\"test: 85; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test9_store\""
+Svade_cg_Abit_unset_read_u_test9_load_str: .string "\"test: 86; cg: Svade_cg; cp: Abit_unset_read_u; bin: test9_load\""
+Svade_cg_Abit_unset_exec_u_test9_exec_str: .string "\"test: 87; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test9_exec\""
+Svade_cg_Dbit_unset_write_u_test10_store_str: .string "\"test: 88; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test10_store\""
+Svade_cg_Abit_unset_read_u_test10_load_str: .string "\"test: 89; cg: Svade_cg; cp: Abit_unset_read_u; bin: test10_load\""
+Svade_cg_Abit_unset_exec_u_test10_exec_str: .string "\"test: 90; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test10_exec\""
+Svade_cg_Abit_unset_write_u_test11_store_str: .string "\"test: 91; cg: Svade_cg; cp: Abit_unset_write_u; bin: test11_store\""
+Svade_cg_Abit_unset_read_u_test11_load_str: .string "\"test: 92; cg: Svade_cg; cp: Abit_unset_read_u; bin: test11_load\""
+Svade_cg_Abit_unset_exec_u_test11_exec_str: .string "\"test: 93; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test11_exec\""
+Svade_cg_Abit_unset_write_u_test12_store_str: .string "\"test: 94; cg: Svade_cg; cp: Abit_unset_write_u; bin: test12_store\""
+Svade_cg_Abit_unset_read_u_test12_load_str: .string "\"test: 95; cg: Svade_cg; cp: Abit_unset_read_u; bin: test12_load\""
+Svade_cg_Abit_unset_exec_u_test12_exec_str: .string "\"test: 96; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test12_exec\""
+Svade_cg_Dbit_unset_write_u_test13_store_str: .string "\"test: 97; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test13_store\""
+Svade_cg_Abit_unset_read_u_test13_load_str: .string "\"test: 98; cg: Svade_cg; cp: Abit_unset_read_u; bin: test13_load\""
+Svade_cg_Abit_unset_exec_u_test13_exec_str: .string "\"test: 99; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test13_exec\""
+Svade_cg_Dbit_unset_write_u_test14_store_str: .string "\"test: 100; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test14_store\""
+Svade_cg_Abit_unset_read_u_test14_load_str: .string "\"test: 101; cg: Svade_cg; cp: Abit_unset_read_u; bin: test14_load\""
+Svade_cg_Abit_unset_exec_u_test14_exec_str: .string "\"test: 102; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test14_exec\""
+Svade_cg_Abit_unset_write_u_test15_store_str: .string "\"test: 103; cg: Svade_cg; cp: Abit_unset_write_u; bin: test15_store\""
+Svade_cg_Abit_unset_read_u_test15_load_str: .string "\"test: 104; cg: Svade_cg; cp: Abit_unset_read_u; bin: test15_load\""
+Svade_cg_Abit_unset_exec_u_test15_exec_str: .string "\"test: 105; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test15_exec\""
+Svade_cg_Abit_unset_write_u_test16_store_str: .string "\"test: 106; cg: Svade_cg; cp: Abit_unset_write_u; bin: test16_store\""
+Svade_cg_Abit_unset_read_u_test16_load_str: .string "\"test: 107; cg: Svade_cg; cp: Abit_unset_read_u; bin: test16_load\""
+Svade_cg_Abit_unset_exec_u_test16_exec_str: .string "\"test: 108; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test16_exec\""
+Svade_cg_Dbit_unset_write_u_test17_store_str: .string "\"test: 109; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test17_store\""
+Svade_cg_Abit_unset_read_u_test17_load_str: .string "\"test: 110; cg: Svade_cg; cp: Abit_unset_read_u; bin: test17_load\""
+Svade_cg_Abit_unset_exec_u_test17_exec_str: .string "\"test: 111; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test17_exec\""
+Svade_cg_Dbit_unset_write_u_test18_store_str: .string "\"test: 112; cg: Svade_cg; cp: Dbit_unset_write_u; bin: test18_store\""
+Svade_cg_Abit_unset_read_u_test18_load_str: .string "\"test: 113; cg: Svade_cg; cp: Abit_unset_read_u; bin: test18_load\""
+Svade_cg_Abit_unset_exec_u_test18_exec_str: .string "\"test: 114; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test18_exec\""
+Svade_cg_Abit_unset_write_u_test19_store_str: .string "\"test: 115; cg: Svade_cg; cp: Abit_unset_write_u; bin: test19_store\""
+Svade_cg_Abit_unset_read_u_test19_load_str: .string "\"test: 116; cg: Svade_cg; cp: Abit_unset_read_u; bin: test19_load\""
+Svade_cg_Abit_unset_exec_u_test19_exec_str: .string "\"test: 117; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test19_exec\""
+Svade_cg_Abit_unset_write_u_test20_store_str: .string "\"test: 118; cg: Svade_cg; cp: Abit_unset_write_u; bin: test20_store\""
+Svade_cg_Abit_unset_read_u_test20_load_str: .string "\"test: 119; cg: Svade_cg; cp: Abit_unset_read_u; bin: test20_load\""
+Svade_cg_Abit_unset_exec_u_test20_exec_str: .string "\"test: 120; cg: Svade_cg; cp: Abit_unset_exec_u; bin: test20_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -124,6 +124,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vtype_vill_set_vl_0",
         "U_V_cg/cp_vtype_vill_set_vl_0",
         "S_V_cg/cp_vtype_vill_set_vl_0",
+        "H_V_cg/cp_vtype_vill_set_vl_0",
       ]
   - name: vtype_vset_rsv
     coverpoint:

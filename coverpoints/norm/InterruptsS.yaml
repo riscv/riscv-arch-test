@@ -63,7 +63,25 @@ normative_rule_definitions:
   # implementation-specific, bounded time limit, the insn:wfi[] instruction causes an
   # illegal-instruction exception.
   - name: mstatus_tw_op
-    coverpoint: ["InterruptsS_cg/cp_wfi", "InterruptsS_cg/cp_wfi_timeout"]
+    coverpoint:
+      [
+        "InterruptsS_cg/{cp_wfi, cp_wfi_vs, cp_wfi_timeout, cp_wfi_timeout_vs, cp_wfi_timeout_vu, cp_wfi_vs_tw_vtw}",
+      ]
+
+  # When VTW=1 (and assuming mstatus.TW=0), an attempt in VS-mode to execute WFI raises a
+  # virtual-instruction exception if the WFI does not complete within an
+  # implementation-specific, bounded time limit. An implementation may have WFI always raise
+  # a virtual-instruction exception in VS-mode when VTW=1 (and mstatus.TW=0), even if there
+  # are pending globally-disabled interrupts when the instruction is executed.
+  - names: [hstatus_vtw_op, H_virtinst_wfi_vtw1_tw0, vtw_virtinstr]
+    coverpoint:
+      [
+        "InterruptsS_cg/{cp_wfi_vs, cp_wfi_timeout_vs, cp_wfi_timeout_vs_vtw_one, cp_wfi_vs_tw_vtw}",
+      ]
+
+  # in VU-mode, attempts to execute WFI when mstatus.TW=0
+  - name: H_virtinst_vu_wfi_tw0
+    coverpoint: ["InterruptsS_cg/cp_wfi_timeout_vu"]
 
   # When S-mode is implemented, then executing WFI in U-mode causes an
   # illegal-instruction exception, regardless of the value of the TW bit, unless the

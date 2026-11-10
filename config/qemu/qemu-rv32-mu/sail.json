@@ -244,7 +244,7 @@
       "grain": 0,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
-      "count": 16,
+      "count": 64,
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
@@ -438,7 +438,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 5,
+    "archid": 42,
     "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
@@ -549,7 +549,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": false,
@@ -588,7 +588,7 @@
         // vector spec marks reserved and recommends, but does not require, trapping.
         // "Vstart_Illegal" - raise an illegal instruction exception.
         // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
-        "vstart_out_of_bounds": "Vstart_Illegal"
+        "vstart_out_of_bounds": "Vstart_Ignore"
       },
       "vl_use_ceil": false,
       // The maximum index EEW for indexed vector addressing mode, as
@@ -1039,7 +1039,7 @@
       // . `No_reentrancy_support`: no specific support for reentrancy
       // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
       // `sbreak` test in `riscv-tests`.
-      "breakpoint_reentrancy": "Use_interrupt_enables",
+      "breakpoint_reentrancy": "No_reentrancy_support",
       "etrigger": {
         "supported": false,
         // A bit set to 1 in this value specifies that the
@@ -1076,7 +1076,7 @@
         "address_select_matches_all_addresses": true,
         // Maximum length of a chain. This cannot exceed the number of
         // triggers.  A value of 0 implies chains are not supported.
-        "max_chain_length": 4
+        "max_chain_length": 1
       },
       "textra": {
         // Which context matches are supported. Writes of unsupported
@@ -1106,7 +1106,7 @@
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
-      "num_triggers": 16,
+      "num_triggers": 2,
       "scontext": { "supported": false }
     },
     "Smdbltrp": { "supported": true },

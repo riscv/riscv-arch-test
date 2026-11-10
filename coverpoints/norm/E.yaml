@@ -3,9 +3,9 @@
 normative_rule_definitions:
   - name: diff_rv32e_rv32i
     # Representative coverpoints; also the register coverpoints of the other E covergroups, and
-    # cp_upperreg_rs2/rd and the SsstrictS/SsstrictU instr covergroups for the reserved x16-x31
+    # cp_upperreg_rs2/rd and the Ssstrict_S and Ssstrict_U instr covergroups for the reserved x16-x31
     coverpoint:
       [
         "E_add_cg/{cp_rs1, cp_rs2, cp_rd}",
-        "SsstrictSm_instr_cg/cp_upperreg_rs1",
+        "Ssstrict_Sm_instr_cg/cp_upperreg_rs1",
       ]

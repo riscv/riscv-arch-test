@@ -115,7 +115,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_0000_b3FF"
+        "value": "0x0000_0000_0000_b3FE"
       }
     },
     "mideleg": {
@@ -1029,9 +1029,9 @@
     "Svpbmt": {
       "supported": false
     },
-    // Wally's page-table walker caches invalid PTEs in the TLB until SFENCE.VMA, which Svvptc forbids.
+    // Wally's page-table walker does not cache invalid PTEs in the TLB, so Svvptc holds.
     "Svvptc": {
-      "supported": false
+      "supported": true
     },
     "Sdtrig": {
       "supported": false,

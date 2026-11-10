@@ -1,24 +1,60 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: Shtvala
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1365004927#gid=1365004927
-notes: |
-  Following tests are done in from VU and VS-modes into HS-mode
+notes: |-
+  Shtvala boots to HS-mode.  The tests take guest-page faults from VS-mode and VU-mode, and from HLV and HSV in HS-mode and U-mode, into HS-mode, which records htval and htinst.  htval is set to a random value before each trap, so a hart that does not write it fails.
+  Each fault is taken twice: through a VS-stage superpage leaf whose guest physical address the G-stage leaves unmapped, where the final access faults and htval holds its guest physical address >> 2 (whose page offset matches the virtual address), and through a VS-stage pointer to a page table at such an address, where the implicit VS-stage PTE read faults, htval holds the PTE's guest physical address >> 2 and htinst holds a pseudoinstruction.  The coverpoints tell the two apart by htinst and by comparing the page offset of htval << 2 with that of the virtual address, so they need no fixed address.
 coverpoints:
-  - heading: Initialize htval to some random value before each test
   - name: cp_load_guest_page_fault
     goal: Fault writes GPA >> 2 to htval
-    description: Cause load guest-page fault
-    expectation: htval written with GPA
-    bins: "1"
+    description: In VS-mode and VU-mode, cause load guest-page faults on the final access and on the implicit VS-stage PTE read
+    expectation: htval written with the faulting guest physical address >> 2
+    bins: "{VS, VU} x lw x load guest-page fault x {final access, implicit PTE read}"
     rules:
       - Shtvala_htval_faulting_gpa
   - name: cp_store_guest_page_fault
     goal: Fault writes GPA >> 2 to htval
-    description: Cause store guest-page fault
-    expectation: htval written with GPA
-    bins: "1"
+    description: In VS-mode and VU-mode, cause store guest-page faults on the final access and on the implicit VS-stage PTE read
+    expectation: htval written with the faulting guest physical address >> 2
+    bins: "{VS, VU} x sw x store/AMO guest-page fault x {final access, implicit PTE read}"
   - name: cp_instr_guest_page_fault
     goal: Fault writes GPA >> 2 to htval
-    description: Cause fetch guest-page fault
-    expectation: htval written with GPA
-    bins: "1"
+    description: In VS-mode and VU-mode, cause fetch guest-page faults on the final access and on the implicit VS-stage PTE read
+    expectation: htval written with the faulting guest physical address >> 2
+    bins: "{VS, VU} x jalr x instruction guest-page fault x {final access, implicit PTE read}"
+  - name: |-
+      cp_amo_guest_page_fault
+      cp_lr_guest_page_fault
+    goal: AMO and LR guest-page faults write GPA >> 2 to htval
+    description: Only with Zaamo (amoswap.w) or Zalrsc (lr.w).  In VS-mode and VU-mode, cause guest-page faults on the final access and on the implicit VS-stage PTE read.
+    expectation: Store/AMO guest-page fault for amoswap.w and load guest-page fault for lr.w, with htval written with the faulting guest physical address >> 2.  rd is unchanged.
+    bins: "{VS, VU} x {amoswap.w, lr.w} x guest-page fault x {final access, implicit PTE read}"
+  - name: |-
+      cp_hlv_guest_page_fault
+      cp_hlvx_guest_page_fault
+      cp_hsv_guest_page_fault
+    goal: HLV, HLVX and HSV guest-page faults write GPA >> 2 to htval
+    description: In HS-mode and in U-mode with hstatus.HU = 1, both with hstatus.SPVP = 0, execute hlv.w, hlvx.wu and hsv.w where the final access or the implicit VS-stage PTE read has an unmapped guest physical address.  The VS-stage and G-stage leaves allow execution, so hlvx.wu passes its permission check.
+    expectation: Load guest-page fault for hlv.w and hlvx.wu and store/AMO guest-page fault for hsv.w, taken in HS-mode, with htval written with the faulting guest physical address >> 2.  A faulting load leaves rd unchanged.
+    bins: "{HS, U} x {hlv.w, hlvx.wu, hsv.w} x guest-page fault x {final access, implicit PTE read}"
+  - name: cp_instr_straddle_guest_page_fault
+    goal: A fetch that straddles into an unmapped guest page writes the page-boundary GPA >> 2 to htval
+    description: Only with Zca.  In VS-mode and VU-mode, jalr to a 32-bit instruction two bytes below the end of a mapped guest page whose successor has an unmapped guest physical address.
+    expectation: Instruction guest-page fault on the second half of the instruction.  sepc holds the start of the instruction, stval the page-boundary address and htval its guest physical address >> 2.
+    bins: "{VS, VU} x jalr x instruction guest-page fault x target at page end - 2 x htval at page boundary"
+  - name: |-
+      cp_load_straddle_guest_page_fault
+      cp_store_straddle_guest_page_fault
+    goal: A misaligned access that straddles into an unmapped guest page writes the page-boundary GPA >> 2 to htval
+    description: |-
+      In VS-mode and VU-mode, lw and sw two bytes below the end of a mapped guest page whose successor has an unmapped guest physical address.  The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead.
+    expectation: Load or store/AMO guest-page fault on the part of the access in the next page, however the hart splits it.  stval holds the page-boundary address and htval its guest physical address >> 2.
+    bins: "{VS, VU} x {lw, sw} x guest-page fault x address at page end - 2 x htval at page boundary"
+  - name: |-
+      cp_hlv_straddle_guest_page_fault
+      cp_hsv_straddle_guest_page_fault
+    goal: HLV and HSV that straddle into an unmapped guest page write htval and the htinst Addr. Offset
+    description: |-
+      In HS-mode with hstatus.SPVP = 0 and in U-mode with hstatus.HU = 1, hlv.w and hsv.w two bytes below the end of a mapped guest page whose successor has an unmapped guest physical address.  The coverpoints need MISALIGNED_LDST, as above.
+    expectation: Load or store/AMO guest-page fault.  htval holds the page-boundary guest physical address >> 2.  A faulting hlv.w leaves rd unchanged.  htinst is zero or holds an Addr. Offset of 2, the difference between the faulting virtual address in stval and the original virtual address; HS-mode checks it, and the trap record holds it for U-mode.
+    bins: "{HS, U} x {hlv.w, hsv.w} x guest-page fault x address at page end - 2 x htval at page boundary"

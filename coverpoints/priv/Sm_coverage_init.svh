@@ -21,3 +21,14 @@
 `ifdef ZVE32F_SUPPORTED
     Sm_VF_cg = new();           Sm_VF_cg.set_inst_name("obj_Sm_VF");
 `endif
+`ifdef ZICNTR_SUPPORTED
+    Sm_Zicntr_cg = new();    Sm_Zicntr_cg.set_inst_name("obj_Sm_Zicntr");
+`ifdef H_SUPPORTED
+    Sm_Zicntr_H_cg = new();  Sm_Zicntr_H_cg.set_inst_name("obj_Sm_Zicntr_H");
+`endif
+`endif
+`ifdef H_SUPPORTED
+    Sm_H_mcsr_cg = new();    Sm_H_mcsr_cg.set_inst_name("obj_Sm_H_mcsr");
+    Sm_H_tvm_cg = new();     Sm_H_tvm_cg.set_inst_name("obj_Sm_H_tvm");
+    Sm_H_inst_cg = new();    Sm_H_inst_cg.set_inst_name("obj_Sm_H_inst");
+`endif

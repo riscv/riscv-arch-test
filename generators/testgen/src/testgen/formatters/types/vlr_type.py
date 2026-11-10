@@ -20,7 +20,7 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 vlr_config = InstructionTypeConfig(
-    required_params={"vd", "rs1"}, instruction_class=["load"], vector_data=VectorTypeConfig()
+    required_params={"vd", "rs1"}, instruction_class=["load"], vector_data=VectorTypeConfig(maskable=False)
 )
 
 

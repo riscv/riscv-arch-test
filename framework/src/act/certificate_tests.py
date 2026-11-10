@@ -25,6 +25,11 @@ RVA23_EXTENSIONS = frozenset(
         "Zicbom",
         "Zicbop",
         "Zicboz",
+        "Ziccamoa",
+        "Ziccamoc",
+        "Ziccif",
+        "Zicclsm",
+        "Ziccrse",
         "Zicfilp",
         "Zicfiss",
         "Zicntr",
@@ -37,8 +42,11 @@ RVA23_EXTENSIONS = frozenset(
         "Zimop",
         # Zm extensions
         "Zmmul",
+        # Zk extensions
+        "Zkt",
         # Za extensions
         "Za64rs",
+        "Za128rs",
         "Zaamo",
         "Zabha",
         "Zacas",
@@ -55,10 +63,12 @@ RVA23_EXTENSIONS = frozenset(
         "Zcb",
         "Zcd",
         "Zcmop",
-        # Zb extensions
+        # Zb extensions (B; Zbc requires Zbkc)
+        "B",
         "Zba",
         "Zbb",
         "Zbc",
+        "Zbkc",
         "Zbs",
         # Zk extensions
         "Zkr",
@@ -76,14 +86,34 @@ RVA23_EXTENSIONS = frozenset(
         "Zvfhmin",
         "Zvkb",
         "Zvkg",
+        "Zvkn",
         "Zvkned",
+        "Zvkng",
         "Zvknha",
         "Zvknhb",
+        "Zvks",
         "Zvksed",
+        "Zvksg",
         "Zvksh",
+        "Zvkt",
+        "Zvl32b",
+        "Zvl64b",
+        "Zvl128b",
+        # Sd extensions
+        "Sdtrig",
+        # Sh extensions (Sha)
+        "Sha",
+        "Shcounterenw",
+        "Shgatpa",
+        "Shtvala",
+        "Shvsatpa",
+        "Shvstvala",
+        "Shvstvecd",
         # Ss extensions
         "Ssccptr",
         "Sscofpmf",
+        "Sscounterenw",
+        "Sspm",
         "Ssstateen",
         "Ssstrict",
         "Sstc",
@@ -92,6 +122,7 @@ RVA23_EXTENSIONS = frozenset(
         "Ssu64xl",
         "Ssnpm",
         "Smnpm",
+        "Supm",
         # Sv extensions
         "Sv39",
         "Sv48",
@@ -102,6 +133,7 @@ RVA23_EXTENSIONS = frozenset(
         "Svinval",
         "Svnapot",
         "Svpbmt",
+        "Svvptc",
     }
 )
 

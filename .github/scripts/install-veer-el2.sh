@@ -10,7 +10,7 @@ set -euo pipefail
 INSTALL_DIR="${1:?Usage: install-veer-el2.sh <install-dir>}"
 VEER_EL2_REPO="https://github.com/chipsalliance/Cores-VeeR-EL2.git"
 VEER_EL2_COMMIT="925f3a34bdadc8f28b12a70cfb73e043b0f5ef3d"
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 
 mkdir -p "$INSTALL_DIR/bin"
 
@@ -35,7 +35,7 @@ git init "$INSTALL_DIR/Cores-VeeR-EL2"
   git checkout FETCH_HEAD
 )
 
-# 3. Verilate at the maximum ratified feature set: user mode and 64 PMP entries on, Smepmp off,
+# 3. Verilate with user mode on, the default 16 PMP entries, Smepmp off,
 #    and Zba, Zbb, Zbc and Zbs on. The draft Zbe, Zbf, Zbp and Zbr stay off by default.
 #    fast_interrupt_redirect must be off, or external interrupts vector through the meivt table
 #    instead of mtvec and never reach the ACT trap handler.
@@ -44,7 +44,7 @@ mkdir -p "$INSTALL_DIR/el2"
   cd "$INSTALL_DIR/el2"
   RV_ROOT="$INSTALL_DIR/Cores-VeeR-EL2" \
     make -f "$INSTALL_DIR/Cores-VeeR-EL2/tools/Makefile" verilator-build -j"$(nproc)" \
-    CONF_PARAMS='-set build_axi4 -set user_mode=1 -set pmp_entries=64 -set smepmp=0 -set bitmanip_zba=1 -set bitmanip_zbb=1 -set bitmanip_zbc=1 -set bitmanip_zbs=1 -set fast_interrupt_redirect=0'
+    CONF_PARAMS='-set build_axi4 -set user_mode=1 -set pmp_entries=16 -set smepmp=0 -set bitmanip_zba=1 -set bitmanip_zbb=1 -set bitmanip_zbc=1 -set bitmanip_zbs=1 -set fast_interrupt_redirect=0'
 )
 
 # 4. Install the per-test runner

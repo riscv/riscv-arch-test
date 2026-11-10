@@ -45,7 +45,7 @@ normative_rule_definitions:
   # future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field,
   # selects dynamic rounding mode; In Rounding Mode register, reserved. ===
   - name: dyn_round_enc
-    # Representative: every legal rm and frm encoding; ZicsrF and SsstrictS cover the reserved ones
+    # Representative: every legal rm and frm encoding; ZicsrF and Ssstrict_S cover the reserved ones
     coverpoint:
       [
         "F_fadd_s_cg/{cp_frm_3, cp_csr_frm}",

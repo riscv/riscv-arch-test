@@ -34,6 +34,7 @@
 - `CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml make`: build tests, certified objects and ELFs for one or more configs. `CONFIG_FILES` is required for `make`. A config without `rvmodel_macros.h` stops at the objects.
 - `make coverage` uses `CONFIG_FILES` if set. Otherwise it uses the Sail rv32/rv64 max configs.
 - `RVMODEL_DIR=<dir> make`: take `rvmodel_macros.h` from `<dir>` instead of each config's `dut_include_dir`.
+- `CONFIG_FILES=<config>/test_config.yaml make objects`: build only the certified objects in `work/<config>/objects`, even when the config has `rvmodel_macros.h`.
 - `CONFIG_FILES=<config>/test_config.yaml make kit`: package the certified objects as a certification kit in `work/kits/`.
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build tests for one DUT configuration.
 - `make <config-target>`: build and run one or more configurations discovered from `run_cmd.txt`.

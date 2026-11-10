@@ -136,6 +136,7 @@ help:
 	@printf '\033[1mCommon targets:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
 	  'elfs (default)'      'Build certified objects for $$(CONFIG_FILES), and link ELFs where rvmodel_macros.h exists' \
+	  'objects'             'Build only the certified objects for $$(CONFIG_FILES), for a DUT owner to link' \
 	  'kit'                 'Package the certified objects of each $$(CONFIG_FILES) config into $$(KIT_DIR)' \
 	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
 	  'vector-tests'        'Generate vector test sources' \
@@ -178,6 +179,7 @@ help:
 	@printf '  make EXCLUDE_EXTENSIONS=Exceptions_Sm # skip an extension\n'
 	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
 	@printf '  make coverage                        # coverage build\n'
+	@printf '  make objects CONFIG_FILES=<cfg>/test_config.yaml  # certified objects only\n'
 	@printf '  make kit CONFIG_FILES=<cfg>/test_config.yaml  # kit for a DUT owner\n'
 
 
@@ -191,22 +193,30 @@ check-config-files:
 		exit 1; \
 	fi
 
+ACT_BUILD_ARGS = --workdir $(WORKDIR) \
+	--test-dir $(TESTDIR) \
+	--jobs $(JOBS) \
+	$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
+	$(if $(CERTIFICATE),--certificate $(CERTIFICATE)) \
+	$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
+	$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
+	$(if $(DEBUG),--debug) \
+	$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
+	$(if $(VERBOSE),--verbose)
+
 .PHONY: elfs
 elfs: check-config-files tests
-	@$(UV_RUN) act $(CONFIG_FILES) \
-		--workdir $(WORKDIR) \
-		--test-dir $(TESTDIR) \
-		--jobs $(JOBS) \
-		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
-		$(if $(CERTIFICATE),--certificate $(CERTIFICATE)) \
-		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
-		$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
-		$(if $(DEBUG),--debug) \
-		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
-		$(if $(VERBOSE),--verbose) \
+	@$(UV_RUN) act $(CONFIG_FILES) $(ACT_BUILD_ARGS) \
 		$(if $(RVMODEL_DIR),--rvmodel-dir $(RVMODEL_DIR)) \
 		$(if $(COVERAGE),--coverage) \
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
+
+# The certified objects alone (work/<config>/objects): the intermediate binaries a DUT owner
+# links with their own rvmodel_macros.h. Stops before the driver and the ELFs even when the
+# config has rvmodel_macros.h.
+.PHONY: objects
+objects: check-config-files tests
+	@$(UV_RUN) act $(CONFIG_FILES) $(ACT_BUILD_ARGS) --objects-only
 
 # One kit per config: the certified objects, the driver source, the env headers and the
 # config's linker script. The DUT owner links them with ./build_kit.sh.

@@ -365,6 +365,14 @@ This will create all of the certified objects that apply to your DUT (based on t
 
 If the config has no `rvmodel_macros.h`, the build stops after the certified objects and builds no ELFs. Supply the macros later with `RVMODEL_DIR=<dir with rvmodel_macros.h>`: the objects and expected results are reused, and only the driver and the links are built.
 
+To build only the certified objects, for example for a DUT whose owner keeps `rvmodel_macros.h` private, use the `objects` target. It stops at `$WORKDIR/<config_name>/objects` even when the config has `rvmodel_macros.h`, and takes the same variables as `make`:
+
+```bash
+CONFIG_FILES=<your_config_directory>/test_config.yaml make objects
+```
+
+[`make kit`](#certification-kits) packages the same objects for the DUT owner.
+
 The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make`):
 
 | Variable                         | Default                                         | Description                                                                                                                                                                                                                                       |

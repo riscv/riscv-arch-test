@@ -230,7 +230,7 @@ normative_rule_definitions:
 
   # When G {ge} 1, the NA4 mode is not selectable.
   - name: pmp_na4_select_restriction
-    coverpoint: ["PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_all_odd}"]
+    coverpoint: ["PMP_Sm_cg/cp_cfg_A_na4_unsupported"]
 
   # The A field in a PMP entry's configuration register encodes the address-matching
   # mode of the associated PMP address register. The encoding of this field is shown
@@ -306,7 +306,7 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_pmpcfg_walk_odd, cp_pmpcfg_zero and cp_grain*
     coverpoint:
       [
-        "PMP_Sm_cg/{cp_pmpcfg_walk, cp_cfg_A_all_even, cp_grain_check_write, cp_pmpaddr_upper_zero}",
+        "PMP_Sm_cg/{cp_pmpcfg_walk, cp_cfg_A_all_even, cp_cfg_A_tor_unsupported, cp_grain_check_write, cp_pmpaddr_upper_zero}",
       ]
 
   # Each PMP address register encodes bits 33-2 of a 34-bit physical address for RV32. For RV64,

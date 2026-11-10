@@ -708,9 +708,6 @@ def handle_parameter_exclusions(
         parameters_needed.append(f"(UDB_ELEN >= {encoded_eew})")
         parameters_needed.append(f"(UDB_SEW_MIN <= {encoded_eew})")
 
-    if index_eew is not None:
-        parameters_needed.append(f"(MAXINDEXEEW >= {index_eew})")
-
     if min_vlen is not None and min_vlen > 32:
         parameters_needed.append(f"defined (ZVL{min_vlen}B_SUPPORTED)")
 

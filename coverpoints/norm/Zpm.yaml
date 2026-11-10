@@ -204,4 +204,7 @@ normative_rule_definitions:
         "Smnpm_SSm_cg/cp_menvcfg_pmm_rsv",
         "Ssnpm_Sm_cg/cp_senvcfg_pmm_rsv",
         "Ssnpm_H_cg/{cp_henvcfg_pmm_rsv, cp_hstatus_hupmm_rsv}",
+        "Smnpm_SSm_cg/cp_menvcfg_pmm_unsupported",
+        "Ssnpm_Sm_cg/cp_senvcfg_pmm_unsupported",
+        "Ssnpm_H_cg/{cp_henvcfg_pmm_unsupported, cp_hstatus_hupmm_unsupported}",
       ]

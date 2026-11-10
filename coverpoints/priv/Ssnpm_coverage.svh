@@ -123,6 +123,23 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
         bins w01_reserved = {2'b01};
     }
     cp_senvcfg_pmm_rsv: cross priv_mode_m, senvcfg_csrrw, pmm_rsv_written;
+    // csrrw senvcfg with PMM = 10 or 11 where that PMLEN (7 or 16) is not supported
+    `ifndef UDB_SUPPORTED_PMLEN_SSNPM_7
+        pmm_unsupported_written: coverpoint ins.current.rs1_val[33:32] {
+            bins w10_pmlen7 = {2'b10};
+            `ifndef UDB_SUPPORTED_PMLEN_SSNPM_16
+                bins w11_pmlen16 = {2'b11};
+            `endif
+        }
+        cp_senvcfg_pmm_unsupported: cross priv_mode_m, senvcfg_csrrw, pmm_unsupported_written;
+    `else
+        `ifndef UDB_SUPPORTED_PMLEN_SSNPM_16
+            pmm_unsupported_written: coverpoint ins.current.rs1_val[33:32] {
+                bins w11_pmlen16 = {2'b11};
+            }
+            cp_senvcfg_pmm_unsupported: cross priv_mode_m, senvcfg_csrrw, pmm_unsupported_written;
+        `endif
+    `endif
 endgroup
 `endif // EXCLUDE_SM
 
@@ -249,6 +266,40 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
     cp_henvcfg_pmm_rsv: cross priv_mode_hs, henvcfg_csrrw, henvcfg_pmm_rsv_written;
     cp_hstatus_hupmm_rsv: cross priv_mode_hs, hstatus_csrrw, hstatus_hupmm_rsv_written;
+    // csrrw henvcfg with PMM = 10 or 11 where that PMLEN (7 or 16) is not supported
+    `ifndef UDB_SUPPORTED_PMLEN_SSNPM_7
+        henvcfg_pmm_unsupported_written: coverpoint ins.current.rs1_val[33:32] {
+            bins w10_pmlen7 = {2'b10};
+            `ifndef UDB_SUPPORTED_PMLEN_SSNPM_16
+                bins w11_pmlen16 = {2'b11};
+            `endif
+        }
+        cp_henvcfg_pmm_unsupported: cross priv_mode_hs, henvcfg_csrrw, henvcfg_pmm_unsupported_written;
+    `else
+        `ifndef UDB_SUPPORTED_PMLEN_SSNPM_16
+            henvcfg_pmm_unsupported_written: coverpoint ins.current.rs1_val[33:32] {
+                bins w11_pmlen16 = {2'b11};
+            }
+            cp_henvcfg_pmm_unsupported: cross priv_mode_hs, henvcfg_csrrw, henvcfg_pmm_unsupported_written;
+        `endif
+    `endif
+    // csrrw hstatus.HUPMM with PMM = 10 or 11 where that PMLEN (7 or 16) is not supported
+    `ifndef UDB_SUPPORTED_PMLEN_SSNPM_7
+        hstatus_hupmm_unsupported_written: coverpoint ins.current.rs1_val[49:48] {
+            bins w10_pmlen7 = {2'b10};
+            `ifndef UDB_SUPPORTED_PMLEN_SSNPM_16
+                bins w11_pmlen16 = {2'b11};
+            `endif
+        }
+        cp_hstatus_hupmm_unsupported: cross priv_mode_hs, hstatus_csrrw, hstatus_hupmm_unsupported_written;
+    `else
+        `ifndef UDB_SUPPORTED_PMLEN_SSNPM_16
+            hstatus_hupmm_unsupported_written: coverpoint ins.current.rs1_val[49:48] {
+                bins w11_pmlen16 = {2'b11};
+            }
+            cp_hstatus_hupmm_unsupported: cross priv_mode_hs, hstatus_csrrw, hstatus_hupmm_unsupported_written;
+        `endif
+    `endif
 
     // MXR is in effect for VS-mode and VU-mode when either vsstatus.MXR or the HS-level sstatus.MXR is 1.
     // {vsstatus.MXR, sstatus.MXR}; both 0 is cp_vs_pmm and cp_vu_pmm.

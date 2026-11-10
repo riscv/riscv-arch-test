@@ -1423,6 +1423,22 @@ def generate_pmm_write_tests(
     return lines
 
 
+def generate_pmm_unsupported_tests(csr: str, test_data: TestData, cg: str, coverpoint: str) -> list[str]:
+    """Write *csr*'s PMM field (hstatus.HUPMM for hstatus) with 10 and 11 where that PMLEN is not supported, and
+    record whether it reads back a value legal for the config: 00 or a supported PMLEN."""
+    ext = _PMM_EXTENSION[csr]
+    lines = []
+    for pmm in (0b10, 0b11):
+        lines.extend(
+            [
+                f"#ifndef UDB_SUPPORTED_PMLEN_{ext}_{PMLEN_BY_PMM[pmm]}",
+                *generate_pmm_write_tests(csr, test_data, cg, coverpoint, writes=(pmm,)),
+                "#endif",
+            ]
+        )
+    return lines
+
+
 def generate_pmm_reserved_tests(csr: str, mpp: str, test_data: TestData, cg: str, coverpoint: str) -> list[str]:
     """Write the reserved PMM = 01 to *csr* from M-mode and read it back, then load an untagged pointer with
     MPRV = 1 and MPP = *mpp*, the mode *csr*.PMM governs. Whatever legal PMM the field holds, the load reads the

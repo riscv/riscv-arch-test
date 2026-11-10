@@ -803,3 +803,15 @@ coverpoints:
     rules:
       - henvcfg_pmm_op
       - pmlen_illegal_warl
+  - name: |-
+      cp_henvcfg_pmm_unsupported
+      cp_hstatus_hupmm_unsupported
+    goal: Verify that henvcfg.PMM and hstatus.HUPMM do not store a PMM value whose PMLEN is not supported.
+    description: |-
+      In HS-mode, for each of PMM = 10 (PMLEN 7) and 11 (PMLEN 16) whose PMLEN is not supported: csrrw henvcfg with
+      PMM set to it, and csrrw hstatus with HUPMM set to it, each with the other bits unchanged; read the field back
+      and record whether it is 00 or a supported value.
+    expectation: Each field reads back 00 or a supported value (WARL).
+    bins: 1 per unsupported PMLEN for each field (0-4)
+    rules:
+      - pmlen_illegal_warl

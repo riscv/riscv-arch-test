@@ -42,3 +42,13 @@ coverpoints:
     rules:
       - pmlen_future_reserved
       - pmlen_illegal_warl
+  - name: cp_menvcfg_pmm_unsupported
+    goal: Verify that menvcfg.PMM does not store a PMM value whose PMLEN is not supported.
+    description: |-
+      In M-mode with menvcfg.PMM = 00, for each of PMM = 10 (PMLEN 7) and 11 (PMLEN 16) whose PMLEN is not supported:
+      csrrw menvcfg with that PMM and its other bits unchanged, read menvcfg.PMM back and record whether it is 00 or a
+      supported value.
+    expectation: The field reads back 00 or a supported value (WARL).
+    bins: 1 per unsupported PMLEN (0-2)
+    rules:
+      - pmlen_illegal_warl

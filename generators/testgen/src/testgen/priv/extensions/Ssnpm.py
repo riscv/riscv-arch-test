@@ -24,6 +24,7 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_instruction_sweep_tests,
     generate_mprv_lower_mode_tests,
     generate_pmm_reserved_tests,
+    generate_pmm_unsupported_tests,
     generate_sign_extension_tests,
     generate_xlen_change_tests,
     generate_zicfiss_tests,
@@ -236,11 +237,13 @@ def make_ssnpmsm(test_data: TestData) -> list[TestChunk]:
     tc.raw_data.extend(mprv_data_section())
     tc.code = [
         comment_banner(
-            "cp_senvcfg_pmm_rsv",
+            "cp_senvcfg_pmm_rsv, cp_senvcfg_pmm_unsupported",
             "Write the reserved senvcfg.PMM = 01 and read it back, then load through an untagged pointer with\n"
-            "MPRV = 1 and MPP = U. The field must read back 00 or a supported PMLEN, and the load must succeed.",
+            "MPRV = 1 and MPP = U. The field must read back 00 or a supported PMLEN, and the load must succeed.\n"
+            "Then write PMM = 10 and 11 where that PMLEN is not supported; each must also read back a legal value.",
         ),
         *generate_pmm_reserved_tests("senvcfg", "PRV_U", test_data, SM_COVERGROUP, "cp_senvcfg_pmm_rsv"),
+        *generate_pmm_unsupported_tests("senvcfg", test_data, SM_COVERGROUP, "cp_senvcfg_pmm_unsupported"),
     ]
     chunks.append(test_data.end_test_chunk())
     return chunks

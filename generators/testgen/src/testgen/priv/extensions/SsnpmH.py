@@ -35,6 +35,7 @@ from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
     csr_op,
     data_page,
+    generate_pmm_unsupported_tests,
     generate_pmm_write_tests,
     pmm_ifdef,
     probe_load,
@@ -242,10 +243,11 @@ def make_ssnpmh_pmm_rsv(test_data: TestData) -> list[TestChunk]:
     val = test_data.int_regs.get_register()
     tc.code = [
         comment_banner(
-            "cp_henvcfg_pmm_rsv, cp_hstatus_hupmm_rsv",
+            "cp_henvcfg_pmm_rsv, cp_hstatus_hupmm_rsv, cp_henvcfg_pmm_unsupported, cp_hstatus_hupmm_unsupported",
             "Write the reserved PMM = 01 to henvcfg.PMM and hstatus.HUPMM from HS-mode and read each back: it must\n"
             "read 00 or a supported PMLEN. With henvcfg.PMM = 01 written, hlv.d through an untagged pointer with\n"
-            "hstatus.SPVP = 1, which henvcfg.PMM governs, must read the seeded value.",
+            "hstatus.SPVP = 1, which henvcfg.PMM governs, must read the seeded value. Then write 10 and 11 to each\n"
+            "field where that PMLEN is not supported; each must also read back a legal value.",
         ),
         *generate_pmm_write_tests("henvcfg", test_data, _CG, "cp_henvcfg_pmm_rsv", writes=(0b01,)),
         *generate_pmm_write_tests("hstatus", test_data, _CG, "cp_hstatus_hupmm_rsv", writes=(0b01,)),
@@ -256,6 +258,9 @@ def make_ssnpmh_pmm_rsv(test_data: TestData) -> list[TestChunk]:
         write_sigupd(val, test_data),
         *csr_op("csrc", "hstatus", "HSTATUS_SPVP", test_data),
         *set_pmm_field("henvcfg", 0b00, 0, test_data),
+        # Last: the testcases of unsupported PMLENs are compiled out on harts that support them.
+        *generate_pmm_unsupported_tests("henvcfg", test_data, _CG, "cp_henvcfg_pmm_unsupported"),
+        *generate_pmm_unsupported_tests("hstatus", test_data, _CG, "cp_hstatus_hupmm_unsupported"),
     ]
     test_data.int_regs.return_register(val)
     return [test_data.end_test_chunk()]

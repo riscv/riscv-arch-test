@@ -42,3 +42,13 @@ coverpoints:
     rules:
       - senvcfg_pmm_enc
       - pmlen_illegal_warl
+  - name: cp_senvcfg_pmm_unsupported
+    goal: Verify that senvcfg.PMM does not store a PMM value whose PMLEN is not supported.
+    description: |-
+      In M-mode with senvcfg.PMM = 00, for each of PMM = 10 (PMLEN 7) and 11 (PMLEN 16) whose PMLEN is not supported:
+      csrrw senvcfg with that PMM and its other bits unchanged, read senvcfg.PMM back and record whether it is 00 or a
+      supported value.
+    expectation: The field reads back 00 or a supported value (WARL).
+    bins: 1 per unsupported PMLEN (0-2)
+    rules:
+      - pmlen_illegal_warl

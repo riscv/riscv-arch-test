@@ -456,6 +456,7 @@ normative_rule_definitions:
         "H_inst_cg/cp_hlv",
         "H_inst_cg/cp_hlvx",
         "H_inst_cg/cp_hsv",
+        "Ssnpm_H_cg/{cp_hlv_u_spvp1_pmm, cp_hlv_u_spvp0_pmm, cp_hlvx_u_pmm, cp_hlvx_hs_pmm}",
         "Exceptions_H_cg/cp_loadstore_priv",
       ]
 

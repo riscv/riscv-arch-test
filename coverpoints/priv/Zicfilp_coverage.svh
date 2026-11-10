@@ -36,21 +36,21 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     `include "general/Zicfilp_coverpoints.svh"
 
     // M-mode landing pad enable
-    lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe")[0] {}
-    lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe") {
+    lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSECCFG, "mlpe")[0] {}
+    lpe_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSECCFG, "mlpe") {
         bins enabled  = {1};
     }
-    lpe_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe") {
+    lpe_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSECCFG, "mlpe") {
         bins disabled = {0};
     }
 
     // The current instruction trapped into M-mode (mepc written with its own PC)
-    sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code")
+    sw_check_exc: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")
                   iff (ins.current.csr_wb[CSR_MEPC] &&
-                       (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
+                       (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) == ins.current.pc_rdata)) {
         bins software_check = {SOFTWARE_CHECK};
     }
-    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval", "mtval") {
+    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) {
         `ifdef UDB_REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK
             bins code_2 = {2};
         `else
@@ -59,11 +59,11 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     }
     // mstatus.MPELP after the current instruction
     `ifdef UDB_MXLEN_32
-        mpelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatush", "mpelp") {
+        mpelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSTATUSH, "mpelp") {
             bins lp_expected = {1};
         }
     `else
-        mpelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpelp") {
+        mpelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSTATUS, "mpelp") {
             bins lp_expected = {1};
         }
     `endif
@@ -114,10 +114,10 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     // with xLPE=1 in the mode the trap is taken from
     origin_lpe_enabled: coverpoint (
         `ifdef S_SUPPORTED
-            (ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe") :
-                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")
+            (ins.prev.mode == 2'b01) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe") :
+                                       get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")
         `else
-            get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")
+            get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe")
         `endif
         ) {
         bins enabled = {1};
@@ -130,7 +130,7 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
 
     // ELP before the current instruction: the previous instruction set it
     elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev) &&
-                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mseccfg", "mlpe") == 1)) {
+                            (get_csr_field(ins.hart, ins.issue, `SAMPLE_PREV, CSR_MSECCFG, "mlpe") == 1)) {
         bins no_lp_expected = {1'b0};
     }
 
@@ -138,15 +138,15 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     cp_pelp_trap_entry_zicfilp: cross priv_mode_m, lpe_enabled, elp_before, illegal;
 
     // With MLPE=0 and a software-written MPELP=1, an ebreak traps into M-mode and must still write MPELP=0
-    mlpe_off_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "mlpe")[0] {
+    mlpe_off_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "mlpe")[0] {
         bins off = {1'b0};
     }
     `ifdef UDB_MXLEN_32
-        mpelp_stale: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpelp")[0] {
+        mpelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpelp")[0] {
             bins one = {1'b1};
         }
     `else
-        mpelp_stale: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpelp")[0] {
+        mpelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpelp")[0] {
             bins one = {1'b1};
         }
     `endif
@@ -168,16 +168,16 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     mret_prev: coverpoint ins.prev.insn {
         bins mret = {MRET};
     }
-    mseccfg_mlpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mseccfg", "mlpe")[0] {}
-    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
+    mseccfg_mlpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSECCFG, "mlpe")[0] {}
+    menvcfg_lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe")[0] {}
     // MPELP before the MRET, two records back
     `ifdef UDB_MXLEN_32
-        mpelp_before_mret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatush", "mpelp")[0] {}
+        mpelp_before_mret: coverpoint get_csr_field(ins.hart, ins.issue, 2, CSR_MSTATUSH, "mpelp")[0] {}
     `else
-        mpelp_before_mret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatus", "mpelp")[0] {}
+        mpelp_before_mret: coverpoint get_csr_field(ins.hart, ins.issue, 2, CSR_MSTATUS, "mpelp")[0] {}
     `endif
     `ifdef S_SUPPORTED
-        senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
+        senvcfg_lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")[0] {}
         cp_pelp_trap_return_zicfilp: cross priv_mode_m_s_u, mret_prev, mseccfg_mlpe, menvcfg_lpe, senvcfg_lpe,
                                              mpelp_before_mret, not_lpad;
     `elsif U_SUPPORTED
@@ -192,25 +192,25 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
         mret_current: coverpoint ins.current.insn {
             bins mret = {MRET};
         }
-        mpp_s: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+        mpp_s: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
             bins s_mode = {2'b01};
         }
         `ifdef UDB_MXLEN_32
-            mpelp_set_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpelp") {
+            mpelp_set_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpelp") {
                 bins lp_expected = {1};
             }
         `else
-            mpelp_set_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpelp") {
+            mpelp_set_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpelp") {
                 bins lp_expected = {1};
             }
         `endif
-        menvcfg_lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "lpe") {
+        menvcfg_lpe_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "lpe") {
             bins enabled = {1};
         }
         // {mip.SSIP, mie.SSIE, mideleg.SSI}
-        ssi_pending_undelegated: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "ssip")[0],
-                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "ssie")[0],
-                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "ssip")[0]} {
+        ssi_pending_undelegated: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "ssip")[0],
+                                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "ssie")[0],
+                                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIDELEG, "ssip")[0]} {
             bins pending = {3'b110};
         }
         cp_elp_async_interrupt_zicfilp: cross priv_mode_m, mret_current, mpp_s, mpelp_set_before, menvcfg_lpe_enabled,
@@ -226,21 +226,21 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     `include "general/Zicfilp_coverpoints.svh"
 
     // S-mode landing pad enable
-    lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
-    lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe") {
+    lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe")[0] {}
+    lpe_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe") {
         bins enabled  = {1};
     }
-    lpe_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe") {
+    lpe_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe") {
         bins disabled = {0};
     }
 
     // The current instruction trapped into S-mode (sepc written with its own PC)
-    sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+    sw_check_exc: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
                   iff (ins.current.csr_wb[CSR_SEPC] &&
-                      (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
+                      (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
         bins software_check = {SOFTWARE_CHECK};
     }
-    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
+    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) {
         `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
             bins code_2 = {2};
         `else
@@ -248,7 +248,7 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
         `endif
     }
     // SPELP after the current instruction (trap entry is logged as an mstatus write)
-    spelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "spelp") {
+    spelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSTATUS, "spelp") {
         bins lp_expected = {1};
     }
 
@@ -296,7 +296,7 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
 
     // ELP before the current instruction: the previous instruction set it
     elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev) &&
-                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "menvcfg", "lpe") == 1)) {
+                            (get_csr_field(ins.hart, ins.issue, `SAMPLE_PREV, CSR_MENVCFG, "lpe") == 1)) {
         bins no_lp_expected = {1'b0};
     }
 
@@ -304,10 +304,10 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     cp_pelp_trap_entry_zicfilp: cross priv_mode_s, lpe_enabled, elp_before, illegal;
 
     // With menvcfg.LPE=0 and a software-written SPELP=1, an ebreak traps into S-mode and must still write SPELP=0
-    menvcfg_lpe_off: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "lpe")[0] {
+    menvcfg_lpe_off: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "lpe")[0] {
         bins off = {1'b0};
     }
-    spelp_stale: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp")[0] {
+    spelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spelp")[0] {
         bins one = {1'b1};
     }
     ebreak_instr: coverpoint ins.current.insn {
@@ -324,7 +324,7 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     `endif
 
     // A trap from U-mode into S-mode, at the non-LPAD target of an ELP-setting Indirect_CT or at an ecall
-    u_lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe") {
+    u_lpe_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe") {
         bins enabled = {1};
     }
     cp_elp_state_preservation_zicfilp: cross priv_mode_u, u_lpe_enabled, trap_case;
@@ -334,10 +334,10 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     sret_prev: coverpoint ins.prev.insn {
         bins sret = {SRET};
     }
-    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
-    senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
+    menvcfg_lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe")[0] {}
+    senvcfg_lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")[0] {}
     // SPELP before the SRET, two records back (the test's T-SBI call refreshes the mstatus log after it writes SPELP)
-    spelp_before_sret: coverpoint get_csr_val(ins.hart, ins.issue, 2, "mstatus", "spelp")[0] {}
+    spelp_before_sret: coverpoint get_csr_field(ins.hart, ins.issue, 2, CSR_MSTATUS, "spelp")[0] {}
     cp_pelp_trap_return_zicfilp: cross priv_mode_s_u, sret_prev, menvcfg_lpe, senvcfg_lpe, spelp_before_sret, not_lpad;
 
 endgroup
@@ -349,21 +349,21 @@ covergroup Zicfilp_U_cg with function sample(ins_t ins);
 
     `ifdef S_SUPPORTED
         // U-mode landing pad enable
-        lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
-        lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe") {
+        lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")[0] {}
+        lpe_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe") {
             bins enabled  = {1};
         }
-        lpe_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe") {
+        lpe_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe") {
             bins disabled = {0};
         }
 
         // The current instruction trapped into S-mode (sepc written with its own PC)
-        sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+        sw_check_exc: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
                       iff (ins.current.csr_wb[CSR_SEPC] &&
-                           (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
+                           (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
             bins software_check = {SOFTWARE_CHECK};
         }
-        xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
+        xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) {
             `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
                 bins code_2 = {2};
             `else
@@ -371,26 +371,26 @@ covergroup Zicfilp_U_cg with function sample(ins_t ins);
             `endif
         }
         // SPELP after the current instruction (trap entry is logged as an mstatus write)
-        xpelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "spelp") {
+        xpelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSTATUS, "spelp") {
             bins lp_expected = {1};
         }
     `else
         // U-mode landing pad enable
-        lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
-        lpe_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe") {
+        lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe")[0] {}
+        lpe_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe") {
             bins enabled  = {1};
         }
-        lpe_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe") {
+        lpe_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe") {
             bins disabled = {0};
         }
 
         // The current instruction trapped into M-mode (mepc written with its own PC)
-        sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code")
+        sw_check_exc: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")
                       iff (ins.current.csr_wb[CSR_MEPC] &&
-                           (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
+                           (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) == ins.current.pc_rdata)) {
             bins software_check = {SOFTWARE_CHECK};
         }
-        xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval", "mtval") {
+        xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) {
             `ifdef UDB_REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK
                 bins code_2 = {2};
             `else
@@ -399,11 +399,11 @@ covergroup Zicfilp_U_cg with function sample(ins_t ins);
         }
         // MPELP after the current instruction
         `ifdef UDB_MXLEN_32
-            xpelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatush", "mpelp") {
+            xpelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSTATUSH, "mpelp") {
                 bins lp_expected = {1};
             }
         `else
-            xpelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpelp") {
+            xpelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSTATUS, "mpelp") {
                 bins lp_expected = {1};
             }
         `endif
@@ -458,25 +458,25 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     `include "general/Zicfilp_coverpoints.svh"
 
     // Landing pad enable of the current mode: henvcfg.LPE in VS-mode, senvcfg.LPE in VU-mode
-    lpe: coverpoint ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "henvcfg", "lpe")[0]
-                                              : get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0]) {
+    lpe: coverpoint ((ins.prev.mode == 2'b01) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_HENVCFG, "lpe")[0]
+                                              : get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")[0]) {
     }
-    lpe_enabled: coverpoint ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "henvcfg", "lpe")
-                                                      : get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")) {
+    lpe_enabled: coverpoint ((ins.prev.mode == 2'b01) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_HENVCFG, "lpe")
+                                                      : get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")) {
         bins enabled  = {1};
     }
-    lpe_disabled: coverpoint ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "henvcfg", "lpe")
-                                                       : get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")) {
+    lpe_disabled: coverpoint ((ins.prev.mode == 2'b01) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_HENVCFG, "lpe")
+                                                       : get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")) {
         bins disabled = {0};
     }
 
     // The current instruction trapped into HS-mode (sepc written with its own PC)
-    sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+    sw_check_exc: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
                   iff (ins.current.csr_wb[CSR_SEPC] &&
-                      (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
+                      (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
         bins software_check = {SOFTWARE_CHECK};
     }
-    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
+    xtval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) {
         `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
             bins code_2 = {2};
         `else
@@ -484,7 +484,7 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
         `endif
     }
     // sstatus.SPELP after the current instruction (trap entry is logged as an mstatus write)
-    spelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "spelp") {
+    spelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MSTATUS, "spelp") {
         bins lp_expected = {1};
     }
 
@@ -531,8 +531,8 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
 
     // ELP before the current instruction: the previous instruction set it
     elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev) &&
-                            ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "henvcfg", "lpe")[0]
-                                                      : get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "senvcfg", "lpe")[0])) {
+                            ((ins.prev.mode == 2'b01) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_PREV, CSR_HENVCFG, "lpe")[0]
+                                                      : get_csr_field(ins.hart, ins.issue, `SAMPLE_PREV, CSR_SENVCFG, "lpe")[0])) {
         bins no_lp_expected = {1'b0};
     }
 
@@ -548,9 +548,9 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
 
     // H-specific coverpoints
 
-    menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "lpe")[0] {}
-    henvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "henvcfg", "lpe")[0] {}
-    senvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "senvcfg", "lpe")[0] {}
+    menvcfg_lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_MENVCFG, "lpe")[0] {}
+    henvcfg_lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_HENVCFG, "lpe")[0] {}
+    senvcfg_lpe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_SENVCFG, "lpe")[0] {}
 
     // Target of an ELP-setting indirect jump (lp_branch_prev): a non-LPAD instruction, or an LPAD whose nonzero
     // label does not match x7[31:12].
@@ -576,9 +576,9 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
         bins no_lp_expected = {2'b01};
     }
     // hedeleg[3] and hedeleg[18] are set together, so bit 18 names the handler for both traps
-    trap_to: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[SOFTWARE_CHECK] {}
-    mode_lpe_enabled: coverpoint (ins.prev.mode == 2'b01 ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")
-                                                         : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")) {
+    trap_to: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[SOFTWARE_CHECK] {}
+    mode_lpe_enabled: coverpoint (ins.prev.mode == 2'b01 ? get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "lpe")
+                                                         : get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "lpe")) {
         bins enabled = {1};
     }
     cp_trap_entry_spelp: cross priv_mode_vs_vu, mode_lpe_enabled, trap_elp, trap_to;
@@ -591,18 +591,18 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn {
         bins sret = {SRET};
     }
-    vs_new_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {}
-    hs_new_mode: coverpoint 2 * get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv") +
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp") {
+    vs_new_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0] {}
+    hs_new_mode: coverpoint 2 * get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spv") +
+                            get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp") {
         bins vu = {2};  // hstatus.SPV = 1, sstatus.SPP = 0
         bins vs = {3};  // hstatus.SPV = 1, sstatus.SPP = 1
     }
-    henvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] {}
-    senvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0] {}
-    sstatus_spelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp")[0] {}
+    henvcfg_lpe_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "lpe")[0] {}
+    senvcfg_lpe_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "lpe")[0] {}
+    sstatus_spelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spelp")[0] {}
     // Checked in HS-mode, where vsstatus has its own record
-    vsstatus_spelp_differs: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "spelp") !=
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp")) {
+    vsstatus_spelp_differs: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "spelp") !=
+                                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spelp")) {
         bins differs = {1'b1};
     }
     cp_vs_sret_spelp: cross priv_mode_vs, sret, vs_new_mode, henvcfg_lpe_before, senvcfg_lpe_before, sstatus_spelp;
@@ -621,28 +621,28 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
 
     // SRET from HS-mode to HS-mode (hstatus.SPV = 0) restores ELP from sstatus.SPELP when menvcfg.LPE = 1, and clears
     // sstatus.SPELP, not vsstatus.SPELP, which the test gives the opposite value
-    hs_to_hs: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv")[0],
-                          get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0]} {
+    hs_to_hs: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spv")[0],
+                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0]} {
         bins hs = {2'b01};
     }
-    menvcfg_lpe_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "lpe")[0] {}
+    menvcfg_lpe_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "lpe")[0] {}
     cp_hs_sret_to_hs_spelp: cross priv_mode_hs, sret, hs_to_hs, menvcfg_lpe_before, sstatus_spelp, vsstatus_spelp_differs;
 
     // SRET from HS-mode to VS-mode or VU-mode with sstatus.SPELP = 1 and the landing pad enable of the new mode set,
     // while a VS-level software interrupt is pending and enabled, for HS-mode (hideleg.VSSI = 0) or VS-mode
     // (hideleg.VSSI = 1). The interrupt is taken right after the SRET, before its target, and must save SPELP = 1.
-    spelp_set_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp") {
+    spelp_set_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spelp") {
         bins lp_expected = {1};
     }
-    new_mode_lpe_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] ?
-                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] :
-                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0]) {
+    new_mode_lpe_enabled: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0] ?
+                                      get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "lpe")[0] :
+                                      get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "lpe")[0]) {
         bins enabled = {1};
     }
     // {hvip.VSSIP, hie.VSSIE, hideleg.VSSI}
-    vssi_pending: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip")[0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie")[0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip")[0]} {
+    vssi_pending: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HVIP, "vssip")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIE, "vssie")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIDELEG, "vssip")[0]} {
         bins to_hs = {3'b110};
         bins to_vs = {3'b111};
     }
@@ -650,18 +650,18 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
 
     // A software-check exception delegated to VS-mode (hedeleg[18] = 1) at the target of an ELP-setting indirect jump:
     // vscause, vstval and vsstatus.SPELP = LP_EXPECTED
-    vs_sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
+    vs_sw_check_exc: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
                      iff (ins.current.csr_wb[CSR_VSCAUSE]) {
         bins software_check = {SOFTWARE_CHECK};
     }
-    vstval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstval", "vstval") {
+    vstval_lpad: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVAL) {
         `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
             bins code_2 = {2};
         `else
             bins zero = {0};
         `endif
     }
-    vsspelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsstatus", "spelp") {
+    vsspelp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSSTATUS, "spelp") {
         bins lp_expected = {1};
     }
     cp_vs_trap_delivery: cross priv_mode_vs_vu, mode_lpe_enabled, lp_branch_prev, lp_target, vs_sw_check_exc, vstval_lpad, vsspelp;
@@ -684,40 +684,40 @@ covergroup Zicfilp_SmH_cg with function sample(ins_t ins);
     // mret with MPV = 1 to VS-mode or VU-mode sets ELP = MPELP only if the landing pad enable of the new mode
     // (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1
     `ifdef UDB_MXLEN_64
-        mret_virt_mode : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
-                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        mret_virt_mode : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                                     get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
     `else
-        mret_virt_mode : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
-                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        mret_virt_mode : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                                     get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
     `endif
         bins vu = {3'b100};
         bins vs = {3'b101};
     }
-    henvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")[0] {}
-    senvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")[0] {}
+    henvcfg_lpe_before : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "lpe")[0] {}
+    senvcfg_lpe_before : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "lpe")[0] {}
     `ifdef UDB_MXLEN_64
-        old_mpelp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpelp")[0] {
+        old_mpelp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpelp")[0] {
     `else
-        old_mpelp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpelp")[0] {
+        old_mpelp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpelp")[0] {
     `endif
     }
     cp_mret_mpelp_virt: cross priv_mode_m, mret, mret_virt_mode, henvcfg_lpe_before, senvcfg_lpe_before, old_mpelp;
 
     // A trap from VS-mode or VU-mode into M-mode saves ELP in MPELP: a software-check exception at the non-LPAD
     // target of an ELP-setting jalr (LP_EXPECTED) or an ebreak (NO_LP_EXPECTED)
-    virt_lpe_enabled : coverpoint ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")
-                                                            : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")) {
+    virt_lpe_enabled : coverpoint ((ins.prev.mode == 2'b01) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "lpe")
+                                                            : get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "lpe")) {
         bins enabled = {1};
     }
     // {software-check exception, ebreak, MPELP after the trap}
     `ifdef UDB_MXLEN_64
-        m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(SOFTWARE_CHECK)),
+        m_trap_elp : coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(SOFTWARE_CHECK)),
                                  (ins.current.insn == EBREAK),
-                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpelp")[0]}
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mpelp")[0]}
     `else
-        m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(SOFTWARE_CHECK)),
+        m_trap_elp : coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(SOFTWARE_CHECK)),
                                  (ins.current.insn == EBREAK),
-                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mpelp")[0]}
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "mpelp")[0]}
     `endif
                      iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins lp_expected    = {3'b101};
@@ -733,7 +733,7 @@ covergroup Zicfilp_SmH_cg with function sample(ins_t ins);
     spelp_operand : coverpoint ins.current.rs1_val[23] {
         bins spelp = {1'b1};
     }
-    mstatus_spelp_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spelp")[0] {}
+    mstatus_spelp_before : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "spelp")[0] {}
     cp_vs_sstatus_spelp_mstatus: cross priv_mode_vs, vs_sstatus_spelp_write, spelp_operand, mstatus_spelp_before;
 endgroup
 `endif

@@ -24,29 +24,29 @@ covergroup Ssdbltrp_H_cg with function sample(ins_t ins);
         wildcard bins sret = {SRET};
     }
     `ifdef UDB_MXLEN_64
-        dte_on : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "dte")[0],
-                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "dte")[0]} {
+        dte_on : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "dte")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "dte")[0]} {
             bins both = {2'b11};
         }
     `else
-        dte_on : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "dte")[0],
-                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "dte")[0]} {
+        dte_on : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "dte")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFGH, "dte")[0]} {
             bins both = {2'b11};
         }
     `endif
     // vsstatus.SDT is bit 24
-    vsstatus_sdt_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vsstatus")[24] {
+    vsstatus_sdt_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[24] {
         bins one = {1};
     }
     // {hstatus.SPV, sstatus.SPP}
-    hs_sret_to : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv")[0],
-                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0]} {
+    hs_sret_to : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0]} {
         bins vu = {2'b10};
         bins vs = {2'b11};
         bins hs = {2'b01};
     }
     // vsstatus.SPP, which SRET in VS-mode reads
-    vs_sret_to : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "spp")[0] {
+    vs_sret_to : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "spp")[0] {
         bins vu = {0};
         bins vs = {1};
     }

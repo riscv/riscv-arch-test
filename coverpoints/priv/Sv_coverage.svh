@@ -25,32 +25,32 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
     `ifdef UDB_MXLEN_64
-        satp_asid_PPN: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "satp")[59:0] {
+        satp_asid_PPN: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP)[59:0] {
             bins all_zero = {60'd0};
             bins not_zero = {[1:$]};
         }
     `else
-        satp_asid_PPN: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "satp")[30:0] {
+        satp_asid_PPN: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP)[30:0] {
             bins all_zero = {31'd0};
             bins not_zero = {[1:$]};
         }
     `endif
 
     `ifdef UDB_MXLEN_64
-        asid_length: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "asid")[15:0] { //sat.5
+        asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[15:0] { //sat.5
             bins values = {16'h0001, 16'h0002, 16'h0004, 16'h0008, 16'h0010, 16'h0020, 16'h0040, 16'h0080, 16'h0100, 16'h0200, 16'h0400, 16'h0800, 16'h1000, 16'h2000, 16'h0400, 16'h8000};
         }
     `else
-        asid_length: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "asid")[8:0] {
+        asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[8:0] {
             bins values = {9'h001, 9'h002, 9'h004, 9'h008, 9'h010, 9'h020, 9'h040, 9'h080, 9'h100};
         }
     `endif
 
-    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{
+    tvm_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tvm")[0]{
         bins zero = {0};
     }
 
-    Scause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+    Scause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins illegal_ins  = {ILLEGAL_INSTRUCTION};
         bins no_exception = {0};
     }
@@ -93,7 +93,7 @@ covergroup Sv_VA_cg with function sample(ins_t ins);
     `endif
 
     `ifdef UDB_MXLEN_64
-        mode_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        mode_supported: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -105,7 +105,7 @@ covergroup Sv_VA_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        mode_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        mode_supported: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -127,7 +127,7 @@ covergroup Sv_sfence_cg with function sample(ins_t ins); //sf.1
         `ifndef UDB_ASID_WIDTH_16
             sfence_rs2_asid_len: coverpoint ins.current.rs2_val iff ((ins.current.insn ==? SFENCE_VMA) && (ins.current.insn[24:20] != 5'd0)) {
                 bins cur_plus_high = {[0:$]} iff (ins.current.rs2_val ==
-                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "asid") | ((64'hFFFF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
+                    (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "asid") | ((64'hFFFF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
             }
             cp_sfence_asid_len: cross priv_mode_s, sfence_rs2_asid_len;
         `endif
@@ -135,7 +135,7 @@ covergroup Sv_sfence_cg with function sample(ins_t ins); //sf.1
         `ifndef UDB_ASID_WIDTH_9
             sfence_rs2_asid_len: coverpoint ins.current.rs2_val iff ((ins.current.insn ==? SFENCE_VMA) && (ins.current.insn[24:20] != 5'd0)) {
                 bins cur_plus_high = {[0:$]} iff (ins.current.rs2_val ==
-                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "asid") | ((32'h1FF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
+                    (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "asid") | ((32'h1FF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
             }
             cp_sfence_asid_len: cross priv_mode_s, sfence_rs2_asid_len;
         `endif
@@ -273,13 +273,13 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         // A non-leaf PTE is never at level 0
         PTE_nonleaf_level_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
         PTE_nonleaf_d: coverpoint ins.current.pte_d[7:0] {
@@ -303,13 +303,13 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         // A non-leaf PTE is never at level 0
         PTE_nonleaf_level_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
     `endif
@@ -317,76 +317,76 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
     `else
         PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
     `endif
 
     `ifdef UDB_MXLEN_64
         misaligned_PPN_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_i[26:0] != 27'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
-                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_i[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
-                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
+                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_i[26:0] != 27'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
+                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_i[17:0] != 18'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
+                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[8:0]  !=  9'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_i[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
-                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
+                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_i[17:0] != 18'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000));
+                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[8:0]  !=  9'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000));
             `endif
         }
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
-                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
-                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
+                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
+                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
+                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
-                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
+                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000));
+                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000));
             `endif
         }
     `else
         misaligned_PPN_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[9:0] != 10'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1));
+            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[9:0] != 10'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1));
         }
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[9:0] != 10'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1));
+            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[9:0] != 10'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1));
         }
     `endif
 
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
     `ifdef UDB_MXLEN_64
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -398,7 +398,7 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -413,16 +413,16 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     write_acc: coverpoint ins.current.write_access{
         bins set = {1};
     }
-    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins load_page_fault = {LOAD_PAGE_FAULT};
     }
-    ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+    ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
     }
-    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
-    Nopagefault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval"){
+    Nopagefault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL){
         bins no_fault  = {64'd0};
     }
     kilo_page_i: coverpoint ins.current.page_type_i {
@@ -431,11 +431,11 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     kilo_page_d: coverpoint ins.current.page_type_d {
         bins kilo_page = {2'b00};
     }
-    sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "sum")[0]{
+    sum_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SSTATUS, "sum")[0]{
         bins notset = {0};
         bins set = {1};
     }
-    mxr_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "mxr")[0] {
+    mxr_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SSTATUS, "mxr")[0] {
         bins notset = {0};
         bins set = {1};
     }
@@ -678,28 +678,28 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         canonical_page_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_canonical = {2'b11} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
+                bins sv48_tera_canonical = {2'b11} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
+                bins sv48_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
+                bins sv48_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
+                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
-                bins sv39_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
-                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
+                bins sv39_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
+                bins sv39_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
+                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
             `endif
         }
         canonical_page_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_canonical = {2'b11} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
+                bins sv48_tera_canonical = {2'b11} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
+                bins sv48_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
+                bins sv48_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
+                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
-                bins sv39_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
-                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
+                bins sv39_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
+                bins sv39_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
+                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
             `endif
         }
 
@@ -734,7 +734,7 @@ covergroup Sv_res_global_pte_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -746,7 +746,7 @@ covergroup Sv_res_global_pte_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -766,38 +766,38 @@ covergroup Sv_res_global_pte_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
     `else
         PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
     `endif
 
@@ -872,14 +872,14 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins reserved_bit_60 = {7'b1000000};
         }
 
-        PBMTE_unset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "pbmte")[0] {
+        PBMTE_unset: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "pbmte")[0] {
             bins not_set = {1'b0};
         }
-        ADUE_unset: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "adue")[0] {
+        ADUE_unset: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "adue")[0] {
             bins not_set = {1'b0};
         }
 
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -900,13 +900,13 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         write_acc: coverpoint ins.current.write_access {
             bins set = {1};
         }
-        load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
             bins load_page_fault = {LOAD_PAGE_FAULT};
         }
-        ins_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
             bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
         }
-        store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
             bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
         }
 
@@ -942,10 +942,10 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         cp_svadu_disabled: cross ADUE_unset, mode;
     `else
 
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins sv32 = {1'b1};
         }
-        ADUE_unset: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfgh", "adue")[0] {
+        ADUE_unset: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFGH, "adue")[0] {
             bins not_set = {1'b0};
         }
         cp_svadu_disabled: cross ADUE_unset, mode;
@@ -958,10 +958,10 @@ covergroup Sv_Sm_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{}
+    tvm_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tvm")[0]{}
 
     // satp is always accessible from M-mode, so an access here never raises an exception.
-    Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+    Mcause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
         bins no_exception = {0};
     }
 
@@ -981,10 +981,10 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0] {
+    tvm_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tvm")[0] {
         bins set = {1};
     }
-    Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+    Mcause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
         bins illegal_ins = {ILLEGAL_INSTRUCTION};
     }
     cp_ins: coverpoint ins.current.insn {
@@ -996,10 +996,10 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
 
     cp_tvm_exception_s: cross tvm_mstatus, priv_mode_s, Mcause, cp_ins; //ms.1
 
-    mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
+    mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mprv")[0] {
         bins set = {1};
     }
-    mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+    mpp_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
         bins U_mode = {2'b00};
         bins S_mode = {2'b01};
     }
@@ -1014,7 +1014,7 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -1026,7 +1026,7 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -1042,31 +1042,31 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
     `else
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
     `endif
 
-    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
         bins load_page_fault = {LOAD_PAGE_FAULT};
     }
-    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
         bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
-    sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sum")[0] {
+    sum_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "sum")[0] {
         bins notset = {0};
         bins set = {1};
     }
@@ -1102,10 +1102,10 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
         wildcard bins leaflvl_s = {8'b11?01111};
     }
     `ifdef UDB_MXLEN_64
-        sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sbe")[0] { //ms.5
+        sbe_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "sbe")[0] { //ms.5
         }
     `else
-        sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "sbe")[0] { //ms.5
+        sbe_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "sbe")[0] { //ms.5
         }
     `endif
 
@@ -1188,7 +1188,7 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
 
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
     `ifdef UDB_MXLEN_64
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -1200,7 +1200,7 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -1208,21 +1208,21 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000);
             `endif
         }
     `else
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_mega = {2'b01} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1);
         }
     `endif
 
@@ -1233,33 +1233,33 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
-                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
-                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
+                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
+                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
+                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001));
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
-                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
+                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000));
+                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000));
             `endif
         }
     `else
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[9:0] != 10'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1));
+            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[9:0] != 10'b0) && (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] == 1'b1));
         }
     `endif
 
-    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") iff (ins.trap == 1) {
+    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE) iff (ins.trap == 1) {
         bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
     // Only reachable when the DUT has an address that faults: its sole bin is the
     // store/AMO access fault cause, and its only consumers are the guarded
     // cp_*_to_nonexistent_pa_cbo_* crosses below.
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") iff (ins.trap == 1) {
+        store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE) iff (ins.trap == 1) {
             bins store_amo_access_fault = {STORE_AMO_ACCESS_FAULT};
         }
     `endif
-    sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "sum")[0]{
+    sum_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SSTATUS, "sum")[0]{
         bins notset = {0};
         bins set = {1};
     }
@@ -1416,13 +1416,13 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+    instr_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+    load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+    store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
     // The PC of the target: a fetch that spans two parcels may report either parcel in virt_adr_i
@@ -1557,20 +1557,20 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    mstatus_mprv_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
+    mstatus_mprv_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mprv")[0] {
         bins one = {1};
     }
-    mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+    mstatus_mpp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
         bins u_mode = {2'b00};
         bins s_mode = {2'b01};
     }
-    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+    instr_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+    load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+    store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
     i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {
@@ -1587,7 +1587,7 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
         wildcard bins lw = {LW};
     }
-    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
@@ -1736,7 +1736,7 @@ covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
     amoops: coverpoint ins.current.insn {
         wildcard bins amoadd_w = {AMOADD_W};
     }
-    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
@@ -1857,7 +1857,7 @@ covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
         wildcard bins sc_w = {SC_W};
     }
-    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
@@ -1939,7 +1939,7 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         wildcard bins lw = {LW};
     }
     // Each supported VS-stage mode
-    vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         `ifdef UDB_SV39_VSMODE_TRANSLATION
             bins sv39 = {8};
         `endif
@@ -1953,28 +1953,28 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
             bins sv32 = {1};
         `endif
     }
-    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare = {0};
     }
     // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
     }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
+    vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
     `ifdef UDB_MXLEN_64
-        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
+        menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
             bins off = {0};
         }
-        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue") {
+        henvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "adue") {
             bins off = {0};
         }
     `else
-        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
+        menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue") {
             bins off = {0};
         }
-        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "adue") {
+        henvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFGH, "adue") {
             bins off = {0};
         }
     `endif
@@ -1999,11 +1999,11 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
     lw : coverpoint ins.current.insn {
         wildcard bins lw = {LW};
     }
-    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins bare = {0};
     }
     // Each supported G-stage mode
-    hgatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         `ifdef UDB_SV39X4_TRANSLATION
             bins sv39x4 = {8};
         `endif
@@ -2017,15 +2017,15 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
             bins sv32x4 = {1};
         `endif
     }
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         wildcard bins none     = {6'b0?????};
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
     // HS-level MXR: mret into the guest logs mstatus
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
+    mstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
+    vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
     `ifdef UDB_MXLEN_64
-        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
+        menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
             bins off = {0};
         }
         // The one set bit above bit 36 of the guest physical address (vsatp = Bare)
@@ -2033,7 +2033,7 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
             bins b[] = {[37:63]};
         }
     `else
-        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
+        menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue") {
             bins off = {0};
         }
     `endif
@@ -2065,21 +2065,21 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     jalr : coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins paged = {[1:15]};
     }
-    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins paged = {[1:15]};
     }
-    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins bare = {0};
     }
-    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare = {0};
     }
     // Each pair of VS-stage and G-stage modes with the same number of levels that the hart supports
-    stage_modes : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+    stage_modes : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
         `ifdef UDB_SV39_VSMODE_TRANSLATION
             `ifdef UDB_SV39X4_TRANSLATION
                 bins sv39_sv39x4 = {8'h88};
@@ -2101,30 +2101,30 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
             `endif
         `endif
     }
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         wildcard bins none     = {6'b0?????};
         bins page_fault        = {6'b101100, 6'b101101, 6'b101111};
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
-    guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
-    page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins page_fault = {6'b101100, 6'b101101, 6'b101111};
     }
-    access_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    access_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins access_fault = {6'b100001, 6'b100101, 6'b100111};
     }
     // A page fault delegated to VS-mode
-    vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "vscause")[4:0]} {
+    vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE)[4:0]} {
         bins page_fault = {6'b101100, 6'b101101, 6'b101111};
     }
-    hedeleg_page_faults : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[15:12] {
+    hedeleg_page_faults : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[15:12] {
         bins delegated = {4'b1011};
     }
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
-    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+    mstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
+    vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
+    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
         `ifdef UDB_MXLEN_64
             bins read = {'h3000};
         `else
@@ -2144,14 +2144,14 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         bins page_end = {'hFFE};
     }
     `ifdef UDB_MXLEN_64
-        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue") {
+        menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
             bins off = {0};
         }
-        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue") {
+        henvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "adue") {
             bins off = {0};
         }
         // A guest virtual address whose bits 63 down to the VS-stage mode's top address bit are not all equal
-        va_noncanonical : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+        va_noncanonical : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
             `ifdef UDB_SV39_VSMODE_TRANSLATION
                 `ifdef UDB_SV39X4_TRANSLATION
                     bins sv39 = {8} iff (ins.current.rs1_val[63:38] != 0 && ins.current.rs1_val[63:38] != '1);
@@ -2172,26 +2172,26 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
             // A guest-page fault on a guest physical address above the G-stage mode's width: htval holds it shifted
             // right by 2, so bits 63:39 (Sv39x4) or 63:48 (Sv48x4) of htval are not all zero.  A VS-stage PPN reaches
             // guest physical address bit 55 at most, which is within Sv57x4.
-            htval_gpa_wide : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")
+            htval_gpa_wide : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")
                              iff (ins.current.csr_wb[CSR_HTVAL]) {
                 `ifdef UDB_SV39X4_TRANSLATION
-                    bins sv39x4 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:39] != 0);
+                    bins sv39x4 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:39] != 0);
                 `endif
                 `ifdef UDB_SV48X4_TRANSLATION
-                    bins sv48x4 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[63:48] != 0);
+                    bins sv48x4 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:48] != 0);
                 `endif
             }
         `endif
     `else
-        menvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue") {
+        menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue") {
             bins off = {0};
         }
-        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "adue") {
+        henvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFGH, "adue") {
             bins off = {0};
         }
         `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
             // Guest physical address bits 33:32, which htval reports as bits 31:30 after a guest-page fault
-            htval_gpa_high : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval")[31:30] iff (ins.current.csr_wb[CSR_HTVAL]) {
+            htval_gpa_high : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[31:30] iff (ins.current.csr_wb[CSR_HTVAL]) {
                 bins bit32 = {1};
                 bins bit33 = {2};
                 bins both  = {3};
@@ -2268,8 +2268,8 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         wildcard bins hlvx_wu = {HLVX_WU};
     }
     // Each pair of VS-stage and G-stage modes with the same number of levels that the hart supports
-    stage_modes : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode")[3:0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode")[3:0]} {
+    stage_modes : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
         `ifdef UDB_SV39_VSMODE_TRANSLATION
             `ifdef UDB_SV39X4_TRANSLATION
                 bins sv39_sv39x4 = {8'h88};
@@ -2292,16 +2292,16 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         `endif
     }
     // The load page fault (VS-stage) or load guest-page fault (G-stage) that HLVX takes on a non-executable page
-    load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+    load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins page_fault       = {6'b101101};
         bins guest_page_fault = {6'b110101};
     }
-    hstatus_spvp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
-    sstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum")[0] {}
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
-    sstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
-    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+    hstatus_spvp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0] {}
+    vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
+    sstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
+    sstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0] {}
+    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
         `ifdef UDB_MXLEN_64
             bins read = {'h3000};
         `else
@@ -2310,13 +2310,13 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
     }
     `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
         // htval holds the guest physical address of the VS-stage root PTE, shifted right by 2
-        htval_root : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") iff (ins.current.csr_wb[CSR_HTVAL]) {
+        htval_root : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) iff (ins.current.csr_wb[CSR_HTVAL]) {
             `ifdef UDB_MXLEN_64
-                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") >> 10) ==
-                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "vsatp") & 64'h00000fffffffffff));
+                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) >> 10) ==
+                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP) & 64'h00000fffffffffff));
             `else
-                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") >> 10) ==
-                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "vsatp") & 32'h003fffff));
+                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) >> 10) ==
+                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP) & 32'h003fffff));
             `endif
         }
     `endif
@@ -2356,16 +2356,16 @@ covergroup Sv_H_csr_cg with function sample(ins_t ins);
     mode_written : coverpoint ins.current.rs1_val[63:60] {
         bins b[] = {[0:15]};
     }
-    vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins bare = {0};
         bins sv39 = {8};
     }
-    hgatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare   = {0};
         bins sv39x4 = {8};
     }
     // In VS-mode, satp is vsatp
-    satp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+    satp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
         bins bare = {0};
         bins sv39 = {8};
     }
@@ -2408,7 +2408,7 @@ covergroup Sv_H_fence_cg with function sample(ins_t ins);
     // implemented ID bit, so with ASIDLEN < ASIDMAX or VMIDLEN < VMIDMAX, all_bits is the current ID with the
     // unimplemented bits MAX-1:LEN also set, which the fence ignores.
     rs2_asid : coverpoint ins.current.rs2_val iff (ins.current.insn[24:20] != 0) {
-        bins current  = {[0:$]} iff (ins.current.rs2_val == get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "asid"));
+        bins current  = {[0:$]} iff (ins.current.rs2_val == get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "asid"));
         `ifdef UDB_MXLEN_64
             bins all_bits = {'hffff};
         `else
@@ -2416,17 +2416,17 @@ covergroup Sv_H_fence_cg with function sample(ins_t ins);
         `endif
     }
     rs2_vmid : coverpoint ins.current.rs2_val iff (ins.current.insn[24:20] != 0) {
-        bins current  = {[0:$]} iff (ins.current.rs2_val == get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "vmid"));
+        bins current  = {[0:$]} iff (ins.current.rs2_val == get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "vmid"));
         `ifdef UDB_MXLEN_64
             bins all_bits = {'h3fff};
         `else
             bins all_bits = {'h7f};
         `endif
     }
-    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins paged = {[1:15]};
     }
-    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins paged = {[1:15]};
     }
 
@@ -2457,17 +2457,17 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         wildcard bins hlv_w = {HLV_W};
         wildcard bins hsv_w = {HSV_W};
     }
-    mprv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {}
-    mprv_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+    mprv : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0] {}
+    mprv_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
         bins on = {1};
     }
     // {MPV, MPP}: the mode whose translation MPRV = 1 selects
     `ifdef UDB_MXLEN_64
-        mpp_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        mpp_mpv : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
     `else
-        mpp_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        mpp_mpv : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
     `endif
         bins m      = {3'b011};
         bins m_mpv1 = {3'b111};
@@ -2477,36 +2477,36 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         bins vu     = {3'b100};
     }
     `ifdef UDB_MXLEN_64
-        mpp_mpv_guest : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
-                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        mpp_mpv_guest : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
     `else
-        mpp_mpv_guest : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
-                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        mpp_mpv_guest : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
     `endif
         bins vs = {3'b101};
         bins vu = {3'b100};
     }
-    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins paged = {[1:15]};
     }
-    vsatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins bare = {0};
     }
-    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins paged = {[1:15]};
     }
-    hgatp_bare : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare = {0};
     }
     // The trap into M-mode that the access takes, if any.  Only a trap writes mcause on these instructions.
-    trap : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+    trap : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]} {
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101101, 6'b101111};
     }
-    vsstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sum")[0] {}
-    mstatus_sum : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sum")[0] {}
-    vsstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr")[0] {}
-    mstatus_mxr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
+    vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
+    mstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sum")[0] {}
+    vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
+    mstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
 
     // MPRV = 1 and MPV = 1 translate M-mode loads and stores through the VS-stage
     cp_vsatp_mprv_effects : cross priv_mode_m, load_store, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_bare, trap;
@@ -2527,28 +2527,28 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
         wildcard bins sw   = {SW};
         wildcard bins jalr = {JALR};
     }
-    vsatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+    vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins paged = {[1:15]};
     }
-    hgatp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+    hgatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins paged = {[1:15]};
     }
-    trap : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+    trap : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]} {
         bins page_fault       = {6'b101100, 6'b101101, 6'b101111};
         bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
     }
     // The trap records a guest virtual address and that it came from V = 1
     `ifdef UDB_MXLEN_64
-        gva_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "gva")[0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpv")[0]} {
+        gva_mpv : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "gva")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mpv")[0]} {
     `else
-        gva_mpv : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "gva")[0],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mpv")[0]} {
+        gva_mpv : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "gva")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "mpv")[0]} {
     `endif
         bins guest = {2'b11};
     }
     // The pseudoinstruction that mtinst holds after a guest-page fault on an implicit VS-stage access
-    mtinst_pseudo : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtinst", "mtinst") iff (ins.current.csr_wb[CSR_MTINST]) {
+    mtinst_pseudo : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTINST) iff (ins.current.csr_wb[CSR_MTINST]) {
         `ifdef UDB_MXLEN_64
             bins read = {'h3000};
         `else
@@ -2567,12 +2567,12 @@ covergroup Sv_HSm_trap_cg with function sample(ins_t ins);
     page_end : coverpoint (ins.current.eff_addr & 'hFFF) {
         bins page_end = {'hFFE};
     }
-    guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")[4:0]} {
+    guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]} {
         bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
     }
     // A nonzero mtval2 holding the guest physical address of a page boundary >> 2: the faulting second portion
-    mtval2_page_boundary : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval2", "mtval2") << 2) & 'hFFF)
-                           iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval2", "mtval2") != 0) {
+    mtval2_page_boundary : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL2) << 2) & 'hFFF)
+                           iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL2) != 0) {
         bins page_boundary = {0};
     }
 
@@ -2608,10 +2608,10 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
       wildcard bins zero = {CBO_ZERO};
     `endif
   }
-  vsatp_paged: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+  vsatp_paged: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
     bins paged = {[1:15]};
   }
-  hgatp_paged: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
+  hgatp_paged: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
     bins paged = {[1:15]};
   }
   // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
@@ -2633,15 +2633,15 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   `endif
 
   // The trap the CBO takes, from the scause the trace shows it writing
-  vs_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+  vs_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
     wildcard bins no_fault = {6'b0?????};
     bins store_page_fault  = {6'b101111};
   }
-  g_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+  g_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
     wildcard bins no_fault       = {6'b0?????};
     bins store_guest_page_fault  = {6'b110111};
   }
-  gpa_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+  gpa_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
     bins store_guest_page_fault = {6'b110111};
     // Only a VS-stage table in the load access-fault region raises this fault
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
@@ -2653,15 +2653,15 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   no_fault: coverpoint ins.current.csr_wb[CSR_SCAUSE] {
     bins no_fault = {0};
   }
-  store_access_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+  store_access_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
     bins store_access_fault = {6'b100111};
   }
   // htinst holds the pseudoinstruction of a guest-page fault on an implicit VS-stage page-table read
-  pseudoinstruction: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+  pseudoinstruction: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
     bins read = {'h2000, 'h3000};
   }
   // In VS-mode the trace logs vsstatus as sstatus
-  vsstatus_sum: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum") {
+  vsstatus_sum: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum") {
     bins set = {1};
   }
 
@@ -2696,28 +2696,28 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   zero: coverpoint ins.current.insn {
     wildcard bins zero = {CBO_ZERO};
   }
-  menvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbie") {
+  menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "cbie") {
     bins off   = {2'b00};
     bins flush = {2'b01};
     bins inval = {2'b11};
   }
-  henvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbie") {
+  henvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "cbie") {
     bins off   = {2'b00};
     bins flush = {2'b01};
     bins inval = {2'b11};
   }
-  senvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbie") {
+  senvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "cbie") {
     bins off   = {2'b00};
     bins flush = {2'b01};
     bins inval = {2'b11};
   }
-  menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbcfe")[0] {}
-  henvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbcfe")[0] {}
-  senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbcfe")[0] {}
-  menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cbze")[0] {}
-  henvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "cbze")[0] {}
-  senvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "cbze")[0] {}
-  vsatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+  menvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "cbcfe")[0] {}
+  henvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "cbcfe")[0] {}
+  senvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "cbcfe")[0] {}
+  menvcfg_cbze: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "cbze")[0] {}
+  henvcfg_cbze: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "cbze")[0] {}
+  senvcfg_cbze: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "cbze")[0] {}
+  vsatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
     bins bare = {0};
   }
 

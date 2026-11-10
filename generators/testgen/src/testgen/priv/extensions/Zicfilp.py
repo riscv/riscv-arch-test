@@ -537,8 +537,11 @@ def trap_entry_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestCh
 
 def _tvec_alignment(tvec: str) -> list[str]:
     """Align a trap handler label for ``tvec`` in either MODE the DUT supports."""
-    vectored = f"UDB_{tvec.upper()}_BASE_ALIGNMENT_VECTORED"
-    return [f"#ifdef {vectored}", f".balign {vectored}", "#endif", ".balign 4"]
+    lines = []
+    for mode in ("VECTORED", "DIRECT"):
+        align = f"UDB_{tvec.upper()}_BASE_ALIGNMENT_{mode}"
+        lines += [f"#ifdef {align}", f".balign {align}", "#endif"]
+    return [*lines, ".balign 4"]
 
 
 def pelp_lpe_off_trap_tests(test_data: TestData, priv: Priv, covergroup: str) -> TestChunk:

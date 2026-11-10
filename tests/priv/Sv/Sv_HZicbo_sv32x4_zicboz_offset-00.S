@@ -292,12 +292,12 @@ Sv_HZicbo_cg_cp_offset_vs_sv32x4_l0_offset_g_v0_cbo_zero:
   or x6, x6, x8
   SREG x6, 0(x13)
   LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI_FIXED_LEN(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x13)
   hfence.gvma
   hfence.vvma
   LI(x14, (0xD0407000 >> 12) << 12)
-  LI(x13, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x13, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x13, x13, 20
   srli x13, x13, 20
   add x14, x14, x13
@@ -566,12 +566,12 @@ Sv_HZicbo_cg_cp_offset_vu_sv32x4_l0_offset_g_v0_cbo_zero:
   or x9, x9, x15
   SREG x9, 0(x13)
   LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI_FIXED_LEN(x9, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x9, 0(x13)
   hfence.gvma
   hfence.vvma
   LI(x14, (0xD0407000 >> 12) << 12)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 20
   srli x6, x6, 20
   add x14, x14, x6

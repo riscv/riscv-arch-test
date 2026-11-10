@@ -276,6 +276,16 @@ If you have a simple DUT designed to match the behavior of RISC-V Sail and Spike
 
 If you have a complex DUT, you presumably have a team of sophisticated verification engineers who can adapt the example macros to your DUT's requirements.
 
+[[bring-up-suites]]
+==== Bring-Up Suites
+
+Two suites check a new DUT environment before the certification run. Neither claims functional coverage, and both finish in seconds.
+
+* `Hello` checks the RVMODEL macros, one test per layer in dependency order: boot and I/O, the signature mechanism, trap entry and return, privilege transitions, the software and external interrupt macros, the timer, and the access-fault address. The first test that fails names the macro or value to fix.
+* `ConfigCheck` checks that the hart matches its UDB configuration. Each testcase reads one value the configuration describes, such as a `misa` bit, the writable `medeleg` bits, the PMP granularity, VLEN or whether an extension's instruction executes, and compares it with the value the configuration implies. The testcase is named after the UDB parameter or extension. A mismatch prints both values on an `RVCP-CONFIG` line, and the test carries on, so one run lists every disagreement.
+
+The expected values of `ConfigCheck` come from the UDB configuration, not from the reference model, and only parameters that the reference model also reads from `sail.json` are checked. The reference run therefore checks `sail.json` against the same configuration: a mismatch there stops the build before any certified object exists.
+
 [[linker-script]]
 === Linker Script
 

@@ -10,10 +10,9 @@
 
 `define COVER_PMP
 
-// Compare pmpaddr on the code-size-invariant low bits (PMP_PMPADDR_LOWMASK) at or above the grain.
-// The tests write pmpaddr while the entry is still OFF and then set A. With granularity G >= 1, OFF
-// reads (and traces) pmpaddr[G-1:0] as 0, while NAPOT reads pmpaddr[G-2:0] as 1s, and setting A
-// does not log a new pmpaddr value, so an exact match on those bits misses at coarse grains.
+// pmpaddr bits that don't depend on test code size (PMP_PMPADDR_LOWMASK) and read the same with the entry OFF or
+// NAPOT. With G = UDB_PMP_GRANULARITY - 2 >= 1, OFF reads pmpaddr[G-1:0] as 0 and NAPOT reads pmpaddr[G-2:0] as 1s.
+// The tests write pmpaddr while the entry is OFF and set A later, which logs no new pmpaddr value.
 `define PMP_PMPADDR_GRAINMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
 
 `ifndef PMP_HAS_SV
@@ -1671,7 +1670,7 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    // Match on code-size-invariant low bits (see PMP_PMPADDR_LOWMASK): the region-under-test's
+    // Match on code-size-invariant low bits (see PMP_PMPADDR_GRAINMASK): the region-under-test's
     // absolute address drifts with test code size, but its low bits are fixed.
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION     & `PMP_PMPADDR_GRAINMASK))
               || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
@@ -3102,10 +3101,8 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
         bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
     }
 
-    // Compare above the grain: the test writes pmpaddr0 while the entry is OFF, so the trace
-    // records it with bits G-1:0 read as zero, and does not record it again once the entry is NAPOT.
-    pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
-                                 (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)) {
+    pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) ==
+                                 (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) {
         bins region = {1};
     }
 
@@ -3203,8 +3200,7 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
-                  (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)); // above the grain, as pmpaddr_region
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   PMP_Zicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);

@@ -177,7 +177,7 @@ check-config-files:
 		echo "error: CONFIG_FILES is not set. Example: CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml make" >&2; \
 		exit 1; \
 	fi
-		@if [ -n "$(COVERAGE)" ] && [ -n "$(strip $(NON_SAIL_CONFIGS))" ]; then \
+	@if [ -n "$(COVERAGE)" ] && [ -n "$(strip $(NON_SAIL_CONFIGS))" ]; then \
 		echo "error: make coverage only supports Sail configs (sail-* config directories), got: $(strip $(NON_SAIL_CONFIGS))" >&2; \
 		echo "Coverage is collected by running the ELFs on Sail. Omit CONFIG_FILES, or run 'make <simulator>' to test a DUT." >&2; \
 		exit 1; \

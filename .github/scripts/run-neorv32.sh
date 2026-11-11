@@ -69,7 +69,7 @@ out="$(timeout --foreground -k 5 "$TIMEOUT" "$SIM" "+MEM=$HEX" "+MAX_CYCLES=$CYC
 rc=$?
 printf '%s\n' "$out"
 
-# The testbench ends with $finish in every case, so the verdict comes from its last line.
+# The testbench ends with $finish in every case, so the verdict comes from its output.
 if [ "$rc" -eq 0 ]; then
   case $out in
   *"[TB] PASS after"*) rc=0 ;;

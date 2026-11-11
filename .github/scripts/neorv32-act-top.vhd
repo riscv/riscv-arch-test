@@ -3,10 +3,10 @@
 -- Copyright (c) 2026, Harvey Mudd College
 -- SPDX-License-Identifier: Apache-2.0
 --
--- Every generic is set here and explained in config/cores/neorv32/README.md. The internal IMEM
--- and DMEM are disabled, so every access outside the internal IO region (0xFFE00000-0xFFFFFFFF)
--- goes to the external bus (XBUS), where neorv32-act-tb.sv provides RAM and the testbench
--- registers. Machine timer and software interrupts come from the internal CLINT at 0xFFF40000.
+-- The generics ACT depends on are set here and explained in config/cores/neorv32/README.md; the
+-- rest keep their defaults. The internal IMEM and DMEM are disabled, so every access outside the
+-- internal IO region (0xFFE00000-0xFFFFFFFF) goes to the external bus (XBUS), where
+-- neorv32-act-tb.sv provides RAM and the testbench registers. Machine timer and software interrupts come from the internal CLINT at 0xFFF40000.
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -12,8 +12,8 @@ NEORV32 implements privileged specification 1.12.
 
 ## Simulation
 
-`.github/scripts/neorv32-act-top.vhd` sets every generic of the processor top level,
-`neorv32_top`. GHDL's synthesis front end converts it to a single Verilog module, as NEORV32's
+`.github/scripts/neorv32-act-top.vhd` sets the generics of the processor top level, `neorv32_top`,
+that ACT depends on; the rest keep their defaults. GHDL's synthesis front end converts it to a single Verilog module, as NEORV32's
 own `rtl/verilog` flow does, and Verilator simulates that module inside
 `.github/scripts/neorv32-act-tb.sv`. Simulating the VHDL directly under GHDL gives the same
 results on the whole suite but runs about a hundred times slower.
@@ -78,11 +78,10 @@ The install script builds GHDL and Verilator, converts and verilates the process
 the `run-neorv32.sh` runner. Building GHDL needs GNAT. The two exports do what
 `.github/scripts/setup-neorv32.sh` does in CI.
 
-## Checked with the UDB feature extractor
+## Parameters confirmed by probes
 
-The extractor (riscv-arch-test PR 2442) run on this testbench agrees with
-`neorv32-rv32imacb-u-pmp.yaml` on every extension and parameter it measures. The yaml keeps these
-differences, each confirmed by a directed probe or the data sheet:
+Directed probes on this testbench agree with `neorv32-rv32imacb-u-pmp.yaml` on every extension and
+parameter they can measure. These entries rest on a directed probe or the data sheet:
 
 - Zihintpause, Zihintntl and Zkt are claimed although the extractor cannot detect them: PAUSE and
   the NTL hints execute as a FENCE and as no-ops, and NEORV32 reports Zkt with the barrel shifter.

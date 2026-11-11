@@ -14,8 +14,9 @@
 //   anything else           bus error, so loads, stores and fetches raise access faults
 //
 // The RAM acknowledges every strobe in the next cycle, so it also serves the instruction cache's
-// burst reads. Exit status: 0 after a store of 0 to the exit register, 1 after any other exit
-// value, and 2 when +MAX_CYCLES=<n> (default 20000000) cycles pass without an exit.
+// burst reads. The run prints "[TB] PASS" after a store of 0 to the exit register, "[TB] FAIL" after
+// any other exit value, and "[TB] TIMEOUT" when +MAX_CYCLES=<n> (default 20000000) cycles pass
+// without an exit.
 
 `timescale 1ns / 1ps
 
@@ -68,7 +69,7 @@ module neorv32_act_tb;
     cycles <= cycles + 1;
     if (cycles >= max_cycles) begin
       $display("\n[TB] TIMEOUT after %0d cycles", cycles);
-      $finish(2);
+      $finish;
     end
     if (rstn && cyc && stb) begin
       ack <= 1'b1;
@@ -84,10 +85,10 @@ module neorv32_act_tb;
       end else if (adr == 32'hF000_0004 && we) begin
         if (dat_o == 32'h0) begin
           $display("\n[TB] PASS after %0d cycles", cycles);
-          $finish(0);
+          $finish;
         end else begin
           $display("\n[TB] FAIL: exit code 0x%08x after %0d cycles", dat_o, cycles);
-          $finish(1);
+          $finish;
         end
       end else if (adr == 32'hF000_0008) begin
         if (we) mei <= dat_o[0];

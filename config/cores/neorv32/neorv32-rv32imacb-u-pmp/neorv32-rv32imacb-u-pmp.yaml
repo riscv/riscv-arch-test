@@ -56,11 +56,11 @@ implemented_extensions:
   - { name: Zicntr, version: "= 2.0" }
   # hpmcounter3..31 are readable from U-mode when the mcounteren bit is set.
   #   docs/datasheet/cpu_csr.adoc#L740-L741
-  - { name: Zihpm, version: "= 2.0" }
+  - { name: Zihpm, version: "= 2.0.0" }
   # PAUSE is FENCE with pred=W, succ=0, and FENCE accepts every value of the unused fields
   # (only funct3 is decoded, cpu_control.vhd#L755-L758). The NTL hints are ADD with rd=x0.
-  - { name: Zihintpause, version: "= 2.0" }
-  - { name: Zihintntl, version: "= 1.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
+  - { name: Zihintntl, version: "= 1.0.0" }
   # Zkt is reported in mxisa whenever CPU_FAST_SHIFT_EN is set, which this configuration does.
   #   Quote: "constant riscv_zkt_c   : boolean := CPU_FAST_SHIFT_EN;"
   #   rtl/core/neorv32_cpu.vhd#L116

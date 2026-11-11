@@ -1182,7 +1182,7 @@ normative_rule_definitions:
   # If mseccfg.MML is not set, the combination of pmpcfg.RW=01 remains reserved for future standard
   # use.
   - name: pmp_rw01_rsv
-    coverpoint: ["Reserved encoding for future use; nothing to test"]
+    coverpoint: ["PMP_Sm_cg/cp_pmpcfg_rw01_rsv"]
 
   # If the Smmpm extension is implemented, the PMM field enables or disables pointer masking (see
   # Zpm) for M-mode according to the values in mseccfg_pmm_enc.

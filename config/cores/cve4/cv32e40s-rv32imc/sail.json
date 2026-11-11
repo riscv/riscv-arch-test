@@ -582,8 +582,6 @@
       "breakpoint_reentrancy": "No_reentrancy_support",
       // Whether the tcontrol CSR is implemented; `Use_tcontrol` requires it
       "tcontrol": { "supported": false },
-      // Whether the tcontrol CSR is implemented; `Use_tcontrol` requires it
-      "tcontrol": { "supported": false },
       "etrigger": {
         "supported": false,
         // A bit set to 1 in this value specifies that the

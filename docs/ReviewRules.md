@@ -62,6 +62,16 @@ the files the change touches.
 
 ## 4. Test design
 
+- A suite's boot define matches its kind and name:
+  - M-mode suites boot with `BOOT_TO_MMODE` and test what needs M-mode (`m*deleg`, PMP, M-level interrupts). Their
+    names start or end with `Sm` or contain `PMP`. Only they use `RVTEST_TSBI_GOTO_MMODE`.
+  - Privileged suites boot with `BOOT_TO_SMODE` or `BOOT_TO_UMODE` and reach higher privilege only through T-SBI.
+    Their names start with `Ss`, `Sv` or `Su`, or end with `S` or `U`.
+  - Unprivileged suites have no boot define, make no T-SBI calls, and touch no CSRs other than the F and V user CSRs.
+    They trap only where the instruction under test traps by design.
+- The testplan covers every feature the spec defines for the extension, with sensible crosses of what affects it. It
+  doesn't test reserved encodings, CSRs, fields or values, or UNSPECIFIED behavior. Custom instruction and CSR space
+  is out of scope, and suites about other features need not exercise XLEN or endianness.
 - `required_extensions` is minimal. Omit extensions another listed one implies (Sstc implies S; S implies U and
   Zicsr). Don't list I when the test also makes sense on E. Omit `march_extensions` unless it differs.
 - Use `forbidden_extensions` or a separate suite rather than an `#ifdef` around a whole file. Never generate a file
@@ -73,8 +83,9 @@ the files the change touches.
   parameter, not an ACT gate that hides the behavior. Gate a HINT (e.g. `prefetch.*`) only if the spec says it can
   behave differently.
 - S- and U-mode test content doesn't guard on `STANDARD_SM_SUPPORTED`; T-SBI exists to hide a nonstandard M-mode.
-- Privileged tests boot into their intended mode and use T-SBI for higher-privilege work. Coverpoints that need
-  M-mode go in an `*Sm` suite. If T-SBI falls short, fix it rather than working around it.
+- Privileged tests boot into their intended mode and use T-SBI for higher-privilege work. Mode changes use
+  `RVTEST_TSBI_GOTO_*`, never the legacy `RVTEST_GOTO_*`. S- and U-mode suites take their traps in S-mode, not M-mode.
+  Coverpoints that need M-mode go in an `*Sm` suite. If T-SBI falls short, fix it rather than working around it.
 - Never weaken a test because a simulator disagrees. Keep the test and its coverage, exclude the failing config, and
   file an issue against the simulator.
 - A test whose result depends on an extension Sail does not support yet runs only when the DUT does not have that
@@ -87,7 +98,13 @@ the files the change touches.
   `rd` unchanged by a fence with `rd != x0`; the whole `cbo.zero` block and a little past it; memory and `rd`
   unchanged after a faulting access; both interrupts pending before a priority check. Writing a value and not
   reading it back is not a test.
+- Watch for expected values tuned until a test passes rather than derived from the spec: values copied from one
+  simulator's output, or a check loosened to match one DUT.
 - A test never hangs: a bounded wait followed by a check, with margins for slow DUTs.
+- A test passes on any legal DUT, not only the ones in CI. It doesn't write illegal values to WLRL fields or touch
+  WPRI fields, and it waits for state that changes eventually (e.g. `mip` after a timer write) before relying on it.
+- Each test file sets up any state it depends on beyond what `RVTEST_BOOT_TO_*` initializes. Enable the M-level
+  `*stateen`/`*envcfg` bits before initializing H CSRs.
 - Allow legal implementation variation: xtval may be 0, `mtval` may be read-only zero, xtinst may be 0 or the defined
   value, `misa` may be read-only zero, the image may be linked anywhere, unordered stores to one address have no
   defined winner. WARL fields may legalize a write to another value. Use the UDB/Sail parameters that describe these
@@ -106,7 +123,18 @@ the files the change touches.
 - DUTs define `RVMODEL_*` macros, never `RVTEST_*`.
 - Trap-handler code is the same size under every option.
 - No simulator-specific logic in `run_tests.py`.
-- Watch test count and runtime: `testcases_per_file`, trap-signature size, long dynamic instruction counts.
+- Watch test count and runtime: `testcases_per_file` and trap-signature size. Split a test that will run more than
+  about 100,000 dynamic instructions into more files.
+- If most users' simulators can't run a new suite, add it to the default exclude list.
+- UDB parameters come in three kinds, each with its own check:
+  - those that affect only the trap handler;
+  - those that affect only expected results, which work only if the UDB yaml and `sail.json` agree;
+  - those that decide whether a test runs, which must guard both the test and its coverpoints.
+
+  Each parameter the suite's extension defines is used, or mapped in `coverpoints/param/<Suite>.yaml`.
+
+- Every name in an `#ifdef`, `` `ifdef`` or `defined()` is defined by some config, header or UDB parameter. An
+  undefined name is usually a typo that silently drops code.
 
 ## 5. Coverpoints
 
@@ -127,15 +155,25 @@ the files the change touches.
 - Coverpoints cover stimulus, not expected results; tests check results. Where DUT timing varies, cover the attempt.
 - Don't repeat an `iff` in a cross and in its component coverpoint.
 - Flag crosses with many bins for little benefit, and suggest simpler coverpoints that still exercise the testplan.
+- Tests name only covergroups that a coverpoint file defines.
+- Guard vector-only exclusions with `ZVE32X_SUPPORTED`, so non-vector Ssstrict configs still test them.
+- Keep `disassemble.svh` grouped by extension.
 
 ## 6. Spec claims, normative mapping and configs
 
 - Verify every claim the change makes about the spec against the ISA manual, and quote it where a finding depends on
-  it. Before accepting "simulator bug", check whether the behavior is legal.
+  it. Before accepting "simulator bug", check whether the behavior is legal. Before accepting "passes now", check
+  which simulator versions CI pins.
 - Normative mapping (`coverpoints/norm/*.yaml`): the coverpoints listed for a rule reasonably exercise it; about four
-  at most, marked representative if more apply. A rule the change touches but can't cover in ACT scope says why.
+  at most, marked representative if more apply. Every listed coverpoint exists. A missing rule that an existing
+  coverpoint plainly covers should be added; one that can't be covered in ACT scope says why; otherwise it is listed
+  with `coverpoint: [""]` as a TODO.
+- Names match across the testplan, coverpoints, generator, tests, normative mapping and CTP, and the CTP links to the
+  suite's coverpoints and rules.
 - Normative tags in the ISA manual make sense on their own (include "On RV32 systems" and the like), don't tag NOTEs,
-  and follow naming conventions (hyphenated instruction names like `orc-b`, extension capitalization kept).
+  and follow naming conventions (hyphenated instruction names like `orc-b`, extension capitalization kept). A
+  "should" meant as a requirement becomes "must". Add a summary only when the tagged text isn't clear on its own.
 - Configs: the UDB yaml, `sail.json`, linker script, `run_cmd.txt` and the DUT must agree. A config claims an
   extension only if the DUT supports it. When fields are copied from another DUT, ask whether each was checked. When
-  configs disagree, change the wrong one (usually not Sail's unless Sail's is wrong).
+  configs disagree, change the wrong one (usually not Sail's unless Sail's is wrong). Flag mistakes in `RVMODEL_*`
+  macros rather than letting them produce wrong values.

@@ -67,7 +67,8 @@ The change has to fit with act4 as it is now and with the other open PRs.
   this change, conflicts with it, or must merge first. Ignore overlaps that are only adjacent edits. Without `gh`,
   skip this and say so in the report.
 - Earlier review: a point already raised in the PR's discussion and not yet addressed goes under "Still open from
-  review" as one line with a link, not as a new finding.
+  review" as one line with a link, not as a new finding. A thread marked resolved is not necessarily fixed; check the
+  code. On a PR updated since a review, look hardest at the commits added after it.
 
 ### 5. Report
 

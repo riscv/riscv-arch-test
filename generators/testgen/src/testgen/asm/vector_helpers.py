@@ -168,7 +168,10 @@ def write_sigupd_v_len(
     # flags are, in order: mask_producing, masked, and vcompress, then VDSEW, the signature LMUL, a flag for a
     # destination used as a scalar vector register, and a flag that forces the check to treat the instruction as
     # tail and mask agnostic.
-    lines: list[str] = []
+    last_reg = check_reg + segments * int(max(lmul, 1)) - 1
+    regs = f"v{check_reg}" if last_reg == check_reg else f"v{check_reg}-v{last_reg}"
+    regions = "body, masked-off, and tail" if masked_flag else "body and tail"
+    lines = [f"# Check {regs}: {regions} elements"]
 
     # Check each segment of the result, advancing by max(lmul, 1) registers each time
     for i in range(segments):
@@ -895,8 +898,8 @@ def index_register_safety(
     assert params.lmul is not None, "LMUL must be set for vector instructions"
     assert params.sew is not None, "SEW must be set for vector instructions"
 
+    # Ensure that the indices in index_reg are within [0, 2*VLMAX) and aligned to the data elements
     lines = [
-        # Ensure that the data in vs2 is within [0, 2*VLMAX) and SEW-aligned
         f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
         f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
     ]
@@ -921,6 +924,8 @@ def index_register_safety(
     if 2**index_alignment_shift < index_alignment_factor:
         index_alignment_shift += 1
 
+    scale = f" * {2**index_alignment_shift}" if align_indices else ""
+    lines.insert(0, f"# v{index_reg} = (random mod 2*VLMAX){scale}")
     lines.append(f"vremu.vx v{index_reg}, v{index_reg}, x{params.temp_reg}")
     if align_indices:
         lines.append(f"vsll.vi v{index_reg}, v{index_reg}, {index_alignment_shift}")

@@ -11,6 +11,7 @@ from dataclasses import replace
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    base_store_complement_fill,
     handle_parameter_exclusions,
     index_register_safety,
     load_test_vtype,
@@ -172,13 +173,21 @@ def format_vsxseg_like_type(
 
     offset = f"{params.rs1val_pointer_offset:+d}" if params.rs1val_pointer_offset else ""
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer}{offset})")
+    operands = f"(x{params.rs1}), v{params.vs2}"
     # The length suite checks the store's whole VLMAX footprint, so writes to inactive or tail elements fail
     footprint = params.vector_suite == "length" and not params.ignore_vector_safety
-    fill, footprint_read_back = (
-        vlmax_store_footprint(params, instr_str, f"(x{params.rs1}), v{params.vs2}") if footprint else ([], [])
-    )
+    fill, footprint_read_back = vlmax_store_footprint(params, instr_str, operands) if footprint else ([], [])
     setup.extend(fill)
+    # The base suite checks only element 0, so fill it with the complement of the stored data
+    complement: list[str] = []
+    complement_fill: list[str] = []
+    if params.vector_suite == "base":
+        complement, complement_fill = base_store_complement_fill(
+            params, instr_str, operands, params.sew, segments, int(max(params.lmul, 1))
+        )
+    setup.extend(complement)
     setup.append(load_test_vtype(params, random_vl_reg))
+    setup.extend(complement_fill)
 
     # We don't need random_vl_reg anymore
     if random_vl_reg.startswith("x"):

@@ -96,7 +96,12 @@ from what it reports where a directed probe or the source shows the extractor wa
 - `Zicntr` is claimed with `TIME_CSR_IMPLEMENTED: false`.
 
 Sail cannot model the data cache's reservation, a single bit that any `sc` to any address
-consumes; `sail.json` uses the largest reservation set Sail accepts (4 KiB).
+consumes; `sail.json` uses the largest reservation set Sail accepts (4 KiB). The two agree only
+while an `lr` and the `sc` after it fall in the same 4 KiB block. The Zalrsc test for
+`sc_pairs_latest_lr` (an `lr` to `scratch`, an `lr` to `scratch + 256`, then an `sc` to `scratch`)
+passes because `scratch` is 256-byte aligned and is not at page offset `0xF00`; at that offset the
+second `lr` would reserve the next block, Sail would make the `sc` fail, and VexRiscv would
+let it succeed.
 
 ## Excluded tests (`ci.yaml`)
 

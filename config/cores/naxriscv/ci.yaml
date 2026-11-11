@@ -7,6 +7,23 @@ ci_enabled: true
 # SpinalHDL/NaxRiscv 9f452d5; paths are under
 # https://github.com/SpinalHDL/NaxRiscv/blob/9f452d50560d02fb391bc8039f5453c54e0911af/src/main/scala/naxriscv/
 exclude_extensions:
+  # A fetch from a region that is not executable (the I/O region holding
+  # RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) raises an instruction page fault, not an access fault: the
+  # fetch stage folds !ALLOW_EXECUTE into its page-fault flag (fetch/FetchCachePlugin.scala#L545).
+  - Exceptions_Sm
+  - Exceptions_S
+  - Exceptions_U
+  - Sv_Exceptions_sv39_exceptions
+  # An AMO to the unmapped I/O address RVMODEL_ACCESS_FAULT_ADDRESS_AMO raises no exception and no
+  # bus-error interrupt, and returns all ones. The PMA check accepts I/O for every access type
+  # (misc/MmuPlugin.scala#L331), and every AMO and SC goes through the data cache, whatever the
+  # address, not the peripheral bus (lsu2/Lsu2Plugin.scala#L1611-L1612). The cache refills the I/O
+  # line from the memory bus, which in NaxRiscv's simulator reports an error only below
+  # 0x1000_0000, so the AMO completes:
+  # https://github.com/SpinalHDL/NaxRiscv/blob/9f452d50560d02fb391bc8039f5453c54e0911af/src/test/cpp/naxriscv/src/main.cpp#L329-L333
+  - Exceptions_Zaamo
+  - Sv_ExceptionsZaamo
+  - Sv_ExceptionsZaamoSm_sv39_exceptions_Zaamo_mprv
   # mcounteren and scounteren read 0 but do not gate S/U-mode access to cycle, instret and
   # hpmcounter*: PerformanceCounterPlugin only allows the CSR addresses
   # (misc/PerformanceCounterPlugin.scala#L49-L57).

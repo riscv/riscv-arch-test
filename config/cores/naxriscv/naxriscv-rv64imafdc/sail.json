@@ -231,6 +231,8 @@
     "impid": 0,
     "hartid": 0,
     "cache_block_size_exp": 6,
+    // lr records its full physical address and sc succeeds only on an exact address match
+    // (lsu2/Lsu2Plugin.scala#L1716 in the commit above).
     "reservation": {
       "reservation_set_size_exp": 3,
       "require_exact_reservation_addr": true,
@@ -277,6 +279,8 @@
     "F": {
       "supported": true,
       "mutable_misa": false,
+      // Every committed FP instruction except fmv.x.w/d, fsw and fsd sets mstatus.FS to dirty,
+      // whether or not it changes fflags (execute/fpu/FpuWriteback.scala#L105-L107, #L223-L225).
       "fflags_dirty_policy": "Fflags_Dirty_Instruction"
     },
     "D": {

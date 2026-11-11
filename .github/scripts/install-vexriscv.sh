@@ -24,7 +24,7 @@ JOBS="${JOBS:-$(nproc)}"
 PYTHONDATA_COMMIT="642ecfed1c84460555d6d803d660cc60cfc1ecb6" # litex-hub/pythondata-cpu-vexriscv master, 2026-06-02
 NETLIST_URL="https://raw.githubusercontent.com/litex-hub/pythondata-cpu-vexriscv/$PYTHONDATA_COMMIT/pythondata_cpu_vexriscv/verilog/VexRiscv_IMAC.v"
 NETLIST_SHA256="25b6534fd2db84d7156859af7613311f5248f4d6269f2365e7afa90113ba9fdd"
-TB_SHA256="639478c2a0506679d657da4420cddccf58906773d663daa5aa36a1b60fd4b101"
+TB_SHA256="20b86d64c62e94b477d5c9d295fd46eae4326be3baed368f7b4d790469913ac6"
 VERILATOR_VERSION="v5.036"
 
 # 1. Verilator from source

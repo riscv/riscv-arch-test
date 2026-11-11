@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     else if (argv[i][0] != '+') elf = argv[i];
   }
   if (!elf) {
-    fprintf(stderr, "Usage: vexriscv-tb <elf> [+max-cycles=N]\n");
+    fprintf(stderr, "Usage: vexriscv-tb <elf> [+max-cycles=N] [+trace-fetch]\n");
     return 2;
   }
   ram = (uint8_t *)calloc(RAM_SIZE, 1);

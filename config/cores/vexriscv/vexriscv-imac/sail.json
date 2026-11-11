@@ -231,6 +231,8 @@
     "impid": 33,
     "hartid": 0,
     "cache_block_size_exp": 6,
+    // The core keeps one reservation bit and no address; a 4 KiB set is the closest Sail allows,
+    // so the Zalrsc tests depend on each lr and its sc being in the same 4 KiB block (README.md).
     "reservation": {
       "reservation_set_size_exp": 12,
       "require_exact_reservation_addr": false,

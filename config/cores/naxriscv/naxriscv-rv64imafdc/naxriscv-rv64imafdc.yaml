@@ -50,7 +50,7 @@ implemented_extensions:
   - { name: U, version: "= 1.0.0" }
   - { name: Ssu64xl, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.0" }
+  - { name: Sv39, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   # Svade is not claimed because UDB defines it only from Sm 1.12, but the MMU behaves that way:
   # a page-table walk that finds A = 0 raises a page fault, and a store to a page with D = 0 is
@@ -88,7 +88,9 @@ params:
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  # A write sets BASE and forces MODE to 0 (misc/PrivilegedPlugin.scala#L416, #L421), so a write
+  # with an unsupported MODE does not retain the old value.
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
   STVEC_MODES: [0]
   MTVAL_WIDTH: 64
   STVAL_WIDTH: 64
@@ -362,6 +364,11 @@ params:
   MISALIGNED_LDST_EXCEPTION_PRIORITY: high
   MISALIGNED_AMO: false
   LRSC_MISALIGNED_BEHAVIOR: always raise misaligned exception
+  # lr records its full physical address, and sc succeeds only if its own physical address equals
+  # it; the size is not compared, so an sc.w after an lr.d to the same address succeeds
+  # (lsu2/Lsu2Plugin.scala#L467-L481, #L1340, #L1716). The address must match exactly, as
+  # sail.json's require_exact_reservation_addr says, but a size mismatch does not make the sc fail,
+  # so LRSC_FAIL_ON_NON_EXACT_LRSC (address and size) is false.
   LRSC_FAIL_ON_NON_EXACT_LRSC: false
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_RESERVATION_STRATEGY: reserve exactly enough to cover the access

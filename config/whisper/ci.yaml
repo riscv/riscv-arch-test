@@ -24,7 +24,8 @@ exclude_extensions:
   # (https://github.com/tenstorrent/whisper/issues/233).
   - Zicfiss_U_ssamoswap_rd_eq_rs2
   # With mstatus.TVM = 1, a VS-mode hgatp write (or a VU-mode satp write) raises illegal instead of virtual
-  # instruction (https://github.com/tenstorrent/whisper/issues/227).
+  # instruction (https://github.com/tenstorrent/whisper/issues/227). This also skips the TVM cases Whisper
+  # passes; remove once the pinned Whisper includes the fix (https://github.com/tenstorrent/whisper/pull/230).
   - Sm_H_tvm
   # SRET from HS-mode to VU-mode leaves vsstatus.SDT = 1
   # (https://github.com/tenstorrent/whisper/issues/228).

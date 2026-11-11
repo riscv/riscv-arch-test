@@ -68,9 +68,15 @@ simulator's CLINT model in `src/test/cpp/naxriscv/src/main.cpp`:
   always exits 0, so the runner turns its `PASS` file into the exit status. Lock-step checking
   against Spike is off (`--spike-disabled`): the tests check themselves against Sail.
 - `RVMODEL_BOOT` sets `mtimecmp` to all ones; the simulator resets it to 0.
-- `RVMODEL_ACCESS_FAULT_ADDRESS` is `0x1F00_0000`, an unmapped I/O address: loads there take a
-  bus-error access fault. The simulator's own fault address, `0x1230`, is neither memory nor
-  I/O, and the core reports loads, stores and fetches there as page faults.
+- `RVMODEL_ACCESS_FAULT_ADDRESS_LOAD` and `_STORE` are `0x1F00_0000`, an unmapped I/O address:
+  loads and stores there take a bus-error access fault. The simulator's own fault address,
+  `0x1230`, is neither memory nor I/O, and the core reports loads, stores and fetches there as
+  page faults.
+- `_FETCH` is not defined: a fetch from I/O, which is not executable, raises an instruction page
+  fault instead of an access fault, and no other address gives an instruction access fault.
+- `_AMO` and `_LRSC` are not defined: AMOs and SCs take the data cache's atomic path, so an AMO
+  to I/O returns all ones without a fault, and an `sc.w` with no reservation fails without a bus
+  access. Bus errors are implementation-defined, so both are legal.
 
 ## Building and running
 
@@ -99,12 +105,8 @@ what it reports where the source or a directed probe shows otherwise:
 
 ## Excluded tests (`ci.yaml`)
 
-Each is a deviation from the specification, except the `sc.w` case, which is waived:
+Each is a deviation from the specification:
 
-- A fetch from a non-executable region raises an instruction page fault instead of an access
-  fault, and loads and stores the MMU marks as access faults raise page faults.
-- An AMO to the I/O region raises no exception and returns all ones.
-- Waived: an `sc.w` with no reservation fails without a bus access, so it raises no access fault.
 - `mcounteren` and `scounteren` read 0 but do not stop S- and U-mode reads of `cycle`, `instret`
   and `hpmcounter*`.
 - Interrupt priority: STI is taken before SSI, and an undelegated supervisor interrupt before a

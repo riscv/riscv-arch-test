@@ -30,10 +30,22 @@
   sd   t1, 0(t0)                          ;
 
 // No peripheral is mapped at 0x1F00_0000, in the I/O region (address bits 31:28 = 1): the
-// simulator answers loads and stores there with a bus error, and the region is not executable
-// (fetchRange excludes it). The simulator's MM_FAULT_ADDRESS, 0x1230, is outside both memory and
-// I/O, but the core reports every access there as a page fault (see ../README.md).
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x1F000000
+// simulator answers loads and stores there with a bus error, which the core reports as a load or
+// store access fault. The simulator's MM_FAULT_ADDRESS, 0x1230, is outside both memory and I/O,
+// but the core reports every access there as a page fault (see ../README.md).
+// FETCH is not defined because no fetch raises an instruction access fault, which is a deviation:
+// the fetch stage folds !ALLOW_EXECUTE (fetchRange excludes I/O) into its page-fault flag, so a
+// fetch from I/O raises an instruction page fault.
+//   https://github.com/SpinalHDL/NaxRiscv/blob/9f452d50560d02fb391bc8039f5453c54e0911af/src/main/scala/naxriscv/fetch/FetchCachePlugin.scala#L545
+// AMO and LRSC are not defined: every AMO and SC takes the data cache's atomic path instead of
+// the peripheral bus that reports the error, so an AMO to I/O returns all ones without a fault,
+// and an sc.w with no reservation fails without a bus access. Both are legal: the spec only
+// recommends that PMA violations trap precisely, and bus errors are implementation-defined
+// (norm:pma_precise_recom, norm:pma_imprecise_ok, https://github.com/riscv/riscv-isa-manual/issues/3350,
+// https://github.com/riscv/riscv-arch-test/issues/3127).
+//   https://github.com/SpinalHDL/NaxRiscv/blob/9f452d50560d02fb391bc8039f5453c54e0911af/src/main/scala/naxriscv/lsu2/Lsu2Plugin.scala#L1611-L1612
+#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0x1F000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0x1F000000
 
 ##### TERMINATION #####
 

@@ -3,10 +3,17 @@ suite: Za64rs
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=910803819#gid=910803819
 coverpoints:
   - name: cp_za64rs
-    goal: reservation set size
-    description: For each offset in [0, 64] that is a multiple of 4, lr.w from base address that a multiple of 64 and then sc.w to an address with that offset from base
-    expectation: sc success code in rd matches reference model, succeeding for small offsets and failing for large offsets (definitely for 64, optionally smaller)
-    bins: "17"
+    goal: An SC outside the naturally aligned 64-byte block containing the LR fails
+    description: "base = scratch+64. lr.w at every word of that block. sc.w at base+64 and base-4. The SC address is filled with the complement of the SC data and read back."
+    expectation: "rd matches the reference model (failure code 1) and the canary is unchanged. The outcome inside the block is not checked."
+    bins: "16 LR offsets x {next block, previous block}"
+    rules:
+      - Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes.
+  - name: cp_za64rs_d
+    goal: The same block boundary for lr.d/sc.d on RV64
+    description: "Same block. lr.d at every doubleword. sc.d at base+64 and base-8. The SC address is filled with the complement of the SC data and read back."
+    expectation: "rd matches the reference model (failure code 1) and the doubleword canary is unchanged."
+    bins: "8 LR offsets x {next block, previous block}"
     rules:
       - Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes.
   - heading: "Note:"

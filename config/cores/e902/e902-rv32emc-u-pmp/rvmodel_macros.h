@@ -35,8 +35,9 @@
 
 # E902 does not implement mcounteren (0x306), mhpmevent3-31 (0x323-0x33F),
 # mhpmcounter3-31 (0xB03-0xB1F) or mhpmcounter3h-31h (0xB83-0xB9F).  The privileged
-# specification requires them, read-only zero at the least, but the CSR decoder sends
-# them to its illegal-instruction default, and rvtest_setup.h writes them on every boot.
+# specification requires mcounteren on a hart with U-mode and recommends the others, but
+# the CSR decoder sends them all to its illegal-instruction default, and rvtest_setup.h
+# writes them on every boot.
 #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_iui.v#L539-L590
 # This handler emulates an M-mode CSR instruction on any of them as read-only zero: rd
 # gets 0 and the write is dropped.  From U-mode they stay illegal, as the specification

@@ -70,24 +70,8 @@ make e902-rv32emc-u-pmp
   `0x7_F000` first.
 - In CLIC mode `mcause` bits 29:27 alias `mstatus.MPP` and `MPIE`, so an M-mode trap reads
   `0x3000_0000` above the cause.
-- `mcounteren`, `mhpmcounter3-31`, `mhpmcounter3h-31h` and `mhpmevent3-31` raise illegal instruction.
+- `mcounteren`, which a hart with U-mode must implement, raises illegal instruction, as do the
+  recommended `mhpmcounter3-31`, `mhpmcounter3h-31h` and `mhpmevent3-31`.
   `rvtest_setup.h` writes them on every boot, so `RVMODEL_INVISIBLE_TRAP_HANDLER` emulates M-mode
   accesses to them as read-only zero.
 - `minstret` reads 0, and `cycle`, `time` and `instret` do not exist, so Zicntr is not declared.
-
-## UDB feature extractor
-
-The extractor from riscv-arch-test#2442 runs on this testbench, but it expects an illegal
-instruction to set `mcause` to 2, and in CLIC mode it reads `0x3000_0002`. The configuration differs
-from its output as follows, each checked with a directed probe:
-
-- It reports Zcb, because the RV32 encodings Zcb uses (bit 12 set in the C.SUB group) run as
-  C.SUB/C.XOR/C.OR/C.AND instead of trapping. Zcb is not implemented.
-- It reports Smcsrind, because CSR `0x350` (`miselect`) is the CLIC `mclicbase` register here.
-  `mireg` traps, and Smcsrind is not implemented.
-- It reports `TRAP_ON_ECALL_FROM_M`, `TRAP_ON_EBREAK` and `TRAP_ON_UNIMPLEMENTED_CSR` as false, and
-  leaves the trap-value and `mtvec` parameters undetermined, because of the `mcause` value. ecall,
-  ebreak and unimplemented CSRs trap with the standard cause, and `mtval` follows the yaml.
-- It reports `MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain`. A write with an unaligned BASE still writes
-  BASE[31:6], so the yaml says `custom`.
-- `TRAP_ON_RESERVED_INSTRUCTION` is false in both, because the C.SUB-group encodings above run.

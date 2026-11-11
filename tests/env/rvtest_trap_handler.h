@@ -1290,8 +1290,8 @@ common_\__MODE__\()entry:                       // common entry for all traps in
   // Route M-mode illegal instructions to the invisible trap handler. Keep this
   // sequence the same size when emulation is disabled. The Sail signature build
   // disables emulation, and a size change would move later trap-handler labels.
-  // Like the T-SBI dispatch, compare only the interrupt bit and cause[11:0], so the
-  // fields a CLIC-mode hart keeps in mcause above the cause do not hide it.
+  // Compare only the interrupt bit and cause[11:0]; a CLIC-mode hart keeps other
+  // fields in mcause above the cause.
   .ifc \__MODE__ , M
       LI(T4,(1<<(UDB_MXLEN-1))+((1<<12)-1))        // T4 = mask: MSB + cause[11:0]
       and T4, T4, T5

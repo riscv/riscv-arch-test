@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Build a verilated XuanTie OpenE902 smart_run SoC testbench for CI.
 # Usage: install-e902.sh <install-dir>
-# Cache key derives from sha256(this file); bump the pins below to invalidate.
+# Cache key derives from sha256(this file); bump the pins below to invalidate. The cached build
+# also holds setup-e902.sh's testbench patch and a copy of run-e902.sh, so change this file too
+# when either of those changes.
 
 set -euo pipefail
 

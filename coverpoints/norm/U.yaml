@@ -86,9 +86,6 @@ normative_rule_definitions:
     coverpoint:
       ["U_uprivinst_cg/cp_uprivinst/mret", "U_uprivinst_cg/cp_uprivinst/sret"]
 
-  - name: sret_presence
-    coverpoint: ["U_uprivinst_cg/cp_uprivinst/sret"]
-
   # The status fields are also updated during execution of instructions, regardless of
   # privilege mode.
   - name: mstatus_fs_vs_xs_update_indep_priv

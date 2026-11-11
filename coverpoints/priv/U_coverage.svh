@@ -21,6 +21,9 @@ covergroup U_uprivinst_cg with function sample(ins_t ins);
         bins ebreak = {EBREAK};
         bins mret   = {MRET};
         bins sret   = {SRET};
+    `ifdef S_SUPPORTED
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    `endif
     }
     // main coverpoints
     cp_uprivinst:  cross priv_mode_u, privinstrs;

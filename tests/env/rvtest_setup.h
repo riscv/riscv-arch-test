@@ -41,10 +41,7 @@
   .option norelax
 
   // Disable assembler/linker optimizations for RVTEST_BEGIN
-  // *** not sure this is still needed after recent simplifications.  dh 4/24/26
   .option push
-  .option rvc
-  .p2align UNROLLSZ
   .option norvc
 
   // Include model specific boot code
@@ -1071,6 +1068,14 @@
   .global rvtest_trap_count
   rvtest_trap_count:
     .dword 0
+
+  // Wait loop armed by wait_loop_arm() in the test generator: {first instruction of the loop,
+  // the loop's exit}, or an exit of 0 when no loop is armed. An interrupt clears the exit and,
+  // if it was taken inside the loop, resumes at the exit. See common_Xint_handler.
+  .p2align 3
+  .global rvtest_wait_loop
+  rvtest_wait_loop:
+    .dword 0, 0
 
   // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
   .p2align 3

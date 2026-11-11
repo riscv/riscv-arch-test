@@ -17,8 +17,9 @@ region the access may not use on one side of it and no entry on the other, it fa
 splits it. The address in xtval, and the Addr. Offset field of a transformed mtinst or htinst, depend on how
 the hart splits it, so these tests do not record xtval and check mtinst and htinst without the Addr. Offset.
 
-Each partial-match case uses its own 16-byte slot of PMP_PARTIAL_BASE and its own PMP entries, all below the
-background entry, so an entry locked by one case never matches another case's slot.
+Each partial-match case uses its own 16-byte slot of PMP_PARTIAL_BASE, so an entry locked by one case never matches
+another case's slot. The unlocked cases of a test come first; the locked cases then reuse their entries after
+turning them off. All entries stay below the background entry.
 coverpoints/priv/PMP_partial.svh classifies each access by the entries that match its bytes.
 """
 
@@ -37,8 +38,9 @@ _SLOTS = 40
 #: Size of a TOR region of one grain.
 GRAIN = "PMP_TOR_REGION_BYTES"
 
-#: The cases use entries 0-13, and the background entry (with pmpaddr below it for a TOR background) the top two.
-ENTRIES_PARAM = "NUM_USABLE_PMP_ENTRIES: '>=16'"
+#: The highest entry a case uses. The background entry, with pmpaddr below it for a TOR background, takes the top two.
+MAX_CASE_ENTRY = 6
+ENTRIES_PARAM = f"NUM_USABLE_PMP_ENTRIES: '>={MAX_CASE_ENTRY + 3}'"
 
 #: Trap handler switch that leaves xtval, and the Addr. Offset field of mtinst and htinst, out of the trap record of a
 #: load or store access fault.
@@ -65,6 +67,11 @@ class Case:
     @property
     def base(self) -> int:
         return SLOT_BYTES * self.slot
+
+    @property
+    def locked(self) -> bool:
+        """A locked TOR entry also locks the pmpaddr below it, so every entry of a locked case stays in use."""
+        return any(entry.lxwr[0] == "1" for entry in self.entries)
 
 
 def _placement(name: str, slot: int, first: int, lock: int, amode: str, center: int, size: str) -> Case:
@@ -95,9 +102,13 @@ def _placement(name: str, slot: int, first: int, lock: int, amode: str, center: 
 
 
 def _placements(first_slot: int, amode: str, center: int, size: str) -> list[Case]:
-    """lower, upper and both, unlocked and then locked, each with fresh entries and its own slot."""
-    cases, entry, slot = [], 0, first_slot
+    """lower, upper and both, unlocked and then locked, each in its own slot.
+
+    The locked cases reuse the entries of the unlocked ones, which make_partial_chunk turns off first.
+    """
+    cases, slot = [], first_slot
     for lock in (0, 1):
+        entry = 0
         for name in ("lower", "upper", "both"):
             case = _placement(name, slot, entry, lock, amode, center, size)
             cases.append(case)
@@ -113,7 +124,7 @@ COVERING: list[Case] = [
     Case(
         "napot_covers",
         6,
-        (Entry(8, "napot", f"{SLOT_BYTES * 6}", "1001"), Entry(9, "na4", f"{SLOT_BYTES * 6}", "1111")),
+        (Entry(0, "napot", f"{SLOT_BYTES * 6}", "1001"), Entry(1, "na4", f"{SLOT_BYTES * 6}", "1111")),
         "cp_partial_covered",
     )
 ]
@@ -127,11 +138,32 @@ QUAD_TOR: list[Case] = _placements(24, "tor", 8, "8")
 GRANULE_TOR: list[Case] = _placements(32, "tor", 8, GRAIN)
 
 
+def _entries_to_clear(cases: Sequence[Case]) -> list[list[Entry]]:
+    """For each case, the entries of earlier unlocked cases to turn off before it reuses any of their indices.
+
+    A case never reuses an entry of a locked case, and no case goes above MAX_CASE_ENTRY.
+    """
+    clears: list[list[Entry]] = []
+    live: list[Entry] = []
+    locked: set[int] = set()
+    for case in cases:
+        indices = {entry.index for entry in case.entries}
+        assert not indices & locked and max(indices) <= MAX_CASE_ENTRY, case.name
+        if indices & {entry.index for entry in live}:
+            clears.append([entry for entry in live if entry.amode != "off"])
+            live = []
+        else:
+            clears.append([])
+        if case.locked:
+            locked |= indices
+        else:
+            live.extend(case.entries)
+    return clears
+
+
 def _check_layout() -> None:
-    """Cases tested together use distinct entries, and all of them stay below the background entry."""
-    for group in (ALIGNED_NA4 + COVERING, ALIGNED_TOR, QUAD_NAPOT, QUAD_TOR, GRANULE_TOR):
-        indices = [e.index for case in group for e in case.entries]
-        assert len(indices) == len(set(indices)) and max(indices) <= 13
+    for group in (ALIGNED_NA4, COVERING, ALIGNED_TOR, QUAD_NAPOT, QUAD_TOR, GRANULE_TOR):
+        _entries_to_clear(group)
 
 
 _check_layout()
@@ -142,17 +174,17 @@ def _set_pmpaddr(entry: Entry) -> list[str]:
     return [*lines, f"csrw pmpaddr{entry.index}, x5"]
 
 
-def _or_pmpcfg(index: int, value: str) -> list[str]:
-    """Set one entry's configuration byte without touching the other entries in its pmpcfg CSR."""
+def _or_pmpcfg(index: int, value: str, op: str = "csrs") -> list[str]:
+    """Set (``csrs``) or clear (``csrc``) bits of one entry's configuration byte, leaving the other entries alone."""
     rv32_csr, rv64_csr = index // 4, (index // 8) * 2
     if rv32_csr == rv64_csr:
-        return [f"LI(x4, {value})", f"csrs pmpcfg{rv32_csr}, x4"]
+        return [f"LI(x4, {value})", f"{op} pmpcfg{rv32_csr}, x4"]
     return [
         f"LI(x4, {value})",
         "#if __riscv_xlen == 32",
-        f"csrs pmpcfg{rv32_csr}, x4",
+        f"{op} pmpcfg{rv32_csr}, x4",
         "#else",
-        f"csrs pmpcfg{rv64_csr}, x4",
+        f"{op} pmpcfg{rv64_csr}, x4",
         "#endif",
     ]
 
@@ -211,10 +243,15 @@ def _access(instruction: str) -> tuple[list[str], tuple[int, ...]]:
     return [f"{instruction} a4, 0(a5)"], (14,)
 
 
-def gen_accesses(accesses: Sequence[Access], offset: str = "0", base: str = "PMP_PARTIAL_BASE") -> Probe:
+def gen_accesses(
+    accesses: Sequence[Access],
+    offset: str = "0",
+    base: str = "PMP_PARTIAL_BASE",
+    data: str = "RVTEST_PMP_RET_ENCODING",
+) -> Probe:
     """Each access at ``base`` plus the case's slot plus ``offset``.
 
-    a4 is preset so that a faulting access leaves a known value.
+    a4 is preset to ``data``: the store data, and the value a faulting load leaves.
     """
 
     def probe(test_data: TestData, case: Case, coverpoint: str, suite: str) -> list[str]:
@@ -222,7 +259,7 @@ def gen_accesses(accesses: Sequence[Access], offset: str = "0", base: str = "PMP
         for instruction, condition in accesses:
             code, checked = _access(instruction)
             body = [
-                "LI(a4, RVTEST_PMP_RET_ENCODING)",
+                f"LI(a4, {data})",
                 test_data.add_testcase(f"{case.name}_{instruction.replace('.', '_')}", coverpoint, suite),
                 *code,
                 *(write_sigupd(reg, test_data) for reg in checked),
@@ -254,7 +291,11 @@ def make_partial_chunk(
     chunk = test_data.begin_test_chunk(name)
     chunk.section_header = comment_banner(coverpoint, description)
     chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4", ""])
-    for case in cases:
+    for case, clear in zip(cases, _entries_to_clear(cases), strict=True):
+        if clear:
+            chunk.code.append(f"// Turn off entries {', '.join(str(e.index) for e in clear)} for reuse")
+            for entry in clear:
+                chunk.code.extend(_or_pmpcfg(entry.index, f"(0xFF << {cfg_shift(entry.index)})", "csrc"))
         case_coverpoint = case.coverpoint or coverpoint
         chunk.code.extend([*case_setup(case), *probe(test_data, case, case_coverpoint, covergroup(test_data)), ""])
     chunk.raw_data.extend(partial_blob())
@@ -397,5 +438,62 @@ def make_misaligned_chunk(
         chunk.code.extend(probe(test_data, case, coverpoint, covergroup(test_data)))
     if lower_mode:
         chunk.code.append("RVTEST_TSBI_GOTO_MMODE")
+    chunk.raw_data.extend(_misaligned_blob())
+    return test_data.end_test_chunk()
+
+
+#####################################################################
+# Misaligned accesses across the pmpaddr bounds of an OFF entry
+#####################################################################
+
+#: Distinct bytes, with the sign bit set in the low halfword and word. LI() trims it to XLEN.
+_OFF_DATA = "0x8786858483828180"
+
+
+def _boundary_store_load(boundary: str, double: str) -> Probe:
+    """Stores that cross the boundary ``boundary`` bytes above PMP_MISALIGNED_REGION, each read back by the loads
+    of the same width."""
+
+    def store_load(store: Access, loads: Sequence[Access], offset: str) -> Probe:
+        return chain(
+            gen_accesses([store], offset, _MISALIGNED_REGION, _OFF_DATA),
+            gen_accesses(loads, offset, _MISALIGNED_REGION),
+        )
+
+    return chain(
+        store_load(("sh", None), [("lh", None), ("lhu", None)], f"{boundary} - 1"),
+        store_load(("sw", None), [("lw", None), ("lwu", RV64)], f"{boundary} - 2"),
+        store_load(("sd", RV64), [("ld", RV64)], f"{boundary} - {double}"),
+    )
+
+
+def _misaligned_setup_off() -> list[str]:
+    """pmpaddr0 and pmpaddr1 bound one grain, as for a TOR entry 1, but entry 1 is OFF with L=1 and XWR=000."""
+    return [
+        "// pmpaddr0 at PMP_MISALIGNED_REGION and pmpaddr1 one grain above it. Entry 1: L=1, A=OFF, XWR=000.",
+        "// Entry 1 matches no address, so the background entry decides every access.",
+        f"LA(x5, {_MISALIGNED_REGION})",
+        "srl x5, x5, PMP_SHIFT",
+        "csrw pmpaddr0, x5",
+        "LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)",
+        "add x5, x5, x6",
+        "csrw pmpaddr1, x5",
+        "RVTEST_PMP_SET_BACKGROUND x4",
+        *_or_pmpcfg(1, cfg_byte("1000", "off", cfg_shift(1))),
+    ]
+
+
+def make_misaligned_off_chunk(test_data: TestData, coverpoint: str, description: str) -> TestChunk:
+    """Misaligned stores and loads across pmpaddr0 and pmpaddr1 of a locked OFF entry 1, from M-mode."""
+    chunk = test_data.begin_test_chunk("Sm_misaligned_off")
+    chunk.section_header = comment_banner(coverpoint, description)
+    chunk.code.extend(
+        [*_MISALIGNED_DEFINES, "", *zero_pmp_regs(), "", *_misaligned_setup_off(), "RVTEST_SFENCE_VMA_IF_SUPPORTED"]
+    )
+    for name, bound, boundary, double in (("start", "pmpaddr0", "0", "6"), ("end", "pmpaddr1", GRAIN, "2")):
+        probe = _boundary_store_load(boundary, double)
+        chunk.code.extend(
+            ["", f"// Across {bound}", *probe(test_data, Case(name, 0, ()), coverpoint, covergroup(test_data))]
+        )
     chunk.raw_data.extend(_misaligned_blob())
     return test_data.end_test_chunk()

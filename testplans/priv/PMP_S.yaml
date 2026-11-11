@@ -67,6 +67,7 @@ coverpoints:
     bins: 6 XWR × 5 addresses = 30 each
     rules:
       - pmp_napot_encoding_low_bits
+      - pmpaddr_napot_enc
       - pmp_a_field_napot_na4
       - pmp_check_priv_modes
       - pmp_rwx_check

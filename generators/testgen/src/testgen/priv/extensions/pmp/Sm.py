@@ -38,6 +38,7 @@ from testgen.priv.extensions.pmp.partial import (
     IMPRECISE_XTVAL,
     gen_accesses,
     make_misaligned_chunk,
+    make_misaligned_off_chunk,
     make_partial_chunk,
     misaligned_setup_m,
 )
@@ -1148,5 +1149,23 @@ def make_pmpsm_misaligned(test_data: TestData) -> list[TestChunk]:
             "cp_misaligned_partial",
             "Misaligned loads and stores across each end of a locked TOR region without permissions; the rest of\n"
             "the access matches no entry. Each faults whether or not the hart splits it. xtval is not recorded.",
+        )
+    ]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["NUM_USABLE_PMP_ENTRIES: '>=4'"],
+)
+def make_pmpsm_misaligned_off(test_data: TestData) -> list[TestChunk]:
+    return [
+        make_misaligned_off_chunk(
+            test_data,
+            "cp_misaligned_off",
+            "Misaligned stores across pmpaddr0 and pmpaddr1 of a locked OFF entry without permissions, each read\n"
+            "back by loads of the same width. Only the background entry matches, so every access succeeds when\n"
+            "MISALIGNED_LDST is true and raises address misaligned when it is false, however the hart splits it.",
         )
     ]

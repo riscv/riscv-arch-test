@@ -14,6 +14,7 @@ parameter_definitions:
         "all coverpoints",
         "PMP_Sm: cp_pmp64_{write, read}",
         "PMP_Sm: cp_partial_{match, covered}, cp_misaligned_mag16",
+        "PMP_Sm: cp_misaligned_off",
         "PMP_S, PMP_U: cp_misaligned_partial",
         "PMP_F, PMP_Zca: cp_misaligned_mag16",
         "PMP_Zaamo: cp_partial_match, cp_misaligned_mag16",
@@ -23,10 +24,11 @@ parameter_definitions:
       [
         "PMP_Sm, PMP_S, PMP_U: Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry, except in cp_none_* and cp_misaligned_partial",
         "PMP_Sm: cp_pmp64_* bins for entries at or above NUM_USABLE_PMP_ENTRIES - 1 cannot be hit",
-        "PMP_Sm, PMP_F, PMP_Zca, PMP_Zaamo, PMP_Zalrsc: Tests of the partial-match coverpoints run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+        "PMP_Sm, PMP_F, PMP_Zca, PMP_Zaamo, PMP_Zalrsc: Tests of the partial-match coverpoints run only when NUM_USABLE_PMP_ENTRIES >= 9: they use entries 0-6 below the background entry",
+        "PMP_Sm: cp_misaligned_off needs at least 4 entries",
         "PMP_S, PMP_U: cp_misaligned_partial needs at least 5 entries",
         "PMP_F, PMP_Zca, PMP_Zicbo, PMP_Zaamo, PMP_Zacas, PMP_Zalrsc: Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry",
-        "PMP_Zacas: The tests run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+        "PMP_Zacas: The tests run only when NUM_USABLE_PMP_ENTRIES >= 9: they use entries 0-6 below the background entry",
       ]
   - name: PMP_GRANULARITY
     coverpoint:
@@ -124,8 +126,13 @@ parameter_definitions:
         "PMP_Zalrsc: lr.d and sc.d bins exist only on RV64",
       ]
   - name: MISALIGNED_LDST
-    coverpoint: ["cp_misaligned_partial"]
+    coverpoint:
+      [
+        "PMP_Sm, PMP_S, PMP_U: cp_misaligned_partial",
+        "PMP_Sm: cp_misaligned_off",
+      ]
     effect:
       [
-        "The coverpoint and its test exist only when true: the misaligned loads and stores must not raise address-misaligned exceptions",
+        "PMP_Sm, PMP_S, PMP_U: cp_misaligned_partial and its test exist only when true: the misaligned loads and stores must not raise address-misaligned exceptions",
+        "PMP_Sm: The cp_misaligned_off accesses succeed when true and raise address-misaligned exceptions when false",
       ]

@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm']
 # params:
 #   MXLEN: 64
-#   NUM_USABLE_PMP_ENTRIES: '>=16'
+#   NUM_USABLE_PMP_ENTRIES: '>=9'
 #   PMP_GRANULARITY: 2
 #   PMP_NA4_SUPPORTED: true
 #   PMP_NAPOT_SUPPORTED: true
@@ -54,21 +54,21 @@ RVTEST_BEGIN
 
   RVTEST_PMP_SET_BACKGROUND x4
 
-// napot_covers: slot 6, entries 8, 9
+// napot_covers: slot 6, entries 0, 1
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 96)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr8, x5
+  csrw pmpaddr0, x5
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 96)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr9, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(8)))
-  csrs pmpcfg2, x4
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(9)))
-  csrs pmpcfg2, x4
+  csrw pmpaddr1, x5
+  LI(x4, (((PMP_L | PMP_R | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0)))
+  csrs pmpcfg0, x4
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(1)))
+  csrs pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
   LA(a5, PMP_PARTIAL_BASE)
   LI(x6, 96 + 0)

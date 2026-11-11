@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zaamo', 'Sm']
 # params:
 #   MXLEN: 64
-#   NUM_USABLE_PMP_ENTRIES: '>=16'
+#   NUM_USABLE_PMP_ENTRIES: '>=9'
 #   PMP_GRANULARITY: 2
 #   PMP_TOR_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei_zaamo
@@ -284,19 +284,36 @@ PMP_Zaamo_cg_cp_partial_match_tor_both_L0_amomaxu_d:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Zaamo_cg_cp_partial_match_tor_both_L0_amomaxu_d, PMP_Zaamo_cg_cp_partial_match_tor_both_L0_amomaxu_d_str)
 
-// tor_lower_L1: slot 11, entries 7, 8
+// Turn off entries 1, 3, 5, 6 for reuse
+  LI(x4, (0xFF << PMP_CFG_SHIFT(1)))
+  csrc pmpcfg0, x4
+  LI(x4, (0xFF << PMP_CFG_SHIFT(3)))
+  csrc pmpcfg0, x4
+  LI(x4, (0xFF << PMP_CFG_SHIFT(5)))
+#if __riscv_xlen == 32
+  csrc pmpcfg1, x4
+#else
+  csrc pmpcfg0, x4
+#endif
+  LI(x4, (0xFF << PMP_CFG_SHIFT(6)))
+#if __riscv_xlen == 32
+  csrc pmpcfg1, x4
+#else
+  csrc pmpcfg0, x4
+#endif
+// tor_lower_L1: slot 11, entries 0, 1
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 180 - 4)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr7, x5
+  csrw pmpaddr0, x5
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 180)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr8, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(8)))
-  csrs pmpcfg2, x4
+  csrw pmpaddr1, x5
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(1)))
+  csrs pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
   LA(a5, PMP_PARTIAL_BASE)
   LI(x6, 176 + 0)
@@ -356,19 +373,19 @@ PMP_Zaamo_cg_cp_partial_match_tor_lower_L1_amomaxu_d:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Zaamo_cg_cp_partial_match_tor_lower_L1_amomaxu_d, PMP_Zaamo_cg_cp_partial_match_tor_lower_L1_amomaxu_d_str)
 
-// tor_upper_L1: slot 12, entries 9, 10
+// tor_upper_L1: slot 12, entries 2, 3
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 196)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr9, x5
+  csrw pmpaddr2, x5
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 196 + 4)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr10, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(10)))
-  csrs pmpcfg2, x4
+  csrw pmpaddr3, x5
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(3)))
+  csrs pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
   LA(a5, PMP_PARTIAL_BASE)
   LI(x6, 192 + 0)
@@ -428,33 +445,33 @@ PMP_Zaamo_cg_cp_partial_match_tor_upper_L1_amomaxu_d:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Zaamo_cg_cp_partial_match_tor_upper_L1_amomaxu_d, PMP_Zaamo_cg_cp_partial_match_tor_upper_L1_amomaxu_d_str)
 
-// tor_both_L1: slot 13, entries 11, 12, 13
+// tor_both_L1: slot 13, entries 4, 5, 6
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 212 - 4)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr11, x5
+  csrw pmpaddr4, x5
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 212)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr12, x5
+  csrw pmpaddr5, x5
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 212 + 4)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr13, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(12)))
+  csrw pmpaddr6, x5
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(5)))
 #if __riscv_xlen == 32
-  csrs pmpcfg3, x4
+  csrs pmpcfg1, x4
 #else
-  csrs pmpcfg2, x4
+  csrs pmpcfg0, x4
 #endif
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(13)))
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(6)))
 #if __riscv_xlen == 32
-  csrs pmpcfg3, x4
+  csrs pmpcfg1, x4
 #else
-  csrs pmpcfg2, x4
+  csrs pmpcfg0, x4
 #endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
   LA(a5, PMP_PARTIAL_BASE)

@@ -27,7 +27,6 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_tor_lw
     # Representative coverpoints; also cp_cfg_Rw10_all, cp_cfg_Rw11_all, cp_cfg_A_NA4_all, cp_cfg_A_na4_r,
     # cp_cfg_A_tor_all{0..14}, cp_cfg_A_tor_r
-    # Representative coverpoints; also cp_cfg_A_tor_lw
     coverpoint:
       [
         "PMP_F_cg/cp_cfg_R",
@@ -45,7 +44,6 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_tor_sw
     # Representative coverpoints; also cp_cfg_rW10_all, cp_cfg_rW11_all, cp_cfg_A_na4_w, cp_cfg_A_tor_w,
     # cp_cfg_A_tor_bot_L0_w, cp_cfg_A_tor_bot_L1_w, cp_pmp64_write
-    # Representative coverpoints; also cp_cfg_A_tor_sw
     coverpoint:
       [
         "PMP_F_cg/cp_cfg_W",
@@ -68,7 +66,6 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_mprv_{lw, sw}
     # Representative coverpoints; also cp_cfg_X1_all, cp_cfg_Rw00_all, cp_cfg_Rw10_all, cp_cfg_Rw11_all,
     # cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all, cp_cfg_L_access_{exec, read, write}
-    # Representative coverpoints; also cp_mprv_{lw, sw}
     coverpoint:
       [
         "PMP_F_cg/{cp_cfg_R, cp_cfg_W}",
@@ -90,7 +87,7 @@ normative_rule_definitions:
       [
         "PMP_F_cg/cp_misaligned_mag16",
         "PMP_S_cg/cp_misaligned_partial",
-        "PMP_Sm_cg/{cp_partial_match, cp_misaligned_mag16, cp_misaligned_partial}",
+        "PMP_Sm_cg/{cp_partial_match, cp_misaligned_mag16, cp_misaligned_partial, cp_misaligned_off}",
         "PMP_U_cg/cp_misaligned_partial",
         "PMP_Zaamo_cg/cp_misaligned_mag16",
         "PMP_Zacas_cg/cp_misaligned_mag16",
@@ -125,8 +122,6 @@ normative_rule_definitions:
     # cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all, cp_cfg_L_access_{exec, read, write},
     # cp_cfg_A_napot_{x, r, w}, cp_cfg_A_na4_{x, r, w}, cp_cfg_A_tor_{x, r, w}, cp_cfg_A_tor_bot_L0_{x, w, r},
     # cp_cfg_A_tor_bot_L1_{x, w, r}, cp_priority_{lw, sw, jalr}, cp_misaligned_partial
-    # Representative coverpoints; also cp_cfg_A_napot_{lw, sw}, cp_cfg_A_na4_{jalr, lw, sw},
-    # cp_cfg_A_tor_{jalr, lw, sw}, cp_mprv_{jalr, lw, sw}
     coverpoint:
       [
         "PMP_F_cg/{cp_cfg_R, cp_cfg_W}",
@@ -174,8 +169,6 @@ normative_rule_definitions:
   - name: pmp_check_priv_modes
     # Representative coverpoints; also cp_cfg_A_off_{lw, sw}, cp_cfg_A_napot_{jalr, lw, sw},
     # cp_cfg_A_na4_{jalr, lw, sw}, cp_cfg_A_tor_{jalr, lw, sw}, cp_mprv_{jalr, lw, sw}, cp_none_{jalr, lw, sw}
-    # Representative coverpoints; also cp_cfg_A_off_{lw, sw}, cp_cfg_A_napot_{jalr, lw, sw},
-    # cp_cfg_A_na4_{jalr, lw, sw}, cp_cfg_A_tor_{jalr, lw, sw}, cp_mprv_{jalr, lw, sw}, cp_none_{jalr, lw, sw}
     coverpoint:
       [
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_A_off_jalr}",
@@ -204,7 +197,6 @@ normative_rule_definitions:
   - name: pmp_exec_fault
     # Representative coverpoints; also cp_cfg_A_tor_jalr
     # Representative coverpoints; also cp_cfg_X1_all, cp_cfg_A_tor_x
-    # Representative coverpoints; also cp_cfg_A_tor_jalr
     coverpoint:
       [
         "PMP_S_cg/{cp_cfg_X, cp_cfg_A_napot_jalr, cp_cfg_A_na4_jalr, cp_mprv_jalr}",
@@ -219,7 +211,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMP_S_cg/{cp_cfg_A_off_jalr, cp_cfg_A_off_lw, cp_cfg_A_off_sw}",
-        "PMP_Sm_cg/{cp_cfg_A_OFF_all_read, cp_cfg_A_OFF_all_write, cp_priority_off_lw, cp_none_lw}",
+        "PMP_Sm_cg/{cp_cfg_A_OFF_all_read, cp_cfg_A_OFF_all_write, cp_priority_off_lw, cp_none_lw, cp_misaligned_off}",
         "PMP_U_cg/{cp_cfg_A_off_jalr, cp_cfg_A_off_lw, cp_cfg_A_off_sw}",
         "PMP_Zca_cg/cp_misaligned_off",
       ]
@@ -229,7 +221,6 @@ normative_rule_definitions:
   - name: pmp_a_field_napot_na4
     # Representative coverpoints; also cp_cfg_A_na4_{lw, sw}
     # Representative coverpoints; also cp_cfg_A_napot_{r, w}, cp_cfg_A_na4_{r, w}
-    # Representative coverpoints; also cp_cfg_A_na4_{lw, sw}
     coverpoint:
       [
         "PMP_S_cg/{cp_cfg_A_napot_jalr, cp_cfg_A_napot_lw, cp_cfg_A_napot_sw, cp_cfg_A_na4_jalr}",
@@ -240,6 +231,18 @@ normative_rule_definitions:
   # NAPOT ranges make use of the low-order bits of the associated address register to
   # encode the size of the range, as shown in &lt;&lt;pmpcfg-napot&gt;&gt;.
   - name: pmp_napot_encoding_low_bits
+    # Representative coverpoints; also cp_cfg_A_napot_w, cp_priority_{sw, jalr}
+    coverpoint:
+      [
+        "PMP_S_cg/{cp_cfg_A_napot_jalr, cp_cfg_A_napot_lw, cp_cfg_A_napot_sw}",
+        "PMP_Sm_cg/{cp_cfg_A_napot_all, cp_cfg_A_napot_x, cp_cfg_A_napot_r, cp_priority_lw}",
+        "PMP_U_cg/{cp_cfg_A_napot_jalr, cp_cfg_A_napot_lw, cp_cfg_A_napot_sw}",
+      ]
+
+  # <<pmpcfg-napot>>: with NA4, pmpaddr encodes a 4-byte range. With NAPOT, the number of
+  # trailing ones in pmpaddr encodes the size: none for an 8-byte range, one for 16 bytes,
+  # and so on, up to all ones for a 2^XLEN+3^-byte range.
+  - name: pmpaddr_napot_enc
     # Representative coverpoints; also cp_cfg_A_napot_w, cp_priority_{sw, jalr}
     coverpoint:
       [
@@ -259,7 +262,6 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_tor_all{1..14}, cp_cfg_A_tor_{r, w}, cp_cfg_A_tor0_{w, x},
     # cp_cfg_A_tor_bot_L0_{w, r}, cp_cfg_A_tor_bot_L1_{x, w, r}, cp_cfg_A_tor_nonoverlap1_{x, w, r},
     # cp_cfg_A_tor_nonoverlap2_{x, w, r}, cp_cfg_A_tor_nonoverlap3_{x, w, r}
-    # Representative coverpoints; also cp_none_{lw, sw}
     coverpoint:
       [
         "PMP_S_cg/{cp_cfg_A_tor_jalr, cp_cfg_A_tor_lw, cp_cfg_A_tor_sw, cp_none_jalr}",
@@ -284,7 +286,6 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_none_{lw, sw}
     # Representative coverpoints; also cp_cfg_X0_all, cp_cfg_X1_all, cp_priority_{lw, sw, jalr},
     # cp_partial_match
-    # Representative coverpoints; also cp_none_{lw, sw}
     coverpoint:
       [
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_none_jalr}",
@@ -398,6 +399,16 @@ normative_rule_definitions:
   # mode of the associated PMP address register. The encoding of this field is shown in
   # &lt;&lt;pmpcfg-a&gt;&gt;.
   - name: pmp_a_field_encoding
+    # Representative coverpoints; also cp_cfg_A_all_odd, cp_cfg_A_OFF_all_{write, exec}
+    coverpoint:
+      [
+        "PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_OFF_all_read, cp_cfg_A_napot_all, cp_cfg_A_NA4_all}",
+      ]
+
+  # <<pmpcfg-a>>: A = 0 is OFF (null region, disabled), 1 is TOR (top of range), 2 is NA4
+  # (naturally aligned four-byte region), and 3 is NAPOT (naturally aligned power-of-two
+  # region, at least 8 bytes).
+  - name: pmpcfg_a_enc
     # Representative coverpoints; also cp_cfg_A_all_odd, cp_cfg_A_OFF_all_{write, exec}
     coverpoint:
       [

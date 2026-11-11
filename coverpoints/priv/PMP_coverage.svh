@@ -157,9 +157,9 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
     bins tor = {2'b01};
   }
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef ZAMA16B_SUPPORTED
-      `ifdef PMP_PARTIAL_GRAIN_8
+      `ifdef PMP_GRAIN_LE_8
         `ifdef UDB_PMP_TOR_SUPPORTED
           cp_misaligned_mag16: cross priv_mode_m, partial_fp, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
         `endif
@@ -1854,7 +1854,21 @@ covergroup PMP_Sm_cg with function sample(
     bins unmatched = {1'b0};
   }
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  // cp_misaligned_off: entry 1 is OFF, and pmpaddr0 and pmpaddr1 bound one grain as for a TOR entry 1.
+  off_locked_none: coverpoint pmpcfg[1] {
+    type_option.weight = 0;
+    bins l1_off_xwr000 = {8'b1000_0000};
+  }
+
+  off_bound: coverpoint {pmp_access_crosses(ins, 64'(pmpaddr[1]) << 2), pmp_access_crosses(ins, 64'(pmpaddr[0]) << 2)} {
+    type_option.weight = 0;
+    bins pmpaddr0 = {2'b01};
+    bins pmpaddr1 = {2'b10};
+  }
+
+  cp_misaligned_off: cross priv_mode_m, partial_ldst, partial_misaligned, off_locked_none, off_bound ;
+
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef UDB_MXLEN_64
       `ifdef UDB_PMP_GRANULARITY_2
         cp_partial_match: cross priv_mode_m, partial_ldst_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
@@ -1866,7 +1880,7 @@ covergroup PMP_Sm_cg with function sample(
       `endif
     `endif
     `ifdef ZAMA16B_SUPPORTED
-      `ifdef PMP_PARTIAL_GRAIN_8
+      `ifdef PMP_GRAIN_LE_8
         `ifdef UDB_PMP_TOR_SUPPORTED
           cp_misaligned_mag16: cross priv_mode_m, partial_ldst, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
         `endif
@@ -3024,6 +3038,7 @@ covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
   cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
 
   // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  // No Zabha byte AMOs: a 1-byte access is always aligned, and an entry matches all of it or none of it.
   partial_amo: coverpoint ins.current.insn {
     type_option.weight = 0;
     wildcard bins amoswap_w = {AMOSWAP_W};
@@ -3112,7 +3127,7 @@ covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
     bins tor = {2'b01};
   }
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef UDB_MXLEN_64
       `ifdef UDB_PMP_GRANULARITY_2
         cp_partial_match: cross priv_mode_m, partial_amo_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
@@ -3120,9 +3135,9 @@ covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
     `endif
   `endif
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef ZAMA16B_SUPPORTED
-      `ifdef PMP_PARTIAL_GRAIN_8
+      `ifdef PMP_GRAIN_LE_8
         `ifdef UDB_PMP_TOR_SUPPORTED
           cp_misaligned_mag16: cross priv_mode_m, partial_amo, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
         `endif
@@ -3243,7 +3258,7 @@ covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0
     `endif
   }
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef UDB_MXLEN_64
       `ifdef UDB_PMP_GRANULARITY_2
         cp_partial_match: cross priv_mode_m, partial_lrsc_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
@@ -3316,6 +3331,7 @@ covergroup PMP_Zacas_cg with function sample(ins_t ins, pmp_partial_t partial);
     }
   `endif
 
+  // No amocas.b: a 1-byte access is always aligned, and an entry matches all of it or none of it.
   amocas_wd: coverpoint ins.current.insn {
     type_option.weight = 0;
     `ifdef ZABHA_SUPPORTED
@@ -3373,20 +3389,20 @@ covergroup PMP_Zacas_cg with function sample(ins_t ins, pmp_partial_t partial);
     bins tor = {2'b01};
   }
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef UDB_PMP_GRANULARITY_2
       cp_partial_match_d: cross priv_mode_m, amocas_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
     `endif
     `ifdef UDB_MXLEN_64
-      `ifdef PMP_PARTIAL_GRAIN_8
+      `ifdef PMP_GRAIN_LE_8
         cp_partial_match_q: cross priv_mode_m, amocas_q, partial_aligned, partial_amode_quad, partial_lock, partial_kind ;
       `endif
     `endif
   `endif
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef ZAMA16B_SUPPORTED
-      `ifdef PMP_PARTIAL_GRAIN_8
+      `ifdef PMP_GRAIN_LE_8
         `ifdef UDB_PMP_TOR_SUPPORTED
           cp_misaligned_mag16: cross priv_mode_m, amocas_wd, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
         `endif
@@ -3671,9 +3687,9 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
     bins tor = {2'b01};
   }
 
-  `ifdef PMP_PARTIAL_ENTRIES
+  `ifdef PMP_USABLE_ENTRIES_GE_9
     `ifdef ZAMA16B_SUPPORTED
-      `ifdef PMP_PARTIAL_GRAIN_8
+      `ifdef PMP_GRAIN_LE_8
         `ifdef UDB_PMP_TOR_SUPPORTED
           cp_misaligned_mag16: cross priv_mode_m, partial_c_ldst, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
         `endif

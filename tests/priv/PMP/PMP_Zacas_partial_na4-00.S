@@ -11,7 +11,7 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Zacas', 'Sm']
 # params:
-#   NUM_USABLE_PMP_ENTRIES: '>=16'
+#   NUM_USABLE_PMP_ENTRIES: '>=9'
 #   PMP_GRANULARITY: 2
 #   PMP_NA4_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei_zaamo_zacas
@@ -125,18 +125,23 @@ PMP_Zacas_cg_cp_partial_match_d_na4_both_L0_amocas_d:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Zacas_cg_cp_partial_match_d_na4_both_L0_amocas_d, PMP_Zacas_cg_cp_partial_match_d_na4_both_L0_amocas_d_str)
 
-// na4_lower_L1: slot 3, entries 4
+// Turn off entries 0, 1, 2, 3 for reuse
+  LI(x4, (0xFF << PMP_CFG_SHIFT(0)))
+  csrc pmpcfg0, x4
+  LI(x4, (0xFF << PMP_CFG_SHIFT(1)))
+  csrc pmpcfg0, x4
+  LI(x4, (0xFF << PMP_CFG_SHIFT(2)))
+  csrc pmpcfg0, x4
+  LI(x4, (0xFF << PMP_CFG_SHIFT(3)))
+  csrc pmpcfg0, x4
+// na4_lower_L1: slot 3, entries 0
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 52 - 4)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr4, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(4)))
-#if __riscv_xlen == 32
-  csrs pmpcfg1, x4
-#else
+  csrw pmpaddr0, x5
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(0)))
   csrs pmpcfg0, x4
-#endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
   LA(a5, PMP_PARTIAL_BASE)
   LI(x6, 48 + 0)
@@ -151,18 +156,14 @@ PMP_Zacas_cg_cp_partial_match_d_na4_lower_L1_amocas_d:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Zacas_cg_cp_partial_match_d_na4_lower_L1_amocas_d, PMP_Zacas_cg_cp_partial_match_d_na4_lower_L1_amocas_d_str)
 
-// na4_upper_L1: slot 4, entries 5
+// na4_upper_L1: slot 4, entries 1
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 68)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr5, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(5)))
-#if __riscv_xlen == 32
-  csrs pmpcfg1, x4
-#else
+  csrw pmpaddr1, x5
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(1)))
   csrs pmpcfg0, x4
-#endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
   LA(a5, PMP_PARTIAL_BASE)
   LI(x6, 64 + 0)
@@ -177,29 +178,21 @@ PMP_Zacas_cg_cp_partial_match_d_na4_upper_L1_amocas_d:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, PMP_Zacas_cg_cp_partial_match_d_na4_upper_L1_amocas_d, PMP_Zacas_cg_cp_partial_match_d_na4_upper_L1_amocas_d_str)
 
-// na4_both_L1: slot 5, entries 6, 7
+// na4_both_L1: slot 5, entries 2, 3
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 84 - 4)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr6, x5
+  csrw pmpaddr2, x5
   LA(x5, PMP_PARTIAL_BASE)
   LI(x6, 84)
   add x5, x5, x6
   srl x5, x5, PMP_SHIFT
-  csrw pmpaddr7, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(6)))
-#if __riscv_xlen == 32
-  csrs pmpcfg1, x4
-#else
+  csrw pmpaddr3, x5
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(2)))
   csrs pmpcfg0, x4
-#endif
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(7)))
-#if __riscv_xlen == 32
-  csrs pmpcfg1, x4
-#else
+  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(3)))
   csrs pmpcfg0, x4
-#endif
   RVTEST_SFENCE_VMA_IF_SUPPORTED
   LA(a5, PMP_PARTIAL_BASE)
   LI(x6, 80 + 0)

@@ -13,8 +13,9 @@ notes: |-
   - Coverpoints compare addresses and pmpaddr values on their low bits (PMP_ADDR_LOWMASK), so bins match wherever .data lands.
   - Entries 0-14 are the entries below the background entry of a 16-entry PMP; with 64 entries, cp_pmp64_* covers entries 15-62.
   - An aligned load, store or AMO of at most XLEN bits, and any aligned AMO, is a single memory operation, so it fails when the lowest-numbered entry matching any of its bytes (the deciding entry) does not match all of them, whatever L, R, W and X are. The same holds for a misaligned access inside a misaligned atomicity granule (Zama16b).
-  - Partial-match tests (cp_partial_*, cp_misaligned_mag16) give each case its own 16-byte slot and its own entries 0-13 below the background entry, so they need NUM_USABLE_PMP_ENTRIES >= 16. Coverage classifies each access with a PMP matcher (PMP_partial.svh): which entry decides, its A, L and XWR, and whether it matches the lower bytes, the upper bytes, or the lower bytes with the next entry matching the upper bytes ("both").
+  - Partial-match tests (cp_partial_*, cp_misaligned_mag16) give each case its own 16-byte slot. The unlocked cases come first, and the locked cases reuse their entries after turning them off, so the cases use entries 0-6 below the background entry and the tests need NUM_USABLE_PMP_ENTRIES >= 9. Coverage classifies each access with a PMP matcher (PMP_partial.svh): which entry decides, its A, L and XWR, and whether it matches the lower bytes, the upper bytes, or the lower bytes with the next entry matching the upper bytes ("both").
   - cp_misaligned_partial needs MISALIGNED_LDST and runs without a background entry. The trap handler does not record mtval for its access faults (IMPRECISE_ACCESS_FAULT_XTVAL): mtval may hold the address of the access or of its faulting part.
+  - cp_misaligned_off runs whatever MISALIGNED_LDST is. An OFF entry matches no address, so the background entry decides every memory operation the hart may split the access into, and the result does not depend on the split.
   - Not tested: a misaligned access outside a misaligned atomicity granule that straddles two permitted regions. The hart may split it into memory operations that are checked separately, so it has no single expected result; #1878 removed earlier tests of this kind. PMP_Zca covers 32-bit fetches across a region boundary.
 coverpoints:
   - heading: Permission bits, locked entry
@@ -129,6 +130,7 @@ coverpoints:
     bins: "4 A (fewer without TOR or NA4) × even pmpcfg CSRs (2, or 8 with 64 entries); odd: 4 A × odd pmpcfg CSRs (RV32)"
     rules:
       - pmp_a_field_encoding
+      - pmpcfg_a_enc
       - pmp_na4_select_restriction
       - pmp_csrs_warl_access
       - pmp_cfg_rv32_layout
@@ -144,6 +146,7 @@ coverpoints:
     rules:
       - pmp_a_field_off
       - pmp_a_field_encoding
+      - pmpcfg_a_enc
   - name: cp_cfg_A_napot_all
     goal: Verify that A=NAPOT matches exactly its region, in each of entries 0-14.
     description: "PMP_NAPOT_SUPPORTED only. For each entry: L=1, A=NAPOT, XWR=000 over a standard region. lw 4 bytes below the region, at its base, and just past its top."
@@ -151,8 +154,10 @@ coverpoints:
     bins: 15 entries × 3 addresses = 45
     rules:
       - pmp_napot_encoding_low_bits
+      - pmpaddr_napot_enc
       - pmp_a_field_napot_na4
       - pmp_a_field_encoding
+      - pmpcfg_a_enc
       - pmp_load_fault
       - pmp_access_fault_exception
   - name: |-
@@ -165,6 +170,7 @@ coverpoints:
     bins: 6 XWR × 5 addresses = 30 each
     rules:
       - pmp_napot_encoding_low_bits
+      - pmpaddr_napot_enc
       - pmp_a_field_napot_na4
       - pmp_rwx_check
       - pmp_exec_fault
@@ -180,6 +186,7 @@ coverpoints:
       - pmp_a_field_napot_na4
       - pmp_granularity
       - pmp_a_field_encoding
+      - pmpcfg_a_enc
       - pmp_load_fault
   - name: |-
       cp_cfg_A_na4_x
@@ -290,6 +297,7 @@ coverpoints:
     rules:
       - pmp_entry_priority
       - pmp_napot_encoding_low_bits
+      - pmpaddr_napot_enc
       - pmp_rwx_check
       - pmp_access_fault_exception
   - name: |-
@@ -432,6 +440,14 @@ coverpoints:
       - pmp_misaligned_access_behavior
       - pmp_full_match_required
       - pmp_rwx_check
+  - name: cp_misaligned_off
+    goal: Verify that an OFF entry matches no byte of a misaligned access across its pmpaddr bounds, whether or not the hart splits the access.
+    description: "NUM_USABLE_PMP_ENTRIES >= 4. Entry 1: L=1, A=OFF, XWR=000, with pmpaddr0 and pmpaddr1 one grain apart, as for a TOR entry 1. sh, sw (and sd) 1, 2 (and 6) bytes below pmpaddr0, and 1, 2 (and 2) bytes below pmpaddr1, from M-mode. Each store is read back by lh and lhu, lw (and lwu), or ld at the same address."
+    expectation: "MISALIGNED_LDST = true: every access succeeds, and each load returns the bytes just stored. MISALIGNED_LDST = false: every access raises an address-misaligned exception (mcause = 4 or 6). With XWR=000, a hart that lets the OFF entry match faults whether or not it splits the access."
+    bins: 2 bounds × 5 loads and stores (8 on RV64)
+    rules:
+      - pmp_a_field_off
+      - pmp_misaligned_access_behavior
   - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
   - goal: "Open item from the original plan: add mstatus.MXR to cp_cfg_R and cp_cfg_W."
   - goal: "Open item from the original plan: add a check of the default (background) region."

@@ -19,9 +19,8 @@
 `ifndef PMP_PARTIAL_SVH
 `define PMP_PARTIAL_SVH
 
-// Test-selection parameters of the partial-match tests, as single macros for `ifdef.
-// PMP_PARTIAL_ENTRIES: NUM_USABLE_PMP_ENTRIES >= 16. UDB defines one macro per value, so the values below 16
-// are listed.
+// Test-selection parameters of the partial-match tests, as single macros for `ifdef. UDB defines one macro per
+// value, so PMP_USABLE_ENTRIES_GE_9 lists the values below 9.
 `ifdef UDB_NUM_USABLE_PMP_ENTRIES_0
 `elsif UDB_NUM_USABLE_PMP_ENTRIES_1
 `elsif UDB_NUM_USABLE_PMP_ENTRIES_2
@@ -31,20 +30,13 @@
 `elsif UDB_NUM_USABLE_PMP_ENTRIES_6
 `elsif UDB_NUM_USABLE_PMP_ENTRIES_7
 `elsif UDB_NUM_USABLE_PMP_ENTRIES_8
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_9
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_10
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_11
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_12
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_13
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_14
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_15
 `else
-  `define PMP_PARTIAL_ENTRIES
+  `define PMP_USABLE_ENTRIES_GE_9
 `endif
 `ifdef UDB_PMP_GRANULARITY_2
-  `define PMP_PARTIAL_GRAIN_8         // G <= 1
+  `define PMP_GRAIN_LE_8         // G <= 1
 `elsif UDB_PMP_GRANULARITY_3
-  `define PMP_PARTIAL_GRAIN_8
+  `define PMP_GRAIN_LE_8
 `endif
 
 typedef enum logic [2:0] {
@@ -91,10 +83,26 @@ function automatic int pmp_access_bytes(logic [31:0] insn);
   endcase
 endfunction
 
+// First byte accessed. LR, SC and AMOs address rs1 directly; the other accesses add the immediate.
+function automatic logic [63:0] pmp_access_first(ins_t ins);
+  logic [`UDB_MXLEN-1:0] vaddr;
+  vaddr = (ins.current.insn[6:0] == 7'b0101111) ? ins.current.rs1_val : ins.current.rs1_val + ins.current.imm;
+  return 64'(vaddr);
+endfunction
+
+// 1 when a load, store or AMO accesses bytes both below byte address boundary and at or above it.
+function automatic logic pmp_access_crosses(ins_t ins, logic [63:0] boundary);
+  int bytes;
+  logic [63:0] first;
+  bytes = pmp_access_bytes(ins.current.insn);
+  first = pmp_access_first(ins);
+  return bytes > 1 && first < boundary && boundary <= first + 64'(bytes - 1);
+endfunction
+
 function automatic pmp_partial_t pmp_partial(ins_t ins);
   pmp_partial_t result;
   int bytes;
-  logic [`UDB_MXLEN-1:0] vaddr, pmpaddr;
+  logic [`UDB_MXLEN-1:0] pmpaddr;
   logic [63:0] first, last, region, top, tor_top, prev_top;
   logic [63:0] lo [64], hi [64];   // entry i matches bytes lo[i] to hi[i]; none when lo[i] > hi[i]
   logic [7:0] cfg [64];
@@ -105,9 +113,7 @@ function automatic pmp_partial_t pmp_partial(ins_t ins);
   bytes = pmp_access_bytes(ins.current.insn);
   if (bytes == 0) return result;
 
-  // LR, SC and AMOs address rs1 directly; the other accesses add the immediate.
-  vaddr = (ins.current.insn[6:0] == 7'b0101111) ? ins.current.rs1_val : ins.current.rs1_val + ins.current.imm;
-  first = 64'(vaddr);
+  first = pmp_access_first(ins);
   last  = first + bytes - 1;
   if (first % bytes == 0)          result.align = PMP_ACCESS_ALIGNED;
   else if (first[63:4] == last[63:4]) result.align = PMP_ACCESS_IN_GRANULE16;

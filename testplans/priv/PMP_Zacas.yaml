@@ -2,7 +2,7 @@
 suite: PMP_Zacas
 notes: |-
   General Test Environment (PMP_Zacas):
-  - Runs when Zacas and Sm are implemented and NUM_USABLE_PMP_ENTRIES >= 16. M-mode only. Partial-match setup as in PMP_Sm cp_partial_match and cp_misaligned_mag16.
+  - Runs when Zacas and Sm are implemented and NUM_USABLE_PMP_ENTRIES >= 9. M-mode only. Partial-match setup as in PMP_Sm cp_partial_match and cp_misaligned_mag16.
   - An aligned AMO is one memory operation even when it is wider than XLEN, so amocas.d on RV32 and amocas.q on RV64 are included. rd is the x8/x9 pair and rs2 the x14/x15 pair when the operand is wider than XLEN; rd is checked after each amocas.
 coverpoints:
   - name: cp_partial_match_d

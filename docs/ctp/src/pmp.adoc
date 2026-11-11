@@ -11,16 +11,17 @@ The testplan also describes a PMPV suite for vector loads and stores, which is n
 An aligned load or store of at most XLEN bits, and any aligned AMO, is a single memory operation, so it fails when the lowest-numbered entry that matches any of its bytes does not match all of them, whatever L, R, W and X are.
 The `cp_partial_*` coverpoints test this with 4-byte NA4 and TOR entries (G = 0) and 8-byte NAPOT and TOR entries (G {le} 1) over the lower half, the upper half or both halves of the access, with L = 0 and L = 1.
 With Zama16b, a misaligned access inside a 16-byte granule is also a single memory operation, which the `cp_misaligned_mag16` coverpoints test with one-grain TOR entries (G {le} 1).
-These tests give each case its own entries below the background entry, so they need `NUM_USABLE_PMP_ENTRIES` {ge} 16.
+Each test runs its unlocked cases first and turns their entries off before its locked cases reuse them, so the cases use entries 0-6 below the background entry and the tests need `NUM_USABLE_PMP_ENTRIES` {ge} 9.
 Outside a misaligned atomicity granule, a misaligned access may be split into memory operations that are checked separately.
 When `MISALIGNED_LDST` is true, `cp_misaligned_partial` checks that an access partly in a region it may not use, with the rest matching no entry, faults whether or not it is split.
 Those tests check only the trap: `mtval` may hold the address of the access or of its faulting part, and the Addr. Offset field of a transformed `mtinst` or `htinst` follows it, so the trap handler does not record `mtval` and checks `mtinst` and `htinst` with the Addr. Offset cleared (`IMPRECISE_ACCESS_FAULT_XTVAL`). Part of a split store may also become visible.
 A misaligned access outside a granule that straddles two permitted regions has no single expected result and is not tested.
+`cp_misaligned_off` makes misaligned loads and stores across the pmpaddr bounds of a locked OFF entry without permissions. Only the background entry matches them, so however the hart splits them, they succeed when `MISALIGNED_LDST` is true and raise address-misaligned exceptions when it is false.
 
 ==== PMP_Sm Machine
 
 Machine-mode tests of the pmpcfg and pmpaddr CSRs (WARL fields, locking, grain, and the illegal odd pmpcfg CSRs on RV64), each address-matching mode in every entry, entry priority, and enforcement of locked entries on M-mode accesses.
-Also aligned `ld` and `sd` partly matched by an entry, and misaligned loads and stores inside a granule or partly in a locked region without permissions.
+Also aligned `ld` and `sd` partly matched by an entry, and misaligned loads and stores inside a granule, partly in a locked region without permissions, or across the bounds of an OFF entry.
 The 64-entry coverpoints need `NUM_PMP_ENTRIES` = 64.
 
 include::{testplansdir}/priv/PMP_Sm.adoc[]

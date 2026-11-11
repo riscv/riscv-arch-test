@@ -4,9 +4,8 @@
 
 ci_enabled: true
 
-# Measured on act4 4dd885840 with the simulator from .github/scripts/install-boom.sh: 546 of the 575 selected
-# tests pass, and the 29 that fail are excluded below. Each group fails at riscv-boom/riscv-boom 5223e44
-# (Chipyard 1.14.0); a directed probe for each bug passes on Spike and Sail and fails on BOOM. Paths are relative to
+# Each group below fails at riscv-boom/riscv-boom 5223e44 (Chipyard 1.14.0); a directed probe for each bug passes
+# on Spike and Sail and fails on BOOM. Paths are relative to
 # https://github.com/riscv-boom/riscv-boom/blob/5223e44cfeb26f41380057a2eb4d651197475f69/src/main/scala/v3/
 exclude_extensions:
   # The fetch unit checks PMP for the whole 8-byte fetch packet (ifu/frontend.scala#L390), so an instruction in an

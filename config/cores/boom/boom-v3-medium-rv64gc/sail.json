@@ -141,7 +141,8 @@
   },
   "memory": {
     // BOOM implements 32 physical address bits. 56 is used because Sail masks the virtual
-    // address it reports in xtval on a translated access to physaddr_bits.
+    // address it reports in xtval on a translated access to physaddr_bits
+    // (https://github.com/riscv/sail-riscv/pull/1917).
     "physaddr_bits": 56,
     // Whether physical addresses reported in `xtval` are truncated to
     // `physaddr_bits` can be specified.  When valid physical

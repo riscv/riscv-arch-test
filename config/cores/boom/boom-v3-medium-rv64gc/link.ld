@@ -1,3 +1,6 @@
+/* Copyright (c) 2026, Harvey Mudd College
+ * SPDX-License-Identifier: Apache-2.0
+ */
 /* Chipyard test harness memory map (device tree of ACTMediumBoomV3Config):
  *   memory@80000000 { reg = <0x80000000 0x10000000>; }
  * 256 MiB of DRAM (SimDRAM) at 0x8000_0000. The ELF is preloaded there with +loadmem and the

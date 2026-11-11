@@ -4,6 +4,7 @@
 # Written against Chipyard    @ 0acc1e1de2d3284bcd4d876956932a013ffe1949 (1.14.0)
 #                 BOOM        @ 5223e44cfeb26f41380057a2eb4d651197475f69
 #                 rocket-chip @ 55bcad0f59436de98ea510334121de8546b9e9d7
+# Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H

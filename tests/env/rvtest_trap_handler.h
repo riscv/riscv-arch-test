@@ -1307,6 +1307,40 @@ common_\__MODE__\()entry:                       // common entry for all traps in
       invisible_Mcontinue:
   .endif
 
+  // A failed self-check jumps to a failure entry (failedtest_*). The entries follow
+  // rvtest_code_end, which starts a fresh page so that a test can map its own code for
+  // a less-privileged mode while keeping the handlers and failure code out of reach. The
+  // jump from that mode then takes a fetch page or access fault at the entry. Run the
+  // entry in this handler's mode instead: set xPP to this mode and xret to xEPC with every
+  // register restored. A fault taken from this handler's own mode is recorded as usual,
+  // because retrying it would loop.
+        LI(T4, CAUSE_FETCH_PAGE_FAULT)
+        beq     T5, T4, \__MODE__\()fail_fetch_chk
+        LI(T4, CAUSE_FETCH_ACCESS)
+        bne     T5, T4, \__MODE__\()fail_fetch_done
+\__MODE__\()fail_fetch_chk:
+        csrr    T4, CSR_XEPC
+        LA(T3, failedtest_x5_x4)
+        bltu    T4, T3, \__MODE__\()fail_fetch_done
+        LA(T3, failedtest_saveregs)
+        bgeu    T4, T3, \__MODE__\()fail_fetch_done
+        csrr    T4, CSR_XSTATUS
+  .ifc \__MODE__ , M
+        LI(T3, MSTATUS_MPP)
+        and     T2, T4, T3
+        beq     T2, T3, \__MODE__\()fail_fetch_done  // fault from M-mode itself
+        LI(T2, MSTATUS_MPIE)
+  .else
+        LI(T3, SSTATUS_SPP)
+        and     T2, T4, T3
+        bnez    T2, \__MODE__\()fail_fetch_done      // fault from this handler's own mode
+        LI(T2, SSTATUS_SPIE)
+  .endif
+        csrs    CSR_XSTATUS, T3                     // xPP = this mode (mret with MPP=M also leaves V=0)
+        csrc    CSR_XSTATUS, T2                     // report with this mode's interrupts disabled
+        j       resto_\__MODE__\()rtn
+\__MODE__\()fail_fetch_done:
+
 
 //==============================================================================
 // T-SBI DISPATCH — M-MODE

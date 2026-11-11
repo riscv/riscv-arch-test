@@ -8,10 +8,11 @@ ci_enabled: true
 # https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/
 exclude_extensions:
   # fmin/fmax return the canonical NaN when one operand is a signaling NaN (F 2.0 behavior; F 2.2 returns the other
-  # operand).
+  # operand): falu/rtl/pa_fadd_single.v#L760-L761
   - F-fmax.s
   - F-fmin.s
-  # Fused multiply-add misses UF when the exact result is tiny but rounds up to the smallest normal.
+  # Fused multiply-add misses UF when the exact result is tiny but rounds up to the smallest normal:
+  # fmau/rtl/pa_fmau_frac_add.v#L427-L428 (https://github.com/XUANTIE-RV/opene906/issues/11)
   - F-fmadd.s
   - F-fmsub.s
   - F-fnmadd.s
@@ -27,6 +28,8 @@ exclude_extensions:
   # harts, these tests would pass without a CLIC model if the trap handler recorded xcause masked to the Interrupt bit
   # and cause[11:0], as it already does to dispatch ecalls (tests/env/rvtest_trap_handler.h, "strips CLIC extension
   # bits").
+  - Exceptions_Sm-
+  - Exceptions_U
   - InterruptsSm_wfi_timeout_U
   - PMP_F_cfg_wr
   - PMP_Sm_all_entries_check
@@ -47,12 +50,6 @@ exclude_extensions:
   - Sm_csr_ro
   - Sm_F
   - Sm_inst
-  # A store bus error is imprecise even with mhint.AEE = 1: mepc is a later instruction (rtu/rtl/pa_rtu_retire.v#L476).
-  # The spec allows imprecise bus errors (norm:pma_imprecise_ok), but ACT requires a precise fault: https://github.com/riscv/riscv-arch-test/issues/3127
-  - Exceptions_F
-  - Exceptions_Sm-
-  - Exceptions_U
-  - Exceptions_Zc
   # LR raises the store causes 6 and 7 for a misaligned or faulting access instead of 4 and 5
   # (lsu/rtl/pa_lsu_ag.v#L1501).
   - Exceptions_Zalrsc
@@ -62,9 +59,11 @@ exclude_extensions:
   - Sm_mcsr_walk
   # mstatus.TW is read-only 0 although U-mode exists (cp0/rtl/pa_cp0_trap_csr.v#L556-L557).
   - Sm_mcsr_access
-  # A csrw to minstret also counts itself.
+  # mhpmcounterN takes a write only while mhpmeventN selects that counter's one event (pmu/rtl/pa_hpcp_top.v#L453-L473),
+  # which Sail cannot model, and a csrw to minstret also counts itself.
   - Sm_mcsr_cntr
-  # minstret counts ECALL, which does not retire.
+  # minstret counts ECALL, which does not retire; the increment (rtu/rtl/pa_rtu_retire.v#L455-L458 and #L1329) does
+  # not exclude excepting instructions. Sm_Zicntr also hits the mcause alias above.
   - Sm_Zicntr
   - U_Zicntr
   # mret leaves mstatus.MPRV set when MPP is U, as privileged 1.11 allows; Sail applies the 1.12 rule that clears it.

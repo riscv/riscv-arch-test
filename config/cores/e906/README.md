@@ -64,8 +64,11 @@ make e906-rv32imafc-u-pmp
   the trap trampoline.
 - The testbench prints the low byte of every store to `0x6000_FFF8` and ends the simulation when
   the stored word is `0xFFF` (pass) or `0xEEE` (fail).
-- The system bus answers addresses outside its SRAM and APB windows with an error, so
-  `RVMODEL_ACCESS_FAULT_ADDRESS` is `0x3000_0000`.
+- The system bus answers addresses outside its SRAM and APB windows with an error, so the load,
+  fetch and AMO access-fault addresses (`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD`, `_FETCH` and `_AMO`)
+  are `0x3000_0000`. Store and LR bus errors are imprecise even with mhint.AEE set (mepc is a later
+  instruction), which the spec allows, so `_STORE` and `_LRSC` are left undefined and those
+  accesses are not tested.
 - Interrupts reach the core only through the CLIC, and mie and mip read 0, so the interrupt macros
   are undefined.
 - `RVMODEL_BOOT` points mtvec at the trampoline, writes mhcr = `0x103F` (caches, write-back,
@@ -86,7 +89,7 @@ make e906-rv32imafc-u-pmp
   event restrictions or the event-gated writes; counter tests affected by those differences must
   remain explicit exclusions rather than describing the counters as absent.
 - `ci.yaml` lists the suites that fail and why: fmin/fmax with a signaling NaN, FMA underflow,
-  the mcause alias, imprecise store and LR bus errors, LR exception causes, mstatus.MPP and TW,
+  the mcause alias, LR exception causes, mstatus.MPP and TW, event-gated HPM counter writes,
   minstret counting its own write and ECALL, and mret keeping MPRV (privileged 1.11 behavior that
   Sail does not model).
 

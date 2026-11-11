@@ -40,7 +40,7 @@
 # (3) mhint.AEE (bit 20) resets to 0, which makes bus-error access faults imprecise:
 #     mepc then holds whatever instruction is in EX when the error returns, not the
 #     faulting load or store (user manual 17.6.3).  Set it: load bus errors become
-#     precise.  Store bus errors stay imprecise (see ci.yaml).
+#     precise.  Store bus errors stay imprecise (see Access faults below).
 #      https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_ext_csr.v#L388-L413
 #define RVMODEL_BOOT              \
   li   t0, E906_TRAP_VECTOR      ;\
@@ -88,7 +88,13 @@
 # memory region.
 #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/smart_run/logical/ahb/ahb.v#L244-L249
 #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/smart_run/logical/system/err_gen.v#L77
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x30000000
+# Stores and LR/SC are not tested: their bus errors are imprecise access faults even with
+# mhint.AEE = 1 (mepc is a later instruction), which the spec allows. AEE only makes loads
+# precise.
+#   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/rtu/rtl/pa_rtu_retire.v#L476
+#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0x30000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0x30000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_AMO   0x30000000
 
 ##### Interrupt Latency #####
 

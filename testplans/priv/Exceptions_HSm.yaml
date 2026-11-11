@@ -8,7 +8,7 @@ coverpoints:
     goal: hedeleg has no effect with medeleg = 0
     description: |-
       In VS-mode and VU-mode with medeleg = 0 and hedeleg = {0, all writable bits}, raise the exceptions of Exceptions_H cp_hedeleg: {jalr to a misaligned target at the access-fault address, jalr to the access-fault address, illegal instruction all 0s and all 1s, ebreak, each load and store at scratch + 0-7, each load and store at the access-fault address, ecall}.
-      The access-fault cases need RVMODEL_ACCESS_FAULT_ADDRESS.
+      Each access-fault case needs RVMODEL_ACCESS_FAULT_ADDRESS_{FETCH/LOAD/STORE} for its access type.
     expectation: Every exception traps to M-mode with mstatus.MPV = 1 and mstatus.MPP = the nominal privilege.  Misaligned fetches, loads and stores trap or complete as the reference model does.
     bins: 9 exceptions * 2 modes * 2 hedeleg (* 8 offsets for misaligned loads and stores)
   - name: cp_ecall_to_m
@@ -31,7 +31,9 @@ coverpoints:
     description: In M-mode with hstatus.HU = {0/1}, attempt {HLV.W, HLVX.WU, HSV.W} on scratch memory.  vsatp and hgatp are Bare.
     expectation: Succeeds; HU has no effect outside U-mode.  The hsv.w result is read back.
     bins: 3 instr * 2 HU
-  - name: cp_priority
+  - name: |-
+      cp_priority_hlv
+      cp_priority_hsv
     goal: priority of misaligned and access fault in M-mode
     description: In M-mode with hstatus.HU = {0/1}, execute {hlv.w / hsv.w} x {scratch / access-fault address} x {addr[1:0] = 00/01}.  vsatp and hgatp are Bare.
     expectation: An aligned access to scratch completes; the other accesses raise the access fault or address-misaligned exception the reference model raises (misaligned accesses to scratch may complete; the order of address-misaligned and access faults is implementation-defined).  HU has no effect.

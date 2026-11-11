@@ -12,6 +12,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from typing import Literal
 
+from testgen.asm.helpers import load_constant
+
 # Root and lower-level page-table labels of each translation stage
 _TABLES = {"s": ("Sroot", "slvl"), "vs": ("Vroot", "vlvl"), "g": ("Hroot", "hlvl")}
 
@@ -91,17 +93,17 @@ class SvMode:
         index = f"((({virtual_address}) >> {self.page_offset_bits(level)}) & {mask:#x})"
         return f"{self.page_table_label(level)} + {index} * {self.pte_bytes}"
 
-    def access_fault_pte_address(self) -> str:
-        """The first PTE-aligned address at or above RVMODEL_ACCESS_FAULT_ADDRESS, inside the faulting region, which the
-        ACT contract guarantees for only 128 bytes from that address."""
-        return f"((RVMODEL_ACCESS_FAULT_ADDRESS + {self.pte_bytes - 1}) & ~{self.pte_bytes - 1})"
+    def access_fault_pte_address(self, fault_address: str) -> str:
+        """The first PTE-aligned address at or above ``fault_address`` (an RVMODEL_ACCESS_FAULT_ADDRESS_* macro), inside
+        the faulting region, which the ACT contract guarantees for only 128 bytes from that address."""
+        return f"(({fault_address} + {self.pte_bytes - 1}) & ~{self.pte_bytes - 1})"
 
-    def access_fault_walk_va(self, virtual_address: str, level: int) -> str:
+    def access_fault_walk_va(self, virtual_address: str, level: int, fault_address: str) -> str:
         """``virtual_address`` with its index at ``level`` replaced, so that a walk whose table at ``level`` is the page
-        of access_fault_pte_address reads the PTE at that address."""
+        of access_fault_pte_address(fault_address) reads the PTE at that address."""
         shift = self.page_offset_bits(level)
         mask = ((1 << self.index_bits(level)) - 1) << shift
-        index = f"(({self.access_fault_pte_address()} & 0xFFF) / {self.pte_bytes})"
+        index = f"(({self.access_fault_pte_address(fault_address)} & 0xFFF) / {self.pte_bytes})"
         return f"((({virtual_address}) & ~{mask:#x}) | ({index} << {shift}))"
 
     def page_table_label(self, level: int) -> str:
@@ -259,7 +261,7 @@ def write_pte(
         )
     else:
         pte_value = f"(({physical_address}) >> {ppn_shift}) << {ppn_shift - 2}"
-        lines.append(f"LI(x{pte}, ({pte_value}) | ({_pte_expression(flags)}))")
+        lines.append(load_constant(f"x{pte}", f"({pte_value}) | ({_pte_expression(flags)})"))
     lines.append(f"SREG x{pte}, 0(x{addr})")
     return lines
 

@@ -90,9 +90,9 @@ include::norm/Shtvala_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Shlcofideleg.adoc[]
 
-==== ZkrH Hypervisor Entropy Register
+==== Zkr Hypervisor Entropy Register
 
-include::{testplansdir}/priv/ZkrH.adoc[]
+The hypervisor entropy tests are the H group of the Zkr suite: see <<t-Zkr_H-coverpoints>>.
 
 ==== Sstc Hypervisor Timer Compare
 

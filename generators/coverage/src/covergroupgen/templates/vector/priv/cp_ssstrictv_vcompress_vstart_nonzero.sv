@@ -4,7 +4,7 @@
 
 
     // vcompress with non-zero vstart must raise illegal instruction exception
-    vstart_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") {
+    vstart_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) {
         bins nonzero = {[1:$]};
     }
 

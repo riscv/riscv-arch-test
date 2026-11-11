@@ -144,7 +144,7 @@ help:
 	@printf '    %s\n' $(ALL_RUN_TARGETS) | fold -s -w 76 | sed 's/^/  /'
 	@printf '\n\033[1mCommon variables:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
-	  'CONFIG_FILES'        'Configs to build (required; use Sail configs for coverage, default: Sail max)' \
+	  'CONFIG_FILES'        'Configs to build (required; coverage defaults to Sail max)' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'CERTIFICATE'         'Only select tests for the specified certificate' \

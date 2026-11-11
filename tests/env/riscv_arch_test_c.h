@@ -6,6 +6,8 @@
 #ifndef RISCV_ARCH_TEST_C_H
 #define RISCV_ARCH_TEST_C_H
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include "encoding.h"

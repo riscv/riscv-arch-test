@@ -4,7 +4,7 @@
 experimental = true
 
 [tools]
-prek = "0.5.9"
+prek = "0.5.10"
 ruby = "3.4.12"
 shellcheck = "0.11.0"
 uv = "0.13.7"

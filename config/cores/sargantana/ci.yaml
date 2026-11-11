@@ -56,13 +56,15 @@ exclude_extensions:
   - S_F
   # mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595 (https://github.com/bsc-loca/sargantana/issues/113
   # items 15 and 8). mideleg.SGEI is read-only one with GEILEN = 0 (csr:csr_bsc.sv#L1559-L1560), which is legal
-  # (norm:mideleg_rd1_lower_level) but Sail cannot model (https://github.com/riscv/sail-riscv/issues/2049). misa.V is set for the partial vector unit,
-  # which the configuration does not declare.
+  # (norm:mideleg_rd1_lower_level) but Sail cannot model (https://github.com/riscv/sail-riscv/issues/2049). misa.V is set although the vector
+  # unit is nonconforming (see Sm_reset below).
   - Sm_mcsr_access
   - Sm_mcsr_walk
   - Sm_scsr
   - Sm_shadow
-  # misa.V is set for the partial vector unit (RVV = 1 in includes/def_pkg.sv), which the configuration does not declare.
+  # misa.V is set (RVV = 1 in includes/def_pkg.sv) although the vector unit is nonconforming: it does not support
+  # LMUL > 1, because core:datapath/rtl/id_stage/rtl/vset_module.sv#L89-L90 sets vill for LMUL 2/4/8. So the
+  # configuration cannot declare V.
   - Sm_reset
   # sepc[1] is writable with IALIGN = 32: csr:csr_bsc.sv#L1244; senvcfg.CBIE keeps 0b10: #L1242
   # (https://github.com/bsc-loca/sargantana/issues/113 items 5 and 8; bsc-loca/csr#7 masks sepc[1])

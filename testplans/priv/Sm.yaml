@@ -608,7 +608,7 @@ coverpoints:
     bins: "1"
   - name: cp_misa_reset
     goal: misa resets to the maximal set of supported extensions and the widest MXLEN
-    description: Read misa at reset.  Check MXL, the zero field and the defined Extensions letters; mask off the reserved and tentatively reserved letters.
+    description: Read misa at reset.  Check the whole value.
     expectation: Match reference model.
     bins: "1"
   - name: |-
@@ -625,8 +625,8 @@ coverpoints:
     bins: "1"
   - name: cp_mstateen_reset
     goal: Writable mstateen bits reset to 0
-    description: Only with Smstateen.  Read mstateen0-3 (and mstateen0h-3h on RV32) at reset.  Then find each CSR's writable bits by writing all ones and then zero, and restore the value the boot code wrote.  Check the writable bits of the reset value.
-    expectation: The writable bits read 0.  Read-only bits are not checked.  Match reference model.
+    description: Only with Smstateen.  Read mstateen0-3 (and mstateen0h-3h on RV32) at reset.  Check the whole value.
+    expectation: The writable bits read 0.  Match reference model.
     bins: 4 CSRs (8 on RV32)
   - name: cp_mdt_reset
     goal: mstatus.MDT resets to 1 (mstatush.MDT on RV32)
@@ -635,8 +635,8 @@ coverpoints:
     bins: "1"
   - name: cp_vector_reset
     goal: vl and vtype at reset can be read and restored with a single vsetvl
-    description: Only with a vector extension (Zve32x).  At reset, turn mstatus.VS on, read vl and vtype, and restore mstatus.  In the test, execute vsetvl with the saved vl as AVL and the saved vtype, then read vl and vtype.
-    expectation: vl and vtype are unchanged.  Only their difference from the saved values is recorded, since the reset values are implementation-defined.
+    description: Only with a vector extension (Zve32x).  At reset, turn mstatus.VS on, read vl and vtype, and restore mstatus.  In the test, set vl = 1 and vtype = 0 (e8, m1, tu, mu), which differ in both CSRs from the recommended reset state (vl = 0, vtype.vill = 1).  Then execute vsetvl with the saved vl as AVL and the saved vtype, and read vl and vtype.
+    expectation: vl and vtype equal the saved values.  The difference of each from its saved value is recorded separately, since the reset values are implementation-defined.
     bins: "2 CSRs"
   - name: |-
       cp_tselect_reset

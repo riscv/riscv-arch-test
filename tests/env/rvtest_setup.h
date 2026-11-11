@@ -1055,7 +1055,7 @@
 #define RESET_TCONTROL_OFFSET   (19*REGWIDTH)
 // tdata1 of each trigger, from trigger 0
 #define RESET_TDATA1_OFFSET     (20*REGWIDTH)
-#if defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS)
+#ifdef UDB_SDTRIG_NUM_TRIGGERS
   #define RESET_CSR_COUNT       (20 + UDB_SDTRIG_NUM_TRIGGERS)
 #else
   #define RESET_CSR_COUNT       20
@@ -1295,7 +1295,7 @@
         #endif
         #ifdef ZVE32X_SUPPORTED
           // Reading vl and vtype needs mstatus.VS on; mstatus is restored to its reset value afterwards
-          LI(T2, MSTATUS_VS & (MSTATUS_VS >> 1))
+          LI(T2, MSTATUS_VS)
           csrs mstatus, T2
           csrr T2, vl
           SREG T2, RESET_VL_OFFSET(T1)
@@ -1322,14 +1322,14 @@
           #ifdef UDB_SDTRIG_NUM_TRIGGERS
             // tdata1 of each trigger; tselect is restored to its reset value afterwards
             LI(T3, 0)
+            LI(T4, UDB_SDTRIG_NUM_TRIGGERS)
           rvtest_reset_tdata1_loop:
             csrw CSR_TSELECT, T3
             csrr T2, CSR_TDATA1
             SREG T2, RESET_TDATA1_OFFSET(T1)
             addi T1, T1, REGWIDTH
             addi T3, T3, 1
-            LI(T2, UDB_SDTRIG_NUM_TRIGGERS)
-            bltu T3, T2, rvtest_reset_tdata1_loop
+            bltu T3, T4, rvtest_reset_tdata1_loop
             LA(T1, rvtest_reset_csrs)
             LREG T2, RESET_TSELECT_OFFSET(T1)
             csrw CSR_TSELECT, T2

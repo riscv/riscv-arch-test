@@ -4,10 +4,7 @@
 
 ci_enabled: true
 
-# lowRISC/ibex e9f5534; paths are under https://github.com/lowRISC/ibex/blob/e9f5534/
 exclude_extensions:
-  # Testbench never faults a fetch; a jump to address 0 runs RAM: examples/simple_system/rtl/ibex_simple_system.sv#L134
-  - PMP_Sm_cfg_A_tor_zero
   # misa.X is set (non-standard extensions), but Sail cannot set it yet (https://github.com/riscv/sail-riscv/issues/2067)
   - Sm_reset
 

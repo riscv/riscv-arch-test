@@ -13,7 +13,7 @@
 """Sm privileged extension test generator."""
 
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, gated, write_sigupd
+from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -1793,38 +1793,34 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
 _RESET_CG = "Sm_reset_cg"
 
-# misa Extensions letters that the privileged spec marks reserved or tentatively reserved
-_MISA_RESERVED = sum(1 << (ord(letter) - ord("A")) for letter in "GJKLNOPRTWYZ")
-_MISA_DEFINED_32 = f"{~_MISA_RESERVED & 0xFFFFFFFF:#x}"
-_MISA_DEFINED_64 = f"{~_MISA_RESERVED & 0xFFFFFFFFFFFFFFFF:#x}"
-
 # CSR fields with architectural reset values, captured by RVTEST_BOOT_TO_MMODE when RESET_TEST is defined:
-# (coverpoint, CSR, (RV32 field mask, RV64 field mask) or None for the whole CSR, gate)
+# (coverpoint, CSR, (RV32 field mask, RV64 field mask) or None for the whole CSR, gate).
+# A field mask is None for an XLEN on which the gate never runs the check.
 _RESET_FIELDS = [
     ("cp_mstatus_reset", "mstatus", ("MSTATUS_MIE | MSTATUS_MPRV", "MSTATUS_MIE | MSTATUS_MPRV | MSTATUS_MBE"), None),
     (
         "cp_mstatush_reset",
         "mstatush",
-        ("MSTATUSH_MBE", "MSTATUSH_MBE"),
+        ("MSTATUSH_MBE", None),
         "__riscv_xlen == 32 && defined(SM1P12P0_OR_LATER_SUPPORTED)",
     ),
-    ("cp_misa_reset", "misa", (_MISA_DEFINED_32, _MISA_DEFINED_64), None),
+    ("cp_misa_reset", "misa", None, None),
     ("cp_hgatp_reset", "hgatp", ("HGATP32_MODE", "HGATP64_MODE"), "defined(H_SUPPORTED)"),
     ("cp_vsatp_reset", "vsatp", ("SATP32_MODE", "SATP64_MODE"), "defined(H_SUPPORTED)"),
     ("cp_mseccfg_reset", "mseccfg", ("MSECCFG_MLPE", "MSECCFG_MLPE"), "defined(ZICFILP_SUPPORTED)"),
     # Smdbltrp: MDT resets to 1, in mstatus on RV64 and in mstatush on RV32
-    ("cp_mdt_reset", "mstatus", ("MSTATUS_MDT", "MSTATUS_MDT"), "__riscv_xlen == 64 && defined(SMDBLTRP_SUPPORTED)"),
+    ("cp_mdt_reset", "mstatus", (None, "MSTATUS_MDT"), "__riscv_xlen == 64 && defined(SMDBLTRP_SUPPORTED)"),
     (
         "cp_mdt_reset",
         "mstatush",
-        ("MSTATUSH_MDT", "MSTATUSH_MDT"),
+        ("MSTATUSH_MDT", None),
         "__riscv_xlen == 32 && defined(SM1P12P0_OR_LATER_SUPPORTED) && defined(SMDBLTRP_SUPPORTED)",
     ),
     # Sdtrig: every field of these CSRs resets to 0 (Debug spec register tables)
     ("cp_tselect_reset", "tselect", None, "defined(SDTRIG_SUPPORTED)"),
-    ("cp_mcontext_reset", "mcontext", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_MCONTEXT_IMPLEMENTED)"),
-    ("cp_scontext_reset", "scontext", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_SCONTEXT_IMPLEMENTED)"),
-    ("cp_tcontrol_reset", "tcontrol", None, "defined(SDTRIG_SUPPORTED) && defined(UDB_TCONTROL_IMPLEMENTED)"),
+    ("cp_mcontext_reset", "mcontext", None, "defined(UDB_MCONTEXT_IMPLEMENTED)"),
+    ("cp_scontext_reset", "scontext", None, "defined(UDB_SCONTEXT_IMPLEMENTED)"),
+    ("cp_tcontrol_reset", "tcontrol", None, "defined(UDB_TCONTROL_IMPLEMENTED)"),
 ]
 
 # Triggers checked by cp_tdata1_reset; more need a larger bound
@@ -1845,7 +1841,7 @@ def make_sm_reset(test_data: TestData) -> list[TestChunk]:
         comment_banner(
             "cp_mstatus_reset, cp_mstatush_reset, cp_misa_reset, cp_hgatp_reset, cp_vsatp_reset, cp_mseccfg_reset",
             "Boot code saved each CSR before writing any of them.  Check the fields with defined reset values:\n"
-            "mstatus.MIE/MPRV, mstatus/mstatush.MBE, misa except reserved letters, hgatp.MODE, vsatp.MODE and\n"
+            "mstatus.MIE/MPRV, mstatus/mstatush.MBE, the whole misa, hgatp.MODE, vsatp.MODE and\n"
             "mseccfg.MLPE",
         )
     )
@@ -1857,8 +1853,8 @@ def make_sm_reset(test_data: TestData) -> list[TestChunk]:
         ]
         if masks is not None:
             mask32, mask64 = masks
-            if mask32 == mask64:
-                lines.append(f"LI(x{r_mask}, {mask32})")
+            if mask32 == mask64 or None in masks:
+                lines.append(f"LI(x{r_mask}, {mask32 or mask64})")
             else:
                 lines.extend(
                     [
@@ -1887,15 +1883,13 @@ _MSTATEEN_RESET = [(f"mstateen{n}", "defined(SMSTATEEN_SUPPORTED)") for n in ran
 
 
 def _mstateen_reset_checks(test_data: TestData) -> list[str]:
-    """Check that the writable bits of each mstateen CSR were zero at reset (smstateen.adoc
-    mstateen_zero_initialization).  Writing all ones and then zero finds the writable bits: those that read 1
-    after the first write and 0 after the second.  The value the boot code wrote is restored afterwards."""
-    r_val, r_ones, r_zeros, r_cur = test_data.int_regs.get_registers(4)
+    """Record each mstateen CSR as saved at reset (smstateen.adoc mstateen_zero_initialization: the writable bits
+    reset to 0).  The reference model has the same writable bits, so the whole value is compared."""
+    r_val = test_data.int_regs.get_register()
     lines = [
         comment_banner(
             "cp_mstateen_reset",
-            "Boot code saved mstateen0-3 (and mstateen0h-3h on RV32) before writing them.  Check that their writable\n"
-            "bits were zero",
+            "Boot code saved mstateen0-3 (and mstateen0h-3h on RV32) before writing them.  Record the saved values",
         )
     ]
     for csr, gate in _MSTATEEN_RESET:
@@ -1903,24 +1897,14 @@ def _mstateen_reset_checks(test_data: TestData) -> list[str]:
             gated(
                 [
                     test_data.add_testcase(csr, "cp_mstateen_reset", _RESET_CG),
-                    f"csrr x{r_cur}, {csr}",
-                    f"LI(x{r_ones}, -1)",
-                    f"csrw {csr}, x{r_ones}",
-                    f"csrr x{r_ones}, {csr}",
-                    f"csrw {csr}, zero",
-                    f"csrr x{r_zeros}, {csr}",
-                    f"csrw {csr}, x{r_cur}",
-                    f"not x{r_zeros}, x{r_zeros}",
-                    f"and x{r_ones}, x{r_ones}, x{r_zeros}",
                     f"LA(x{r_val}, rvtest_reset_csrs)",
                     f"LREG x{r_val}, RESET_{csr.upper()}_OFFSET(x{r_val})",
-                    f"and x{r_val}, x{r_val}, x{r_ones}",
                     write_sigupd(r_val, test_data),
                 ],
                 gate,
             )
         )
-    test_data.int_regs.return_registers([r_val, r_ones, r_zeros, r_cur])
+    test_data.int_regs.return_registers([r_val])
     return lines
 
 
@@ -2338,31 +2322,37 @@ def make_sm_zicntr_h(test_data: TestData) -> list[TestChunk]:
 
 
 def _vector_reset_check(test_data: TestData) -> list[str]:
-    """vl and vtype at reset can be restored by one vsetvl (vector.adoc vector_reset_state): vsetvl with the saved
-    vl as AVL and the saved vtype must leave both unchanged.  The saved values are implementation-defined, so only
-    their difference from the restored values is recorded."""
+    """vl and vtype at reset can be restored by one vsetvl (vector.adoc vector_reset_state).  vl and vtype are first
+    set to vl = 1 and vtype = 0 (e8, m1, tu, mu), which differ in both CSRs from the recommended reset state
+    (vl = 0, vtype.vill = 1).  vsetvl with the saved vl as AVL and the saved vtype must then restore both.  The saved
+    values are implementation-defined, so only the difference of each CSR from its saved value is recorded."""
     r_vl, r_vtype, r_tmp = test_data.int_regs.get_registers(3)
     lines = [
         comment_banner(
             "cp_vector_reset",
-            "Boot code saved vl and vtype at reset.  vsetvl with them must restore both unchanged",
+            "Boot code saved vl and vtype at reset.  After setting both to other values, vsetvl with the saved\n"
+            "values must restore both",
         ),
-        test_data.add_testcase("vsetvl", "cp_vector_reset", _RESET_CG),
-        f"LI(x{r_tmp}, MSTATUS_VS & (MSTATUS_VS >> 1))",
+        f"LI(x{r_tmp}, MSTATUS_VS)",
         f"csrs mstatus, x{r_tmp}",
         f"LA(x{r_tmp}, rvtest_reset_csrs)",
         f"LREG x{r_vl}, RESET_VL_OFFSET(x{r_tmp})",
         f"LREG x{r_vtype}, RESET_VTYPE_OFFSET(x{r_tmp})",
-        ".option push",
-        ".option arch, +zve32x",
-        f"vsetvl x{r_tmp}, x{r_vl}, x{r_vtype}",
-        ".option pop",
+        *arch_block(
+            [
+                f"vsetivli x{r_tmp}, 1, e8, m1, tu, mu",
+                f"vsetvl x{r_tmp}, x{r_vl}, x{r_vtype}",
+            ],
+            "zve32x",
+        ),
+        test_data.add_testcase("vl", "cp_vector_reset", _RESET_CG),
         f"csrr x{r_tmp}, vl",
         f"xor x{r_vl}, x{r_vl}, x{r_tmp}",
+        write_sigupd(r_vl, test_data),
+        test_data.add_testcase("vtype", "cp_vector_reset", _RESET_CG),
         f"csrr x{r_tmp}, vtype",
         f"xor x{r_vtype}, x{r_vtype}, x{r_tmp}",
-        f"or x{r_vl}, x{r_vl}, x{r_vtype}",
-        write_sigupd(r_vl, test_data),
+        write_sigupd(r_vtype, test_data),
     ]
     test_data.int_regs.return_registers([r_vl, r_vtype, r_tmp])
     return gated(lines, "defined(ZVE32X_SUPPORTED)")
@@ -2415,12 +2405,12 @@ def _tdata1_reset_checks(test_data: TestData) -> list[str]:
                     f"xor x{r_val}, x{r_val}, x{r_exp}",
                     write_sigupd(r_val, test_data),
                 ],
-                f"defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS) && UDB_SDTRIG_NUM_TRIGGERS > {n}",
+                f"defined(UDB_SDTRIG_NUM_TRIGGERS) && UDB_SDTRIG_NUM_TRIGGERS > {n}",
             )
         )
     lines.extend(
         [
-            f"#if defined(SDTRIG_SUPPORTED) && defined(UDB_SDTRIG_NUM_TRIGGERS) && UDB_SDTRIG_NUM_TRIGGERS > {_MAX_TRIGGERS}",
+            f"#if defined(UDB_SDTRIG_NUM_TRIGGERS) && UDB_SDTRIG_NUM_TRIGGERS > {_MAX_TRIGGERS}",
             f'#error "cp_tdata1_reset checks at most {_MAX_TRIGGERS} triggers"',
             "#endif",
         ]

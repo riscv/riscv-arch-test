@@ -19,6 +19,7 @@ from testgen.priv.extensions.pmp.helpers import (
     RETURN_TRAMPOLINE,
     TOR_ENTRIES,
     TOR_REGION_WORDS,
+    TOR_TWIN_BYTES,
     cfg_byte,
     cfg_shift,
     entry_walk,
@@ -118,6 +119,11 @@ def _make_pmpcfg_walk_chunk(test_data: TestData, number: int, byte: int) -> Test
 #: The 15 PMP entries below the background entry of a 16-entry PMP, lowest priority first.
 _ENTRIES = tuple(range(14, -1, -1))
 
+#: The TOR twins' entries below a 16-entry background: each is bounded below by the preceding
+#: pmpaddr, and entry 14 is left alone because pmpaddr14 is the bottom of a TOR background.
+_TOR_ENTRIES = tuple(range(13, 0, -1))
+_TOR_ODD_ENTRIES = tuple(range(13, 0, -2))
+
 
 # ---------------------------------------------------------------------------
 # cfg_A_all: pmpcfg.A is writable in every region
@@ -145,6 +151,9 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
 
     for name in amodes:
         const = None if name == "OFF" else f"PMP_{name}"
+        if name == "NAPOT":
+            # Without NAPOT, cp_cfg_A_napot_unsupported checks only that A does not read back NAPOT.
+            chunk.code.extend(["", "#ifdef UDB_PMP_NAPOT_SUPPORTED"])
         chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
         if const:
             rv32_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(4))
@@ -166,6 +175,40 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
         chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
         add_csr_checks(name, const, (5, 7, 9, 11, 13, 15))
         chunk.code.append("#endif")
+        if name == "NAPOT":
+            chunk.code.append("#endif // UDB_PMP_NAPOT_SUPPORTED")
+    return test_data.end_test_chunk()
+
+
+# ---------------------------------------------------------------------------
+# cfg_A_accept: which address-matching modes the hart accepts
+# ---------------------------------------------------------------------------
+
+
+def _make_a_accept_chunk(test_data: TestData) -> TestChunk:
+    """Write each A encoding to pmp0cfg (L = 0, XWR = 000) after clearing it, and read it back. Every
+    hart runs this: the reference model's readback follows its own TOR, NA4 and NAPOT support, so a
+    hart that accepts an unsupported mode or drops a supported one mismatches."""
+    chunk = test_data.begin_test_chunk("Sm_cfg_A_accept")
+    chunk.section_header = comment_banner(
+        "cp_cfg_A_accept",
+        "Write A = OFF, TOR, NA4 and NAPOT to pmp0cfg with L = 0 and XWR = 000, each after clearing it, and read it back.",
+    )
+    chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
+    for name in ("OFF", "TOR", "NA4", "NAPOT"):
+        const = "0" if name == "OFF" else f"(PMP_{name} & 0xFF)"
+        chunk.code.extend(
+            [
+                "",
+                f"// Clear pmp0cfg, then write A = {name}",
+                "csrw pmpcfg0, x0",
+                f"LI(x7, {const})",
+                test_data.add_testcase(name.lower(), "cp_cfg_A_accept", "PMP_Sm_cg"),
+                # x7, not DEFAULT_TEMP_REG (x4): the macro loads the expected value into x4
+                gen_csr_write_sigupd(7, "pmpcfg0", test_data),
+            ]
+        )
+    chunk.code.extend(["", "// Restore pmp0cfg", "csrw pmpcfg0, x0"])
     return test_data.end_test_chunk()
 
 
@@ -295,13 +338,16 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
 # ---------------------------------------------------------------------------
 
 
-def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
-    chunk = test_data.begin_test_chunk("Sm_cfg_L_access_all")
+def _make_l_access_all_chunk(test_data: TestData, amode: str = "napot") -> TestChunk:
+    """L = 0 never restricts M mode. The TOR twin walks entries 13..1, each bounded below by the
+    preceding pmpaddr; entries that would reach the background entry are compiled out."""
+    tor = amode == "tor"
+    chunk = test_data.begin_test_chunk("Sm_cfg_L_access_all" + ("_tor" if tor else ""))
     body = [
         *zero_pmp_regs(),
         "",
         "#define REGIONSTART TEST_FOR_EXECUTION",
-        *napot_mask_defines(),
+        *([] if tor else napot_mask_defines()),
         "",
         "// PMP configuration 0: M-mode access succeeds when every PMP entry is off",
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
@@ -310,16 +356,25 @@ def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
         "RVTEST_PMP_SET_BACKGROUND x4",
         *entry_walk(
             test_data,
-            _ENTRIES,
-            "napot",
-            lambda e: f"({cfg_byte('0000', 'napot', '0')} << {cfg_shift(e)})",
+            _TOR_ENTRIES if tor else _ENTRIES,
+            amode,
+            lambda e: f"({cfg_byte('0000', amode, '0')} << {cfg_shift(e)})",
             gen_rwx,
-            cross_by_access(execute="cp_cfg_L_access_exec", load="cp_cfg_L_access_read", store="cp_cfg_L_access_write"),
+            cross_by_access(
+                execute=f"cp_cfg_L_access_exec{'_tor' if tor else ''}",
+                load=f"cp_cfg_L_access_read{'_tor' if tor else ''}",
+                store=f"cp_cfg_L_access_write{'_tor' if tor else ''}",
+            ),
+            tor_bytes=TOR_TWIN_BYTES,
         ),
     ]
+    entries = "entries 13..1 (bounded below by the preceding pmpaddr)" if tor else "every entry"
+    suffix = "_tor" if tor else ""
     chunk.section_header = comment_banner(
-        "cp_cfg_L_access_exec, cp_cfg_L_access_read, cp_cfg_L_access_write, cp_none_jalr, cp_none_lw and cp_none_sw",
-        "{jalr, sw, lw} with every PMP entry off, then at a region whose entry has L = 0, A = NAPOT, XWR = 000, for every entry; all succeed.",
+        f"cp_cfg_L_access_exec{suffix}, cp_cfg_L_access_read{suffix}, cp_cfg_L_access_write{suffix}, "
+        "cp_none_jalr, cp_none_lw and cp_none_sw",
+        "{jalr, sw, lw} with every PMP entry off, then at a region whose entry has L = 0, "
+        f"A = {amode.upper()}, XWR = 000, for {entries}; all succeed.",
     )
     chunk.code.extend(body)
     chunk.raw_data.extend(tuple(REGION_BLOBS["napot_pad"]))
@@ -417,6 +472,54 @@ def _make_xwr_all_chunk(test_data: TestData, part: int) -> TestChunk:
         "cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_Rw00_all, cp_cfg_Rw10_all, cp_cfg_Rw11_all, "
         "cp_cfg_rW00_all, cp_cfg_rW10_all and cp_cfg_rW11_all",
         "Every load and store width plus a jalr at a locked NAPOT region, rolling the six legal XWR over entries 14..0.",
+    )
+    chunk.code.extend(body)
+    chunk.raw_data.extend(tuple(REGION_BLOBS["napot_pad"]))
+    return test_data.end_test_chunk()
+
+
+#: The six legal XWR, rolled over the odd TOR entries 13..1 so that each entry gets each one
+#: across the six TOR twin files.
+_LEGAL_XWR = ("000", "100", "001", "101", "011", "111")
+
+
+def _make_xwr_all_tor_chunk(test_data: TestData, part: int) -> TestChunk:
+    """TOR twin of cfg_XWR_all: locked TOR regions on entries 13, 11, ..., 1 (each bounded below by
+    the preceding pmpaddr), with the six legal XWR rolled over the entries across six files.
+    Entries that would reach the bottom of the background entry are compiled out."""
+    chunk = test_data.begin_test_chunk(f"Sm_cfg_XWR_all_tor-{part:02d}")
+    codes = [_LEGAL_XWR[(part - 1 + index) % 6] for index in range(len(_TOR_ODD_ENTRIES))]
+    body = [
+        *zero_pmp_regs(),
+        "",
+        *(f"#define PMPREGION_XWR_{xwr} {cfg_byte(f'1{xwr}', 'tor', '0')}" for xwr in sorted(set(codes))),
+        "#define REGIONSTART TEST_FOR_EXECUTION",
+        "",
+        "RVTEST_PMP_SET_BACKGROUND x4",
+    ]
+    first = len(_TOR_ODD_ENTRIES) * (part - 1) + 1
+    for n, (entry, xwr) in enumerate(zip(_TOR_ODD_ENTRIES, codes, strict=True), start=first):
+        crosses = cross_by_access(
+            execute=f"cp_cfg_X{xwr[0]}_all_tor",
+            load=f"cp_cfg_Rw{xwr[2]}{xwr[1]}_all_tor",
+            store=f"cp_cfg_rW{xwr[2]}{xwr[1]}_all_tor",
+        )
+        body.extend(
+            [
+                "",
+                f"#if UDB_NUM_USABLE_PMP_ENTRIES >= {entry + 3}",
+                f"// PMP configuration {n}: L = 1 and XWR = {xwr} on PMP entry {entry}",
+                *set_pmpaddr("tor", entry, tor_bytes=TOR_TWIN_BYTES),
+                *set_pmpcfg(entry, f"(PMPREGION_XWR_{xwr} << {cfg_shift(entry)})"),
+                "RVTEST_SFENCE_VMA_IF_SUPPORTED",
+                *gen_rwx_all(test_data, f"entry{entry}_lxwr{xwr}", crosses),
+                "#endif",
+            ]
+        )
+    chunk.section_header = comment_banner(
+        "cp_cfg_X0_all_tor, cp_cfg_X1_all_tor, cp_cfg_Rw00_all_tor, cp_cfg_Rw10_all_tor, cp_cfg_Rw11_all_tor, "
+        "cp_cfg_rW00_all_tor, cp_cfg_rW10_all_tor and cp_cfg_rW11_all_tor",
+        "Every load and store width plus a jalr at a locked TOR region, rolling the six legal XWR over entries 13, 11, ..., 1.",
     )
     chunk.code.extend(body)
     chunk.raw_data.extend(tuple(REGION_BLOBS["napot_pad"]))
@@ -653,8 +756,10 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
                     "and x7, x7, t3",
                     write_sigupd(7, test_data),
                 ]
-                if read_mode == "TOR":
-                    block = ["#ifdef UDB_PMP_TOR_SUPPORTED", *block, "#endif"]
+                modes = sorted({write_mode, read_mode} - {"OFF"})
+                if modes:
+                    guard = " && ".join(f"defined(UDB_PMP_{mode}_SUPPORTED)" for mode in modes)
+                    block = [f"#if {guard}", *block, "#endif"]
                 chunk.code.extend(block)
     return test_data.end_test_chunk()
 
@@ -925,6 +1030,177 @@ def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
 
 
 #####################################################################
+# TOR twins of the priority and all-entries checks
+#####################################################################
+
+#: LXWR of the three nested TOR regions on entries 1, 3 and 5, smallest (highest priority) first.
+_PRIORITY_TOR_CODES = ("1000", "1101", "1011")
+
+
+def _make_priority_tor_chunk(test_data: TestData) -> TestChunk:
+    """Three nested TOR regions with a common base on entries 1, 3 and 5; entry 2i+1 covers
+    PMP_NAPOT_REGION_BYTES * 2^i bytes. The last word of region i lies in regions i..2 only."""
+    chunk = test_data.begin_test_chunk("Sm_priority_tor")
+    entries = (1, 3, 5)
+    body = [
+        *zero_pmp_regs(),
+        "",
+        *(
+            f"#define PMPREGION{e}_LXWR_{lxwr} {cfg_byte(lxwr, 'tor', cfg_shift(e))}"
+            for e, lxwr in zip(entries, _PRIORITY_TOR_CODES, strict=True)
+        ),
+        "",
+        "RVTEST_PMP_SET_BACKGROUND x4",
+        "",
+        "// Three nested TOR regions based at TEST_FOR_EXECUTION, of PMP_NAPOT_REGION_BYTES times 1, 2 and 4",
+    ]
+    for index, entry in enumerate(entries):
+        body.extend(
+            set_pmpaddr("tor", entry, "TEST_FOR_EXECUTION", tor_bytes=f"({1 << index} * PMP_NAPOT_REGION_BYTES)")
+        )
+    codes = dict(zip(entries, _PRIORITY_TOR_CODES, strict=True))
+    cfg_values = [f"PMPREGION{e}_LXWR_{codes[e]}" if e in codes else "0" for e in range(max(entries) + 1)]
+    body.extend(
+        [
+            "#if __riscv_xlen == 64",
+            *_packed_pmpcfg_writes(cfg_values, 64),
+            "#else",
+            *_packed_pmpcfg_writes(cfg_values, 32),
+            "#endif",
+            "RVTEST_SFENCE_VMA_IF_SUPPORTED",
+        ]
+    )
+    for index, (entry, lxwr) in enumerate(zip(entries, _PRIORITY_TOR_CODES, strict=True)):
+        size = 1 << index
+        body.extend(
+            [
+                "",
+                f"// PMP configuration {index + 1}: access the last word of region {index} (entry {entry}, size {size}x), permissions {lxwr}",
+                *gen_rwx(
+                    test_data,
+                    f"region{index}_lxwr{lxwr}",
+                    cross_by_access(
+                        execute="cp_priority_tor_jalr", load="cp_priority_tor_lw", store="cp_priority_tor_sw"
+                    ),
+                    f"(TEST_FOR_EXECUTION + {size} * PMP_NAPOT_REGION_BYTES - 4)",
+                ),
+            ]
+        )
+    data = [
+        ".p2align 12",
+        "TEST_FOR_EXECUTION_0:",
+        "jr ra",
+        ".balign (64 * PMP_NAPOT_REGION_BYTES)",
+        "TEST_FOR_EXECUTION:",
+        ".rept (16 * PMP_NAPOT_REGION_BYTES)",
+        "nop",
+        ".endr",
+        *RETURN_TRAMPOLINE,
+    ]
+    chunk.section_header = comment_banner(
+        "cp_priority_tor_jalr, cp_priority_tor_lw and cp_priority_tor_sw",
+        "{jalr, sw, lw} at the last word of each of three nested TOR regions on entries 1, 3 and 5; "
+        "the lowest-numbered matching entry decides.",
+    )
+    chunk.code.extend(body)
+    chunk.raw_data.extend(tuple(data))
+    return test_data.end_test_chunk()
+
+
+def _make_priority_off_tor_chunk(test_data: TestData) -> TestChunk:
+    """Entries 0..3 = OFF, TOR XR, OFF, TOR XWR over one region: each OFF entry holds the bottom
+    of the TOR entry above it and never matches, and entry 1 decides."""
+    chunk = test_data.begin_test_chunk("Sm_priority_off_tor")
+    codes = (("1000", "off"), ("1101", "tor"), ("1000", "off"), ("1111", "tor"))
+    body = [
+        *zero_pmp_regs(),
+        "",
+        *(
+            f"#define PMPREGION{e}_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(e))}"
+            for e, (lxwr, amode) in enumerate(codes)
+        ),
+        "#define REGIONSTART TEST_FOR_EXECUTION",
+        "",
+        "RVTEST_PMP_SET_BACKGROUND x4",
+        "",
+        "// pmpaddr0 and pmpaddr2: OFF entries at REGIONSTART; entries 1 and 3: TOR regions above them",
+        *set_pmpaddr("tor", 1, tor_bytes=TOR_TWIN_BYTES),
+        *set_pmpaddr("tor", 3, tor_bytes=TOR_TWIN_BYTES),
+        "",
+        "// PMP configuration 1: an OFF region does not match, and the first matching region takes priority",
+        *set_pmpcfg(0, "|".join(f"PMPREGION{e}_LXWR_{lxwr}" for e, (lxwr, _) in enumerate(codes))),
+        "RVTEST_SFENCE_VMA_IF_SUPPORTED",
+        *gen_rwx(
+            test_data,
+            "entry1",
+            cross_by_access(
+                execute="cp_priority_off_tor_jalr", load="cp_priority_off_tor_lw", store="cp_priority_off_tor_sw"
+            ),
+        ),
+    ]
+    chunk.section_header = comment_banner(
+        "cp_priority_off_tor_jalr, cp_priority_off_tor_lw and cp_priority_off_tor_sw",
+        "{jalr, sw, lw} at a region covered by entries 0..3 = OFF, TOR XR, OFF, TOR XWR; entry 1 decides.",
+    )
+    chunk.code.extend(body)
+    chunk.raw_data.extend(tuple(REGION_BLOBS["napot_pad"]))
+    return test_data.end_test_chunk()
+
+
+def _make_all_entries_tor_chunk(test_data: TestData) -> TestChunk:
+    """TOR twin of all_entries_check: a locked TOR XR region on every odd entry below the background
+    entry, each bounded below by the preceding pmpaddr."""
+    chunk = test_data.begin_test_chunk("Sm_all_entries_check_tor")
+
+    def _all_entries_cfg(entry: int) -> str:
+        return f"(PMP_REGION_CFG << {cfg_shift(entry)})"
+
+    crosses = cross_by_access(
+        execute="cp_all_entries_tor_jalr", load="cp_all_entries_tor_lw", store="cp_all_entries_tor_sw"
+    )
+    body = [
+        *zero_pmp_regs(),
+        "",
+        f"#define PMP_REGION_CFG {cfg_byte('1101', 'tor', '0')}",
+        "#define REGIONSTART TEST_FOR_EXECUTION",
+        "",
+        "RVTEST_PMP_SET_BACKGROUND x4",
+        "",
+        "// Every odd entry below the background entry, lowest priority first.",
+        "#if UDB_NUM_PMP_ENTRIES == 64",
+        *entry_walk(
+            test_data,
+            range(61, 0, -2),
+            "tor",
+            _all_entries_cfg,
+            gen_rwx,
+            crosses,
+            case_prefix="pmp64_entry",
+            tor_bytes=TOR_TWIN_BYTES,
+        ),
+        "#else",
+        *entry_walk(
+            test_data,
+            _TOR_ODD_ENTRIES,
+            "tor",
+            _all_entries_cfg,
+            gen_rwx,
+            crosses,
+            case_prefix="pmp16_entry",
+            tor_bytes=TOR_TWIN_BYTES,
+        ),
+        "#endif",
+    ]
+    chunk.section_header = comment_banner(
+        "cp_all_entries_tor_jalr, cp_all_entries_tor_lw and cp_all_entries_tor_sw",
+        "{jalr, sw, lw} at a locked TOR XR region, for every odd entry below the background entry.",
+    )
+    chunk.code.extend(body)
+    chunk.raw_data.extend(tuple(REGION_BLOBS["napot_pad"]))
+    return test_data.end_test_chunk()
+
+
+#####################################################################
 
 
 @add_priv_test_generator(
@@ -938,10 +1214,9 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
         _make_zero_walk_chunk(test_data),
         *(_make_pmpcfg_walk_chunk(test_data, byte + 2, byte) for byte in range(4)),
         _make_a_all_chunk(test_data, "cfg_A_all", ("NAPOT", "OFF")),
+        _make_a_accept_chunk(test_data),
         _make_a_off_all_chunk(test_data),
-        _make_l_access_all_chunk(test_data),
         _make_l_modify_chunk(test_data, "off"),
-        *(_make_xwr_all_chunk(test_data, part) for part in range(1, 5)),
         _make_grain_chunk(test_data),
         _make_grain_check_chunk(test_data),
     ]
@@ -982,6 +1257,8 @@ def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
 )
 def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
     return [
+        _make_l_access_all_chunk(test_data),
+        *(_make_xwr_all_chunk(test_data, part) for part in range(1, 5)),
         _make_l_modify_chunk(test_data, "napot"),
         _make_amode_all_chunk(test_data, "napot"),
         *(_make_legal_chunk(test_data, "napot", part) for part in (1, 2)),
@@ -1006,4 +1283,9 @@ def make_pmpsm_tor(test_data: TestData) -> list[TestChunk]:
         _make_tor_all_chunk(test_data),
         *(_make_tor_check_chunk(test_data, part) for part in (1, 2, 3)),
         *(_make_legal_chunk(test_data, "tor", part) for part in (1, 2)),
+        _make_l_access_all_chunk(test_data, "tor"),
+        *(_make_xwr_all_tor_chunk(test_data, part) for part in range(1, 7)),
+        _make_priority_tor_chunk(test_data),
+        _make_priority_off_tor_chunk(test_data),
+        _make_all_entries_tor_chunk(test_data),
     ]

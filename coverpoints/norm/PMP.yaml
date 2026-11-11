@@ -13,15 +13,15 @@ normative_rule_definitions:
     # Representative coverpoints; also PMP_Sm_cg/cp_cfg_Rw*_all and PMP_Sm_cg/cp_cfg_A_*_r
     coverpoint:
       [
-        "PMP_F_cg/cp_cfg_R",
-        "PMP_S_cg/{cp_cfg_R, cp_mprv_lw}",
+        "PMP_F_cg/{cp_cfg_R, cp_cfg_R_tor}",
+        "PMP_S_cg/{cp_cfg_R, cp_cfg_R_tor, cp_mprv_lw, cp_mprv_tor_lw}",
         "PMP_Sm_cg/cp_cfg_R",
-        "PMP_Zalrsc_cg/cp_cfg_RW",
-        "PMP_F_cg/cp_cfg_R",
-        "PMP_Zca_cg/cp_cfg_R",
-        "PMP_U_cg/{cp_cfg_R, cp_mprv_lw}",
-        "PMP_Zalrsc_cg/cp_cfg_RW",
-        "PMP_Zca_cg/cp_cfg_R",
+        "PMP_Zalrsc_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+        "PMP_F_cg/{cp_cfg_R, cp_cfg_R_tor}",
+        "PMP_Zca_cg/{cp_cfg_R, cp_cfg_R_tor}",
+        "PMP_U_cg/{cp_cfg_R, cp_cfg_R_tor, cp_mprv_lw, cp_mprv_tor_lw}",
+        "PMP_Zalrsc_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+        "PMP_Zca_cg/{cp_cfg_R, cp_cfg_R_tor}",
       ]
 
   # Attempting to execute a store instruction which accesses a physical address within
@@ -33,18 +33,18 @@ normative_rule_definitions:
     # Representative coverpoints; also PMP_Sm_cg/cp_cfg_rW*_all and cp_cfg_W in PMP_F_cg and PMP_Zca_cg
     coverpoint:
       [
-        "PMP_F_cg/cp_cfg_W",
-        "PMP_S_cg/{cp_cfg_W, cp_mprv_sw}",
+        "PMP_F_cg/{cp_cfg_W, cp_cfg_W_tor}",
+        "PMP_S_cg/{cp_cfg_W, cp_cfg_W_tor, cp_mprv_sw, cp_mprv_tor_sw}",
         "PMP_Sm_cg/cp_cfg_W",
-        "PMP_Zalrsc_cg/cp_cfg_RW",
-        "PMP_Zaamo_cg/cp_cfg_RW",
-        "PMP_Zicbo_cg/cp_cbo_zero",
-        "PMP_U_cg/{cp_cfg_W, cp_mprv_sw}",
-        "PMP_Zaamo_cg/cp_cfg_RW",
-        "PMP_Zalrsc_cg/cp_cfg_RW",
-        "PMP_Zca_cg/cp_cfg_W",
-        "PMP_HSvZicbo_cg/cp_pmp",
-        "PMP_Zicbo_cg/cp_cbo_zero",
+        "PMP_Zalrsc_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+        "PMP_Zaamo_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+        "PMP_Zicbo_cg/{cp_cbo_zero, cp_cbo_zero_tor}",
+        "PMP_U_cg/{cp_cfg_W, cp_cfg_W_tor, cp_mprv_sw, cp_mprv_tor_sw}",
+        "PMP_Zaamo_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+        "PMP_Zalrsc_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+        "PMP_Zca_cg/{cp_cfg_W, cp_cfg_W_tor}",
+        "PMP_HSvZicbo_cg/{cp_pmp, cp_pmp_tor}",
+        "PMP_Zicbo_cg/{cp_cbo_zero, cp_cbo_zero_tor}",
       ]
 
   # When the L bit is set, the R/W/X permissions are enforced for all privilege modes.
@@ -62,11 +62,11 @@ normative_rule_definitions:
     # cp_mprv_* covers M-mode accesses with MPRV = 0 and 1 to unlocked entries
     coverpoint:
       [
-        "PMP_F_cg/{cp_cfg_R, cp_cfg_W}",
-        "PMP_S_cg/{cp_cfg_X, cp_mprv_lw, cp_mprv_sw}",
-        "PMP_Sm_cg/{cp_cfg_X0_all, cp_cfg_L_access_exec, cp_cfg_L_access_read, cp_cfg_L_access_write}",
-        "PMP_U_cg/{cp_cfg_X, cp_mprv_lw, cp_mprv_sw}",
-        "PMP_Zaamo_cg/cp_cfg_RW",
+        "PMP_F_cg/{cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
+        "PMP_S_cg/{cp_cfg_X, cp_cfg_X_tor, cp_mprv_lw, cp_mprv_tor_lw, cp_mprv_sw, cp_mprv_tor_sw}",
+        "PMP_Sm_cg/{cp_cfg_X0_all, cp_cfg_X0_all_tor, cp_cfg_L_access_exec, cp_cfg_L_access_exec_tor, cp_cfg_L_access_read, cp_cfg_L_access_read_tor, cp_cfg_L_access_write, cp_cfg_L_access_write_tor}",
+        "PMP_U_cg/{cp_cfg_X, cp_cfg_X_tor, cp_mprv_lw, cp_mprv_tor_lw, cp_mprv_sw, cp_mprv_tor_sw}",
+        "PMP_Zaamo_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
       ]
 
   # PMP checks are applied to all accesses whose effective privilege mode is S or U,
@@ -78,8 +78,8 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_* and cp_mprv_jalr
     coverpoint:
       [
-        "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_mprv_lw, cp_mprv_sw}",
-        "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_mprv_lw, cp_mprv_sw}",
+        "PMP_S_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_mprv_lw, cp_mprv_tor_lw, cp_mprv_sw, cp_mprv_tor_sw}",
+        "PMP_U_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_mprv_lw, cp_mprv_tor_lw, cp_mprv_sw, cp_mprv_tor_sw}",
       ]
 
   # PMP CSRs are only accessible to M-mode.
@@ -114,9 +114,9 @@ normative_rule_definitions:
     # U-mode accesses with L = 0 and L = 1
     coverpoint:
       [
-        "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
-        "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_L_access_read}",
-        "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
+        "PMP_S_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
+        "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_L_access_read, cp_cfg_L_access_read_tor}",
+        "PMP_U_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
       ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X
@@ -135,10 +135,10 @@ normative_rule_definitions:
     # U-mode accesses with L = 0 and L = 1
     coverpoint:
       [
-        "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
-        "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_X1_all}",
-        "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
-        "PMP_Zca_cg/{cp_cfg_R, cp_cfg_W}",
+        "PMP_S_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
+        "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_X1_all, cp_cfg_X1_all_tor}",
+        "PMP_U_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
+        "PMP_Zca_cg/{cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
       ]
 
   # Failed memory operations generate an instruction, load, or store access-fault
@@ -147,9 +147,9 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_X0_all, cp_cfg_A_{napot,tor,na4}_* and cp_priority_*
     coverpoint:
       [
-        "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
+        "PMP_S_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
         "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_A_napot_all}",
-        "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
+        "PMP_U_cg/{cp_cfg_X, cp_cfg_X_tor, cp_cfg_R, cp_cfg_R_tor, cp_cfg_W, cp_cfg_W_tor}",
       ]
 
   # Attempting to fetch an instruction from a PMP region that does not have execute
@@ -158,9 +158,9 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_na4_x and cp_priority_jalr
     coverpoint:
       [
-        "PMP_S_cg/{cp_cfg_X, cp_mprv_jalr}",
-        "PMP_Sm_cg/{cp_cfg_X, cp_cfg_X0_all, cp_cfg_A_napot_x, cp_cfg_A_tor_x}",
-        "PMP_U_cg/{cp_cfg_X, cp_mprv_jalr}",
+        "PMP_S_cg/{cp_cfg_X, cp_cfg_X_tor, cp_mprv_jalr, cp_mprv_tor_jalr}",
+        "PMP_Sm_cg/{cp_cfg_X, cp_cfg_X0_all, cp_cfg_X0_all_tor, cp_cfg_A_napot_x, cp_cfg_A_tor_x}",
+        "PMP_U_cg/{cp_cfg_X, cp_cfg_X_tor, cp_mprv_jalr, cp_mprv_tor_jalr}",
         "PMP_Zca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}",
       ]
 
@@ -170,7 +170,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMP_S_cg/{cp_cfg_A_off_jalr, cp_cfg_A_off_lw, cp_cfg_A_off_sw}",
-        "PMP_Sm_cg/{cp_cfg_A_OFF_all_read, cp_cfg_A_OFF_all_write, cp_cfg_A_OFF_all_exec, cp_priority_off_lw}",
+        "PMP_Sm_cg/{cp_cfg_A_OFF_all_read, cp_cfg_A_OFF_all_write, cp_cfg_A_OFF_all_exec, cp_priority_off_lw, cp_priority_off_tor_lw}",
         "PMP_U_cg/{cp_cfg_A_off_jalr, cp_cfg_A_off_lw, cp_cfg_A_off_sw}",
         "PMP_Zca_cg/cp_misaligned_off",
       ]
@@ -188,6 +188,7 @@ normative_rule_definitions:
     # Representative coverpoints; also the _jalr and _sw variants
     coverpoint:
       [
+        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_S_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
         "PMP_Sm_cg/{cp_cfg_A_tor_r, cp_cfg_A_tor0_r, cp_cfg_A_tor_bot_L1_r, cp_cfg_A_tor_nonoverlap2_r}",
         "PMP_U_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
@@ -202,6 +203,7 @@ normative_rule_definitions:
     # Representative coverpoints; also the _jalr and _sw variants
     coverpoint:
       [
+        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_S_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
         "PMP_Sm_cg/{cp_cfg_A_napot_all, cp_cfg_A_napot_r, cp_cfg_A_NA4_all, cp_cfg_A_na4_r}",
         "PMP_U_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
@@ -230,7 +232,11 @@ normative_rule_definitions:
 
   # When G {ge} 1, the NA4 mode is not selectable.
   - name: pmp_na4_select_restriction
-    coverpoint: ["PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_all_odd}"]
+    coverpoint:
+      [
+        "PMP_Sm_cg/cp_cfg_A_accept",
+        "PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_all_odd}",
+      ]
 
   # The A field in a PMP entry's configuration register encodes the address-matching
   # mode of the associated PMP address register. The encoding of this field is shown
@@ -239,6 +245,7 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_all_odd, cp_cfg_A_OFF_all_*, cp_cfg_A_NA4_all
     coverpoint:
       [
+        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_OFF_all_read, cp_cfg_A_napot_all, cp_cfg_A_tor_r}",
       ]
 
@@ -258,7 +265,7 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_priority_* and PMP_Zca_cg/cp_misaligned_{tor,na4}
     coverpoint:
       [
-        "PMP_Sm_cg/{cp_priority_lw, cp_priority_sw, cp_priority_off_lw}",
+        "PMP_Sm_cg/{cp_priority_lw, cp_priority_tor_lw, cp_priority_sw, cp_priority_tor_sw, cp_priority_off_lw, cp_priority_off_tor_lw}",
         "PMP_Zca_cg/cp_misaligned_napot",
         "PMP_Zca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}",
       ]
@@ -306,6 +313,7 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_pmpcfg_walk_odd, cp_pmpcfg_zero and cp_grain*
     coverpoint:
       [
+        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_Sm_cg/{cp_pmpcfg_walk, cp_cfg_A_all_even, cp_grain_check_write, cp_pmpaddr_upper_zero}",
       ]
 
@@ -330,7 +338,7 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_all_even, other cp_cfg_A_tor_all*, cp_pmp64_write
     coverpoint:
       [
-        "PMP_Sm_cg/{cp_pmpcfg_walk, cp_cfg_A_tor_all7, cp_cfg_A_tor_all8, cp_pmp64_read}",
+        "PMP_Sm_cg/{cp_pmpcfg_walk, cp_cfg_A_tor_all7, cp_cfg_A_tor_all8, cp_pmp64_read, cp_all_entries_tor_lw}",
       ]
 
   # For RV64, the odd-numbered configuration registers, pmpcfg1, pmpcfg3, …,
@@ -361,12 +369,19 @@ normative_rule_definitions:
     # PMPZaamo checks rd after every AMO, and a later AMO's return value shows any write by a
     # faulting one. The PMPSm, PMPS, PMPU, and PMPF store probes do not read memory back.
     # rd is checked after every AMO, and a later AMO's return value shows any write by a faulting one
-    coverpoint: ["PMP_Zaamo_cg/cp_cfg_RW", "PMP_Zaamo_cg/cp_cfg_RW"]
+    coverpoint:
+      [
+        "PMP_Zaamo_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+        "PMP_Zaamo_cg/{cp_cfg_RW, cp_cfg_RW_tor}",
+      ]
 
   # Up to 64 PMP entries are supported. Implementations may implement zero, 16, or
   # 64 PMP entries; the lowest-numbered PMP entries must be implemented first.
   - name: pmp_entry_count
-    coverpoint: ["PMP_Sm_cg/{cp_pmp64_read, cp_pmp64_write}"]
+    coverpoint:
+      [
+        "PMP_Sm_cg/{cp_pmp64_read, cp_all_entries_tor_lw, cp_pmp64_write, cp_all_entries_tor_sw}",
+      ]
 
   # On some implementations, misaligned loads, stores, and instruction fetches may
   # be decomposed into multiple memory operations, some of which may succeed before
@@ -407,16 +422,16 @@ normative_rule_definitions:
 
   # store, store-conditional, and AMO instructions generate store/AMO exceptions.
   - name: mcause_exccode_st_sc_amo
-    coverpoint: ["PMP_Zaamo_cg/cp_cfg_RW"]
+    coverpoint: ["PMP_Zaamo_cg/{cp_cfg_RW, cp_cfg_RW_tor}"]
 
   # No SC.W instruction shall retire unless it passes memory permission checks
   - name: sc_retire_permission
     # Covers SCs with and without a live reservation
-    coverpoint: ["PMP_Zalrsc_cg/cp_cfg_RW"]
+    coverpoint: ["PMP_Zalrsc_cg/{cp_cfg_RW, cp_cfg_RW_tor}"]
 
   # Load and load-reserved instructions generate load exceptions.
   - name: mcause_exccode_ld_ldrsv
-    coverpoint: ["PMP_Zalrsc_cg/cp_cfg_RW"]
+    coverpoint: ["PMP_Zalrsc_cg/{cp_cfg_RW, cp_cfg_RW_tor}"]
 
   # If mtval is written with a nonzero value when an instruction access-fault, page-fault, or
   # hardware-error exception occurs on a hart with variable-length instructions, then mtval will
@@ -450,8 +465,8 @@ normative_rule_definitions:
   - name: cbm_unperm_fault
     coverpoint:
       [
-        "PMP_Zicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}",
-        "PMP_SvZicbo_cg/{cp_PA_PMP_rw_unset_cbo_s,cp_PA_PMP_rw_unset_cbo_u}",
+        "PMP_Zicbo_cg/{cp_cbo_inval, cp_cbo_inval_tor, cp_cbo_flush, cp_cbo_flush_tor, cp_cbo_clean, cp_cbo_clean_tor}",
+        "PMP_SvZicbo_cg/{cp_PA_PMP_rw_unset_cbo_s, cp_PA_PMP_rw_unset_cbo_s_tor, cp_PA_PMP_rw_unset_cbo_u, cp_PA_PMP_rw_unset_cbo_u_tor}",
       ]
 
   # The permissions required for a cache-block management instruction to access a PMP region are
@@ -460,8 +475,8 @@ normative_rule_definitions:
   - name: pmp_cbm_fault
     coverpoint:
       [
-        "PMP_Zicbo_cg/{cp_cbo_inval, cp_cbo_flush, cp_cbo_clean}",
-        "PMP_HSvZicbo_cg/cp_pmp",
+        "PMP_Zicbo_cg/{cp_cbo_inval, cp_cbo_inval_tor, cp_cbo_flush, cp_cbo_flush_tor, cp_cbo_clean, cp_cbo_clean_tor}",
+        "PMP_HSvZicbo_cg/{cp_pmp, cp_pmp_tor}",
       ]
 
   # If access to the cache block is not permitted, a cache-block zero instruction
@@ -474,28 +489,34 @@ normative_rule_definitions:
   - name: cbz_unperm_fault
     coverpoint:
       [
-        "PMP_Zicbo_cg/cp_cbo_zero",
-        "PMP_SvZicbo_cg/{cp_PA_PMP_rw_unset_cbo_s,cp_PA_PMP_rw_unset_cbo_u}",
+        "PMP_Zicbo_cg/{cp_cbo_zero, cp_cbo_zero_tor}",
+        "PMP_SvZicbo_cg/{cp_PA_PMP_rw_unset_cbo_s, cp_PA_PMP_rw_unset_cbo_s_tor, cp_PA_PMP_rw_unset_cbo_u, cp_PA_PMP_rw_unset_cbo_u_tor}",
       ]
 
   # If access to the cache block is not permitted, a cache-block prefetch
   # instruction does not raise any exceptions and shall not access any caches or
   # memory.
   - name: cbp_unperm_noexcep
-    coverpoint: ["PMP_Zicbo_cg/{cp_prefetch_w, cp_prefetch_r, cp_prefetch_i}"]
+    coverpoint:
+      [
+        "PMP_Zicbo_cg/{cp_prefetch_w, cp_prefetch_w_tor, cp_prefetch_r, cp_prefetch_r_tor, cp_prefetch_i, cp_prefetch_i_tor}",
+      ]
 
   # A cache-block management instruction is permitted to access the specified cache
   # block whenever a load instruction or store instruction is permitted to access the
   # corresponding physical addresses.
   - name: cbm_access
-    coverpoint: ["PMP_Zicbo_cg/{cp_cbo_clean, cp_cbo_flush, cp_cbo_inval}"]
+    coverpoint:
+      [
+        "PMP_Zicbo_cg/{cp_cbo_clean, cp_cbo_clean_tor, cp_cbo_flush, cp_cbo_flush_tor, cp_cbo_inval, cp_cbo_inval_tor}",
+      ]
 
   # A cache-block zero instruction is permitted to access the specified cache block
   # whenever a store instruction is permitted to access the corresponding physical
   # addresses and when the PMAs indicate that cache-block zero instructions are a
   # supported access type.
   - name: cbz_access
-    coverpoint: ["PMP_Zicbo_cg/cp_cbo_zero"]
+    coverpoint: ["PMP_Zicbo_cg/{cp_cbo_zero, cp_cbo_zero_tor}"]
 
   # When a page-fault, guest-page-fault, or access-fault exception is taken, the
   # relevant *tval CSR is written with the faulting effective address (i.e. the value
@@ -507,8 +528,8 @@ normative_rule_definitions:
     # rs1 is always block-aligned here, so a DUT that reports the block address also passes
     coverpoint:
       [
-        "PMP_Zicbo_cg/{cp_cbo_zero, cp_cbo_clean}",
-        "PMP_SvZicbo_cg/{cp_PA_PMP_rw_unset_cbo_s,cp_PA_PMP_rw_unset_cbo_u}",
+        "PMP_Zicbo_cg/{cp_cbo_zero, cp_cbo_zero_tor, cp_cbo_clean, cp_cbo_clean_tor}",
+        "PMP_SvZicbo_cg/{cp_PA_PMP_rw_unset_cbo_s, cp_PA_PMP_rw_unset_cbo_s_tor, cp_PA_PMP_rw_unset_cbo_u, cp_PA_PMP_rw_unset_cbo_u_tor}",
       ]
 
   # PMP checks are also applied to page-table accesses for virtual-address translation,
@@ -522,8 +543,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMP_Sv_cg/pmp0_pte_{noread,nowrite,noexec}_s",
-        "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s,cp_PTE_PMP_rw_unset_cbo_u}",
-        "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
+        "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s, cp_PTE_PMP_rw_unset_cbo_s_tor, cp_PTE_PMP_rw_unset_cbo_u, cp_PTE_PMP_rw_unset_cbo_u_tor}",
+        "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_tor_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_tor_read_s, Abit_unset_pmpW_unset_write_u, Abit_unset_pmpW_unset_tor_write_u, Dbit_unset_pmpW_unset_write_s, Dbit_unset_pmpW_unset_tor_write_s}",
       ]
 
   # PMP checks are also applied to page-table accesses for virtual-address translation,
@@ -533,7 +554,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMP_Sv_cg/pmp0_pte_{noread,nowrite,noexec}_s",
-        "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s,cp_PTE_PMP_rw_unset_cbo_u}",
+        "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s, cp_PTE_PMP_rw_unset_cbo_s_tor, cp_PTE_PMP_rw_unset_cbo_u, cp_PTE_PMP_rw_unset_cbo_u_tor}",
       ]
 
   # Implementations with virtual memory are permitted to perform address translations
@@ -575,9 +596,9 @@ normative_rule_definitions:
     # Representative coverpoints; also the other PMP_Svadu_cg/{Abit,Dbit}_unset_pmpW_unset crosses
     coverpoint:
       [
-        "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
+        "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_tor_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_tor_read_s, Abit_unset_pmpW_unset_write_u, Abit_unset_pmpW_unset_tor_write_u, Dbit_unset_pmpW_unset_write_s, Dbit_unset_pmpW_unset_tor_write_s}",
       ]
 
   # PMP checks the supervisor physical address of a CBO from VS-mode or VU-mode
   - name: H_pmp
-    coverpoint: ["PMP_HSvZicbo_cg/cp_pmp"]
+    coverpoint: ["PMP_HSvZicbo_cg/{cp_pmp, cp_pmp_tor}"]

@@ -15,6 +15,7 @@ from testgen.priv.extensions.pmp.helpers import (
     NAPOT_REGION_WORDS,
     RETURN_TRAMPOLINE,
     TOR_REGION_WORDS,
+    TOR_TWIN_BYTES,
     cfg_byte,
     cfg_shift,
     lxwr_walk_body,
@@ -22,9 +23,11 @@ from testgen.priv.extensions.pmp.helpers import (
     napot_mask_defines,
     set_pmpaddr,
     set_pmpcfg,
+    tor_twin_parts,
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
+    ProbeGenerator,
     cross_by_access,
     gen_compressed_execute,
     gen_zca,
@@ -274,23 +277,46 @@ _LEGAL_CROSSES = cross_by_access(execute="exec_c_instr", load="cp_cfg_R", store=
 _NAPOT_PAD = (NAPOT_REGION_WORDS, "jr ra")
 
 
-def _make_legal_chunk(test_data: TestData) -> TestChunk:
-    chunk = test_data.begin_test_chunk("Zca_legal_lwrx")
-    chunk.section_header = comment_banner("cp_cfg_R and cp_cfg_W", _ZCA_LEGAL_TEST_CASES)
-    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_zca, _LEGAL_CROSSES))
-    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop"), pad=_NAPOT_PAD))
-    return test_data.end_test_chunk()
+#: The TOR twins' crosses: the same probes against a TOR region bounding the same bytes.
+_LEGAL_CROSSES_TOR = cross_by_access(execute="exec_c_instr", load="cp_cfg_R_tor", store="cp_cfg_W_tor")
 
 
-def _make_zc_chunk(test_data: TestData, subset: str) -> TestChunk:
-    chunk = test_data.begin_test_chunk(f"Zca_{subset}_legal_lxwr")
-    chunk.section_header = comment_banner("cp_cfg_R and cp_cfg_W", _ZC_TEST_CASES[subset])
+def _legal_walk(test_data: TestData, name: str, generator: ProbeGenerator, amode: str) -> list[TestChunk]:
+    """The six locked LXWR against the region under test. The NAPOT test stacks them on entries
+    5..0; the TOR twin on entries 5, 3 and 1 in two files."""
+    if amode == "tor":
+        parts = [
+            (f"{name}_tor-{part:02d}", cases, 3 * part - 2)
+            for part, cases in enumerate(tor_twin_parts(LOCKED_LXWR_CASES), 1)
+        ]
+    else:
+        parts = [(name, LOCKED_LXWR_CASES, 1)]
+    crosses = _LEGAL_CROSSES_TOR if amode == "tor" else _LEGAL_CROSSES
+    tor = "_tor" if amode == "tor" else ""
+    chunks = []
+    for chunk_name, cases, first in parts:
+        chunk = test_data.begin_test_chunk(chunk_name)
+        description = _ZCA_LEGAL_TEST_CASES if name == "Zca_legal_lwrx" else _ZC_TEST_CASES[name.split("_")[1]]
+        chunk.section_header = comment_banner(
+            f"cp_cfg_R{tor} and cp_cfg_W{tor}", description.replace("NAPOT", amode.upper())
+        )
+        chunk.code.extend(
+            lxwr_walk_body(test_data, cases, amode, generator, crosses, first=first, tor_bytes=TOR_TWIN_BYTES)
+        )
+        # Two c.nops per .rept word: these tests build with Zca, where a bare `nop` compresses
+        # to 2 bytes and leaves the region half a PMP grain short.
+        chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop"), pad=_NAPOT_PAD))
+        chunks.append(test_data.end_test_chunk())
+    return chunks
+
+
+def _make_legal_chunks(test_data: TestData, amode: str) -> list[TestChunk]:
+    return _legal_walk(test_data, "Zca_legal_lwrx", gen_zca, amode)
+
+
+def _make_zc_chunks(test_data: TestData, subset: str, amode: str) -> list[TestChunk]:
     generator = {"zcb": gen_zcb, "zcd": gen_zcd, "zcf": gen_zcf}[subset]
-    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", generator, _LEGAL_CROSSES))
-    # Two c.nops per .rept word: these tests build with Zca, where a bare `nop` compresses
-    # to 2 bytes and leaves the region half a PMP grain short (see _make_legal_chunk).
-    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop"), pad=_NAPOT_PAD))
-    return test_data.end_test_chunk()
+    return _legal_walk(test_data, f"Zca_{subset}_legal_lxwr", generator, amode)
 
 
 @add_priv_test_generator(
@@ -333,10 +359,10 @@ def make_pmpzca_napot(test_data: TestData) -> list[TestChunk]:
     "PMP",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_legal(test_data: TestData) -> list[TestChunk]:
-    return [_make_legal_chunk(test_data)]
+    return _make_legal_chunks(test_data, "napot")
 
 
 @add_priv_test_generator(
@@ -349,6 +375,7 @@ def make_pmpzca_tor(test_data: TestData) -> list[TestChunk]:
     return [
         _make_cret_chunk(test_data, "tor"),
         *(_make_region_chunk(test_data, "tor", misaligned) for misaligned in (False, True)),
+        *_make_legal_chunks(test_data, "tor"),
     ]
 
 
@@ -357,10 +384,21 @@ def make_pmpzca_tor(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcb", "Sm"],
     march_extensions=["Zca", "Zcb"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_zcb(test_data: TestData) -> list[TestChunk]:
-    return [_make_zc_chunk(test_data, "zcb")]
+    return _make_zc_chunks(test_data, "zcb", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Zcb", "Sm"],
+    march_extensions=["Zca", "Zcb"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzca_zcb_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_zc_chunks(test_data, "zcb", "tor")
 
 
 @add_priv_test_generator(
@@ -368,10 +406,21 @@ def make_pmpzca_zcb(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcd", "Sm"],
     march_extensions=["Zca", "Zcd"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
-    return [_make_zc_chunk(test_data, "zcd")]
+    return _make_zc_chunks(test_data, "zcd", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Zcd", "Sm"],
+    march_extensions=["Zca", "Zcd"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzca_zcd_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_zc_chunks(test_data, "zcd", "tor")
 
 
 @add_priv_test_generator(
@@ -379,7 +428,18 @@ def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcf", "Sm"],
     march_extensions=["Zca", "Zcf"],
-    params=["MXLEN: 32", "NUM_PMP_ENTRIES: '>0'"],
+    params=["MXLEN: 32", "NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_zcf(test_data: TestData) -> list[TestChunk]:
-    return [_make_zc_chunk(test_data, "zcf")]
+    return _make_zc_chunks(test_data, "zcf", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Zcf", "Sm"],
+    march_extensions=["Zca", "Zcf"],
+    params=["MXLEN: 32", "NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzca_zcf_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_zc_chunks(test_data, "zcf", "tor")

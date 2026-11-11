@@ -16,6 +16,7 @@ from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
     REGION_BLOBS,
     TOR_ENTRIES,
+    TOR_TWIN_BYTES,
     UNLOCKED_LXWR_CASES,
     cfg_byte,
     cfg_shift,
@@ -23,6 +24,7 @@ from testgen.priv.extensions.pmp.helpers import (
     napot_mask_defines,
     set_pmpaddr,
     set_pmpcfg,
+    tor_twin_parts,
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
@@ -86,17 +88,33 @@ def _make_cfg_a_off_chunk(test_data: TestData, mode: Mode) -> TestChunk:
     return test_data.end_test_chunk()
 
 
-def _make_cfg_xwr_chunk(test_data: TestData, mode: Mode, *, locked: bool) -> TestChunk:
+def _make_cfg_xwr_chunk(
+    test_data: TestData, mode: Mode, *, locked: bool, amode: str = "napot", part: int | None = None
+) -> TestChunk:
+    """Every load and store width plus a jalr from the lower mode at the region under test. The TOR
+    twin bounds the same region with entries 5, 3 and 1, so its six cases take two files."""
     name = "cfg_XWR" if locked else "cfg_XWR_unlocked"
     cases = LOCKED_LXWR_CASES if locked else UNLOCKED_LXWR_CASES
-    chunk = test_data.begin_test_chunk(f"{mode.letter}_{name}")
+    suffix = ""
+    first = 1
+    if amode == "tor":
+        assert part is not None
+        cases = tor_twin_parts(cases)[part - 1]
+        suffix = f"_tor-{part:02d}"
+        first = 3 * (part - 1) + 1
+    chunk = test_data.begin_test_chunk(f"{mode.letter}_{name}{suffix}")
+    tor = "_tor" if amode == "tor" else ""
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_cfg_X, cp_cfg_R and cp_cfg_W",
-        f"Every load and store width plus a jalr from {mode.letter} mode at the start of a NAPOT region, "
+        f"{mode.suite} cp_cfg_X{tor}, cp_cfg_R{tor} and cp_cfg_W{tor}",
+        f"Every load and store width plus a jalr from {mode.letter} mode at the start of a {amode.upper()} region, "
         f"L = {int(locked)}, each legal XWR.",
     )
-    crosses = cross_by_access(execute="cp_cfg_X", load="cp_cfg_R", store="cp_cfg_W")
-    chunk.code.extend(lxwr_walk_body(test_data, cases, "napot", gen_rwx_all, crosses, lower_mode=mode.letter))
+    crosses = cross_by_access(execute=f"cp_cfg_X{tor}", load=f"cp_cfg_R{tor}", store=f"cp_cfg_W{tor}")
+    chunk.code.extend(
+        lxwr_walk_body(
+            test_data, cases, amode, gen_rwx_all, crosses, first=first, lower_mode=mode.letter, tor_bytes=TOR_TWIN_BYTES
+        )
+    )
     # The NAPOT pad keeps the region 8-byte aligned at every grain, so ld and sd stay naturally aligned.
     chunk.raw_data.extend(REGION_BLOBS["napot_pad"])
     return test_data.end_test_chunk()
@@ -142,27 +160,38 @@ def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
     return test_data.end_test_chunk()
 
 
-def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
-    chunk = test_data.begin_test_chunk(f"{mode.letter}_mprv_check-0{part}")
+def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int, amode: str = "napot") -> TestChunk:
+    """M-mode accesses with MPRV = {0, 1} and MPP = the lower mode. The NAPOT test uses entry 0;
+    the TOR twin uses entry 1, bounded below by pmpaddr0."""
+    tor = amode == "tor"
+    entry = 1 if tor else 0
+    chunk = test_data.begin_test_chunk(f"{mode.letter}_mprv_check{'_tor' if tor else ''}-0{part}")
     xwr = "000" if part == 1 else "111"
     body = [
         *zero_pmp_regs(),
         "",
-        f"#define PMPREGION_LXWR_0{xwr} {cfg_byte(f'0{xwr}', 'napot', cfg_shift(0))}",
-        f"#define PMPREGION_LXWR_1{xwr} {cfg_byte(f'1{xwr}', 'napot', cfg_shift(0))}",
+        f"#define PMPREGION_LXWR_0{xwr} {cfg_byte(f'0{xwr}', amode, cfg_shift(entry))}",
+        f"#define PMPREGION_LXWR_1{xwr} {cfg_byte(f'1{xwr}', amode, cfg_shift(entry))}",
         "#define MPRV       (1 << 17)",
         "#define MPP        (3 << 11)",
         f"#define MPP_LOWER  {mode.mpp}",
         "#define REGIONSTART TEST_FOR_EXECUTION",
-        *napot_mask_defines(),
+        *([] if tor else napot_mask_defines()),
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",
     ]
-    crosses = cross_by_access(execute="cp_mprv_jalr", load="cp_mprv_lw", store="cp_mprv_sw")
+    suffix = "_tor" if tor else ""
+    crosses = cross_by_access(execute=f"cp_mprv{suffix}_jalr", load=f"cp_mprv{suffix}_lw", store=f"cp_mprv{suffix}_sw")
     n = 0
     for lock in (0, 1):
-        body.extend(["", *set_pmpaddr("napot", 0), *set_pmpcfg(0, f"PMPREGION_LXWR_{lock}{xwr}")])
+        body.extend(
+            [
+                "",
+                *set_pmpaddr(amode, entry, tor_bytes=TOR_TWIN_BYTES),
+                *set_pmpcfg(entry, f"PMPREGION_LXWR_{lock}{xwr}"),
+            ]
+        )
         body.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         for mprv in (0, 1):
             n += 1
@@ -175,8 +204,9 @@ def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
                 ]
             )
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_mprv_jalr, cp_mprv_lw and cp_mprv_sw",
-        f"{{jalr, sw, lw}} from M mode with mstatus.MPRV = {{0, 1}} and MPP = {mode.letter}, region L = {{0, 1}}, XWR = {xwr}.",
+        f"{mode.suite} cp_mprv{suffix}_jalr, cp_mprv{suffix}_lw and cp_mprv{suffix}_sw",
+        f"{{jalr, sw, lw}} from M mode with mstatus.MPRV = {{0, 1}} and MPP = {mode.letter}, "
+        f"{amode.upper()} region on entry {entry}, L = {{0, 1}}, XWR = {xwr}.",
     )
     chunk.code.extend(body)
     chunk.raw_data.extend(REGION_BLOBS["napot_pad"])
@@ -218,15 +248,22 @@ def _make_legal_chunk(test_data: TestData, mode: Mode, amode: str, part: int | N
 
 def make_lower_mode_base(test_data: TestData, mode: Mode) -> list[TestChunk]:
     """Build lower-mode PMP tests without an address-mode constraint."""
-    chunks = [_make_cfg_a_off_chunk(test_data, mode)]
-    chunks.extend(_make_cfg_xwr_chunk(test_data, mode, locked=locked) for locked in (True, False))
-    chunks.append(_make_csr_access_chunk(test_data, mode))
-    chunks.extend(_make_mprv_chunk(test_data, mode, part) for part in (1, 2))
-    return chunks
+    return [_make_cfg_a_off_chunk(test_data, mode), _make_csr_access_chunk(test_data, mode)]
 
 
 def make_lower_mode_amode(test_data: TestData, mode: Mode, amode: str) -> list[TestChunk]:
     """Build lower-mode PMP tests for one PMP address mode."""
     if amode == "na4":
         return [_make_legal_chunk(test_data, mode, amode)]
-    return [_make_legal_chunk(test_data, mode, amode, part) for part in (1, 2)]
+    chunks = [_make_legal_chunk(test_data, mode, amode, part) for part in (1, 2)]
+    if amode == "napot":
+        chunks.extend(_make_cfg_xwr_chunk(test_data, mode, locked=locked) for locked in (True, False))
+        chunks.extend(_make_mprv_chunk(test_data, mode, part) for part in (1, 2))
+    else:
+        chunks.extend(
+            _make_cfg_xwr_chunk(test_data, mode, locked=locked, amode="tor", part=part)
+            for locked in (True, False)
+            for part in (1, 2)
+        )
+        chunks.extend(_make_mprv_chunk(test_data, mode, part, "tor") for part in (1, 2))
+    return chunks

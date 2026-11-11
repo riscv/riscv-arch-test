@@ -31,7 +31,8 @@ def _setup_envcfg(extension: str, mode: str, scratch: int) -> tuple[str, ...]:
 
 
 def _cross(topic: str, mode: str) -> str:
-    return f"cp_{'PA' if topic == 'pmp_on_pa' else 'PTE'}_PMP_rw_unset_cbo_{mode[0].lower()}"
+    tor = "_tor" if topic.endswith("_tor") else ""
+    return f"cp_{'PA' if topic.startswith('pmp_on_pa') else 'PTE'}_PMP_rw_unset_cbo_{mode[0].lower()}{tor}"
 
 
 def _add_operations(
@@ -65,7 +66,7 @@ def _begin_test(
     va_defs: tuple[tuple[str, str], ...] | None = None,
     va_code_override: str | None = None,
 ) -> TestChunk:
-    min_granularity = 5 if topic == "pmp_on_pa" else None
+    min_granularity = 5 if topic.startswith("pmp_on_pa") else None
     return begin_sv_test(
         test_data,
         regs,
@@ -82,28 +83,33 @@ def _begin_test(
     )
 
 
-def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> TestChunk:
+def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str, amode: str = "napot") -> TestChunk:
+    """PMP covers the translated data page with X only. NAPOT uses entry 0; the TOR twin uses entry 1,
+    bounded below by pmpaddr0, over the same bytes."""
     regs = SvRegs.allocate(test_data)
+    tor = amode == "tor"
+    entry = 1 if tor else 0
+    topic = "pmp_on_pa_tor" if tor else "pmp_on_pa"
     chunk = _begin_test(
         test_data,
         regs,
         sv,
         mode,
-        "pmp_on_pa",
+        topic,
         extension,
         pre_va_asm=(
             f"RVTEST_PMP_SET_BACKGROUND x{regs.scratch}",
             "",
-            *pmp.set_pmpaddr("napot", 0, "rvtest_data_1"),
+            *pmp.set_pmpaddr(amode, entry, "rvtest_data_1", tor_bytes="(1 << PMP_REGION_SHIFT)"),
         ),
     )
     chunk.code.extend(
         [
             *pmp.write_pmpcfg0(
                 test_data,
-                pmp.cfg_byte("0100", "napot", pmp.cfg_shift(0)),
+                pmp.cfg_byte("0100", amode, pmp.cfg_shift(entry)),
                 "pmpcfg0_x",
-                "PMP_perm",
+                "PMP_perm_tor" if tor else "PMP_perm",
             ),
             "",
         ]
@@ -116,7 +122,7 @@ def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> T
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, regs, mode, level, extension, number, _cross("pmp_on_pa", mode)),
+                *_add_operations(test_data, sv, regs, mode, level, extension, number, _cross(topic, mode)),
                 "",
             ]
         )
@@ -125,15 +131,20 @@ def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> T
     return end_sv_test(test_data, regs)
 
 
-def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> TestChunk:
+def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str, amode: str = "napot") -> TestChunk:
+    """PMP covers the page table at each level with X only. NAPOT uses entry 0; the TOR twin uses
+    entry 1, bounded below by pmpaddr0, over the same bytes."""
     va_data, va_code = PMP_PTE_VAS[sv.name]
     regs = SvRegs.allocate(test_data)
+    tor = amode == "tor"
+    entry = 1 if tor else 0
+    topic = "pmp_on_pte_tor" if tor else "pmp_on_pte"
     chunk = _begin_test(
         test_data,
         regs,
         sv,
         mode,
-        "pmp_on_pte",
+        topic,
         extension,
         pre_va_asm=(f"RVTEST_PMP_SET_BACKGROUND x{regs.scratch}",),
         va_defs=(("va_data", va_data),),
@@ -143,15 +154,17 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
     faults_per_case = len(_FAMILIES[extension][1])
     for number, level in enumerate(sv.levels_desc, start=1):
         top = level == sv.levels - 1
-        chunk.code.extend([*pmp.set_pmpaddr("napot", 0, sv.page_table_label(level)), ""])
+        chunk.code.extend(
+            [*pmp.set_pmpaddr(amode, entry, sv.page_table_label(level), tor_bytes=pmp.TOR_TWIN_BYTES), ""]
+        )
         if top:
             chunk.code.extend(
                 [
                     *pmp.write_pmpcfg0(
                         test_data,
-                        pmp.cfg_byte("0100", "napot", pmp.cfg_shift(0)),
+                        pmp.cfg_byte("0100", amode, pmp.cfg_shift(entry)),
                         "write_pmpcfg0",
-                        "PMP_perm",
+                        "PMP_perm_tor" if tor else "PMP_perm",
                     ),
                     ".if (UDB_PMP_GRANULARITY < 12)",
                 ]
@@ -163,7 +176,7 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, regs, mode, level, extension, number, _cross("pmp_on_pte", mode)),
+                *_add_operations(test_data, sv, regs, mode, level, extension, number, _cross(topic, mode)),
             ]
         )
         if top:
@@ -174,10 +187,12 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
     return end_sv_test(test_data, regs)
 
 
-def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str) -> list[TestChunk]:
+def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str, amode: str) -> list[TestChunk]:
     tests = []
     for mode in ("Smode", "Umode"):
-        tests.extend((_make_on_pa(test_data, sv, mode, extension), _make_on_pte(test_data, sv, mode, extension)))
+        tests.extend(
+            (_make_on_pa(test_data, sv, mode, extension, amode), _make_on_pte(test_data, sv, mode, extension, amode))
+        )
     return tests
 
 
@@ -185,85 +200,173 @@ def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str) -> list[Te
     "PMP",
     required_extensions=["Sv32", "Zicbom", "Sm"],
     march_extensions=["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV32, "Zicbom")
+    return _make_svpmpzicbo(test_data, SV32, "Zicbom", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv32", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv32_zicbom_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV32, "Zicbom", "tor")
 
 
 @add_priv_test_generator(
     "PMP",
     required_extensions=["Sv32", "Zicboz", "Sm"],
     march_extensions=["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV32, "Zicboz")
+    return _make_svpmpzicbo(test_data, SV32, "Zicboz", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv32", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv32_zicboz_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV32, "Zicboz", "tor")
 
 
 @add_priv_test_generator(
     "PMP",
     required_extensions=["Sv39", "Zicbom", "Sm"],
     march_extensions=["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV39, "Zicbom")
+    return _make_svpmpzicbo(test_data, SV39, "Zicbom", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv39", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv39_zicbom_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV39, "Zicbom", "tor")
 
 
 @add_priv_test_generator(
     "PMP",
     required_extensions=["Sv39", "Zicboz", "Sm"],
     march_extensions=["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV39, "Zicboz")
+    return _make_svpmpzicbo(test_data, SV39, "Zicboz", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv39", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv39_zicboz_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV39, "Zicboz", "tor")
 
 
 @add_priv_test_generator(
     "PMP",
     required_extensions=["Sv48", "Zicbom", "Sm"],
     march_extensions=["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV48, "Zicbom")
+    return _make_svpmpzicbo(test_data, SV48, "Zicbom", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv48", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv48_zicbom_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV48, "Zicbom", "tor")
 
 
 @add_priv_test_generator(
     "PMP",
     required_extensions=["Sv48", "Zicboz", "Sm"],
     march_extensions=["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV48, "Zicboz")
+    return _make_svpmpzicbo(test_data, SV48, "Zicboz", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv48", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv48_zicboz_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV48, "Zicboz", "tor")
 
 
 @add_priv_test_generator(
     "PMP",
     required_extensions=["Sv57", "Zicbom", "Sm"],
     march_extensions=["Zicbom"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV57, "Zicbom")
+    return _make_svpmpzicbo(test_data, SV57, "Zicbom", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv57", "Zicbom", "Sm"],
+    march_extensions=["Zicbom"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv57_zicbom_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV57, "Zicbom", "tor")
 
 
 @add_priv_test_generator(
     "PMP",
     required_extensions=["Sv57", "Zicboz", "Sm"],
     march_extensions=["Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svpmpzicbo_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svpmpzicbo(test_data, SV57, "Zicboz")
+    return _make_svpmpzicbo(test_data, SV57, "Zicboz", "napot")
+
+
+@add_priv_test_generator(
+    "PMP",
+    required_extensions=["Sv57", "Zicboz", "Sm"],
+    march_extensions=["Zicboz"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_svpmpzicbo_sv57_zicboz_tor(test_data: TestData) -> list[TestChunk]:
+    return _make_svpmpzicbo(test_data, SV57, "Zicboz", "tor")

@@ -49,6 +49,8 @@ RVTEST_BEGIN
 
   RVTEST_PMP_SET_BACKGROUND x4
 
+#ifdef UDB_PMP_NAPOT_SUPPORTED
+
 // PMP configuration: write A = NAPOT to every byte of every pmpcfg CSR
 #if __riscv_xlen == 64
   LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
@@ -109,6 +111,7 @@ PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15:
   # Write x4 to pmpcfg15, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15_str)
 #endif
+#endif // UDB_PMP_NAPOT_SUPPORTED
 
 // PMP configuration: write A = OFF to every byte of every pmpcfg CSR
 PMP_Sm_cg_cp_cfg_A_all_even_OFF_pmpcfg0:

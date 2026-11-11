@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'S', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -32,7 +33,7 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // PMPS cp_mprv_jalr, cp_mprv_lw and cp_mprv_sw
-//   {jalr, sw, lw} from M mode with mstatus.MPRV = {0, 1} and MPP = S, region L = {0, 1}, XWR = 000.
+//   {jalr, sw, lw} from M mode with mstatus.MPRV = {0, 1} and MPP = S, NAPOT region on entry 0, L = {0, 1}, XWR = 000.
 /////////////////////////////////
 
 // Clear every pmpcfg and pmpaddr CSR
@@ -259,18 +260,18 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_S_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 150; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 151; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 152; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
-PMP_S_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 153; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 154; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 155; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
-PMP_S_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 156; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 157; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 158; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
-PMP_S_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 159; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 160; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 161; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 289; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 290; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 291; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 292; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 293; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 294; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 295; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 296; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 297; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 298; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 299; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 300; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

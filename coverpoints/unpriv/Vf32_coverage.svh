@@ -15323,24 +15323,9 @@ covergroup Vf32_vfredusum_vs_cg with function sample(ins_t ins);
     //// end cp_custom_vfredusum_determinism ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfredusum_noactive
-    // Unordered sum reductions with no active elements: class of vs1[0] (vs1 at SEW) x frm
+    // cp_custom_vfredusum_noactive_sew32
+    // Unordered sum reductions with no active elements: vs1[0] edges (cp_vs1_edges_f_sew32) x frm
     //////////////////////////////////////////////////////////////////////////////////
-
-    vfredusum_noactive_vs1 : coverpoint vred_fp_class(get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val), vred_sew(ins.hart, ins.issue)) {
-        bins pos0           = {vred_pos0};
-        bins neg0           = {vred_neg0};
-        bins posinf         = {vred_posinf};
-        bins neginf         = {vred_neginf};
-        bins qnan           = {vred_qnan};
-        bins qnan_other     = {vred_qnan_other};
-        bins snan           = {vred_snan};
-        bins posmax         = {vred_posmax};
-        bins negmax         = {vred_negmax};
-        bins minsub         = {vred_minsub};
-        bins neg1           = {vred_neg1};
-        bins onepulp        = {vred_onepulp};
-    }
 
     vfredusum_noactive_mask : coverpoint vred_mask_class(ins.hart, ins.issue, ins.current.vm, ins.prev.v_wdata[0]) {
         bins none_active = {vred_none_active};
@@ -15351,36 +15336,36 @@ covergroup Vf32_vfredusum_vs_cg with function sample(ins_t ins);
         bins rdn = {3'b010};
     }
 
-    cp_custom_vfredusum_noactive : cross std_vec, vfredusum_noactive_vs1, vfredusum_noactive_mask, vfredusum_noactive_frm iff (ins.trap == 0);
+    cp_custom_vfredusum_noactive_sew32 : cross std_vec, cp_vs1_edges_f_sew32, vfredusum_noactive_mask, vfredusum_noactive_frm iff (ins.trap == 0);
 
-    //// end cp_custom_vfredusum_noactive ////////////////////////////////////////////////
+    //// end cp_custom_vfredusum_noactive_sew32 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfredusum_specials
-    // Unordered sum reductions of special values: class of vs1[0] (vs1 at SEW) x class of vs2[0], vl = 2 to 4
+    // cp_custom_vfredusum_specials_sew32
+    // Unordered sum reductions of special values (vs1 at SEW): vs1[0] x vs2[0], vl = 2 to 4
     //////////////////////////////////////////////////////////////////////////////////
 
-    vfredusum_specials_vs1 : coverpoint vred_fp_class(get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val), vred_sew(ins.hart, ins.issue)) {
-        bins pos0           = {vred_pos0};
-        bins neg0           = {vred_neg0};
-        bins posinf         = {vred_posinf};
-        bins qnan           = {vred_qnan};
-        bins snan           = {vred_snan};
-        bins posmax         = {vred_posmax};
-        bins negmax         = {vred_negmax};
-        bins minsub         = {vred_minsub};
+    vfredusum_specials_vs1 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)[31:0] {
+        bins pos0     = {32'h00000000};   // +0
+        bins neg0     = {32'h80000000};   // -0
+        bins posinf   = {32'h7F800000};   // +inf
+        bins qnan     = {32'h7FC00000};   // canonical quiet NaN
+        bins snan     = {32'h7F800001};   // signaling NaN
+        bins posmax   = {32'h7F7FFFFF};   // +largest finite
+        bins negmax   = {32'hFF7FFFFF};   // -largest finite
+        bins minsub   = {32'h00000001};   // smallest positive subnormal
     }
 
-    vfredusum_specials_vs2 : coverpoint vred_fp_class(get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val), vred_sew(ins.hart, ins.issue)) {
-        bins pos0           = {vred_pos0};
-        bins neg0           = {vred_neg0};
-        bins posinf         = {vred_posinf};
-        bins qnan           = {vred_qnan};
-        bins snan           = {vred_snan};
-        bins posmax         = {vred_posmax};
-        bins negmax         = {vred_negmax};
-        bins minsub         = {vred_minsub};
-        bins onepulp        = {vred_onepulp};
+    vfredusum_specials_vs2 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0] {
+        bins posinf   = {32'h7F800000};   // +inf
+        bins posmax   = {32'h7F7FFFFF};   // +largest finite
+        bins negmax   = {32'hFF7FFFFF};   // -largest finite
+        bins qnan     = {32'h7FC00000};   // canonical quiet NaN
+        bins snan     = {32'h7F800001};   // signaling NaN
+        bins neg0     = {32'h80000000};   // -0
+        bins pos0     = {32'h00000000};   // +0
+        bins minsub   = {32'h00000001};   // smallest positive subnormal
+        bins onepulp  = {32'h3F800001};   // 1 + ulp
     }
 
     vfredusum_specials_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
@@ -15391,9 +15376,9 @@ covergroup Vf32_vfredusum_vs_cg with function sample(ins_t ins);
         bins unmasked = {1'b1};
     }
 
-    cp_custom_vfredusum_specials : cross std_vec, vfredusum_specials_vs1, vfredusum_specials_vs2, vfredusum_specials_vl, vfredusum_specials_unmasked iff (ins.trap == 0);
+    cp_custom_vfredusum_specials_sew32 : cross std_vec, vfredusum_specials_vs1, vfredusum_specials_vs2, vfredusum_specials_vl, vfredusum_specials_unmasked iff (ins.trap == 0);
 
-    //// end cp_custom_vfredusum_specials ////////////////////////////////////////////////
+    //// end cp_custom_vfredusum_specials_sew32 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfredusum_sweep
@@ -26349,24 +26334,9 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
     //// end cp_custom_vfredusum_determinism ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfredusum_noactive_w
-    // Unordered sum reductions with no active elements: class of vs1[0] (vs1 at 2*SEW) x frm
+    // cp_custom_vfredusum_noactive_w_sew32
+    // Unordered sum reductions with no active elements: vs1[0] edges (cp_vs1_edges_f_emul2_sew32) x frm
     //////////////////////////////////////////////////////////////////////////////////
-
-    vfredusum_noactive_vs1 : coverpoint vred_fp_class(get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs1_val), 2 * vred_sew(ins.hart, ins.issue)) {
-        bins pos0           = {vred_pos0};
-        bins neg0           = {vred_neg0};
-        bins posinf         = {vred_posinf};
-        bins neginf         = {vred_neginf};
-        bins qnan           = {vred_qnan};
-        bins qnan_other     = {vred_qnan_other};
-        bins snan           = {vred_snan};
-        bins posmax         = {vred_posmax};
-        bins negmax         = {vred_negmax};
-        bins minsub         = {vred_minsub};
-        bins neg1           = {vred_neg1};
-        bins onepulp        = {vred_onepulp};
-    }
 
     vfredusum_noactive_mask : coverpoint vred_mask_class(ins.hart, ins.issue, ins.current.vm, ins.prev.v_wdata[0]) {
         bins none_active = {vred_none_active};
@@ -26377,36 +26347,36 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
         bins rdn = {3'b010};
     }
 
-    cp_custom_vfredusum_noactive_w : cross std_vec, vfredusum_noactive_vs1, vfredusum_noactive_mask, vfredusum_noactive_frm iff (ins.trap == 0);
+    cp_custom_vfredusum_noactive_w_sew32 : cross std_vec, cp_vs1_edges_f_emul2_sew32, vfredusum_noactive_mask, vfredusum_noactive_frm iff (ins.trap == 0);
 
-    //// end cp_custom_vfredusum_noactive_w ////////////////////////////////////////////////
+    //// end cp_custom_vfredusum_noactive_w_sew32 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfredusum_specials_w
-    // Unordered sum reductions of special values: class of vs1[0] (vs1 at 2*SEW) x class of vs2[0], vl = 2 to 4
+    // cp_custom_vfredusum_specials_w_sew32
+    // Unordered sum reductions of special values (vs1 at 2*SEW): vs1[0] x vs2[0], vl = 2 to 4
     //////////////////////////////////////////////////////////////////////////////////
 
-    vfredusum_specials_vs1 : coverpoint vred_fp_class(get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs1_val), 2 * vred_sew(ins.hart, ins.issue)) {
-        bins pos0           = {vred_pos0};
-        bins neg0           = {vred_neg0};
-        bins posinf         = {vred_posinf};
-        bins qnan           = {vred_qnan};
-        bins snan           = {vred_snan};
-        bins posmax         = {vred_posmax};
-        bins negmax         = {vred_negmax};
-        bins minsub         = {vred_minsub};
+    vfredusum_specials_vs1 : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs1_val)[63:0] {
+        bins pos0     = {64'h0000000000000000};   // +0
+        bins neg0     = {64'h8000000000000000};   // -0
+        bins posinf   = {64'h7FF0000000000000};   // +inf
+        bins qnan     = {64'h7FF8000000000000};   // canonical quiet NaN
+        bins snan     = {64'h7FF0000000000001};   // signaling NaN
+        bins posmax   = {64'h7FEFFFFFFFFFFFFF};   // +largest finite
+        bins negmax   = {64'hFFEFFFFFFFFFFFFF};   // -largest finite
+        bins minsub   = {64'h0000000000000001};   // smallest positive subnormal
     }
 
-    vfredusum_specials_vs2 : coverpoint vred_fp_class(get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val), vred_sew(ins.hart, ins.issue)) {
-        bins pos0           = {vred_pos0};
-        bins neg0           = {vred_neg0};
-        bins posinf         = {vred_posinf};
-        bins qnan           = {vred_qnan};
-        bins snan           = {vred_snan};
-        bins posmax         = {vred_posmax};
-        bins negmax         = {vred_negmax};
-        bins minsub         = {vred_minsub};
-        bins onepulp        = {vred_onepulp};
+    vfredusum_specials_vs2 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0] {
+        bins posinf   = {32'h7F800000};   // +inf
+        bins posmax   = {32'h7F7FFFFF};   // +largest finite
+        bins negmax   = {32'hFF7FFFFF};   // -largest finite
+        bins qnan     = {32'h7FC00000};   // canonical quiet NaN
+        bins snan     = {32'h7F800001};   // signaling NaN
+        bins neg0     = {32'h80000000};   // -0
+        bins pos0     = {32'h00000000};   // +0
+        bins minsub   = {32'h00000001};   // smallest positive subnormal
+        bins onepulp  = {32'h3F800001};   // 1 + ulp
     }
 
     vfredusum_specials_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
@@ -26417,9 +26387,9 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
         bins unmasked = {1'b1};
     }
 
-    cp_custom_vfredusum_specials_w : cross std_vec, vfredusum_specials_vs1, vfredusum_specials_vs2, vfredusum_specials_vl, vfredusum_specials_unmasked iff (ins.trap == 0);
+    cp_custom_vfredusum_specials_w_sew32 : cross std_vec, vfredusum_specials_vs1, vfredusum_specials_vs2, vfredusum_specials_vl, vfredusum_specials_unmasked iff (ins.trap == 0);
 
-    //// end cp_custom_vfredusum_specials_w ////////////////////////////////////////////////
+    //// end cp_custom_vfredusum_specials_w_sew32 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfredusum_sweep

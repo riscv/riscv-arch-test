@@ -28,6 +28,7 @@ from testgen.asm.helpers import write_sigupd
 from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector import _redusum_model as model
+from testgen.data.edges import VECTOR_EDGES
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -157,7 +158,6 @@ def _edge_values(fmt: model.Fmt) -> dict[str, int]:
         "posinf": fmt.pos_inf,
         "neginf": fmt.pos_inf | fmt.sign_bit,
         "qnan": fmt.canonical_nan,
-        "negqnanpayload": fmt.canonical_nan | fmt.sign_bit | 1,
         "snan": fmt.pos_inf | 1,
         "posmax": model.encode(fmt.max_norm, False, fmt),
         "negmax": model.encode(-fmt.max_norm, False, fmt),
@@ -545,15 +545,16 @@ def cp_custom_vfredusum_noactive(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """
-    No active elements: vl = 7 with an all-zero mask and signaling-NaN elements, for every vs1[0] class, at
-    RNE and RDN (whose additive identities differ). vd[0] must be vs1[0]; a NaN scalar may instead become the
-    canonical NaN, with NV only if it was signaling. Also vl = 0, which must leave vd and fflags unchanged.
+    No active elements: vl = 7 with an all-zero mask and signaling-NaN elements, for every vs1[0] value of the
+    standard edge coverpoint (cp_vs1_edges_f), at RNE and RDN (whose additive identities differ). vd[0] must be
+    vs1[0]; a NaN scalar may instead become the canonical NaN, with NV only if it was signaling. Also vl = 0,
+    which must leave vd and fflags unchanged.
     """
     del instr_type
     ctx = _Ctx(instr_name, coverpoint, test_data)
     if ctx.skip():
         return []
-    acc_values = _edge_values(ctx.acc)
+    acc_values = {16: VECTOR_EDGES.f16, 32: VECTOR_EDGES.f32, 64: VECTOR_EDGES.f64}[ctx.w]
     snans = [_edge_values(ctx.efmt)["snan"]] * 8
     zero_mask = (f"{ctx.prefix}_mask_zero", [0] * (_MASK_BITS // 8), 8)
     elems_data = (f"{ctx.prefix}_elems_snan8", snans, ctx.sew)

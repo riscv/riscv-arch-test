@@ -254,8 +254,8 @@ Tests: every vl in {2, 3, 4, 7, 8, 16, ... VLMAX} x every frm x {unmasked, fixed
 a|vs1[0] in {+0, -0, +inf, canonical qNaN, sNaN, +largest, -largest, smallest subnormal} x vs2[0] in {+0, -0, +inf, canonical qNaN, sNaN, +largest, -largest, smallest subnormal, 1+ulp}, vl = 2 to 4. Tests: every vs1[0] class with vs2 = {+inf, -inf}, {+inf, +inf}, {+largest, +largest}, {+largest, -largest}, {-largest, -inf}, {qNaN, +inf, -inf}, {sNaN, -inf}, {-0, -0}, {+0, -0}, {smallest subnormal, smallest subnormal}, {1+ulp, -1} or {+largest, +largest, -largest, -largest}.
 
 Each runs at rne and at every other frm whose legal outcomes differ. A NaN result must be the canonical NaN.
-|cp_custom_vfredusum_noactive|12*2
-a|vs1[0] class x frm={rne, rdn}, no active elements. Tests: every vs1[0] class, vl = 7, all-zero mask, sNaN elements. vd[0] must equal vs1[0] with no flags; a NaN vs1[0] may instead become the canonical NaN, with NV exactly when it was signaling. vl=0, masked and unmasked: vd and fflags unchanged.
+|cp_custom_vfredusum_noactive|20*2
+a|vs1[0] in the cp_vs1_edges_f values (at 2*SEW for vfwredusum) x frm={rne, rdn}, no active elements. Tests: every such vs1[0], vl = 7, all-zero mask, sNaN elements. vd[0] must equal vs1[0] with no flags; a NaN vs1[0] may instead become the canonical NaN, with NV exactly when it was signaling. vl=0, masked and unmasked: vd and fflags unchanged.
 |cp_custom_vfredusum_determinism|3*3
 a|vl={3, 7, VLMAX} x frm={rne, rdn, rup}, unmasked. Tests: cancellation and mild data D at vl = 3, 7 and VLMAX. Two reference results, each checked to be legal:
 

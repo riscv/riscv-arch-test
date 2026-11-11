@@ -524,49 +524,6 @@ function vred_mask_t vred_mask_class(int hart, int issue, logic vm, `VLEN_BITS m
   return vred_none_active;
 endfunction
 
-function int vred_sew(int hart, int issue);
-  return 8 << int'(get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew"));
-endfunction
-
-typedef enum {
-  vred_pos0,
-  vred_neg0,
-  vred_posinf,
-  vred_neginf,
-  vred_qnan,        // canonical quiet NaN
-  vred_qnan_other,  // any other quiet NaN
-  vred_snan,
-  vred_posmax,
-  vred_negmax,
-  vred_minsub,      // smallest positive subnormal
-  vred_neg1,
-  vred_onepulp,     // 1 + ulp
-  vred_fp_other
-} vred_fp_class_t;
-
-// Class of a binary16, binary32 or binary64 value held in the low width bits of val
-function vred_fp_class_t vred_fp_class(logic [63:0] val, int width);
-  int fb = (width == 16) ? 10 : (width == 32) ? 23 : 52;
-  int eb = width - 1 - fb;
-  logic [63:0] frac = val & ((64'd1 << fb) - 1);
-  logic [63:0] expo = (val >> fb) & ((64'd1 << eb) - 1);
-  logic [63:0] emax = (64'd1 << eb) - 1;
-  logic [63:0] bias = emax >> 1;
-  logic sign = val[width-1];
-  if (expo == emax) begin
-    if (frac == 0)      return sign ? vred_neginf : vred_posinf;
-    if (!frac[fb-1])    return vred_snan;
-    if (!sign && frac == (64'd1 << (fb-1))) return vred_qnan;
-    return vred_qnan_other;
-  end
-  if (expo == 0 && frac == 0)                          return sign ? vred_neg0 : vred_pos0;
-  if (!sign && expo == 0 && frac == 1)                 return vred_minsub;
-  if (expo == emax - 1 && frac == ((64'd1 << fb) - 1)) return sign ? vred_negmax : vred_posmax;
-  if (sign && expo == bias && frac == 0)               return vred_neg1;
-  if (!sign && expo == bias && frac == 1)              return vred_onepulp;
-  return vred_fp_other;
-endfunction
-
 
 typedef enum {
   vstart_one,

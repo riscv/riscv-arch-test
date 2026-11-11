@@ -835,11 +835,14 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T5, unexpected_int_str; la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
 
 // Trap handler version. The M-mode handler uses rvtest_code_end_mmode: with Smdbltrp,
-// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap.
+// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap. Both versions
+// leave unexpected_int_str in T5, so RVTEST_CODE_END reports the abort instead of
+// checking the signature counts of a test that did not finish.
 .macro RVTEST_DFLT_INT_HNDLR_MODE __MODE__
+        LA(     T5, unexpected_int_str)
   .ifc \__MODE__ , M
         LA(     T1, rvtest_code_end_mmode)
   .else

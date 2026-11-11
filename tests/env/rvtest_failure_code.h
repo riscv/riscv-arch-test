@@ -2408,6 +2408,8 @@
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
+    unexpected_int_str:
+        .string "\nRVCP: An interrupt was raised or taken that rvmodel_macros.h does not define a macro to set or clear. The test was aborted.\n"
     trap_vector_overlap_str:
         .string "RVCP: Fixed trap vector overlaps the test image. Change the linker script to reserve space for the trap handler outside the test image.\n"
     trap_vector_copy_failed_str:

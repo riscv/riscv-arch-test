@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   issues:
     types: [opened, reopened, labeled]
-  issue_comment:
+  issue_comment: # zizmor: ignore[dangerous-triggers] -- no checkout; only compares comment author to issue author
     types: [created]
 
 permissions: {}

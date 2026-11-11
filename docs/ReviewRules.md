@@ -1,4 +1,4 @@
-# ACTBot review rules
+# Review rules for ACT changes
 
 These rules are distilled from maintainer reviews of ACT PRs. Each is a default, not a law: report a departure when it
 makes the change harder to read, maintain or trust, and say which rule it breaks. Apply only the sections that match
@@ -76,8 +76,12 @@ the files the change touches.
 - Privileged tests boot into their intended mode and use T-SBI for higher-privilege work. Coverpoints that need
   M-mode go in an `*Sm` suite. If T-SBI falls short, fix it rather than working around it.
 - Never weaken a test because a simulator disagrees. Keep the test and its coverage, exclude the failing config, and
-  file an issue against the simulator. If the reference model lacks a feature, skip the case in the test but keep the
-  coverpoint so the miss stays visible.
+  file an issue against the simulator.
+- A test whose result depends on an extension Sail does not support yet runs only when the DUT does not have that
+  extension (`#ifndef` on the extension's macro). There it matches Sail and hits its coverpoints. A DUT with the
+  extension skips it: no errors, but the coverpoints stay unhit, which shows the DUT is not fully tested. The test
+  carries a note saying what Sail must support before the guard can be removed. Don't write the state and skip the
+  readback instead; that hides the gap.
 - Test read-only-zero and reserved-but-defined bits rather than masking them out of walks.
 - Every testcase checks its result with a signature update or the trap signature. Examples: the counter after a wrap;
   `rd` unchanged by a fence with `rd != x0`; the whole `cbo.zero` block and a little past it; memory and `rd`
@@ -113,6 +117,10 @@ the files the change touches.
 - Name each coverpoint for what it matches. No duplicates, and consistent names across related suites.
 - Write coverpoints inline in the covergroup. Don't hide coverpoint blocks, bin lists or gates in `` `define``
   macros.
+- Gate coverpoints for a feature that exists only with an extension on that extension's macro. Don't gate them on
+  whether Sail supports the extension: the coverpoint stays live so a test skipped for a Sail gap shows as a miss.
+- A coverpoint that wants every value of its expression (both values of a 1-bit signal, all four of a 2-bit field)
+  uses automatic bins, `coverpoint <expr> {}`, rather than listing each value as a bin.
 - Never comment out a bin. `ignore_bins` is only for architecturally unreachable bins and needs a stated reason;
   never use it for a legal bin a tool can't reach yet. Prefer a single-bin coverpoint to `ignore_bins` in a cross.
 - Don't add bins another test already covers trivially.

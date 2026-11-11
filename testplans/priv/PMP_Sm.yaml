@@ -4,7 +4,7 @@ source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iN
 notes: |
   General Test Environment (PMP_Sm):
   - Runs when Sm is implemented and NUM_PMP_ENTRIES > 0. Boots to M-mode; every access on this sheet is made from M-mode.
-  - Test files are split by UDB parameter: base, RV64 only (MXLEN = 64), PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED and PMP_TOR_SUPPORTED. The NA4 and TOR coverpoints are compiled out when the mode is not supported, except cp_cfg_A_na4_unsupported and cp_cfg_A_tor_unsupported, which exist only then (files for PMP_NA4_SUPPORTED and PMP_TOR_SUPPORTED false); the NAPOT ones are not.
+  - Test files are split by UDB parameter: base, RV64 only (MXLEN = 64), PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED and PMP_TOR_SUPPORTED. The NA4 and TOR coverpoints, and the NAPOT bin of cp_cfg_A_all_even/odd, are compiled out when the mode is not supported, except cp_cfg_A_na4_unsupported, cp_cfg_A_tor_unsupported and cp_cfg_A_napot_unsupported, which exist only then (files for PMP_NA4_SUPPORTED, PMP_TOR_SUPPORTED and PMP_NAPOT_SUPPORTED false); the other NAPOT ones are not.
   - Background entry: the highest usable entry (15 of 16, 63 of 64) is L=1, XWR=111, NAPOT over all of memory (TOR up to all ones when NAPOT is not supported), so accesses that match no lower entry succeed. cp_none_* runs before it is set.
   - Grain g = 2^(G+2) bytes from PMP_GRANULARITY. A standard region is a NAPOT region of max(g, 8) bytes in .data, g-aligned past the code. A TOR region is one grain.
   - Fetch probe = jalr into the region, which holds a return instruction. Loads = lb, lbu, lh, lhu, lw (+ lwu, ld on RV64). Stores = sb, sh, sw (+ sd on RV64).
@@ -120,9 +120,9 @@ coverpoints:
       cp_cfg_A_all_even
       cp_cfg_A_all_odd
     goal: Verify that every pmpcfg byte accepts each address-matching mode.
-    description: With L=0 and XWR=000, write A = OFF, TOR, NA4 and NAPOT into every byte of every pmpcfg CSR and read each back. TOR and NA4 are written only when they are supported. cp_cfg_A_all_odd covers the odd pmpcfg CSRs (RV32 only).
+    description: With L=0 and XWR=000, write A = OFF, TOR, NA4 and NAPOT into every byte of every pmpcfg CSR and read each back. TOR, NA4 and NAPOT are written only when they are supported. cp_cfg_A_all_odd covers the odd pmpcfg CSRs (RV32 only).
     expectation: Readback matches the reference model. A supported mode reads back as written.
-    bins: "4 A (fewer without TOR or NA4) × even pmpcfg CSRs (2, or 8 with 64 entries); odd: 4 A × odd pmpcfg CSRs (RV32)"
+    bins: "4 A (fewer without TOR, NA4 or NAPOT) × even pmpcfg CSRs (2, or 8 with 64 entries); odd: 4 A × odd pmpcfg CSRs (RV32)"
     rules:
       - pmp_a_field_encoding
       - pmp_csrs_warl_access
@@ -131,8 +131,9 @@ coverpoints:
   - name: |-
       cp_cfg_A_na4_unsupported
       cp_cfg_A_tor_unsupported
+      cp_cfg_A_napot_unsupported
     goal: Verify that an unsupported address-matching mode is not stored.
-    description: "PMP_NA4_SUPPORTED false (always when G ≥ 1), or PMP_TOR_SUPPORTED false. Write every byte of every pmpcfg CSR with L=0, XWR=111, A=OFF, then with L=0, XWR=111 and the unsupported A, and read the CSR back."
+    description: "PMP_NA4_SUPPORTED false (always when G ≥ 1), PMP_TOR_SUPPORTED false, or PMP_NAPOT_SUPPORTED false. Write every byte of every pmpcfg CSR with L=0, XWR=111, A=OFF, then with L=0, XWR=111 and the unsupported A, and read the CSR back."
     expectation: "No byte reads back the unsupported mode; A may read back any supported mode. The other bits match the reference model: XWR=111 in each implemented entry."
     bins: pmpcfg CSRs (2 on RV64, 4 on RV32; 8 or 16 with 64 entries), for each unsupported mode
     rules:
@@ -390,6 +391,7 @@ coverpoints:
     bins: 2 (X={0,1})
     rules:
       - pmp_rwx_warl
+      - pmp_rw01_rsv
   - heading: 64 PMP entries
   - name: |-
       cp_pmp64_write

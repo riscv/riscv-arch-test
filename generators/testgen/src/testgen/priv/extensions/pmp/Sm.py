@@ -256,15 +256,22 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
     body = [
         *zero_pmp_regs(),
         "",
-        f"#define PMPREGION_TOR {cfg_byte('1111', 'tor', 'PMP0_CFG_SHIFT')}",
+        f"#define PMPREGION_TOR {cfg_byte('1000', 'tor', 'PMP0_CFG_SHIFT')}",
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",
-        "LA(x5, TEST_FOR_EXECUTION)",
-        "srl x5, x5, PMP_SHIFT",
+        "// Entry 0 denies [0, PMP_TOR_REGION_BYTES), so skip the probes if the image or the trap vector is there.",
+        "LI(x4, PMP_TOR_REGION_BYTES)",
+        "LA(x5, rvtest_entry_point)",
+        "bltu x5, x4, pmp_tor_zero_skip",
+        "csrr x5, mtvec",
+        "andi x5, x5, -4",
+        "bltu x5, x4, pmp_tor_zero_skip",
+        "",
+        "LI(x5, PMP_TOR_REGION_BYTES >> 2)",
         "csrw pmpaddr0, x5",
         "",
-        "// PMP configuration 1: pmpcfg0 = L, TOR, XWR: region 0 spans [0, TEST_FOR_EXECUTION)",
+        "// pmpcfg0 = L, TOR, no permissions: region 0 spans [0, PMP_TOR_REGION_BYTES)",
         *set_pmpcfg(0, "PMPREGION_TOR"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         *gen_rwx_tor_zero(
@@ -272,13 +279,14 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
             "region0",
             cross_by_access(execute="cp_cfg_A_tor0_x", load="cp_cfg_A_tor0_r", store="cp_cfg_A_tor0_w"),
         ),
+        "pmp_tor_zero_skip:",
     ]
     chunk.section_header = comment_banner(
         "cp_cfg_A_tor0_x, cp_cfg_A_tor0_r and cp_cfg_A_tor0_w",
-        "{sw, lw, jalr} at pmpaddr0, pmpaddr0-4 and 0 with entry 0 = L, TOR, XWR.",
+        "{sw, lw, jalr} at 0 and pmpaddr0-4 with entry 0 = L, TOR, no permissions: each faults on entry 0, "
+        "whatever the platform maps at 0, while the background entry would allow it.",
     )
     chunk.code.extend(body)
-    chunk.raw_data.extend(tuple(REGION_BLOBS["off"]))
     return test_data.end_test_chunk()
 
 

@@ -150,21 +150,39 @@ coverpoints:
     bins: 1 PMM × 2 address variants (upper 7 bits = 0/1) × 1 misaligned write (sw) × 1 misaligned read (lw) × 1 mode (U) ×
     rules:
       - pm_misaligned_equivalence
-  - name: cp_hardware_csr_writes_fault
+  - name: cp_hardware_csr_writes_fault_load
     goal: |-
       Verify pointer masking is applied to hardware-written CSR address values.
-      Verify that stval contains the masked effective address when a fault occurs on a pointer-masked access.
+      Verify that stval contains the masked effective address when a fault occurs on a pointer-masked load.
     description: |-
       When a fault occurs on an explicit memory access under pointer masking, the hardware-written stval reflects the masked effective address, not the raw tagged address.
       Test Environment:
       In S-mode set senvcfg.PMM={10(PMLEN=7), 11(PMLEN=16)}.
       Set medeleg[12,13,15]=1 to delegate U-mode load/store/access faults to S-mode.
-      If RVMODEL_ACCESS_FAULT_ADDRESS is defined, use it as the base illegal address across all modes. Construct addresses by applying upper-16-bit patterns {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00} to this illegal base address.
+      If RVMODEL_ACCESS_FAULT_ADDRESS_LOAD is defined, use it as the base illegal address across all modes. Construct addresses by applying upper-16-bit patterns {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00} to this illegal base address.
       Switch to U-mode.
-       Perform one lw and one sw to each constructed illegal address under satp.MODE={Bare, Sv39, Sv48, Sv57}.
+       Perform one lw to each constructed illegal address under satp.MODE={Bare, Sv39, Sv48, Sv57}.
       In the S-mode trap handler, read stval and verify it contains the correctly masked effective address.
     expectation: Fault is taken; stval written by hardware contains the masked effective address (upper PMLEN bits correctly zeroed in bare mode or sign-extended in VA modes), not the original unmasked address used by the program.
-    bins: 2 PMM × 8 address patterns × 1 lw × 1 sw × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57)
+    bins: 2 PMM × 8 address patterns × 1 lw × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57)
+    rules:
+      - pm_csr_hw_apply
+      - pm_no_trap_vector_mask
+  - name: cp_hardware_csr_writes_fault_store
+    goal: |-
+      Verify pointer masking is applied to hardware-written CSR address values.
+      Verify that stval contains the masked effective address when a fault occurs on a pointer-masked store.
+    description: |-
+      When a fault occurs on an explicit memory access under pointer masking, the hardware-written stval reflects the masked effective address, not the raw tagged address.
+      Test Environment:
+      In S-mode set senvcfg.PMM={10(PMLEN=7), 11(PMLEN=16)}.
+      Set medeleg[12,13,15]=1 to delegate U-mode load/store/access faults to S-mode.
+      If RVMODEL_ACCESS_FAULT_ADDRESS_STORE is defined, use it as the base illegal address across all modes. Construct addresses by applying upper-16-bit patterns {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00} to this illegal base address.
+      Switch to U-mode.
+       Perform one sw to each constructed illegal address under satp.MODE={Bare, Sv39, Sv48, Sv57}.
+      In the S-mode trap handler, read stval and verify it contains the correctly masked effective address.
+    expectation: Fault is taken; stval written by hardware contains the masked effective address (upper PMLEN bits correctly zeroed in bare mode or sign-extended in VA modes), not the original unmasked address used by the program.
+    bins: 2 PMM × 8 address patterns × 1 sw × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57)
     rules:
       - pm_csr_hw_apply
       - pm_no_trap_vector_mask

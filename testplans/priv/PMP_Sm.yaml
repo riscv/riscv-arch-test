@@ -237,8 +237,8 @@ coverpoints:
       cp_cfg_A_tor0_w
       cp_cfg_A_tor0_x
     goal: Verify that TOR entry 0 uses 0 as its bottom bound.
-    description: "PMP_TOR_SUPPORTED only. Entry 0: L=1, A=TOR, XWR=111, pmpaddr0 = start of the test region, so region 0 is [0, pmpaddr0) and contains the code. lw, sw and jalr at pmpaddr0-4 and pmpaddr0."
-    expectation: "All accesses succeed: pmpaddr0-4 matches entry 0, and pmpaddr0 falls through to the background entry."
+    description: "PMP_TOR_SUPPORTED only. Entry 0: L=1, A=TOR, XWR=000, pmpaddr0 = one grain, so region 0 is [0, grain). lw, sw and jalr at 0 and pmpaddr0-4. Skipped if the image or mtvec lies in [0, grain)."
+    expectation: "All accesses raise access faults from entry 0 before reaching the bus, whatever the platform maps at 0; without entry 0 the background entry would allow them."
     bins: 2 addresses each
     rules:
       - pmp_a_field_tor

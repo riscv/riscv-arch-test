@@ -1465,7 +1465,9 @@ covergroup PMP_Sm_cg with function sample(
       `ifdef UDB_PMP_NA4_SUPPORTED
         bins NA4   = {32'b00010000000100000001000000010000};
       `endif
-      bins NAPOT = {32'b00011000000110000001100000011000};
+      `ifdef UDB_PMP_NAPOT_SUPPORTED
+        bins NAPOT = {32'b00011000000110000001100000011000};
+      `endif
     `endif
     `ifdef UDB_MXLEN_64
       `ifdef UDB_PMP_TOR_SUPPORTED
@@ -1474,7 +1476,9 @@ covergroup PMP_Sm_cg with function sample(
       `ifdef UDB_PMP_NA4_SUPPORTED
         bins NA4   = {64'b0001000000010000000100000001000000010000000100000001000000010000};
       `endif
-      bins NAPOT = {64'b0001100000011000000110000001100000011000000110000001100000011000};
+      `ifdef UDB_PMP_NAPOT_SUPPORTED
+        bins NAPOT = {64'b0001100000011000000110000001100000011000000110000001100000011000};
+      `endif
     `endif
   }
 
@@ -1571,7 +1575,7 @@ covergroup PMP_Sm_cg with function sample(
     cp_cfg_A_all_odd: cross priv_mode_m, rs1_val_for_pmpcfg_A, csrrw, legal_pmpcfg_entries_odd ;
   `endif
 
-  // cp_cfg_A_na4_unsupported and cp_cfg_A_tor_unsupported: csrrw of each pmpcfg CSR with L = 0, XWR = 111
+  // cp_cfg_A_na4_unsupported, cp_cfg_A_tor_unsupported and cp_cfg_A_napot_unsupported: csrrw of each pmpcfg CSR with L = 0, XWR = 111
   // and an unsupported A in every byte
   `ifndef UDB_PMP_NA4_SUPPORTED
     rs1_val_pmpcfg_na4_xwr: coverpoint ins.current.rs1_val {
@@ -1594,6 +1598,17 @@ covergroup PMP_Sm_cg with function sample(
       `endif
     }
     cp_cfg_A_tor_unsupported: cross priv_mode_m, rs1_val_pmpcfg_tor_xwr, csrrw, legal_pmpcfg_csrs ;
+  `endif
+  `ifndef UDB_PMP_NAPOT_SUPPORTED
+    rs1_val_pmpcfg_napot_xwr: coverpoint ins.current.rs1_val {
+      `ifdef UDB_MXLEN_32
+        bins napot_xwr = {32'h1f1f1f1f};
+      `endif
+      `ifdef UDB_MXLEN_64
+        bins napot_xwr = {64'h1f1f1f1f1f1f1f1f};
+      `endif
+    }
+    cp_cfg_A_napot_unsupported: cross priv_mode_m, rs1_val_pmpcfg_napot_xwr, csrrw, legal_pmpcfg_csrs ;
   `endif
 
   cp_cfg_A_OFF_all_read : cross priv_mode_m, pmpcfgA_OFF, read_instr_lw, addr_in_region;

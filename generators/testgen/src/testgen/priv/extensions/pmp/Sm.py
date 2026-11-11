@@ -215,6 +215,9 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
 
     for name in amodes:
         const = None if name == "OFF" else f"PMP_{name}"
+        if name == "NAPOT":
+            # Without NAPOT, cp_cfg_A_napot_unsupported checks only that A does not read back NAPOT.
+            chunk.code.extend(["", "#ifdef UDB_PMP_NAPOT_SUPPORTED"])
         chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
         if const:
             rv32_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(4))
@@ -236,6 +239,8 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
         chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
         add_csr_checks(name, const, (5, 7, 9, 11, 13, 15))
         chunk.code.append("#endif")
+        if name == "NAPOT":
+            chunk.code.append("#endif // UDB_PMP_NAPOT_SUPPORTED")
     return test_data.end_test_chunk()
 
 
@@ -1136,6 +1141,16 @@ def make_pmpsm_no_na4(test_data: TestData) -> list[TestChunk]:
 )
 def make_pmpsm_no_tor(test_data: TestData) -> list[TestChunk]:
     return [_make_a_unsupported_chunk(test_data, "TOR", 0x08)]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: false"],
+)
+def make_pmpsm_no_napot(test_data: TestData) -> list[TestChunk]:
+    return [_make_a_unsupported_chunk(test_data, "NAPOT", 0x18)]
 
 
 @add_priv_test_generator(

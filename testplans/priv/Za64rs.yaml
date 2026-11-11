@@ -16,5 +16,3 @@ coverpoints:
     bins: "8 LR offsets x {next block, previous block}"
     rules:
       - Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes.
-  - heading: "Note:"
-  - heading: Can borrow tests from sc.w unprivileged test

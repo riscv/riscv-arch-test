@@ -18,16 +18,8 @@ exclude_extensions:
   - F-fnmadd.s
   - F-fnmsub.s
   - ZicsrF
-  # mtvec.MODE is hardwired to 3, CLIC mode (cp0/rtl/pa_cp0_trap_csr.v#L624). In that mode mcause bits 29:27 alias
-  # mstatus.MPP and MPIE, so a trap from M-mode writes mcause = 0x3000_000x (cp0/rtl/pa_cp0_trap_csr.v#L879-L882) and
-  # the trap signature's xcause word differs from Sail's 0x0000_000x. This is not permitted by the ratified privileged
-  # spec: mtvec.MODE values of 2 and above are reserved (norm:mtvec_mode_enc), and the mcause Exception Code is all
-  # of bits MXLEN-2:0 (norm:mcause_exccode_op), in which only codes 24-31 and 48-63 are designated for custom use, so
-  # 0x3000_000x is a reserved code. Only the unratified CLIC extension (Smclic, riscv/riscv-fast-interrupt) defines
-  # CLIC mode and the mcause mpp/mpie fields; neither Sail nor UDB models it. If ACT chooses to accept CLIC-only
-  # harts, these tests would pass without a CLIC model if the trap handler recorded xcause masked to the Interrupt bit
-  # and cause[11:0], as it already does to dispatch ecalls (tests/env/rvtest_trap_handler.h, "strips CLIC extension
-  # bits").
+  # mtvec.MODE is hardwired to 3, CLIC mode (cp0/rtl/pa_cp0_trap_csr.v#L624), in which mcause bits 29:27 alias
+  # mstatus.MPP and MPIE, so an M-mode trap writes mcause = 0x3000_000x (cp0/rtl/pa_cp0_trap_csr.v#L879-L882).
   - Exceptions_Sm-
   - Exceptions_U
   - InterruptsSm_wfi_timeout_U
@@ -66,7 +58,8 @@ exclude_extensions:
   # not exclude excepting instructions. Sm_Zicntr also hits the mcause alias above.
   - Sm_Zicntr
   - U_Zicntr
-  # mret leaves mstatus.MPRV set when MPP is U, as privileged 1.11 allows; Sail applies the 1.12 rule that clears it.
+  # mret leaves mstatus.MPRV set when MPP is U, as privileged 1.11 allows; Sail 0.16 clears it regardless
+  # (https://github.com/riscv/sail-riscv/issues/2075). Drop this once ACT pins a Sail release with sail-riscv#2096.
   - Sm_xret
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache patch"

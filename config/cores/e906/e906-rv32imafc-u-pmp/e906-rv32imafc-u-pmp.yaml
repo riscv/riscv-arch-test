@@ -173,10 +173,11 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
   MTVEC_BASE_ALIGNMENT_DIRECT: 64
 
-  # With mhint.AEE = 1, which RVMODEL_BOOT sets, bus-error access faults are precise.
-  # The reset value, 0, makes them imprecise (user manual 17.6.3).
+  # Store and LR bus errors are imprecise even with mhint.AEE = 1, which RVMODEL_BOOT sets
+  # to make load and fetch bus errors precise (user manual 17.6.3).
   #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_ext_csr.v#L839
-  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/rtu/rtl/pa_rtu_retire.v#L476
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: false
   # WFI stalls until an interrupt is pending; in U-mode it raises illegal instruction
   # (there is no mstatus.TW).
   #   Quote: "assign iui_wfi_umode_inv  = regs_iui_pm[1:0] == 2'b00 && iui_inst_wfi && !rtu_yy_xx_dbgon;"
@@ -266,6 +267,9 @@ params:
   HPM_COUNTER17_WIDTH: 64
 
   MCOUNTINHIBIT_IMPLEMENTED: true
+  # mcountinhibit bits 1 (TM) and 31 read as zero:
+  #   Quote: "assign mcntinhbt_value[31:0] = {1'b0, hpm[27:0], ir, 1'b0, cy};"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmu/rtl/pa_hpcp_top.v#L600
   COUNTINHIBIT_EN:
     [
       true,

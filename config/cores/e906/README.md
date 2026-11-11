@@ -86,29 +86,8 @@ make e906-rv32imafc-u-pmp
   accepts only 0 or that counter's fixed event code, and counter writes are accepted only while
   that event is selected. UDB and Sail declare these nine counters as implemented. Sail's
   configuration can express their width and selector width, but cannot express the per-counter
-  event restrictions or the event-gated writes; counter tests affected by those differences must
-  remain explicit exclusions rather than describing the counters as absent.
+  event restrictions or the event-gated writes.
 - `ci.yaml` lists the suites that fail and why: fmin/fmax with a signaling NaN, FMA underflow,
   the mcause alias, LR exception causes, mstatus.MPP and TW, event-gated HPM counter writes,
   minstret counting its own write and ECALL, and mret keeping MPRV (privileged 1.11 behavior that
-  Sail does not model).
-
-## UDB feature extractor
-
-The UDB feature extractor (riscv-arch-test PR 2442) agrees with the yaml on every declared
-extension. Its other differences, each checked by RTL reading or a directed probe, are kept:
-
-- It reports the HPM counters as absent when it probes them with every event selector at zero.
-  Selecting each counter's fixed event enables writes to its 64-bit storage, so the configuration
-  declares counters 3, 4, 8, 9 and 13-17 as implemented.
-- It reports Zcb, Smcsrind and Sdtrig. The Zcb encodings retire without effect (c.zext.b and c.mul
-  leave rd unchanged), CSR 0x350 is the CLIC mclicbase and 0x351 traps, and the triggers are debug
-  0.13.2 (see above).
-- It reports TRAP_ON_EBREAK, TRAP_ON_ECALL_FROM_M and TRAP_ON_UNIMPLEMENTED_CSR as false because it
-  expects mcause 3, 11 and 2, and gets them with the CLIC alias bits set (`0x3000_0003` and so on).
-- It measures MTVEC_ILLEGAL_WRITE_BEHAVIOR as `retain`, but a write of `0x144` to mtvec reads back
-  `0x143`: BASE takes bits 31:6 of any write, so the yaml says `custom`.
-- It does not measure MTVEC_MODES, MTVEC_BASE_ALIGNMENT_DIRECT, MISALIGNED_LDST_EXCEPTION_PRIORITY,
-  LRSC_MISALIGNED_BEHAVIOR, REPORT_VA_IN_MTVAL_ON_BREAKPOINT, PMA_GRANULARITY or
-  PRECISE_SYNCHRONOUS_EXCEPTIONS, and assumes common values. The yaml's values come from the RTL
-  and the user manual.
+  Sail 0.16 does not model; fixed in sail-riscv#2096).

@@ -163,9 +163,13 @@ def write_sigupd(
         )
     elif sig_type == "vstart":
         test_data.test_chunk.sigupd_count += 1
+        # Check that vstart was set correctly. sig_reg is the signature ptr, link_reg is the link ptr,
+        # and temp_reg is a temp reg.
         return f"RVTEST_SIGUPD_VSTART(x{sig_reg}, x{link_reg}, x{temp_reg}, {label})"
     elif sig_type == "vxsat":
         test_data.test_chunk.sigupd_count += 1
+        # Check that vxsat was set correctly. sig_reg is the signature ptr, link_reg is the link ptr,
+        # and temp_reg is a temp reg.
         return f"RVTEST_SIGUPD_VXSAT(x{sig_reg}, x{link_reg}, x{temp_reg}, {label})"
     else:
         raise ValueError(f"Unknown sig_type: {sig_type}")

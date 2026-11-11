@@ -8,5 +8,5 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: setup-shakti.sh <install-dir>}"
 
-# run-shakti.sh finds shakti-eclass-sim and shakti-cclass-sim beside itself.
+# run-shakti.sh finds the simulator (shakti-eclass-sim or shakti-cclass-sim) beside itself.
 echo "$INSTALL_DIR/bin" >>"$GITHUB_PATH"

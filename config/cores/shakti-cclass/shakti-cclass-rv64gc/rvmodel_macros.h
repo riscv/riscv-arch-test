@@ -25,16 +25,6 @@
 // CLINT (devices/clint/clint.defines): msip at +0, mtimecmp at +0x4000, mtime at +0xBFF8.
 .EQU SHAKTI_CLINT_BASE,  0x2000000
 
-##### STARTUP #####
-
-// test_soc's mtimecmp resets to all ones (devices/clint/clint.bsv at devices 9.0.8), but Sail's
-// resets to 0, so the reference model would take a timer interrupt as soon as a test writes one
-// half of mtimecmp. Set it to all ones on both.
-#define RVMODEL_BOOT \
-  li   t0, SHAKTI_CLINT_BASE + 0x4000    ;\
-  li   t1, -1                            ;\
-  sd   t1, 0(t0)                         ;
-
 // The fabric sends every address outside the memory map to an error slave, which answers with
 // a bus error.
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x40000000

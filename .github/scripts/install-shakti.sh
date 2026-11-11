@@ -1,16 +1,29 @@
 #!/usr/bin/env bash
 # Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
-# Build the Shakti E-class and C-class Verilator testbenches for CI.
-# Usage: install-shakti.sh <install-dir>
+# Build the Verilator testbench of one Shakti core (E-class or C-class) for CI.
+# Usage: install-shakti.sh <install-dir> [eclass|cclass]
+#        Without a core, the core comes from the install directory's name: CI installs each
+#        simulator in a directory named after its config/cores directory (shakti-eclass or
+#        shakti-cclass), so each job builds and caches only its own core. Building both cores
+#        into one directory takes two runs; Verilator and bsc are built only once.
 # Env:   BSC_PLATFORM  bsc release tarball platform (default: ubuntu-24.04; e.g. rockylinux-9.5)
 #        BSC_SHA256    its SHA-256 (known for ubuntu-24.04; otherwise unchecked if unset)
 # Cache key derives from sha256(this file); bump the pins below to invalidate.
 
 set -euo pipefail
 
-INSTALL_DIR="${1:?Usage: install-shakti.sh <install-dir>}"
+INSTALL_DIR="${1:?Usage: install-shakti.sh <install-dir> [eclass|cclass]}"
 INSTALL_DIR="$(mkdir -p "$INSTALL_DIR" && cd "$INSTALL_DIR" && pwd)"
+CORE="${2:-$(basename "$INSTALL_DIR")}"
+CORE="${CORE#shakti-}"
+case "$CORE" in
+eclass | cclass) ;;
+*)
+  echo "install-shakti.sh: give the core (eclass or cclass) as the second argument" >&2
+  exit 2
+  ;;
+esac
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 JOBS="${JOBS:-$(nproc)}"
 
@@ -104,15 +117,16 @@ export PATH="$INSTALL_DIR/bsc/bin:$PATH"
 export BLUESPECDIR="$INSTALL_DIR/bsc/lib"
 
 # 3. E-class in its base-sim SoC
-ECLASS="$INSTALL_DIR/e-class"
-rm -rf "$ECLASS"
-fetch "$GITLAB/cores/e-class.git" "$ECLASS_COMMIT" "$ECLASS"
-for dep in "${ECLASS_DEPS[@]}"; do
-  read -r name url commit <<<"$dep"
-  fetch "$url" "$commit" "$ECLASS/base-sim/$name"
-done
-# Add independent byte controls for the testbench's external interrupt inputs.
-patch -p1 -l -d "$ECLASS" <<'ACT_ECLASS_INTERRUPTS'
+build_eclass() {
+  ECLASS="$INSTALL_DIR/e-class"
+  rm -rf "$ECLASS"
+  fetch "$GITLAB/cores/e-class.git" "$ECLASS_COMMIT" "$ECLASS"
+  for dep in "${ECLASS_DEPS[@]}"; do
+    read -r name url commit <<<"$dep"
+    fetch "$url" "$commit" "$ECLASS/base-sim/$name"
+  done
+  # Add independent byte controls for the testbench's external interrupt inputs.
+  patch -p1 -l -d "$ECLASS" <<'ACT_ECLASS_INTERRUPTS'
 --- a/base-sim/sign_dump.bsv
 +++ b/base-sim/sign_dump.bsv
 @@ -49,9 +49,11 @@
@@ -211,55 +225,57 @@ patch -p1 -l -d "$ECLASS" <<'ACT_ECLASS_INTERRUPTS'
      `ifdef rtldump
        interface io_dump= eclass.io_dump;
 ACT_ECLASS_INTERRUPTS
-(
-  cd "$ECLASS/base-sim"
-  # Build with the open-source bsc and Verilator 5, as on the upstream fix branch for
-  # https://gitlab.com/shaktiproject/cores/e-class/-/issues/94 (commit 82dbf50): a smaller
-  # GHC stack limit, no basicinout Verilog filter (the open-source bsc does not ship it), and
-  # --no-timing. Also drop -static, which needs a static libm, and silence Verilator 5.052's
-  # MULTIDRIVEN warning on the asynchronous reset in bsc's FIFOL1.v.
-  patch_line Makefile '+RTS -K40000M -RTS' '+RTS -K4000M -RTS'
-  # shellcheck disable=SC2016 # a literal ${BLUESPECDIR} in the Makefile
-  patch_line Makefile '^  VERILOG_FILTER:= -verilog-filter \${BLUESPECDIR}/bin/basicinout$' '  VERILOG_FILTER:='
-  patch_line Makefile '--stats -O3' '--stats --no-timing -O3'
-  patch_line Makefile '-Wno-lint' '-Wno-lint -Wno-MULTIDRIVEN'
-  patch_line Makefile ' -LDFLAGS "-static"' ''
+  (
+    cd "$ECLASS/base-sim"
+    # Build with the open-source bsc and Verilator 5, as on the upstream fix branch for
+    # https://gitlab.com/shaktiproject/cores/e-class/-/issues/94 (commit 82dbf50): a smaller
+    # GHC stack limit, no basicinout Verilog filter (the open-source bsc does not ship it), and
+    # --no-timing. Also drop -static, which needs a static libm, and silence Verilator 5.052's
+    # MULTIDRIVEN warning on the asynchronous reset in bsc's FIFOL1.v.
+    patch_line Makefile '+RTS -K40000M -RTS' '+RTS -K4000M -RTS'
+    # shellcheck disable=SC2016 # a literal ${BLUESPECDIR} in the Makefile
+    patch_line Makefile '^  VERILOG_FILTER:= -verilog-filter \${BLUESPECDIR}/bin/basicinout$' '  VERILOG_FILTER:='
+    patch_line Makefile '--stats -O3' '--stats --no-timing -O3'
+    patch_line Makefile '-Wno-lint' '-Wno-lint -Wno-MULTIDRIVEN'
+    patch_line Makefile ' -LDFLAGS "-static"' ''
 
-  # Start from templates/rv32imac.inc and change only these settings:
-  #   USERTRAPS=disable  user-level interrupts (the withdrawn N extension), which neither UDB
-  #                      nor Sail models.
-  #   RESETPC            start at the base of RAM, where the test is loaded, rather than in
-  #                      the boot ROM, whose image needs the device-tree tooling.
-  #   RTLDUMP=disable    the instruction trace, which also sets misa.S and clears misa.N so
-  #                      that misa matches Spike's (src/core/csrfile.bsv lines 241-250).
-  #   TRIGGERS=0         the debug triggers. UDB does not claim Sdtrig.
-  #   COUNTERS=0         the one event counter, so mhpmcounter3..31 and mhpmevent3..31 read 0.
-  #   PMPSIZE=16         16 PMP entries, the most E-class supports, instead of 4. ACT needs
-  #                      at least 8 (tests/env/check_defines.h).
-  cp templates/rv32imac.inc act.inc
-  set_param() {
-    patch_line act.inc "^$1=.*" "$1=$2"
-  }
-  set_param USERTRAPS disable
-  set_param RESETPC 2147483648
-  set_param RTLDUMP disable
-  set_param TRIGGERS 0
-  set_param COUNTERS 0
-  set_param PMPSIZE 16
-  make CONFIG=act.inc generate_verilog
-  make CONFIG=act.inc link_verilator
-)
-install -m 0755 "$ECLASS/base-sim/bin/out" "$INSTALL_DIR/bin/shakti-eclass-sim"
+    # Start from templates/rv32imac.inc and change only these settings:
+    #   USERTRAPS=disable  user-level interrupts (the withdrawn N extension), which neither UDB
+    #                      nor Sail models.
+    #   RESETPC            start at the base of RAM, where the test is loaded, rather than in
+    #                      the boot ROM, whose image needs the device-tree tooling.
+    #   RTLDUMP=disable    the instruction trace, which also sets misa.S and clears misa.N so
+    #                      that misa matches Spike's (src/core/csrfile.bsv lines 241-250).
+    #   TRIGGERS=0         the debug triggers. UDB does not claim Sdtrig.
+    #   COUNTERS=0         the one event counter, so mhpmcounter3..31 and mhpmevent3..31 read 0.
+    #   PMPSIZE=16         16 PMP entries, the most E-class supports, instead of 4. ACT needs
+    #                      at least 8 (tests/env/check_defines.h).
+    cp templates/rv32imac.inc act.inc
+    set_param() {
+      patch_line act.inc "^$1=.*" "$1=$2"
+    }
+    set_param USERTRAPS disable
+    set_param RESETPC 2147483648
+    set_param RTLDUMP disable
+    set_param TRIGGERS 0
+    set_param COUNTERS 0
+    set_param PMPSIZE 16
+    make CONFIG=act.inc generate_verilog
+    make CONFIG=act.inc link_verilator
+  )
+  install -m 0755 "$ECLASS/base-sim/bin/out" "$INSTALL_DIR/bin/shakti-eclass-sim"
+}
 
-# 4. C-class in its test_soc SoC (sample_config/c64, RV64GC with S and U modes)
-CCLASS="$INSTALL_DIR/c-class"
-rm -rf "$CCLASS"
-fetch "$GITLAB/cores/c-class.git" "$CCLASS_COMMIT" "$CCLASS"
-for dep in "${CCLASS_DEPS[@]}"; do
-  read -r name url commit <<<"$dep"
-  fetch "$url" "$commit" "$CCLASS/$name"
-done
-patch -p1 -l -d "$CCLASS" <<'ACT_CCLASS_INTERRUPTS'
+# 3. C-class in its test_soc SoC (sample_config/c64, RV64GC with S and U modes)
+build_cclass() {
+  CCLASS="$INSTALL_DIR/c-class"
+  rm -rf "$CCLASS"
+  fetch "$GITLAB/cores/c-class.git" "$CCLASS_COMMIT" "$CCLASS"
+  for dep in "${CCLASS_DEPS[@]}"; do
+    read -r name url commit <<<"$dep"
+    fetch "$url" "$commit" "$CCLASS/$name"
+  done
+  patch -p1 -l -d "$CCLASS" <<'ACT_CCLASS_INTERRUPTS'
 --- a/test_soc/c64_c32/sign_dump.bsv
 +++ b/test_soc/c64_c32/sign_dump.bsv
 @@ -21,11 +21,13 @@
@@ -320,31 +336,31 @@ patch -p1 -l -d "$CCLASS" <<'ACT_CCLASS_INTERRUPTS'
        end
      endrule:rl_connect_plic
 ACT_CCLASS_INTERRUPTS
-python3 -m venv "$INSTALL_DIR/venv"
-"$INSTALL_DIR/venv/bin/pip" install -q "${PY_PINS[@]}" "$SOC_CONFIG"
-(
-  cd "$CCLASS"
-  # soc_config writes benchmarks/Makefile.inc; the benchmarks themselves are not needed.
-  mkdir -p benchmarks
-  # Start from sample_config/c64 and change only these settings:
-  #   reset_pc       start at the base of RAM, where the test is loaded, rather than in the
-  #                  boot ROM, whose image needs the device-tree tooling.
-  #   PMP entries    8 usable entries instead of 4: pmp4cfg..pmp7cfg and pmpaddr4..7 get the
-  #                  same WARL specification as entry 0. ACT needs at least 8
-  #                  (tests/env/check_defines.h). csrbox 1.12.0 generates BSV that does not
-  #                  compile for RV64 entries 8..15 (it reads them from a pmpcfg1), so those stay
-  #                  read-only zero. pmpcfg2 and pmpaddr4..15 join the CSR grouping, so that all
-  #                  16 entries' CSRs exist, as the privileged specification requires.
-  #   medeleg, mideleg  delegate only what the privileged specification allows: exceptions
-  #                  0-9, 12, 13 and 15, and the supervisor interrupts 1, 5 and 9. The sample's
-  #                  mask, 0xF7FF for both, also makes reserved bits 10 and 14 of medeleg and the
-  #                  machine and reserved interrupt bits of mideleg writable, which UDB rejects.
-  #   satp.ASID      8 writable bits as a bitmask. The sample's range 0..0xFF, with illegal writes
-  #                  leaving the field unchanged, makes a write of all ones (the privileged
-  #                  specification's way to find ASIDLEN) read back as the old ASID.
-  cp -r sample_config/c64 act_config
-  patch_line act_config/core64.yaml '^reset_pc: 4096$' 'reset_pc: 2147483648'
-  "$INSTALL_DIR/venv/bin/python" - act_config <<'PY'
+  python3 -m venv "$INSTALL_DIR/venv"
+  "$INSTALL_DIR/venv/bin/pip" install -q "${PY_PINS[@]}" "$SOC_CONFIG"
+  (
+    cd "$CCLASS"
+    # soc_config writes benchmarks/Makefile.inc; the benchmarks themselves are not needed.
+    mkdir -p benchmarks
+    # Start from sample_config/c64 and change only these settings:
+    #   reset_pc       start at the base of RAM, where the test is loaded, rather than in the
+    #                  boot ROM, whose image needs the device-tree tooling.
+    #   PMP entries    8 usable entries instead of 4: pmp4cfg..pmp7cfg and pmpaddr4..7 get the
+    #                  same WARL specification as entry 0. ACT needs at least 8
+    #                  (tests/env/check_defines.h). csrbox 1.12.0 generates BSV that does not
+    #                  compile for RV64 entries 8..15 (it reads them from a pmpcfg1), so those stay
+    #                  read-only zero. pmpcfg2 and pmpaddr4..15 join the CSR grouping, so that all
+    #                  16 entries' CSRs exist, as the privileged specification requires.
+    #   medeleg, mideleg  delegate only what the privileged specification allows: exceptions
+    #                  0-9, 12, 13 and 15, and the supervisor interrupts 1, 5 and 9. The sample's
+    #                  mask, 0xF7FF for both, also makes reserved bits 10 and 14 of medeleg and the
+    #                  machine and reserved interrupt bits of mideleg writable, which UDB rejects.
+    #   satp.ASID      8 writable bits as a bitmask. The sample's range 0..0xFF, with illegal writes
+    #                  leaving the field unchanged, makes a write of all ones (the privileged
+    #                  specification's way to find ASIDLEN) read back as the old ASID.
+    cp -r sample_config/c64 act_config
+    patch_line act_config/core64.yaml '^reset_pc: 4096$' 'reset_pc: 2147483648'
+    "$INSTALL_DIR/venv/bin/python" - act_config <<'PY'
 import copy, sys
 from ruamel.yaml import YAML
 d = sys.argv[1]
@@ -378,20 +394,23 @@ grp = grp.replace("    - PMPADDR3\n", "    - PMPADDR3\n    - PMPCFG2\n" + extra,
 assert "PMPADDR15" in grp
 open(f"{d}/csr_grouping64.yaml", "w").write(grp)
 PY
-  # soc_config runs pip to install csrbox and riscv-config from their clones.
-  export PATH="$INSTALL_DIR/venv/bin:$PATH"
-  soc_config -ispec act_config/rv64i_isa.yaml \
-    -customspec act_config/rv64i_custom.yaml -cspec act_config/core64.yaml \
-    -gspec act_config/csr_grouping64.yaml -dspec act_config/rv64i_debug.yaml --verbose info
-  # soc_config counts the 16 pmpaddr CSRs in the grouping, but csrbox gives the core only the
-  # 8 writable entries.
-  patch_line makefile.inc ' pmpentries=16 ' ' pmpentries=8 '
-  # As for E-class: no -static, and no MULTIDRIVEN warning on bsc's FIFOL1.v.
-  patch_line makefile.inc ' -LDFLAGS "-static"' ''
-  patch_line makefile.inc '-Wno-lint' '-Wno-lint -Wno-MULTIDRIVEN'
-  make -j"$JOBS" generate_verilog
-  make link_verilator
-)
-install -m 0755 "$CCLASS/bin/out" "$INSTALL_DIR/bin/shakti-cclass-sim"
+    # soc_config runs pip to install csrbox and riscv-config from their clones.
+    export PATH="$INSTALL_DIR/venv/bin:$PATH"
+    soc_config -ispec act_config/rv64i_isa.yaml \
+      -customspec act_config/rv64i_custom.yaml -cspec act_config/core64.yaml \
+      -gspec act_config/csr_grouping64.yaml -dspec act_config/rv64i_debug.yaml --verbose info
+    # soc_config counts the 16 pmpaddr CSRs in the grouping, but csrbox gives the core only the
+    # 8 writable entries.
+    patch_line makefile.inc ' pmpentries=16 ' ' pmpentries=8 '
+    # As for E-class: no -static, and no MULTIDRIVEN warning on bsc's FIFOL1.v.
+    patch_line makefile.inc ' -LDFLAGS "-static"' ''
+    patch_line makefile.inc '-Wno-lint' '-Wno-lint -Wno-MULTIDRIVEN'
+    make -j"$JOBS" generate_verilog
+    make link_verilator
+  )
+  install -m 0755 "$CCLASS/bin/out" "$INSTALL_DIR/bin/shakti-cclass-sim"
+}
+
+"build_$CORE"
 
 install -m 0755 "$SCRIPT_DIR/run-shakti.sh" "$INSTALL_DIR/bin/run-shakti.sh"

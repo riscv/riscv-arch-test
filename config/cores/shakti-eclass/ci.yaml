@@ -1,0 +1,90 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the Shakti E-class core
+
+ci_enabled: true
+
+# shaktiproject/cores/e-class e8a0dfd; paths are under
+# https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/src/core/
+# None of these E-class bugs has been reported upstream yet.
+exclude_extensions:
+  # mtval on an illegal instruction is rs1 + immediate, on ecall the PC, on ebreak PC + 1, and on
+  # an interrupt a stale address: every trap writes stage 2's effective address
+  # (stage2.bsv#L272, csrfile.bsv#L1199).
+  # InterruptsSm_enable_U and InterruptsSm_trigger_U first miss a machine external interrupt raised
+  # in U-mode: mip.MEIP follows the interrupt input only while the hart is in M-mode
+  # (csrfile.bsv#L1263-L1268).
+  - U-
+  - U_Zicntr
+  - U_ucsr
+  - Exceptions_U
+  - Exceptions_Sm-
+  - Exceptions_Zc
+  - Sm_csr_ro
+  - Sm_csr_insufficient_priv
+  - Sm_inst
+  - Sm_Zicntr
+  - PMP_U_csr_access
+  - InterruptsSm_enable_M
+  - InterruptsSm_enable_U
+  - InterruptsSm_priority_mie_M
+  - InterruptsSm_priority_mie_U
+  - InterruptsSm_priority_mip_M
+  - InterruptsSm_priority_mip_U
+  - InterruptsSm_trigger_M
+  - InterruptsSm_trigger_U
+  - InterruptsSm_wfi_timeout_U
+  - InterruptsSm_wfi_U
+  # The instruction after a wfi executes with the wfi's PC (stage1.bsv#L426-L428).
+  - InterruptsSm_wfi_M
+  # minstret never increments, because the rule that increments it conflicts with the commit
+  # rule (stage3.bsv#L287, csrfile.bsv#L204).
+  - Zicntr
+  - Zicsr-csrrc
+  - Zicsr-csrrci
+  - Zicsr-csrrs
+  - Zicsr-csrrsi
+  # mstatus.FS is writable without F or S (csrfile.bsv#L273-L276). Of Sm_mcsr_walk only part -00
+  # fails, but its parts cannot be excluded one at a time.
+  - Sm_mcsr_access
+  - Sm_mcsr_walk
+  - Sm_mstatus_sd
+  # mepc[1] is not masked on reads when misa.C is 0 (csrfile.bsv#L610).
+  - Sm_misa
+  # mhpmcounter16..31 raise illegal instruction (decode.bsv#L101).
+  - Sm_mcsr_cntr
+  # Not an E-class bug: Sail clears mstatus.MPRV on an mret to a lower mode, a privileged 1.12
+  # rule, also when it models privileged 1.11
+  # (https://github.com/riscv/sail-riscv/issues/2075). Fixed by
+  # https://github.com/riscv/sail-riscv/pull/2096 after Sail 0.16; drop this exclusion once ACT
+  # uses a later Sail.
+  - Sm_xret
+  # An LR at a misaligned address raises store-address-misaligned (alu.bsv#L215).
+  - Exceptions_Zalrsc
+  # An sc.w without a reservation skips its PMP check (stage2.bsv#L245-L248).
+  - PMP_Zalrsc_cfg_wr
+  # pmpcfg2 reads entries 12..15 and pmpcfg3 reads 0 (csrfile.bsv#L404).
+  - PMP_Sm_pmpcfg_walk_02
+  - PMP_Sm_pmpcfg_walk_03
+  - PMP_Sm_pmpcfg_walk_04
+  - PMP_Sm_pmpcfg_walk_05
+  # An NA4 entry never matches a fetch or a halfword or word access, and a NAPOT entry does not
+  # match a fetch of its last word, because fetches pass a size of 4 bytes and data accesses the
+  # size code (eclass.bsv#L155, #L217, pmp_func.bsv#L80-L84).
+  - PMP_Sm_cfg_na4_all
+  - PMP_Sm_na4_legal_lxwr
+  - PMP_U_na4_legal_lxwr
+  - PMP_Zca_misaligned_na4
+  - PMP_Sm_napot_legal_lxwr-01-
+  - PMP_U_napot_legal_lxwr-01-
+  - PMP_Sm_priority-
+  # The PMP check of a load or store ignores mstatus.MPRV (eclass.bsv#L219).
+  - PMP_U_mprv_check-01-
+  # A fetch access fault on the second half of an instruction that crosses into a denied region
+  # writes neither address to mtval.
+  - PMP_Zca_misaligned_napot
+  - PMP_Zca_misaligned_tor
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache libgmp10"
+install_script: ".github/scripts/install-shakti.sh"
+setup_script: ".github/scripts/setup-shakti.sh"

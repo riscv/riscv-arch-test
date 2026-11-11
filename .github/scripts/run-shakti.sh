@@ -5,7 +5,7 @@
 # C-class test_soc).
 # Usage: run-shakti.sh --core eclass|cclass [--sim PATH] [--timeout SEC] [--keep] --elf <path>
 # The simulator defaults to shakti-<core>-sim beside this script, where install-shakti.sh puts
-# both.
+# it.
 # Env:   CROSS  toolchain prefix (default: riscv64-unknown-elf)
 #
 # The testbench loads main memory from code.mem and writes the UART output to app_log, both

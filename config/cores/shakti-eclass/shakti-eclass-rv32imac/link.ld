@@ -3,8 +3,8 @@
  * base-sim has 32 MB of main memory (Addr_space = 25) at 0x8000_0000, loaded from code.mem, and
  * install-shakti.sh puts the reset vector at its base. RAM_LENGTH must match the main memory
  * region in sail.json.
- * https://gitlab.com/shaktiproject/cores/e-class/-/blob/82dbf50b49ef0ab2a09ee7bfc4d2cd6c64fed8e1/base-sim/Makefile#L14-L21
- * https://gitlab.com/shaktiproject/cores/e-class/-/blob/82dbf50b49ef0ab2a09ee7bfc4d2cd6c64fed8e1/base-sim/Soc.defines#L22
+ * https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/base-sim/Makefile#L13-L20
+ * https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/base-sim/Soc.defines#L21
  */
 RAM_ORIGIN = 0x80000000;
 RAM_LENGTH = 0x02000000;

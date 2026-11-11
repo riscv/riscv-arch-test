@@ -422,7 +422,11 @@ params:
   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
   MISALIGNED_AMO: false
-  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  # An SC fails unless its address equals the LR's: the reservation holds address bits 2:0
+  # (caches_mmu src/dcache/dcache1rw.bsv#L860-L868 at 787102a), so after lr.w A an sc.w to A+4
+  # fails. Size is not compared (after lr.d A an sc.w to A succeeds); UDB has no address-only
+  # value, and true agrees with sail.json's require_exact_reservation_addr.
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
   LRSC_RESERVATION_STRATEGY: reserve exactly enough to cover the access
   TRAP_ON_EBREAK: true
   REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true

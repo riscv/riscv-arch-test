@@ -418,6 +418,16 @@
     #ifdef RVTEST_VECTOR
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
         RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
+      #ifdef H_SUPPORTED
+        # In VS-mode and VU-mode, vector instructions also need vsstatus.VS
+        RVTEST_TSBI_CSR_SET(CSR_VSSTATUS, 0x600)
+      #endif
+        # Save vstart for a vstart report, then clear it: a vector instruction may raise an
+        # illegal-instruction exception when vstart != 0, and one that completes resets vstart.
+        csrr x6, vstart
+        la x7, failing_vstart
+        SREG x6, 0(x7)
+        csrwi vstart, 0
         la x6, vecreg_scratch              # vecreg_scratch base address
         li x7, VLEN_BYTES                  # too large for an addi immediate once VLEN >= 16384
         vs1r.v v0, (x6)
@@ -936,8 +946,9 @@
         j failedtest_vector_csr_common
 
     failedtest_saveresults_vstart:
-        # Re-read vstart for bad value (no vector instructions have retired since failure).
-        csrr x6, vstart
+        # vstart as saved before the vector registers were stored
+        la x6, failing_vstart
+        LREG x6, 0(x6)
         SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
 
     failedtest_vector_csr_common:
@@ -2205,6 +2216,9 @@
         .fill VLEN_WORDS, 4, 0xbaaaaaad
     vecreg_scratch:                              # space to save full vector register contents
         .fill VECREG_REGION_WORDS, 4, 0xfeedf00dbaaaaaad
+    .p2align 3
+    failing_vstart:                              # vstart when the failure code started
+        .fill 2, 4, 0
 #endif // RVTEST_VECTOR
 
     //==========================================================================

@@ -71,6 +71,11 @@ exclude_extensions:
   - Sv_ExceptionsZalrsc
   - Sv_ExceptionsZalrscSm_sv32_exceptions
   - Sv_ExceptionsZalrscSm_sv39_exceptions
+  # RV32 only: every mstatus write clears MPELP, which QEMU keeps in bit 41 of its 64-bit mstatus, so after the trap
+  # handler's mstatus accesses mret does not restore ELP and the second software-check exception of the
+  # medeleg software-check cases never happens (related: mstatush.MPELP is not writable,
+  # https://gitlab.com/qemu-project/qemu/-/work_items/4220). qemu-rv64-max passes.
+  - Exceptions_Sm_medeleg
   # Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)
   - Exceptions_ZicboU
   - Exceptions_ZicboS

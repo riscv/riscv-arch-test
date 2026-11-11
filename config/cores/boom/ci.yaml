@@ -4,17 +4,17 @@
 
 ci_enabled: true
 
-# Measured on act4 cbbb9f0eb with the simulator from .github/scripts/install-boom.sh: 545 of the 575 selected
-# tests pass, and the 30 that fail are excluded below. Each group fails at riscv-boom/riscv-boom 5223e44
+# Measured on act4 4dd885840 with the simulator from .github/scripts/install-boom.sh: 546 of the 575 selected
+# tests pass, and the 29 that fail are excluded below. Each group fails at riscv-boom/riscv-boom 5223e44
 # (Chipyard 1.14.0); a directed probe for each bug passes on Spike and Sail and fails on BOOM. Paths are relative to
 # https://github.com/riscv-boom/riscv-boom/blob/5223e44cfeb26f41380057a2eb4d651197475f69/src/main/scala/v3/
 exclude_extensions:
   # The fetch unit checks PMP for the whole 8-byte fetch packet (ifu/frontend.scala#L390), so an instruction in an
-  # executable region next to a non-executable NA4 or TOR region takes an instruction access fault.
+  # executable region next to a non-executable NA4 or TOR region takes an instruction access fault
+  # (https://github.com/riscv-boom/riscv-boom/issues/786).
   - PMP_S_na4_legal_lxwr
   - PMP_S_tor_legal_lxwr-02
   - PMP_Sm_cfg_A_tor_bot
-  - PMP_Sm_cfg_A_tor_zero
   - PMP_Sm_cfg_tor_check-01
   - PMP_Sm_na4_legal_lxwr
   - PMP_Sm_tor_legal_lxwr-02
@@ -27,19 +27,22 @@ exclude_extensions:
   - PMP_Zca_misaligned_na4
   - PMP_Zca_misaligned_tor
   # The data TLB keeps only the walker's ae_final (lsu/tlb.scala#L186): a PMP fault on a PTE read is reported as a
-  # page fault, and a leaf PTE with reserved bits, N or PBMT set is used instead of raising a page fault.
+  # page fault (https://github.com/riscv-boom/riscv-boom/issues/810), and a leaf PTE with reserved bits, N or PBMT
+  # set is used instead of raising a page fault (https://github.com/riscv-boom/riscv-boom/issues/735).
   - PMP_Sv_sv39_pmp_on_pte
   - Sv_sv39_pte_reserved_field
   - Sv_sv39_svnapot_not_supported
   - Sv_sv39_svpbmt_disabled
-  # minstret counts ECALL, which commits through the ROB (exu/decode.scala#L239, exu/rob.scala#L414), and counts a
-  # csrw minstret, because the CSR file adds retirements a cycle late (exu/core.scala#L1015).
+  # minstret counts ECALL, which commits through the ROB (exu/decode.scala#L239, exu/rob.scala#L414,
+  # https://github.com/riscv-boom/riscv-boom/issues/829), and counts a csrw minstret, because the CSR file adds
+  # retirements a cycle late (exu/core.scala#L1015, https://github.com/riscv-boom/riscv-boom/issues/637).
   - S_Zicntr
   - Sm_Zicntr
   - Sm_mcsr_cntr
   - U_Zicntr
   # fdiv.s and fsqrt.s widen single operands to double and drop the conversion's flags
-  # (exu/execution-units/fdiv.scala#L111-L119), so a signaling-NaN operand does not raise NV.
+  # (exu/execution-units/fdiv.scala#L111-L119), so a signaling-NaN operand does not raise NV
+  # (https://github.com/riscv-boom/riscv-boom/issues/809).
   - F-fdiv.s
   - F-fsqrt.s
 

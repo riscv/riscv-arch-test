@@ -157,9 +157,6 @@
     `ifdef COVER_SV
         sv_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SVH
-        svh_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SVADE
         svade_sample(hart, issue, ins);
     `endif
@@ -369,9 +366,6 @@
     `endif
     `ifdef COVER_ZKSH
         zksh_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZKT
-        zkt_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZMMUL
         zmmul_sample(hart, issue, ins);

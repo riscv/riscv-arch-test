@@ -115,11 +115,11 @@ function automatic pmp_partial_t pmp_partial(ins_t ins);
 
   prev_top = '0;
   for (int i = 0; i < `UDB_NUM_PMP_ENTRIES; i++) begin
-    pmpaddr = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + i, "pmpaddr", "pmpaddr");
+    pmpaddr = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(i));
     `ifdef UDB_MXLEN_32
-      cfg[i] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + i/4, "pmpcfg", "pmpcfg") >> (8*(i%4));
+      cfg[i] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i/4)) >> (8*(i%4));
     `else
-      cfg[i] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*(i/8), "pmpcfg", "pmpcfg") >> (8*(i%8));
+      cfg[i] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*(i/8))) >> (8*(i%8));
     `endif
     top = 64'(pmpaddr) << 2;
     // TOR ignores pmpaddr[G-1:0], which read as ones in a NAPOT entry below a TOR entry.

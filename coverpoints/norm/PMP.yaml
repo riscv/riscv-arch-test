@@ -55,6 +55,7 @@ normative_rule_definitions:
         "PMP_Zaamo_cg/cp_cfg_RW",
         "PMP_Zalrsc_cg/cp_cfg_RW",
         "PMP_Zca_cg/cp_cfg_W",
+        "PMP_HSvZicbo_cg/cp_pmp",
         "PMP_Zicbo_cg/cp_cbo_zero",
       ]
 
@@ -552,7 +553,11 @@ normative_rule_definitions:
   # region are defined in &lt;&lt;cmo&gt;&gt;; when such access is not permitted, the
   # instruction raises a store access-fault exception.
   - name: pmp_cbm_fault
-    coverpoint: ["PMP_Zicbo_cg/{cp_cbo_clean, cp_cbo_flush, cp_cbo_inval}"]
+    coverpoint:
+      [
+        "PMP_Zicbo_cg/{cp_cbo_clean, cp_cbo_flush, cp_cbo_inval}",
+        "PMP_HSvZicbo_cg/cp_pmp",
+      ]
 
   # A cache-block zero instruction is permitted to access the specified cache block
   # whenever a store instruction is permitted to access the corresponding physical
@@ -670,3 +675,7 @@ normative_rule_definitions:
       [
         "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
       ]
+
+  # PMP checks the supervisor physical address of a CBO from VS-mode or VU-mode
+  - name: H_pmp
+    coverpoint: ["PMP_HSvZicbo_cg/cp_pmp"]

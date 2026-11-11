@@ -51,7 +51,7 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
 
     // fcsr
     `ifdef ZFINX_SUPPORTED
-        misa_F_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "misa", "exts")[5] {
+        misa_F_clear: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MISA, "exts")[5] {
             bins F_clear = {1'b0};
         }
         fcsr_state: coverpoint {mstateen0_bit(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", 0), hstateen0_bit(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", 0), sstateen0_bit(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr")} {

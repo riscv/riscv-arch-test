@@ -3,6 +3,12 @@
 
 blank_issues_enabled: false
 contact_links:
+  - name: UDB parameter or configuration request
+    url: https://github.com/riscv/riscv-unified-db/issues
+    about: Request a new or changed UDB parameter, or report a UDB configuration problem, in the riscv-unified-db repository.
+  - name: Sail model configuration or behavior request
+    url: https://github.com/riscv/sail-riscv/issues
+    about: Request a new Sail model configuration option, or report Sail model behavior, in the sail-riscv repository.
   - name: ACT SIG mailing list
     url: https://lists.riscv.org/g/sig-arch-test
     about: Join the mailing list and project meetings for broader discussion.

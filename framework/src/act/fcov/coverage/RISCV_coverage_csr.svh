@@ -20,73 +20,6 @@
 //
 //
 
-typedef enum {
-  dcsr,
-  etrigger,
-  fcsr,
-  fflags,
-  frm,
-  hcounteren,
-  hedeleg,
-  henvcfg,
-  hgatp,
-  hgeie,
-  hgeip,
-  hideleg,
-  hie,
-  hip,
-  hstatus,
-  hvip,
-  icount,
-  itrigger,
-  jvt,
-  mcause,
-  mcontrol,
-  mcounteren,
-  mcountinhibit,
-  medeleg,
-  menvcfg,
-  mideleg,
-  mie,
-  mip,
-  misa,
-  mseccfg,
-  mstatus,
-  mstatush,
-  mtvec,
-  pmpcfg0,
-  pmpcfg1,
-  pmpcfg2,
-  pmpcfg3,
-  satp,
-  scause,
-  scounteren,
-  seed,
-  senvcfg,
-  sie,
-  sip,
-  sstatus,
-  stvec,
-  tcontrol,
-  tdata1,
-  textra32,
-  textra64,
-  tinfo,
-  vcsr,
-  vl,
-  vlenb,
-  vsatp,
-  vscause,
-  vsie,
-  vsip,
-  vsstatus,
-  vstart,
-  vstvec,
-  vtype,
-  vxrm,
-  vxsat
-} csr_name_t;
-
 // xcause exception codes (Interrupt = 0), named as in the privileged spec's mcause table
 localparam int INSTRUCTION_ADDRESS_MISALIGNED        = 0;
 localparam int INSTRUCTION_ACCESS_FAULT              = 1;
@@ -124,1459 +57,1545 @@ localparam int MACHINE_EXTERNAL_INTERRUPT            = 11;
 localparam int SUPERVISOR_GUEST_EXTERNAL_INTERRUPT   = 12;
 localparam int COUNTER_OVERFLOW_INTERRUPT            = 13;
 
-function `XLEN_BITS get_csr_val(int hart, int issue, int prev, string name, string field);
-  int addr = int'(get_csr_addr(hart, name));
-  return get_csr_val_addr(hart, issue, prev, addr, name, field);
+// Whole value of the CSR at addr
+function `XLEN_BITS get_csr_val(int hart, int issue, int prev, bit [11:0] addr);
+  return traceDataQ[hart][issue][prev].csr[addr];
 endfunction
 
-function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, string name, string field);
+// Named field of the CSR at addr, shifted to bit 0
+function `XLEN_BITS get_csr_field(int hart, int issue, int prev, bit [11:0] addr, string field);
 
   `XLEN_BITS val;
   val = traceDataQ[hart][issue][prev].csr[addr];
 
-  // A field named after the CSR selects the whole register
-  if (field == name) return val;
-
-  // If the field is defined/found, shift and mask the value to be returned
-  if (name == "dcsr") begin
-    case(field)
-      "cause" : val = (val >> 6) & 'h7;
-      "ebreakm" : val = (val >> 15) & 'h1;
-      "ebreaks" : val = (val >> 13) & 'h1;
-      "ebreaku" : val = (val >> 12) & 'h1;
-      "mprven" : val = (val >> 4) & 'h1;
-      "nmip" : val = (val >> 3) & 'h1;
-      "prv" : val = val & 'h3;
-      "step" : val = (val >> 2) & 'h1;
-      "stepie" : val = (val >> 11) & 'h1;
-      "stopcount" : val = (val >> 10) & 'h1;
-      "stoptime" : val = (val >> 9) & 'h1;
-      "xdebugver" : val = (val >> 28) & 'hf;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "etrigger") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "dmode" : val = (val >> 27) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "dmode" : val = (val >> 59) & 64'h1;
-`endif
-`ifdef UDB_MXLEN_32
-      "hit" : val = (val >> 26) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "hit" : val = (val >> 58) & 64'h1;
-`endif
-      "m" : val = (val >> 9) & 'h1;
-      "nmi" : val = (val >> 10) & 'h1;
-      "s" : val = (val >> 7) & 'h1;
-`ifdef UDB_MXLEN_32
-      "type" : val = (val >> 28) & 32'hf;
-`endif
-`ifdef UDB_MXLEN_64
-      "type" : val = (val >> 60) & 64'hf;
-`endif
-      "u" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "fcsr") begin
-    case(field)
-      "fflags" : val = val & 'h1f;
-      "frm" : val = (val >> 5) & 'h7;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "fflags") begin
-    case(field)
-      "fflags" : val = val & 'h1f;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "frm") begin
-    case(field)
-      "frm" : val = val & 'h7;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hcounteren") begin
-    case(field)
-      "cy" : val = val & 'h1;
-      "enable" : val = (val >> 3) & 'h1fffffff;
-      "ir" : val = (val >> 2) & 'h1;
-      "tm" : val = (val >> 1) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hedeleg") begin
-    case(field)
-      "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "henvcfg") begin
-    case(field)
-      "fiom" : val = val & 'h1;
-      "lpe" : val = (val >> 2) & 'h1;
-      "sse" : val = (val >> 3) & 'h1;
-      "cbie" : val = (val >> 4) & 'h3;
-      "cbcfe" : val = (val >> 6) & 'h1;
-      "cbze" : val = (val >> 7) & 'h1;
-`ifdef UDB_MXLEN_64
-      "pmm" : val = (val >> 32) & 64'h3;
-      "dte" : val = (val >> 59) & 64'h1;
-      "adue" : val = (val >> 61) & 64'h1;
-      "pbmte" : val = (val >> 62) & 64'h1;
-      "stce" : val = (val >> 63) & 64'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "henvcfgh") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "dte" : val = (val >> 27) & 32'h1;
-      "adue" : val = (val >> 29) & 32'h1;
-      "pbmte" : val = (val >> 30) & 32'h1;
-      "stce" : val = (val >> 31) & 32'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hgatp") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "vmid" : val = (val >> 22) & 32'h7f;
-`endif
-`ifdef UDB_MXLEN_64
-      "vmid" : val = (val >> 44) & 64'h3fff;
-`endif
-`ifdef UDB_MXLEN_32
-      "mode" : val = (val >> 31) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "mode" : val = (val >> 60) & 64'hf;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hgeie") begin
-    case(field)
-      "enable" : val = (val >> 1) & 'h7fffffff;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hgeip") begin
-    case(field)
-      "pending" : val = (val >> 1) & 'h7fffffff;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hideleg") begin
-    case(field)
-      "meip" : val = (val >> 11) & 'h1;
-      "msip" : val = (val >> 3) & 'h1;
-      "mtip" : val = (val >> 7) & 'h1;
-      "seip" : val = (val >> 9) & 'h1;
-      "sgeip" : val = (val >> 12) & 'h1;
-      "ssip" : val = (val >> 1) & 'h1;
-      "stip" : val = (val >> 5) & 'h1;
-      "vgeip" : val = (val >> 10) & 'h1;
-      "vssip" : val = (val >> 2) & 'h1;
-      "vstip" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hie") begin
-    case(field)
-      "sgeie" : val = (val >> 12) & 'h1;
-      "vseie" : val = (val >> 10) & 'h1;
-      "vssie" : val = (val >> 2) & 'h1;
-      "vstie" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hip") begin
-    case(field)
-      "sgeip" : val = (val >> 12) & 'h1;
-      "vseip" : val = (val >> 10) & 'h1;
-      "vssip" : val = (val >> 2) & 'h1;
-      "vstip" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hstateen0") begin
-    case(field)
-      "c" : val = val & 'h1;
-      "fcsr" : val = (val >> 1) & 'h1;
-      "jvt" : val = (val >> 2) & 'h1;
-`ifdef UDB_MXLEN_64
-      "ctr" : val = (val >> 54) & 64'h1;
-      "context" : val = (val >> 57) & 64'h1;
-      "imsic" : val = (val >> 58) & 64'h1;
-      "aia" : val = (val >> 59) & 64'h1;
-      "csrind" : val = (val >> 60) & 64'h1;
-      "envcfg" : val = (val >> 62) & 64'h1;
-      "se0" : val = (val >> 63) & 64'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hstateen0h") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "ctr" : val = (val >> 22) & 32'h1;
-      "context" : val = (val >> 25) & 32'h1;
-      "imsic" : val = (val >> 26) & 32'h1;
-      "aia" : val = (val >> 27) & 32'h1;
-      "csrind" : val = (val >> 28) & 32'h1;
-      "envcfg" : val = (val >> 30) & 32'h1;
-      "se0" : val = (val >> 31) & 32'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hstatus") begin
-    case(field)
-      "gva" : val = (val >> 6) & 'h1;
-      "hu" : val = (val >> 9) & 'h1;
-`ifdef UDB_MXLEN_64
-      "hupmm" : val = (val >> 48) & 64'h3;
-`endif
-      "spv" : val = (val >> 7) & 'h1;
-      "spvp" : val = (val >> 8) & 'h1;
-      "vsbe" : val = (val >> 5) & 'h1;
-`ifdef UDB_MXLEN_64
-      "vsxl" : val = (val >> 32) & 64'h3;
-`endif
-      "vtsr" : val = (val >> 22) & 'h1;
-      "vtvm" : val = (val >> 20) & 'h1;
-      "vtw" : val = (val >> 21) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "hvip") begin
-    case(field)
-      "vseip" : val = (val >> 10) & 'h1;
-      "vssip" : val = (val >> 2) & 'h1;
-      "vstip" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "icount") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "dmode" : val = (val >> 27) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "dmode" : val = (val >> 59) & 64'h1;
-`endif
-      "hit" : val = (val >> 24) & 'h1;
-      "m" : val = (val >> 9) & 'h1;
-      "s" : val = (val >> 7) & 'h1;
-`ifdef UDB_MXLEN_32
-      "type" : val = (val >> 28) & 32'hf;
-`endif
-`ifdef UDB_MXLEN_64
-      "type" : val = (val >> 60) & 64'hf;
-`endif
-      "u" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "itrigger") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "dmode" : val = (val >> 27) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "dmode" : val = (val >> 59) & 64'h1;
-`endif
-`ifdef UDB_MXLEN_32
-      "hit" : val = (val >> 26) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "hit" : val = (val >> 58) & 64'h1;
-`endif
-      "m" : val = (val >> 9) & 'h1;
-      "s" : val = (val >> 7) & 'h1;
-`ifdef UDB_MXLEN_32
-      "type" : val = (val >> 28) & 32'hf;
-`endif
-`ifdef UDB_MXLEN_64
-      "type" : val = (val >> 60) & 64'hf;
-`endif
-      "u" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "jvt") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "base" : val = (val >> 6) & 32'h3ffffff;
-`endif
-`ifdef UDB_MXLEN_64
-      "base" : val = (val >> 6) & 64'h3ffffffffffffff;
-`endif
-      "mode" : val = val & 'h3f;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mcause") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "code" : val = val & 32'h7fffffff;
-`endif
-`ifdef UDB_MXLEN_64
-      "code" : val = val & 64'h7fffffffffffffff;
-`endif
-`ifdef UDB_MXLEN_32
-      "int" : val = val & 32'hffffffff;
-`endif
-`ifdef UDB_MXLEN_64
-      "int" : val = val & 64'hffffffffffffffff;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mcontrol") begin
-    case(field)
-      "action" : val = (val >> 12) & 'hf;
-      "chain" : val = (val >> 11) & 'h1;
-`ifdef UDB_MXLEN_32
-      "dmode" : val = (val >> 27) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "dmode" : val = (val >> 59) & 64'h1;
-`endif
-      "execute" : val = (val >> 2) & 'h1;
-      "hit" : val = (val >> 20) & 'h1;
-      "load" : val = val & 'h1;
-      "m" : val = (val >> 6) & 'h1;
-`ifdef UDB_MXLEN_32
-      "maskmax" : val = (val >> 21) & 32'h3f;
-`endif
-`ifdef UDB_MXLEN_64
-      "maskmax" : val = (val >> 53) & 64'h3f;
-`endif
-      "match" : val = (val >> 7) & 'hf;
-      "s" : val = (val >> 4) & 'h1;
-      "select" : val = (val >> 19) & 'h1;
-`ifdef UDB_MXLEN_64
-      "sizehi" : val = (val >> 21) & 64'h3;
-`endif
-      "sizelo" : val = (val >> 16) & 'h3;
-      "store" : val = (val >> 1) & 'h1;
-      "timing" : val = (val >> 18) & 'h1;
-`ifdef UDB_MXLEN_32
-      "type" : val = (val >> 28) & 32'hf;
-`endif
-`ifdef UDB_MXLEN_64
-      "type" : val = (val >> 60) & 64'hf;
-`endif
-      "u" : val = (val >> 3) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mcounteren") begin
-    case(field)
-      "cy" : val = val & 'h1;
-      "enable" : val = (val >> 3) & 'h1fffffff;
-      "ir" : val = (val >> 2) & 'h1;
-      "tm" : val = (val >> 1) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mcountinhibit") begin
-    case(field)
-      "cy" : val = val & 'h1;
-      "inhibit" : val = (val >> 3) & 'h1fffffff;
-      "ir" : val = (val >> 2) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mcyclecfg") begin
-    case(field)
-`ifdef UDB_MXLEN_64
-      "minh" : val = (val >> 62) & 64'h1;
-      "sinh" : val = (val >> 61) & 64'h1;
-      "uinh" : val = (val >> 60) & 64'h1;
-      "vsinh" : val = (val >> 59) & 64'h1;
-      "vuinh" : val = (val >> 58) & 64'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mcyclecfgh") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "minh" : val = (val >> 30) & 32'h1;
-      "sinh" : val = (val >> 29) & 32'h1;
-      "uinh" : val = (val >> 28) & 32'h1;
-      "vsinh" : val = (val >> 27) & 32'h1;
-      "vuinh" : val = (val >> 26) & 32'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "medeleg") begin
-    case(field)
-      "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "menvcfg") begin
-    case(field)
-      "fiom" : val = val & 'h1;
-      "lpe" : val = (val >> 2) & 'h1;
-      "sse" : val = (val >> 3) & 'h1;
-      "cbie" : val = (val >> 4) & 'h3;
-      "cbcfe" : val = (val >> 6) & 'h1;
-      "cbze" : val = (val >> 7) & 'h1;
-`ifdef UDB_MXLEN_64
-      "pmm" : val = (val >> 32) & 64'h3;
-      "dte" : val = (val >> 59) & 64'h1;
-      "cde" : val = (val >> 60) & 64'h1;
-      "adue" : val = (val >> 61) & 64'h1;
-      "pbmte" : val = (val >> 62) & 64'h1;
-      "stce" : val = (val >> 63) & 64'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "menvcfgh") begin
-    case(field)
-      "adue" : val = (val >> 29) & `UDB_MXLEN'(1);
-      "cde" : val = (val >> 28) & `UDB_MXLEN'(1);
-      "dte" : val = (val >> 27) & `UDB_MXLEN'(1);
-      "stce" : val = (val >> 31) & `UDB_MXLEN'(1);
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mideleg") begin
-    case(field)
-      "lcofip" : val = (val >> 13) & 'h1;
-      "meip" : val = (val >> 11) & 'h1;
-      "msip" : val = (val >> 3) & 'h1;
-      "mtip" : val = (val >> 7) & 'h1;
-      "seip" : val = (val >> 9) & 'h1;
-      "sgeip" : val = (val >> 12) & 'h1;
-      "ssip" : val = (val >> 1) & 'h1;
-      "stip" : val = (val >> 5) & 'h1;
-      "vgeip" : val = (val >> 10) & 'h1;
-      "vssip" : val = (val >> 2) & 'h1;
-      "vstip" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mie") begin
-    case(field)
-      "lcofie" : val = (val >> 13) & 'h1;
-      "meie" : val = (val >> 11) & 'h1;
-      "msie" : val = (val >> 3) & 'h1;
-      "mtie" : val = (val >> 7) & 'h1;
-      "seie" : val = (val >> 9) & 'h1;
-      "sgeie" : val = (val >> 12) & 'h1;
-      "ssie" : val = (val >> 1) & 'h1;
-      "stie" : val = (val >> 5) & 'h1;
-      "vgeie" : val = (val >> 10) & 'h1;
-      "vssie" : val = (val >> 2) & 'h1;
-      "vstie" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "minstretcfg") begin
-    case(field)
-`ifdef UDB_MXLEN_64
-      "minh" : val = (val >> 62) & 64'h1;
-      "sinh" : val = (val >> 61) & 64'h1;
-      "uinh" : val = (val >> 60) & 64'h1;
-      "vsinh" : val = (val >> 59) & 64'h1;
-      "vuinh" : val = (val >> 58) & 64'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "minstretcfgh") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "minh" : val = (val >> 30) & 32'h1;
-      "sinh" : val = (val >> 29) & 32'h1;
-      "uinh" : val = (val >> 28) & 32'h1;
-      "vsinh" : val = (val >> 27) & 32'h1;
-      "vuinh" : val = (val >> 26) & 32'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mip") begin
-    case(field)
-      "lcofip" : val = (val >> 13) & 'h1;
-      "meip" : val = (val >> 11) & 'h1;
-      "msip" : val = (val >> 3) & 'h1;
-      "mtip" : val = (val >> 7) & 'h1;
-      "seip" : val = (val >> 9) & 'h1;
-      "sgeip" : val = (val >> 12) & 'h1;
-      "ssip" : val = (val >> 1) & 'h1;
-      "stip" : val = (val >> 5) & 'h1;
-      "vgeip" : val = (val >> 10) & 'h1;
-      "vssip" : val = (val >> 2) & 'h1;
-      "vstip" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "misa") begin
-    case(field)
-      "exts" : val = val & 'h3ffffff;
-`ifdef UDB_MXLEN_32
-      "mxl" : val = (val >> 30) & 32'h3;
-`endif
-`ifdef UDB_MXLEN_64
-      "mxl" : val = (val >> 62) & 64'h3;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mseccfg") begin
-    case(field)
-      "mml" : val = val & 'h1;
-      "mmwp" : val = (val >> 1) & 'h1;
-      "rlb" : val = (val >> 2) & 'h1;
-      "useed" : val = (val >> 8) & 'h1;
-      "sseed" : val = (val >> 9) & 'h1;
-      "mlpe" : val = (val >> 10) & 'h1;
-`ifdef UDB_MXLEN_64
-      "pmm" : val = (val >> 32) & 64'h3;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mstatus") begin
-    case(field)
-      "fs" : val = (val >> 13) & 'h3;
-`ifdef UDB_MXLEN_64
-      "gva" : val = (val >> 38) & 64'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "mbe" : val = (val >> 37) & 64'h1;
-`endif
-      "mie" : val = (val >> 3) & 'h1;
-`ifdef UDB_MXLEN_64
-      "mpelp" : val = (val >> 41) & 64'h1;
-`endif
-      "mpie" : val = (val >> 7) & 'h1;
-      "mpp" : val = (val >> 11) & 'h3;
-      "mprv" : val = (val >> 17) & 'h1;
-`ifdef UDB_MXLEN_64
-      "mpv" : val = (val >> 39) & 64'h1;
-`endif
-      "mxr" : val = (val >> 19) & 'h1;
-`ifdef UDB_MXLEN_64
-      "sbe" : val = (val >> 36) & 64'h1;
-`endif
-`ifdef UDB_MXLEN_32
-      "sd" : val = (val >> 31) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "sd" : val = (val >> 63) & 64'h1;
-`endif
-      "sie" : val = (val >> 1) & 'h1;
-      "spelp" : val = (val >> 23) & 'h1;
-      "spie" : val = (val >> 5) & 'h1;
-      "spp" : val = (val >> 8) & 'h1;
-      "sum" : val = (val >> 18) & 'h1;
-`ifdef UDB_MXLEN_64
-      "sxl" : val = (val >> 34) & 64'h3;
-`endif
-      "tsr" : val = (val >> 22) & 'h1;
-      "tvm" : val = (val >> 20) & 'h1;
-      "tw" : val = (val >> 21) & 'h1;
-      "ube" : val = (val >> 6) & 'h1;
-`ifdef UDB_MXLEN_64
-      "uxl" : val = (val >> 32) & 64'h3;
-`endif
-      "vs" : val = (val >> 9) & 'h3;
-      "xs" : val = (val >> 15) & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mstatush") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "gva" : val = (val >> 6) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_32
-      "mbe" : val = (val >> 5) & 32'h1;
+  case (addr)
+    CSR_DCSR: begin
+      case(field)
+        "cause" : val = (val >> 6) & 'h7;
+        "ebreakm" : val = (val >> 15) & 'h1;
+        "ebreaks" : val = (val >> 13) & 'h1;
+        "ebreaku" : val = (val >> 12) & 'h1;
+        "mprven" : val = (val >> 4) & 'h1;
+        "nmip" : val = (val >> 3) & 'h1;
+        "prv" : val = val & 'h3;
+        "step" : val = (val >> 2) & 'h1;
+        "stepie" : val = (val >> 11) & 'h1;
+        "stopcount" : val = (val >> 10) & 'h1;
+        "stoptime" : val = (val >> 9) & 'h1;
+        "xdebugver" : val = (val >> 28) & 'hf;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_FCSR: begin
+      case(field)
+        "fflags" : val = val & 'h1f;
+        "frm" : val = (val >> 5) & 'h7;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_FFLAGS: begin
+      case(field)
+        "fflags" : val = val & 'h1f;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_FRM: begin
+      case(field)
+        "frm" : val = val & 'h7;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HCOUNTEREN: begin
+      case(field)
+        "cy" : val = val & 'h1;
+        "enable" : val = (val >> 3) & 'h1fffffff;
+        "ir" : val = (val >> 2) & 'h1;
+        "tm" : val = (val >> 1) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HEDELEG: begin
+      case(field)
+        "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HENVCFG: begin
+      case(field)
+        "fiom" : val = val & 'h1;
+        "lpe" : val = (val >> 2) & 'h1;
+        "sse" : val = (val >> 3) & 'h1;
+        "cbie" : val = (val >> 4) & 'h3;
+        "cbcfe" : val = (val >> 6) & 'h1;
+        "cbze" : val = (val >> 7) & 'h1;
+`ifdef UDB_MXLEN_64
+        "pmm" : val = (val >> 32) & 64'h3;
+        "dte" : val = (val >> 59) & 64'h1;
+        "adue" : val = (val >> 61) & 64'h1;
+        "pbmte" : val = (val >> 62) & 64'h1;
+        "stce" : val = (val >> 63) & 64'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HENVCFGH: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "dte" : val = (val >> 27) & 32'h1;
+        "adue" : val = (val >> 29) & 32'h1;
+        "pbmte" : val = (val >> 30) & 32'h1;
+        "stce" : val = (val >> 31) & 32'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HGATP: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "vmid" : val = (val >> 22) & 32'h7f;
+`endif
+`ifdef UDB_MXLEN_64
+        "vmid" : val = (val >> 44) & 64'h3fff;
+`endif
+`ifdef UDB_MXLEN_32
+        "mode" : val = (val >> 31) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_64
+        "mode" : val = (val >> 60) & 64'hf;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HGEIE: begin
+      case(field)
+        "enable" : val = (val >> 1) & 'h7fffffff;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HGEIP: begin
+      case(field)
+        "pending" : val = (val >> 1) & 'h7fffffff;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HIDELEG: begin
+      case(field)
+        "meip" : val = (val >> 11) & 'h1;
+        "msip" : val = (val >> 3) & 'h1;
+        "mtip" : val = (val >> 7) & 'h1;
+        "seip" : val = (val >> 9) & 'h1;
+        "sgeip" : val = (val >> 12) & 'h1;
+        "ssip" : val = (val >> 1) & 'h1;
+        "stip" : val = (val >> 5) & 'h1;
+        "vgeip" : val = (val >> 10) & 'h1;
+        "vssip" : val = (val >> 2) & 'h1;
+        "vstip" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HIE: begin
+      case(field)
+        "sgeie" : val = (val >> 12) & 'h1;
+        "vseie" : val = (val >> 10) & 'h1;
+        "vssie" : val = (val >> 2) & 'h1;
+        "vstie" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HIP: begin
+      case(field)
+        "sgeip" : val = (val >> 12) & 'h1;
+        "vseip" : val = (val >> 10) & 'h1;
+        "vssip" : val = (val >> 2) & 'h1;
+        "vstip" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HSTATEEN0: begin
+      case(field)
+        "c" : val = val & 'h1;
+        "fcsr" : val = (val >> 1) & 'h1;
+        "jvt" : val = (val >> 2) & 'h1;
+`ifdef UDB_MXLEN_64
+        "ctr" : val = (val >> 54) & 64'h1;
+        "context" : val = (val >> 57) & 64'h1;
+        "imsic" : val = (val >> 58) & 64'h1;
+        "aia" : val = (val >> 59) & 64'h1;
+        "csrind" : val = (val >> 60) & 64'h1;
+        "envcfg" : val = (val >> 62) & 64'h1;
+        "se0" : val = (val >> 63) & 64'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HSTATEEN0H: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "ctr" : val = (val >> 22) & 32'h1;
+        "context" : val = (val >> 25) & 32'h1;
+        "imsic" : val = (val >> 26) & 32'h1;
+        "aia" : val = (val >> 27) & 32'h1;
+        "csrind" : val = (val >> 28) & 32'h1;
+        "envcfg" : val = (val >> 30) & 32'h1;
+        "se0" : val = (val >> 31) & 32'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HSTATUS: begin
+      case(field)
+        "gva" : val = (val >> 6) & 'h1;
+        "hu" : val = (val >> 9) & 'h1;
+`ifdef UDB_MXLEN_64
+        "hupmm" : val = (val >> 48) & 64'h3;
+`endif
+        "spv" : val = (val >> 7) & 'h1;
+        "spvp" : val = (val >> 8) & 'h1;
+        "vsbe" : val = (val >> 5) & 'h1;
+`ifdef UDB_MXLEN_64
+        "vsxl" : val = (val >> 32) & 64'h3;
+`endif
+        "vtsr" : val = (val >> 22) & 'h1;
+        "vtvm" : val = (val >> 20) & 'h1;
+        "vtw" : val = (val >> 21) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_HVIP: begin
+      case(field)
+        "vseip" : val = (val >> 10) & 'h1;
+        "vssip" : val = (val >> 2) & 'h1;
+        "vstip" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_JVT: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "base" : val = (val >> 6) & 32'h3ffffff;
+`endif
+`ifdef UDB_MXLEN_64
+        "base" : val = (val >> 6) & 64'h3ffffffffffffff;
+`endif
+        "mode" : val = val & 'h3f;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MCAUSE: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "code" : val = val & 32'h7fffffff;
+`endif
+`ifdef UDB_MXLEN_64
+        "code" : val = val & 64'h7fffffffffffffff;
+`endif
+`ifdef UDB_MXLEN_32
+        "int" : val = val & 32'hffffffff;
+`endif
+`ifdef UDB_MXLEN_64
+        "int" : val = val & 64'hffffffffffffffff;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MCOUNTEREN: begin
+      case(field)
+        "cy" : val = val & 'h1;
+        "enable" : val = (val >> 3) & 'h1fffffff;
+        "ir" : val = (val >> 2) & 'h1;
+        "tm" : val = (val >> 1) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MCOUNTINHIBIT: begin
+      case(field)
+        "cy" : val = val & 'h1;
+        "inhibit" : val = (val >> 3) & 'h1fffffff;
+        "ir" : val = (val >> 2) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MCYCLECFG: begin
+      case(field)
+`ifdef UDB_MXLEN_64
+        "minh" : val = (val >> 62) & 64'h1;
+        "sinh" : val = (val >> 61) & 64'h1;
+        "uinh" : val = (val >> 60) & 64'h1;
+        "vsinh" : val = (val >> 59) & 64'h1;
+        "vuinh" : val = (val >> 58) & 64'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MCYCLECFGH: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "minh" : val = (val >> 30) & 32'h1;
+        "sinh" : val = (val >> 29) & 32'h1;
+        "uinh" : val = (val >> 28) & 32'h1;
+        "vsinh" : val = (val >> 27) & 32'h1;
+        "vuinh" : val = (val >> 26) & 32'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MEDELEG: begin
+      case(field)
+        "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MENVCFG: begin
+      case(field)
+        "fiom" : val = val & 'h1;
+        "lpe" : val = (val >> 2) & 'h1;
+        "sse" : val = (val >> 3) & 'h1;
+        "cbie" : val = (val >> 4) & 'h3;
+        "cbcfe" : val = (val >> 6) & 'h1;
+        "cbze" : val = (val >> 7) & 'h1;
+`ifdef UDB_MXLEN_64
+        "pmm" : val = (val >> 32) & 64'h3;
+        "dte" : val = (val >> 59) & 64'h1;
+        "cde" : val = (val >> 60) & 64'h1;
+        "adue" : val = (val >> 61) & 64'h1;
+        "pbmte" : val = (val >> 62) & 64'h1;
+        "stce" : val = (val >> 63) & 64'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MENVCFGH: begin
+      case(field)
+        "adue" : val = (val >> 29) & `UDB_MXLEN'(1);
+        "cde" : val = (val >> 28) & `UDB_MXLEN'(1);
+        "dte" : val = (val >> 27) & `UDB_MXLEN'(1);
+        "stce" : val = (val >> 31) & `UDB_MXLEN'(1);
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MIDELEG: begin
+      case(field)
+        "lcofip" : val = (val >> 13) & 'h1;
+        "meip" : val = (val >> 11) & 'h1;
+        "msip" : val = (val >> 3) & 'h1;
+        "mtip" : val = (val >> 7) & 'h1;
+        "seip" : val = (val >> 9) & 'h1;
+        "sgeip" : val = (val >> 12) & 'h1;
+        "ssip" : val = (val >> 1) & 'h1;
+        "stip" : val = (val >> 5) & 'h1;
+        "vgeip" : val = (val >> 10) & 'h1;
+        "vssip" : val = (val >> 2) & 'h1;
+        "vstip" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MIE: begin
+      case(field)
+        "lcofie" : val = (val >> 13) & 'h1;
+        "meie" : val = (val >> 11) & 'h1;
+        "msie" : val = (val >> 3) & 'h1;
+        "mtie" : val = (val >> 7) & 'h1;
+        "seie" : val = (val >> 9) & 'h1;
+        "sgeie" : val = (val >> 12) & 'h1;
+        "ssie" : val = (val >> 1) & 'h1;
+        "stie" : val = (val >> 5) & 'h1;
+        "vgeie" : val = (val >> 10) & 'h1;
+        "vssie" : val = (val >> 2) & 'h1;
+        "vstie" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MINSTRETCFG: begin
+      case(field)
+`ifdef UDB_MXLEN_64
+        "minh" : val = (val >> 62) & 64'h1;
+        "sinh" : val = (val >> 61) & 64'h1;
+        "uinh" : val = (val >> 60) & 64'h1;
+        "vsinh" : val = (val >> 59) & 64'h1;
+        "vuinh" : val = (val >> 58) & 64'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MINSTRETCFGH: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "minh" : val = (val >> 30) & 32'h1;
+        "sinh" : val = (val >> 29) & 32'h1;
+        "uinh" : val = (val >> 28) & 32'h1;
+        "vsinh" : val = (val >> 27) & 32'h1;
+        "vuinh" : val = (val >> 26) & 32'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MIP: begin
+      case(field)
+        "lcofip" : val = (val >> 13) & 'h1;
+        "meip" : val = (val >> 11) & 'h1;
+        "msip" : val = (val >> 3) & 'h1;
+        "mtip" : val = (val >> 7) & 'h1;
+        "seip" : val = (val >> 9) & 'h1;
+        "sgeip" : val = (val >> 12) & 'h1;
+        "ssip" : val = (val >> 1) & 'h1;
+        "stip" : val = (val >> 5) & 'h1;
+        "vgeip" : val = (val >> 10) & 'h1;
+        "vssip" : val = (val >> 2) & 'h1;
+        "vstip" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MISA: begin
+      case(field)
+        "exts" : val = val & 'h3ffffff;
+`ifdef UDB_MXLEN_32
+        "mxl" : val = (val >> 30) & 32'h3;
+`endif
+`ifdef UDB_MXLEN_64
+        "mxl" : val = (val >> 62) & 64'h3;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MSECCFG: begin
+      case(field)
+        "mml" : val = val & 'h1;
+        "mmwp" : val = (val >> 1) & 'h1;
+        "rlb" : val = (val >> 2) & 'h1;
+        "useed" : val = (val >> 8) & 'h1;
+        "sseed" : val = (val >> 9) & 'h1;
+        "mlpe" : val = (val >> 10) & 'h1;
+`ifdef UDB_MXLEN_64
+        "pmm" : val = (val >> 32) & 64'h3;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MSTATUS: begin
+      case(field)
+        "fs" : val = (val >> 13) & 'h3;
+`ifdef UDB_MXLEN_64
+        "gva" : val = (val >> 38) & 64'h1;
+`endif
+`ifdef UDB_MXLEN_64
+        "mbe" : val = (val >> 37) & 64'h1;
+`endif
+        "mie" : val = (val >> 3) & 'h1;
+`ifdef UDB_MXLEN_64
+        "mpelp" : val = (val >> 41) & 64'h1;
+`endif
+        "mpie" : val = (val >> 7) & 'h1;
+        "mpp" : val = (val >> 11) & 'h3;
+        "mprv" : val = (val >> 17) & 'h1;
+`ifdef UDB_MXLEN_64
+        "mpv" : val = (val >> 39) & 64'h1;
+`endif
+        "mxr" : val = (val >> 19) & 'h1;
+`ifdef UDB_MXLEN_64
+        "sbe" : val = (val >> 36) & 64'h1;
+`endif
+`ifdef UDB_MXLEN_32
+        "sd" : val = (val >> 31) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_64
+        "sd" : val = (val >> 63) & 64'h1;
+`endif
+        "sie" : val = (val >> 1) & 'h1;
+        "spelp" : val = (val >> 23) & 'h1;
+        "spie" : val = (val >> 5) & 'h1;
+        "spp" : val = (val >> 8) & 'h1;
+        "sum" : val = (val >> 18) & 'h1;
+`ifdef UDB_MXLEN_64
+        "sxl" : val = (val >> 34) & 64'h3;
+`endif
+        "tsr" : val = (val >> 22) & 'h1;
+        "tvm" : val = (val >> 20) & 'h1;
+        "tw" : val = (val >> 21) & 'h1;
+        "ube" : val = (val >> 6) & 'h1;
+`ifdef UDB_MXLEN_64
+        "uxl" : val = (val >> 32) & 64'h3;
+`endif
+        "vs" : val = (val >> 9) & 'h3;
+        "xs" : val = (val >> 15) & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MSTATUSH: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "gva" : val = (val >> 6) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_32
+        "mbe" : val = (val >> 5) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_32
+        "mpelp" : val = (val >> 9) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_32
+        "mpv" : val = (val >> 7) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_32
+        "sbe" : val = (val >> 4) & 32'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MTVEC: begin
+      case(field)
+        "mode" : val = val & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG0: begin
+      case(field)
+        "pmp0cfg_a" : val = (val >> 3) & 'h3;
+        "pmp0cfg_l" : val = (val >> 7) & 'h1;
+        "pmp0cfg_xwr" : val = val & 'h7;
+        "pmp1cfg_a" : val = (val >> 11) & 'h3;
+        "pmp1cfg_l" : val = (val >> 15) & 'h1;
+        "pmp1cfg_xwr" : val = (val >> 8) & 'h7;
+        "pmp2cfg_a" : val = (val >> 19) & 'h3;
+        "pmp2cfg_l" : val = (val >> 23) & 'h1;
+        "pmp2cfg_xwr" : val = (val >> 16) & 'h7;
+        "pmp3cfg_a" : val = (val >> 27) & 'h3;
+        "pmp3cfg_l" : val = (val >> 31) & 'h1;
+        "pmp3cfg_xwr" : val = (val >> 24) & 'h7;
+`ifdef UDB_MXLEN_64
+        "pmp4cfg_a" : val = (val >> 35) & 64'h3;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp4cfg_l" : val = (val >> 39) & 64'h1;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp4cfg_xwr" : val = (val >> 32) & 64'h7;
 `endif
-`ifdef UDB_MXLEN_32
-      "mpelp" : val = (val >> 9) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_32
-      "mpv" : val = (val >> 7) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_32
-      "sbe" : val = (val >> 4) & 32'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mtvec") begin
-    case(field)
-      "mode" : val = val & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg0") begin
-    case(field)
-      "pmp0cfg_a" : val = (val >> 3) & 'h3;
-      "pmp0cfg_l" : val = (val >> 7) & 'h1;
-      "pmp0cfg_xwr" : val = val & 'h7;
-      "pmp1cfg_a" : val = (val >> 11) & 'h3;
-      "pmp1cfg_l" : val = (val >> 15) & 'h1;
-      "pmp1cfg_xwr" : val = (val >> 8) & 'h7;
-      "pmp2cfg_a" : val = (val >> 19) & 'h3;
-      "pmp2cfg_l" : val = (val >> 23) & 'h1;
-      "pmp2cfg_xwr" : val = (val >> 16) & 'h7;
-      "pmp3cfg_a" : val = (val >> 27) & 'h3;
-      "pmp3cfg_l" : val = (val >> 31) & 'h1;
-      "pmp3cfg_xwr" : val = (val >> 24) & 'h7;
-`ifdef UDB_MXLEN_64
-      "pmp4cfg_a" : val = (val >> 35) & 64'h3;
-`endif
-`ifdef UDB_MXLEN_64
-      "pmp4cfg_l" : val = (val >> 39) & 64'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "pmp4cfg_xwr" : val = (val >> 32) & 64'h7;
-`endif
 `ifdef UDB_MXLEN_64
-      "pmp5cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp5cfg_a" : val = (val >> 43) & 64'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp5cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp5cfg_l" : val = (val >> 47) & 64'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp5cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp5cfg_xwr" : val = (val >> 40) & 64'h7;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp6cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp6cfg_a" : val = (val >> 51) & 64'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp6cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp6cfg_l" : val = (val >> 55) & 64'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp6cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp6cfg_xwr" : val = (val >> 48) & 64'h7;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp7cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp7cfg_a" : val = (val >> 59) & 64'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp7cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp7cfg_l" : val = (val >> 63) & 64'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp7cfg_xwr" : val = (val >> 56) & 64'h7;
+        "pmp7cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg1") begin
-    case(field)
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG1: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "pmp4cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp4cfg_a" : val = (val >> 3) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp4cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp4cfg_l" : val = (val >> 7) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp4cfg_xwr" : val = val & 32'h7;
+        "pmp4cfg_xwr" : val = val & 32'h7;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp5cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp5cfg_a" : val = (val >> 11) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp5cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp5cfg_l" : val = (val >> 15) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp5cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp5cfg_xwr" : val = (val >> 8) & 32'h7;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp6cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp6cfg_a" : val = (val >> 19) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp6cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp6cfg_l" : val = (val >> 23) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp6cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp6cfg_xwr" : val = (val >> 16) & 32'h7;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp7cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp7cfg_a" : val = (val >> 27) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp7cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp7cfg_l" : val = (val >> 31) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp7cfg_xwr" : val = (val >> 24) & 32'h7;
+        "pmp7cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg2") begin
-    case(field)
-      "pmp10cfg_a" : val = (val >> 19) & 'h3;
-      "pmp10cfg_l" : val = (val >> 23) & 'h1;
-      "pmp10cfg_xwr" : val = (val >> 16) & 'h7;
-      "pmp11cfg_a" : val = (val >> 27) & 'h3;
-      "pmp11cfg_l" : val = (val >> 31) & 'h1;
-      "pmp11cfg_xwr" : val = (val >> 24) & 'h7;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG2: begin
+      case(field)
+        "pmp10cfg_a" : val = (val >> 19) & 'h3;
+        "pmp10cfg_l" : val = (val >> 23) & 'h1;
+        "pmp10cfg_xwr" : val = (val >> 16) & 'h7;
+        "pmp11cfg_a" : val = (val >> 27) & 'h3;
+        "pmp11cfg_l" : val = (val >> 31) & 'h1;
+        "pmp11cfg_xwr" : val = (val >> 24) & 'h7;
 `ifdef UDB_MXLEN_64
-      "pmp12cfg_a" : val = (val >> 35) & 64'h3;
+        "pmp12cfg_a" : val = (val >> 35) & 64'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp12cfg_l" : val = (val >> 39) & 64'h1;
+        "pmp12cfg_l" : val = (val >> 39) & 64'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp12cfg_xwr" : val = (val >> 32) & 64'h7;
+        "pmp12cfg_xwr" : val = (val >> 32) & 64'h7;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp13cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp13cfg_a" : val = (val >> 43) & 64'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp13cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp13cfg_l" : val = (val >> 47) & 64'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp13cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp13cfg_xwr" : val = (val >> 40) & 64'h7;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp14cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp14cfg_a" : val = (val >> 51) & 64'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp14cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp14cfg_l" : val = (val >> 55) & 64'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp14cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp14cfg_xwr" : val = (val >> 48) & 64'h7;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp15cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp15cfg_a" : val = (val >> 59) & 64'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp15cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp15cfg_l" : val = (val >> 63) & 64'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp15cfg_xwr" : val = (val >> 56) & 64'h7;
-`endif
-      "pmp8cfg_a" : val = (val >> 3) & 'h3;
-      "pmp8cfg_l" : val = (val >> 7) & 'h1;
-      "pmp8cfg_xwr" : val = val & 'h7;
-      "pmp9cfg_a" : val = (val >> 11) & 'h3;
-      "pmp9cfg_l" : val = (val >> 15) & 'h1;
-      "pmp9cfg_xwr" : val = (val >> 8) & 'h7;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg3") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp12cfg_a" : val = (val >> 3) & 32'h3;
-`endif
-`ifdef UDB_MXLEN_32
-      "pmp12cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp15cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
+        "pmp8cfg_a" : val = (val >> 3) & 'h3;
+        "pmp8cfg_l" : val = (val >> 7) & 'h1;
+        "pmp8cfg_xwr" : val = val & 'h7;
+        "pmp9cfg_a" : val = (val >> 11) & 'h3;
+        "pmp9cfg_l" : val = (val >> 15) & 'h1;
+        "pmp9cfg_xwr" : val = (val >> 8) & 'h7;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG3: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "pmp12cfg_xwr" : val = val & 32'h7;
+        "pmp12cfg_a" : val = (val >> 3) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp13cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp12cfg_l" : val = (val >> 7) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp13cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp12cfg_xwr" : val = val & 32'h7;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp13cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp13cfg_a" : val = (val >> 11) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp14cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp13cfg_l" : val = (val >> 15) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp14cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp13cfg_xwr" : val = (val >> 8) & 32'h7;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp14cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp14cfg_a" : val = (val >> 19) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp15cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp14cfg_l" : val = (val >> 23) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp15cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp14cfg_xwr" : val = (val >> 16) & 32'h7;
 `endif
 `ifdef UDB_MXLEN_32
-      "pmp15cfg_xwr" : val = (val >> 24) & 32'h7;
+        "pmp15cfg_a" : val = (val >> 27) & 32'h3;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "satp") begin
-    case(field)
 `ifdef UDB_MXLEN_32
-      "asid" : val = (val >> 22) & 32'h1ff;
-`endif
-`ifdef UDB_MXLEN_64
-      "asid" : val = (val >> 44) & 64'hffff;
-`endif
-`ifdef UDB_MXLEN_32
-      "mode" : val = (val >> 31) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "mode" : val = (val >> 60) & 64'hf;
+        "pmp15cfg_l" : val = (val >> 31) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_32
-      "ppn" : val = val & 32'h3fffff;
+        "pmp15cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
-`ifdef UDB_MXLEN_64
-      "ppn" : val = val & 64'hfffffffffff;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "scause") begin
-    case(field)
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SATP: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "code" : val = val & 32'h7fffffff;
+        "asid" : val = (val >> 22) & 32'h1ff;
 `endif
 `ifdef UDB_MXLEN_64
-      "code" : val = val & 64'h7fffffffffffffff;
+        "asid" : val = (val >> 44) & 64'hffff;
 `endif
 `ifdef UDB_MXLEN_32
-      "int" : val = val & 32'hffffffff;
+        "mode" : val = (val >> 31) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "int" : val = val & 64'hffffffffffffffff;
+        "mode" : val = (val >> 60) & 64'hf;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "scounteren") begin
-    case(field)
-      "cy" : val = val & 'h1;
-      "enable" : val = (val >> 3) & 'h1fffffff;
-      "ir" : val = (val >> 2) & 'h1;
-      "tm" : val = (val >> 1) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "seed") begin
-    case(field)
 `ifdef UDB_MXLEN_32
-      "OPST" : val = (val >> 30) & 32'h3;
+        "ppn" : val = val & 32'h3fffff;
 `endif
 `ifdef UDB_MXLEN_64
-      "entropy" : val = val & `UDB_MXLEN'(16'hffff);
+        "ppn" : val = val & 64'hfffffffffff;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "senvcfg") begin
-    case(field)
-      "fiom" : val = val & 'h1;
-      "lpe" : val = (val >> 2) & 'h1;
-      "sse" : val = (val >> 3) & 'h1;
-      "cbie" : val = (val >> 4) & 'h3;
-      "cbcfe" : val = (val >> 6) & 'h1;
-      "cbze" : val = (val >> 7) & 'h1;
-`ifdef UDB_MXLEN_64
-      "pmm" : val = (val >> 32) & 64'h3;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "sie") begin
-    case(field)
-      "lcofie" : val = (val >> 13) & 'h1;
-      "seie" : val = (val >> 9) & 'h1;
-      "ssie" : val = (val >> 1) & 'h1;
-      "stie" : val = (val >> 5) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "sip") begin
-    case(field)
-      "lcofip" : val = (val >> 13) & 'h1;
-      "seip" : val = (val >> 9) & 'h1;
-      "ssip" : val = (val >> 1) & 'h1;
-      "stip" : val = (val >> 5) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "sstatus") begin
-    case(field)
-      "fs" : val = (val >> 13) & 'h3;
-      "mxr" : val = (val >> 19) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SCAUSE: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "sd" : val = (val >> 31) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "sd" : val = (val >> 63) & 64'h1;
+        "code" : val = val & 32'h7fffffff;
 `endif
-      "sie" : val = (val >> 1) & 'h1;
-      "spelp" : val = (val >> 23) & 'h1;
-      "spie" : val = (val >> 5) & 'h1;
-      "spp" : val = (val >> 8) & 'h1;
-      "sum" : val = (val >> 18) & 'h1;
-      "ube" : val = (val >> 6) & 'h1;
 `ifdef UDB_MXLEN_64
-      "uxl" : val = (val >> 32) & 64'h3;
+        "code" : val = val & 64'h7fffffffffffffff;
 `endif
-      "vs" : val = (val >> 9) & 'h3;
-      "xs" : val = (val >> 15) & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "stvec") begin
-    case(field)
-      "mode" : val = val & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "tcontrol") begin
-    case(field)
-      "mpte" : val = (val >> 7) & 'h1;
-      "mte" : val = (val >> 3) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "tdata1") begin
-    case(field)
 `ifdef UDB_MXLEN_32
-      "type" : val = (val >> 28) & 32'hf;
-      "dmode" : val = (val >> 27) & 32'h1;
+        "int" : val = val & 32'hffffffff;
 `endif
 `ifdef UDB_MXLEN_64
-      "type" : val = (val >> 60) & 64'hf;
-      "dmode" : val = (val >> 59) & 64'h1;
-`endif
-      // mcontrol6 fields (type 6); other types place their fields differently
-      "uncertain" : val = (val >> 26) & 'h1;
-      "hit1" : val = (val >> 25) & 'h1;
-      "vs" : val = (val >> 24) & 'h1;
-      "vu" : val = (val >> 23) & 'h1;
-      "hit0" : val = (val >> 22) & 'h1;
-      "select" : val = (val >> 21) & 'h1;
-      "size" : val = (val >> 16) & 'h7;
-      "action" : val = (val >> 12) & 'hf;
-      "chain" : val = (val >> 11) & 'h1;
-      "match" : val = (val >> 7) & 'hf;
-      "m" : val = (val >> 6) & 'h1;
-      "uncertainen" : val = (val >> 5) & 'h1;
-      "s" : val = (val >> 4) & 'h1;
-      "u" : val = (val >> 3) & 'h1;
-      "execute" : val = (val >> 2) & 'h1;
-      "store" : val = (val >> 1) & 'h1;
-      "load" : val = val & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "textra32") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "mselect" : val = (val >> 25) & 32'h1;
+        "int" : val = val & 64'hffffffffffffffff;
 `endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SCOUNTEREN: begin
+      case(field)
+        "cy" : val = val & 'h1;
+        "enable" : val = (val >> 3) & 'h1fffffff;
+        "ir" : val = (val >> 2) & 'h1;
+        "tm" : val = (val >> 1) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SEED: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "sselect" : val = val & 32'h3;
+        "OPST" : val = (val >> 30) & 32'h3;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "textra64") begin
-    case(field)
 `ifdef UDB_MXLEN_64
-      "mselect" : val = (val >> 50) & 64'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "sselect" : val = val & 64'h3;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "tinfo") begin
-    case(field)
-      "info" : val = val & 'hffff;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vcsr") begin
-    case(field)
-      "vxsat" : val = val & 'h1;
-      "vxrm"  : val = (val >> 1) & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vl") begin
-    case(field)
-      "vl" : val = val & 'hffff;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vlenb") begin
-    case(field)
-      "vlenb" : val = val & 'h1fff;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vsatp") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "asid" : val = (val >> 22) & 32'h1ff;
+        "entropy" : val = val & `UDB_MXLEN'(16'hffff);
 `endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SENVCFG: begin
+      case(field)
+        "fiom" : val = val & 'h1;
+        "lpe" : val = (val >> 2) & 'h1;
+        "sse" : val = (val >> 3) & 'h1;
+        "cbie" : val = (val >> 4) & 'h3;
+        "cbcfe" : val = (val >> 6) & 'h1;
+        "cbze" : val = (val >> 7) & 'h1;
 `ifdef UDB_MXLEN_64
-      "asid" : val = (val >> 44) & 64'hffff;
+        "pmm" : val = (val >> 32) & 64'h3;
 `endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SIE: begin
+      case(field)
+        "lcofie" : val = (val >> 13) & 'h1;
+        "seie" : val = (val >> 9) & 'h1;
+        "ssie" : val = (val >> 1) & 'h1;
+        "stie" : val = (val >> 5) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SIP: begin
+      case(field)
+        "lcofip" : val = (val >> 13) & 'h1;
+        "seip" : val = (val >> 9) & 'h1;
+        "ssip" : val = (val >> 1) & 'h1;
+        "stip" : val = (val >> 5) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SSTATUS: begin
+      case(field)
+        "fs" : val = (val >> 13) & 'h3;
+        "mxr" : val = (val >> 19) & 'h1;
 `ifdef UDB_MXLEN_32
-      "mode" : val = (val >> 31) & 32'h1;
+        "sd" : val = (val >> 31) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "mode" : val = (val >> 60) & 64'hf;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vscause") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "code" : val = val & 32'h7fffffff;
+        "sd" : val = (val >> 63) & 64'h1;
 `endif
+        "sie" : val = (val >> 1) & 'h1;
+        "spelp" : val = (val >> 23) & 'h1;
+        "spie" : val = (val >> 5) & 'h1;
+        "spp" : val = (val >> 8) & 'h1;
+        "sum" : val = (val >> 18) & 'h1;
+        "ube" : val = (val >> 6) & 'h1;
 `ifdef UDB_MXLEN_64
-      "code" : val = val & 64'h7fffffffffffffff;
+        "uxl" : val = (val >> 32) & 64'h3;
 `endif
+        "vs" : val = (val >> 9) & 'h3;
+        "xs" : val = (val >> 15) & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_STVEC: begin
+      case(field)
+        "mode" : val = val & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_TCONTROL: begin
+      case(field)
+        "mpte" : val = (val >> 7) & 'h1;
+        "mte" : val = (val >> 3) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_TDATA1: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "int" : val = val & 32'hffffffff;
+        "type" : val = (val >> 28) & 32'hf;
+        "dmode" : val = (val >> 27) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_64
-      "int" : val = val & 64'hffffffffffffffff;
+        "type" : val = (val >> 60) & 64'hf;
+        "dmode" : val = (val >> 59) & 64'h1;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vsie") begin
-    case(field)
-      "seie" : val = (val >> 9) & 'h1;
-      "ssie" : val = (val >> 1) & 'h1;
-      "stie" : val = (val >> 5) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vsip") begin
-    case(field)
-      "seip" : val = (val >> 9) & 'h1;
-      "ssip" : val = (val >> 1) & 'h1;
-      "stip" : val = (val >> 5) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vsstatus") begin
-    case(field)
-      "fs" : val = (val >> 13) & 'h3;
-      "mxr" : val = (val >> 19) & 'h1;
+        // mcontrol6 fields (type 6); other types place their fields differently
+        "uncertain" : val = (val >> 26) & 'h1;
+        "hit1" : val = (val >> 25) & 'h1;
+        "vs" : val = (val >> 24) & 'h1;
+        "vu" : val = (val >> 23) & 'h1;
+        "hit0" : val = (val >> 22) & 'h1;
+        "select" : val = (val >> 21) & 'h1;
+        "size" : val = (val >> 16) & 'h7;
+        "action" : val = (val >> 12) & 'hf;
+        "chain" : val = (val >> 11) & 'h1;
+        "match" : val = (val >> 7) & 'hf;
+        "m" : val = (val >> 6) & 'h1;
+        "uncertainen" : val = (val >> 5) & 'h1;
+        "s" : val = (val >> 4) & 'h1;
+        "u" : val = (val >> 3) & 'h1;
+        "execute" : val = (val >> 2) & 'h1;
+        "store" : val = (val >> 1) & 'h1;
+        "load" : val = val & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_TINFO: begin
+      case(field)
+        "info" : val = val & 'hffff;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VCSR: begin
+      case(field)
+        "vxsat" : val = val & 'h1;
+        "vxrm"  : val = (val >> 1) & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VL: begin
+      case(field)
+        "vl" : val = val & 'hffff;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VLENB: begin
+      case(field)
+        "vlenb" : val = val & 'h1fff;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VSATP: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "sd" : val = (val >> 31) & 32'h1;
+        "asid" : val = (val >> 22) & 32'h1ff;
 `endif
 `ifdef UDB_MXLEN_64
-      "sd" : val = (val >> 63) & 64'h1;
+        "asid" : val = (val >> 44) & 64'hffff;
 `endif
-      "sie" : val = (val >> 1) & 'h1;
-      "spelp" : val = (val >> 23) & 'h1;
-      "spie" : val = (val >> 5) & 'h1;
-      "spp" : val = (val >> 8) & 'h1;
-      "sum" : val = (val >> 18) & 'h1;
-      "ube" : val = (val >> 6) & 'h1;
-`ifdef UDB_MXLEN_64
-      "uxl" : val = (val >> 32) & 64'h3;
-`endif
-      "vs" : val = (val >> 9) & 'h3;
-      "xs" : val = (val >> 15) & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vstart") begin
-    case(field)
-      "vstart" : val = val & 'hffff;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vstvec") begin
-    case(field)
-      "mode" : val = val & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vtype") begin
-    case(field)
 `ifdef UDB_MXLEN_32
-      "vill" : val = (val >> 31) & 32'h1;
-`endif
-`ifdef UDB_MXLEN_64
-      "vill" : val = (val >> 63) & 64'h1;
+        "mode" : val = (val >> 31) & 32'h1;
 `endif
-      "vlmul" : val = val & 'h7;
-      "vma" : val = (val >> 7) & 'h1;
-      "vsew" : val = (val >> 3) & 'h7;
-      "vta" : val = (val >> 6) & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vxrm") begin
-    case(field)
-      "vxrm" : val = val & 'h3;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "vxsat") begin
-    case(field)
-      "vxsat" : val = val & 'h1;
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "sstateen0") begin
-    case(field)
-        "fcsr"   : val = (val >> 1) & 'h1;
-        "jvt"    : val = (val >> 2) & 'h1;
-        default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mstateen0") begin
-    case(field)
-      "c" : val = val & 'h1;
-      "fcsr" : val = (val >> 1) & 'h1;
-      "jvt" : val = (val >> 2) & 'h1;
 `ifdef UDB_MXLEN_64
-      "ctr" : val = (val >> 54) & 64'h1;
-      "srmcfg" : val = (val >> 55) & 64'h1;
-      "p1p13" : val = (val >> 56) & 64'h1;
-      "context" : val = (val >> 57) & 64'h1;
-      "imsic" : val = (val >> 58) & 64'h1;
-      "aia" : val = (val >> 59) & 64'h1;
-      "csrind" : val = (val >> 60) & 64'h1;
-      "envcfg" : val = (val >> 62) & 64'h1;
-      "se0" : val = (val >> 63) & 64'h1;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "mstateen0h") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "ctr" : val = (val >> 22) & 32'h1;
-      "srmcfg" : val = (val >> 23) & 32'h1;
-      "p1p13" : val = (val >> 24) & 32'h1;
-      "context" : val = (val >> 25) & 32'h1;
-      "imsic" : val = (val >> 26) & 32'h1;
-      "aia" : val = (val >> 27) & 32'h1;
-      "csrind" : val = (val >> 28) & 32'h1;
-      "envcfg" : val = (val >> 30) & 32'h1;
-      "se0" : val = (val >> 31) & 32'h1;
+        "mode" : val = (val >> 60) & 64'hf;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg4") begin
-    case(field)
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VSCAUSE: begin
+      case(field)
 `ifdef UDB_MXLEN_32
-      "pmp16cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp16cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp16cfg_xwr" : val = val & 32'h7;
-      "pmp17cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp17cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp17cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp18cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp18cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp18cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp19cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp19cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp19cfg_xwr" : val = (val >> 24) & 32'h7;
+        "code" : val = val & 32'h7fffffff;
 `endif
 `ifdef UDB_MXLEN_64
-      "pmp16cfg_a" : val = (val >> 3) & 64'h3;
-      "pmp16cfg_l" : val = (val >> 7) & 64'h1;
-      "pmp16cfg_xwr" : val = val & 64'h7;
-      "pmp17cfg_a" : val = (val >> 11) & 64'h3;
-      "pmp17cfg_l" : val = (val >> 15) & 64'h1;
-      "pmp17cfg_xwr" : val = (val >> 8) & 64'h7;
-      "pmp18cfg_a" : val = (val >> 19) & 64'h3;
-      "pmp18cfg_l" : val = (val >> 23) & 64'h1;
-      "pmp18cfg_xwr" : val = (val >> 16) & 64'h7;
-      "pmp19cfg_a" : val = (val >> 27) & 64'h3;
-      "pmp19cfg_l" : val = (val >> 31) & 64'h1;
-      "pmp19cfg_xwr" : val = (val >> 24) & 64'h7;
-      "pmp20cfg_a" : val = (val >> 35) & 64'h3;
-      "pmp20cfg_l" : val = (val >> 39) & 64'h1;
-      "pmp20cfg_xwr" : val = (val >> 32) & 64'h7;
-      "pmp21cfg_a" : val = (val >> 43) & 64'h3;
-      "pmp21cfg_l" : val = (val >> 47) & 64'h1;
-      "pmp21cfg_xwr" : val = (val >> 40) & 64'h7;
-      "pmp22cfg_a" : val = (val >> 51) & 64'h3;
-      "pmp22cfg_l" : val = (val >> 55) & 64'h1;
-      "pmp22cfg_xwr" : val = (val >> 48) & 64'h7;
-      "pmp23cfg_a" : val = (val >> 59) & 64'h3;
-      "pmp23cfg_l" : val = (val >> 63) & 64'h1;
-      "pmp23cfg_xwr" : val = (val >> 56) & 64'h7;
+        "code" : val = val & 64'h7fffffffffffffff;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg5") begin
-    case(field)
 `ifdef UDB_MXLEN_32
-      "pmp20cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp20cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp20cfg_xwr" : val = val & 32'h7;
-      "pmp21cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp21cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp21cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp22cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp22cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp22cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp23cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp23cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp23cfg_xwr" : val = (val >> 24) & 32'h7;
+        "int" : val = val & 32'hffffffff;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg6") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp24cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp24cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp24cfg_xwr" : val = val & 32'h7;
-      "pmp25cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp25cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp25cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp26cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp26cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp26cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp27cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp27cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp27cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
 `ifdef UDB_MXLEN_64
-      "pmp24cfg_a" : val = (val >> 3) & 64'h3;
-      "pmp24cfg_l" : val = (val >> 7) & 64'h1;
-      "pmp24cfg_xwr" : val = val & 64'h7;
-      "pmp25cfg_a" : val = (val >> 11) & 64'h3;
-      "pmp25cfg_l" : val = (val >> 15) & 64'h1;
-      "pmp25cfg_xwr" : val = (val >> 8) & 64'h7;
-      "pmp26cfg_a" : val = (val >> 19) & 64'h3;
-      "pmp26cfg_l" : val = (val >> 23) & 64'h1;
-      "pmp26cfg_xwr" : val = (val >> 16) & 64'h7;
-      "pmp27cfg_a" : val = (val >> 27) & 64'h3;
-      "pmp27cfg_l" : val = (val >> 31) & 64'h1;
-      "pmp27cfg_xwr" : val = (val >> 24) & 64'h7;
-      "pmp28cfg_a" : val = (val >> 35) & 64'h3;
-      "pmp28cfg_l" : val = (val >> 39) & 64'h1;
-      "pmp28cfg_xwr" : val = (val >> 32) & 64'h7;
-      "pmp29cfg_a" : val = (val >> 43) & 64'h3;
-      "pmp29cfg_l" : val = (val >> 47) & 64'h1;
-      "pmp29cfg_xwr" : val = (val >> 40) & 64'h7;
-      "pmp30cfg_a" : val = (val >> 51) & 64'h3;
-      "pmp30cfg_l" : val = (val >> 55) & 64'h1;
-      "pmp30cfg_xwr" : val = (val >> 48) & 64'h7;
-      "pmp31cfg_a" : val = (val >> 59) & 64'h3;
-      "pmp31cfg_l" : val = (val >> 63) & 64'h1;
-      "pmp31cfg_xwr" : val = (val >> 56) & 64'h7;
+        "int" : val = val & 64'hffffffffffffffff;
 `endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg7") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp28cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp28cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp28cfg_xwr" : val = val & 32'h7;
-      "pmp29cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp29cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp29cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp30cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp30cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp30cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp31cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp31cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp31cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg8") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp32cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp32cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp32cfg_xwr" : val = val & 32'h7;
-      "pmp33cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp33cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp33cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp34cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp34cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp34cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp35cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp35cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp35cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-`ifdef UDB_MXLEN_64
-      "pmp32cfg_a" : val = (val >> 3) & 64'h3;
-      "pmp32cfg_l" : val = (val >> 7) & 64'h1;
-      "pmp32cfg_xwr" : val = val & 64'h7;
-      "pmp33cfg_a" : val = (val >> 11) & 64'h3;
-      "pmp33cfg_l" : val = (val >> 15) & 64'h1;
-      "pmp33cfg_xwr" : val = (val >> 8) & 64'h7;
-      "pmp34cfg_a" : val = (val >> 19) & 64'h3;
-      "pmp34cfg_l" : val = (val >> 23) & 64'h1;
-      "pmp34cfg_xwr" : val = (val >> 16) & 64'h7;
-      "pmp35cfg_a" : val = (val >> 27) & 64'h3;
-      "pmp35cfg_l" : val = (val >> 31) & 64'h1;
-      "pmp35cfg_xwr" : val = (val >> 24) & 64'h7;
-      "pmp36cfg_a" : val = (val >> 35) & 64'h3;
-      "pmp36cfg_l" : val = (val >> 39) & 64'h1;
-      "pmp36cfg_xwr" : val = (val >> 32) & 64'h7;
-      "pmp37cfg_a" : val = (val >> 43) & 64'h3;
-      "pmp37cfg_l" : val = (val >> 47) & 64'h1;
-      "pmp37cfg_xwr" : val = (val >> 40) & 64'h7;
-      "pmp38cfg_a" : val = (val >> 51) & 64'h3;
-      "pmp38cfg_l" : val = (val >> 55) & 64'h1;
-      "pmp38cfg_xwr" : val = (val >> 48) & 64'h7;
-      "pmp39cfg_a" : val = (val >> 59) & 64'h3;
-      "pmp39cfg_l" : val = (val >> 63) & 64'h1;
-      "pmp39cfg_xwr" : val = (val >> 56) & 64'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg9") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp36cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp36cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp36cfg_xwr" : val = val & 32'h7;
-      "pmp37cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp37cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp37cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp38cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp38cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp38cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp39cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp39cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp39cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg10") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp40cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp40cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp40cfg_xwr" : val = val & 32'h7;
-      "pmp41cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp41cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp41cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp42cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp42cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp42cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp43cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp43cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp43cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-`ifdef UDB_MXLEN_64
-      "pmp40cfg_a" : val = (val >> 3) & 64'h3;
-      "pmp40cfg_l" : val = (val >> 7) & 64'h1;
-      "pmp40cfg_xwr" : val = val & 64'h7;
-      "pmp41cfg_a" : val = (val >> 11) & 64'h3;
-      "pmp41cfg_l" : val = (val >> 15) & 64'h1;
-      "pmp41cfg_xwr" : val = (val >> 8) & 64'h7;
-      "pmp42cfg_a" : val = (val >> 19) & 64'h3;
-      "pmp42cfg_l" : val = (val >> 23) & 64'h1;
-      "pmp42cfg_xwr" : val = (val >> 16) & 64'h7;
-      "pmp43cfg_a" : val = (val >> 27) & 64'h3;
-      "pmp43cfg_l" : val = (val >> 31) & 64'h1;
-      "pmp43cfg_xwr" : val = (val >> 24) & 64'h7;
-      "pmp44cfg_a" : val = (val >> 35) & 64'h3;
-      "pmp44cfg_l" : val = (val >> 39) & 64'h1;
-      "pmp44cfg_xwr" : val = (val >> 32) & 64'h7;
-      "pmp45cfg_a" : val = (val >> 43) & 64'h3;
-      "pmp45cfg_l" : val = (val >> 47) & 64'h1;
-      "pmp45cfg_xwr" : val = (val >> 40) & 64'h7;
-      "pmp46cfg_a" : val = (val >> 51) & 64'h3;
-      "pmp46cfg_l" : val = (val >> 55) & 64'h1;
-      "pmp46cfg_xwr" : val = (val >> 48) & 64'h7;
-      "pmp47cfg_a" : val = (val >> 59) & 64'h3;
-      "pmp47cfg_l" : val = (val >> 63) & 64'h1;
-      "pmp47cfg_xwr" : val = (val >> 56) & 64'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg11") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp44cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp44cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp44cfg_xwr" : val = val & 32'h7;
-      "pmp45cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp45cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp45cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp46cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp46cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp46cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp47cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp47cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp47cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg12") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp48cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp48cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp48cfg_xwr" : val = val & 32'h7;
-      "pmp49cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp49cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp49cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp50cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp50cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp50cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp51cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp51cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp51cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-`ifdef UDB_MXLEN_64
-      "pmp48cfg_a" : val = (val >> 3) & 64'h3;
-      "pmp48cfg_l" : val = (val >> 7) & 64'h1;
-      "pmp48cfg_xwr" : val = val & 64'h7;
-      "pmp49cfg_a" : val = (val >> 11) & 64'h3;
-      "pmp49cfg_l" : val = (val >> 15) & 64'h1;
-      "pmp49cfg_xwr" : val = (val >> 8) & 64'h7;
-      "pmp50cfg_a" : val = (val >> 19) & 64'h3;
-      "pmp50cfg_l" : val = (val >> 23) & 64'h1;
-      "pmp50cfg_xwr" : val = (val >> 16) & 64'h7;
-      "pmp51cfg_a" : val = (val >> 27) & 64'h3;
-      "pmp51cfg_l" : val = (val >> 31) & 64'h1;
-      "pmp51cfg_xwr" : val = (val >> 24) & 64'h7;
-      "pmp52cfg_a" : val = (val >> 35) & 64'h3;
-      "pmp52cfg_l" : val = (val >> 39) & 64'h1;
-      "pmp52cfg_xwr" : val = (val >> 32) & 64'h7;
-      "pmp53cfg_a" : val = (val >> 43) & 64'h3;
-      "pmp53cfg_l" : val = (val >> 47) & 64'h1;
-      "pmp53cfg_xwr" : val = (val >> 40) & 64'h7;
-      "pmp54cfg_a" : val = (val >> 51) & 64'h3;
-      "pmp54cfg_l" : val = (val >> 55) & 64'h1;
-      "pmp54cfg_xwr" : val = (val >> 48) & 64'h7;
-      "pmp55cfg_a" : val = (val >> 59) & 64'h3;
-      "pmp55cfg_l" : val = (val >> 63) & 64'h1;
-      "pmp55cfg_xwr" : val = (val >> 56) & 64'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg13") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp52cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp52cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp52cfg_xwr" : val = val & 32'h7;
-      "pmp53cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp53cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp53cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp54cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp54cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp54cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp55cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp55cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp55cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg14") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp56cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp56cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp56cfg_xwr" : val = val & 32'h7;
-      "pmp57cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp57cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp57cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp58cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp58cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp58cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp59cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp59cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp59cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-`ifdef UDB_MXLEN_64
-      "pmp56cfg_a" : val = (val >> 3) & 64'h3;
-      "pmp56cfg_l" : val = (val >> 7) & 64'h1;
-      "pmp56cfg_xwr" : val = val & 64'h7;
-      "pmp57cfg_a" : val = (val >> 11) & 64'h3;
-      "pmp57cfg_l" : val = (val >> 15) & 64'h1;
-      "pmp57cfg_xwr" : val = (val >> 8) & 64'h7;
-      "pmp58cfg_a" : val = (val >> 19) & 64'h3;
-      "pmp58cfg_l" : val = (val >> 23) & 64'h1;
-      "pmp58cfg_xwr" : val = (val >> 16) & 64'h7;
-      "pmp59cfg_a" : val = (val >> 27) & 64'h3;
-      "pmp59cfg_l" : val = (val >> 31) & 64'h1;
-      "pmp59cfg_xwr" : val = (val >> 24) & 64'h7;
-      "pmp60cfg_a" : val = (val >> 35) & 64'h3;
-      "pmp60cfg_l" : val = (val >> 39) & 64'h1;
-      "pmp60cfg_xwr" : val = (val >> 32) & 64'h7;
-      "pmp61cfg_a" : val = (val >> 43) & 64'h3;
-      "pmp61cfg_l" : val = (val >> 47) & 64'h1;
-      "pmp61cfg_xwr" : val = (val >> 40) & 64'h7;
-      "pmp62cfg_a" : val = (val >> 51) & 64'h3;
-      "pmp62cfg_l" : val = (val >> 55) & 64'h1;
-      "pmp62cfg_xwr" : val = (val >> 48) & 64'h7;
-      "pmp63cfg_a" : val = (val >> 59) & 64'h3;
-      "pmp63cfg_l" : val = (val >> 63) & 64'h1;
-      "pmp63cfg_xwr" : val = (val >> 56) & 64'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else if (name == "pmpcfg15") begin
-    case(field)
-`ifdef UDB_MXLEN_32
-      "pmp60cfg_a" : val = (val >> 3) & 32'h3;
-      "pmp60cfg_l" : val = (val >> 7) & 32'h1;
-      "pmp60cfg_xwr" : val = val & 32'h7;
-      "pmp61cfg_a" : val = (val >> 11) & 32'h3;
-      "pmp61cfg_l" : val = (val >> 15) & 32'h1;
-      "pmp61cfg_xwr" : val = (val >> 8) & 32'h7;
-      "pmp62cfg_a" : val = (val >> 19) & 32'h3;
-      "pmp62cfg_l" : val = (val >> 23) & 32'h1;
-      "pmp62cfg_xwr" : val = (val >> 16) & 32'h7;
-      "pmp63cfg_a" : val = (val >> 27) & 32'h3;
-      "pmp63cfg_l" : val = (val >> 31) & 32'h1;
-      "pmp63cfg_xwr" : val = (val >> 24) & 32'h7;
-`endif
-      default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
-    endcase
-  end else
-    $fatal(1, "get_csr_val: CSR %s has no fields; read it whole with field \"%s\"", name, name);
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VSIE: begin
+      case(field)
+        "seie" : val = (val >> 9) & 'h1;
+        "ssie" : val = (val >> 1) & 'h1;
+        "stie" : val = (val >> 5) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VSIP: begin
+      case(field)
+        "seip" : val = (val >> 9) & 'h1;
+        "ssip" : val = (val >> 1) & 'h1;
+        "stip" : val = (val >> 5) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VSSTATUS: begin
+      case(field)
+        "fs" : val = (val >> 13) & 'h3;
+        "mxr" : val = (val >> 19) & 'h1;
+`ifdef UDB_MXLEN_32
+        "sd" : val = (val >> 31) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_64
+        "sd" : val = (val >> 63) & 64'h1;
+`endif
+        "sie" : val = (val >> 1) & 'h1;
+        "spelp" : val = (val >> 23) & 'h1;
+        "spie" : val = (val >> 5) & 'h1;
+        "spp" : val = (val >> 8) & 'h1;
+        "sum" : val = (val >> 18) & 'h1;
+        "ube" : val = (val >> 6) & 'h1;
+`ifdef UDB_MXLEN_64
+        "uxl" : val = (val >> 32) & 64'h3;
+`endif
+        "vs" : val = (val >> 9) & 'h3;
+        "xs" : val = (val >> 15) & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VSTART: begin
+      case(field)
+        "vstart" : val = val & 'hffff;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VSTVEC: begin
+      case(field)
+        "mode" : val = val & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VTYPE: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "vill" : val = (val >> 31) & 32'h1;
+`endif
+`ifdef UDB_MXLEN_64
+        "vill" : val = (val >> 63) & 64'h1;
+`endif
+        "vlmul" : val = val & 'h7;
+        "vma" : val = (val >> 7) & 'h1;
+        "vsew" : val = (val >> 3) & 'h7;
+        "vta" : val = (val >> 6) & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VXRM: begin
+      case(field)
+        "vxrm" : val = val & 'h3;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_VXSAT: begin
+      case(field)
+        "vxsat" : val = val & 'h1;
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_SSTATEEN0: begin
+      case(field)
+          "fcsr"   : val = (val >> 1) & 'h1;
+          "jvt"    : val = (val >> 2) & 'h1;
+          default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MSTATEEN0: begin
+      case(field)
+        "c" : val = val & 'h1;
+        "fcsr" : val = (val >> 1) & 'h1;
+        "jvt" : val = (val >> 2) & 'h1;
+`ifdef UDB_MXLEN_64
+        "ctr" : val = (val >> 54) & 64'h1;
+        "srmcfg" : val = (val >> 55) & 64'h1;
+        "p1p13" : val = (val >> 56) & 64'h1;
+        "context" : val = (val >> 57) & 64'h1;
+        "imsic" : val = (val >> 58) & 64'h1;
+        "aia" : val = (val >> 59) & 64'h1;
+        "csrind" : val = (val >> 60) & 64'h1;
+        "envcfg" : val = (val >> 62) & 64'h1;
+        "se0" : val = (val >> 63) & 64'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_MSTATEEN0H: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "ctr" : val = (val >> 22) & 32'h1;
+        "srmcfg" : val = (val >> 23) & 32'h1;
+        "p1p13" : val = (val >> 24) & 32'h1;
+        "context" : val = (val >> 25) & 32'h1;
+        "imsic" : val = (val >> 26) & 32'h1;
+        "aia" : val = (val >> 27) & 32'h1;
+        "csrind" : val = (val >> 28) & 32'h1;
+        "envcfg" : val = (val >> 30) & 32'h1;
+        "se0" : val = (val >> 31) & 32'h1;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG4: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp16cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp16cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp16cfg_xwr" : val = val & 32'h7;
+        "pmp17cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp17cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp17cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp18cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp18cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp18cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp19cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp19cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp19cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp16cfg_a" : val = (val >> 3) & 64'h3;
+        "pmp16cfg_l" : val = (val >> 7) & 64'h1;
+        "pmp16cfg_xwr" : val = val & 64'h7;
+        "pmp17cfg_a" : val = (val >> 11) & 64'h3;
+        "pmp17cfg_l" : val = (val >> 15) & 64'h1;
+        "pmp17cfg_xwr" : val = (val >> 8) & 64'h7;
+        "pmp18cfg_a" : val = (val >> 19) & 64'h3;
+        "pmp18cfg_l" : val = (val >> 23) & 64'h1;
+        "pmp18cfg_xwr" : val = (val >> 16) & 64'h7;
+        "pmp19cfg_a" : val = (val >> 27) & 64'h3;
+        "pmp19cfg_l" : val = (val >> 31) & 64'h1;
+        "pmp19cfg_xwr" : val = (val >> 24) & 64'h7;
+        "pmp20cfg_a" : val = (val >> 35) & 64'h3;
+        "pmp20cfg_l" : val = (val >> 39) & 64'h1;
+        "pmp20cfg_xwr" : val = (val >> 32) & 64'h7;
+        "pmp21cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp21cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp21cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp22cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp22cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp22cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp23cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp23cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp23cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG5: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp20cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp20cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp20cfg_xwr" : val = val & 32'h7;
+        "pmp21cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp21cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp21cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp22cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp22cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp22cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp23cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp23cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp23cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG6: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp24cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp24cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp24cfg_xwr" : val = val & 32'h7;
+        "pmp25cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp25cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp25cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp26cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp26cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp26cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp27cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp27cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp27cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp24cfg_a" : val = (val >> 3) & 64'h3;
+        "pmp24cfg_l" : val = (val >> 7) & 64'h1;
+        "pmp24cfg_xwr" : val = val & 64'h7;
+        "pmp25cfg_a" : val = (val >> 11) & 64'h3;
+        "pmp25cfg_l" : val = (val >> 15) & 64'h1;
+        "pmp25cfg_xwr" : val = (val >> 8) & 64'h7;
+        "pmp26cfg_a" : val = (val >> 19) & 64'h3;
+        "pmp26cfg_l" : val = (val >> 23) & 64'h1;
+        "pmp26cfg_xwr" : val = (val >> 16) & 64'h7;
+        "pmp27cfg_a" : val = (val >> 27) & 64'h3;
+        "pmp27cfg_l" : val = (val >> 31) & 64'h1;
+        "pmp27cfg_xwr" : val = (val >> 24) & 64'h7;
+        "pmp28cfg_a" : val = (val >> 35) & 64'h3;
+        "pmp28cfg_l" : val = (val >> 39) & 64'h1;
+        "pmp28cfg_xwr" : val = (val >> 32) & 64'h7;
+        "pmp29cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp29cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp29cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp30cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp30cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp30cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp31cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp31cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp31cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG7: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp28cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp28cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp28cfg_xwr" : val = val & 32'h7;
+        "pmp29cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp29cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp29cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp30cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp30cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp30cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp31cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp31cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp31cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG8: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp32cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp32cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp32cfg_xwr" : val = val & 32'h7;
+        "pmp33cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp33cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp33cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp34cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp34cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp34cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp35cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp35cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp35cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp32cfg_a" : val = (val >> 3) & 64'h3;
+        "pmp32cfg_l" : val = (val >> 7) & 64'h1;
+        "pmp32cfg_xwr" : val = val & 64'h7;
+        "pmp33cfg_a" : val = (val >> 11) & 64'h3;
+        "pmp33cfg_l" : val = (val >> 15) & 64'h1;
+        "pmp33cfg_xwr" : val = (val >> 8) & 64'h7;
+        "pmp34cfg_a" : val = (val >> 19) & 64'h3;
+        "pmp34cfg_l" : val = (val >> 23) & 64'h1;
+        "pmp34cfg_xwr" : val = (val >> 16) & 64'h7;
+        "pmp35cfg_a" : val = (val >> 27) & 64'h3;
+        "pmp35cfg_l" : val = (val >> 31) & 64'h1;
+        "pmp35cfg_xwr" : val = (val >> 24) & 64'h7;
+        "pmp36cfg_a" : val = (val >> 35) & 64'h3;
+        "pmp36cfg_l" : val = (val >> 39) & 64'h1;
+        "pmp36cfg_xwr" : val = (val >> 32) & 64'h7;
+        "pmp37cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp37cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp37cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp38cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp38cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp38cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp39cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp39cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp39cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG9: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp36cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp36cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp36cfg_xwr" : val = val & 32'h7;
+        "pmp37cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp37cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp37cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp38cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp38cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp38cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp39cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp39cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp39cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG10: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp40cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp40cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp40cfg_xwr" : val = val & 32'h7;
+        "pmp41cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp41cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp41cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp42cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp42cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp42cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp43cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp43cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp43cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp40cfg_a" : val = (val >> 3) & 64'h3;
+        "pmp40cfg_l" : val = (val >> 7) & 64'h1;
+        "pmp40cfg_xwr" : val = val & 64'h7;
+        "pmp41cfg_a" : val = (val >> 11) & 64'h3;
+        "pmp41cfg_l" : val = (val >> 15) & 64'h1;
+        "pmp41cfg_xwr" : val = (val >> 8) & 64'h7;
+        "pmp42cfg_a" : val = (val >> 19) & 64'h3;
+        "pmp42cfg_l" : val = (val >> 23) & 64'h1;
+        "pmp42cfg_xwr" : val = (val >> 16) & 64'h7;
+        "pmp43cfg_a" : val = (val >> 27) & 64'h3;
+        "pmp43cfg_l" : val = (val >> 31) & 64'h1;
+        "pmp43cfg_xwr" : val = (val >> 24) & 64'h7;
+        "pmp44cfg_a" : val = (val >> 35) & 64'h3;
+        "pmp44cfg_l" : val = (val >> 39) & 64'h1;
+        "pmp44cfg_xwr" : val = (val >> 32) & 64'h7;
+        "pmp45cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp45cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp45cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp46cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp46cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp46cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp47cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp47cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp47cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG11: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp44cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp44cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp44cfg_xwr" : val = val & 32'h7;
+        "pmp45cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp45cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp45cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp46cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp46cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp46cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp47cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp47cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp47cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG12: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp48cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp48cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp48cfg_xwr" : val = val & 32'h7;
+        "pmp49cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp49cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp49cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp50cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp50cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp50cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp51cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp51cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp51cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp48cfg_a" : val = (val >> 3) & 64'h3;
+        "pmp48cfg_l" : val = (val >> 7) & 64'h1;
+        "pmp48cfg_xwr" : val = val & 64'h7;
+        "pmp49cfg_a" : val = (val >> 11) & 64'h3;
+        "pmp49cfg_l" : val = (val >> 15) & 64'h1;
+        "pmp49cfg_xwr" : val = (val >> 8) & 64'h7;
+        "pmp50cfg_a" : val = (val >> 19) & 64'h3;
+        "pmp50cfg_l" : val = (val >> 23) & 64'h1;
+        "pmp50cfg_xwr" : val = (val >> 16) & 64'h7;
+        "pmp51cfg_a" : val = (val >> 27) & 64'h3;
+        "pmp51cfg_l" : val = (val >> 31) & 64'h1;
+        "pmp51cfg_xwr" : val = (val >> 24) & 64'h7;
+        "pmp52cfg_a" : val = (val >> 35) & 64'h3;
+        "pmp52cfg_l" : val = (val >> 39) & 64'h1;
+        "pmp52cfg_xwr" : val = (val >> 32) & 64'h7;
+        "pmp53cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp53cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp53cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp54cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp54cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp54cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp55cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp55cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp55cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG13: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp52cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp52cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp52cfg_xwr" : val = val & 32'h7;
+        "pmp53cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp53cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp53cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp54cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp54cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp54cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp55cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp55cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp55cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG14: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp56cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp56cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp56cfg_xwr" : val = val & 32'h7;
+        "pmp57cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp57cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp57cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp58cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp58cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp58cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp59cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp59cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp59cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+`ifdef UDB_MXLEN_64
+        "pmp56cfg_a" : val = (val >> 3) & 64'h3;
+        "pmp56cfg_l" : val = (val >> 7) & 64'h1;
+        "pmp56cfg_xwr" : val = val & 64'h7;
+        "pmp57cfg_a" : val = (val >> 11) & 64'h3;
+        "pmp57cfg_l" : val = (val >> 15) & 64'h1;
+        "pmp57cfg_xwr" : val = (val >> 8) & 64'h7;
+        "pmp58cfg_a" : val = (val >> 19) & 64'h3;
+        "pmp58cfg_l" : val = (val >> 23) & 64'h1;
+        "pmp58cfg_xwr" : val = (val >> 16) & 64'h7;
+        "pmp59cfg_a" : val = (val >> 27) & 64'h3;
+        "pmp59cfg_l" : val = (val >> 31) & 64'h1;
+        "pmp59cfg_xwr" : val = (val >> 24) & 64'h7;
+        "pmp60cfg_a" : val = (val >> 35) & 64'h3;
+        "pmp60cfg_l" : val = (val >> 39) & 64'h1;
+        "pmp60cfg_xwr" : val = (val >> 32) & 64'h7;
+        "pmp61cfg_a" : val = (val >> 43) & 64'h3;
+        "pmp61cfg_l" : val = (val >> 47) & 64'h1;
+        "pmp61cfg_xwr" : val = (val >> 40) & 64'h7;
+        "pmp62cfg_a" : val = (val >> 51) & 64'h3;
+        "pmp62cfg_l" : val = (val >> 55) & 64'h1;
+        "pmp62cfg_xwr" : val = (val >> 48) & 64'h7;
+        "pmp63cfg_a" : val = (val >> 59) & 64'h3;
+        "pmp63cfg_l" : val = (val >> 63) & 64'h1;
+        "pmp63cfg_xwr" : val = (val >> 56) & 64'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    CSR_PMPCFG15: begin
+      case(field)
+`ifdef UDB_MXLEN_32
+        "pmp60cfg_a" : val = (val >> 3) & 32'h3;
+        "pmp60cfg_l" : val = (val >> 7) & 32'h1;
+        "pmp60cfg_xwr" : val = val & 32'h7;
+        "pmp61cfg_a" : val = (val >> 11) & 32'h3;
+        "pmp61cfg_l" : val = (val >> 15) & 32'h1;
+        "pmp61cfg_xwr" : val = (val >> 8) & 32'h7;
+        "pmp62cfg_a" : val = (val >> 19) & 32'h3;
+        "pmp62cfg_l" : val = (val >> 23) & 32'h1;
+        "pmp62cfg_xwr" : val = (val >> 16) & 32'h7;
+        "pmp63cfg_a" : val = (val >> 27) & 32'h3;
+        "pmp63cfg_l" : val = (val >> 31) & 32'h1;
+        "pmp63cfg_xwr" : val = (val >> 24) & 32'h7;
+`endif
+        default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+      endcase
+    end
+    // tdata1/tdata3 type views. They have no CSR address, so these arms are disabled.
+    // etrigger: begin
+    //   case(field)
+    // `ifdef UDB_MXLEN_32
+    //     "dmode" : val = (val >> 27) & 32'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "dmode" : val = (val >> 59) & 64'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_32
+    //     "hit" : val = (val >> 26) & 32'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "hit" : val = (val >> 58) & 64'h1;
+    // `endif
+    //     "m" : val = (val >> 9) & 'h1;
+    //     "nmi" : val = (val >> 10) & 'h1;
+    //     "s" : val = (val >> 7) & 'h1;
+    // `ifdef UDB_MXLEN_32
+    //     "type" : val = (val >> 28) & 32'hf;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "type" : val = (val >> 60) & 64'hf;
+    // `endif
+    //     "u" : val = (val >> 6) & 'h1;
+    //     default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+    //   endcase
+    // end
+    // icount: begin
+    //   case(field)
+    // `ifdef UDB_MXLEN_32
+    //     "dmode" : val = (val >> 27) & 32'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "dmode" : val = (val >> 59) & 64'h1;
+    // `endif
+    //     "hit" : val = (val >> 24) & 'h1;
+    //     "m" : val = (val >> 9) & 'h1;
+    //     "s" : val = (val >> 7) & 'h1;
+    // `ifdef UDB_MXLEN_32
+    //     "type" : val = (val >> 28) & 32'hf;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "type" : val = (val >> 60) & 64'hf;
+    // `endif
+    //     "u" : val = (val >> 6) & 'h1;
+    //     default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+    //   endcase
+    // end
+    // itrigger: begin
+    //   case(field)
+    // `ifdef UDB_MXLEN_32
+    //     "dmode" : val = (val >> 27) & 32'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "dmode" : val = (val >> 59) & 64'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_32
+    //     "hit" : val = (val >> 26) & 32'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "hit" : val = (val >> 58) & 64'h1;
+    // `endif
+    //     "m" : val = (val >> 9) & 'h1;
+    //     "s" : val = (val >> 7) & 'h1;
+    // `ifdef UDB_MXLEN_32
+    //     "type" : val = (val >> 28) & 32'hf;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "type" : val = (val >> 60) & 64'hf;
+    // `endif
+    //     "u" : val = (val >> 6) & 'h1;
+    //     default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+    //   endcase
+    // end
+    // mcontrol: begin
+    //   case(field)
+    //     "action" : val = (val >> 12) & 'hf;
+    //     "chain" : val = (val >> 11) & 'h1;
+    // `ifdef UDB_MXLEN_32
+    //     "dmode" : val = (val >> 27) & 32'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "dmode" : val = (val >> 59) & 64'h1;
+    // `endif
+    //     "execute" : val = (val >> 2) & 'h1;
+    //     "hit" : val = (val >> 20) & 'h1;
+    //     "load" : val = val & 'h1;
+    //     "m" : val = (val >> 6) & 'h1;
+    // `ifdef UDB_MXLEN_32
+    //     "maskmax" : val = (val >> 21) & 32'h3f;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "maskmax" : val = (val >> 53) & 64'h3f;
+    // `endif
+    //     "match" : val = (val >> 7) & 'hf;
+    //     "s" : val = (val >> 4) & 'h1;
+    //     "select" : val = (val >> 19) & 'h1;
+    // `ifdef UDB_MXLEN_64
+    //     "sizehi" : val = (val >> 21) & 64'h3;
+    // `endif
+    //     "sizelo" : val = (val >> 16) & 'h3;
+    //     "store" : val = (val >> 1) & 'h1;
+    //     "timing" : val = (val >> 18) & 'h1;
+    // `ifdef UDB_MXLEN_32
+    //     "type" : val = (val >> 28) & 32'hf;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "type" : val = (val >> 60) & 64'hf;
+    // `endif
+    //     "u" : val = (val >> 3) & 'h1;
+    //     default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+    //   endcase
+    // end
+    // textra32: begin
+    //   case(field)
+    // `ifdef UDB_MXLEN_32
+    //     "mselect" : val = (val >> 25) & 32'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_32
+    //     "sselect" : val = val & 32'h3;
+    // `endif
+    //     default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+    //   endcase
+    // end
+    // textra64: begin
+    //   case(field)
+    // `ifdef UDB_MXLEN_64
+    //     "mselect" : val = (val >> 50) & 64'h1;
+    // `endif
+    // `ifdef UDB_MXLEN_64
+    //     "sselect" : val = val & 64'h3;
+    // `endif
+    //     default: $fatal(1, "get_csr_field: RV%0d CSR 0x%03h has no field %s", `UDB_MXLEN, addr, field);
+    //   endcase
+    // end
+    default: $fatal(1, "get_csr_field: CSR 0x%03h has no field %s; use get_csr_val to read it whole", addr, field);
+  endcase
 
   return val;
 endfunction

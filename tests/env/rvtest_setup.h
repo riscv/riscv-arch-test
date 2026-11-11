@@ -79,6 +79,17 @@
 /**** - Include headers that contain code (not macros) that would throw off the address ****/
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
 /*******************************************************************************************/
+// Turn off M-mode landing pads (mseccfg.MLPE) on the way out of a test. The end-of-test
+// and failure code, the epilogs and rvmodel_halt_fail are not written with landing pads,
+// so an indirect jump among them (such as jr T1 to rvmodel_halt_fail) would otherwise
+// raise a software-check exception when a test left MLPE set.
+.macro RVTEST_MLPE_OFF
+  #if defined(ZICFILP_SUPPORTED) && defined(STANDARD_SM_SUPPORTED) // runs in M-mode only with the T-SEE
+    LI(     T1, MSECCFG_MLPE)
+    csrc    mseccfg, T1
+  #endif
+.endm
+
 .macro RVTEST_CODE_END
   // Disable assembler/linker optimizations for RVTEST_CODE_END
   .option push
@@ -95,6 +106,10 @@
   j rvtest_code_end
   .p2align 12
   rvtest_code_end:
+  // The default unexpected-interrupt handlers reach rvtest_code_end and
+  // rvtest_code_end_mmode with jr T1, which sets ELP when Zicfilp is enabled in that
+  // mode, so both start with a 4-byte-aligned lpad 0 (a no-op otherwise).
+    auipc   x0, 0                     // lpad 0
 
   // The checks and epilogs read M-mode CSRs. The test body and the default
   // unexpected-interrupt handlers can reach this point in any mode. Callers in
@@ -102,7 +117,10 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_code_end_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
 
   #ifndef RVTEST_NOSIG
     // Check the regular signature offset to make sure the correct number of
@@ -203,14 +221,21 @@
   // when mstatus.MDT=1 in M-mode. Callers in an M-mode trap handler use the _mmode entry.
   // An M-mode test body can also set MDT, so skip the switch if the last T-SBI mode
   // change was to M-mode.
+  // The failure paths in the trap handlers reach both entries with jr T1, which sets ELP
+  // when Zicfilp is enabled in that mode, so each starts with a 4-byte-aligned lpad 0.
+  .p2align 2
   rvtest_fail_epilogs:
+    auipc   x0, 0                     // lpad 0
     #ifdef STANDARD_SM_SUPPORTED
       LA(T1, rvtest_current_mode)
       LREG T1, 0(T1)
       beqz T1, rvtest_fail_epilogs_mmode
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_fail_epilogs_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
     LI(T5, 1)
 
   run_epilogs_body:
@@ -1565,6 +1590,25 @@
             LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
             csrw hstateen0, t0
           #endif
+          // Setting mstateen1-3.SE above makes machine-level software responsible for initializing
+          // the writable bits of the matching hstateen and sstateen CSRs, whose reset values are
+          // unspecified (norm:hstateen_sstateen_zero_initialization).
+          // hstateen1-3.SE = 1: Enable access to sstateen1-3 from VS-mode, as hstateen0.SE0 does for
+          // sstateen0. Bit 63 (SE) is the only writable bit of hstateen1-3; the rest are reserved.
+          #if __riscv_xlen == 64
+            LI(t0, HSTATEEN_SSTATEEN)
+            csrw hstateen1, t0
+            csrw hstateen2, t0
+            csrw hstateen3, t0
+          #else    // RV32
+            LI(t0, HSTATEENH_SSTATEEN)
+            csrw hstateen1h, t0
+            csrw hstateen2h, t0
+            csrw hstateen3h, t0
+            csrw hstateen1, zero
+            csrw hstateen2, zero
+            csrw hstateen3, zero
+          #endif
         #endif
       #endif // H_SUPPORTED
     #endif // STANDARD_SM_SUPPORTED
@@ -1638,7 +1682,10 @@
   // Keep custom state and reserved bits disabled.
   #ifdef SSSTATEEN_SUPPORTED
     li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
-    csrs sstateen0, t0 // enable access from lower privilege mode
+    csrw sstateen0, t0 // enable access from lower privilege mode; clear the other writable bits
+    csrw sstateen1, zero // keep any writable bits of sstateen1-3 disabled
+    csrw sstateen2, zero
+    csrw sstateen3, zero
   #endif
 
   // Initialize S-mode CSRs

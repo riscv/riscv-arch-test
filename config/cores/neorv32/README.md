@@ -13,8 +13,9 @@ NEORV32 implements privileged specification 1.12.
 ## Simulation
 
 `.github/scripts/neorv32-act-top.vhd` sets the generics of the processor top level, `neorv32_top`,
-that ACT depends on; the rest keep their defaults. GHDL's synthesis front end converts it to a single Verilog module, as NEORV32's
-own `rtl/verilog` flow does, and Verilator simulates that module inside
+that ACT depends on; the rest keep their defaults. GHDL's synthesis front end converts it to a
+single Verilog module, as NEORV32's own `rtl/verilog` flow does, and Verilator simulates that
+module inside
 `.github/scripts/neorv32-act-tb.sv`. Simulating the VHDL directly under GHDL gives the same
 results on the whole suite but runs about a hundred times slower.
 
@@ -80,11 +81,11 @@ the `run-neorv32.sh` runner. Building GHDL needs GNAT. The two exports do what
 
 ## Parameters confirmed by probes
 
-Directed probes on this testbench agree with `neorv32-rv32imacb-u-pmp.yaml` on every extension and
-parameter they can measure. These entries rest on a directed probe or the data sheet:
+These entries rest on a directed test program run on this testbench, or on the data sheet:
 
-- Zihintpause, Zihintntl and Zkt are claimed although the extractor cannot detect them: PAUSE and
-  the NTL hints execute as a FENCE and as no-ops, and NEORV32 reports Zkt with the barrel shifter.
+- Zihintpause, Zihintntl and Zkt are claimed although no instruction-level probe can detect them:
+  PAUSE and the NTL hints execute as a FENCE and as no-ops, and NEORV32 reports Zkt with the barrel
+  shifter.
 - `LRSC_FAIL_ON_NON_EXACT_LRSC: false`: an SC to another word of the reserved 64-byte granule
   succeeds and writes memory.
 - `MISALIGNED_LDST_EXCEPTION_PRIORITY: high`: a misaligned load or store to a bus-error address

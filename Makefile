@@ -5,7 +5,7 @@
 
 ########## Runtime Options ##########
 # CONFIG_FILES is required when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
-# `make coverage` uses CONFIG_FILES if set, otherwise it defaults to the Sail max configs.
+# `make coverage` only accepts Sail configs (config directories named sail-*) in CONFIG_FILES; if unset, it defaults to the Sail max configs.
 CONFIG_FILES ?=
 
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
@@ -125,7 +125,7 @@ help:
 	  'elfs (default)'      'Generate tests and compile self-checking ELFs for $$(CONFIG_FILES)' \
 	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
 	  'vector-tests'        'Generate vector test sources' \
-	  'coverage'            'Build with coverage instrumentation for $$(CONFIG_FILES) (default: Sail max)' \
+	  'coverage'            'Build with coverage instrumentation for Sail configs in $$(CONFIG_FILES) (default: Sail max)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
 	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
 	@printf '\n\033[1mGenerators:\033[0m\n'
@@ -144,7 +144,7 @@ help:
 	@printf '    %s\n' $(ALL_RUN_TARGETS) | fold -s -w 76 | sed 's/^/  /'
 	@printf '\n\033[1mCommon variables:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
-	  'CONFIG_FILES'        'Configs to build (required; coverage defaults to Sail max)' \
+	  'CONFIG_FILES'        'Configs to build (required; make coverage accepts only sail-* configs, default: Sail max)' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'CERTIFICATE'         'Only select tests for the specified certificate' \
@@ -165,6 +165,11 @@ help:
 
 
 ########## Test compilation ##########
+# Config files whose directory name is not sail-* (i.e. non-Sail DUT configs).
+# Keys on the parent directory name so relative, ./, absolute, and out-of-tree
+# sail-* config dirs are all accepted.
+NON_SAIL_CONFIGS = $(foreach f,$(CONFIG_FILES),$(if $(filter sail-%,$(notdir $(patsubst %/,%,$(dir $(f))))),,$(f)))
+
 .DEFAULT_GOAL := elfs
 .PHONY: check-config-files
 check-config-files:
@@ -172,8 +177,8 @@ check-config-files:
 		echo "error: CONFIG_FILES is not set. Example: CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml make" >&2; \
 		exit 1; \
 	fi
-	@if [ -n "$(COVERAGE)" ] && [ -n "$(filter-out config/sail/% ./config/sail/% %/config/sail/%,$(CONFIG_FILES))" ]; then \
-		echo "error: make coverage only supports Sail configs (config/sail/*), got: $(filter-out config/sail/% ./config/sail/% %/config/sail/%,$(CONFIG_FILES))" >&2; \
+		@if [ -n "$(COVERAGE)" ] && [ -n "$(strip $(NON_SAIL_CONFIGS))" ]; then \
+		echo "error: make coverage only supports Sail configs (sail-* config directories), got: $(strip $(NON_SAIL_CONFIGS))" >&2; \
 		echo "Coverage is collected by running the ELFs on Sail. Omit CONFIG_FILES, or run 'make <simulator>' to test a DUT." >&2; \
 		exit 1; \
 	fi

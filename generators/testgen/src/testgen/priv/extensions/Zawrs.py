@@ -11,6 +11,7 @@
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
+from testgen.asm.wait import wait_loop, wait_loop_arm
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -60,7 +61,7 @@ def wrs_resume_helper(
     coverpoint = "cp_wrs_resume"
     ######################################
 
-    r_cause, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
+    r_addr, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
 
     lower = priv != "M"
     # The resume is triggered by a timer interrupt: Sstc below M-mode when it is implemented, otherwise a machine
@@ -105,6 +106,14 @@ def wrs_resume_helper(
                         ]
                     )
 
+                    lines.extend(
+                        [
+                            test_data.add_testcase(
+                                f"tw_{tw_val}_mie_{mie_val}_sie_{sie_val}_{op}", coverpoint, covergroup
+                            ),
+                            *wait_loop_arm(test_data, r_temp, r_temp2),
+                        ]
+                    )
                     if lower:
                         lines.extend(
                             [
@@ -124,17 +133,9 @@ def wrs_resume_helper(
                                 "#endif",
                             ]
                         )
-                        lines.extend(
-                            [
-                                "# Read the trap count after the T-SBI calls above, which trap as well",
-                                *_read_trap_count_helper(r_cause),
-                            ]
-                        )
                     else:
                         lines.extend(
                             [
-                                "# Read the trap count before arming the timer, so an early interrupt is counted",
-                                *_read_trap_count_helper(r_cause),
                                 "# Set mie.MTIE",
                                 f"LI(x{r_temp}, 0x80)",
                                 f"csrs mie, x{r_temp}",
@@ -142,64 +143,38 @@ def wrs_resume_helper(
                                 "RVTEST_SET_MTIME_INT_SOON_M",
                             ]
                         )
-
-                    lines.extend(
-                        [
-                            "# lr.w to set up reservation",
-                            f"LA(x{r_temp}, scratch)",
-                            f"lr.w x{r_temp2}, (x{r_temp})",
-                            test_data.add_testcase(
-                                f"tw_{tw_val}_mie_{mie_val}_sie_{sie_val}_{op}", coverpoint, covergroup
-                            ),
-                            "1:",
-                            f"{op}",
-                            *_read_trap_count_helper(r_temp),
-                            f"bne x{r_cause}, x{r_temp}, 2f              # MIE=1: trap count increased -> done",
+                    # WRS can terminate early, so repeat lr.w + WRS until the timer interrupt is taken. When the
+                    # interrupt is masked (M-mode with mstatus.MIE = 0, or S-mode with sstatus.SIE = 0 and the
+                    # Sstc timer), it is never taken, so also leave once it is pending.
+                    wait = [f"lr.w x{r_temp2}, (x{r_addr}) # reservation for WRS to wait on", op]
+                    lines.extend(["# lr.w address", f"LA(x{r_addr}, scratch)"])
+                    if priv == "M":
+                        lines += wait_loop(test_data, r_temp, wait, None if mie_val else ("mip", 0x80))
+                    elif priv == "S" and sie_val == 0:
+                        lines += [
+                            "#ifdef SSTC_SUPPORTED",
+                            *wait_loop(test_data, r_temp, wait, ("sip", 0x20)),
+                            "#else",
+                            *wait_loop(test_data, r_temp, wait),
+                            "#endif",
                         ]
-                    )
-                    # Since wrs instructions can terminate early, in order to test the resume behavior of wrs instructions,
-                    # the test repeats the instruction until timer interrupt fires. For the case where interrupt is not expected
-                    # to fire, the test repeats wrs instruction until interrupts becomes pending
-                    # Two cases where the interrupt is not expected to fire are listed below:
-                    ################## The test runs in M mode with mstatus.MIE = 0 ######################################
-                    if (priv == "M") & (mie_val == 0):
-                        lines.extend(
-                            [
-                                "# Only moves on if mstatus.MIE = 0 and mip.MTIP = 1, expect no interrupt should be taken",
-                                f"csrr x{r_temp}, mip",
-                                f"andi x{r_temp}, x{r_temp}, 0x80  # Extract mip.MTIP",
-                                f"bnez x{r_temp}, 2f              # Interrupt pending -> done",
-                            ]
-                        )
-                    ################## The test runs in S mode with sstatus.SIE = 0 ######################################
-                    if (priv == "S") & (sie_val == 0):
-                        lines.extend(
-                            [
-                                "#ifdef SSTC_SUPPORTED",
-                                "# Only moves on if SIE = 0 and sip.STIP = 1, expect no interrupt should be taken",
-                                f"csrr x{r_temp}, sip",
-                                f"andi x{r_temp}, x{r_temp}, 0x20  # Extract sip.STIP",
-                                f"bnez x{r_temp}, 2f              # Interrupt pending -> done",
-                                "#endif",
-                            ]
-                        )
-                    lines.extend(
-                        [
-                            "j 1b",
-                            "2:",
-                            write_sigupd(r_cause, test_data),
-                        ]
-                    )
-                    # Disarm timers so no pending interrupt carries into the next testcase
-                    lines.append(f"RVTEST_CLR_MTIME_INT_{priv}")
+                    else:
+                        lines += wait_loop(test_data, r_temp, wait)
+                    # Disarm the timer that was armed so no pending interrupt carries into the next testcase.
+                    # Below M-mode that is the supervisor timer with Sstc, and mtimecmp is written through T-SBI
+                    # only without Sstc (for example on M+U cores). RVA23 mandates Sstc, so it never does.
                     if lower:
                         lines.extend(
                             [
                                 "#ifdef SSTC_SUPPORTED",
                                 f"RVTEST_CLR_SSTC_INT_{priv}",
+                                "#else",
+                                f"RVTEST_CLR_MTIME_INT_{priv}",
                                 "#endif",
                             ]
                         )
+                    else:
+                        lines.append("RVTEST_CLR_MTIME_INT_M")
 
     if lower:
         lines.extend(
@@ -212,7 +187,7 @@ def wrs_resume_helper(
         )
     lines.append("#endif")
 
-    test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
+    test_data.int_regs.return_registers([r_addr, r_temp, r_temp2])
     return lines
 
 
@@ -238,7 +213,7 @@ def wrs_no_mie_helper(
         *([f"mstatus.SIE = 1{' (if S supported)' if priv == 'U' else ''}"] if lower else []),
         "mie = all 0s",
         "mstatus.TW = 1" if lower else "mstatus.TW = 0",
-        "mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP}" if lower else "mip = {MSIP + MEIP + MTIP}",
+        "mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP (without Sstc)}" if lower else "mip = {MSIP + MEIP + MTIP}",
         f"execute {{WRS.NTO/WRS.STO}} in {priv} mode" if lower else "execute WRS.STO in M mode",
         "2 bins" if lower else "1 bin",
     ]
@@ -247,6 +222,10 @@ def wrs_no_mie_helper(
     if lower:
         guard += " || defined(S_SUPPORTED)"
     lines = [comment_banner(coverpoint, "\n".join(description)), guard]
+    # Below M-mode the machine timer is raised only without Sstc: with Sstc (as in RVA23) mtimecmp is not
+    # written through T-SBI, because machine timer interrupts are not part of a supervisor-mode profile.
+    # Sstc implies S-mode, whose interrupts keep the guard above satisfied.
+    mti_guard = "#if defined(UDB_MTI_INTR_IMPL) && !defined(SSTC_SUPPORTED)" if lower else "#ifdef UDB_MTI_INTR_IMPL"
     # wrs.nto can only be tested in non-M mode using TW = 1
     wrs_list = ["WRS.STO", "WRS.NTO"] if lower else ["WRS.STO"]
 
@@ -266,7 +245,7 @@ def wrs_no_mie_helper(
                 "#ifdef UDB_MSI_INTR_IMPL",
                 f"RVTEST_SET_MSW_INT_{priv}",
                 "#endif",
-                "#ifdef UDB_MTI_INTR_IMPL",
+                mti_guard,
                 f"RVTEST_SET_MTIME_INT_{priv}",
                 "#endif",
             ]
@@ -342,7 +321,7 @@ def wrs_no_mie_helper(
                 "#ifdef UDB_MSI_INTR_IMPL",
                 f"RVTEST_CLR_MSW_INT_{priv}",
                 "#endif",
-                "#ifdef UDB_MTI_INTR_IMPL",
+                mti_guard,
                 f"RVTEST_CLR_MTIME_INT_{priv}",
                 "#endif",
             ]

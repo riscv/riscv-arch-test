@@ -17,7 +17,7 @@
 //                                  deliberately NOT used as handler temporaries: they
 //                                  are the T-SBI argument/return registers.
 //    2. ARCHITECTURE CONSTANTS  — interrupt/exception cause counts, masks, mode encodings
-//    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes and macros
+//    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes (in tsbi.h)
 //    4. CSR RENAME MACROS       — XCSR_RENAME parameterizes CSR names by privilege mode
 //    5. T-SBI CONVENIENCE MACROS— Test-facing macros for the a0-based SBI calling convention
 //    6. DEFAULT INTERRUPT MACROS— Stubs for RVMODEL interrupt set/clear if not DUT-defined
@@ -110,7 +110,7 @@
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
 //    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
 //    TSBI_SW/SWP4/SD  (a0=store opcode)— Store a2 to physical address a1
-//    Any other value                  — Returns -1 in a0 (TSBI_RESERVED_RET)
+//    Any other value                  — Fails the test or returns -1 in a0 (TSBI_RESERVED_RET)
 //
 //  Dispatch hierarchy:
 //    M-mode handler:  handles all operations directly
@@ -175,59 +175,6 @@
   #define NUM_SPECD_EXCPTCAUSES 24               // causes 0..23 have defined dispatch entries
   #define EXCPT_CAUSE_MSK ((1<<5)-1)             // 5-bit mask to extract cause index
 #endif
-
-//==============================================================================
-// SECTION 3: T-SBI (TEST SUPERVISOR BINARY INTERFACE) CONSTANTS
-//
-// These #define constants specify the operation codes passed in a0 when making
-// T-SBI calls via ecall. The handler checks a0 against these values to dispatch
-// the appropriate service routine.
-//
-// Design rationale for the operation code values:
-//   - GOTO_xMODE uses small integers (1-5) for easy range checking
-//   - ECALL_TEST uses the ecall instruction encoding (0x73) itself, which is
-//     mnemonic and doesn't conflict with GOTO codes or CSR encodings
-//   - CSR_ACCESS uses the actual CSR instruction encoding (opcode 0x73 with
-//     funct3 != 0), making it self-describing — the handler doesn't need a
-//     lookup table; it just executes the encoding directly
-//     GOTO_MMODE fast path
-//
-// Dispatch order in the handler:
-//   1. If (a0-1) < 5  -> GOTO_xMODE      (a0 in range [1..5])
-//   2. If a0 == 0x73  -> ECALL_TEST      (exact match on ecall encoding)
-//   3. If a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (SYSTEM opcode with funct3)
-//   4. Otherwise       -> RESERVED        (return -1)
-//==============================================================================
-
-// a0 values for TSBI_GOTO_xMODE.
-#define TSBI_GOTO_MMODE     0x00000001
-#define TSBI_GOTO_SMODE     0x00000002
-#define TSBI_GOTO_UMODE     0x00000003
-#define TSBI_GOTO_VSMODE    0x00000004
-#define TSBI_GOTO_VUMODE    0x00000005
-#define TSBI_ECALL_TEST     0x00000073
-#define TSBI_SFENCE_VMA     0x12000073           // sfence.vma x0, x0: flush address-translation caches
-#define TSBI_LW             0x0005a503
-#define TSBI_LWP4           0x0045a503
-#define TSBI_LD             0x0005b503
-#define TSBI_SW             0x00c5a023
-#define TSBI_SWP4           0x00c5a223
-#define TSBI_SD             0x00c5b023
-
-// CSR access operation codes: the encoding of a CSR instruction with rs1 = a1 and rd = a0.
-// csr is a 12-bit CSR number such as CSR_MIP from encoding.h.
-#define TSBI_CSR_SET(csr)    ((((csr) & 0xFFF) << 20) | 0x0005a073)  // csrrs x0, csr, a1
-#define TSBI_CSR_CLEAR(csr)  ((((csr) & 0xFFF) << 20) | 0x0005b073)  // csrrc x0, csr, a1
-#define TSBI_CSR_WRITE(csr)  ((((csr) & 0xFFF) << 20) | 0x00059073)  // csrrw x0, csr, a1
-#define TSBI_CSR_READ(csr)   ((((csr) & 0xFFF) << 20) | 0x00002573)  // csrrs a0, csr, x0
-
-// CSR_ACCESS is not a single #define — it's any value where:
-//   bits[6:0]   == 0x73 (SYSTEM opcode)    AND
-//   bits[14:12] != 0    (funct3 selects CSRRW/CSRRS/CSRRC/CSRRWI/CSRRSI/CSRRCI)
-// The caller constructs this encoding. Example for "csrrs a0, mstatus, x0":
-//   encoding = 0x30002573  (CSR=0x300, rs1=x0=0, funct3=010, rd=a0=x10)
-
-#define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
 //==============================================================================
 // SECTION 5: MODE ENCODING CONSTANTS
@@ -2247,6 +2194,7 @@ tsbi_csr_mstatus:                                 // dispatcher fast path
 #ifdef H_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
 #endif
+        TSBI_CSR_INSTR_TABLE(0xF14) // mhartid
 tsbi_csr_table_end:
 
 // Instructions other than CSR accesses, searched in order up to the sentinel.
@@ -2691,6 +2639,22 @@ common_\__MODE__\()int_handler:
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
 
+// Release an armed wait loop (wait_loop_arm/wait_loop in the test generator). The loop checks
+// rvtest_wait_loop's exit before each WFI or WRS and leaves when it is 0, so clearing it ends
+// the wait. If the interrupt was taken inside the loop, between that check and the wait
+// instruction, returning there would wait for an interrupt that this handler has just
+// cleared, so resume at the loop's exit instead. Leaving early is legal: a wait
+// instruction may complete at any time.
+        LA(     T6, rvtest_wait_loop)
+        LREG    T2, REGWIDTH(T6)                     // T2 = loop exit, 0 if no loop is armed
+        beqz    T2, nowait_\__MODE__\()int
+        SREG    zero, REGWIDTH(T6)                   // release the loop
+        LREG    T6, 0(T6)                            // T6 = first instruction of the loop
+        csrr    T3, CSR_XEPC
+        bltu    T3, T6, nowait_\__MODE__\()int     // interrupted outside the loop: return normally
+        bgeu    T3, T2, nowait_\__MODE__\()int
+        csrw    CSR_XEPC, T2                         // interrupted inside the loop: resume at its exit
+nowait_\__MODE__\()int:
         j       sv_\__MODE__\()tval_words           // words 3-5: xtval and, with H, second trap value and xtinst
 
 dispatch_\__MODE__\()int_handler:
@@ -2841,8 +2805,8 @@ excpt_\__MODE__\()hndlr_tbl:
 
 // Each routine below clears its interrupt source through the RVTEST_CLR_*_INT
 // flavor for the mode this handler runs in: _M performs the operation directly,
-// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h and
-// exist only when Sm is supported; without Sm these interrupts are unexpected.
+// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h.
+// Without a standard M-mode these handlers are not emitted.
 #ifdef STANDARD_SM_SUPPORTED
 
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt

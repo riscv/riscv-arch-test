@@ -12,6 +12,9 @@ exclude_extensions:
   # E-class: mtval on an illegal instruction is rs1 + immediate, on ecall the PC, on ebreak PC + 1,
   # and on an interrupt a stale address: every trap writes stage 2's effective address
   # (E-class stage2.bsv#L272, csrfile.bsv#L1199).
+  # E-class InterruptsSm_enable_U and InterruptsSm_trigger_U first miss a machine external
+  # interrupt raised in U-mode: mip.MEIP follows the interrupt input only while the hart is in
+  # M-mode (E-class csrfile.bsv#L1263-L1268).
   # C-class also fails U_Zicntr (see S_Zicntr), InterruptsSm_trigger_M and _U (see Sm_shadow),
   # InterruptsSm_wfi_timeout_U (see InterruptsS_wfi_timeout_U) and Sm_csr_insufficient_priv:
   # dcsr is readable in M-mode outside Debug mode, which the privileged spec only says "should"

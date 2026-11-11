@@ -36,7 +36,7 @@
   sd   t1, 0(t0)                         ;
 
 // The fabric sends every address outside the memory map to an error slave, which answers with
-// a bus error. On RV64 the address must be below 2 GB for la to reach it from RAM.
+// a bus error.
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x40000000
 
 ##### TERMINATION #####

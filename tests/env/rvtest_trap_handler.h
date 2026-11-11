@@ -1331,9 +1331,25 @@ common_\__MODE__\()entry:                       // common entry for all traps in
         beq     T2, T3, \__MODE__\()fail_fetch_done  // fault from M-mode itself
         LI(T2, MSTATUS_MPIE)
   .else
+    .ifc \__MODE__ , S
+      #ifdef H_SUPPORTED
+        // In HS-mode, a trap from VS or VU (SPV=1) also comes from a less-privileged
+        // mode, whatever SPP says. Clear SPV so that sret returns to HS, not VS.
+        csrr    T2, CSR_HSTATUS
+        andi    T2, T2, HSTATUS_SPV
+        beqz    T2, \__MODE__\()fail_fetch_nonguest
+        csrc    CSR_HSTATUS, T2                     // SPV = 0
+        j       \__MODE__\()fail_fetch_lower
+\__MODE__\()fail_fetch_nonguest:
+      #endif
+    .endif
         LI(T3, SSTATUS_SPP)
         and     T2, T4, T3
         bnez    T2, \__MODE__\()fail_fetch_done      // fault from this handler's own mode
+\__MODE__\()fail_fetch_lower:
+        // The failure code reads the failed check's instructions from the code that
+        // jumped here, which may be on a U-mode page: set SUM so those loads work.
+        LI(T3, SSTATUS_SPP | SSTATUS_SUM)
         LI(T2, SSTATUS_SPIE)
   .endif
         csrs    CSR_XSTATUS, T3                     // xPP = this mode (mret with MPP=M also leaves V=0)

@@ -39,7 +39,7 @@ deterministic_instrs: coverpoint ins.current.insn {
     `endif
     wildcard bins fmadd        = {FMADD_S};
     wildcard bins fsqrt        = {FSQRT_S};
-    wildcard bins fsgnj        = {FSGNJ_S};
+    wildcard bins fsgnjn       = {FSGNJN_S};
     wildcard bins fmv_f_x      = {FMV_S_X};
     wildcard bins fmin         = {FMIN_S};
     wildcard bins fcvt_w_s     = {FCVT_W_S};

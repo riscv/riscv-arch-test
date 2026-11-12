@@ -45,11 +45,12 @@ space := $(empty) $(empty)
 override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
 override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
 
-# Number of parallel build jobs for test compilation.
+# Number of parallel jobs for building tests and for running them (run_tests.py).
 # Automatically derived from make's -j or --jobs flag (e.g., make -j4). Can be overridden with JOBS=N.
-# 0 (default) = auto-detect CPU count.
+# 0 = auto-detect CPU count. The default of 16 keeps licensed simulators from exhausting the local ports
+# to the license server: each run checks out a license, and its connections stay in TIME_WAIT for a minute.
 # Setting to 1 is helpful for debugging test hangs so that only a single test runs at a time.
-JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
+JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),16)
 
 # Suppress "make[1]: Entering/Leaving directory ..." from recursive sub-makes
 MAKEFLAGS += --no-print-directory
@@ -149,7 +150,7 @@ help:
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'CERTIFICATE'         'Only select tests for the specified certificate' \
 	  'ENABLE_EXPERIMENTAL_EXTENSIONS' 'Enable tests for unratified extensions' \
-	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
+	  'JOBS'                'Parallel build and run jobs (default 16, 0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
 	  'CLEAN_INTERMEDIATES' 'Delete intermediate build/ dirs after build (saves disk)' \
 	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
@@ -247,7 +248,7 @@ regression: clean
 	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(RUN_CMD_FILES))" \
 	$(MAKE) elfs || exit_code=1; \
 	$(foreach f,$(RUN_CMD_FILES),\
-	  ./run_tests.py $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  ./run_tests.py --jobs $(JOBS) $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$exit_code
 
 
@@ -284,7 +285,7 @@ $(1): tests
 	$$(MAKE) elfs
 	@exit_code=0; \
 	$(foreach f,$(_TARGETS_$(1)),\
-	  ./run_tests.py $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  ./run_tests.py --jobs $(JOBS) $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$$$exit_code
 endef
 

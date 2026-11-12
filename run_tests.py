@@ -240,7 +240,13 @@ def main() -> int:
         "command", type=str, help="Command to run each ELF (elf path will be appended). E.g., 'spike --isa=rv64gc'"
     )
     parser.add_argument("elf_dir", type=Path, help="Path to ELF directory (e.g., work/spike-rv64/elfs)")
-    parser.add_argument("-j", "--jobs", type=int, default=os.cpu_count(), help="Number of parallel jobs")
+    parser.add_argument(
+        "-j",
+        "--jobs",
+        type=int,
+        default=0,
+        help="Number of parallel jobs (0 = CPU count; default: 0)",
+    )
     parser.add_argument(
         "-v",
         "--verbose",
@@ -261,6 +267,10 @@ def main() -> int:
 
     if args.timeout <= 0:
         parser.error("--timeout must be a positive integer")
+    if args.jobs < 0:
+        parser.error("--jobs must be zero or a positive integer")
+    if args.jobs == 0:
+        args.jobs = os.cpu_count() or 1
 
     # Verbose implies debug and serialized execution
     if args.verbose:

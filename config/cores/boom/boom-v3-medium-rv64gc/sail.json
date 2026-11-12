@@ -140,10 +140,8 @@
     "privileged_isa_version": "Privileged_ISA_1_12"
   },
   "memory": {
-    // BOOM implements 32 physical address bits. 56 is used because Sail masks the virtual
-    // address it reports in xtval on a translated access to physaddr_bits
-    // (https://github.com/riscv/sail-riscv/pull/1917).
-    "physaddr_bits": 56,
+    // Matches PHYS_ADDR_WIDTH (paddrBits = 32) in the UDB yaml.
+    "physaddr_bits": 32,
     // Whether physical addresses reported in `xtval` are truncated to
     // `physaddr_bits` can be specified.  When valid physical
     // addresses result from truncating invalid physical addresses to

@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import fflags_setup, load_int_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -23,7 +23,7 @@ def format_x2f_type(
     frm = f", {params.frm}" if params.frm is not None else ""
     setup = [
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),
-        "fsflagsi 0b00000 # clear all fflags",
+        fflags_setup(params),
     ]
     test = [
         f"{instr_name} f{params.fd}, x{params.rs1}{frm} # perform operation",

@@ -33,8 +33,8 @@ RVTEST_BEGIN
   fsflagsi 0b00000 # clear all fflags
 F_fmin_s_cg_cr_fs1_fs2_edges_fs1val_0x813d9ab0_fs2val_0x813d9ab0_frm_None:
   fmin.s f31, f9, f3 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmin_s_cg_cr_fs1_fs2_edges_fs1val_0x813d9ab0_fs2val_0x813d9ab0_frm_None, F_fmin_s_cg_cr_fs1_fs2_edges_fs1val_0x813d9ab0_fs2val_0x813d9ab0_frm_None_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmin_s_cg_cr_fs1_fs2_edges_fs1val_0x813d9ab0_fs2val_0x813d9ab0_frm_None, F_fmin_s_cg_cr_fs1_fs2_edges_fs1val_0x813d9ab0_fs2val_0x813d9ab0_frm_None_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

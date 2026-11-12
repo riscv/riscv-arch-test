@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import to_hex, write_sigupd
+from testgen.asm.helpers import fflags_setup, to_hex, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -45,7 +45,7 @@ def format_cfls_type(
     assert test_data.test_chunk is not None
     test_data.test_chunk.data_values.append(params.temp_fval)
 
-    setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
+    setup: list[str] = [fflags_setup(params)]
     # sp (x2) is used as the base pointer for CFLS instructions
     # Ensure sp is allocated
     asm = test_data.int_regs.consume_registers([2])

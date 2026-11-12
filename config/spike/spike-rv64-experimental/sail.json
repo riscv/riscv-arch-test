@@ -194,7 +194,7 @@
       // - "ExtContext_TwoState" allows {Off, Dirty}, and writes of Initial and Clean get written as Dirty.
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
       "fs_legal_states": "ExtContext_FourState",
-      "vs_legal_states": "ExtContext_Off"
+      "vs_legal_states": "ExtContext_FourState"
     },
     // Set the version of the privileged ISA. `"Privileged_ISA_1_13"`
     // is the latest that the Sail model supports.  The other
@@ -571,12 +571,12 @@
       // For e.g. Zve32x and Zve32f require `elen_exp` >= 5,
       // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
       // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
-      "support_level": "Disabled",
+      "support_level": "Integer",
       // `vlen_exp` and `elen_exp` should be between 3 and 16,
       // inclusive.  If `support_level` is `"Disabled"`, then these
       // should be left as 3 (or any other legal value).
-      "vlen_exp": 3,
-      "elen_exp": 3,
+      "vlen_exp": 7,
+      "elen_exp": 5,
       "reserved_behavior": {
         // This determines how to handle attempts by vsetvli, vsetivli,
         // and vsetvl to set an unsupported or reserved vtype.
@@ -594,7 +594,7 @@
       // The maximum index EEW for indexed vector addressing mode, as
       // a power of 2.  This must be at least 3 but must not exceed
       // the supported ELEN.
-      "max_index_eew_exp": 3,
+      "max_index_eew_exp": 5,
       "vstart": {
         // The vector specification permits implementations to raise an
         // illegal instruction exception when `vstart` is non-zero for
@@ -672,6 +672,9 @@
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
     "Zibi": {
+      "supported": true
+    },
+    "Zvdot4a8i": {
       "supported": true
     },
     // This extension just asserts that the cache block size is 64 bytes.

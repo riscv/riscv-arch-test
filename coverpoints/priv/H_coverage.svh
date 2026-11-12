@@ -497,11 +497,19 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
 
     csr_nonuser: coverpoint ins.current.insn[31:20]  {
         bins nonuser_0[]  = {[12'h100:12'h3FF]};
-        bins nonuser_1a[] = {[12'h500:12'h7A9]};
+        // ignore the custom supervisor and hypervisor CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF,
+        // 0xDC0-0xDFF, 0xEC0-0xEFF), which raise virtual instruction if implemented
+        bins nonuser_1a[] = {[12'h500:12'h5BF]};
+        bins nonuser_1b[] = {[12'h600:12'h6BF]};
         // ignore mscontext at 0x7aa, which may be accessible from S mode
-        bins nonuser_1b[] = {[12'h7AB:12'h7FF]};
-        bins nonuser_2[] = {[12'h900:12'hBFF]};
-        bins nonuser_3[] = {[12'hD00:12'hFFF]};
+        bins nonuser_1c[] = {[12'h700:12'h7A9]};
+        bins nonuser_1d[] = {[12'h7AB:12'h7FF]};
+        bins nonuser_2a[] = {[12'h900:12'h9BF]};
+        bins nonuser_2b[] = {[12'hA00:12'hABF]};
+        bins nonuser_2c[] = {[12'hB00:12'hBFF]};
+        bins nonuser_3a[] = {[12'hD00:12'hDBF]};
+        bins nonuser_3b[] = {[12'hE00:12'hEBF]};
+        bins nonuser_3c[] = {[12'hF00:12'hFFF]};
     }
     csrr: coverpoint ins.current.insn  {
         wildcard bins csrr = {CSRR};

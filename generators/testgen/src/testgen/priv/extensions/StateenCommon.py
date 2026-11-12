@@ -33,6 +33,7 @@ CSR_GUARDS = {
     "sieh": "__riscv_xlen == 32",
     "siph": "__riscv_xlen == 32",
     "henvcfgh": "__riscv_xlen == 32",
+    "scontext": "defined(UDB_SCONTEXT_IMPLEMENTED)",
     "hcontext": "defined(UDB_HCONTEXT_IMPLEMENTED)",
     **{f"{level}stateen{n}h": "__riscv_xlen == 32" for level in "mh" for n in range(4)},
 }
@@ -142,7 +143,7 @@ FEATURES = {
         "MSTATEEN0H_HCONTEXT",
         csrs=("scontext",),
         h_csrs=("hcontext",),
-        guard="defined(SDTRIG_SUPPORTED)",
+        guard="defined(UDB_SCONTEXT_IMPLEMENTED) || defined(UDB_HCONTEXT_IMPLEMENTED)",
         name="CONTEXT",
     ),
     "imsic": StateenFeature(

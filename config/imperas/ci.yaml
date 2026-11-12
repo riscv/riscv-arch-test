@@ -26,6 +26,10 @@ exclude_extensions:
   # https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
   # (fixed in Imperas-HMC101126-eng-build). The other configs pass.
   # - Smstateen
+  # rv64-max, rv32gck, rv32gcv: no scontext/hcontext bits, but Sail 0.16 has fixed context widths
+  # (https://github.com/riscv/sail-riscv/issues/2054); drop after the Sail bump sets the widths.
+  - Smstateen
+  - Ssstateen
   # https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
   # (fixed in Imperas-HMC101126-eng-build)
   # - ExceptionsVx

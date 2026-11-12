@@ -4,9 +4,11 @@ The RISC-V Architectural Certification Tests (ACTs) are a set of assembly langua
 
 The Architectural Certification Tests are used with the ACT4 Framework, a Makefile and Python based tool that replaces the deprecated riscof tool. The ACT4 Framework generates and compiles self-checking tests in Executable Linkable Format (ELF) for a device under test (DUT) and optionally collects coverage showing that the tests hit the coverpoints that check the normative rules. The user is then responsible for running all of the ELF files on the DUT with the user's own testbench. Each test reports success or failure, and if possible prints error messages to a console.
 
-The ACT4 Framework requires a UDB configuration file specifying the extensions and parameters supported by the DUT; an rvmodel_macros.h file defining DUT-specific operations such as printing to a console, terminating a test with a success/failure code, and generating interrupts; and a linker script describing the DUT memory map.
+The ACT4 Framework requires a UDB configuration file specifying the extensions and parameters supported by the DUT, along with its device addresses and timings; an rvmodel_macros.h file defining DUT-specific operations such as printing to a console, terminating a test with a success/failure code, and generating interrupts; and a linker script describing the DUT memory map.
 
-RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
+RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test.
+
+The build is driver-based. Each test is assembled into a _certified object_ with its expected results built in, and without ever seeing `rvmodel_macros.h`. The DUT's macros are assembled separately into a small _driver library_, and each certified object is linked with it to form the final self-checking ELF. The reference model runs the same certified code, linked with its own driver. The objects therefore depend only on the configuration, and a DUT owner can be handed them as a [certification kit](#certification-kits) and link them against private macros that never leave their machine.
 
 The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md). Learn more about [RVA23 Certification Testing](./docs/RVA23Cert.md).
 
@@ -17,6 +19,7 @@ The Architectural Certification Tests are described in full detail in the [Certi
   - [Get Source Code](#get-source-code)
   - [Configuration](#configuration)
   - [Generating Self-Checking ELFs](#generating-self-checking-elfs)
+  - [Certification Kits](#certification-kits)
   - [Running Certification Tests](#running-certification-tests)
   - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -196,8 +199,8 @@ Create a configuration directory for your DUT. If adding the configuration to th
 Your configuration directory should contain the following files:
 
 1. `test_config.yaml` - ACT Framework configuration
-2. `<dut-name>.yaml` - UDB configuration file
-3. `rvmodel_macros.h` - DUT-specific macro implementations
+2. `<dut-name>.yaml` - UDB configuration file, including a [`dut_environment`](#dut_environment-block) block
+3. `rvmodel_macros.h` - DUT-specific macro implementations (the driver). Optional: without it, the build stops at the certified objects
 4. `link.ld` - Linker script
 5. `sail.json`, `rvtest_config.svh`, `rvtest_config.h` - Additional configs (will be auto-generated in the future)
 
@@ -215,7 +218,7 @@ It should contain the following fields:
 - `ref_model_exe`: RISC-V Sail model executable (`sail_riscv_sim`); absolute path or executable name on PATH
 - `udb_config`: Path to UDB YAML file; interpreted relative to framework config file
 - `linker_script`: Path to linker script; interpreted relative to framework config file
-- `dut_include_dir`: Directory containing `rvmodel_macros.h`; interpreted relative to framework config file (use `.` for same directory as config file)
+- `dut_include_dir`: Directory containing `sail.json` and, if available, `rvmodel_macros.h`; interpreted relative to framework config file (use `.` for same directory as config file). `RVMODEL_DIR` can point the build at a different directory for `rvmodel_macros.h`.
 - `harts`: Optional; number of harts available for testing; defaults to `1`
 - `include_priv_tests`: Optional; defaults to `True`; if set to `False`, all tests that rely on privilege modes will be skipped
 
@@ -227,9 +230,37 @@ A [UDB](https://github.com/riscv/riscv-unified-db) configuration file is used to
 
 See [cvw-rv64gc.yaml](./config/cores/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an example and [the riscv-unified-db repo](https://github.com/riscv/riscv-unified-db) for more details.
 
+#### `dut_environment` Block
+
+The device addresses and timings that tests use are set in a top-level `dut_environment` block of the UDB config file, not in `rvmodel_macros.h`. Test objects are assembled without `rvmodel_macros.h`, and the reference model needs the same values to compute matching results, so these values are part of the configuration. The framework turns the block into `dut_environment.h`.
+
+```yaml
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
+  RVMODEL_MSIP_ADDRESS: 0x02000000
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 1000
+  RVMODEL_HPM_COUNTER: 3
+  RVMODEL_MHPMEVENT_VAL: 0x1
+  STANDARD_SM_SUPPORTED: true
+```
+
+- `RVMODEL_INTERRUPT_LATENCY` and `RVMODEL_TIMER_INT_SOON_DELAY` are required.
+- Omit `RVMODEL_ACCESS_FAULT_ADDRESS` if the DUT does not generate some/all access faults. `RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD,STORE,FETCH,AMO,LRSC}` default to it; set one to use a different address for that type of access, or set only some to test only those types.
+- `RVMODEL_MTIME_ADDRESS` is required if machine timer interrupts are implemented, or if Sstc is implemented without Zicntr. `RVMODEL_MTIMECMP_ADDRESS` is required if machine timer interrupts are implemented. Omit `RVMODEL_MSIP_ADDRESS` if MSIP is not memory-mapped (required only for Sm version 1.13 and above).
+- `RVMODEL_HPM_COUNTER` (3 to 31) and `RVMODEL_MHPMEVENT_VAL` are required with Sscofpmf: the counter the tests use, and the `mhpmevent` selector that makes `RVMODEL_MHPMEVENT_CODE` count.
+- `STANDARD_SM_SUPPORTED: true` declares a standard M-mode: the framework installs its trap handlers and boots through M-mode. Leave it out for a DUT without standard M-mode, such as an RVI20 core.
+- `INVISIBLE_TRAP_HANDLER: true` declares that `rvmodel_macros.h` defines `RVMODEL_INVISIBLE_TRAP_HANDLER`.
+
+The meaning of each value is described in the [CTP](https://riscv.github.io/riscv-arch-test/ctp.html#rvmodel-macros). A value that is also defined in `rvmodel_macros.h` must agree with the block, or the driver does not assemble.
+
 #### `rvmodel_macros.h` DUT-Specific Macro Implementation
 
 The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/ctp.html#rvmodel-macros).
+
+Only the driver library is built from `rvmodel_macros.h`: the framework assembles [tests/env/rvmodel_driver.S](./tests/env/rvmodel_driver.S) against it once per config, and the test objects call the driver's routines (`rvmodel_halt_pass`, `rvtest_set_msw_int_m`, and so on; see [tests/env/rvtest_driver.h](./tests/env/rvtest_driver.h)). The reference model's driver is built the same way from [tests/env/sail_macros.h](./tests/env/sail_macros.h).
 
 **Required Macros**:
 
@@ -245,21 +276,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT` (can be omitted if not needed)
-- `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
-- `RVMODEL_ACCESS_FAULT_ADDRESS_{LOAD,STORE,FETCH,AMO,LRSC}` (default to `RVMODEL_ACCESS_FAULT_ADDRESS`; define one to override the address for that type of access, or define only some to test only those types of access)
-- `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions)
-- `RVMODEL_FENCEI` (can be omitted to use `fence.i`, or `nop` without Zifencei)
-- `RVMODEL_BOOT_TO_MMODE` (omit unless the DUT has a custom M-mode that cannot run the default M-mode boot)
-
-**Timer Macros**: Can be left blank if machine mode is not supported.
-
-- `RVMODEL_MTIME_ADDRESS` (required if machine timer interrupts are implemented, or if Sstc is implemented without Zicntr; otherwise can be omitted)
-- `RVMODEL_MTIMECMP_ADDRESS` (required if machine timer interrupts are implemented; otherwise can be omitted)
-- `RVMODEL_TIMER_INT_SOON_DELAY`
-
-**MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
-
-- `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
+- `RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)` (can be omitted if the DUT does not trap and emulate instructions; when defined, set `INVISIBLE_TRAP_HANDLER: true` in the `dut_environment` block)
 
 **Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. \_M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the \_M flavor is identical to the regular flavor, it does not need to be defined.
 
@@ -283,13 +300,12 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_SET_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
 - `RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)` (clears `hgeip` bit \_GEI; required with `RVMODEL_SET_GUEST_EXT_INT`)
 - `RVMODEL_CLR_GUEST_EXT_INT_M(_GEI, _R1, _R2)`
-- `RVMODEL_INTERRUPT_LATENCY`
 
-**Sscofpmf Macros**: Required if Sscofpmf is supported.
+`RVMODEL_FENCEI` and `RVMODEL_BOOT_TO_MMODE`/`SMODE`/`UMODE` are not supported: they would expand inside the test object, which the reference model also runs. Put DUT-specific boot code in `RVMODEL_BOOT`, and leave `STANDARD_SM_SUPPORTED` out of the `dut_environment` block if the DUT has no standard M-mode.
 
-- `RVMODEL_HPM_COUNTER`
-- `RVMODEL_MHPMEVENT_VAL`
-- `RVMODEL_MHPMEVENT_CODE(_R1, _R2)`
+**Sscofpmf Macro**: Required if Sscofpmf is supported. The counter and its event selector (`RVMODEL_HPM_COUNTER`, `RVMODEL_MHPMEVENT_VAL`) are values in the `dut_environment` block.
+
+- `RVMODEL_MHPMEVENT_CODE(_R1, _R2)` (makes the selected counter count in the current privilege mode; \_R1 holds a scratch address the code may load from)
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).
 
@@ -305,7 +321,7 @@ A linker script is needed to place the code and data regions in the appropriate 
   - When assigning sections to a `MEMORY` region with `> ram`, sections that rely on a previous location-counter assignment, alignment, or gap must explicitly use the current location counter as their address (for example, `.data . : { ... } > ram`).
 - There must be `.rodata`, `.data`, and `.bss` output sections. The `.bss` section must define `__bss_start` and `__bss_end` for C test startup.
 - The linker script must define `__stack_bottom` and `__stack_top`, using `__stack_size * __num_harts` bytes of stack space.
-- There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel . : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) } > ram`). This **must** follow the data and stack sections so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
+- There must be a `.text.rvmodel` output section for the driver and other DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel . : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) } > ram`). This **must** follow the data and stack sections so that the driver, which differs in size between the DUT and the reference model, does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
 - On DUTs that support virtual memory, the test image must lie in a range the virtual memory tests leave mapped. 0x8000_0000 works for both RV32 and RV64. The safe ranges are:
   - RV32: 0x0140_0000–0x03FF_FFFF, 0x0440_0000–0x2FFF_FFFF, 0x3040_0000–0x8FFF_FFFF and 0x90C0_0000–0xFFBF_FFFF.
   - RV64: 0x4000_0000–0xBFFF_FFFF and 0x2_0000_0000–0x3F_FFFF_FFFF. The image must fit in the Sv39 address space, even on Sv48 or Sv57 harts.
@@ -345,22 +361,34 @@ Run the following command to generate test assembly files, compile them, and cre
 CONFIG_FILES=<your_config_directory>/test_config.yaml make
 ```
 
-This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `$WORKDIR/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
+This will create all of the certified objects that apply to your DUT (based on the provided UDB configuration) in `$WORKDIR/<config_name>/objects`, and the ELFs in `$WORKDIR/<config_name>/elfs`. These ELFs have the expected results compiled into them and are linked with the driver built from your macros, using your linker script.
+
+If the config has no `rvmodel_macros.h`, the build stops after the certified objects and builds no ELFs. Supply the macros later with `RVMODEL_DIR=<dir with rvmodel_macros.h>`: the objects and expected results are reused, and only the driver and the links are built.
+
+To build only the certified objects, for example for a DUT whose owner keeps `rvmodel_macros.h` private, use the `objects` target. It stops at `$WORKDIR/<config_name>/objects` even when the config has `rvmodel_macros.h`, and takes the same variables as `make`:
+
+```bash
+CONFIG_FILES=<your_config_directory>/test_config.yaml make objects
+```
+
+[`make kit`](#certification-kits) packages the same objects for the DUT owner.
 
 The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make`):
 
-| Variable                         | Default                                         | Description                                                                                                                                                                                                                           |
-| -------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CONFIG_FILES`                   | _(required)_                                    | Space-separated list of `test_config.yaml` paths to build ELFs for. `make coverage` defaults to the Sail rv32/rv64 max configs when unset.                                                                                            |
-| `WORKDIR`                        | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                                                                                             |
-| `EXTENSIONS`                     | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                                                                                           |
-| `EXCLUDE_EXTENSIONS`             | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                                                                                                  |
-| `CERTIFICATE`                    | _(empty)_                                       | Certificate name. Only include tests that apply to the specified certificate. Skips M-mode tests and tests for implemented extensions that are not part of the profile.                                                               |
-| `ENABLE_EXPERIMENTAL_EXTENSIONS` | _(empty)_                                       | Set to `True` to compile tests for unratified extensions. These tests are excluded by default.                                                                                                                                        |
-| `DEBUG`                          | _(empty)_                                       | Set to `True` to enable debug output (ELF objdumps, trace files, and trap report). Significantly slows down ELF generation.                                                                                                           |
-| `VERBOSE`                        | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                                                                                           |
-| `CLEAN_INTERMEDIATES`            | _(empty)_                                       | Set to `True` to delete each config's intermediate `build/` directory (`.sig.elf`/`.sig`/`.results`/logs) after a successful build, keeping only the ELFs. Saves disk space (useful for CI caching). Mutually exclusive with `DEBUG`. |
-| `JOBS`                           | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                                                                                              |
+| Variable                         | Default                                         | Description                                                                                                                                                                                                                                       |
+| -------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG_FILES`                   | _(required)_                                    | Space-separated list of `test_config.yaml` paths to build ELFs for. `make coverage` defaults to the Sail rv32/rv64 max configs when unset.                                                                                                        |
+| `RVMODEL_DIR`                    | _(empty — each config's `dut_include_dir`)_     | Directory containing the DUT's `rvmodel_macros.h`. Without one, the build stops at the certified objects.                                                                                                                                         |
+| `KIT_DIR`                        | `$WORKDIR/kits`                                 | Output directory for `make kit`.                                                                                                                                                                                                                  |
+| `WORKDIR`                        | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                                                                                                         |
+| `EXTENSIONS`                     | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                                                                                                       |
+| `EXCLUDE_EXTENSIONS`             | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                                                                                                              |
+| `CERTIFICATE`                    | _(empty)_                                       | Certificate name. Only include tests that apply to the specified certificate. Skips M-mode tests and tests for implemented extensions that are not part of the profile.                                                                           |
+| `ENABLE_EXPERIMENTAL_EXTENSIONS` | _(empty)_                                       | Set to `True` to compile tests for unratified extensions. These tests are excluded by default.                                                                                                                                                    |
+| `DEBUG`                          | _(empty)_                                       | Set to `True` to enable debug output (ELF objdumps, trace files, and trap report). Significantly slows down ELF generation.                                                                                                                       |
+| `VERBOSE`                        | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                                                                                                       |
+| `CLEAN_INTERMEDIATES`            | _(empty)_                                       | Set to `True` to delete each config's intermediate `build/` directory (`.sig.elf`/`.sig`/`.results`/logs) after a successful build, keeping only the objects and ELFs. Saves disk space (useful for CI caching). Mutually exclusive with `DEBUG`. |
+| `JOBS`                           | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                                                                                                          |
 
 By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
@@ -368,15 +396,59 @@ By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-te
 >
 > The default `EXCLUDE_EXTENSIONS` list excludes several privileged extensions that are still being stabilized or have known issues with the Sail reference model. See [Makefile](./Makefile) for the current list and reasons for each excluded extension.
 
-The ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the RISC-V Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
+For each config, the ACT framework first assembles `tests/env/rvmodel_driver.S` into the reference model's driver (from `sail_macros.h`) and, when `rvmodel_macros.h` is available, into the DUT's driver, in `$WORKDIR/<config_name>/driver`. For each test it then:
+
+1. assembles a signature-generating object (`.sig.o`) and links it with the reference driver into a `.sig.elf`, in `$WORKDIR/<config_name>/build`;
+2. simulates the `.sig.elf` on the RISC-V Sail reference model and saves the signature into a `.sig` file;
+3. reassembles the test with the expected results included into the certified object in `$WORKDIR/<config_name>/objects`;
+4. links the certified object with the DUT's driver into the self-checking ELF in `$WORKDIR/<config_name>/elfs`.
+
+The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 
 > [!NOTE]
 >
 > To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `mise` to be installed.
 
+### Certification Kits
+
+A certification kit lets a DUT owner run the tests without sharing `rvmodel_macros.h`. The certification authority builds the kit from the DUT's configuration alone:
+
+```bash
+CONFIG_FILES=<config_directory>/test_config.yaml make kit
+```
+
+This writes `$KIT_DIR/<config_directory_name>/`, containing the certified objects (also bundled per suite under `lib/`), the driver source `rvmodel_driver.S` and the env headers it needs, the config's linker script as `link.ld`, a `manifest.json` with a SHA-256 for every object and expected signature, and `build_kit.sh`. Every object in a kit carries a random kit id.
+
+The DUT owner then assembles the driver against their macros and links every object with it:
+
+```bash
+./build_kit.sh <dir with rvmodel_macros.h> [output dir]
+```
+
+Each test prints the digest of the expected results it checked against and the kit id. When the logs come back, the authority checks them against the manifest:
+
+```bash
+uv run act-verify-logs <kit>/manifest.json <returned logs dir> --kit-dir <kit>
+```
+
+This reports any test that failed, did not run, or ran against different expected results, and any log that does not carry this kit's id.
+With `--kit-dir` it first re-hashes the manifest, the archives and every object against the digests the kit records. Each check names what it compares with what (the log, the manifest field, the file) and prints sample rows with both values; `--details` lists every test.
+
 ### Running Certification Tests
 
 All ELFs produced in the `$WORKDIR/<config_name>/elfs` directory must be run on your DUT for certification. Depending on your DUT, you may need to convert these ELFs into a format that your testbench accepts (hex files are common). It is recommended to use a script or Makefile to run all ELFs in the directory on your DUT. Some examples for this are coming soon.
+
+When bringing up a new DUT environment, build and run the `Hello` suite first (`EXTENSIONS=Hello`). Its nine tests each check one layer of what the environment provides, in dependency order: boot and I/O, the signature mechanism, trap entry and return, privilege transitions, the machine and supervisor software and external interrupt macros, the timer, the access-fault address, the Sscofpmf event code, and the guest external interrupt macros. The first one that fails names the layer to fix.
+
+Then run the `ConfigCheck` suite (`EXTENSIONS=ConfigCheck`) to check that the DUT matches its UDB config. Each testcase reads one value the config describes from the hart and compares it with the value the config implies. Its files cover misa; the mtvec and stvec modes and alignments; the delegatable medeleg and mideleg bits; what mtval reports for illegal instructions, breakpoints, misaligned accesses and access faults; the PMP entries, granularity and physical address width; the satp modes and ASID width; misaligned load/store support; the counter-enable and counter-inhibit bits; one instruction, CSR or `menvcfg` field per listed extension; VLEN, ELEN and the vector extensions; the cache block size; GEILEN, VMID width and the hgatp modes; the number of triggers; the pointer-masking lengths; and the Ssqosid ID widths. A mismatch prints the testcase, named after the UDB parameter or extension, with both values:
+
+```
+RVCP-CONFIG: mismatch "test: 19; cg: ConfigCheck_cg; cp: cp_pmp; bin: PMP_GRANULARITY"
+RVCP-CONFIG:   config   0x0000000000001000
+RVCP-CONFIG:   observed 0x0000000000000004
+```
+
+The test carries on after a mismatch, so one run lists every disagreement. The expected values come from the UDB config rather than the reference model, so the reference run checks `sail.json` against the same config and the build stops if they disagree.
 
 Each test will print one of the following to the console:
 
@@ -397,7 +469,7 @@ Debugging a failing test typically involves examining the object dump (.elf.objd
 
 A common source of errors is configuration mismatches, so ensure that:
 
-- Your UDB config file accurately reflects your DUT's capabilities
+- Your UDB config file accurately reflects your DUT's capabilities, and its `dut_environment` block matches your DUT's device addresses
 - The RISC-V Sail config file matches your UDB configuration and DUT
 - Your `rvmodel_macros.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses

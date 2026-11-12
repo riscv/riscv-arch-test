@@ -357,3 +357,19 @@ params:
       false,
       false,
     ]
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  # With no access windows requested, veer.config enables four instruction and four data
+  # access windows that leave region 0x9 as a hole (RV_EXTERNAL_MEM_HOLE = 0x90000000).
+  # Fetches, loads and stores there raise access faults.
+  #   Quote: "# Create the memory map hole for random testing"
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/configs/veer.config#L1944-L1999
+  #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/memory-map.md#L182-L190
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x90000000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  # VeeR EH2 has no mtime/mtimecmp and the testbench supplies none, so RVMODEL_MTIME_ADDRESS
+  # and RVMODEL_MTIMECMP_ADDRESS are not defined.
+  RVMODEL_TIMER_INT_SOON_DELAY: 100
+  STANDARD_SM_SUPPORTED: true

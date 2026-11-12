@@ -183,7 +183,7 @@ def prime_counter_overflow(r_val: int, r_hval: int, r_temp: int, r_addr: int, pr
         *write_counter_all_ones(r_val, r_hval, r_temp, priv_mode),
         *write_event_pattern(r_val, r_hval, HIGHER_MODE_PATTERN[priv_mode], priv_mode),
         f"LA(x{r_addr}, scratch)",
-        f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
+        f"RVTEST_MHPMEVENT_CODE(x{r_addr})",
     ]
 
 
@@ -196,7 +196,7 @@ def combo_counts(priv_mode: str, r_temp: int, r_hval: int, test_data: TestData) 
     return [
         "csrw RVTEST_CSR_MHPMCOUNTER, zero",
         f"LA(x{r_temp}, scratch)",
-        f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_hval})",
+        f"RVTEST_MHPMEVENT_CODE(x{r_temp})",
         f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER",
         f"snez x{r_temp}, x{r_temp}   # counted iff MINH = 0",
         f"{write_sigupd(r_temp, test_data)}",
@@ -250,7 +250,7 @@ def _generate_xinh_inhibits_tests(
                 f"{tsbi_call_or_direct('csrw RVTEST_CSR_MHPMCOUNTER, zero', priv_mode)}",
                 "",
                 f"LA(x{r_temp}, scratch)",
-                f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
+                f"RVTEST_MHPMEVENT_CODE(x{r_temp})",
                 "",
                 f"{test_data.add_testcase(binname, coverpoint, covergroup)}",
                 f"{tsbi_call_or_direct(f'csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER', priv_mode)}",
@@ -395,7 +395,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                 "",
                 f"LA(x{r_addr}, scratch)",
                 "# One counted event is enough to wrap the all-1s counter and set OF",
-                f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
+                f"RVTEST_MHPMEVENT_CODE(x{r_addr})",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 *read_event_config_bits(r_temp, priv_mode),
@@ -435,7 +435,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             "# Counting starts here, after LCOFIP was cleared, so a wrongly raised LCOFIP stays visible",
             "",
             f"LA(x{r_addr}, scratch)",
-            f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
+            f"RVTEST_MHPMEVENT_CODE(x{r_addr})",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
             "",
             test_data.add_testcase(

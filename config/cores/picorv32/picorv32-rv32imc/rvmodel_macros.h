@@ -6,6 +6,10 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 #define RVMODEL_DATA_SECTION
 
 // STANDARD_SM_SUPPORTED is deliberately NOT defined.
@@ -23,22 +27,6 @@
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 //#define RVMODEL_BOOT
-
-// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
-// if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no standard M-mode CSRs are implemented, leave
-// STANDARD_SM_SUPPORTED undefined instead.  If a nonconforming
-// M-mode is implemented, define this macro to set up the necessary
-// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-//
-// PicoRV32 implements no CSRs, so STANDARD_SM_SUPPORTED is left undefined and the
-// default boot code, which touches CSRs only for a standard M-mode, does nothing.
-//#define RVMODEL_BOOT_TO_MMODE
-
-# Address to use for load/store fault tests that should cause an access fault on the DUT.
-// Undefined: PicoRV32 has no exceptions, and the testbench ends the simulation on
-// an out-of-range access.
-//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 
@@ -94,12 +82,5 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Interrupt Latency #####
-
-// PicoRV32 is built with ENABLE_IRQ=0 and has no standard interrupts. These are
-// required by tests/env/check_defines.h even when unused.
-#define RVMODEL_INTERRUPT_LATENCY 10
-#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 #endif // _RVMODEL_MACROS_H

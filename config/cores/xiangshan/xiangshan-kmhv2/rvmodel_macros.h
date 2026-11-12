@@ -7,10 +7,12 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 # No HTIF. The simulation ends on XiangShan's trap instruction, so there is no .tohost section.
 #define RVMODEL_DATA_SECTION
-
-#define STANDARD_SM_SUPPORTED
 
 # Simulation memory map (SimTop): the UART-lite at 0x4060_0000, the interrupt generator at
 # 0x4007_0000, the CLINT-style timer at 0x3800_0000 and the PLIC at 0x3C00_0000.
@@ -60,24 +62,6 @@
   addi _STR_PTR, _STR_PTR, 1 ;                        \
   j 1b                       ;                        \
 3:
-
-##### Access Fault #####
-
-# [0x3900_2000, 0x3A00_0000) has no read, write or execute permission in the PMA table, so
-# every access raises an access fault in the core without reaching the bus.
-#   https://github.com/OpenXiangShan/XiangShan/blob/e7bab53e66dfb3c4a1d11cf9519b0396f8576cae/src/main/scala/system/SoC.scala#L65
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x39800000
-
-##### Machine Timer #####
-
-#define RVMODEL_MTIME_ADDRESS    (XS_CLINT + 0xBFF8)
-#define RVMODEL_MTIMECMP_ADDRESS (XS_CLINT + 0x4000)
-#define RVMODEL_MSIP_ADDRESS     (XS_CLINT + 0x0)
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 2000
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Interrupts #####
 
@@ -188,14 +172,6 @@
 
 ##### Sscofpmf #####
 
-# mhpmcounter3-10 count frontend events, 11-18 backend, 19-26 MemBlock and 27-31 L2
-# (NewCSR/NewCSR.scala:1293-1296). mhpmevent[9:0] selects the first event of the counter's set,
-# and the zero op fields OR it with the empty event 0 (utility/HardwarePerfMonitor.scala:52-74).
-# Backend event 55 is rob_commitInstrLoad, a committed load (backend/Backend.scala:939-955; the
-# index is printed as "backend perfEvents Set" during elaboration). The Sail reference counts
-# EV_FENCE for the same selector (sail.json) and triggers it with a fence (sail_macros.h).
-#define RVMODEL_HPM_COUNTER 11
-#define RVMODEL_MHPMEVENT_VAL 55
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
     lw _R2, 0(_R1)
 

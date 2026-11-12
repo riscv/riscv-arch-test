@@ -732,3 +732,25 @@ params:
   SDTRIG_TEXTRA_MHSELECT_VMID_MATCH: false
   SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH: false
   SDTRIG_TEXTRA_SSELECT_ASID_MATCH: false
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  # [0x3900_2000, 0x3A00_0000) has no read, write or execute permission in the PMA table, so
+  # every access raises an access fault in the core without reaching the bus.
+  #   https://github.com/OpenXiangShan/XiangShan/blob/e7bab53e66dfb3c4a1d11cf9519b0396f8576cae/src/main/scala/system/SoC.scala#L65
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x39800000
+  RVMODEL_MSIP_ADDRESS: 0x38000000
+  RVMODEL_MTIME_ADDRESS: 0x3800BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x38004000
+  RVMODEL_INTERRUPT_LATENCY: 2000
+  RVMODEL_TIMER_INT_SOON_DELAY: 100
+  # mhpmcounter3-10 count frontend events, 11-18 backend, 19-26 MemBlock and 27-31 L2
+  # (NewCSR/NewCSR.scala:1293-1296). mhpmevent[9:0] selects the first event of the counter's set,
+  # and the zero op fields OR it with the empty event 0 (utility/HardwarePerfMonitor.scala:52-74).
+  # Backend event 55 is rob_commitInstrLoad, a committed load (backend/Backend.scala:939-955; the
+  # index is printed as "backend perfEvents Set" during elaboration). The Sail reference counts
+  # EV_FENCE for the same selector (sail.json) and triggers it with a fence (sail_macros.h).
+  RVMODEL_HPM_COUNTER: 11
+  RVMODEL_MHPMEVENT_VAL: 55
+  STANDARD_SM_SUPPORTED: true

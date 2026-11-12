@@ -7,9 +7,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 // The default RVTEST_BOOT_TO_MMODE, limited to the CSRs SERV implements.  SERV decodes a CSR
 // address from instruction bits 26, 22, 21 and 20 only, so the default boot's writes to
@@ -26,11 +28,6 @@
   rvtest_boot_to_mmode_csr_init:      ;\
   LI(t0, MSTATUS_MPP)                 ;\
   csrw mstatus, t0
-
-// No address faults: the Wishbone bus has no error response, and servile_mux and servant_mux
-// decode the whole address space into RAM, GPIO and timer.
-// https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servile/servile_mux.v#L44
-//#define RVMODEL_ACCESS_FAULT_ADDRESS
 
 // #### TERMINATION #####
 
@@ -67,14 +64,5 @@
 3:
 
 // #### Interrupts #####
-
-// SERV takes 32+ cycles per instruction and samples the timer interrupt once per instruction.
-#define RVMODEL_INTERRUPT_LATENCY 100
-
-// servant_timer is one 32-bit register: a read returns mtime and a write sets mtimecmp, so it
-// cannot serve as ACT's CLINT, and RVMODEL_MTIME_ADDRESS and RVMODEL_MTIMECMP_ADDRESS stay
-// undefined.  It resets with mtime == mtimecmp == 0, so mip.MTIP is set from reset.
-// https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/servant/servant_timer.v#L27-L35
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 #endif // _RVMODEL_MACROS_H

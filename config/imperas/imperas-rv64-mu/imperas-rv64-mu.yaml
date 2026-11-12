@@ -376,3 +376,18 @@ params:
   SDTRIG_TEXTRA_MHVALUE_LEN: 0
   SDTRIG_TEXTRA_SVALUE_LEN: 0
   SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH: false
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
+  RVMODEL_MSIP_ADDRESS: 0x02000000
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 1000
+  RVMODEL_HPM_COUNTER: 3
+  # No event code counts: there are no plans for Imperas to support HPM events, so this is
+  # not expected to change in the foreseeable future.
+  RVMODEL_MHPMEVENT_VAL: 0
+  STANDARD_SM_SUPPORTED: true

@@ -496,3 +496,18 @@ params:
   SDTRIG_TEXTRA_MHVALUE_LEN: 13
   SDTRIG_TEXTRA_SVALUE_LEN: 32
   SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH: true
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
+  RVMODEL_MSIP_ADDRESS: 0x02000000
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  RVMODEL_HPM_COUNTER: 3
+  # Selector 12 is the Load event in whisper.json. The Sail reference counts EV_FENCE for the same
+  # selector (sail.json) and triggers it with a fence (sail_macros.h).
+  RVMODEL_MHPMEVENT_VAL: 12
+  STANDARD_SM_SUPPORTED: true

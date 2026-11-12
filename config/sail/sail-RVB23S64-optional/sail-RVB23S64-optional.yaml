@@ -818,3 +818,18 @@ params:
   SDTRIG_TEXTRA_MHSELECT_VMID_MATCH: true
   SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH: true
   SDTRIG_TEXTRA_SSELECT_ASID_MATCH: true
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
+  RVMODEL_MSIP_ADDRESS: 0x02000000
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 1
+  RVMODEL_TIMER_INT_SOON_DELAY: 5000
+  RVMODEL_HPM_COUNTER: 3
+  # Selector 1 is mapped to EV_FENCE by base.event_selectors in sail.json. A fence raises
+  # the event in every privilege mode and never traps.
+  RVMODEL_MHPMEVENT_VAL: 1
+  STANDARD_SM_SUPPORTED: true

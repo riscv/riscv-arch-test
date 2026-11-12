@@ -239,3 +239,14 @@ params:
 
   # No PMP hardware of any kind.
   NUM_PMP_ENTRIES: 0
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  # PicoRV32 is built with ENABLE_IRQ=0 and has no standard interrupts. These are
+  # required by tests/env/check_defines.h even when unused.
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  # Not set: RVMODEL_ACCESS_FAULT_ADDRESS.
+  # Undefined: PicoRV32 has no exceptions, and the testbench ends the simulation on
+  # an out-of-range access.

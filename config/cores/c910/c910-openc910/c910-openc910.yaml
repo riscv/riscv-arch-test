@@ -662,3 +662,22 @@ params:
       false,
       false,
     ]
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  # The SoC's AXI interconnect routes 0x0200_0000-0x0FFF_FFFF to an error responder that
+  # returns SLVERR.  0x0200_0000 is outside every sail.json memory region too.
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/axi/axi_interconnect128.v#L362-L363
+  # Loads, stores and LR/SC are not tested: a load bus error is an imprecise access fault
+  # (user manual 5.2.3), and a store bus error raises no fault.
+  RVMODEL_ACCESS_FAULT_ADDRESS_FETCH: 0x02000000
+  RVMODEL_ACCESS_FAULT_ADDRESS_AMO: 0x02000000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  # RVMODEL_MTIME_ADDRESS and RVMODEL_MTIMECMP_ADDRESS are undefined.  The CLINT has no
+  # memory-mapped mtime (only the time CSR reads it), and its mtimecmp at 0xB400_4000 is
+  # more than 2 GB from the tests, beyond the reach of the LA macro the framework uses
+  # to access it.
+  #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L148-L168
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  STANDARD_SM_SUPPORTED: true

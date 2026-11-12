@@ -6,6 +6,10 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 // The tile terminates a simulation and prints to the console through the HTIF
 // tohost/fromhost protocol implemented in simulator/models/cxx/dpi_host.cpp:
 //   "if (data & 1) return 1; // Simulation finished"
@@ -24,12 +28,6 @@
         .balign 64; htif_magicmem: .dword 0,0,0,0,0,0,0,0;   \
         .balign 64; htif_iobuf: .fill 8192,1,0;              \
         .popsection;
-
-// Sargantana implements a conforming M-mode: mstatus/mtvec/mepc/mcause/mtval/mie/mip
-// and the delegation registers are all present, so ACT's standard trap prologs and
-// M-mode CSR initialization apply.  Without this, RVTEST_BOOT_TO_MMODE skips
-// RVTEST_TRAP_PROLOG and mtvec is never written (tests/env/rvtest_setup.h:941).
-#define STANDARD_SM_SUPPORTED
 
 // STARTUP //
 
@@ -123,26 +121,9 @@
 
 // Access Fault //
 
-// Address 0 lies outside every mapped section of the default core configuration
-// (InitMappedBase/InitMappedEnd cover 0x40000000-0x3fffffffff, 0x100-0xffff and
-// 0x10000-0x10020), so an access to it raises an access fault.
-// https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/drac_pkg.sv#L1297-L1305
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
-
 // Interrupt Latency //
 
-#define RVMODEL_INTERRUPT_LATENCY 10
-
 // Machine Timer //
-
-// RVMODEL_MTIME_ADDRESS is deliberately left undefined: the tile has no CLINT, and the
-// simulation testbench ties every interrupt and the time input off.
-//   "// No support for timer, interrupts, etc in simulation
-//    .time_i(64'd0), .irq_i(1'b0), .soft_irq_i(1'b0), .time_irq_i(1'b0),"
-// https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/sim_top.sv#L263-L268
-// With it undefined, ACT skips the machine-timer interrupt tests.  RVMODEL_TIMER_INT_SOON_DELAY
-// is still required to assemble.
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 // Supervisor Interrupts //
 
@@ -151,11 +132,6 @@
 
 // Sscofpmf //
 
-#define RVMODEL_HPM_COUNTER 3
-// mhpmevent[55:0] selects one of 40 events by index (csr:hpm_counters.sv). Event 5 is a load
-// reaching the execute stage (core:top_drac.sv, pmu_flags.exe_load). The Sail reference counts
-// EV_FENCE for the same selector (sail.json) and triggers it with a fence (sail_macros.h).
-#define RVMODEL_MHPMEVENT_VAL 5
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
     lw _R2, 0(_R1)
 

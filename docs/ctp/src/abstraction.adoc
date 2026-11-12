@@ -35,11 +35,11 @@ The user is responsible for loading the test ELF onto the DUT and jumping to `rv
 
 The test ELF begins with the `RVTEST_BEGIN` macro, which defines `rvtest_entry_point` (at an address specified in the link.ld file), and jumps to `rvmodel_boot`.
 
-`rvmodel_boot` in turn calls the `RVMODEL_BOOT` macro, which optionally contains DUT-specific boot code such as turning on a PLL or memory controller.  This macro can be empty or undefined in the common case that no DUT-specific boot code is required or that the DUT-specific boot is performed earlier by a separate bootloader.
+`rvmodel_boot` in turn calls the driver's `rvmodel_dut_boot`, which runs the `RVMODEL_BOOT` macro (see <<rvmodel-driver>>). It optionally contains DUT-specific boot code such as turning on a PLL or memory controller.  This macro can be empty or undefined in the common case that no DUT-specific boot code is required or that the DUT-specific boot is performed earlier by a separate bootloader.
 
-Next, `rvmodel_boot` calls `RVMODEL_IO_INIT` to perform any necessary I/O initialization, such as configuring baud rate and flow control in a UART.  This macro can also be empty or undefined if no I/O initialization is needed.
+Next, `rvmodel_boot` calls the driver's `rvmodel_dut_io_init`, which runs `RVMODEL_IO_INIT` to perform any necessary I/O initialization, such as configuring baud rate and flow control in a UART.  This macro can also be empty or undefined if no I/O initialization is needed.
 
-Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the trap handlers and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming standard M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for custom M-mode. The default boot code touches CSRs only when `STANDARD_SM_SUPPORTED` is defined, so a DUT with no M-mode CSRs, such as an RV32I DUT, leaves both `STANDARD_SM_SUPPORTED` and `RVMODEL_BOOT_TO_MMODE` undefined.
+Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the trap handlers and initialize M-mode CSRs. When the config declares `STANDARD_SM_SUPPORTED` (in its `dut_environment` block), it runs the default boot code assuming standard M-mode. Otherwise, such as for an RV32I DUT that has no CSRs, it skips the M-mode setup.
 
 CSR initialization includes
 
@@ -55,7 +55,7 @@ CSR initialization includes
 * pmpaddr0/pmpcfg0 if PMP_ENTRIES > 0
 * turn off virtual memory and perform sfence.vma to synchronize MMU if SV32_SUPPORTED or SV39_SUPPORTED
 
-Even if standard M-mode is not supported or RVMODEL_BOOT_TO_MMODE is defined, the boot code still attempts to turn on mstatus.FS/VS if float or vector is supported, because these are needed for unprivileged tests, even on a RV32I DUT that has no other M-mode features.
+Even if standard M-mode is not supported, the boot code still attempts to turn on mstatus.FS/VS if float or vector is supported, because these are needed for unprivileged tests, even on a RV32I DUT that has no other M-mode features.
 
 The boot process ends in M-mode if the BOOT_TO_MMODE symbol is defined in the test (for tests intended to run in machine mode), or if no lower privilege mode is supported.
 
@@ -89,9 +89,20 @@ The macro names begin with RVMODEL, so they are called _RVMODEL DUT-Specific Mac
 
 The RVMODEL DUT-Specific Macros rely on the capabilities of the SoC and/or testbench.  For example, a SoC with a 16550-compatible UART sends a character by writing a byte to the UART's memory-mapped Transmit Holding Register. A SoC without a UART may have a testbench that monitors writes to a specific memory address and prints the byte written to that address.
 
+[[rvmodel-driver]]
+==== The Driver
+
+Tests never include the DUT's `rvmodel_macros.h`. Each test is assembled into a _certified object_ that calls out wherever it needs the DUT: to boot, print, halt, or raise or clear an interrupt. The code macros of `rvmodel_macros.h` are assembled separately into a _driver library_ from `tests/env/rvmodel_driver.S`, which defines those entry points (`rvmodel_halt_pass`, `rvtest_set_msw_int_m`, and so on; the full list is in `tests/env/rvtest_driver.h`), and each certified object is linked with it. The reference model's driver is assembled the same way from `tests/env/sail_macros.h`, and the reference model runs the same certified code linked with that driver to produce the expected results.
+
+The value macros (device addresses, timings and counter selections: `RVMODEL_ACCESS_FAULT_ADDRESS` and its per-type `RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE>` variants, `RVMODEL_MSIP_ADDRESS`, `RVMODEL_MTIME_ADDRESS`, `RVMODEL_MTIMECMP_ADDRESS`, `RVMODEL_INTERRUPT_LATENCY`, `RVMODEL_TIMER_INT_SOON_DELAY`, `RVMODEL_HPM_COUNTER` and `RVMODEL_MHPMEVENT_VAL`) are used inside the certified code, and the reference model needs the same values. They are therefore set in the `dut_environment` block of the UDB configuration file rather than in `rvmodel_macros.h`, as are `STANDARD_SM_SUPPORTED` and `INVISIBLE_TRAP_HANDLER` (which declares that the DUT defines `RVMODEL_INVISIBLE_TRAP_HANDLER`).
+
+Because the certified objects depend only on the configuration, they can be built without `rvmodel_macros.h` and handed to a DUT owner, who links them with a driver built from private macros that never leave their machine.
+
+`RVMODEL_FENCEI` and `RVMODEL_BOOT_TO_MMODE`, `RVMODEL_BOOT_TO_SMODE` and `RVMODEL_BOOT_TO_UMODE` are not supported, because they would expand inside the certified code. Instruction-stream synchronization uses `fence.i` when Zifencei is supported.
+
 ==== Macros
 
-The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" field indicates circumstances under which the macro can be empty. The Mode column indicates the privilege mode from which the macro can be called.  All macros can clobber `a0`, `a1`, and `a2` if needed to make T-SBI calls.
+The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" field indicates circumstances under which the macro can be empty. The Mode column indicates the privilege mode from which the macro can be called; macros with Mode n/a are values, set in the `dut_environment` block of the UDB configuration file (see <<rvmodel-driver>>).  All macros can clobber `a0`, `a1`, and `a2` if needed to make T-SBI calls.
 
 [[t-rvmodel]]
 .RVMODEL DUT-Specific Macros
@@ -101,7 +112,6 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" 
 |===
 |Macro|Description|Can be Empty?|Mode
 |RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller or initializing custom state. Cannot clobber `x1`/`ra`, but any other registers may be trashed.|Empty or omitted if no boot operations are needed, or a separate DUT-specific executable is used for booting before loading and invoking the test ELF.| Machine
-|RVMODEL_BOOT_TO_MMODE|Replaces the default M-mode boot in `RVTEST_BOOT_TO_MMODE` (trap handler setup and M-mode CSR initialization) for a DUT with a custom M-mode that cannot run it. It must leave the trap handlers set up as the default does.|Omit for a standard M-mode, and for a DUT with no M-mode CSRs that leaves `STANDARD_SM_SUPPORTED` undefined. | Machine
 |RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation.|No | Any
 |RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.|No | Any
 |RVMODEL_IO_INIT(_R1, _R2, _R3)|Initialization steps needed prior to writing to the console. _R1, _R2, and _R3 are temporary registers that may be trashed by the macro.|Empty or omitted if no I/O initialization is needed. | Machine
@@ -128,7 +138,7 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" 
 |RVMODEL_CLR_GUEST_EXT_INT_M(_GEI, _R1, _R2)|Clears bit _GEI of `hgeip`. Only runs in machine mode, so it is usable within a M-mode interrupt handler without making a T-SBI call. Leave undefined to use non-M version. Must be defined if RVMODEL_CLR_GUEST_EXT_INT uses T-SBI.|If the hypervisor extension is not supported or GEILEN is 0. | Machine
 |RVMODEL_HPM_COUNTER|The index, 3 to 31, of the HPM counter used by the Sscofpmf tests. The tests derive the `mhpmevent` and `mhpmcounter` CSRs, and their RV32 high halves, from it.|If Sscofpmf is not supported. | n/a
 |RVMODEL_MHPMEVENT_VAL|The event selector written to bits 55:0 of the selected `mhpmevent` CSR so that `RVMODEL_MHPMEVENT_CODE` increments the selected counter. The Sail reference model does not have to count the same event: its build runs a `fence` in place of `RVMODEL_MHPMEVENT_CODE`, so map `EV_FENCE` to this selector value in `event_selectors` of the DUT's `sail.json`. An event that counts every instruction or cycle is acceptable: the tests preset the counter with counting inhibited, and inhibit counting in the modes above the one under test so that the T-SBI trap handler is not counted. 0 if the DUT cannot count any event; leave `event_selectors` empty, and the overflow checks are vacuous.|If Sscofpmf is not supported. | n/a
-|RVMODEL_MHPMEVENT_CODE(_R1, _R2)|Code that makes the selected counter increment one or more times in the current privilege mode. The tests check that the counter moved, not by how much. _R1 holds the address of a writable scratch word; _R2 may be trashed. The code must not trap, and it must assemble to 4 bytes. |If Sscofpmf is not supported. | Any
+|RVMODEL_MHPMEVENT_CODE(_R1, _R2)|Code that makes the selected counter increment one or more times in the current privilege mode. The tests check that the counter moved, not by how much. _R1 holds the address of a writable scratch word; _R2 may be trashed. The code must not trap. It runs in the driver (`rvmodel_mhpmevent_code`), so its size does not matter. |If Sscofpmf is not supported. | Any
 |RVMODEL_ACCESS_FAULT_ADDRESS|The base physical address of a region that causes a precise access fault when any part of the region is read, written or fetched. This is used to test exceptions. The faulting region must be at least 128 bytes; if vector fault-only-first loads are tested, it must be at least ceil(VLEN*LMUL/8) bytes (the vector coverpoints exercise up to 2*VLEN/8 bytes with LMUL=2). For typical implementations where address 0 is unmapped, the entire first page satisfies both requirements. It is the default value of each RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE> macro below. See <<access-fault-address>>.|Omit if the DUT does not generate access faults, or if it defines only some RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE> macros.| n/a
 |RVMODEL_ACCESS_FAULT_ADDRESS_LOAD|The base physical address of a region that gives a precise load access fault. Used for scalar, floating-point, compressed, hypervisor, and vector loads. The size requirements of RVMODEL_ACCESS_FAULT_ADDRESS apply.|Defaults to RVMODEL_ACCESS_FAULT_ADDRESS. Omit, with RVMODEL_ACCESS_FAULT_ADDRESS, if the DUT cannot give precise load access faults.| n/a
 |RVMODEL_ACCESS_FAULT_ADDRESS_STORE|The base physical address of a region that gives a precise store/AMO access fault for a store. Used for scalar, floating-point, compressed, hypervisor, and vector stores, and for cache-block operations. The size requirements of RVMODEL_ACCESS_FAULT_ADDRESS apply.|Defaults to RVMODEL_ACCESS_FAULT_ADDRESS. Omit, with RVMODEL_ACCESS_FAULT_ADDRESS, if the DUT cannot give precise store access faults.| n/a
@@ -140,9 +150,8 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" 
 |RVMODEL_MTIMECMP_ADDRESS|The address of the memory-mapped `mtimecmp` register, used for timer interrupts.| Omit if machine timer interrupts are not implemented. | n/a
 |RVMODEL_INTERRUPT_LATENCY|Expected latency (in cycles/NOPs) for interrupt trap processing. Ensures interrupt is received and can be processed before test continues.|Can be 0 if interrupt controller adds no delay. Omit if the DUT has neither standard M-mode (`STANDARD_SM_SUPPORTED`) nor S-mode. | n/a
 |RVMODEL_TIMER_INT_SOON_DELAY|The delay (in timer ticks) before a timer interrupt fires when an interrupt is requested "soon". Used in logic such as `mtimecmp = mtime + delay`. Must be long enough for the test to return from the `RVTEST_SET_*_INT_SOON_*` routine and reach the instruction under test before the interrupt fires. When the test runs below machine mode that routine takes a T-SBI round trip through the machine-mode trap handler, so the delay must cover an `ecall`, the handler, and the return to the original mode.| If timer interrupts, `wfi`, and `wrs` are not tested. Omit if the DUT has neither standard M-mode (`STANDARD_SM_SUPPORTED`) nor S-mode. | n/a
-|RVMODEL_DATA_SECTION|DUT-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  |Yes, if not needed by DUT. | n/a
-|RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)|Optionally emulates an illegal instruction in the M-mode invisible trap handler. `_PC_REG` and `_INSTRUCTION_REG` are read-only and contain the trapping PC and instruction, respectively. `_ACTION_REG`, `_DEST_REG`, and `_VALUE_REG` may be changed. See <<invisible-traps>> for full details.|Omit if the DUT has no invisible trap emulation. | Machine
-|RVMODEL_FENCEI|The instruction that makes instruction fetch see code the framework has just stored (a relocated trap trampoline or code in a PMP region), used in place of `fence.i`. It must be one instruction, or a `jal` to a DUT routine, so that code size does not depend on the DUT.|Omit to use `fence.i` with Zifencei and `nop` without it (instruction fetch is then assumed to be coherent with stores). | Any
+|RVMODEL_DATA_SECTION|DUT-specific data, emitted by the driver after the test data. Used for memory-mapped regions like `tohost`/`fromhost`.  |Yes, if not needed by DUT. | n/a
+|RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)|Optionally emulates an illegal instruction in the M-mode invisible trap handler. `_PC_REG` and `_INSTRUCTION_REG` are read-only and contain the trapping PC and instruction, respectively. `_ACTION_REG`, `_DEST_REG`, and `_VALUE_REG` may be changed. Requires `INVISIBLE_TRAP_HANDLER: true` in the `dut_environment` block. See <<invisible-traps>> for full details.|Omit if the DUT has no invisible trap emulation. | Machine
 |===
 
 [NOTE]
@@ -192,7 +201,7 @@ The rvtest_setup.S and rvtest_trap_handler.S files implement the boot code, T-SB
 
 A DUT can use an invisible trap to emulate an instruction that is not implemented in hardware or has a known bug.
 When invisible traps are enabled, all illegal-instruction exceptions are first sent to M-mode for possible
-emulation before being forwarded to the normal trap handler. Invisible traps are enabled when `RVMODEL_INVISIBLE_TRAP_HANDLER` is defined or `UDB_TIME_CSR_IMPLEMENTED` is false. In the latter case, the framework emulates the `time` and `timeh` CSRs using `mtime`, adding `htimedelta` in VS and VU and applying the `mcounteren`, `hcounteren`, and `scounteren` checks.
+emulation before being forwarded to the normal trap handler. Invisible traps are enabled when the config's `dut_environment` block sets `INVISIBLE_TRAP_HANDLER` (and `rvmodel_macros.h` defines `RVMODEL_INVISIBLE_TRAP_HANDLER`), or `UDB_TIME_CSR_IMPLEMENTED` is false. In the latter case, the framework emulates the `time` and `timeh` CSRs using `mtime`, adding `htimedelta` in VS and VU and applying the `mcounteren`, `hcounteren`, and `scounteren` checks.
 
 Custom invisible traps implemented using the `RVMODEL_INVISIBLE_TRAP_HANDLER` macro must follow the conventions described below.
 
@@ -251,7 +260,7 @@ Alternatively, the DUT might run a separate proprietary bootloader executable fi
 
 RVMODEL macros for Spike are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts
 
-RVMODEL macros for the RISC-V Sail model are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
+RVMODEL macros for the RISC-V Sail model are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_macros.h[tests/env/sail_macros.h], from which the reference model's driver is built.  They are similar to Spike but use HTIF for printing.  TODO: interrupts
 
 ==== Host Target Interface
 
@@ -267,12 +276,22 @@ If you have a simple DUT designed to match the behavior of RISC-V Sail and Spike
 
 If you have a complex DUT, you presumably have a team of sophisticated verification engineers who can adapt the example macros to your DUT's requirements.
 
+[[bring-up-suites]]
+==== Bring-Up Suites
+
+Two suites check a new DUT environment before the certification run. Neither claims functional coverage, and both finish in seconds.
+
+* `Hello` checks the RVMODEL macros, one test per layer in dependency order: boot and I/O, the signature mechanism, trap entry and return, privilege transitions, the software and external interrupt macros, the timer, and the access-fault address. The first test that fails names the macro or value to fix.
+* `ConfigCheck` checks that the hart matches its UDB configuration. Each testcase reads one value the configuration describes, such as a `misa` bit, the writable `medeleg` bits, the PMP granularity, VLEN or whether an extension's instruction executes, and compares it with the value the configuration implies. The testcase is named after the UDB parameter or extension. A mismatch prints both values on an `RVCP-CONFIG` line, and the test carries on, so one run lists every disagreement.
+
+The expected values of `ConfigCheck` come from the UDB configuration, not from the reference model, and only parameters that the reference model also reads from `sail.json` are checked. The reference run therefore checks `sail.json` against the same configuration: a mismatch there stops the build before any certified object exists.
+
 [[linker-script]]
 === Linker Script
 
 Each DUT needs a linker script tailored to its memory map. The linker script in `config/<core>/<version>/link.ld` defines where to place the code and data regions in the DUT's memory map.  It must contain `.text.init`, `.text.rvtest`, `.data`, and `.text.rvmodel` sections (in that order), and an `ENTRY` point named `rvtest_entry_point`. The first line of the list of `SECTIONS` in the linker script sets the starting address of the ELF (`. = 0x...`) and is the only part of the sample linker script that most users will need to change. Set it to your reset address for simple DUTs. Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
 
-The `.text.rvmodel` section contains DUT-specific (`RVMODEL`) code and **must** be placed after the `.data` section.  This ensures that variable-size model-specific macro expansions (which may differ between the DUT build and the reference-model build) do not affect the addresses of test data symbols such as `scratch` and `begin_signature`, preventing signature mismatches.
+The `.text.rvmodel` section contains the driver and other DUT-specific (`RVMODEL`) code and **must** be placed after the `.data` section.  This ensures that the driver, which differs between the DUT and the reference model, does not affect the addresses of test data symbols such as `scratch` and `begin_signature`, preventing signature mismatches.
 
 On harts that support virtual memory, the test image must be placed where the virtual memory tests leave it mapped. 0x8000_0000, used by the sample configurations, works for both RV32 and RV64. The boot code identity-maps the superpage that contains the test data (a 4 MiB megapage on RV32, a 1 GiB gigapage on RV64), so the whole image must fit inside one aligned superpage. The tests also map fixed virtual addresses, such as 0, all ones, and aliases of the code and data. If one of these falls in the same superpage as the image, the test overwrites the image's identity mapping and hangs. On RV64, the image must also lie in the Sv39 address space, below 2^38 (256 GiB), even on harts that support Sv48 or Sv57, because the Sv39 tests run on those harts too. The safe ranges are:
 
@@ -283,11 +302,11 @@ For some systems, this may involve configuring a non-default physical address an
 
 === File Organization
 
-Standard macros are defined in `tests/env`.  DUT-specific macros are defined in `rvmodel_macros.h`, which is in a DUT-specific config directory (e.g. `config/<dut>/<version>/rvmodel_macros.h` for predefined simulators, or out-of-tree for custom DUTs).
+Standard macros are defined in `tests/env`.  DUT-specific macros are defined in `rvmodel_macros.h`, which is in a DUT-specific config directory (e.g. `config/<dut>/<version>/rvmodel_macros.h` for predefined simulators, or out-of-tree for custom DUTs). Only the driver (`tests/env/rvmodel_driver.S` and `rvtest_driver.h`) is assembled against it. DUT-specific values are in the `dut_environment` block of the UDB configuration file.
 
 Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros and `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in ***util.h, ... describe further
 
-DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for DUTs with custom M-mode, when defined.
+DUT-specific macros begin with `RVMODEL`.  `RVTEST` macros that need the DUT call the corresponding driver routine.
 
 === Test Supervisor Binary Interface (T-SBI)
 

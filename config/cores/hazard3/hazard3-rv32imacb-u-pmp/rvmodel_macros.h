@@ -7,9 +7,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 // Testbench IO registers:
 // https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/test/sim/tb_common/include/tb_constants.h#L15-L32
@@ -31,17 +33,6 @@
   li   t0, H3_IO_BASE                     ;\
   li   t1, 1                              ;\
   sw   t1, H3_IO_GLOBMON_EN(t0)           ;
-
-// The testbench returns a bus error for every address outside RAM and the IO window.
-// LR/SC is not defined: an sc.w with no reservation fails inside the core without a bus
-// access, so it gets no bus error and no access fault. This is legal: bus errors are
-// implementation-defined (https://github.com/riscv/riscv-isa-manual/issues/3350,
-// https://github.com/Wren6991/Hazard3/issues/53).
-//   https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/doc/sections/bus_behaviour.adoc#L63
-#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0x90000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0x90000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0x90000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_AMO   0x90000000
 
 ##### TERMINATION #####
 
@@ -71,19 +62,6 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-
-// From U-mode, RVTEST_SET_MTIME_INT_SOON_U makes several T-SBI calls of about 900 cycles
-// each, and the interrupt must not fire before the last one returns.
-#define RVMODEL_TIMER_INT_SOON_DELAY 5000
-
-#define RVMODEL_MTIME_ADDRESS     0xc0000100
-#define RVMODEL_MTIMECMP_ADDRESS  0xc0000108
 
 ##### Machine Interrupts #####
 

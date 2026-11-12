@@ -8,6 +8,7 @@
 ##################################
 
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -16,7 +17,7 @@ import typer
 from rich import print as rprint
 
 from act.build import build, prune_empty_dirs
-from act.build_plan import generate_build_plan
+from act.build_plan import find_rvmodel_dir, generate_build_plan
 from act.build_types import BuildTask
 from act.certificate_tests import certificate_exists, get_certificate_extensions
 from act.config import CoverageSimulator
@@ -59,7 +60,25 @@ def run_act(
         int,
         typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
     ] = 0,
+    rvmodel_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--rvmodel-dir",
+            exists=True,
+            file_okay=False,
+            help="Directory with the DUT's rvmodel_macros.h (default: each config's dut_include_dir). "
+            "Without one, the build stops at the certified objects.",
+        ),
+    ] = None,
     *,
+    objects_only: Annotated[
+        bool,
+        typer.Option(
+            "--objects-only",
+            help="Stop at the certified objects (work/<config>/objects), even when rvmodel_macros.h is "
+            "available: no DUT driver and no ELFs. These are what a DUT owner links with their own macros.",
+        ),
+    ] = False,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (objdumps, trace files, and trap reports)")] = False,
     clean_intermediates: Annotated[bool, typer.Option(help="Delete intermediate build/ dirs")] = False,
@@ -87,6 +106,9 @@ def run_act(
 
     if debug and clean_intermediates:
         raise typer.BadParameter("--debug and --clean-intermediates cannot be used together")
+
+    if objects_only and coverage:
+        raise typer.BadParameter("--coverage runs the linked ELFs, so it cannot be used with --objects-only")
 
     if workdir is None:
         workdir = Path.cwd() / "work"
@@ -118,6 +140,8 @@ def run_act(
         raise typer.Exit(1) from None
 
     config_names: list[str] = []
+    no_rvmodel: list[str] = []
+    selected_counts: dict[str, int] = {}
     tasks: list[BuildTask] = []
 
     # Load all configs and prepare every DUT's generated files
@@ -137,12 +161,20 @@ def run_act(
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
 
         config_names.append(config.name)
+        selected_counts[config.name] = len(selected_tests)
+        config_rvmodel_dir = None if objects_only else find_rvmodel_dir(config, rvmodel_dir)
+        if config_rvmodel_dir is None and not objects_only:
+            no_rvmodel.append(config.name)
+            # ELFs left from an earlier build were linked against a driver this
+            # build no longer has; don't leave them around to be run.
+            if not dry_run:
+                shutil.rmtree(workdir / config.name / "elfs", ignore_errors=True)
         if not dry_run:
             test_list_file = workdir / config.name / "test_list.md"
             write_test_list(config.name, selected_tests, test_list_file)
             rprint(f"[bold cyan]Selected test list:[/] {test_list_file}")
-        tasks.extend(
-            generate_build_plan(
+        try:
+            config_tasks, _ = generate_build_plan(
                 config,
                 mxlen,
                 selected_tests,
@@ -157,8 +189,12 @@ def run_act(
                 enable_experimental_extensions,
                 exclude_sm,
                 max(1, jobs // len(config_files)),
+                rvmodel_dir=config_rvmodel_dir,
             )
-        )
+        except ValueError as e:
+            rprint(f"[bold red]{e}[/]", file=sys.stderr)
+            raise typer.Exit(1) from None
+        tasks.extend(config_tasks)
 
     # Run all tasks to compile ELFs
     result = build(
@@ -189,6 +225,17 @@ def run_act(
                 rprint(f"    - {error.task_name}", file=sys.stderr)
         sys.exit(1)
     rprint(f"[bold green]✓ Build complete:[/] {summary}")
+    for name in no_rvmodel:
+        rprint(
+            f"[yellow]{name}:[/] no rvmodel_macros.h, so the build stopped at the certified objects in "
+            f"{workdir / name / 'objects'}. Pass --rvmodel-dir (RVMODEL_DIR=... with make) to link and run them."
+        )
+    if objects_only and not dry_run and not result.errors:
+        for name in config_names:
+            rprint(
+                f"[bold cyan]{name}:[/] {selected_counts[name]} certified objects in {workdir / name / 'objects'}. "
+                "Link them with the DUT's driver, or package them with `make kit`."
+            )
 
     # Prune empty build directories if requested
     if clean_intermediates and not dry_run:

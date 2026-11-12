@@ -3,11 +3,13 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayana sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
-// This header is included AFTER rvmodel_macros.h for signature ELF builds
-// (non-selfcheck). It overrides DUT-specific macros with Sail-compatible
-// implementations for IO, termination, and interrupts. Macros that should
-// always come from the DUT (e.g. RVMODEL_ACCESS_FAULT_ADDRESS_*) are NOT
-// redefined here.
+// The reference model's rvmodel_macros.h. It is included in place of the DUT's
+// for signature builds (no RVTEST_SELFCHECK): the reference driver assembled
+// from rvmodel_driver.S, and the signature-generation test objects. It supplies
+// Sail-compatible IO, termination and interrupts, and overrides the device
+// addresses and timings that dut_environment.h set from the config. Values the
+// reference model must share with the DUT (e.g. RVMODEL_ACCESS_FAULT_ADDRESS_*,
+// RVMODEL_HPM_COUNTER) are NOT redefined here.
 
 #ifndef _SAIL_MACROS_H
 #define _SAIL_MACROS_H
@@ -28,7 +30,7 @@
 
 // Don't use invisible trap emulation for expected result generation
 #undef RVTEST_EMULATE_TIME_CSR
-#undef RVMODEL_INVISIBLE_TRAP_HANDLER
+#undef RVTEST_DUT_INVISIBLE_TRAP_HANDLER
 
 // Sail does not model Smrnmi yet, so the signature build must not write mnstatus at boot.
 // The self-checking build for a DUT with Smrnmi still sets mnstatus.NMIE.
@@ -194,24 +196,23 @@
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
 ##### Guest External Interrupts #####
-// Replaced only when the DUT defines them, so that check_defines.h still reports a DUT that has
-// GEILEN > 0 without them. The Sail config's extensions.H.geilen must match the DUT's GEILEN.
-#ifdef RVMODEL_SET_GUEST_EXT_INT
-  #undef RVMODEL_SET_GUEST_EXT_INT
-  #undef RVMODEL_SET_GUEST_EXT_INT_M
-  #define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
-    li _R1, (1 << 31);               \
-    or _R1, _R1, _GEI;               \
-    li _R2, SAIL_SIG_GUEST_ADDRESS;    \
-    sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
+// The reference driver never sees the DUT's macros, so these are always defined here; the DUT
+// driver build is where check_defines.h reports a DUT with GEILEN > 0 that lacks them. The Sail
+// config's extensions.H.geilen must match the DUT's GEILEN.
+#undef RVMODEL_SET_GUEST_EXT_INT
+#undef RVMODEL_SET_GUEST_EXT_INT_M
+#define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (1 << 31);               \
+  or _R1, _R1, _GEI;               \
+  li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
 
-  #undef RVMODEL_CLR_GUEST_EXT_INT
-  #undef RVMODEL_CLR_GUEST_EXT_INT_M
-  #define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
-    li _R2, SAIL_SIG_GUEST_ADDRESS;    \
-    sw _GEI, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
+#undef RVMODEL_CLR_GUEST_EXT_INT
+#undef RVMODEL_CLR_GUEST_EXT_INT_M
+#define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R2, SAIL_SIG_GUEST_ADDRESS;    \
+  sw _GEI, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
 
-#endif
 
 
 ##### Sscofpmf #####

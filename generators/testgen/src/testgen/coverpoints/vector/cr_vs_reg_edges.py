@@ -161,7 +161,13 @@ def make_vs2_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 
         for rs1_edge in rs1_edges:
             params = generate_random_vector_params(
-                test_data, instr_name, instr_type, lmul=1, rs1val=rs1_edge, vs2_val_pointer=vs2_label
+                test_data,
+                instr_name,
+                instr_type,
+                lmul=1,
+                rs1val=rs1_edge,
+                vs2_val_pointer=vs2_label,
+                ignore_vector_safety=True,  # keep the edge value exact even where rs1 is an index or offset
             )
             desc = f"{coverpoint} (vs2={vs2_edge}, rs1={rs1_edge})"
             bin_name = f"cp_vs2_rs1_edges_b{vs2_edge}_{rs1_edge}"

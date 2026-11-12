@@ -13,6 +13,7 @@ from testgen.asm.vector_helpers import (
     load_vec_regs,
     load_vxrm,
     prep_mask_v,
+    scalar_index_safety,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -24,6 +25,9 @@ from testgen.formatters.registry import (
     add_instruction_formatter,
     get_instruction_type_config,
 )
+
+# Instructions whose rs1 is an element index or slide offset, rather than data
+RS1_OFFSET_INSTRUCTIONS = {"vrgather.vx", "vslideup.vx", "vslidedown.vx"}
 
 vvx_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
 wvx_config = InstructionTypeConfig(
@@ -201,6 +205,8 @@ def format_vvx_like_type(
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
     setup.append(f"LI (x{params.rs1}, {params.rs1val})")
+    if instr_str in RS1_OFFSET_INSTRUCTIONS and not params.ignore_vector_safety:
+        setup.extend(scalar_index_safety(params.rs1, params))
 
     setup.append(load_test_vtype(params, random_vl_reg))
 

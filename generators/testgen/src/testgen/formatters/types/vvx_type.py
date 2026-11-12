@@ -13,6 +13,7 @@ from testgen.asm.vector_helpers import (
     load_vec_regs,
     load_vxrm,
     prep_mask_v,
+    scalar_from_vlmax,
     scalar_index_safety,
     write_sigupd_v,
     write_sigupd_v_len,
@@ -205,9 +206,12 @@ def format_vvx_like_type(
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
-    setup.append(f"LI (x{params.rs1}, {params.rs1val})")
-    if instr_str in RS1_OFFSET_INSTRUCTIONS and not params.ignore_vector_safety:
-        setup.extend(scalar_index_safety(params.rs1, params))
+    if params.rs1val_vlmax is not None:
+        setup.extend(scalar_from_vlmax(params.rs1, params.rs1val_vlmax, params))
+    else:
+        setup.append(f"LI (x{params.rs1}, {params.rs1val})")
+        if instr_str in RS1_OFFSET_INSTRUCTIONS and not params.ignore_vector_safety and params.rs1val != 0:
+            setup.extend(scalar_index_safety(params.rs1, params))
 
     setup.append(load_test_vtype(params, random_vl_reg))
 

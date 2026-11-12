@@ -339,11 +339,19 @@ def cp_custom_fp_recsqrt_est_flag_edges(
 
 
 # vfrec7 inputs are built from these sets, matching the cp_custom_FpRecipEst_flag_edges cross. B is the
-# exponent bias. Exponent fields: 0, 1, B, 2B-1, 2B and all ones.
+# exponent bias. Exponent fields: 0, 1, B, 2B-2, 2B-1, 2B and all ones.
 _RECIP_EXP_FIELDS = {
-    16: {"zero": 0, "one": 1, "bias": 15, "two_bias_m1": 29, "two_bias": 30, "ones": 31},
-    32: {"zero": 0, "one": 1, "bias": 127, "two_bias_m1": 253, "two_bias": 254, "ones": 255},
-    64: {"zero": 0, "one": 1, "bias": 1023, "two_bias_m1": 2045, "two_bias": 2046, "ones": 2047},
+    16: {"zero": 0, "one": 1, "bias": 15, "two_bias_m2": 28, "two_bias_m1": 29, "two_bias": 30, "ones": 31},
+    32: {"zero": 0, "one": 1, "bias": 127, "two_bias_m2": 252, "two_bias_m1": 253, "two_bias": 254, "ones": 255},
+    64: {
+        "zero": 0,
+        "one": 1,
+        "bias": 1023,
+        "two_bias_m2": 2044,
+        "two_bias_m1": 2045,
+        "two_bias": 2046,
+        "ones": 2047,
+    },
 }
 _FRAC_BITS = {16: 10, 32: 23, 64: 52}
 _FRM_NAMES = ["rne", "rtz", "rdn", "rup", "rmm"]  # frm encodings 0-4
@@ -353,7 +361,7 @@ _FRM_NAMES = ["rne", "rtz", "rdn", "rup", "rmm"]  # frm encodings 0-4
 def cp_custom_fp_recip_est_flag_edges(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
-    """Cover every row of the vfrec7.v table by crossing sign, exponent field, fraction and frm."""
+    """Cover every row of the vfrec7.v table and both sides of each row boundary, under every frm."""
     assert test_data.config.sew is not None, "SEW must be provided for vector tests"
     sew = test_data.config.sew
     if sew > test_data.config.flen:
@@ -361,10 +369,14 @@ def cp_custom_fp_recip_est_flag_edges(
 
     lmul = get_base_lmul(instr_name, instr_type, sew)
     frac_bits = _FRAC_BITS[sew]
+    # Fractions on each side of the sig=00 / sig=01 / sig=1x boundaries, plus zero and all ones
     fracs = {
         "zero": 0,
         "lsb": 1,
-        "msb_clear": (1 << (frac_bits - 1)) - 1,
+        "sig00_max": (1 << (frac_bits - 2)) - 1,
+        "sig01_min": 1 << (frac_bits - 2),
+        "sig01_max": (1 << (frac_bits - 1)) - 1,
+        "sig1x_min": 1 << (frac_bits - 1),
         "ones": (1 << frac_bits) - 1,
     }
 

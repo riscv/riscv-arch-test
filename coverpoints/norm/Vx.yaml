@@ -1994,7 +1994,11 @@ normative_rule_definitions:
   # This is a unary vector-vector instruction that returns an estimate of 1/x accurate to
   # 7 bits.
   - name: vfrec7_op
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_flag_edges",
+      ]
   # For the non-exceptional cases, the seven high bits of significand (after the leading
   # one) are used to address the following table. The output of the table becomes the
   # seven high bits of the result significand (after the leading one); the remainder of

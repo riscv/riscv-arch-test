@@ -16,7 +16,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: neorv32-rv32imacb-u-pmp
-description: NEORV32 v1.13.7 microcontroller configuration - RV32IMACB_Zbc_Zcb_Zicond with U-mode, 16 PMP regions and 4 HPM counters
+description: NEORV32 v1.13.7 microcontroller configuration - RV32IMACB_Zbc_Zcb_Zcmop_Zicond_Zimop_Zkn_Zks with U-mode, 16 PMP regions and 4 HPM counters
 
 # misa reads 0x40901107: MXL=1, A, B, C, I, M, U and X (cpu_control.vhd#L1217-L1227).
 implemented_extensions:
@@ -37,17 +37,39 @@ implemented_extensions:
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
-  # Zbkc (clmul, clmulh) is a subset of Zbc.
-  #   Quote: "It provides the same instructions as the Zbkc ISA extension but also provides a
-  #   _reversed_ instruction (`clmulr`)."
-  #   docs/datasheet/cpu_isa.adoc#L513-L515
+  # Scalar cryptography: RISCV_ISA_Zbkb/Zbkc/Zbkx/Zknd/Zkne/Zknh/Zksed/Zksh are all set, so mxisa
+  # also reports the Zkn and Zks suites (cpu_control.vhd#L1295-L1304).
+  #   Quote: "constant riscv_zkn_c : boolean := RISCV_ISA_Zbkb and RISCV_ISA_Zbkc and
+  #   RISCV_ISA_Zbkx and RISCV_ISA_Zkne and RISCV_ISA_Zknd and RISCV_ISA_Zknh;"
+  #   rtl/core/neorv32_cpu.vhd#L117-L120
+  #   docs/datasheet/cpu_isa.adoc#L542-L700
+  # Zbkb (pack, packh, zip, unzip, brev8 on top of the Zbb rotates, rev8 and andn/orn/xnor),
+  # Zbkc (clmul, clmulh, shared with Zbc) and Zbkx (xperm4, xperm8) are decoded in
+  # rtl/core/neorv32_cpu_alu_bitmanip.vhd#L191-L222.
+  - { name: Zbkb, version: "= 1.0.0" }
   - { name: Zbkc, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
+  # AES, SHA-2, SM3 and SM4 are decoded in rtl/core/neorv32_cpu_alu_crypto.vhd#L217-L233.
+  - { name: Zkn, version: "= 1.0.0" }
+  - { name: Zknd, version: "= 1.0.0" }
+  - { name: Zkne, version: "= 1.0.0" }
+  - { name: Zknh, version: "= 1.0.0" }
+  - { name: Zks, version: "= 1.0.0" }
+  - { name: Zksed, version: "= 1.0.0" }
+  - { name: Zksh, version: "= 1.0.0" }
   # Quote: "Note that the NEORV32 `C` ISA extension only includes the `Zca` instructions"
   #   docs/datasheet/cpu_isa.adoc#L151-L152
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
   - { name: Zicond, version: "= 1.0.0" }
+  # Zcmop needs C and Zimop (rtl/core/neorv32_cpu.vhd#L115); the decompressor expands c.mop.n
+  # to mop.r.n with rd = rs1 = x0 (rtl/core/neorv32_cpu_decompressor.vhd#L167-L181).
+  - { name: Zcmop, version: "= 1.0.0" }
+  # mop.r.n and mop.rr.n are legal SYSTEM instructions with funct3 = 100 (cpu_control.vhd#L773-L778)
+  # that read no CSR and write none (cpu_control.vhd#L412, #L470), so rd gets the all-zero CSR
+  # read data (cpu_control.vhd#L1202).
+  - { name: Zimop, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   # cycle, time and instret all exist; time shadows the CLINT MTIMER.

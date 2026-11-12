@@ -226,6 +226,14 @@ def write_sigupd_v_mask_prod(
     ]
 
 
+def ls_base_address(params: InstructionParams) -> str:
+    """Address expression for a load/store base: the rs1 data label plus its byte offset, if any."""
+    assert params.rs1val_pointer is not None, "rs1val_pointer must be set for a load/store base address"
+    if params.rs1val_offset:
+        return f"{params.rs1val_pointer}+{params.rs1val_offset}"
+    return params.rs1val_pointer
+
+
 def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> str:
     """
     Resets the vtype to the state that prep_base_v left it.

@@ -6,15 +6,6 @@
 ci_enabled: true
 
 exclude_extensions:
-  # PMP_Sm_cfg_A_tor_zero stores to, loads from and jumps to address 0. In the testharness
-  # address 0 is the debug module (DebugBase=0x0, DebugLength=0x1000), which answers every
-  # access with OKAY, while Sail expects an access fault because there is no memory at 0.
-  # CVA6 has no data-side PMA check, so the DUT raises no fault and the load returns 0.
-  # Only cv32a6_imac_sv32 has PMP entries, so only it runs this test.
-  # Remove this exclusion once riscv-arch-test#2963 drops the address-0 probes.
-  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_soc_pkg.sv#L58
-  # https://github.com/riscv/riscv-arch-test/issues/2963
-  - PMP_Sm_cfg_A_tor_zero
   # LR faults use store causes: a misaligned lr.w raises cause 6 instead of 4, an lr.w page fault
   # cause 15 instead of 13, and an lr.w PMP fault cause 7 instead of 5. The decoder sends every
   # A instruction, LR included, to the store unit, and the LSU and MMU pick the cause from that unit.

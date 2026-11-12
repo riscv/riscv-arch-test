@@ -41,10 +41,7 @@
   .option norelax
 
   // Disable assembler/linker optimizations for RVTEST_BEGIN
-  // *** not sure this is still needed after recent simplifications.  dh 4/24/26
   .option push
-  .option rvc
-  .p2align UNROLLSZ
   .option norvc
 
   // Include model specific boot code
@@ -79,6 +76,17 @@
 /**** - Include headers that contain code (not macros) that would throw off the address ****/
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
 /*******************************************************************************************/
+// Turn off M-mode landing pads (mseccfg.MLPE) on the way out of a test. The end-of-test
+// and failure code, the epilogs and rvmodel_halt_fail are not written with landing pads,
+// so an indirect jump among them (such as jr T1 to rvmodel_halt_fail) would otherwise
+// raise a software-check exception when a test left MLPE set.
+.macro RVTEST_MLPE_OFF
+  #if defined(ZICFILP_SUPPORTED) && defined(STANDARD_SM_SUPPORTED) // runs in M-mode only with the T-SEE
+    LI(     T1, MSECCFG_MLPE)
+    csrc    mseccfg, T1
+  #endif
+.endm
+
 .macro RVTEST_CODE_END
   // Disable assembler/linker optimizations for RVTEST_CODE_END
   .option push
@@ -95,6 +103,10 @@
   j rvtest_code_end
   .p2align 12
   rvtest_code_end:
+  // The default unexpected-interrupt handlers reach rvtest_code_end and
+  // rvtest_code_end_mmode with jr T1, which sets ELP when Zicfilp is enabled in that
+  // mode, so both start with a 4-byte-aligned lpad 0 (a no-op otherwise).
+    auipc   x0, 0                     // lpad 0
 
   // The checks and epilogs read M-mode CSRs. The test body and the default
   // unexpected-interrupt handlers can reach this point in any mode. Callers in
@@ -102,7 +114,10 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_code_end_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
 
   #ifndef RVTEST_NOSIG
     // Check the regular signature offset to make sure the correct number of
@@ -203,14 +218,21 @@
   // when mstatus.MDT=1 in M-mode. Callers in an M-mode trap handler use the _mmode entry.
   // An M-mode test body can also set MDT, so skip the switch if the last T-SBI mode
   // change was to M-mode.
+  // The failure paths in the trap handlers reach both entries with jr T1, which sets ELP
+  // when Zicfilp is enabled in that mode, so each starts with a 4-byte-aligned lpad 0.
+  .p2align 2
   rvtest_fail_epilogs:
+    auipc   x0, 0                     // lpad 0
     #ifdef STANDARD_SM_SUPPORTED
       LA(T1, rvtest_current_mode)
       LREG T1, 0(T1)
       beqz T1, rvtest_fail_epilogs_mmode
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_fail_epilogs_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
     LI(T5, 1)
 
   run_epilogs_body:
@@ -1046,6 +1068,14 @@
   .global rvtest_trap_count
   rvtest_trap_count:
     .dword 0
+
+  // Wait loop armed by wait_loop_arm() in the test generator: {first instruction of the loop,
+  // the loop's exit}, or an exit of 0 when no loop is armed. An interrupt clears the exit and,
+  // if it was taken inside the loop, resumes at the exit. See common_Xint_handler.
+  .p2align 3
+  .global rvtest_wait_loop
+  rvtest_wait_loop:
+    .dword 0, 0
 
   // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
   .p2align 3

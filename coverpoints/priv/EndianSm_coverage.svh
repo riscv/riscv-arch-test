@@ -53,10 +53,10 @@ covergroup EndianSm_cg with function sample(ins_t ins);
         // all word offsets
     }
     `ifdef UDB_MXLEN_64
-        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mbe")[0] {
+        mstatus_mbe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mbe")[0] {
         }
     `else
-        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mbe")[0] {
+        mstatus_mbe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "mbe")[0] {
         }
     `endif
     // main coverpoints

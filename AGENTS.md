@@ -61,6 +61,7 @@
 - The framework installs trap handlers for unprivileged tests when standard machine mode is available. Unexpected traps fail the test.
 - Privileged tests should boot into their intended mode. Use T-SBI calls for operations that require a higher privilege level. Use `tsbi_call()` for supported CSR or memory instructions and `RVTEST_TSBI_GOTO_*` for mode changes.
 - Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool so they are never allocated.
+- To wait for an interrupt with WFI or WRS, use `wait_loop_arm()` and `wait_loop()` from `testgen/asm/wait.py`. A loop that checks whether the interrupt was taken and then executes the wait instruction can hang: an interrupt taken between the check and the wait is cleared by the trap handler, and the wait instruction then has nothing to wake it.
 - In generated assembly, use Python loops to emit repeated code. Avoid assembly loops so testcase labels and debug strings stay unique.
 - Do not use the target-dependent `.align` directive in assembly. Use `.p2align` or `.balign`.
 - Do not use the `la` or `li` pseudoinstructions. Use `LA()` for labels and `LI()` for constants. Use `LI_FIXED_LEN()` for values that come from `RVMODEL_*` macros, so code size does not depend on the DUT. In generators, `load_constant()` selects `LI()` or `LI_FIXED_LEN()`.

@@ -10,8 +10,7 @@ normative_rule_definitions:
       [
         "Ssnpm_cg/cp_pmlen_masking",
         "S_scsr_cg/cp_scsrwalk/senvcfg",
-        "Ssnpm_H_cg/cp_vu_pmm",
-        "Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm",
+        "Ssnpm_H_cg/{cp_vu_pmm, cp_vu_pmlen_masking, cp_hlv_hs_spvp0_pmm}",
       ]
 
   # Changing senvcfg.PMM takes effect immediately, without the need to execute an
@@ -29,6 +28,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssnpm_cg/cp_pmlen_masking",
+        "Ssnpm_H_cg/cp_vu_pmlen_masking",
         "S_scsr_cg/cp_scsrwalk/senvcfg (the walk writes the reserved PMM=0b01)",
       ]
 
@@ -36,6 +36,9 @@ normative_rule_definitions:
   - name: henvcfg_pmm_op
     coverpoint:
       [
-        "Ssnpm_H_cg/cp_vs_pmm",
-        "Ssnpm_H_cg/{cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
+        "Ssnpm_H_cg/{cp_vs_pmm, cp_vs_pmlen_masking, cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
+        "Ssnpm_H_cg/{cp_vs_pmlen_zicfiss_amo, cp_vs_pmlen_zicfiss_ssp}",
+        "Ssnpm_H_cg/{cp_henvcfg_pmm_change_hfence, cp_henvcfg_pmm_change_hfence_sv48x4}",
+        "Ssnpm_H_cg/cp_henvcfg_pmm_change_no_hfence",
+        "Tested by the signature: henvcfg.PMM does not mask the guest physical address from the VS stage (Ssnpm_H plan, cp_vs_gstage_no_pmm)",
       ]

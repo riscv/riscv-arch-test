@@ -38,7 +38,7 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -51,7 +51,7 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr")[0] {}
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0] {}
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins sepc     = {CSR_SEPC};
         //bins stvec    = {CSR_STVEC}; //// warl field has complex write restrictions and is not easy to test
@@ -84,7 +84,7 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -98,7 +98,7 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef SMMPM_SUPPORTED  // mseccfg.PMM exists only with Smmpm; it must not apply here
-        mseccfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+        mseccfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "pmm") {
             bins pmm_00 = {2'b00};
             `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
                 bins pmm_10 = {2'b10};
@@ -109,11 +109,11 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
-    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
+    mprv_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
-    mpp_field_s: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    mpp_field_s: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins mpp_s = {2'b01};   // effective privilege = S-mode
     }
 
@@ -131,7 +131,7 @@ covergroup Smnpm_U_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -164,7 +164,7 @@ covergroup Smnpm_USm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -178,7 +178,7 @@ covergroup Smnpm_USm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef SMMPM_SUPPORTED  // mseccfg.PMM exists only with Smmpm; it must not apply here
-        mseccfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+        mseccfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "pmm") {
             bins pmm_00 = {2'b00};
             `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
                 bins pmm_10 = {2'b10};
@@ -189,10 +189,10 @@ covergroup Smnpm_USm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+    mprv_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
-    mpp_field_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    mpp_field_u: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins mpp_u = {2'b00};   // effective privilege = U-mode
     }
 

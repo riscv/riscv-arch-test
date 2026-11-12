@@ -4,7 +4,7 @@
     // cr_vl_lmul_e64_emul2max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"){
+    cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -22,7 +22,7 @@
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_e64_emul2max_sew16 : cross cp_csr_vtype_lmul_all_le_8_e64_emul2max, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_e64_emul2max_sew16 : cross cp_csr_vtype_lmul_all_le_8_e64_emul2max, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
     }
 

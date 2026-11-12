@@ -7,56 +7,92 @@
 ##################################
 
 """Za64rs extension test generator.
+
 Reservation sets are contiguous, naturally aligned, and at most 64 bytes.
+An SC outside the aligned 64-byte block that contains the LR must fail.
 """
 
-from testgen.asm.helpers import comment_banner, lrsc_retry_loop, write_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
+# scratch is 256-byte aligned and 264 bytes. scratch+64 is the block under test, so
+# the word before it and the first word of the next block both stay inside scratch.
+_BLOCK_BASE = 64
+_COVERGROUP = "Za64rs_cg"
 
-def _generate_za64rs_tests(test_data: TestData) -> list[str]:
-    covergroup = "Za64rs_cg"
-    coverpoint = "cp_za64rs"
 
-    base_reg, src_reg, dest_reg, temp_reg, retry_reg = test_data.int_regs.get_registers(5)
-
+def _neighbor_tests(
+    test_data: TestData,
+    *,
+    width: str,
+    coverpoint: str,
+    step: int,
+    data_imm: str,
+) -> list[str]:
+    """LR anywhere in the block. SC at the next block and at the last access of the previous block."""
+    base, lr_addr, sc_addr, src, dest = test_data.int_regs.get_registers(5)
+    store = "sw" if width == "w" else "sd"
+    load = "lw" if width == "w" else "ld"
+    # +step is the first access of the next block. -step is the last access of the previous block.
+    sc_offsets = ((_BLOCK_BASE, "next"), (-step, "prev"))
     lines = [
         comment_banner(
             coverpoint,
-            "Za64rs: Reservation set size test",
+            f"Za64rs: lr.{width} anywhere in a naturally aligned 64-byte block.\n"
+            f"sc.{width} at the next block and the previous block must fail, and must not store.",
         ),
         "",
-        f"LA(x{base_reg}, scratch)",
-        f"LI(x{src_reg}, 0xA5A5A5A5)",
+        f"LA(x{base}, scratch)",
+        f"addi x{base}, x{base}, {_BLOCK_BASE}",
         "",
     ]
+    for lr_off in range(0, _BLOCK_BASE, step):
+        for sc_off, side in sc_offsets:
+            label = test_data.add_testcase(f"lr{lr_off}_{side}", coverpoint, _COVERGROUP)
+            lines.extend(
+                [
+                    f"# lr.{width} at block+{lr_off}; sc.{width} at block{sc_off:+d} ({side} block)",
+                    # ~data flips every bit this SC would write, so a store cannot leave the canary in place.
+                    f"LI(x{src}, {data_imm})",
+                    f"xori x{src}, x{src}, -1",
+                    f"{store} x{src}, {sc_off}(x{base})",
+                    f"xori x{src}, x{src}, -1",
+                    f"addi x{lr_addr}, x{base}, {lr_off}",
+                    f"addi x{sc_addr}, x{base}, {sc_off}",
+                    f"lr.{width} x0, (x{lr_addr})",
+                    label,
+                    f"sc.{width} x{dest}, x{src}, (x{sc_addr})",
+                    write_sigupd(dest, test_data),
+                    f"{load} x{dest}, {sc_off}(x{base})",
+                    write_sigupd(dest, test_data),
+                    "",
+                ]
+            )
+    test_data.int_regs.return_registers([base, lr_addr, sc_addr, src, dest])
+    return lines
 
-    for offset in range(0, 65, 4):
-        binname = f"offset_{offset}"
-        label_line = test_data.add_testcase(binname, coverpoint, covergroup)
-        lr_sc = [
-            f"lr.w x{dest_reg}, (x{base_reg})",
-            label_line,
-            f"sc.w x{dest_reg}, x{src_reg}, (x{temp_reg})",
-        ]
-        # Offsets 0-60 can lie in the LR's reservation set, so the sc.w there may succeed.
-        # Za64rs puts offset 64 outside it, so that sc.w must fail and needs no retry.
-        if offset < 64:
-            retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, retry_reg, dest_reg)
-            lr_sc = [*retry_start, *lr_sc, *retry_end]
-        lines.extend(
-            [
-                f"# Za64rs: sc.w at offset={offset} within reservation set",
-                f"addi x{temp_reg}, x{base_reg}, {offset}",
-                *lr_sc,
-                write_sigupd(dest_reg, test_data),
-                "",
-            ]
+
+def _generate_za64rs_tests(test_data: TestData) -> list[str]:
+    lines = _neighbor_tests(
+        test_data,
+        width="w",
+        coverpoint="cp_za64rs",
+        step=4,
+        data_imm="0xA5A5A5A5",
+    )
+    lines.append("#if __riscv_xlen == 64")
+    lines.extend(
+        _neighbor_tests(
+            test_data,
+            width="d",
+            coverpoint="cp_za64rs_d",
+            step=8,
+            data_imm="0xA5A5A5A5A5A5A5A5",
         )
-
-    test_data.int_regs.return_registers([base_reg, src_reg, dest_reg, temp_reg, retry_reg])
+    )
+    lines.extend(["#endif", ""])
     return lines
 
 
@@ -65,9 +101,7 @@ def _generate_za64rs_tests(test_data: TestData) -> list[str]:
     required_extensions=["Zalrsc", "Za64rs"],
 )
 def make_za64rs(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for Za64rs reservation-set size extension."""
-    test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
-    tc.code.extend(_generate_za64rs_tests(test_data))
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
+    """Generate tests for the Za64rs reservation-set size extension."""
+    chunk = test_data.begin_test_chunk()
+    chunk.code.extend(_generate_za64rs_tests(test_data))
+    return [test_data.end_test_chunk()]

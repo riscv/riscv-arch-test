@@ -22,6 +22,10 @@ ENVHEADERDIR="${7}"
 COVERAGELIST="${8}"
 VERILATOR_BUILD_JOBS="${VERILATOR_BUILD_JOBS:-1}"
 
+# Let ccache reuse objects built with Verilator's precompiled header. Verilator
+# writes the headers just before compiling, so also skip the header mtime checks.
+export CCACHE_SLOPPINESS="${CCACHE_SLOPPINESS:+${CCACHE_SLOPPINESS},}pch_defines,time_macros,include_file_mtime,include_file_ctime"
+
 # Clean old coverage database
 rm -rf "${WKDIR}" "${COVERAGEDAT}"
 mkdir -p "${WKDIR}"

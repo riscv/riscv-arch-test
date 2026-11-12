@@ -10,6 +10,7 @@ from testgen.asm.vector_helpers import (
     VectorLoad,
     compute_egs_vlen,
     handle_parameter_exclusions,
+    index_register_safety,
     load_test_vtype,
     load_vec_regs,
     load_vxrm,
@@ -19,7 +20,12 @@ from testgen.asm.vector_helpers import (
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import (
+    InstructionTypeConfig,
+    VectorTypeConfig,
+    add_instruction_formatter,
+    get_instruction_type_config,
+)
 
 vvv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 wvv_config = InstructionTypeConfig(
@@ -54,7 +60,9 @@ wvv_acc_config = InstructionTypeConfig(
 vvv_sat_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 vvvp_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2")}),
+    vector_data=VectorTypeConfig(
+        overlap_constraints={("vd", "vs1"), ("vd", "vs2")}, index_register="vs1", vlmax_regs={"vs2"}
+    ),
 )
 vcompress_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
@@ -162,7 +170,7 @@ def format_vvv_sat(
 def format_vvvp(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_vvv_like_type(instr_str, test_data, params, "VVVP", enable_vs2_preload=True)
+    return format_vvv_like_type(instr_str, test_data, params, "VVVP")
 
 
 @add_instruction_formatter("VCOMPRESS", vcompress_config)
@@ -201,7 +209,6 @@ def format_vvv_like_type(
     type_name: str,
     *,
     widen: set[str] | None = None,
-    enable_vs2_preload: bool = False,
     egs: int = 1,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.vs1 is not None and params.vs1_val_pointer is not None, (
@@ -243,19 +250,28 @@ def format_vvv_like_type(
         setup.extend(load_vxrm(params.vxrm))
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
-    vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"
+    vector_data = get_instruction_type_config(type_name).vector_data
+    assert vector_data is not None, f"{type_name}-type instructions must have vector data"
+    vs2_at_vlmax = "vs2" in vector_data.vlmax_regs
+    vs2_vl = "vlmax" if vs2_at_vlmax else params.vl
 
     to_load = [
         VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True, egs=egs),
         VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl, egs=egs),
     ]
 
-    if not (params.vs1 == params.vs2 and params.vector_suite == "length" and enable_vs2_preload):
+    if not (params.vs1 == params.vs2 and params.vector_suite == "length" and vs2_at_vlmax):
         # Don't overwrite vs2 in this case
-        to_load.append(VectorLoad(reg="vs1", widen="vs1" in widen, egs=egs))
+        vs1_vl = "vlmax" if params.vs1 == params.vs2 and vs2_at_vlmax else params.vl
+        to_load.append(VectorLoad(reg="vs1", widen="vs1" in widen, vl=vs1_vl, egs=egs))
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
+
+    if vector_data.index_register == "vs1" and not params.ignore_vector_safety:
+        setup.extend(
+            index_register_safety(params.vs1, params.sew, 1, random_vl_reg, test_data, params, align_indices=False)
+        )
     setup.append(load_test_vtype(params, random_vl_reg))
 
     # We don't need random_vl_reg anymore

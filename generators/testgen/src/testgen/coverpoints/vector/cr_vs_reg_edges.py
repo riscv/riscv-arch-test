@@ -107,6 +107,11 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
         case _:
             raise ValueError(f"Unknown coverpoint variant: {coverpoint}")
 
+    # Any gather index in vs1 is legal, so keep its edge values instead of reducing them to [0, 2*VLMAX)
+    vector_data = get_instruction_type_config(instr_type).vector_data
+    if "vs1" in (r1_name, r2_name) and vector_data is not None and vector_data.index_register == "vs1":
+        ignore_vector_safety = True
+
     test_chunks = []
     for r1_edge in edges1:
         r1_label = make_and_register_edge_label(r1_name, r1_edge, suffix1, test_data)

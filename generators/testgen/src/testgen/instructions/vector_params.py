@@ -530,12 +530,20 @@ def generate_random_vector_params(
         preset_label = params_dict[f"{register}_val_pointer"]
 
         if preset_label is None:
+            eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
+            if suite == "base" and loaded_at_vlmax and not instr_type_config.vector_data.random_element_generator:
+                # Base-suite sources loaded at VLMAX share one random register group, so each test does not repeat it
+                label = f"vlmax_random_e{eew}_n{vlmax_count}"
+                setattr(params, f"{register}_val_pointer", label)
+                if label not in test_data.vector_labels:
+                    test_data.register_vector_data(label, eew, random_elements=vlmax_count)
+                continue
+
             # Set the label
             label = f"{register}_random_{suite}_{test_count:03d}"
             setattr(params, f"{register}_val_pointer", label)  # params.register_val_pointer = label
 
             # Register the label
-            eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
             element_count = (
                 instr_type_config.vector_data.egs if suite == "base" and not loaded_at_vlmax else vlmax_count
             )
@@ -548,9 +556,10 @@ def generate_random_vector_params(
             # Pad a short preset label, such as an edge value, with random elements up to VLMAX, so every element the
             # instruction can read holds distinct data
             elements, eew = test_data.vector_labels[preset_label]
-            label = f"{preset_label}_vlmax_{test_count:03d}"
-            padding = [random_int(eew) for _ in range(vlmax_count - len(elements))]
-            test_data.register_vector_data(label, eew, elements=[*elements, *padding])
+            label = f"{preset_label}_vlmax_n{vlmax_count}"
+            if label not in test_data.vector_labels:
+                padding = [random_int(eew) for _ in range(vlmax_count - len(elements))]
+                test_data.register_vector_data(label, eew, elements=[*elements, *padding])
             setattr(params, f"{register}_val_pointer", label)
 
     # immediate handling

@@ -600,8 +600,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
     # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED.  Its writable bits are
-    # the mcountinhibit.writable_bits Sail parameter.
+    # the mcountinhibit.writable_bits Sail parameter.  The bit of a counter that is not implemented
+    # (COUNTINHIBIT_EN false) is WARL with no specified value: it may be read-only zero or read-only one
+    # (CV32E20), which Sail cannot model, so it is walked but not checked.  Bit 1 is always read-only zero.
     csr_mcountinhibit = ("mcountinhibit", None)
+    mcountinhibit_unchecked = [(1 << n, f"!defined(UDB_COUNTINHIBIT_EN_{n})") for n in range(32) if n != 1]
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # Smepmp's MML and MMWP are sticky and the reference model has no Smepmp, so with Smepmp mseccfg bits 2:0
@@ -641,7 +644,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.extend(
+        csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
+    )
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc = test_data.new_test_chunk(test_chunks)
@@ -776,7 +781,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.extend(
+        csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
+    )
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")

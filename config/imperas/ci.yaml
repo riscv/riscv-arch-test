@@ -42,6 +42,11 @@ exclude_extensions:
   # ones for every match type, not only match=1 (NAPOT), so on rv32 tdata2 = 0xffffffff with match=0 reads back 0
   # and SdtrigSm_tdata2_translate fails on imperas-rv32gck and imperas-rv32gcv:
   # https://solvnetplus.synopsys.com/s/case/500WQ00002DvzvvYAB/mcontrol6-tdata2-loses-its-low-maskmax-bits-when-they-are-all-ones-for-every-match-type-not-only-match1-napot
+  # (fixed in Imperas-HMC101126-eng-build). Data-value triggers (select=1) on loads narrower than XLEN compare a
+  # sign-extended value, and tdata2 cut to the access size, instead of the data zero-extended against all of tdata2
+  # (norm:Sdtrig_mcontrol6_select_data), so the mcontrol6_match_size_load tests fail on imperas-rv64-max, -rv64-m
+  # and -rv64-mu:
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002IaoaoYAB/sdtrig-select1-data-triggers-compare-a-signextended-value-and-tdata2-truncated-to-the-access-size
   # (fixed in Imperas-HMC101126-eng-build). The imperas.ic files set amo_trigger=T, because AMOs must fire
   # load/store address triggers, and tcontrol_undefined=T, because Sail cannot model tcontrol with a delegable
   # medeleg[3].

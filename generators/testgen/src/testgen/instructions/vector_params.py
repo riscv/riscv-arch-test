@@ -22,6 +22,7 @@ from testgen.data.state import TestData
 from testgen.formatters import get_instruction_type_config
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig
 from testgen.instructions.vector import VectorInstructionInfo, parse_vector_instruction_info
+from testgen.instructions.vector_data import instruction_random_elements
 
 
 def get_register_emul(
@@ -501,6 +502,24 @@ def generate_random_vector_params(
             params, info, source_dest_different_eew, lmul, sew, instr_type_config.vector_data
         )
 
+    # Immediate handling, before the data, which can depend on the immediate
+    if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:
+        if instr_type_config.imm_range is not None:
+            min_val, max_val = instr_type_config.imm_range
+            params.immval = random_range(min_val, max_val, nonzero=instr_type_config.imm_nonzero)
+        elif instr_type_config.imm_bits is not None:
+            imm_bits = instr_type_config.imm_bits
+            if isinstance(imm_bits, int):
+                params.immval = random_int(
+                    imm_bits, signed=instr_type_config.imm_signed, nonzero=instr_type_config.imm_nonzero
+                )
+            else:
+                raise NotImplementedError("Vector random parameter generation only supports integer values of imm_bits")
+        else:
+            raise ValueError(
+                f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
+            )
+
     ####################################################################################
     # Randomize the instruction data & take vector registers from the register file
     ####################################################################################
@@ -547,8 +566,10 @@ def generate_random_vector_params(
             element_count = (
                 instr_type_config.vector_data.egs if suite == "base" and not loaded_at_vlmax else vlmax_count
             )
-            if instr_type_config.vector_data.random_element_generator:
+            elements = instruction_random_elements(instruction, register, element_count, eew, sew, params, test_data)
+            if elements is None and instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
+            if elements is not None:
                 test_data.register_vector_data(label, eew, elements=elements)
             else:
                 test_data.register_vector_data(label, eew, random_elements=element_count)
@@ -561,24 +582,6 @@ def generate_random_vector_params(
                 padding = [random_int(eew) for _ in range(vlmax_count - len(elements))]
                 test_data.register_vector_data(label, eew, elements=[*elements, *padding])
             setattr(params, f"{register}_val_pointer", label)
-
-    # immediate handling
-    if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:
-        if instr_type_config.imm_range is not None:
-            min_val, max_val = instr_type_config.imm_range
-            params.immval = random_range(min_val, max_val, nonzero=instr_type_config.imm_nonzero)
-        elif instr_type_config.imm_bits is not None:
-            imm_bits = instr_type_config.imm_bits
-            if isinstance(imm_bits, int):
-                params.immval = random_int(
-                    imm_bits, signed=instr_type_config.imm_signed, nonzero=instr_type_config.imm_nonzero
-                )
-            else:
-                raise NotImplementedError("Vector random parameter generation only supports integer values of imm_bits")
-        else:
-            raise ValueError(
-                f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
-            )
 
     # All vector floating point instructions use the dyn rounding mode
     if "vector_fp" in instr_type_config.instruction_class and params.csr_frm_val is None:

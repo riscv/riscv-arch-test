@@ -13,6 +13,7 @@ from testgen.data.edges import IMMEDIATE_EDGES, VECTOR_EDGES, get_general_edges
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
+from testgen.instructions.vector_data import clip_random_edge_label
 from testgen.instructions.vector_params import generate_random_vector_params
 
 _VXRM_MODES = ["rnu", "rne", "rdn", "rod"]
@@ -39,6 +40,10 @@ def make_vxrm_vs2_vs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
             for vs1_edge in VECTOR_EDGES.vx_edges:
                 vs1_label = make_and_register_edge_label("vs1", vs1_edge, vs1_suffix, test_data)
+                vs2_test_label = vs2_label
+                if vs2_edge == "random":
+                    shift = test_data.vector_labels[vs1_label][0][0]
+                    vs2_test_label = clip_random_edge_label(instr_name, shift, test_data) or vs2_label
 
                 params = generate_random_vector_params(
                     test_data,
@@ -48,7 +53,7 @@ def make_vxrm_vs2_vs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
                     additional_no_overlap={("vs1", "vs2")},
                     masked=False,
                     suite="base",
-                    vs2_val_pointer=vs2_label,
+                    vs2_val_pointer=vs2_test_label,
                     vs1_val_pointer=vs1_label,
                     vxrm=vxrm_mode,
                 )
@@ -82,12 +87,15 @@ def make_vxrm_vs2_rs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
             vs2_label = make_and_register_edge_label("vs2", vs2_edge, suffix, test_data)
 
             for rs1_edge in rs1_edges:
+                vs2_test_label = vs2_label
+                if vs2_edge == "random":
+                    vs2_test_label = clip_random_edge_label(instr_name, rs1_edge, test_data) or vs2_label
                 params = generate_random_vector_params(
                     test_data,
                     instr_name,
                     instr_type,
                     lmul=1,
-                    vs2_val_pointer=vs2_label,
+                    vs2_val_pointer=vs2_test_label,
                     vxrm=vxrm_mode,
                 )
                 # rs1val is overwritten by generate_random_vector_params; override here.
@@ -123,12 +131,15 @@ def make_vxrm_vs2_imm_cross(instr_name: str, instr_type: str, coverpoint: str, t
             vs2_label = make_and_register_edge_label("vs2", vs2_edge, suffix, test_data)
 
             for imm in imm_edges:
+                vs2_test_label = vs2_label
+                if vs2_edge == "random":
+                    vs2_test_label = clip_random_edge_label(instr_name, imm, test_data) or vs2_label
                 params = generate_random_vector_params(
                     test_data,
                     instr_name,
                     instr_type,
                     lmul=1,
-                    vs2_val_pointer=vs2_label,
+                    vs2_val_pointer=vs2_test_label,
                     vxrm=vxrm_mode,
                     immval=imm,
                 )

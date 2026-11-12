@@ -214,10 +214,11 @@ def format_vvi_like_type(
     vs2_at_vlmax = "vs2" in vector_data.vlmax_regs
     vs2_vl = "vlmax" if vs2_at_vlmax else params.vl
 
-    to_load = [
-        VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True, egs=egs),
-        VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl, egs=egs),
-    ]
+    to_load = [VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl, egs=egs)]
+    # In the base suite, a vd that overlaps a vs2 loaded at VLMAX takes vs2's data; loading vd at vl afterward would
+    # overwrite vs2's first elements
+    if not (params.vector_suite == "base" and vs2_at_vlmax and params.vd == params.vs2):
+        to_load.insert(0, VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True, egs=egs))
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)

@@ -93,10 +93,16 @@ exclude_extensions:
   - PMP_Sv_sv39_pmp_on_pa_Smode
   - PMP_Sv_sv39_pmp_on_pa_Umode
   - PMP_Zca_misaligned_tor
-  # With a grain of 8 bytes, pmpaddr[0] is read-only zero in NAPOT mode too, so no NAPOT region
-  # larger than 8 bytes can be encoded (sample_config/c64/rv64i_isa.yaml, pmpaddr bitmask
-  # 0x3FFFFFFE). pmpaddr is WARL, so this is a sample-configuration choice rather than a clear
-  # bug; open c-class MR !225 changes the sample to G = 0.
+  # The grain is 8 bytes (G = 1), but pmpaddr[G-1] = pmpaddr[0] is not stored: the pmpaddr
+  # bitmask 0x3FFFFFFE makes it read-only zero
+  # (https://gitlab.com/shaktiproject/cores/c-class/-/blob/f52775317b0e6c16272f5c42d3dd7d52282f0e65/sample_config/c64/rv64i_isa.yaml#L589,
+  # also L602, L615, L628), so in NAPOT mode it reads 0 after a write of 1. With G = 1 the spec
+  # forces no bit in NAPOT mode, and pmpaddr[G-1] keeps its value when A goes from NAPOT to OFF
+  # and back. The address matcher ignores pmpaddr[0] and takes it as 1 in NAPOT mode
+  # (https://gitlab.com/shaktiproject/uncore/caches_mmu/-/blob/787102aba7af7afeff0755a7bf8ddbfb86ea936b/src/pmp/pmp_func.bsv#L100-L103),
+  # so an entry does not match the region its pmpaddr reads as: pmpaddr = 0x20004002 (8 bytes at
+  # 0x80010008) also matches 0x80010000-0x80010007. Open c-class MR !225 changes the sample to
+  # G = 0.
   - PMP_Sm_grain-
   # FENCE and FENCE.I write 0 to a nonzero rd (src/decoder.bsv#L300-L307;
   # https://gitlab.com/shaktiproject/cores/c-class/-/issues/322; the FENCE.I case was

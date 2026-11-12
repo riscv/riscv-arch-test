@@ -1,5 +1,5 @@
 // Sail configuration for NEORV32 v1.13.7 (stnolting/neorv32 b1f3072) in the configuration of
-// .github/scripts/neorv32-act-top.vhd. Must agree with neorv32-rv32imacb-u-pmp.yaml.
+// .github/scripts/neorv32-act-top.vhd. Must agree with neorv32-rv32imacbk-u-pmp.yaml.
 {
   "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.16/sail_riscv_config_schema.json",
   "base": {
@@ -12,7 +12,7 @@
     //   https://github.com/stnolting/neorv32/blob/b1f307244928161a3fca1a010af11d5a736b5339/rtl/core/neorv32_cpu_counters.vhd#L195
     "hpmcounter_increments_in_self_hpmevent_write": false,
     // The precision of the HPM counter, upto 64 bits.
-    // HPM_CNT_WIDTH=64.  Must agree with HPM_COUNTER*_WIDTH in neorv32-rv32imacb-u-pmp.yaml.
+    // HPM_CNT_WIDTH=64.  Must agree with HPM_COUNTER*_WIDTH in neorv32-rv32imacbk-u-pmp.yaml.
     "hpmcounter_width_bits": 64,
     // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
     // not supported.  On RV32 without Sscofpmf, this can be upto 32,
@@ -24,7 +24,7 @@
     //   https://github.com/stnolting/neorv32/blob/b1f307244928161a3fca1a010af11d5a736b5339/rtl/core/neorv32_cpu_counters.vhd#L276-L285
     "hpmevent_width_bits": 9,
     // mcountinhibit keeps CY, IR and the bits of the HPM_NUM_CNTS=4 counters (3..6).
-    // Must agree with COUNTINHIBIT_EN in neorv32-rv32imacb-u-pmp.yaml.
+    // Must agree with COUNTINHIBIT_EN in neorv32-rv32imacbk-u-pmp.yaml.
     //   https://github.com/stnolting/neorv32/blob/b1f307244928161a3fca1a010af11d5a736b5339/rtl/core/neorv32_cpu_counters.vhd#L85-L110
     "mcountinhibit": {
       // Whether the `mcountinhibit` CSR is implemented.
@@ -38,7 +38,7 @@
     //   https://github.com/stnolting/neorv32/blob/b1f307244928161a3fca1a010af11d5a736b5339/docs/datasheet/cpu_csr.adoc#L451-L476
     "writable_fiom": false,
     // HPM_NUM_CNTS=4: mhpmcounter3..6 exist (bits 3..6 = 0x78) and 7..31 are read-only zero.
-    // Must agree with HPM_COUNTER_EN in neorv32-rv32imacb-u-pmp.yaml.
+    // Must agree with HPM_COUNTER_EN in neorv32-rv32imacbk-u-pmp.yaml.
     //   https://github.com/stnolting/neorv32/blob/b1f307244928161a3fca1a010af11d5a736b5339/docs/datasheet/cpu_csr.adoc#L668-L675
     "writable_hpm_counters": {
       "len": 32,
@@ -78,7 +78,7 @@
     // unaligned values are written to these CSRs, the lowest bits
     // will be zeroed to respect the specified alignment.
     // Direct mode with a 4-byte-aligned BASE, Vectored mode with a 128-byte-aligned BASE (2^7).
-    // Must agree with MTVEC_MODES and MTVEC_BASE_ALIGNMENT_* in neorv32-rv32imacb-u-pmp.yaml.
+    // Must agree with MTVEC_MODES and MTVEC_BASE_ALIGNMENT_* in neorv32-rv32imacbk-u-pmp.yaml.
     //   https://github.com/stnolting/neorv32/blob/b1f307244928161a3fca1a010af11d5a736b5339/docs/datasheet/cpu_csr.adoc#L285-L289
     "mtvec": {
       "direct": {

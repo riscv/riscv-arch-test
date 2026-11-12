@@ -4,9 +4,9 @@
 microcontroller written in VHDL by Stephan Nolting. The configuration runs it in a minimal
 testbench, pinned to release `v1.13.7` (`b1f3072`). The RTL is not patched.
 
-| Config                    | ISA                                                                                                          | Modes                 |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------- |
-| `neorv32-rv32imacb-u-pmp` | RV32IMACB_Zbc_Zcb_Zcmop_Zicond_Zicsr_Zifencei_Zicntr_Zihpm_Zihintntl_Zihintpause_Zimop_Zkn_Zks_Zkt_Smcntrpmf | M + U, 16 PMP regions |
+| Config                     | ISA                                                                                                          | Modes                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------- |
+| `neorv32-rv32imacbk-u-pmp` | RV32IMACB_Zbc_Zcb_Zcmop_Zicond_Zicsr_Zifencei_Zicntr_Zihpm_Zihintntl_Zihintpause_Zimop_Zkn_Zks_Zkt_Smcntrpmf | M + U, 16 PMP regions |
 
 NEORV32 implements privileged specification 1.12.
 
@@ -73,7 +73,7 @@ which NEORV32 lacks, so not Zk), the fast multiplier, the barrel shifter and an 
 .github/scripts/install-neorv32.sh ~/repos/neorv32-builds
 export PATH=$HOME/repos/neorv32-builds/bin:$PATH
 export NEORV32_SIM=$HOME/repos/neorv32-builds/bin/neorv32-tb
-make neorv32-rv32imacb-u-pmp
+make neorv32-rv32imacbk-u-pmp
 ```
 
 The install script builds GHDL and Verilator, converts and verilates the processor, and installs

@@ -15,7 +15,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: neorv32-rv32imacb-u-pmp
+name: neorv32-rv32imacbk-u-pmp
 description: NEORV32 v1.13.7 microcontroller configuration - RV32IMACB_Zbc_Zcb_Zcmop_Zicond_Zimop_Zkn_Zks with U-mode, 16 PMP regions and 4 HPM counters
 
 # misa reads 0x40901107: MXL=1, A, B, C, I, M, U and X (cpu_control.vhd#L1217-L1227).

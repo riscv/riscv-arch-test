@@ -15,6 +15,7 @@ M-mode.  hedeleg is 0 except where a test delegates to VS-mode.
 from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
+from testgen.priv.extensions.exceptions.ExceptionsCommon import generate_load_x0_fault_tests
 from testgen.priv.extensions.exceptions.ExceptionsHCommon import (
     DELEGATED_FAULTS,
     HEDELEG_WALK,
@@ -213,6 +214,12 @@ def make_exceptionsh(test_data: TestData) -> list[TestChunk]:
     tc = test_data.new_test_chunk(test_chunks, "H_hlv")
     for mode in ("s", "vs", "u", "vu"):
         tc.code.extend(hlv_priority_tests(test_data, CG, mode, "s"))
+
+    tc = test_data.new_test_chunk(test_chunks, "H_load_x0")
+    for mode in ("vs", "vu"):
+        tc.code.append(f"RVTEST_TSBI_GOTO_{mode.upper()}MODE")
+        tc.code.extend(generate_load_x0_fault_tests(test_data, CG, f"_{mode}"))
+        tc.code.append("RVTEST_TSBI_GOTO_SMODE")
 
     tc = test_data.new_test_chunk(test_chunks, "H_xtinst")
     tc.code.extend(xtinst_exception_tests(test_data, CG, "s"))

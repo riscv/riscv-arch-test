@@ -15,6 +15,7 @@ naturally aligned 16-byte boundary do NOT raise a misaligned fault.
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.instructions.zilx import ZILX_INSTRUCTIONS, indexed_load
 from testgen.priv.registry import add_priv_test_generator
 
 # Each row: (mnemonic, access_size_bytes, is_fp, guard).
@@ -199,6 +200,27 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
     if prev_guard is not None:
         lines.append("#endif")
 
+    index = test_data.int_regs.get_register()
+    lines.append("#ifdef ZILX_SUPPORTED")
+    for mnemonic, instruction in ZILX_INSTRUCTIONS.items():
+        if instruction.rv64_only:
+            lines.append("#if __riscv_xlen == 64")
+        for offset in range(16 - instruction.size + 1):
+            setup, load, cleanup = indexed_load(mnemonic, dest_reg, addr_reg, index, offset)
+            lines.extend(
+                [
+                    f"addi x{addr_reg}, x{base_reg}, 0",
+                    *setup,
+                    test_data.add_testcase(f"{mnemonic}_off{offset}", _size_coverpoint(instruction.size), covergroup),
+                    load,
+                    *cleanup,
+                    write_sigupd(dest_reg, test_data),
+                ]
+            )
+        if instruction.rv64_only:
+            lines.append("#endif")
+    lines.append("#endif")
+    test_data.int_regs.return_register(index)
     test_data.int_regs.return_registers([addr_reg, dest_reg, sentinel_reg, base_reg])
     test_data.float_regs.return_register(fp_reg)
     return lines

@@ -670,7 +670,7 @@
     "Shvstvecd": { "supported": false },
     "Sstvecd": { "supported": false },
     "Svukte": { "supported": false },
-    "Zilx": { "supported": false },
+    "Zilx": { "supported": true },
     "Zibi": {
       "supported": true
     },

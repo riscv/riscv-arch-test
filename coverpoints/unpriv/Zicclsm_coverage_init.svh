@@ -40,3 +40,22 @@
     ZicclsmZca_c_sdsp_cg = new(); ZicclsmZca_c_sdsp_cg.set_inst_name("obj_ZicclsmZca_c_sdsp");
 `endif
 `endif
+`ifdef ZILX_SUPPORTED
+    ZicclsmZilx_lxh_cg = new(); ZicclsmZilx_lxh_cg.set_inst_name("obj_ZicclsmZilx_lxh");
+    ZicclsmZilx_lxhu_cg = new(); ZicclsmZilx_lxhu_cg.set_inst_name("obj_ZicclsmZilx_lxhu");
+    ZicclsmZilx_lxsh_cg = new(); ZicclsmZilx_lxsh_cg.set_inst_name("obj_ZicclsmZilx_lxsh");
+    ZicclsmZilx_lxshu_cg = new(); ZicclsmZilx_lxshu_cg.set_inst_name("obj_ZicclsmZilx_lxshu");
+    ZicclsmZilx_lxsw_cg = new(); ZicclsmZilx_lxsw_cg.set_inst_name("obj_ZicclsmZilx_lxsw");
+    ZicclsmZilx_lxw_cg = new(); ZicclsmZilx_lxw_cg.set_inst_name("obj_ZicclsmZilx_lxw");
+`ifdef UDB_MXLEN_64
+    ZicclsmZilx_lxd_cg = new(); ZicclsmZilx_lxd_cg.set_inst_name("obj_ZicclsmZilx_lxd");
+    ZicclsmZilx_lxsd_cg = new(); ZicclsmZilx_lxsd_cg.set_inst_name("obj_ZicclsmZilx_lxsd");
+    ZicclsmZilx_lxsuwd_cg = new(); ZicclsmZilx_lxsuwd_cg.set_inst_name("obj_ZicclsmZilx_lxsuwd");
+    ZicclsmZilx_lxsuwh_cg = new(); ZicclsmZilx_lxsuwh_cg.set_inst_name("obj_ZicclsmZilx_lxsuwh");
+    ZicclsmZilx_lxsuwhu_cg = new(); ZicclsmZilx_lxsuwhu_cg.set_inst_name("obj_ZicclsmZilx_lxsuwhu");
+    ZicclsmZilx_lxsuww_cg = new(); ZicclsmZilx_lxsuww_cg.set_inst_name("obj_ZicclsmZilx_lxsuww");
+    ZicclsmZilx_lxsuwwu_cg = new(); ZicclsmZilx_lxsuwwu_cg.set_inst_name("obj_ZicclsmZilx_lxsuwwu");
+    ZicclsmZilx_lxswu_cg = new(); ZicclsmZilx_lxswu_cg.set_inst_name("obj_ZicclsmZilx_lxswu");
+    ZicclsmZilx_lxwu_cg = new(); ZicclsmZilx_lxwu_cg.set_inst_name("obj_ZicclsmZilx_lxwu");
+`endif
+`endif

@@ -15,6 +15,7 @@ from collections.abc import Mapping, Sequence
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.instructions.zilx import ZILX_INSTRUCTIONS, indexed_load
 
 
 def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: str) -> list[str]:
@@ -545,6 +546,29 @@ def generate_load_address_misaligned_tests(
             )
         lines.append("#endif")
 
+    lines.append("#ifdef ZILX_SUPPORTED")
+    for op, instruction in ZILX_INSTRUCTIONS.items():
+        if instruction.rv64_only:
+            lines.append("#if __riscv_xlen == 64")
+        addr, result, index = test_data.int_regs.get_registers(3)
+        for offset in range(8):
+            index_setup, load, cleanup = indexed_load(op, result, addr, index, offset)
+            lines.extend([f"LA(x{addr}, scratch)", *index_setup])
+            if use_sentinel:
+                lines.append(f"LI(x{result}, 0xB0BACAFE)")
+            lines.extend(
+                [
+                    *setup,
+                    test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
+                    load,
+                    *cleanup,
+                    write_sigupd(result, test_data),
+                ]
+            )
+        test_data.int_regs.return_registers([addr, result, index])
+        if instruction.rv64_only:
+            lines.append("#endif")
+    lines.append("#endif")
     return lines
 
 
@@ -615,7 +639,22 @@ def generate_load_access_fault_tests(
         )
         if use_sigupd:
             lines.append(write_sigupd(check_reg, test_data))
-    lines.extend(["", "#endif", "#endif"])
+    lines.extend(["", "#endif", "#ifdef ZILX_SUPPORTED"])
+    index = test_data.int_regs.get_register()
+    for op, instruction in ZILX_INSTRUCTIONS.items():
+        if instruction.rv64_only:
+            lines.append("#if __riscv_xlen == 64")
+        index_setup, load, cleanup = indexed_load(op, check_reg, addr_reg, index)
+        lines.extend([f"LA(x{addr_reg}, {address})", *index_setup])
+        if use_sigupd:
+            lines.append(f"LI(x{check_reg}, 0xB0BACAFE)")
+        lines.extend([*setup, test_data.add_testcase(f"{op}_fault", coverpoint, covergroup), load, *cleanup])
+        if use_sigupd:
+            lines.append(write_sigupd(check_reg, test_data))
+        if instruction.rv64_only:
+            lines.append("#endif")
+    test_data.int_regs.return_register(index)
+    lines.extend(["#endif", "#endif"])
 
     test_data.int_regs.return_registers([addr_reg, check_reg])
     return lines

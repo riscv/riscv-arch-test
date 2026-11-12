@@ -13,6 +13,7 @@ from typing import Literal
 
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
+from testgen.instructions.zilx import ZILX_INSTRUCTIONS, indexed_load
 
 _OFFSETS = ("address", "address-4", "address+4", "address+g-4", "address+g")
 _AMOS = ("amoadd", "amoand", "amoor", "amoxor", "amomax", "amomaxu", "amomin", "amominu", "amoswap")
@@ -71,6 +72,32 @@ def gen_rwx(test_data: TestData, case: str, coverpoint: Cross, region: str = "TE
         "lw a4, 0(a5)",
         write_sigupd(14, test_data),
     ]
+
+
+def gen_zilx(test_data: TestData, case: str, coverpoint: Cross, region: str) -> list[str]:
+    lines: list[str] = []
+    addr, result, index = test_data.int_regs.get_registers(3)
+    lines.append("#ifdef ZILX_SUPPORTED")
+    for instruction, details in ZILX_INSTRUCTIONS.items():
+        if details.rv64_only:
+            lines.append("#if __riscv_xlen == 64")
+        setup, load, cleanup = indexed_load(instruction, result, addr, index)
+        lines.extend(
+            [
+                f"LA(x{addr}, {region})",
+                f"LI(x{result}, 0xB0BACAFE)",
+                *setup,
+                _testcase(test_data, f"{case}_{instruction}", coverpoint, instruction),
+                load,
+                *cleanup,
+                write_sigupd(result, test_data),
+            ]
+        )
+        if details.rv64_only:
+            lines.append("#endif")
+    lines.append("#endif")
+    test_data.int_regs.return_registers([addr, result, index])
+    return lines
 
 
 def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: Cross, bits: str) -> list[str]:
@@ -157,7 +184,7 @@ def gen_rwx_all(test_data: TestData, case: str, coverpoint: Cross, region: str =
         )
         if rv64_only:
             lines.append("#endif")
-    return lines
+    return lines + gen_zilx(test_data, case, coverpoint, region)
 
 
 def gen_rwx_na4(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:

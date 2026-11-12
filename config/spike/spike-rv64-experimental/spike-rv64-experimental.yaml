@@ -13,6 +13,7 @@ implemented_extensions:
   - { name: Sv39, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Zibi, version: "= 0.7" }
+  - { name: Zilx, version: "= 0.1.0" }
   - { name: Zicsr, version: "= 2.0" }
 params:
   # Trap delegation: the writable medeleg and mideleg bits (sail.json base.medeleg and

@@ -35,6 +35,17 @@ exclude_extensions:
   - InterruptsSm_trigger_U
   - InterruptsSm_wfi_timeout_U
   - InterruptsSm_wfi_U
+  # Same cause on a PMP instruction access fault: the fault response carries the fetch address as
+  # the instruction bits (eclass.bsv#L191-L193), stage 1 decompresses its low halfword
+  # (stage1.bsv#L418-L420), and stage 2 reports PC + that instruction's immediate
+  # (stage2.bsv#L195, alu.bsv#L190). A fetch from 0x80005008 (c.lw, immediate 0x20) reports
+  # 0x80005028, while one from 0x80009008 reports 0x80009008, so which tests fail depends on
+  # where the linker puts the region.
+  - PMP_Sm_tor_legal_lxwr-01-
+  - PMP_U_cfg_XWR-
+  - PMP_U_cfg_XWR_unlocked
+  - PMP_U_tor_legal_lxwr-01-
+  - PMP_Zca_legal_lwrx
   # The instruction after a wfi executes with the wfi's PC (stage1.bsv#L426-L428).
   - InterruptsSm_wfi_M
   # minstret never increments, because the rule that increments it conflicts with the commit

@@ -7956,7 +7956,6 @@ covergroup Vf64_vfmul_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef V_SUPPORTED
 covergroup Vf64_vfmv_f_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
@@ -8191,8 +8190,6 @@ covergroup Vf64_vfmv_f_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
-`ifdef V_SUPPORTED
 covergroup Vf64_vfmv_s_f_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
@@ -8370,7 +8367,6 @@ covergroup Vf64_vfmv_s_f_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
 covergroup Vf64_vfmv_v_f_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
@@ -15690,7 +15686,6 @@ covergroup Vf64_vfsgnjx_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef V_SUPPORTED
 covergroup Vf64_vfslide1down_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
@@ -15918,8 +15913,6 @@ covergroup Vf64_vfslide1down_vf_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
-`ifdef V_SUPPORTED
 covergroup Vf64_vfslide1up_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
@@ -16137,7 +16130,6 @@ covergroup Vf64_vfslide1up_vf_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
 covergroup Vf64_vfsqrt_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
@@ -20140,16 +20132,12 @@ function void vf64_sample(int hart, int issue, ins_t ins);
             "vfmul.vv"     : begin
                 Vf64_vfmul_vv_cg.sample(ins);
             end
-`ifdef V_SUPPORTED
             "vfmv.f.s"     : begin
                 Vf64_vfmv_f_s_cg.sample(ins);
             end
-`endif
-`ifdef V_SUPPORTED
             "vfmv.s.f"     : begin
                 Vf64_vfmv_s_f_cg.sample(ins);
             end
-`endif
             "vfmv.v.f"     : begin
                 Vf64_vfmv_v_f_cg.sample(ins);
             end
@@ -20219,16 +20207,12 @@ function void vf64_sample(int hart, int issue, ins_t ins);
             "vfsgnjx.vv"     : begin
                 Vf64_vfsgnjx_vv_cg.sample(ins);
             end
-`ifdef V_SUPPORTED
             "vfslide1down.vf"     : begin
                 Vf64_vfslide1down_vf_cg.sample(ins);
             end
-`endif
-`ifdef V_SUPPORTED
             "vfslide1up.vf"     : begin
                 Vf64_vfslide1up_vf_cg.sample(ins);
             end
-`endif
             "vfsqrt.v"     : begin
                 Vf64_vfsqrt_v_cg.sample(ins);
             end

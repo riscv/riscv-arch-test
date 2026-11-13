@@ -127,18 +127,10 @@
 `ifdef ZVE64X_SUPPORTED
     Vx32_vnclipu_wx_cg = new(); Vx32_vnclipu_wx_cg.set_inst_name("obj_Vx32_vnclipu_wx");
 `endif
-`ifdef ZVE64X_SUPPORTED
     Vx32_vnmsac_vv_cg = new(); Vx32_vnmsac_vv_cg.set_inst_name("obj_Vx32_vnmsac_vv");
-`endif
-`ifdef ZVE64X_SUPPORTED
     Vx32_vnmsac_vx_cg = new(); Vx32_vnmsac_vx_cg.set_inst_name("obj_Vx32_vnmsac_vx");
-`endif
-`ifdef ZVE64X_SUPPORTED
     Vx32_vnmsub_vv_cg = new(); Vx32_vnmsub_vv_cg.set_inst_name("obj_Vx32_vnmsub_vv");
-`endif
-`ifdef ZVE64X_SUPPORTED
     Vx32_vnmsub_vx_cg = new(); Vx32_vnmsub_vx_cg.set_inst_name("obj_Vx32_vnmsub_vx");
-`endif
 `ifdef ZVE64X_SUPPORTED
     Vx32_vnsra_wi_cg = new(); Vx32_vnsra_wi_cg.set_inst_name("obj_Vx32_vnsra_wi");
 `endif

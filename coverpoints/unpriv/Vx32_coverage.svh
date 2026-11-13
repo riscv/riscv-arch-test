@@ -21617,7 +21617,6 @@ covergroup Vx32_vnclipu_wx_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 `endif
-`ifdef ZVE64X_SUPPORTED
 covergroup Vx32_vnmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -21831,8 +21830,6 @@ covergroup Vx32_vnmsac_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
-`ifdef ZVE64X_SUPPORTED
 covergroup Vx32_vnmsac_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22024,8 +22021,6 @@ covergroup Vx32_vnmsac_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
-`ifdef ZVE64X_SUPPORTED
 covergroup Vx32_vnmsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22239,8 +22234,6 @@ covergroup Vx32_vnmsub_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
-`ifdef ZVE64X_SUPPORTED
 covergroup Vx32_vnmsub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22432,7 +22425,6 @@ covergroup Vx32_vnmsub_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
 `ifdef ZVE64X_SUPPORTED
 covergroup Vx32_vnsra_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -47185,26 +47177,18 @@ function void vx32_sample(int hart, int issue, ins_t ins);
                 Vx32_vnclipu_wx_cg.sample(ins);
             end
 `endif
-`ifdef ZVE64X_SUPPORTED
             "vnmsac.vv"     : begin
                 Vx32_vnmsac_vv_cg.sample(ins);
             end
-`endif
-`ifdef ZVE64X_SUPPORTED
             "vnmsac.vx"     : begin
                 Vx32_vnmsac_vx_cg.sample(ins);
             end
-`endif
-`ifdef ZVE64X_SUPPORTED
             "vnmsub.vv"     : begin
                 Vx32_vnmsub_vv_cg.sample(ins);
             end
-`endif
-`ifdef ZVE64X_SUPPORTED
             "vnmsub.vx"     : begin
                 Vx32_vnmsub_vx_cg.sample(ins);
             end
-`endif
 `ifdef ZVE64X_SUPPORTED
             "vnsra.wi"     : begin
                 Vx32_vnsra_wi_cg.sample(ins);

@@ -87,4 +87,4 @@ coverpoints:
     expectation: The exception traps to M-mode with mtval2 = 0 and mtinst = 0, or for lw and sw the transformed instruction.
     bins: "3"
     notes: |-
-      cp_xtinst_instr_misaligned is compiled only without Zca, and the load and store cases only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  Of the current H configurations only sargantana-rv64imafdb assembles them.
+      cp_xtinst_instr_misaligned is compiled only without Zca, and the load and store cases only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  None of the current H configurations assembles them.

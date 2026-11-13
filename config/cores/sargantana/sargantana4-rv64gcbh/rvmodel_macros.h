@@ -1,5 +1,5 @@
 // rvmodel_macros.h
-// RVMODEL macro definitions for the BSC Sargantana core tile (bsc-loca/core_tile @ 2528e7df)
+// RVMODEL macro definitions for the BSC Sargantana core tile (bsc-loca/core_tile @ 1b9529b5, v4.0.0)
 // Copyright (c) 2026, Harvey Mudd College
 // SPDX-License-Identifier: Apache-2.0
 
@@ -11,7 +11,7 @@
 //   "if (data & 1) return 1; // Simulation finished"
 // and otherwise treating the written value as a pointer to an eight-doubleword
 // "magicmem" block whose first word is a syscall number.
-// https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/models/cxx/dpi_host.cpp#L15-L29
+// https://github.com/bsc-loca/core_tile/blob/1b9529b556b2fb88d73f1b76e790743572500efb/simulator/models/cxx/dpi_host.cpp#L15-L29
 //
 // tohost, fromhost and the syscall block each get their own 64-byte word: the tile
 // matches a tohost write by the address of the HPDcache write-buffer request, which is
@@ -44,7 +44,7 @@
 // an exit code of 0 is the only one the tile reports as success:
 //   "exit_code = dc_write_req_data_i[15:1];
 //    if (exit_code == 0) begin ... $write("Run finished correctly"); $finish;"
-// https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/models/hdl/l2_behav.sv#L447-L462
+// https://github.com/bsc-loca/core_tile/blob/1b9529b556b2fb88d73f1b76e790743572500efb/simulator/models/hdl/l2_behav.sv#L653-L668
 // A single sd is used rather than a pair of sw so that the doubleword reaches the write
 // buffer as one request whose low 64 bits are the tohost value.
 #define RVMODEL_HALT_PASS  \
@@ -72,24 +72,21 @@
 
 // Write the whole string with one HTIF SYS_write (64) rather than a character at a time:
 // the tile has no character-at-a-time HTIF device protocol, only the syscall block
-// ("switch (magicmem[0]) { case SYS_write: ... write(magicmem[1], buf, magicmem[3])"),
+// ("switch (magicmem[0]) { case SYS_write: ... write(magicmem[1], buf, length)"),
 // and a per-character syscall would need the settle loop below on every character.
-// https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/models/cxx/dpi_host.cpp#L31-L48
+// https://github.com/bsc-loca/core_tile/blob/1b9529b556b2fb88d73f1b76e790743572500efb/simulator/models/cxx/dpi_host.cpp#L31-L48
 //
-// The string is copied into htif_iobuf first because the DPI fetches the buffer with
-// word-aligned reads off the buffer base:
-//   "uint32_t data = memory_dpi_read_contents(magicmem[2] + (i & ~0b11));"
-// and the backing memory asserts on an unaligned address
-//   ("assert((addr & 0x3) == 0);", simulator/models/cxx/dpi_perfect_memory.cpp#L194),
-// so handing it a string that does not start on a 4-byte boundary aborts the
-// simulator.  ACT's message strings are plain .string literals at arbitrary
-// alignment, so the copy is not optional.
+// The string is copied into htif_iobuf first.  core_tile v3.1 fetched the buffer with
+// word-aligned reads off an unaligned base and the backing memory asserted on it;
+// v4.0 aligns each read ("memory_dpi_read_contents((magicmem[2] + i) & ~0b11)"), so the
+// copy is no longer required, but it costs nothing and keeps the buffer in its own
+// 64-byte word away from tohost (see link.ld).
 //
 // The settle loop is required too.  dpi_host reads the syscall block out of the DPI
 // backing memory at the instant the tohost write request is seen, but the stores that
 // filled the block are still in the HPDcache write buffer at that point, so without the
 // delay the model reads magicmem[0] == 0 and prints "Unknown tohost syscall 0" instead
-// of the string.  Measured on core_tile @ 2528e7df: a four-iteration loop is already
+// of the string.  Measured on core_tile @ 2528e7df (v3.1): a four-iteration loop is already
 // enough and zero delay always fails; 100 is used for margin.
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)               \
   la _R2, htif_iobuf         ;/* word-aligned staging buffer */ \
@@ -126,7 +123,7 @@
 // Address 0 lies outside every mapped section of the default core configuration
 // (InitMappedBase/InitMappedEnd cover 0x40000000-0x3fffffffff, 0x100-0xffff and
 // 0x10000-0x10020), so an access to it raises an access fault.
-// https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/drac_pkg.sv#L1297-L1305
+// https://github.com/bsc-loca/sargantana/blob/8db4398bd91a42e581c1ba83858d420ddfa6e923/includes/drac_pkg.sv#L1320-L1332
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 // Interrupt Latency //
@@ -139,7 +136,7 @@
 // simulation testbench ties every interrupt and the time input off.
 //   "// No support for timer, interrupts, etc in simulation
 //    .time_i(64'd0), .irq_i(1'b0), .soft_irq_i(1'b0), .time_irq_i(1'b0),"
-// https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/sim_top.sv#L263-L268
+// https://github.com/bsc-loca/core_tile/blob/1b9529b556b2fb88d73f1b76e790743572500efb/simulator/sim_top.sv#L298-L303
 // With it undefined, ACT skips the machine-timer interrupt tests.  RVMODEL_TIMER_INT_SOON_DELAY
 // is still required to assemble.
 #define RVMODEL_TIMER_INT_SOON_DELAY 100

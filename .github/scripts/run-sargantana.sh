@@ -14,6 +14,10 @@ TILE="${SARGANTANA_TILE:-$HOME/repos/core_tile}"
 # +max-cycles=0 runs forever, and the testbench's no-commit deadlock detector does not fire
 # while a test spins on a load, so cap the run.
 MAX_CYCLES=3000000
+# The testbench's no-commit deadlock detector defaults to 200 cycles, shorter than a cold
+# two-stage (VS-stage over G-stage) page-table walk, which reports healthy hypervisor tests
+# as deadlocked. Allow 20000 cycles without a commit.
+DEADLOCK_CYCLES=20000
 TIMEOUT=600
 ELF=""
 
@@ -58,7 +62,7 @@ SIM="$TILE/sim"
 # The boot ROM jumps to 0x8000_0000, where the tests link. Its image path defaults to
 # bootrom.hex in the working directory, so pass it explicitly.
 out="$(timeout --foreground -k 5 "$TIMEOUT" \
-  "$SIM" +bootrom="$TILE/bootrom.hex" +max-cycles="$MAX_CYCLES" +load="$ELF" 2>&1)"
+  "$SIM" +bootrom="$TILE/bootrom.hex" +max-cycles="$MAX_CYCLES" +deadlock-cycles="$DEADLOCK_CYCLES" +load="$ELF" 2>&1)"
 rc=$?
 printf '%s\n' "$out"
 

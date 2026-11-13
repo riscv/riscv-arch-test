@@ -122,7 +122,7 @@ coverpoints:
     expectation: Instruction misaligned trap into HS-mode with htval = 0 and htinst = 0.
     bins: "1"
     notes: |-
-      Compiled only without Zca, when misaligned fetches trap.  Of the current H configurations only sargantana-rv64imafdb assembles it.
+      Compiled only without Zca, when misaligned fetches trap.  None of the current H configurations assembles it.
   - name: cp_xtinst_instr_access
     goal: Instruction access fault writes xtinst
     description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, jump to the access-fault address.
@@ -149,7 +149,7 @@ coverpoints:
     expectation: Load misaligned exception into HS-mode with htval = 0 and htinst = 0 or the transformed lw.
     bins: "1"
     notes: |-
-      Compiled only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  Of the current H configurations only sargantana-rv64imafdb assembles it.
+      Compiled only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  None of the current H configurations assembles it.
   - name: cp_xtinst_load_access
     goal: load access fault writes xtinst
     description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, lw from the access-fault address.
@@ -161,7 +161,7 @@ coverpoints:
     expectation: Store misaligned exception into HS-mode with htval = 0 and htinst = 0 or the transformed sw.
     bins: "1"
     notes: |-
-      Compiled only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  Of the current H configurations only sargantana-rv64imafdb assembles it.
+      Compiled only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  None of the current H configurations assembles it.
   - name: cp_xtinst_store_access
     goal: store access fault writes xtinst
     description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, sw to the access-fault address.

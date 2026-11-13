@@ -4,8 +4,6 @@
 
 ci_enabled: true
 exclude_extensions:
-  # Sail lacks Ssaia/Sscsrind, so expects illegal instead of virtual instruction for their CSRs from VU-mode.
-  - H_vucsr
   # Max configs: Whisper implements tcontrol while using mstatus.MIE/SIE for breakpoint
   # reentrancy, which Sail cannot model (it has tcontrol only with Use_tcontrol,
   # https://github.com/riscv/sail-riscv/issues/2039), so the reference traps on the tcontrol accesses.
@@ -13,13 +11,6 @@ exclude_extensions:
   - SdtrigSm_csr_access_global
   - SdtrigSm_tcontrol
   - SdtrigS_csr_access_global
-  # Sail 0.16 lacks Smaia and Smrnmi, whose CSRs Whisper implements
-  - Ssstrict_Sm_CSR
-  # Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
-  # In VS-mode, Whisper raises virtual instruction on the AIA and Sscsrind CSRs (siselect/sireg, stopi,
-  # vsiselect, vstopi, vstopei, hvien), where Sail raises illegal instruction because it lacks them.
-  - Ssstrict_S_CSR
-  - Ssstrict_H_vs_CSR
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

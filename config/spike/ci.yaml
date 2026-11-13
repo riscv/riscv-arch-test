@@ -8,9 +8,6 @@ ci_enabled: true
 exclude_configs:
   - spike-rv64-experimental
 exclude_extensions:
-  # Sail lacks Ssaia/Sscsrind, so expects illegal instead of virtual instruction for their CSRs from VU-mode
-  # (https://github.com/riscv/sail-riscv/issues/1134).
-  - H_vucsr
   # spike-rv32-max only: scontext is 16 bits wide on RV32 in Spike but 32 bits in Sail (cp_context).
   # https://github.com/riscv/sail-riscv/issues/2054
   # The exclusion applies to every Spike config, so the other configs, which pass, lose Smstateen too until

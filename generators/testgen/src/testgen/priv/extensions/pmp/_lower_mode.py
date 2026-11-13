@@ -187,7 +187,7 @@ def _make_legal_chunk(test_data: TestData, mode: Mode, amode: str, part: int | N
     """The six unlocked XWR encodings against one NA4, NAPOT or TOR region, from the lower mode."""
     cases = UNLOCKED_LXWR_CASES if part is None else UNLOCKED_LXWR_CASES[3 * (part - 1) : 3 * part]
     if amode == "tor":
-        cases = [(lxwr, entry) for (lxwr, _), entry in zip(cases, TOR_ENTRIES[part - 1 if part else 0], strict=True)]
+        cases = [(lxwr, entry) for (lxwr, _), entry in zip(cases, TOR_ENTRIES, strict=True)]
     name = f"{amode}_legal_lxwr" + ("" if part is None else f"-0{part}")
     generator = {"na4": gen_rwx_na4, "napot": gen_rwx_napot, "tor": gen_rwx_legal}[amode]
     chunk = test_data.begin_test_chunk(f"{mode.letter}_{name}")

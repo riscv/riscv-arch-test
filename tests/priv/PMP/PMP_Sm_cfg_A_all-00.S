@@ -58,53 +58,128 @@ RVTEST_BEGIN
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg0:
   # Write x4 to pmpcfg0, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg0, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg0_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg2:
   # Write x4 to pmpcfg2, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg2, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg2_str)
 #if __riscv_xlen == 32
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg1:
   # Write x4 to pmpcfg1, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg1, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg1, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg1_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg3:
   # Write x4 to pmpcfg3, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg3, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg3_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg4:
   # Write x4 to pmpcfg4, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg4_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg6:
   # Write x4 to pmpcfg6, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg6, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg6_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg8:
   # Write x4 to pmpcfg8, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg8, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg8_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg10:
   # Write x4 to pmpcfg10, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg10, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg10_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg12:
   # Write x4 to pmpcfg12, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg12, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg12_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg14:
   # Write x4 to pmpcfg14, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg14, PMP_Sm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg14_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg5:
   # Write x4 to pmpcfg5, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg5, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg5, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg5_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg7:
   # Write x4 to pmpcfg7, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg7, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg7, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg7_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg9:
   # Write x4 to pmpcfg9, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg9, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg9, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg9_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg11:
   # Write x4 to pmpcfg11, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg11, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg11, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg11_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg13:
   # Write x4 to pmpcfg13, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg13, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg13, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg13_str)
+#if __riscv_xlen == 64
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+#else
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
+#endif
 PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15:
   # Write x4 to pmpcfg15, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x4, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15, PMP_Sm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15_str)

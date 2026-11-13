@@ -65,103 +65,107 @@ COVERGROUP = SUITE.covergroup
 def _generate_cp_trigger_sm(
     test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
 ) -> None:
-    """Trigger each interrupt across mideleg, mtvec.MODE, mstatus.SIE, and mstatus.MIE.
+    """Raise each interrupt in ``priv`` mode with every bit of mie set, for each mideleg = 0s/1s, mtvec.MODE,
+    mstatus.SIE and mstatus.MIE.
 
-    With H, each VS-level interrupt is also triggered with hideleg delegating it to VS-mode, where vstvec.MODE and
-    vsstatus.SIE take the values of mtvec.MODE and mstatus.SIE.  Only VS-mode (with vsstatus.SIE = 1) and VU-mode
-    take it.
+    With H, raise each VS-level interrupt again with hideleg delegating it to VS-mode, for each vstvec.MODE and
+    vsstatus.SIE.
     """
 
     ######################################
     banner = "cp_trigger / cp_trigger_reg / cp_trigger_sti_sstc"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}"))
     title = (
         f"Trigger each interrupt in {priv} mode with mie=1s x mideleg = zeros/ones x mtvec.MODE=DIRECT/VECTORED"
         " x mstatus.SIE=0/1 x mstatus.MIE=0/1 (x hideleg=0/1 for the VS-level interrupts)"
     )
-    tc.section_header = comment_banner(banner, title)
     tmp_reg = test_data.int_regs.get_register()
 
-    int_types = [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]
-    # The VS-level cases add more code; S-mode also needs an earlier boundary to balance its interrupt paths.
-    split_after = 8 if priv == "S" else 10
-    for index, int_type in enumerate(int_types):
-        if priv != "M" and index == split_after:
-            tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}_2"))
-            tc.output_split_name = suite.split(f"trigger_{priv}")
-            tc.section_header = comment_banner(banner, title)
-        macro = int_macro[int_type]
-        guard = guard_symbol(int_type)
-        for hideleg, mideleg in [(h, m) for h in ([0, 1] if int_type in vs_ints else [0]) for m in [0, -1]]:
-            delegstr = "zeros" if mideleg == 0 else "ones"
-            cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type, mideleg == -1)
-            # mideleg only exists with S-mode. Without it the mideleg = zeros cases still run and just
-            # skip the write, while the mideleg = ones cases are meaningless and are left out entirely.
-            case_open = ["#ifdef S_SUPPORTED // only test delegation if S_SUPPORTED"] if mideleg == -1 else []
-            case_close = ["#endif // S_SUPPORTED"] if mideleg == -1 else []
-            write_open = ["#ifdef S_SUPPORTED // only write mideleg if S_SUPPORTED"] if mideleg == 0 else []
-            write_close = ["#endif // S_SUPPORTED"] if mideleg == 0 else []
-            for mode in [0, 1]:
-                for sie in [0, 1]:
-                    for mie in [0, 1]:
-                        modecmd = "csrs" if mode == 1 else "csrc"
-                        siecmd = "csrs" if sie == 1 else "csrc"
-                        miecmd = "csrs" if mie == 1 else "csrc"
-                        vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, sie, tmp_reg)
-                        tc.code += [
-                            f"#ifdef {guard}",
-                            *case_open,
-                            f"#ifdef UDB_MTVEC_MODES_{mode}",
-                            *vs_open,
-                            *write_open,
-                            f"LI(x{tmp_reg}, {mideleg})",
-                            f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}",
-                            *write_close,
-                            f"LI(x{tmp_reg}, 1)",
-                            f"{modecmd} mtvec, x{tmp_reg} # mtvec.mode = {mode}",
-                            # The trap handler clears the taken interrupt's xIE bit, so re-enable before every case
-                            f"LI(x{tmp_reg}, -1)",
-                            f"csrw mie, x{tmp_reg} # mie = 1s",
-                            f"LI(x{tmp_reg}, 0x88) # MIE, MPIE",
-                            f"{miecmd} mstatus, x{tmp_reg} # mstatus.MIE = {mie}",
-                            f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
-                            f"{siecmd} mstatus, x{tmp_reg} # mstatus.SIE = {sie}",
-                            # Leave a nonzero xtval so the trap handler's xtval == 0 check sees the interrupt write it.
-                            # The T-SBI ecall into S or U zeroes mtval again; it does not touch stval.
-                            f"auipc x{tmp_reg}, 0 # nonzero valid address",
-                            f"csrw mtval, x{tmp_reg} # mtval = nonzero",
-                            "#ifdef S_SUPPORTED",
-                            f"csrw stval, x{tmp_reg} # stval = nonzero",
-                            "#endif // S_SUPPORTED",
-                            # Likewise the second trap value and xtinst. The ecall zeroes mtval2 and mtinst but
-                            # not htval and htinst. xtinst gets a transformed load, lw x1, 0(x0).
-                            "#ifdef H_SUPPORTED",
-                            f"csrw mtval2, x{tmp_reg} # mtval2 = nonzero",
-                            f"csrw htval, x{tmp_reg} # htval = nonzero",
-                            f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
-                            f"csrw mtinst, x{tmp_reg} # mtinst = nonzero",
-                            f"csrw htinst, x{tmp_reg} # htinst = nonzero",
-                            "#endif // H_SUPPORTED",
-                            test_data.add_testcase(
-                                f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}"
-                                + ("_hideleg" if hideleg else ""),
-                                cp,
-                                COVERGROUP,
-                            ),
-                            *mode_enter(suite, priv),
-                            f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
-                            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
-                            f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
-                            *mode_exit(suite, priv),
-                            *vs_close,
-                            f"#endif // UDB_MTVEC_MODES_{mode}",
-                            *case_close,
-                            f"#endif // {guard}",
-                            "",
-                        ]
+    # One test file per group keeps each file short enough for slow targets: the M- and S-level interrupts,
+    # the interrupts raised by writing a pending bit or stimecmp, and the VS-level interrupts.
+    groups = {"": [*machine_ints, *supervisor_ints], "_reg": [*reg_ints, *sstc_ints], "_vs": [*vs_ints]}
+    for suffix, int_types in groups.items():
+        tc = test_data.new_test_chunk(test_chunks, f"trigger_{priv}{suffix}")
+        tc.section_header = comment_banner(banner, title)
+        for int_type in int_types:
+            _trigger_sm_cases(test_data, tc, suite, priv, int_type, tmp_reg)
 
     test_data.int_regs.return_register(tmp_reg)
+
+
+def _trigger_sm_cases(
+    test_data: TestData, tc: TestChunk, suite: InterruptSuite, priv: str, int_type: str, tmp_reg: int
+) -> None:
+    """The _generate_cp_trigger_sm cases for one interrupt."""
+    macro = int_macro[int_type]
+    guard = guard_symbol(int_type)
+    for hideleg, mideleg in [(h, m) for h in ([0, 1] if int_type in vs_ints else [0]) for m in [0, -1]]:
+        delegstr = "zeros" if mideleg == 0 else "ones"
+        cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type, mideleg == -1)
+        # mideleg only exists with S-mode. Without it the mideleg = zeros cases still run and just
+        # skip the write, while the mideleg = ones cases are meaningless and are left out entirely.
+        case_open = ["#ifdef S_SUPPORTED // only test delegation if S_SUPPORTED"] if mideleg == -1 else []
+        case_close = ["#endif // S_SUPPORTED"] if mideleg == -1 else []
+        write_open = ["#ifdef S_SUPPORTED // only write mideleg if S_SUPPORTED"] if mideleg == 0 else []
+        write_close = ["#endif // S_SUPPORTED"] if mideleg == 0 else []
+        for mode in [0, 1]:
+            for sie in [0, 1]:
+                for mie in [0, 1]:
+                    modecmd = "csrs" if mode == 1 else "csrc"
+                    siecmd = "csrs" if sie == 1 else "csrc"
+                    miecmd = "csrs" if mie == 1 else "csrc"
+                    vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, sie, tmp_reg)
+                    tc.code += [
+                        f"#ifdef {guard}",
+                        *case_open,
+                        f"#ifdef UDB_MTVEC_MODES_{mode}",
+                        *vs_open,
+                        *write_open,
+                        f"LI(x{tmp_reg}, {mideleg})",
+                        f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}",
+                        *write_close,
+                        f"LI(x{tmp_reg}, 1)",
+                        f"{modecmd} mtvec, x{tmp_reg} # mtvec.mode = {mode}",
+                        # The trap handler clears the taken interrupt's xIE bit, so re-enable before every case
+                        f"LI(x{tmp_reg}, -1)",
+                        f"csrw mie, x{tmp_reg} # mie = 1s",
+                        f"LI(x{tmp_reg}, 0x88) # MIE, MPIE",
+                        f"{miecmd} mstatus, x{tmp_reg} # mstatus.MIE = {mie}",
+                        f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
+                        f"{siecmd} mstatus, x{tmp_reg} # mstatus.SIE = {sie}",
+                        # Leave a nonzero xtval so the trap handler's xtval == 0 check sees the interrupt write it.
+                        # The T-SBI ecall into S or U zeroes mtval again; it does not touch stval.
+                        f"auipc x{tmp_reg}, 0 # nonzero valid address",
+                        f"csrw mtval, x{tmp_reg} # mtval = nonzero",
+                        "#ifdef S_SUPPORTED",
+                        f"csrw stval, x{tmp_reg} # stval = nonzero",
+                        "#endif // S_SUPPORTED",
+                        # Likewise the second trap value and xtinst. The ecall zeroes mtval2 and mtinst but
+                        # not htval and htinst. xtinst gets a transformed load, lw x1, 0(x0).
+                        "#ifdef H_SUPPORTED",
+                        f"csrw mtval2, x{tmp_reg} # mtval2 = nonzero",
+                        f"csrw htval, x{tmp_reg} # htval = nonzero",
+                        f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
+                        f"csrw mtinst, x{tmp_reg} # mtinst = nonzero",
+                        f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                        "#endif // H_SUPPORTED",
+                        test_data.add_testcase(
+                            f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}"
+                            + ("_hideleg" if hideleg else ""),
+                            cp,
+                            COVERGROUP,
+                        ),
+                        *mode_enter(suite, priv),
+                        f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
+                        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
+                        f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
+                        *mode_exit(suite, priv),
+                        *vs_close,
+                        f"#endif // UDB_MTVEC_MODES_{mode}",
+                        *case_close,
+                        f"#endif // {guard}",
+                        "",
+                    ]
 
 
 def _generate_cp_priority_mideleg(
@@ -174,8 +178,8 @@ def _generate_cp_priority_mideleg(
 def _generate_cp_priority_mie_sm(
     test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
 ) -> None:
-    """Split lower-mode InterruptsSm mie-priority pairs across two files."""
-    generate_cp_priority(test_data, test_chunks, suite, priv, "ie", split_at=22 if priv != "M" else None)
+    """Priority of enabled interrupts, with the pairs that include a VS-level interrupt in their own test file."""
+    generate_cp_priority(test_data, test_chunks, suite, priv, "ie", split_vs=True)
 
 
 def _generate_cp_write_stip_sstc(
@@ -186,7 +190,7 @@ def _generate_cp_write_stip_sstc(
     ######################################
     coverpoint = "cp_write_stip_sstc"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, suite.split("write_stip_sstc"))
+    tc = test_data.new_test_chunk(test_chunks, "write_stip_sstc")
     tc.section_header = comment_banner(
         coverpoint, "With menvcfg.STCE = 1, write stimecmp = 0s/1s x mip.STIP = 0/1 and read STIP back"
     )
@@ -223,7 +227,7 @@ def _generate_cp_mip_seip(test_data: TestData, test_chunks: list[TestChunk], sui
     """mip.SEIP reads the OR of the software SEIP bit and the platform's SEI, and csrrs and csrrc write back only the
     software bit.
 
-    Needs a platform interrupt controller (RVMODEL_CLR_SEXT_INT_M) that can drop SEI without touching mip.SEIP.
+    Needs a platform interrupt controller (RVMODEL_SET/CLR_SEXT_INT) that can drop SEI without touching mip.SEIP.  The coverage model gates on the same macros (RVMODEL_SEXT_INT_EXTERNAL).
     With SEI asserted and software SEIP = 0, csrrs and csrrc of mip with rs1 = 0 or SSIP return SEIP = 1.  Once the
     platform drops SEI, mip.SEIP reads 0: none of the writes set the software bit.
     """
@@ -231,14 +235,14 @@ def _generate_cp_mip_seip(test_data: TestData, test_chunks: list[TestChunk], sui
     ######################################
     coverpoint = "cp_mip_seip"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, suite.split("mip_seip"))
+    tc = test_data.new_test_chunk(test_chunks, "mip_seip")
     tc.section_header = comment_banner(
         coverpoint, "With the platform asserting SEI and software SEIP = 0, csrrs/csrrc mip with rs1 = 0/SSIP"
     )
     tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     tc.code += [
-        "#if defined(UDB_SEI_INTR_IMPL) && defined(UDB_SSI_INTR_IMPL) && defined(RVMODEL_CLR_SEXT_INT_M)",
+        "#if defined(UDB_SEI_INTR_IMPL) && defined(UDB_SSI_INTR_IMPL) && defined(RVMODEL_SET_SEXT_INT_M)",
         "csrw mideleg, zero # mideleg = zeros",
         "csrw mie, zero # mie = 0 so SEI and SSI are not taken",
         f"LI(x{tmp_reg}, MIP_SEIP)",

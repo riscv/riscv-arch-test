@@ -21,8 +21,6 @@ exclude_extensions:
   - U-
   - U_ucsr-
   - PMP_U_csr
-  # Testbench: stores never reach instruction memory, so a jump to stored code fetches stale data
-  - PMP_Sm_cfg_A_tor_zero
   # PMP checks only a fetch's start, missing a non-executable second half: design/el2_veer.sv#L1097
   - PMP_Zca_misaligned_na4
   - PMP_Zca_misaligned_napot

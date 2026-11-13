@@ -223,7 +223,7 @@ coverpoints:
       With Sscofpmf, LCOFI is pending and enabled throughout
     expectation: vsie and vsip read hie and hip shifted right by one in the delegated bits and zero elsewhere, including LCOFI (hideleg[13] = 0).  Writes reach only the delegated bits of hie, and only VSSIP of hvip.
     bins: 8 hideleg * 4 accesses
-  - name: cp_sie_vs
+  - name: cp_sip_vs
     goal: VS-mode sees vsip in sip, not the HS-level interrupts, and writes of sip.SSIP reach hvip.VSSIP
     description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = 0, then {read sip, csrs sip.SSIP, csrc sip.SSIP} and read sip.  Back in HS-mode, read hvip and sip.SSIP.  With vsstatus.SIE = 1, VS-mode takes VSSI on entry and its handler clears vsip.SSIP before the read; cp_trigger_tsbi covers that case.
     expectation: sip.SSIP reads and writes hvip.VSSIP; the pending HS-level SSIP is neither visible nor changed.

@@ -302,8 +302,6 @@ normative_rule_definitions:
   - name: sstatus_spp
     coverpoint: ["Interrupts_cg/cp_trigger"]
 
-  # From the hypervisor branch's InterruptsH and InterruptsHGei
-
   # Register hvip is an HSXLEN-bit read/write register that a hypervisor can write to
   # indicate virtual interrupts intended for VS-mode. Bits of hvip that are not writable
   # are read-only zeros.
@@ -397,7 +395,7 @@ normative_rule_definitions:
   - name: hip_vssip_vssie_op
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write, cp_hie, cp_sie_vs}",
+        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write, cp_hie, cp_sip_vs}",
         "Interrupts_Sm_cg/cp_mie_mip",
       ]
 
@@ -450,7 +448,7 @@ normative_rule_definitions:
   # to HS-level continue to be indicated in the HS-level sip register, not in vsip, when
   # V=1.
   - name: vsip_vsie_sz_acc_op
-    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sie_vs}"]
+    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sip_vs}"]
 
     # Representative coverpoints; vsie and vsip through hideleg, and undelegated interrupts on entry
     # to VS-mode
@@ -477,7 +475,7 @@ normative_rule_definitions:
   - name: vsip_vsie_ssi
     coverpoint:
       [
-        "Interrupts_cg/cp_{vsip_vsie, sie_vs, hip_write, hie}",
+        "Interrupts_cg/cp_{vsip_vsie, sip_vs, hip_write, hie}",
         "Interrupts_Sm_cg/cp_mie_mip",
       ]
 
@@ -795,9 +793,11 @@ normative_rule_definitions:
   # stalled, the interrupt trap will be taken on the following instruction, i.e.,
   # execution resumes in the trap handler and mepc = pc + 4.
   - name: wfi_mepc_val
-    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}"]
+    coverpoint:
+      [
+        "Untestable: mepc = WFI is indistinguishable from a legal interrupt taken just before the WFI, and mepc = WFI + 8 from a legal early resume",
+      ]
 
-  # mepc is not recorded for interrupts; a wrong mepc returns to the WFI, which has nothing left to wake it
   # Implementations are permitted to resume execution for any reason, even if an
   # enabled interrupt has not become pending. Hence, a legal implementation is to
   # simply implement the WFI instruction as a NOP.

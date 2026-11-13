@@ -26,6 +26,10 @@ exclude_extensions:
   # https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
   # (fixed in Imperas-HMC101126-eng-build). The other configs pass.
   # - Smstateen
+  # rv64-max, rv32gck, rv32gcv: no scontext/hcontext bits, but Sail 0.16 has fixed context widths
+  # (https://github.com/riscv/sail-riscv/issues/2054); drop after the Sail bump sets the widths.
+  - Smstateen
+  - Ssstateen
   # https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
   # (fixed in Imperas-HMC101126-eng-build)
   # - ExceptionsVx
@@ -42,6 +46,9 @@ exclude_extensions:
   # ones for every match type, not only match=1 (NAPOT), so on rv32 tdata2 = 0xffffffff with match=0 reads back 0
   # and SdtrigSm_tdata2_translate fails on imperas-rv32gck and imperas-rv32gcv:
   # https://solvnetplus.synopsys.com/s/case/500WQ00002DvzvvYAB/mcontrol6-tdata2-loses-its-low-maskmax-bits-when-they-are-all-ones-for-every-match-type-not-only-match1-napot
+  # (fixed in Imperas-HMC101126-eng-build). rv64-max/-m/-mu: select=1 data triggers on narrow loads compare
+  # sign-extended data against tdata2 cut to the access size, so mcontrol6_match_size_load fails:
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002IaoaoYAB/sdtrig-select1-data-triggers-compare-a-signextended-value-and-tdata2-truncated-to-the-access-size
   # (fixed in Imperas-HMC101126-eng-build). The imperas.ic files set amo_trigger=T, because AMOs must fire
   # load/store address triggers, and tcontrol_undefined=T, because Sail cannot model tcontrol with a delegable
   # medeleg[3].

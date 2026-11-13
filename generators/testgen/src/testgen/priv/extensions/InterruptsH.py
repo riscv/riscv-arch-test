@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Interrupts hypervisor interrupt CSR test generator (from the hypervisor branch's InterruptsH).
+"""Interrupts hypervisor interrupt CSR test generator.
 
 The suite boots to HS-mode, where mideleg delegates the S-level, VS-level and guest external interrupts.
 Delegation of the VS-level interrupts to VS-mode is covered by the trigger and priority crosses (Interrupts.py and
@@ -18,10 +18,10 @@ from itertools import product
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.Interrupts import COVERGROUP as _CG
 from testgen.priv.extensions.InterruptsCommon import IE_CSRS, IP_CSRS, alias_write_tests
 from testgen.priv.registry import add_priv_test_generator
 
-_CG = "Interrupts_cg"
 # hideleg with no VS-level interrupt delegated, and all three
 _HIDELEG = (("none", 0), ("vs", 0x444))
 
@@ -115,12 +115,12 @@ def _hcsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _sie_vs_tests(test_data: TestData) -> list[str]:
+def _sip_vs_tests(test_data: TestData) -> list[str]:
     """In VS-mode, sip is vsip: it shows the delegated VS-level interrupts and not the pending HS-level ones."""
     tmp_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner(
-            "cp_sie_vs",
+            "cp_sip_vs",
             "With sie = 0, sip.SSIP = 1 (pending in HS-mode, not enabled), hideleg = hie = 0x444 and hvip.VSSIP = 0/1,\n"
             "enter VS-mode with vsstatus.SIE = 0, then read sip, or csrs or csrc sip.SSIP and read sip.  sip.SSIP\n"
             "reads and writes hvip.VSSIP, never the HS-level SSIP; back in HS-mode, read hvip and sip.SSIP.\n"
@@ -136,7 +136,7 @@ def _sie_vs_tests(test_data: TestData) -> list[str]:
         f"csrc vsstatus, x{tmp_reg}",
     ]
     for vssip, op in product((0, 1), ("csrr", "csrs", "csrc")):
-        label = test_data.add_testcase(f"vssip{vssip}_{op}", "cp_sie_vs", _CG)
+        label = test_data.add_testcase(f"vssip{vssip}_{op}", "cp_sip_vs", _CG)
         access = (
             [label, f"csrr x{tmp_reg}, sip"]
             if op == "csrr"
@@ -184,7 +184,7 @@ def make_interrupts_h(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_hcsr_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "h_vs")
-    tc.code.extend(_sie_vs_tests(test_data))
+    tc.code.extend(_sip_vs_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

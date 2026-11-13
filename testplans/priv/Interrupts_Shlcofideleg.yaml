@@ -7,7 +7,7 @@ description: |
 coverpoints:
   - name: cp_trigger_lcofi_vs
     goal: LCOFI delegated to VS-mode
-    description: With hideleg[13] = 1, sie.LCOFIE = 1 and vsstatus.SIE = {0/1}, raise LCOFI in {HS, U, VS, VU} mode
+    description: With hideleg[13] = 1, sie.LCOFIE = 1 and vsstatus.SIE = {0/1}, raise LCOFI in {HS, U, VS, VU} mode, with sstatus.SIE = 1 in HS-mode
     expectation: HS-mode and U-mode never take LCOFI.  VS-mode takes it (cause 13) when vsstatus.SIE = 1, and VU-mode always does.
     bins: 4 priv * 2 SIE
   - name: cp_vsip_vsie_lcofi

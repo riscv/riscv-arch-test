@@ -18,7 +18,7 @@
     // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
     // bits; this value then defines the number, upto 56, of the lowest
     // bits of the CSRs that are used as the event selector.
-    "hpmevent_width_bits": 64,
+    "hpmevent_width_bits": 56,
     "mcountinhibit": {
       // Whether the `mcountinhibit` CSR is implemented.
       "supported": true,
@@ -129,7 +129,7 @@
       // does not exist.
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_0000_0000_2222"
+        "value": "0x0000_0000_0000_0222"
       }
     },
     // These settings control whether the specified exceptions
@@ -383,11 +383,11 @@
           "read_idempotent": false,
           "write_idempotent": false,
           "misaligned_exceptions": {
-            "load_store": { "Some": "AlignmentException" },
+            "load_store": { "Some": "AccessFault" },
             "vector": {
-              "Some": "AlignmentException"
+              "Some": "AccessFault"
             },
-            "amo": "AlignmentException",
+            "amo": "AccessFault",
             "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
@@ -408,7 +408,7 @@
         },
         "size": {
           "len": 64,
-          "value": "0x80000000"
+          "value": "0x08000000"
         },
         "attributes": {
           "mem_type": "MainMemory",

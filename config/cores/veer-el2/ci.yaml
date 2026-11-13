@@ -6,15 +6,20 @@ ci_enabled: true
 
 # Cores-VeeR-EL2 @ 925f3a34, https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/
 exclude_extensions:
-  # mstatus.TW is read-only 0; writes to cycle do not trap: design/dec/el2_dec_tlu_ctl.sv#L2919-L2926
+  # Writes to the read-only cycle CSR do not trap, in M-mode or in U-mode with mcounteren.CY set
+  # (https://github.com/chipsalliance/Cores-VeeR-EL2/issues/563): design/dec/el2_dec_tlu_ctl.sv#L2918-L2921
   - Sm_csr_ro
+  - U_ucsr_ro
+  # mstatus.TW is read-only 0 although U-mode exists
+  # (https://github.com/chipsalliance/Cores-VeeR-EL2/issues/600). The numbered Sm_mcsr_walk
+  # files cannot be excluded one at a time.
   - Sm_mcsr_access
   - Sm_mcsr_walk
-  # mtval lacks the encoding for U-mode mret and CSR privilege traps: design/dec/el2_dec_tlu_ctl.sv#L1889
-  - U
-  # Testbench: stores never reach instruction memory, so a jump to stored code fetches stale data
-  - PMP_Sm_cfg_A_tor_zero
-  # mtval is 0, not the encoding, for a U-mode CSR privilege trap: design/dec/el2_dec_tlu_ctl.sv#L1889
+  # Legal behavior Sail cannot model: EL2 writes mtval = 0 for a U-mode mret or CSR privilege trap
+  # and the encoding for other illegal instructions, as the spec allows (norm:mtval_instr_bits_lead_in),
+  # but Sail has one xtval_nonzero.illegal_instruction flag for all of them: design/dec/el2_dec_tlu_ctl.sv#L1889
+  - U-
+  - U_ucsr-
   - PMP_U_csr
   # PMP checks only a fetch's start, missing a non-executable second half: design/el2_veer.sv#L1097
   - PMP_Zca_misaligned_na4
@@ -22,7 +27,8 @@ exclude_extensions:
   - PMP_Zca_misaligned_tor
   # Testbench: stores never reach instruction memory, so fence.i fetches stale code
   - Zifencei
-  # FENCE with a reserved fm raises an illegal instruction: design/dec/decode#L229
+  # FENCE with a reserved fm raises an illegal instruction instead of executing as a normal FENCE
+  # (https://github.com/chipsalliance/Cores-VeeR-EL2/issues/604): design/dec/decode#L229
   - I-fence
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"

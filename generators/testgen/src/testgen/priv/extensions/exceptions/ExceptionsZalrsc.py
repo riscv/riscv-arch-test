@@ -121,7 +121,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC",
         comment_banner(coverpoint),
         "",
-        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
+        f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
         f"LI(x{check_reg}, 0xBAD)",
         test_data.add_testcase("lr.w_load_access_fault", coverpoint, covergroup),
         f"lr.w x{check_reg}, (x{addr_reg})",
@@ -149,7 +149,7 @@ def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC",
         comment_banner(coverpoint),
         "",
-        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
+        f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
         f"addi x{addr_reg}, x{addr_reg}, 1",
         f"LI(x{check_reg}, 0xBAD)",
         test_data.add_testcase("lr.w_off1_priority", coverpoint, covergroup),
@@ -179,7 +179,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC",
         comment_banner(coverpoint),
         "",
-        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
+        f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
         f"LI(x{data_reg}, 0xADDEDCAB)",
         f"LI(x{temp_reg}, 0xBAD)",
         test_data.add_testcase("lr.w_store_fault", coverpoint, covergroup),
@@ -217,7 +217,7 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)",
             f"addi x{addr_reg}, x{addr_reg}, 1",
             f"LI(x{data_reg}, 0xDECAFCAB)",  # Match original value
             f"LI(x{temp_reg}, 0xDECAFCAB)",

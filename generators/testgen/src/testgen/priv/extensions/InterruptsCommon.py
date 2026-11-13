@@ -16,6 +16,7 @@ from itertools import combinations
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
+from testgen.asm.wait import wait_loop, wait_loop_arm
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -383,13 +384,13 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
     boot = suite.boot
     status = suite.status
     ie_name, ie_mask = wfi["ie"]
-    ip_csr, ip_name, ip_mask = wfi["ip"]
+    ip_csr, _, ip_mask = wfi["ip"]
     tc = test_data.new_test_chunk(test_chunks, f"wfi_{priv}")
     tc.section_header = comment_banner(
         coverpoint,
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
     )
-    count_reg, tmp_reg = test_data.int_regs.get_registers(2)
+    addr_reg, tmp_reg = test_data.int_regs.get_registers(2)
 
     # mstatus.TW only affects modes below M, so sweep it in M-mode where it must not matter
     for tw in [0, 1] if priv == "M" else [0]:
@@ -416,40 +417,18 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                     suite.covergroup,
                 ),
                 *mode_enter(suite, priv),
-                # Below M-mode the SOON macro reaches the timer through T-SBI traps; RVMODEL_TIMER_INT_SOON_DELAY
-                # is sized so the interrupt cannot fire before those return and the trap count is sampled.
+                *wait_loop_arm(test_data, addr_reg, tmp_reg),
                 f"RVTEST_SET_{wfi['timer']}_INT_SOON_{flavor(priv)} # timer interrupt after RVMODEL_TIMER_INT_SOON_DELAY",
-                # Every trap, including the interrupt, bumps rvtest_trap_count. Sample it after the last
-                # trap of the setup so that any later change means the timer interrupt was taken.
-                f"LA(x{count_reg}, rvtest_trap_count)",
-                f"LREG x{count_reg}, 0(x{count_reg}) # trap count before waiting",
-                # WFI may return before the timer fires (it may even be a no-op), so repeat it until the interrupt
-                # has arrived. Check before each WFI: if the interrupt was already taken, a WFI would sleep with
-                # nothing left to wake it.
-                "1:",
-                f"LA(x{tmp_reg}, rvtest_trap_count)",
-                f"LREG x{tmp_reg}, 0(x{tmp_reg})",
-                f"bne x{tmp_reg}, x{count_reg}, 2f # timer interrupt taken",
-                *(
-                    []
-                    if taken
-                    # Masked here, the interrupt is never taken, so the trap count never changes; WFI still
-                    # wakes once it is pending, which is the only observable sign that it fired.
-                    else [
-                        f"csrr x{tmp_reg}, {ip_csr}",
-                        f"andi x{tmp_reg}, x{tmp_reg}, {ip_mask:#x} # {ip_csr}.{ip_name}",
-                        f"bnez x{tmp_reg}, 2f # timer interrupt pending but masked",
-                    ]
-                ),
-                "wfi",
-                "j 1b",
-                "2:",
+                # WFI may return before the timer fires (it may even be a no-op), so repeat it until the
+                # interrupt has arrived. Masked here, the interrupt is never taken, but WFI still wakes once
+                # it is pending, which is the only observable sign that it fired.
+                *wait_loop(test_data, tmp_reg, ["wfi"], None if taken else (ip_csr, ip_mask)),
                 f"RVTEST_CLR_{wfi['timer']}_INT_{flavor(priv)} # Clear the timer interrupt",
                 *mode_exit(suite, priv),
                 "",
             ]
 
-    test_data.int_regs.return_registers([count_reg, tmp_reg])
+    test_data.int_regs.return_registers([addr_reg, tmp_reg])
 
 
 def generate_cp_trigger_vsti_sstc(

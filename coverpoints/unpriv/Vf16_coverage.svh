@@ -15109,6 +15109,120 @@ covergroup Vf16_vfredusum_vs_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_determinism
+    // Unordered sum reductions repeated with scaled and negated data: vl x frm, unmasked
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_det_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
+        bins three = {vred_vl_3};
+        bins seven = {vred_vl_7};
+        bins vlmax = {vred_vl_vlmax};
+    }
+
+    vfredusum_det_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
+        bins rne = {3'b000};
+        bins rdn = {3'b010};
+        bins rup = {3'b011};
+    }
+
+    vfredusum_det_unmasked : coverpoint ins.current.vm {
+        bins unmasked = {1'b1};
+    }
+
+    cp_custom_vfredusum_determinism : cross std_vec, vfredusum_det_vl, vfredusum_det_frm, vfredusum_det_unmasked iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_determinism ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_noactive_sew16
+    // Unordered sum reductions with no active elements: vs1[0] edges (cp_vs1_edges_f_sew16) x frm
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_noactive_mask : coverpoint vred_mask_class(ins.hart, ins.issue, ins.current.vm, ins.prev.v_wdata[0]) {
+        bins none_active = {vred_none_active};
+    }
+
+    vfredusum_noactive_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
+        bins rne = {3'b000};
+        bins rdn = {3'b010};
+    }
+
+    cp_custom_vfredusum_noactive_sew16 : cross std_vec, cp_vs1_edges_f_sew16, vfredusum_noactive_mask, vfredusum_noactive_frm iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_noactive_sew16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_specials_sew16
+    // Unordered sum reductions of special values (vs1 at SEW): vs1[0] x vs2[0], vl = 2 to 4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_specials_vs1 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)[15:0] {
+        bins pos0     = {16'h0000};   // +0
+        bins neg0     = {16'h8000};   // -0
+        bins posinf   = {16'h7C00};   // +inf
+        bins qnan     = {16'h7E00};   // canonical quiet NaN
+        bins snan     = {16'h7C01};   // signaling NaN
+        bins posmax   = {16'h7BFF};   // +largest finite
+        bins negmax   = {16'hFBFF};   // -largest finite
+        bins minsub   = {16'h0001};   // smallest positive subnormal
+    }
+
+    vfredusum_specials_vs2 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
+        bins posinf   = {16'h7C00};   // +inf
+        bins posmax   = {16'h7BFF};   // +largest finite
+        bins negmax   = {16'hFBFF};   // -largest finite
+        bins qnan     = {16'h7E00};   // canonical quiet NaN
+        bins snan     = {16'h7C01};   // signaling NaN
+        bins neg0     = {16'h8000};   // -0
+        bins pos0     = {16'h0000};   // +0
+        bins minsub   = {16'h0001};   // smallest positive subnormal
+        bins onepulp  = {16'h3C01};   // 1 + ulp
+    }
+
+    vfredusum_specials_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
+        bins two_to_four = {vred_vl_2, vred_vl_3, vred_vl_4};
+    }
+
+    vfredusum_specials_unmasked : coverpoint ins.current.vm {
+        bins unmasked = {1'b1};
+    }
+
+    cp_custom_vfredusum_specials_sew16 : cross std_vec, vfredusum_specials_vs1, vfredusum_specials_vs2, vfredusum_specials_vl, vfredusum_specials_unmasked iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_specials_sew16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_sweep
+    // Unordered sum reductions checked against every legal tree: vl x frm x masking
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_sweep_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
+        bins two   = {vred_vl_2};
+        bins three = {vred_vl_3};
+        bins four  = {vred_vl_4};
+        bins seven = {vred_vl_7};
+        bins vlmax = {vred_vl_vlmax};
+    }
+
+    vfredusum_sweep_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
+        bins rne = {3'b000};
+        bins rtz = {3'b001};
+        bins rdn = {3'b010};
+        bins rup = {3'b011};
+        bins rmm = {3'b100};
+    }
+
+    vfredusum_sweep_mask : coverpoint vred_mask_class(ins.hart, ins.issue, ins.current.vm, ins.prev.v_wdata[0]) {
+        bins unmasked    = {vred_unmasked};
+        bins some_active = {vred_some_active};
+        bins none_active = {vred_none_active};
+    }
+
+    cp_custom_vfredusum_sweep : cross std_vec, vfredusum_sweep_vl, vfredusum_sweep_frm, vfredusum_sweep_mask iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_sweep ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -26113,6 +26227,120 @@ covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_determinism
+    // Unordered sum reductions repeated with scaled and negated data: vl x frm, unmasked
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_det_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
+        bins three = {vred_vl_3};
+        bins seven = {vred_vl_7};
+        bins vlmax = {vred_vl_vlmax};
+    }
+
+    vfredusum_det_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
+        bins rne = {3'b000};
+        bins rdn = {3'b010};
+        bins rup = {3'b011};
+    }
+
+    vfredusum_det_unmasked : coverpoint ins.current.vm {
+        bins unmasked = {1'b1};
+    }
+
+    cp_custom_vfredusum_determinism : cross std_vec, vfredusum_det_vl, vfredusum_det_frm, vfredusum_det_unmasked iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_determinism ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_noactive_w_sew16
+    // Unordered sum reductions with no active elements: vs1[0] edges (cp_vs1_edges_f_emul2_sew16) x frm
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_noactive_mask : coverpoint vred_mask_class(ins.hart, ins.issue, ins.current.vm, ins.prev.v_wdata[0]) {
+        bins none_active = {vred_none_active};
+    }
+
+    vfredusum_noactive_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
+        bins rne = {3'b000};
+        bins rdn = {3'b010};
+    }
+
+    cp_custom_vfredusum_noactive_w_sew16 : cross std_vec, cp_vs1_edges_f_emul2_sew16, vfredusum_noactive_mask, vfredusum_noactive_frm iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_noactive_w_sew16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_specials_w_sew16
+    // Unordered sum reductions of special values (vs1 at 2*SEW): vs1[0] x vs2[0], vl = 2 to 4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_specials_vs1 : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs1_val)[31:0] {
+        bins pos0     = {32'h00000000};   // +0
+        bins neg0     = {32'h80000000};   // -0
+        bins posinf   = {32'h7F800000};   // +inf
+        bins qnan     = {32'h7FC00000};   // canonical quiet NaN
+        bins snan     = {32'h7F800001};   // signaling NaN
+        bins posmax   = {32'h7F7FFFFF};   // +largest finite
+        bins negmax   = {32'hFF7FFFFF};   // -largest finite
+        bins minsub   = {32'h00000001};   // smallest positive subnormal
+    }
+
+    vfredusum_specials_vs2 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
+        bins posinf   = {16'h7C00};   // +inf
+        bins posmax   = {16'h7BFF};   // +largest finite
+        bins negmax   = {16'hFBFF};   // -largest finite
+        bins qnan     = {16'h7E00};   // canonical quiet NaN
+        bins snan     = {16'h7C01};   // signaling NaN
+        bins neg0     = {16'h8000};   // -0
+        bins pos0     = {16'h0000};   // +0
+        bins minsub   = {16'h0001};   // smallest positive subnormal
+        bins onepulp  = {16'h3C01};   // 1 + ulp
+    }
+
+    vfredusum_specials_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
+        bins two_to_four = {vred_vl_2, vred_vl_3, vred_vl_4};
+    }
+
+    vfredusum_specials_unmasked : coverpoint ins.current.vm {
+        bins unmasked = {1'b1};
+    }
+
+    cp_custom_vfredusum_specials_w_sew16 : cross std_vec, vfredusum_specials_vs1, vfredusum_specials_vs2, vfredusum_specials_vl, vfredusum_specials_unmasked iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_specials_w_sew16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfredusum_sweep
+    // Unordered sum reductions checked against every legal tree: vl x frm x masking
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vfredusum_sweep_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
+        bins two   = {vred_vl_2};
+        bins three = {vred_vl_3};
+        bins four  = {vred_vl_4};
+        bins seven = {vred_vl_7};
+        bins vlmax = {vred_vl_vlmax};
+    }
+
+    vfredusum_sweep_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM) {
+        bins rne = {3'b000};
+        bins rtz = {3'b001};
+        bins rdn = {3'b010};
+        bins rup = {3'b011};
+        bins rmm = {3'b100};
+    }
+
+    vfredusum_sweep_mask : coverpoint vred_mask_class(ins.hart, ins.issue, ins.current.vm, ins.prev.v_wdata[0]) {
+        bins unmasked    = {vred_unmasked};
+        bins some_active = {vred_some_active};
+        bins none_active = {vred_none_active};
+    }
+
+    cp_custom_vfredusum_sweep : cross std_vec, vfredusum_sweep_vl, vfredusum_sweep_frm, vfredusum_sweep_mask iff (ins.trap == 0);
+
+    //// end cp_custom_vfredusum_sweep ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_wred

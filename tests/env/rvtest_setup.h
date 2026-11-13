@@ -1153,6 +1153,20 @@
       tsig_begin_canary:
       trap_sigptr:
       sig_end_canary:
+      // Trap log (see TRAP LOG in rvtest_trap_handler.h). The handlers address it
+      // through each mode's rvtest_sig_begin pointer, so the offsets are fixed.
+      .global rvtest_trap_allow
+      rvtest_trap_allow:                        // TRAPLOG_ALLOW_OFF
+        .fill 1, REGWIDTH, 0
+      .global rvtest_trap_resume
+      rvtest_trap_resume:                       // TRAPLOG_RESUME_OFF
+        .fill 3, REGWIDTH, 0
+      .global rvtest_trap_log
+      rvtest_trap_log:                          // TRAPLOG_LOG_OFF
+        .fill RVTEST_TRAP_LOG_N*TRAPLOG_ENTRY_WORDS, REGWIDTH, 0
+      .if (rvtest_trap_allow - rvtest_sig_begin != TRAPLOG_ALLOW_OFF) || (rvtest_trap_resume - rvtest_sig_begin != TRAPLOG_RESUME_OFF) || (rvtest_trap_log - rvtest_sig_begin != TRAPLOG_LOG_OFF)
+        .error "trap log layout does not match the TRAPLOG_*_OFF offsets"
+      .endif
     #elif defined(RVTEST_SELFCHECK)
       signature_base:
         // Preload signature region with correct values for self-checking

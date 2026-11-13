@@ -1276,6 +1276,23 @@
 
 
     failedtest_saveresults_common:
+    #ifdef STANDARD_SM_SUPPORTED
+        # Report from M-mode: a lower mode may run translated, with page tables that do not map the
+        # console. Stay in the current mode where failedtest_terminate does: in the M-mode trap
+        # handler (a trap failure with trap_diag_mode 0), and when the last T-SBI mode change was
+        # to M-mode (an M-mode test body may have set MDT, which makes the ecall a double trap).
+        lw x7, failure_type
+        li x8, 3
+        bne x7, x8, 1f
+        lw x7, trap_diag_mode
+        beqz x7, 2f
+    1:
+        LA(x7, rvtest_current_mode)
+        LREG x7, 0(x7)
+        beqz x7, 2f
+        RVTEST_TSBI_GOTO_MMODE                       # clobbers a0, which was saved above
+    2:
+    #endif
         # After the jal instruction there are two UDB_MXLEN-sized pointers: the instruction address and the test string pointer
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
 
@@ -2443,6 +2460,10 @@
         .string "RVCP: XSTATUS: "
     trap_sig_offset_mismatch:
         .string "\"Trap count mismatch.\"";
+#ifdef RVTEST_NOSIG
+    traplog_unexpected_str:
+        .string "\"Unexpected trap: the test did not permit a trap here (rvtest_trap_allow = 0). The actual value is xcause.\"";
+#endif
     sv_Mvect_str:
         .string "\"Mismatch in trap signature! Trap was being handled in M-Mode.\"";
     sv_Svect_str:

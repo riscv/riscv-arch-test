@@ -66,8 +66,10 @@
 // failedtest_trap_x7_x9 in case of a mismatch.
 // On failure, x6/T1 carries the actual value, DEFAULT_TEMP_REG carries the
 // expected value, x7/T2 is the link register, and x9/T4 is scratch.
-// If not in Self Check mode, just store signatures to the trap signature region
-#ifdef RVTEST_SELFCHECK
+// If not in Self Check mode, just store signatures to the trap signature region.
+// A build without a signature (RVTEST_NOSIG) stores them in the trap log instead,
+// and the test checks the log itself (TRAP LOG in rvtest_trap_handler.h).
+#if defined(RVTEST_SELFCHECK) && !defined(RVTEST_NOSIG)
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 2f                                        ;\
@@ -96,8 +98,8 @@
 // In Self Check mode, zero in sigreg also matches when zeroreg is nonzero. Each pass path
 // executes four instructions, so the handler's instruction count does not depend on which
 // legal value the hart wrote. Both compile modes emit the same instructions so the signature
-// and self-check ELFs have identical code layout.
-#ifdef RVTEST_SELFCHECK
+// and self-check ELFs have identical code layout. RVTEST_NOSIG stores, as TRAP_SIGUPD does.
+#if defined(RVTEST_SELFCHECK) && !defined(RVTEST_NOSIG)
   #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR) \
     .option push                                                ;\
     .option norvc                                               ;\
@@ -156,8 +158,8 @@
 
 // TRAP_SIGUPD_ADDR_PREFIX(tempreg, sigreg, offset)
 // Exact compare. Self-check: load the expected value into tempreg and jump to 9: when
-// it equals the actual value. Signature build: store the actual value and jump to 9:.
-#ifdef RVTEST_SELFCHECK
+// it equals the actual value. Signature build and RVTEST_NOSIG: store the actual value and jump to 9:.
+#if defined(RVTEST_SELFCHECK) && !defined(RVTEST_NOSIG)
   #define TRAP_SIGUPD_ADDR_PREFIX(_TMPREG, _R, _OFF)                     \
     LREG _TMPREG, _OFF*REGWIDTH(T1) /* expected value from signature */ ;\
     beq  _TMPREG, _R, 9f            /* exact match: pass */             ;

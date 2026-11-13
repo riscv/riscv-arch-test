@@ -907,10 +907,14 @@
         "address_select_matches_all_addresses": false,
         // Maximum length of a chain. This cannot exceed the number of
         // triggers.  A value of 0 implies chains are not supported.
-        "max_chain_length": 2
+        "max_chain_length": 2,
+        // Whether `textra` is implemented for this trigger.
+        "uses_textra": false
       },
       // XiangShan has no tdata3 (NewCSR/DebugLevel.scala:26-98), so no context matches.
       "textra": {
+        // Whether the `tdata3` register is supported.
+        "supported": false,
         // Which context matches are supported. Writes of unsupported
         // `mhselect` and `sselect` values are legalized to 0 (ignore).
         "mhselect": {

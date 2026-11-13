@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 15
+#define SIGUPD_COUNT 21
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -37,60 +37,117 @@ RVTEST_BEGIN
 # Testcase fencei: normal fence.i
   LI(x17, 3)
   LA(x9, selfmodify_0)
+  jal x5, selfmodify_0
+  # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x17, Zifencei_fence_i_cg_cp_custom_fencei_fencei, Zifencei_fence_i_cg_cp_custom_fencei_fencei_str)
+  LI(x17, 3) # replay the patched instruction from the same input
   lw x6, 0(x9) # read the instruction as data before the store
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 5: x6 = 0x0000000000588893
   sw x6, 0(x9)
-  .balign 128 # keep each patched instruction in its own cache line
 Zifencei_fence_i_cg_cp_custom_fencei_fencei:
   fence.i # normal fence.i
-selfmodify_0:
-  addi x17, x17, 1 # original code
+  jalr x5, x9, 0
   # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x17, Zifencei_fence_i_cg_cp_custom_fencei_fencei, Zifencei_fence_i_cg_cp_custom_fencei_fencei_str)
+  jal x0, after_selfmodify_0
+  .balign 128 # keep this patched instruction in its own cache line
+selfmodify_0:
+  addi x17, x17, 1 # original code
+  jalr x0, x5, 0
+after_selfmodify_0:
 
 # Testcase fencei_nonzerors1: fence.i with nonzero rs1
   LI(x2, 0x0F0F0F0F) # nonzero value in the ignored rs1
   LI(x24, 3)
   LA(x20, selfmodify_1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load addi x24, x24, 7: x9 = 0x00000000007c0c13
-  sw x9, 0(x20)
-  .balign 128 # keep each patched instruction in its own cache line
-Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1:
-  .insn 0x0001100f # fence.i with nonzero rs1
-selfmodify_1:
-  addi x24, x24, 1 # original code
+  jal x5, selfmodify_1
   # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x24, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1_str)
+  LI(x24, 3) # replay the patched instruction from the same input
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load addi x24, x24, 7: x9 = 0x00000000007c0c13
+  sw x9, 0(x20)
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1:
+  .insn 0x0001100f # fence.i with nonzero rs1
+  jalr x5, x20, 0
+  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x24, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1_str)
+  jal x0, after_selfmodify_1
+  .balign 128 # keep this patched instruction in its own cache line
+selfmodify_1:
+  addi x24, x24, 1 # original code
+  jalr x0, x5, 0
+after_selfmodify_1:
 
 # Testcase fencei_nonzerord: fence.i with nonzero rd
   LI(x1, 0x5A5A5A5A) # fence.i must not write the ignored rd
   LI(x11, 3)
   LA(x19, selfmodify_2)
+  jal x5, selfmodify_2
+  # Check if x11 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x11, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord_str)
+  LI(x11, 3) # replay the patched instruction from the same input
   RVTEST_TESTDATA_LOAD_INT(x3, x13) # load addi x11, x11, 9: x13 = 0x0000000000958593
   sw x13, 0(x19)
-  .balign 128 # keep each patched instruction in its own cache line
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord:
   .insn 0x0000108f # fence.i with nonzero rd
-selfmodify_2:
-  addi x11, x11, 1 # original code
+  jalr x5, x19, 0
   # Check if x11 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x11, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord_str)
+  jal x0, after_selfmodify_2
+  .balign 128 # keep this patched instruction in its own cache line
+selfmodify_2:
+  addi x11, x11, 1 # original code
+  jalr x0, x5, 0
+after_selfmodify_2:
 
 # Testcase fencei_nonzerof12: fence.i with nonzero funct12
   LI(x17, 3)
   LA(x14, selfmodify_3)
+  jal x5, selfmodify_3
+  # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x17, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12_str)
+  LI(x17, 3) # replay the patched instruction from the same input
   lw x6, 0(x14) # read the instruction as data before the store
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 13: x6 = 0x0000000000d88893
   sw x6, 0(x14)
-  .balign 128 # keep each patched instruction in its own cache line
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12:
   .insn 0x0010100f # fence.i with nonzero funct12
-selfmodify_3:
-  addi x17, x17, 1 # original code
+  jalr x5, x14, 0
   # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x17, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12_str)
+  jal x0, after_selfmodify_3
+  .balign 128 # keep this patched instruction in its own cache line
+selfmodify_3:
+  addi x17, x17, 1 # original code
+  jalr x0, x5, 0
+after_selfmodify_3:
+
+#ifdef ZCA_SUPPORTED
+# Testcase fencei_zca_sh: sh of c.li before fence.i
+  LI(x23, 3)
+  LA(x10, selfmodify_4)
+  jal x5, selfmodify_4
+  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x23, Zifencei_fence_i_cg_cp_custom_fencei_fencei_zca_sh, Zifencei_fence_i_cg_cp_custom_fencei_fencei_zca_sh_str)
+  LI(x23, 3) # replay the patched instruction from the same input
+  lw x7, 0(x10) # read the instruction as data before the store
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load c.li x23, 17: x7 = 0x0000000000004bc5
+  sh x7, 0(x10)
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_zca_sh:
+  fence.i # sh of c.li before fence.i
+  jalr x5, x10, 0
+  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x23, Zifencei_fence_i_cg_cp_custom_fencei_fencei_zca_sh, Zifencei_fence_i_cg_cp_custom_fencei_fencei_zca_sh_str)
+  jal x0, after_selfmodify_4
+  .balign 128 # keep this patched instruction in its own cache line
+selfmodify_4:
+  .half 0x0b85 # original c.addi x23, 1
+  jalr x0, x5, 0
+after_selfmodify_4:
+
+#endif // ZCA_SUPPORTED
 
 
   mv x2, x29 # restore signature pointer to default register for teardown
@@ -106,12 +163,14 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000007c0c13
 .dword 0x0000000000958593
 .dword 0x0000000000d88893
+.dword 0x0000000000004bc5
 
 // Testcase strings
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_str: .string "\"test: 1; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei\""
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1_str: .string "\"test: 2; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei_nonzerors1\""
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord_str: .string "\"test: 3; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei_nonzerord\""
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12_str: .string "\"test: 4; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei_nonzerof12\""
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_zca_sh_str: .string "\"test: 5; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei_zca_sh\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

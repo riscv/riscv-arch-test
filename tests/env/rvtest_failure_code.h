@@ -418,6 +418,16 @@
     #ifdef RVTEST_VECTOR
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
         RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
+      #ifdef H_SUPPORTED
+        # In VS-mode and VU-mode, vector instructions also need vsstatus.VS
+        RVTEST_TSBI_CSR_SET(CSR_VSSTATUS, 0x600)
+      #endif
+        # Save vstart for a vstart report, then clear it: a vector instruction may raise an
+        # illegal-instruction exception when vstart != 0, and one that completes resets vstart.
+        csrr x6, vstart
+        la x7, failing_vstart
+        SREG x6, 0(x7)
+        csrwi vstart, 0
         la x6, vecreg_scratch              # vecreg_scratch base address
         li x7, VLEN_BYTES                  # too large for an addi immediate once VLEN >= 16384
         vs1r.v v0, (x6)
@@ -936,8 +946,9 @@
         j failedtest_vector_csr_common
 
     failedtest_saveresults_vstart:
-        # Re-read vstart for bad value (no vector instructions have retired since failure).
-        csrr x6, vstart
+        # vstart as saved before the vector registers were stored
+        la x6, failing_vstart
+        LREG x6, 0(x6)
         SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
 
     failedtest_vector_csr_common:
@@ -2205,6 +2216,9 @@
         .fill VLEN_WORDS, 4, 0xbaaaaaad
     vecreg_scratch:                              # space to save full vector register contents
         .fill VECREG_REGION_WORDS, 4, 0xfeedf00dbaaaaaad
+    .p2align 3
+    failing_vstart:                              # vstart when the failure code started
+        .fill 2, 4, 0
 #endif // RVTEST_VECTOR
 
     //==========================================================================
@@ -2408,6 +2422,8 @@
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
+    unexpected_int_str:
+        .string "\nRVCP: An interrupt was raised or taken that rvmodel_macros.h does not define a macro to set or clear. The test was aborted.\n"
     trap_vector_overlap_str:
         .string "RVCP: Fixed trap vector overlaps the test image. Change the linker script to reserve space for the trap handler outside the test image.\n"
     trap_vector_copy_failed_str:
@@ -2553,6 +2569,10 @@
         .string "RVCP: END OF DEBUG INFORMATION\n\n"
     fflagsstr:
         .string "fflags\n"
+    // canary_check stores this address as a data word right after a jalr. Keep it 4-byte aligned so
+    // the word cannot decode as a jal (opcode bits 1:0 = 11): a core that fetches down the wrong path
+    // past the jalr could follow such a jal into IO space (https://github.com/bsc-loca/sargantana/issues/145).
+    .p2align 2
     canary_mismatch:
         .string "Testcase signature canary mismatch!"
     regular_sig_offset_header:

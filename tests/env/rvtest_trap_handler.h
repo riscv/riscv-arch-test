@@ -835,11 +835,14 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T5, unexpected_int_str; la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
 
 // Trap handler version. The M-mode handler uses rvtest_code_end_mmode: with Smdbltrp,
-// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap.
+// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap. Both versions
+// leave unexpected_int_str in T5, so RVTEST_CODE_END reports the abort instead of
+// checking the signature counts of a test that did not finish.
 .macro RVTEST_DFLT_INT_HNDLR_MODE __MODE__
+        LA(     T5, unexpected_int_str)
   .ifc \__MODE__ , M
         LA(     T1, rvtest_code_end_mmode)
   .else
@@ -1303,6 +1306,56 @@ common_\__MODE__\()entry:                       // common entry for all traps in
       jr T2
       invisible_Mcontinue:
   .endif
+
+  // A failed self-check jumps to a failure entry (failedtest_*). The entries follow
+  // rvtest_code_end, which starts a fresh page so that a test can map its own code for
+  // a less-privileged mode while keeping the handlers and failure code out of reach. The
+  // jump from that mode then takes a fetch page or access fault at the entry. Run the
+  // entry in this handler's mode instead: set xPP to this mode and xret to xEPC with every
+  // register restored. A fault taken from this handler's own mode is recorded as usual,
+  // because retrying it would loop.
+        LI(T4, CAUSE_FETCH_PAGE_FAULT)
+        beq     T5, T4, \__MODE__\()fail_fetch_chk
+        LI(T4, CAUSE_FETCH_ACCESS)
+        bne     T5, T4, \__MODE__\()fail_fetch_done
+\__MODE__\()fail_fetch_chk:
+        csrr    T4, CSR_XEPC
+        LA(T3, failedtest_x5_x4)
+        bltu    T4, T3, \__MODE__\()fail_fetch_done
+        LA(T3, failedtest_saveregs)
+        bgeu    T4, T3, \__MODE__\()fail_fetch_done
+        csrr    T4, CSR_XSTATUS
+  .ifc \__MODE__ , M
+        LI(T3, MSTATUS_MPP)
+        and     T2, T4, T3
+        beq     T2, T3, \__MODE__\()fail_fetch_done  // fault from M-mode itself
+        LI(T2, MSTATUS_MPIE)
+  .else
+    .ifc \__MODE__ , S
+      #ifdef H_SUPPORTED
+        // In HS-mode, a trap from VS or VU (SPV=1) also comes from a less-privileged
+        // mode, whatever SPP says. Clear SPV so that sret returns to HS, not VS.
+        csrr    T2, CSR_HSTATUS
+        andi    T2, T2, HSTATUS_SPV
+        beqz    T2, \__MODE__\()fail_fetch_nonguest
+        csrc    CSR_HSTATUS, T2                     // SPV = 0
+        j       \__MODE__\()fail_fetch_lower
+\__MODE__\()fail_fetch_nonguest:
+      #endif
+    .endif
+        LI(T3, SSTATUS_SPP)
+        and     T2, T4, T3
+        bnez    T2, \__MODE__\()fail_fetch_done      // fault from this handler's own mode
+\__MODE__\()fail_fetch_lower:
+        // The failure code reads the failed check's instructions from the code that
+        // jumped here, which may be on a U-mode page: set SUM so those loads work.
+        LI(T3, SSTATUS_SPP | SSTATUS_SUM)
+        LI(T2, SSTATUS_SPIE)
+  .endif
+        csrs    CSR_XSTATUS, T3                     // xPP = this mode (mret with MPP=M also leaves V=0)
+        csrc    CSR_XSTATUS, T2                     // report with this mode's interrupts disabled
+        j       resto_\__MODE__\()rtn
+\__MODE__\()fail_fetch_done:
 
 
 //==============================================================================

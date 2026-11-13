@@ -11,6 +11,10 @@ ci_enabled: false
 # that engineering build, so they are commented out. Uncomment them when running stock ImperasDV. Cases fixed in
 # Y-2026.06-DEV-20261106 are no longer listed; Y-2026.09 still needs their exclusions.
 exclude_extensions:
+  # rv64-max, rv32gck, rv32gcv: no scontext/hcontext bits, but Sail 0.16 has fixed context widths
+  # (https://github.com/riscv/sail-riscv/issues/2054); drop after the Sail bump sets the widths.
+  - Smstateen
+  - Ssstateen
   # https://solvnetplus.synopsys.com/s/case/500WQ00002CEtpVYAT/vmvnrrv-interprets-vstart-in-8bit-elements-instead-of-sew-elements-when-sew-8
   # vmv<nr>r.v counts vstart in bytes instead of SEW elements (ExceptionsVx, cp_vstart, SEW=16 bins)
   # (fixed in Imperas-HMC101126-eng-build)
@@ -18,6 +22,9 @@ exclude_extensions:
   # Stock only: an icount trigger that fires with action=0 writes the PC to xtval
   # instead of zero (norm:Sdtrig_icount_action0), so tests in which an icount trigger fires fail:
   # https://solvnetplus.synopsys.com/s/case/500WQ00002BsufNYAR/an-icount-trigger-that-fires-with-action0-writes-the-pc-to-mtval-instead-of-zero
+  # (fixed in Imperas-HMC101126-eng-build). rv64-max/-m/-mu: select=1 data triggers on narrow loads compare
+  # sign-extended data against tdata2 cut to the access size, so mcontrol6_match_size_load fails:
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002IaoaoYAB/sdtrig-select1-data-triggers-compare-a-signextended-value-and-tdata2-truncated-to-the-access-size
   # (fixed in Imperas-HMC101126-eng-build). The imperas.ic files set amo_trigger=T, because AMOs must fire
   # load/store address triggers, and tcontrol_undefined=T, because Sail cannot model tcontrol with a delegable
   # medeleg[3].

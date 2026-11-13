@@ -1,0 +1,526 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# SPDX-License-Identifier: Apache-2.0
+# Quan Pham <quanpham071204@gmail.com> October 2026
+# UDB Architecture Configuration for CVA6 cv64a6_imafdc_sv39, run on the CVA6 Verilator testharness
+# (target cv64a6_imafdc_sv39_hpdcache).
+# Started from the CVA6 + Ara configuration attached to openhwfoundation/cva6#3585 and
+# re-checked against the stand-alone target.
+#
+# Links below point at openhwfoundation/cva6@81245a47, the commit pinned in
+# .github/scripts/install-cva6.sh. Parameters of the target come from
+#   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv
+
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv64a6_imafdc_sv39
+description: OpenHW Group CVA6 cv64a6_imafdc_sv39 configuration (Verilator testharness)
+
+implemented_extensions:
+  # misa is read-only (MXL=2): A, B, C, D, F, I, M, S, U. X is 0 because no non-standard
+  # FP format (XF16, XF16ALT, XF8, XFVec) is enabled on this target.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L647
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L366-L379
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  # CVA6ConfigAExtEn = 1 (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L33)
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  # CVA6ConfigRVF = 1 and RVD follows it; CVA6ConfigF16En = 0, so no Zfh/Zfhmin
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L22-L27
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  # CVA6ConfigCExtEn = 1 and CVA6ConfigZcbExtEn = 1 (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L30-L31)
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcb, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  # RVZiCbom = 1; menvcfg.CBIE/CBCFE are implemented (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1787-L1800)
+  - { name: Zicbom, version: "= 1.0.0" }
+  # CVA6ConfigRVZiCond = 1 (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L37)
+  - { name: Zicond, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  # CVA6ConfigBExtEn = 1 (Zba, Zbb, Zbs, Zbc) and ZKN = 1. ZKN decodes pack/packh/brev8,
+  # xperm4/xperm8, the AES and the SHA-256/512 instructions.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L34
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L107
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L882-L1046
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L1191-L1218
+  - { name: B, version: "= 1.0.0" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
+  - { name: Zkne, version: "= 1.0.0" }
+  - { name: Zknd, version: "= 1.0.0" }
+  - { name: Zknh, version: "= 1.0.0" }
+  # Instruction fetches and page-table walks both read the coherent cache hierarchy.
+  - { name: Ziccif, version: "= 1.0.0" }
+  - { name: Ssccptr, version: "= 1.0.0" }
+  # cycle and instret are implemented (RVZicntr = 1). The time CSR is not decoded and
+  # traps as an illegal instruction, see TIME_CSR_IMPLEMENTED below.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L706-L708
+  # Zihpm: six counters, mhpmcounter3..8 (MHPMCounterNum = 6); 9..31 read as zero.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/ariane_pkg.sv#L646
+  - { name: Zicntr, version: "= 2.0.0" }
+  - { name: Zihpm, version: "= 2.0.0" }
+  # RVS = RVU = 1 (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L124-L125)
+  - { name: U, version: "= 1.0.0" }
+  - { name: S, version: "= 1.12.0" }
+  # Sm 1.12: menvcfg and mconfigptr are decoded (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L673, https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L694)
+  - { name: Sm, version: "= 1.12.0" }
+  # satp accepts only Bare and Sv39.
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+  # Svade: the page table walker raises a page fault when A (or D on a store) is clear and
+  # never updates them.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/cva6_mmu/cva6_ptw.sv#L490-L510
+  - { name: Svade, version: "= 1.0.0" }
+  # TvalEn = 1, stvec accepts direct and vectored mode.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L73
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1427
+  - { name: Sstvala, version: "= 1.0.0" }
+  - { name: Sstvecd, version: "= 1.0.0" }
+  # scounteren is written unmasked from csr_wdata[31:0] (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1429-L1431)
+  - { name: Sscounterenw, version: "= 1.0.0" }
+  # sstatus.UXL is readable but not in SMODE_STATUS_WRITE_MASK, so UXLEN is fixed at 64.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/ariane_pkg.sv#L125-L134
+  - { name: Ssu64xl, version: "= 1.0.0" }
+  # Not implemented on this target: H, V, Zcmp, Zcmt, Zfa, Zfh, Zicbop, Zicboz, Svinval,
+  # Svnapot, Svpbmt, Sv48, Sv57, Sstc, Smepmp.
+
+params:
+  # misa.X = 0, see above.
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+
+  # ---------------------------------------------------------------- A params
+  # A misaligned AMO or LR/SC raises an address-misaligned exception.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/load_store_unit.sv#L746-L806
+  MISALIGNED_AMO: false
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  # misa writes are ignored (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1666)
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_B: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_U: false
+  MUTABLE_MISA_S: false
+
+  # ---------------------------------------------------------------- F/D params
+  # mstatus.FS is set to Dirty when an FP instruction commits (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L2054).
+  # FCVT F->int and FP compares do not set it today: CVA6 #3173.
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  MSTATUS_VS_LEGAL_VALUES: [0]
+  # From the csr_regfile.sv medeleg/mideleg write masks (RVS = 1, RVH = 0)
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1669-L1699
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # ---------------------------------------------------------------- U params
+  # BigEndianEn = 0, so MBE/SBE/UBE are read-only zero (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1647-L1649)
+  U_MODE_ENDIANNESS: little
+  # WFI in U-mode raises an illegal-instruction exception (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L290-L293)
+  WFI_U_MODE: false
+  UXLEN: [64]
+  TRAP_ON_ECALL_FROM_U: true
+
+  # ---------------------------------------------------------------- S params
+  # ASID_WIDTH = 16 for XLEN = 64 (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/build_config_pkg.sv#L41)
+  ASID_WIDTH: 16
+  S_MODE_ENDIANNESS: little
+  # SSIP, STIP and SEIP are writable in mip, mie and mideleg (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1695-L1699)
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
+  SXLEN: [64]
+  # TvalEn = 1: every trap with a faulting address or instruction reports it in [ms]tval.
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 64
+  # scounteren: the hardware write is unmasked, but UDB only allows a bit to be enabled
+  # when its counter exists: CY, IR and HPM3..8 (no time CSR).
+  SCOUNTENABLE_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # A vectored interrupt replaces base bits 7:2 with the cause instead of adding 4*cause,
+  # so the vectored base must be 256-byte aligned (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L2713)
+  # The RTL does not enforce this: a stvec write keeps bits 7:2 even in vectored mode
+  # (only mtvec clears them). No ACT test depends on it today.
+  # https://github.com/openhwfoundation/cva6/issues/1987
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 256
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+
+  # ---------------------------------------------------------------- Sm params
+  # MSIP/MTIP/MEIP follow the ipi_i, time_irq_i and irq_i[0] pins (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L2095-L2099).
+  # ACT reads these as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h). The testharness CLINT drives both ipi_i (MSIP, SoftwareInterruptEn=1)
+  # and time_irq_i. There is no external interrupt source behind the PLIC (InclUART=0).
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  # The time CSR is not decoded, so rdtime traps.
+  TIME_CSR_IMPLEMENTED: false
+  CACHE_BLOCK_SIZE: 16
+  FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
+  # WFI waits until an enabled interrupt is pending or debug is requested, with no timeout.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L2679-L2684
+  WFI_FINITE: false
+  MXLEN: 64
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  # mvendorid 0x602 (OpenHW Group: bank 0xC, offset 0x2), marchid 3, mimpid 0.
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/ariane_pkg.sv#L55-L57
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 3
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0xC
+  VENDOR_ID_OFFSET: 0x2
+  # mconfigptr reads zero (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L694)
+  CONFIG_PTR_ADDRESS: 0
+  # Misaligned scalar loads/stores are not supported in hardware. Declared false so the
+  # Misalign suites are not selected.
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  TRAP_ON_ILLEGAL_WLRL: false
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 64
+  PMA_GRANULARITY: 12
+  # PLEN = 56 for XLEN = 64 (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/build_config_pkg.sv#L36)
+  PHYS_ADDR_WIDTH: 56
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  # DirectVecOnly = 0, so direct and vectored modes are supported. In vectored mode bits
+  # 7:1 are cleared, i.e. a 256-byte base alignment (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1741-L1748)
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+  # Mode bit 1 is cleared on write, so mode 2 or 3 lands as mode 0 or 1.
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  # CVA6ConfigNrPMPEntries = 8, PMPNapotEn = 1, granularity 8 bytes (G=1).
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv#L75
+  #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L995-L1001
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 8
+  PMP_GRANULARITY: 3
+  PMP_NA4_SUPPORTED: false
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
+  # Six 64-bit counters, mhpmcounter3..8 (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/perf_counters.sv#L66)
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  # mcountinhibit: CY and HPM3..8 are writable, TM is zero (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1806)
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # mcounteren: as for scounteren (https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/csr_regfile.sv#L1749-L1752)
+  MCOUNTENABLE_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

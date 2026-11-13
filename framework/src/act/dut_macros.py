@@ -30,25 +30,25 @@ _MIRRORED_INDEX_DEFINES: list[str] = [
     "RVMODEL_HPM_COUNTER",
 ]
 
-# Defines emitted without a value, only so coverpoints can test them with `ifdef. Each is emitted when any of
-# its listed rvmodel_macros.h macros has an active #define, whatever its value or parameters.
+# Defines emitted without a value, so coverpoints can test them with `ifdef. Each is emitted when
+# rvmodel_macros.h defines any of its listed macros, with any value or parameters.
 _MIRRORED_FLAG_DEFINES: dict[str, list[str]] = {
-    # The DUT has a supervisor external interrupt controller instead of raising SEI through mip.SEIP
+    # The DUT raises SEI through a supervisor external interrupt controller, not only through mip.SEIP
     "RVMODEL_SEXT_INT_EXTERNAL": ["RVMODEL_SET_SEXT_INT", "RVMODEL_SET_SEXT_INT_M"],
 }
 
-_DEFINE_RE = re.compile(r"^\s*#define\s+(\w+)(?:\s+(0[xX][0-9a-fA-F]+|\d+)\b)?")
+_DEFINE_RE = re.compile(r"^\s*#define\s+(\w+)\s+(0[xX][0-9a-fA-F]+|\d+)\b")
+_DEFINE_NAME_RE = re.compile(r"^\s*#define\s+(\w+)\b")
 
 
-def _scan_h_defines(h_path: Path, names: list[str]) -> dict[str, str | None]:
-    """Return the value (as written) for each requested macro found in h_path, or None if the
-    value is not an integer literal.
+def _scan_h_defines(h_path: Path, names: list[str]) -> dict[str, str]:
+    """Return the value (as written) for each requested macro found in h_path.
 
-    Only matches lines that begin (after whitespace) with `#define NAME`.
+    Only matches lines that begin (after whitespace) with `#define NAME VALUE`.
     Lines starting with `//`, `/*`, or any other prefix are ignored, so commented-out
     defines are skipped. If a name is defined more than once, the last wins.
     """
-    found: dict[str, str | None] = {}
+    found: dict[str, str] = {}
     wanted = set(names)
     for line in h_path.read_text().splitlines():
         match = _DEFINE_RE.match(line)
@@ -60,6 +60,11 @@ def _scan_h_defines(h_path: Path, names: list[str]) -> dict[str, str | None]:
     return found
 
 
+def _scan_h_define_names(h_path: Path) -> set[str]:
+    """Return the name of every macro that h_path defines, with the same line rules as _scan_h_defines."""
+    return {match.group(1) for line in h_path.read_text().splitlines() if (match := _DEFINE_NAME_RE.match(line))}
+
+
 def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     """Generate rvmodel_macros.svh in output_dir derived from rvmodel_macros.h."""
     input_h = dut_include_dir / "rvmodel_macros.h"
@@ -67,8 +72,7 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     if not input_h.exists():
         raise FileNotFoundError(f"rvmodel_macros.h not found at {input_h}")
 
-    flag_sources = [source for sources in _MIRRORED_FLAG_DEFINES.values() for source in sources]
-    defines = _scan_h_defines(input_h, _MIRRORED_DEFINES + _MIRRORED_INDEX_DEFINES + flag_sources)
+    defines = _scan_h_defines(input_h, _MIRRORED_DEFINES + _MIRRORED_INDEX_DEFINES)
     # Same defaults as tests/env/check_defines.h: each undefined variant takes the general value.
     if _ACCESS_FAULT_ADDRESS in defines:
         for name in _ACCESS_FAULT_VARIANTS:
@@ -84,16 +88,16 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
         "",
     ]
     for name in _MIRRORED_DEFINES:
-        value = defines.get(name)
-        if value is not None:
+        if name in defines:
+            value = defines[name]
             hex_value = value[2:] if value.lower().startswith("0x") else f"{int(value):x}"
             lines.append(f"`define {name} 64'h{hex_value}")
     for name in _MIRRORED_INDEX_DEFINES:
-        value = defines.get(name)
-        if value is not None:
-            lines.append(f"`define {name} {int(value, 0)}")
+        if name in defines:
+            lines.append(f"`define {name} {int(defines[name], 0)}")
+    defined_names = _scan_h_define_names(input_h)
     for name, sources in _MIRRORED_FLAG_DEFINES.items():
-        if any(source in defines for source in sources):
+        if defined_names.intersection(sources):
             lines.append(f"`define {name}")
     lines += ["", f"`endif // {guard}", ""]
 

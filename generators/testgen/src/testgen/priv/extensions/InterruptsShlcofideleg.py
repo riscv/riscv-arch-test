@@ -19,7 +19,7 @@ goes to M-mode from every mode.
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.InterruptsCommon import goto_mode
+from testgen.priv.extensions.InterruptsCommon import lower_modes
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_Shlcofideleg_cg"
@@ -33,12 +33,13 @@ def _trigger_tests(test_data: TestData) -> list[str]:
         comment_banner(
             "cp_trigger_lcofi_vs",
             "With hideleg[13] = 1, sie.LCOFIE = 1 and vsstatus.SIE = 0/1, raise LCOFI in HS, U, VS or VU mode.\n"
-            "HS-mode and U-mode never take it; VS-mode takes cause 13 when vsstatus.SIE = 1 and VU-mode always does",
+            "HS-mode (with sstatus.SIE = 1) and U-mode never take it; VS-mode takes cause 13 when vsstatus.SIE = 1\n"
+            "and VU-mode always does",
         ),
         "csrci sstatus, SSTATUS_SIE",
     ]
-    for mode, goto in goto_mode.items():
-        flavor = "S" if mode == "HS" else "U"
+    for mode in lower_modes:
+        flavor = "S" if mode == "S" else "U"
         for sie in (0, 1):
             lines.extend(
                 [
@@ -47,12 +48,14 @@ def _trigger_tests(test_data: TestData) -> list[str]:
                     f"csrw sie, x{tmp_reg} # sie.LCOFIE = 1",
                     f"LI(x{tmp_reg}, SSTATUS_SIE)",
                     f"csr{'s' if sie else 'c'} vsstatus, x{tmp_reg} # vsstatus.SIE = {sie}",
+                    # HS-mode would take an undelegated LCOFI only with sstatus.SIE = 1
+                    *(["csrsi sstatus, SSTATUS_SIE # sstatus.SIE = 1"] if mode == "S" else []),
                     test_data.add_testcase(f"{mode.lower()}_vsstatus_sie{sie}", "cp_trigger_lcofi_vs", _CG),
-                    *([] if mode == "HS" else [f"RVTEST_TSBI_GOTO_{goto}MODE"]),
+                    *([] if mode == "S" else [f"RVTEST_TSBI_GOTO_{mode}MODE"]),
                     f"RVTEST_SET_LCOFI_INT_{flavor}",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                     f"RVTEST_CLR_LCOFI_INT_{flavor}",
-                    *([] if mode == "HS" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                    *(["csrci sstatus, SSTATUS_SIE # sstatus.SIE = 0"] if mode == "S" else ["RVTEST_TSBI_GOTO_SMODE"]),
                     f"csrr x{tmp_reg}, sie # LCOFIE is cleared only if VS-mode took LCOFI",
                     write_sigupd(tmp_reg, test_data),
                 ]
@@ -120,24 +123,28 @@ def _trigger_sm_tests(test_data: TestData) -> list[str]:
             "cp_trigger_lcofi_m",
             "With mideleg = 0, write hideleg[13] = 1 (it reads 0) and set mie.LCOFIE = 1 and vsstatus.SIE = 1.\n"
             "Raise LCOFI in M-mode with mstatus.MIE = 0/1, or with MIE = 0 and then enter HS, U, VS or VU mode.\n"
-            "M-mode takes it when MIE = 1 and on the mret into every other mode.  VS-mode reads vsip.LCOFIP = 0",
+            "M-mode takes it when MIE = 1 and on the mret into every other mode.  Before VS-mode is entered, with\n"
+            "LCOFI pending and enabled, vsip.LCOFIP and vsie.LCOFIE read 0",
         ),
         "csrw mideleg, zero",
     ]
     # M-mode takes LCOFI as it is raised when mstatus.MIE = 1; the other modes take it on the mret into the mode
-    for mode, mie in [("M", 0), ("M", 1), *[(mode, 0) for mode in goto_mode]]:
+    for mode, mie in [("M", 0), ("M", 1), *[(mode, 0) for mode in lower_modes]]:
         name = f"m_mie{mie}" if mode == "M" else mode.lower()
         if mode == "M":
             enter = []
         else:
+            # M-mode clears LCOFIP when it takes LCOFI on entry, so read the VS-level view while it is still pending
+            vs_view = [
+                f"csrr x{check_reg}, vsip # vsip.LCOFIP reads 0 because hideleg[13] = 0",
+                write_sigupd(check_reg, test_data),
+                f"csrr x{check_reg}, vsie # vsie.LCOFIE reads 0 because hideleg[13] = 0",
+                write_sigupd(check_reg, test_data),
+            ]
             enter = [
-                f"RVTEST_TSBI_GOTO_{goto_mode[mode]}MODE",
+                *(vs_view if mode == "VS" else []),
+                f"RVTEST_TSBI_GOTO_{mode}MODE",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                *(
-                    [f"csrr x{check_reg}, sip # vsip.LCOFIP reads 0", write_sigupd(check_reg, test_data)]
-                    if mode == "VS"
-                    else []
-                ),
                 "RVTEST_TSBI_GOTO_MMODE",
             ]
         lines.extend(

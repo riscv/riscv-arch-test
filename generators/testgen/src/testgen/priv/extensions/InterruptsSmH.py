@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Interrupts_Sm hypervisor interrupt test generator (from the hypervisor branch's InterruptsHSm).
+"""Interrupts_Sm hypervisor interrupt test generator.
 
 The group boots to M-mode.  mideleg is zero except for the VS-level interrupts (and SGEI when GEILEN > 0),
 which are always delegated to HS-mode.
@@ -15,9 +15,8 @@ which are always delegated to HS-mode.
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.InterruptsSm import COVERGROUP as _CG
 from testgen.priv.registry import add_priv_test_generator
-
-_CG = "Interrupts_Sm_cg"
 
 
 def _mcsr_tests(test_data: TestData) -> list[str]:
@@ -35,7 +34,7 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
     ]
     for name, csr, value, guard in (
         ("hie_444", "hie", "MIP_VS_MASK", None),
-        ("hie_1444", "hie", "MIP_HS_MASK", "UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1"),
+        ("hie_1444", "hie", "MIP_HS_MASK", "defined(RVTEST_SGEI_INTR_IMPL)"),
         ("hvip_444", "hvip", "MIP_VS_MASK", None),
     ):
         lines.extend(

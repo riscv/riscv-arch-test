@@ -6,8 +6,8 @@ description: |
 coverpoints:
   - name: cp_trigger_sgei
     goal: SGEI goes to HS-mode from every mode
-    description: With mideleg = 0, hideleg = 0 and hgeip & hgeie != 0, set mstatus.MIE = {0/1}, mstatus.SIE = {0/1} and hie.SGEIE = {0/1}, then read mip in M-mode or change to {HS, U, VS, VU} mode
+    description: With mideleg = 0, hideleg = 0 and hgeip & hgeie != 0, set mstatus.SIE = {0/1} and hie.SGEIE = {0/1}, then read mip in M-mode with mstatus.MIE = {0/1} or change to {HS, U, VS, VU} mode
     expectation: |-
       M-mode never takes SGEI and reads mip.SGEIP = 1.
       HS-mode takes it (cause 12) when SIE = 1 and SGEIE = 1; U, VS and VU modes take it when SGEIE = 1.
-    bins: 5 priv * 2 MIE * 2 SIE * 2 SGEIE
+    bins: (2 MIE in M + 4 priv) * 2 SIE * 2 SGEIE

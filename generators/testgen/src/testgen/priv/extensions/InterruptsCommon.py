@@ -91,8 +91,8 @@ int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": 
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
 int_macro |= {"VSEI": "VSEXT", "VSTI": "VSTIME", "VSSI": "VSSW"}
 
-# Modes a test enters with RVTEST_TSBI_GOTO_<mode>MODE, by the mode name in testcase labels
-goto_mode = {"HS": "S", "U": "U", "VS": "VS", "VU": "VU"}
+# Modes below M, named as in RVTEST_TSBI_GOTO_<mode>MODE (S is HS-mode with H)
+lower_modes = ["S", "U", "VS", "VU"]
 
 
 def flavor(priv: str) -> str:
@@ -160,7 +160,8 @@ def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
 
 def hideleg_vs_target(hideleg: int, int_type: str, mode: int, sie: int, reg: int) -> tuple[list[str], list[str]]:
     """Lines that open and close a case where hideleg delegates int_type to VS-mode, with vstvec.MODE = mode and
-    vsstatus.SIE = sie. Both are empty when hideleg = 0."""
+    vsstatus.SIE = sie. The close restores hideleg, vstvec.MODE and vsstatus.SIE/SPIE to their boot values. Both are
+    empty when hideleg = 0."""
     if not hideleg:
         return [], []
     modecmd = "csrs" if mode == 1 else "csrc"
@@ -173,7 +174,18 @@ def hideleg_vs_target(hideleg: int, int_type: str, mode: int, sie: int, reg: int
         f"{modecmd} vstvec, x{reg} # vstvec.mode = {mode}",
         f"LI(x{reg}, 0x22) # SIE, SPIE",
         f"{siecmd} vsstatus, x{reg} # vsstatus.SIE = {sie}",
-    ], ["csrw hideleg, zero # hideleg = 0", "#endif // UDB_VSTVEC_MODES"]
+    ], [
+        "csrw hideleg, zero # hideleg = 0",
+        # Boot sets vstvec.MODE = 0 when direct mode is supported, else 1
+        *(
+            ["#ifdef UDB_VSTVEC_MODES_0", f"LI(x{reg}, 1)", f"csrc vstvec, x{reg} # vstvec.mode = 0", "#endif"]
+            if mode == 1
+            else []
+        ),
+        f"LI(x{reg}, 0x22) # SIE, SPIE",
+        f"csrc vsstatus, x{reg} # vsstatus.SIE = SPIE = 0",
+        "#endif // UDB_VSTVEC_MODES",
+    ]
 
 
 def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
@@ -286,7 +298,7 @@ def generate_cp_priority(
     priv: str,
     vary: str,
     *,
-    split_at: int | None = None,
+    split_vs: bool = False,
 ) -> None:
     """Raise pairs of interrupts so the higher priority one is taken first.
 
@@ -295,6 +307,8 @@ def generate_cp_priority(
     the S-mode suite are repeated with hideleg delegating each nonempty subset of the pair's VS-level members to
     VS-mode, where vsstatus.SIE = 1.  HS-mode takes the undelegated member first, and VS-mode takes the delegated
     ones only in VS-mode and VU-mode.
+
+    With ``split_vs``, the pairs that include a VS-level interrupt go in their own test file.
     """
     ie = suite.ie
     status = suite.status
@@ -322,10 +336,12 @@ def generate_cp_priority(
     for int_type in types:
         if int_bit[int_type] in supervisor_bits:
             delegatable.append(int_type)
-    for index, (first, second) in enumerate(combinations(types, 2)):
-        if split_at is not None and index == split_at:
-            tc = test_data.new_test_chunk(test_chunks, suite.split(f"{split_name}_2"))
-            tc.output_split_name = suite.split(split_name)
+    pairs = list(combinations(types, 2))
+    if split_vs:
+        pairs.sort(key=lambda pair: any(int_type in vs_ints for int_type in pair))
+    for first, second in pairs:
+        if split_vs and tc.split_name == suite.split(split_name) and (first in vs_ints or second in vs_ints):
+            tc = test_data.new_test_chunk(test_chunks, suite.split(f"{split_name}_vs"))
             tc.section_header = comment_banner(coverpoint, title)
         pair = [first, second]
         # ie: everything is pending and only the pair is enabled; otherwise only the pair is pending

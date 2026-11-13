@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Interrupts hypervisor interrupt CSR test generator (from the hypervisor branch's InterruptsH).
+"""Interrupts hypervisor interrupt CSR test generator.
 
 The suite boots to HS-mode, where mideleg delegates the S-level, VS-level and guest external interrupts.
 Delegation of the VS-level interrupts to VS-mode is covered by the trigger and priority crosses (Interrupts.py and
@@ -16,9 +16,8 @@ InterruptsCommon.py).  The tests here check the hip, hie, vsip and vsie aliases 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.Interrupts import COVERGROUP as _CG
 from testgen.priv.registry import add_priv_test_generator
-
-_CG = "Interrupts_cg"
 
 
 def _vs(combo: int) -> int:
@@ -55,7 +54,7 @@ def _hcsr_tests(test_data: TestData) -> list[str]:
             f"csrr x{tmp_reg}, hie",
             write_sigupd(tmp_reg, test_data),
             # SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so SGEIE are implementation-defined
-            "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
+            "#ifdef RVTEST_SGEI_INTR_IMPL",
             "RVTEST_TSBI_CSR_WRITE(CSR_MIE, MIP_HS_MASK)",
             test_data.add_testcase("mie_1444", "cp_hie", _CG),
             f"csrr x{tmp_reg}, hie",
@@ -121,12 +120,12 @@ def _hcsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _sie_vs_tests(test_data: TestData) -> list[str]:
+def _sip_vs_tests(test_data: TestData) -> list[str]:
     """In VS-mode, sip is vsip: it shows the delegated VS-level interrupts and not the pending HS-level ones."""
     tmp_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner(
-            "cp_sie_vs",
+            "cp_sip_vs",
             "With sie = 0, sip.SSIP = 1 (pending in HS-mode, not enabled), hideleg = hie = 0x444 and hvip.VSSIP = 0/1,\n"
             "enter VS-mode with vsstatus.SIE = 0 and read sip.  sip.SSIP reads hvip.VSSIP, never the HS-level SSIP.\n"
             "With vsstatus.SIE = 1, VS-mode would take VSSI and clear it first (cp_trigger_tsbi)",
@@ -147,7 +146,7 @@ def _sie_vs_tests(test_data: TestData) -> list[str]:
                 f"csrw hvip, x{tmp_reg}",
                 "RVTEST_TSBI_GOTO_VSMODE",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                test_data.add_testcase(f"vssip{vssip}", "cp_sie_vs", _CG),
+                test_data.add_testcase(f"vssip{vssip}", "cp_sip_vs", _CG),
                 f"csrr x{tmp_reg}, sip",
                 write_sigupd(tmp_reg, test_data),
                 "RVTEST_TSBI_GOTO_SMODE",
@@ -179,7 +178,7 @@ def make_interrupts_h(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_hcsr_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "h_vs")
-    tc.code.extend(_sie_vs_tests(test_data))
+    tc.code.extend(_sip_vs_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

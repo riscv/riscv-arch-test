@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Interrupts guest external interrupt test generator (from the hypervisor branch's InterruptsHGei).
+"""Interrupts guest external interrupt test generator.
 
 hgeip is read-only, so only the platform can raise a guest external interrupt, through the RVMODEL_SET/CLR_GUEST_EXT_INT
 hooks that a DUT with H and GEILEN > 0 (RVTEST_SGEI_INTR_IMPL) must define; the tests call them through
@@ -22,7 +22,7 @@ IMSIC state below M-mode (vstopei, vsiselect and vsireg), so each file first set
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.InterruptsCommon import goto_mode, int_macro
+from testgen.priv.extensions.InterruptsCommon import int_macro, lower_modes
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_Sgei_cg"
@@ -89,7 +89,7 @@ def _trigger_tests(test_data: TestData) -> list[str]:
             "enter U, VS or VU mode.  HS-mode takes cause 12 on the mret into the mode when SGEIE = 1",
         )
     )
-    for mode in ("U", "VS", "VU"):
+    for mode in lower_modes[1:]:
         for ie in (0, 1):
             lines.extend(
                 [
@@ -97,7 +97,7 @@ def _trigger_tests(test_data: TestData) -> list[str]:
                     f"csrw hie, x{tmp_reg}",
                     *_gei("SET", 1, tmp_reg),
                     test_data.add_testcase(f"{mode.lower()}_sgeie{ie}", "cp_trigger_sgei_lower", _CG),
-                    f"RVTEST_TSBI_GOTO_{goto_mode[mode]}MODE",
+                    f"RVTEST_TSBI_GOTO_{mode}MODE",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                     "RVTEST_TSBI_GOTO_SMODE",
                     f"csrr x{tmp_reg}, hip",
@@ -119,8 +119,8 @@ def _trigger_sm_tests(test_data: TestData) -> list[str]:
         "#ifdef RVTEST_SGEI_INTR_IMPL",
         comment_banner(
             "cp_trigger_sgei",
-            "With mideleg = 0 and guest external interrupt 1 pending and enabled in hgeie, set mstatus.MIE = 0/1,\n"
-            "mstatus.SIE = 0/1 and hie.SGEIE = 0/1, then read mip in M-mode or enter HS, U, VS or VU mode",
+            "With mideleg = 0 and guest external interrupt 1 pending and enabled in hgeie, set mstatus.SIE = 0/1 and\n"
+            "hie.SGEIE = 0/1, then read mip in M-mode with mstatus.MIE = 0/1 or enter HS, U, VS or VU mode",
         ),
         "csrw mideleg, zero",
         "csrw hideleg, zero",
@@ -128,11 +128,13 @@ def _trigger_sm_tests(test_data: TestData) -> list[str]:
         f"LI(x{tmp_reg}, 2)",
         f"csrw hgeie, x{tmp_reg}",
     ]
-    for mode in ("M", *goto_mode):
-        for mie in (0, 1):
+    for mode in ("M", *lower_modes):
+        # mstatus.MIE matters only in M-mode; the mret into another mode replaces it with MPIE
+        for mie in (0, 1) if mode == "M" else (0,):
             for sie in (0, 1):
                 for ie in (0, 1):
-                    bin_name = f"{mode.lower()}_mie{mie}_sie{sie}_sgeie{ie}"
+                    mie_name = f"_mie{mie}" if mode == "M" else ""
+                    bin_name = f"{mode.lower()}{mie_name}_sie{sie}_sgeie{ie}"
                     if mode == "M":
                         body = [
                             f"LI(x{tmp_reg}, MIP_HS_MASK)",
@@ -144,7 +146,7 @@ def _trigger_sm_tests(test_data: TestData) -> list[str]:
                     else:
                         body = [
                             test_data.add_testcase(bin_name, "cp_trigger_sgei", _CG_SM),
-                            f"RVTEST_TSBI_GOTO_{goto_mode[mode]}MODE",
+                            f"RVTEST_TSBI_GOTO_{mode}MODE",
                             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                             "RVTEST_TSBI_GOTO_MMODE",
                             f"csrr x{check_reg}, hip",

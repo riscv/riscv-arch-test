@@ -431,7 +431,7 @@ normative_rule_definitions:
   # to HS-level continue to be indicated in the HS-level sip register, not in vsip, when
   # V=1.
   - name: vsip_vsie_sz_acc_op
-    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sie_vs}"]
+    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sip_vs}"]
 
     # Representative coverpoints; vsie and vsip through hideleg, and undelegated interrupts on entry
     # to VS-mode
@@ -448,7 +448,7 @@ normative_rule_definitions:
   # When bit 2 of hideleg is zero, vsip.SSIP and vsie.SSIE are read-only zeros. Else,
   # vsip.SSIP and vsie.SSIE are aliases of hip.VSSIP and hie.VSSIE.
   - name: vsip_vsie_ssi
-    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sie_vs}"]
+    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sip_vs}"]
 
   # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hideleg_img&gt;&gt;.

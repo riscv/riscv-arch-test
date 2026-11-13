@@ -82,7 +82,9 @@ def format_fvmvvf_like_type(
     )
     setup.extend(load_code)
     fp_load_sew_map: dict[int, Literal["half", "single", "double", "quad"]] = {16: "half", 32: "single", 64: "double"}
-    setup.append(load_float_reg("fs1", params.fs1, params.fs1val, test_data, fp_load_sew_map[params.sew]))
+    setup.append(
+        load_float_reg("fs1", params.fs1, params.fs1val, test_data, fp_load_sew_map[params.sew], comment=False)
+    )
     setup.append(load_test_vtype(params, random_vl_reg))
 
     # We don't need random_vl_reg anymore

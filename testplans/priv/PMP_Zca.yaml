@@ -12,7 +12,7 @@ coverpoints:
   - heading: Compressed loads and stores
   - name: cp_cfg_R
     goal: Verify that R controls every compressed load when the entry is locked.
-    description: Six legal XWR with L=1, one entry each. Every compressed load at the start of the region.
+    description: Six legal XWR with L=1, one entry each. Every compressed load at the start of the region, the NAPOT region base PMP_NAPOT_REGION_START, so the 8-byte c.ld, c.ldsp, c.fld and c.fldsp probes are naturally aligned at every PMP granularity.
     expectation: Load access fault when R=0.
     bins: 6 XWR × compressed loads. c.lwsp and c.ldsp are ignored in the cross.
     rules:

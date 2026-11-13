@@ -8,8 +8,12 @@ description: |
 coverpoints:
   - name: cp_misaligned_priority_s
     goal: Priority of exceptions
-    description: Attempt lr.w and sc.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+    description: |-
+      Attempt lr.w and sc.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+      Also attempt them with no fault (valid PTE, aligned, no access fault); that lr.w/sc.w is retried in a constrained LR/SC loop of up to 100 attempts. Faulting accesses are tried once.
   - heading: The following coverpoints should be exercised in user mode
   - name: cp_misaligned_priority_u
     goal: Priority of exceptions
-    description: Attempt lr.w and sc.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+    description: |-
+      Attempt lr.w and sc.w from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+      Also attempt them with no fault (valid PTE, aligned, no access fault); that lr.w/sc.w is retried in a constrained LR/SC loop of up to 100 attempts. Faulting accesses are tried once.

@@ -32,10 +32,10 @@ coverpoints:
   - name: cp_store_address_misaligned
     goal: misaligned store
     description: Execute fsw with all 4 lsbs in address.  If supported, also do fsh, fsd, fsq.
-    expectation: might cause misaligned load fault
+    expectation: might cause store/AMO address-misaligned fault
     bins: 16 addresses * up to 4 instructions
   - name: cp_store_access_fault
     goal: store access fault
     description: Execute fsw from access fault address.  If supported, also do fsh, fsd, fsq.
-    expectation: load access fault
+    expectation: store/AMO access fault
     bins: up to 4 instructions

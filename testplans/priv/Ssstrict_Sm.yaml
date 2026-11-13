@@ -10,7 +10,7 @@ coverpoints:
     expectation: Legal CSRs return a value; non-existent/inaccessible CSRs raise illegal-instruction exception.
     bins: One bin per CSR address 0x000–0xFBF (excluding skips)
     notes: csrr instruction, save value
-  - name: cp_csrw_corners
+  - name: cp_csrw_edges
     goal: CSR Accesses
     description: Write all-zeros then all-ones to every CSR in M-mode. Skips PMP regs (0x3A0-0x3EF) to avoid corrupting PMP configuration and custom CSRs.
     expectation: Write to legal CSRs succeeds; write to read-only or non-existent CSRs raises illegal-instruction.
@@ -19,7 +19,7 @@ coverpoints:
   - name: cp_csrcs
     goal: CSR Accesses
     description: Set all bits (CSRRS with rs1=all-ones) then clear all bits (CSRRC with rs1=all-ones) for every CSR in M-mode. Skips PMP and custom CSRs.
-    expectation: Same as cp_csrw_corners — legal writes succeed, illegal CSRs trap.
+    expectation: Same as cp_csrw_edges — legal writes succeed, illegal CSRs trap.
     bins: "Two bins per CSR: CSRRS all-ones, CSRRC all-ones"
     notes: csrc -1
   - name: cp_illegal_instruction

@@ -2,34 +2,54 @@
 suite: Zama16b
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=907997467#gid=907997467
 coverpoints:
-  - name: cp_zama16b_load
+  - name: cp_zama16b_1byte
     goal: Misaligned accesses are atomic
     description: |-
-      For each op in {lw, lh, lhu, lb, lbu} + {ld, lwu for RV64} + {flw for F, fld for D on RV64, flh for Zfh}:
+      For each 1-byte op in {lb, lbu, sb} + {amoswap.b, amoadd.b, amoand.b, amoor.b, amoxor.b, amomax.b, amomaxu.b, amomin.b, amominu.b for Zabha}:
       Pick base address as multiple of 16
-      Issue instruction with offsets of [0, 16-size]
-    expectation: No misaligned load fault
-    bins: Up to 11 ops * 16 offsets
+      Issue instruction with offsets of [0, 15]
+    expectation: No address-misaligned fault
+    bins: Up to 12 ops * 16 offsets
     rules:
       - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
-  - name: cp_zama16b_store
+  - name: cp_zama16b_2byte
     goal: Misaligned accesses are atomic
     description: |-
-      For each op in {sw, sh, sb} + {sd for RV64} + {fsw for F, fsd for D on RV64, fsh for Zfh}:
+      For each 2-byte op in {lh, lhu, sh} + {flh, fsh for Zfh} + {amoswap.h, amoadd.h, amoand.h, amoor.h, amoxor.h, amomax.h, amomaxu.h, amomin.h, amominu.h for Zabha}:
       Pick base address as multiple of 16
-      Issue instruction with offsets of [0, 16-size]
-    expectation: No misaligned store fault
-    bins: Up to 9 ops * 16 offsets
+      Issue instruction with offsets of [0, 14]
+    expectation: No address-misaligned fault
+    bins: Up to 14 ops * 15 offsets
     rules:
       - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
-  - name: cp_zama16b_amo
+  - name: cp_zama16b_4byte
     goal: Misaligned accesses are atomic
     description: |-
-      For each op in {amoswap.w, amoadd.w, amoand.w, amoor.w, amoxor.w, amomax.w, amomaxu.w, amomin.w amominu.w} + {.d flavors for RV64} + {b and h flavors for Zabha} + {amocas.w, d, q if supported}:
-      Pick address as multiple of 16 + offset of [0, 16-size]
-      Issue instruction
-    expectation: No misaligned store/AMO fault
-    bins: Up to 39 ops * 12 offsets
+      For each 4-byte op in {lw, sw} + {lwu for RV64} + {flw, fsw for F} + {amoswap.w, amoadd.w, amoand.w, amoor.w, amoxor.w, amomax.w, amomaxu.w, amomin.w, amominu.w for Zaamo} + {amocas.w for Zacas}:
+      Pick base address as multiple of 16
+      Issue instruction with offsets of [0, 12]
+    expectation: No address-misaligned fault
+    bins: Up to 15 ops * 13 offsets
+    rules:
+      - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
+  - name: cp_zama16b_8byte
+    goal: Misaligned accesses are atomic
+    description: |-
+      For each 8-byte op in {ld, sd for RV64} + {fld, fsd for D on RV64} + {amoswap.d, amoadd.d, amoand.d, amoor.d, amoxor.d, amomax.d, amomaxu.d, amomin.d, amominu.d for Zaamo on RV64} + {amocas.d for Zacas}:
+      Pick base address as multiple of 16
+      Issue instruction with offsets of [0, 8]
+    expectation: No address-misaligned fault
+    bins: Up to 14 ops * 9 offsets
+    rules:
+      - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
+  - name: cp_zama16b_16byte
+    goal: Misaligned accesses are atomic
+    description: |-
+      For each 16-byte op in {amocas.q for Zacas on RV64}:
+      Pick base address as multiple of 16
+      Issue instruction at offset 0 (the only offset that does not cross a 16-byte boundary)
+    expectation: No address-misaligned fault
+    bins: "1"
     rules:
       - Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.
   - heading: "Note:"

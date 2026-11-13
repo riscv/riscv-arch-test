@@ -4,111 +4,143 @@
 
 ci_enabled: true
 
-# bsc-loca/core_tile @ 2528e7df. Paths are under
-#   tile:  https://github.com/bsc-loca/core_tile/blob/2528e7df/
-#   core:  https://github.com/bsc-loca/sargantana/blob/403975c8/rtl/
-#   fpu:   https://github.com/bsc-loca/sargantana/blob/403975c8/rtl/datapath/rtl/exe_stage/rtl/old_fpu/
-#   csr:   https://github.com/bsc-loca/csr/blob/c5c8a1d1/rtl/
-#   mmu:   https://github.com/bsc-loca/mmu/blob/0f4727a7/rtl/
-#   cvfpu: https://github.com/openhwgroup/cvfpu/blob/84066933/src/
+# bsc-loca/core_tile @ 1b9529b5 (v4.0.0). Paths are under
+#   tile:  https://github.com/bsc-loca/core_tile/blob/1b9529b5/
+#   core:  https://github.com/bsc-loca/sargantana/blob/8db4398b/rtl/
+#   csr:   https://github.com/bsc-loca/csr/blob/40a00a0e/rtl/
+#   mmu:   https://github.com/bsc-loca/mmu/blob/cbb65eb7/rtl/
 exclude_extensions:
-  # FMA sets UF when the result rounds up to the smallest normal: cvfpu:fpnew_fma_multi.sv#L801-L803
-  # (https://github.com/openhwfoundation/cvfpu/issues/182, fixed by openhwfoundation/cvfpu#190; https://github.com/bsc-loca/sargantana/issues/113 item 12)
-  - F-fmadd.s
-  - F-fmsub.s
-  - F-fnmadd.s
-  - F-fnmsub.s
-  # fmul.s has the same UF bug: cvfpu:fpnew_fma_multi.sv#L801-L803 (https://github.com/openhwfoundation/cvfpu/issues/182)
-  - ZicsrF
-  # fleq/fltq raise NV on a quiet NaN: fpu:zfa_post_process.sv#L88-L98; fround.s/froundnx.s and
-  # fmaxm.s/fminm.s ignore NaN-boxing; fcvtmod.w.d drops NX (https://github.com/bsc-loca/sargantana/issues/113 items 10, 11 and 14; fixed in BSC's
-  # internal version)
-  - Zfa-fleq.s
-  - Zfa-fltq.s
-  - ZfaD-fcvtmod.w.d
-  - ZfaD-fleq.d
-  - ZfaD-fleq.s
-  - ZfaD-fltq.d
-  - ZfaD-fltq.s
-  - ZfaD-fround.s
-  - ZfaD-froundnx.s
-  - ZfaD-fmaxm.s
-  - ZfaD-fminm.s
-  # fcvt.s.h/fcvt.d.h ignore NaN-boxing; fcvt.h.s/fcvt.h.d round a tiny value up under RMM: fpu:conv_zfhmin.sv
-  # (https://github.com/bsc-loca/sargantana/issues/113 items 11 and 13; fixed in BSC's internal version)
-  - Zfhmin-fcvt.h.s
-  - Zfhmin-fcvt.s.h
-  - ZfhminD-fcvt.d.h
-  - ZfhminD-fcvt.h.d
-  - ZfhminD-fcvt.s.h
-  # Testbench, not the core: the standalone sim_top ties time_i to 0: tile:simulator/sim_top.sv#L263-L268
+  # Testbench, not the core: the standalone sim_top ties time_i to 0 (tile:simulator/sim_top.sv#L298-L303), so time never
+  # advances and an Sstc timer interrupt that a WFI waits for never arrives.
   - Zicntr
+  - InterruptsS_wfi_S-
+  - InterruptsS_wfi_VS-
+  # Not the core: in this tile WRS.NTO never waits, because the reservation-lost input is tied high outside OpenPiton
+  # (tile:rtl/top_tile.sv#L411-L416), and time never advances, while Sail models WRS.NTO as a wait that expires after
+  # platform.max_time_to_wait. Tests that wait for that expiry (VU-mode with hstatus.VTW = 1, or a WRS.NTO resumed by
+  # its timeout) spin forever. Modelled as a NOP instead, Sail would miss the immediate illegal-instruction exception
+  # that Sargantana raises under mstatus.TW (csr:csr_bsc.sv#L2917-L2920), which Zawrs allows.
+  - Zawrs_S-
+  - Zawrs_U-
   # minstret counts ecall, ebreak and CSR illegal-instruction traps, which raise csr_xcpt rather than
-  # ex_i: csr:csr_bsc.sv#L948 (https://github.com/bsc-loca/sargantana/issues/114)
-  - Sm_Zicntr
-  # U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2411
+  # ex_i: csr:csr_bsc.sv#L1035 (https://github.com/bsc-loca/sargantana/issues/114)
+  - Sm_Zicntr-
+  # U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2586
   # (https://github.com/bsc-loca/csr/issues/10)
   - S_Zicntr
-  # Same counter-enable bug: csr:csr_bsc.sv#L2411 (https://github.com/bsc-loca/csr/issues/10)
+  # Same counter-enable bug: csr:csr_bsc.sv#L2586 (https://github.com/bsc-loca/csr/issues/10)
   - U_Zicntr
-  # csrr mstatus/sstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1009 (https://github.com/bsc-loca/sargantana/issues/113 item 9)
+  # csrr mstatus/sstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1096 (https://github.com/bsc-loca/sargantana/issues/113 item 9)
   - Sm_F
   - S_F
-  # mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595 (https://github.com/bsc-loca/sargantana/issues/113
-  # items 15 and 8). mideleg.SGEI is read-only one with GEILEN = 0 (csr:csr_bsc.sv#L1559-L1560), which is legal
-  # (norm:mideleg_rd1_lower_level) but Sail cannot model (https://github.com/riscv/sail-riscv/issues/2049). misa.V is set for the partial vector unit,
-  # which the configuration does not declare.
-  - Sm_mcsr_access
-  - Sm_mcsr_walk
-  - Sm_scsr
-  - Sm_shadow
-  # sepc[1] is writable with IALIGN = 32: csr:csr_bsc.sv#L1244; senvcfg.CBIE keeps 0b10: #L1242
-  # (https://github.com/bsc-loca/sargantana/issues/113 items 5 and 8; bsc-loca/csr#7 masks sepc[1])
+  # mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1653-L1656, #L1723 (https://github.com/bsc-loca/sargantana/issues/113
+  # items 15 and 8). Sm_mcsr_walk-01 also hits the mie.SGEIE difference below.
+  - Sm_mcsr_walk-
+  # Not the core: mideleg.SGEI is read-only one with GEILEN = 0 (csr:csr_bsc.sv#L1687-L1688), which is legal
+  # (norm:mideleg_rd1_lower_level) but Sail cannot model (https://github.com/riscv/sail-riscv/issues/2049), and mie.SGEIE
+  # is writable, which norm:hie_acc allows but Sail 0.16 makes read-only zero when GEILEN = 0.
+  - Sm_mcsr_access-
+  - Sm_shadow-
+  # senvcfg.CBIE keeps the reserved 0b10: csr:csr_bsc.sv#L1344-L1345 (https://github.com/bsc-loca/sargantana/issues/113 item 8)
   - S_scsr-
-  - S_scsr_addr
-  # An FP instruction that raises fflags without writing an f register leaves FS clean:
-  # csr:csr_bsc.sv#L1019-L1021, #L1041-L1044 (https://github.com/bsc-loca/sargantana/issues/117)
-  - U_F
   # mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:
-  # csr:csr_bsc.sv#L1888-L1936 (https://github.com/bsc-loca/sargantana/issues/127)
+  # csr:csr_bsc.sv#L2026-L2075 (https://github.com/bsc-loca/sargantana/issues/127)
   - InterruptsSm_priority_mideleg
-  # A write to mtval2 writes mip (csr:csr_bsc.sv#L1599-L1600), so the xtval seeding added in #2749 sets STIP
+  # A write to mtval2 writes mip (csr:csr_bsc.sv#L1727-L1729), so the xtval seeding added in #2749 sets STIP
   # (https://github.com/bsc-loca/csr/issues/14). The VS and VU groups also hit the GVA bug (#119).
-  - InterruptsSm_trigger
+  - InterruptsSm_trigger_M
+  - InterruptsSm_trigger_S
+  - InterruptsSm_trigger_U
+  - InterruptsSm_trigger_VS
+  - InterruptsSm_trigger_VU
   # scountovf reads are masked by mcounteren in M mode too: https://github.com/bsc-loca/sargantana/issues/116
   - Sscofpmf_Sm_mcounteren
-  # A non-canonical VA gives an access fault and is checked at 41 bits:
-  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L197; bad PTEs hang or give the wrong fault
-  # (a non-leaf PTE with D, A, U or a reserved bit 63:54 set is walked instead of page-faulting)
-  # (https://github.com/bsc-loca/sargantana/issues/113 items 1, 4, 6 and 7)
-  - Sv_sv39_canonical
-  - Sv_sv39_nleaf_pte_DAU
+  # A non-leaf PTE with a reserved bit set faults on the first access through it and is walked on the next ones
+  # (https://github.com/bsc-loca/sargantana/issues/113 item 7; v4.0's invalid_pte guard on the PTE cache,
+  # mmu:ptw/ptw.sv#L276, does not stop it)
   - Sv_sv39_nleaf_pte_reserved
-  - Sv_sv39_pte_reserved
-  - Sv_sv39_svnapot
-  - Sv_sv39_svpbmt
-  # PTE reads are never PMA-checked, so a walk to a faulting address page-faults:
-  # mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93 (https://github.com/bsc-loca/sargantana/issues/113 item 3)
-  - Sv_Zicbo_sv39_zicbom
-  - Sv_Zicbo_sv39_zicboz
-  # A translated fetch is not PMA-checked: core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L139-L141
-  # (https://github.com/bsc-loca/sargantana/issues/113 item 16)
-  - Sv_Exceptions
-  # hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339
-  # (https://github.com/bsc-loca/sargantana/issues/126); virtual instruction instead of illegal instruction for
-  # instructions that HS-mode cannot execute either: csr:csr_bsc.sv#L2389-L2392 (https://github.com/bsc-loca/csr/issues/15); htval on a
-  # VS-stage PTE read (https://github.com/bsc-loca/sargantana/issues/123); vsstatus.SD ignores VS
-  # (https://github.com/bsc-loca/sargantana/issues/118); vsepc[1], henvcfg.CBIE and vsstatus.SD after an FP
-  # write as in https://github.com/bsc-loca/sargantana/issues/113 items 5, 8 and 9; the counter-enable bug (bsc-loca/csr#10)
-  - H
-  # The H CSR bugs above (#126, #123, https://github.com/bsc-loca/sargantana/issues/113), and mstatus.TVM traps SFENCE.VMA in VS-mode:
-  # csr:csr_bsc.sv#L2532 (https://github.com/bsc-loca/csr/issues/16)
-  - Sm_H
-  # Not yet triaged on Sargantana: hangs in two-stage translation (Sv_H, Sv_HSm), and the trap
-  # signature mismatches of H
-  - Sv_H
-  - Sv_HSm
-  - Sv_HZicbo
+  # vsstatus.SD lags an FP write (https://github.com/bsc-loca/sargantana/issues/113 item 9)
+  - H_F_vs
+  # The counter-enable bug (https://github.com/bsc-loca/csr/issues/10), and virtual instead of illegal
+  # instruction (https://github.com/bsc-loca/csr/issues/15)
+  - H_Zicntr-
+  # hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1436-L1455
+  # (https://github.com/bsc-loca/sargantana/issues/126); henvcfg.CBIE keeps 0b10
+  # (https://github.com/bsc-loca/sargantana/issues/113 item 8). H_hcsr_walk-04 also hits the vstimecmp bug (NEW-1) below.
+  - H_hcsr_access-
+  - H_hcsr_walk-
+  # hgatp[59:58] are stored instead of reading 0 (https://github.com/bsc-loca/sargantana/issues/146)
+  - H_hcsr_addr-
+  # Virtual instruction instead of illegal instruction for instructions that HS-mode cannot execute either:
+  # csr:csr_bsc.sv#L2564-L2567 (https://github.com/bsc-loca/csr/issues/15)
+  - H_inst-
+  - H_vucsr-
+  # The same virtual-instruction bug on csrrsi to CSR 0xE00 from VS-mode (https://github.com/bsc-loca/csr/issues/15)
+  - H_vscsr_ro-
+  # htval on a guest-page fault in the VS-stage walk (https://github.com/bsc-loca/sargantana/issues/123)
+  - H_trap
+  # The H CSR bugs above (#126, #146, #123, https://github.com/bsc-loca/sargantana/issues/113 item 8), and
+  # mstatus.TVM traps SFENCE.VMA in VS-mode: csr:csr_bsc.sv#L2707 (https://github.com/bsc-loca/csr/issues/16)
+  - Sm_H_hcsr_access-
+  - Sm_H_hcsr_addr-
+  - Sm_H_hcsr_walk-
+  - Sm_H_trap-
+  - Sm_H_tvm-
+  # Two-stage translation. GVA is 0 on load and store page faults from VS-stage translation:
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L223, #L233 (https://github.com/bsc-loca/sargantana/issues/135)
+  - Sv_H_sv39x4_two_stage_vs
+  - Sv_HSm_sv39x4_mprv_sum_mxr
+  - Sv_H_sv39x4_ldst_straddle
+  - Sv_H_sv39x4_two_stage_vu
+  # With hgatp = Bare, a VS-stage superpage translates every address to its first page: mmu:tlb/tlb.sv#L521-L524
+  # (https://github.com/bsc-loca/sargantana/issues/136)
+  - Sv_H_sv39x4_atp_mode
+  # The GVA (#135) and hgatp = Bare superpage (#136) bugs, and VS-stage page-fault checks are enabled by the G-stage
+  # enable, so with hgatp = Bare no VS-stage permission is checked: mmu:tlb/tlb.sv#L481-L492
+  # (https://github.com/bsc-loca/sargantana/issues/137)
+  - Sv_H_sv39_vs_perm
+  - Sv_H_sv39_vs_pte
+  # The same check with vsatp = Bare: user-level accesses (VU, HLV with SPVP = 0, MPRV with MPP = U and MPV = 1) take a
+  # spurious page fault (https://github.com/bsc-loca/sargantana/issues/137). Sv_HSm_sv39_mprv_vsatp also hits the
+  # GVA bug (#135), and Sv_HSm_sv39x4_mprv_hgatp translates M-mode MPRV accesses with MPP = M when MPV = 1:
+  # csr:csr_bsc.sv#L2378, #L2388, #L2400 (https://github.com/bsc-loca/csr/issues/17)
+  - Sv_H_sv39x4_g_perm_vu
+  - Sv_HSm_sv39_mprv_vsatp
+  - Sv_HSm_sv39x4_mprv_hgatp
+  # A VS-stage superpage over a smaller G-stage page is translated through the superpage's base guest physical address:
+  # mmu:ptw/ptw.sv#L594 (https://github.com/bsc-loca/sargantana/issues/138)
+  - Sv_H_sv39x4_page_sizes
+  # A non-canonical VA under VS-stage translation does not raise a page fault
+  # (https://github.com/bsc-loca/sargantana/issues/113 item 4; v4.0 fixed it for satp only)
+  - Sv_H_sv39x4_canonical
+  # A translated fetch, and a PTE read, are not PMA-checked (https://github.com/bsc-loca/sargantana/issues/113 items 16
+  # and 3)
+  - Sv_H_sv39x4_access_fault
+  # hedeleg[23:20] are writable, so guest-page faults are delegated to VS-mode (https://github.com/bsc-loca/sargantana/issues/126)
+  - Sv_H_sv39x4_hedeleg
+  # htval of a fault on a VS-stage page-table read (https://github.com/bsc-loca/sargantana/issues/123), and htval drops
+  # guest-physical-address bits above bit 41: mmu:ptw/ptw.sv#L421, #L597 (https://github.com/bsc-loca/sargantana/issues/142)
+  - Sv_H_sv39x4_gpa_wide
+  # The GVA bug (#135), #123, and the G-stage leaf of a VS-level page table is not checked for R and A:
+  # mmu:ptw/ptw.sv#L576 (https://github.com/bsc-loca/sargantana/issues/141). Sv_H_sv39x4_hlv also hits HLVX ignoring
+  # vsstatus.SUM: mmu:tlb/tlb.sv#L478 (https://github.com/bsc-loca/sargantana/issues/139)
+  - Sv_H_sv39x4_hlv
+  - Sv_H_sv39x4_implicit
+  # The GVA bug (#135) and #123
+  - Sv_HSm_sv39x4_guest_faults
+  # Zicbo under two-stage translation: VS-stage and G-stage PTE reads are not PMA-checked
+  # (https://github.com/bsc-loca/sargantana/issues/113 item 3), and the superpage bug of #138 (_g). _zicbom_g also needs
+  # G-stage write permission for cbo.clean/flush/inval: core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L236-L237
+  # (https://github.com/bsc-loca/sargantana/issues/140). _zicbom_g and _zicbom_vs also hit the PTE cache keeping a
+  # non-leaf PTE that failed its checks (https://github.com/bsc-loca/sargantana/issues/113 item 7).
+  # The _vs tests also hit the GVA bug (#135) and #123.
+  - Sv_HZicbo_sv39x4_zicbom_g
+  - Sv_HZicbo_sv39x4_zicbom_vs
+  - Sv_HZicbo_sv39x4_zicboz_g
+  - Sv_HZicbo_sv39x4_zicboz_vs
+  # Virtual-instruction exceptions set GVA = 1 (https://github.com/bsc-loca/sargantana/issues/128)
+  - Sv_HZicbo_zicbom_henvcfg
+  - Sv_HZicbo_zicboz_henvcfg
   # Wrong htval on a VS-stage PTE fault (https://github.com/bsc-loca/sargantana/issues/123)
   - Shtvala-
   - Shtvala_amo
@@ -116,22 +148,22 @@ exclude_extensions:
   # VS-stage permission fault reported as a guest-page fault (https://github.com/bsc-loca/sargantana/issues/124)
   - Shvstvala_page_fault
   # An interrupt taken from VS or VU into HS sets hstatus.GVA = 1:
-  # core:datapath/rtl/datapath.sv#L913 (https://github.com/bsc-loca/sargantana/issues/119)
+  # core:datapath/rtl/datapath.sv#L970 (https://github.com/bsc-loca/sargantana/issues/119)
   - InterruptsS_enable_VS
   - InterruptsS_enable_VU
   # With LCOFI and a VS-level interrupt both pending and enabled into HS, LCOFI is taken first, but
   # the VS-level interrupts have the higher priority (SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI, LCOFI):
-  # csr:csr_bsc.sv#L1911-L1926 (https://github.com/bsc-loca/sargantana/issues/120). The VS and VU
+  # csr:csr_bsc.sv#L2049-L2051 (https://github.com/bsc-loca/sargantana/issues/120). The VS and VU
   # groups also hit the GVA bug (#119).
   - InterruptsS_priority_sie
   - InterruptsS_priority_sip
   - InterruptsS_trigger_VS
   - InterruptsS_trigger_VU
   # WFI in VU-mode with mstatus.TW = 1 raises virtual instruction instead of illegal instruction:
-  # csr:csr_bsc.sv#L2536-L2541 (https://github.com/bsc-loca/sargantana/issues/121)
+  # csr:csr_bsc.sv#L2713 (https://github.com/bsc-loca/sargantana/issues/121)
   - InterruptsS_wfi_timeout_VU
   # An interrupt taken into M-mode from VS or VU sets mstatus.GVA = 1, the same bug:
-  # csr:csr_bsc.sv#L2145 (https://github.com/bsc-loca/sargantana/issues/119)
+  # csr:csr_bsc.sv#L2296 (https://github.com/bsc-loca/sargantana/issues/119)
   - InterruptsSm_enable_VS
   - InterruptsSm_enable_VU
   - InterruptsSm_priority_mie_VS
@@ -141,9 +173,62 @@ exclude_extensions:
   # Same as InterruptsS_wfi_timeout_VU (https://github.com/bsc-loca/sargantana/issues/121)
   - InterruptsSm_wfi_timeout_VU
   # GVA is 0 on breakpoints and misaligned jumps from VS-mode and 1 on virtual-instruction exceptions:
-  # core:datapath/rtl/id_stage/rtl/decoder.sv#L3606, #L3630 (https://github.com/bsc-loca/sargantana/issues/128)
-  - Exceptions_H
-  - Exceptions_HSm
+  # core:datapath/rtl/id_stage/rtl/decoder.sv#L3862, #L3886 (https://github.com/bsc-loca/sargantana/issues/128)
+  - Exceptions_H_hedeleg_vs
+  - Exceptions_H_hedeleg_vu
+  - Exceptions_H_hlv
+  - Exceptions_H_virtual
+  - Exceptions_H_xtinst
+  - Exceptions_HSm_ecall
+  - Exceptions_HSm_hedeleg
+  - Exceptions_HSm_xtinst
+
+  # Every denied vstimecmp access raises a virtual-instruction exception (csr:csr_bsc.sv#L731-L740, #L1617-L1627):
+  # from HS-mode (V = 0) when henvcfg.STCE or hcounteren.TM is 0, and from VS/VU-mode when menvcfg.STCE is 0, where
+  # illegal instruction is required (NEW-1; H_hcsr_walk-04 is excluded above)
+  - Sstc_H_hs
+  - Sstc_H_vs-
+  - Sstc_H_vu
+  # xtval on an access that crosses into a faulting page is the start address, not the address of the faulting
+  # page: fetch, core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L270; load/store,
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L212-L280 (NEW-2)
+  - Shtvala_fetch_straddle
+  - Shtvala_straddle
+  # The Svinval fences are not serialized (core:datapath/rtl/id_stage/rtl/decoder.sv#L3309-L3332), and reach the CSR
+  # unit with a neighbouring instruction's system-instruction field: a trap reports xtval of the next instruction, and
+  # hinval.gvma in HS-mode raises an environment call from S-mode (NEW-3)
+  - Svinval_Svinval
+  - Svinval_Sm_Svinval_mstatus_tvm
+  - Svinval_SmH_Svinval_mstatus_tvm
+  - Svinval_H_Svinval_hstatus_vtvm
+  # sinval.vma x0, x0 and hinval.vvma x0, x0 between sfence.w.inval and sfence.inval.ir leave the stale translation
+  # (csr:csr_bsc.sv#L2517-L2522) (NEW-4)
+  - Svinval_sv39_inval
+  - Svinval_H_sv39x4_inval
+  # Pointer masking is applied while MXR is in effect: the masking in
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L150-L189 never looks at MXR (NEW-5)
+  - Ssnpm_bare_pmm10_edgecases
+  - Ssnpm_bare_pmm11_edgecases
+  - Ssnpm_Sm
+  # The masked address is zero-extended on every V = 0 access, even with satp = Sv39, where it must be sign-extended:
+  # "masked_addr = instr_to_translate.data_rs1 & physical_mask;",
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L183-L189 (NEW-6)
+  - Ssnpm_sv39_pmm10_edgecases
+  - Ssnpm_sv39_pmm11_edgecases
+  # henvcfg.PBMTE is writable while menvcfg.PBMTE is 0, where it must be read-only zero: csr:csr_bsc.sv#L657 (NEW-7).
+  # Only Smstateen-00 and Ssstateen-01 fail, but a numbered part cannot be excluded alone.
+  - Smstateen-
+  - Ssstateen-
+  - Svpbmt_H_sv39_vs_pbmt
+  # With hgatp = Bare, a 64 KiB VS-stage NAPOT page translates every address to its first 4 KiB page, as for
+  # superpages (https://github.com/bsc-loca/sargantana/issues/136)
+  - Svnapot_H_sv39x4_napot
+  # A VS-level interrupt delegated by hideleg is taken in U-mode (https://github.com/bsc-loca/sargantana/issues/122)
+  - InterruptsS_trigger_vsti_sstc_U
+  # A VS-timer interrupt taken from VS or VU sets hstatus.GVA = 1 (https://github.com/bsc-loca/sargantana/issues/119)
+  - InterruptsS_trigger_vsti_sstc_VS
+  - InterruptsS_trigger_vsti_sstc_VU
+  - InterruptsSm_trigger_vsti_sstc_M
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

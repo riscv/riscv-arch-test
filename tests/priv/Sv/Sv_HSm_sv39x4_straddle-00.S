@@ -32,7 +32,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_straddle_m
+// cp_misaligned_instr_page_fault_m
 //   In VS-mode and VU-mode, fetch a 4-byte instruction in the last halfword of a guest page whose next page has an invalid G-stage leaf.  The
 //   guest-page fault is taken in M-mode with mtval = the page-boundary address and mtval2 = its guest physical
 //   address >> 2
@@ -203,7 +203,7 @@ RVTEST_BEGIN
   LI(x14, 0x140802000 + 0xffe)
   LI(x6, 0x100)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HSm_trap_cg_cp_straddle_m_vs_g_invalid_exec:
+Sv_HSm_trap_cg_cp_misaligned_instr_page_fault_m_vs_g_invalid_exec:
   jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_MMODE
 
@@ -387,7 +387,7 @@ Sv_HSm_trap_cg_cp_straddle_m_vs_g_invalid_exec:
   LI(x14, 0x140802000 + 0xffe)
   LI(x8, 0x101)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HSm_trap_cg_cp_straddle_m_vu_g_invalid_exec:
+Sv_HSm_trap_cg_cp_misaligned_instr_page_fault_m_vu_g_invalid_exec:
   jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_MMODE
 
@@ -480,8 +480,8 @@ rvtest_vlvl1_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_HSm_trap_cg_cp_straddle_m_vs_g_invalid_exec_str: .string "\"test: 1; cg: Sv_HSm_trap_cg; cp: cp_straddle_m; bin: vs_g_invalid_exec\""
-Sv_HSm_trap_cg_cp_straddle_m_vu_g_invalid_exec_str: .string "\"test: 2; cg: Sv_HSm_trap_cg; cp: cp_straddle_m; bin: vu_g_invalid_exec\""
+Sv_HSm_trap_cg_cp_misaligned_instr_page_fault_m_vs_g_invalid_exec_str: .string "\"test: 1; cg: Sv_HSm_trap_cg; cp: cp_misaligned_instr_page_fault_m; bin: vs_g_invalid_exec\""
+Sv_HSm_trap_cg_cp_misaligned_instr_page_fault_m_vu_g_invalid_exec_str: .string "\"test: 2; cg: Sv_HSm_trap_cg; cp: cp_misaligned_instr_page_fault_m; bin: vu_g_invalid_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

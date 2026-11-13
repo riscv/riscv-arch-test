@@ -2,7 +2,7 @@
 suite: Sv_HSm
 notes: |-
   Sv_HSm covers two-stage address translation seen from M-mode through mstatus.MPRV and MPV, and guest traps taken in M-mode.  The group boots to M-mode and delegates nothing (medeleg = hedeleg = 0), so the M-mode trap handler takes every trap and records mcause, mtval, mtval2, mtinst and mstatus.GVA/MPV.  It runs with Sv39/Sv39x4 on RV64 and Sv32/Sv32x4 on RV32, and uses the Sv_H test page, page tables and conventions; the other two-stage cases are in Sv_H.
-  MPRV tests set mstatus.MPRV, MPP and MPV (mstatush.MPV on RV32) just before each M-mode load or store and clear MPRV after it, because a trap from M-mode leaves MPP = M and MPV = 0.  Instruction fetches in M-mode are never translated.  The fetch straddle test (cp_straddle_m) needs Zca, and the load/store straddle test (cp_ldst_straddle_m) needs a hart that performs misaligned accesses byte by byte (MISALIGNED_LDST with MISALIGNED_SPLIT_STRATEGY = sequential_bytes); they are separate test files.
+  MPRV tests set mstatus.MPRV, MPP and MPV (mstatush.MPV on RV32) just before each M-mode load or store and clear MPRV after it, because a trap from M-mode leaves MPP = M and MPV = 0.  Instruction fetches in M-mode are never translated.  The fetch straddle test (cp_misaligned_instr_page_fault_m) needs Zca, and the load/store straddle test (cp_misaligned_{load,store}_page_fault_m) needs a hart that performs misaligned accesses (MISALIGNED_LDST); they are separate test files.
 coverpoints:
   - heading: M-mode accesses with MPRV (Sv_HSm_mprv_cg)
   - name: cp_vsatp_mprv_effects
@@ -43,13 +43,14 @@ coverpoints:
       cp_guest_page_fault_m: {VS, VU} x {sw, lw, jalr} x vsatp paged x hgatp paged x {page fault, guest-page fault} x mstatus.GVA = MPV = 1
       cp_implicit_gpf_m: {VS, VU} x {sw, lw, jalr} x vsatp paged x hgatp paged x mtinst read pseudoinstruction
   - name: |-
-      cp_straddle_m
-      cp_ldst_straddle_m
+      cp_misaligned_instr_page_fault_m
+      cp_misaligned_load_page_fault_m
+      cp_misaligned_store_page_fault_m
     goal: mtval2 reports the faulting portion of a straddling fetch or misaligned access
     description: |-
-      cp_straddle_m needs Zca: in VS-mode and VU-mode, jump to a 4-byte instruction in the last halfword (offset 0xFFE) of a guest page whose next page has an invalid G-stage leaf.
-      cp_ldst_straddle_m needs a hart that performs misaligned accesses byte by byte: in VS-mode and VU-mode, store and load the word two bytes below the end of such a page.
+      cp_misaligned_instr_page_fault_m needs Zca: in VS-mode and VU-mode, jump to a 4-byte instruction in the last halfword (offset 0xFFE) of a guest page whose next page has an invalid G-stage leaf.
+      cp_misaligned_{load,store}_page_fault_m need a hart that performs misaligned accesses (MISALIGNED_LDST): in VS-mode and VU-mode, store and load the halfword one byte below the end (offset 0xFFF) of such a page.
     expectation: An instruction, store/AMO or load guest-page fault taken in M-mode, with mtval = the page-boundary address (the faulting portion) and mtval2 = its guest physical address >> 2, or zero.  A faulting load leaves rd unchanged.
     bins: |-
-      cp_straddle_m: {VS, VU} x jalr x vsatp paged x hgatp paged x target offset 0xFFE x guest-page fault x nonzero mtval2 at the page boundary
-      cp_ldst_straddle_m: {VS, VU} x {lw, sw} x vsatp paged x hgatp paged x address offset 0xFFE x guest-page fault x nonzero mtval2 at the page boundary
+      cp_misaligned_instr_page_fault_m: {VS, VU} x jalr x vsatp paged x hgatp paged x target offset 0xFFE x guest-page fault x nonzero mtval2 at the page boundary
+      cp_misaligned_load_page_fault_m, cp_misaligned_store_page_fault_m: {VS, VU} x lh or sh x vsatp paged x hgatp paged x address offset 0xFFF x guest-page fault x nonzero mtval2 at the page boundary

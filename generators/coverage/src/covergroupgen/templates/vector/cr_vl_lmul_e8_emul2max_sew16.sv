@@ -10,6 +10,7 @@
         // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
         // at least 2 for a distinct VLMAX and at least 3 for a value in between.
         // Value of VTYPE.vlmul (vector register grouping)
+
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
                 bins fourth_one = {6'b110_001};
@@ -36,6 +37,9 @@
         bins two_one = {6'b001_001};
         bins two_vlmax = {6'b001_010};
         bins two_legal = {6'b001_011};
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        bins four_legal = {6'b010_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////

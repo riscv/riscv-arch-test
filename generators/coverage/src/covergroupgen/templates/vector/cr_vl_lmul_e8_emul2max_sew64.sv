@@ -27,6 +27,14 @@
         `ifdef ZVL128B_SUPPORTED
             bins two_legal = {6'b001_011};
         `endif
+        bins four_one = {6'b010_001};
+        bins four_vlmax = {6'b010_010};
+        `ifdef ZVL64B_SUPPORTED
+            bins four_legal = {6'b010_011};
+        `endif
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////

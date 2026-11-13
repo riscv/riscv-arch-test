@@ -27,6 +27,9 @@ from rich.progress import (
     TextColumn,
     TimeElapsedColumn,
 )
+from testgen.coverpoints.vector.cr_vl_lmul import vl_lmul_max
+from testgen.formatters import get_instruction_type_config
+from testgen.instructions.vector import get_max_lmul
 from testgen.io.templates import get_vector_base_extension
 
 
@@ -234,6 +237,33 @@ def _max_legal_lmul_for_instruction(instr: str) -> int:
     if instr in _c.vd_widen_ins or instr in _c.vs2_widen_ins:
         return 4
     return 8
+
+
+# Smallest VLMAX at which each cp_masking_edges value differs from zero, all ones and the others.
+_MASK_EDGE_MIN_VLMAX = {"vlmaxm1ones": 2, "random": 2, "vlmaxd2p1ones": 8}
+
+
+def _guard_mask_edges(rendered: str, instr: str, instr_type: str, sew: int) -> str:
+    """Guard cp_masking_edges bins on the smallest VLEN at which they are reachable.
+
+    mask_edges_check classifies the low VLMAX bits of v0, so VLMAX-1 ones and a random mask are
+    distinct only when VLMAX >= 2 and VLMAX/2+1 ones only when VLMAX >= 8. The tests use the
+    instruction's largest legal LMUL, at which VLMAX = VLEN * LMUL / SEW.
+    """
+    vector_config = get_instruction_type_config(instr_type).vector_data
+    assert vector_config is not None, f"{instr} ({instr_type}) is not a vector instruction"
+    lmul = get_max_lmul(instr, instr_type, sew, vector_config)
+    for name, vlmax in _MASK_EDGE_MIN_VLMAX.items():
+        vlen = int(vlmax * sew / lmul)
+        if vlen > 32:  # Every vector extension has VLEN >= 32
+            rendered = re.sub(
+                rf"^( *)(bins {name}\b.*\n)",
+                rf"\1`ifdef ZVL{vlen}B_SUPPORTED\n\1    \2\1`endif\n",
+                rendered,
+                count=1,
+                flags=re.MULTILINE,
+            )
+    return rendered
 
 
 _LMUL_CROSS_RE = re.compile(r"cp_ssstrictv_lmul(\d+)_(vd|vs1|vs2)_off_group")
@@ -620,6 +650,10 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
             return None
         cp = re.sub(r"_sew_ge\d+$", "", cp)
 
+    # cr_vl_lmul_ei<EEW>_lmul<N>max (indexed segments) covers the same LMULs as lmul<M>max at this SEW.
+    if (m := re.fullmatch(r"cr_vl_lmul_(ei\d+_lmul\dmax)", cp)) and _is_vector(arch):
+        cp = f"cr_vl_lmul_lmul{int(vl_lmul_max(m.group(1), int(_get_effew(arch))))}max"
+
     # Append SEW suffix for SEW-dependent coverpoints.
     if any(sew_cp in cp and cp not in SEW_INDEPENDENT_CPS for sew_cp in SEW_DEPENDENT_CPS):
         cp = cp + "_sew" + _get_effew(arch)
@@ -706,6 +740,8 @@ def _gen_instrs(
             if resolved is None:
                 continue
             rendered = customize_template(templates, resolved, arch, instr) + "\n"
+            if resolved == "cp_masking_edges" and _is_vector(arch):
+                rendered = _guard_mask_edges(rendered, instr, _instr_type, int(_get_effew(arch)))
             covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))
 
         # Instruction footer

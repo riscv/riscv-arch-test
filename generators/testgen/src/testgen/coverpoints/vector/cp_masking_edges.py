@@ -13,7 +13,7 @@ from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
-from testgen.instructions.vector import get_base_lmul, parse_vector_instruction_info
+from testgen.instructions.vector import get_base_lmul, get_max_lmul
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -45,10 +45,12 @@ def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data
 
     test_chunks = []
     base_lmul = get_base_lmul(instr_name, instr_type, sew)
+    # VLMAX-1 ones and the random mask need VLMAX >= 2 and VLMAX/2+1 ones needs VLMAX >= 8 to differ
+    # from all ones and zero. Run them at the largest legal LMUL so they do at the smallest VLEN that allows it.
+    max_lmul = get_max_lmul(instr_name, instr_type, sew, config.vector_data)
 
     for m in cp_masking_edges_data:
-        # VLMAX/2+1 ones differs from all ones and VLMAX-1 ones only when VLMAX >= 8, so use the largest LMUL
-        lmul = _max_lmul(instr_name, instr_type, sew, base_lmul) if m == PresetMask.VLMAX_D2_P1_ONES else base_lmul
+        lmul = base_lmul if m in (PresetMask.ONES, PresetMask.ZEROS) else max_lmul
         vma = random_range(0, 1)
         vta = random_range(0, 1)
 
@@ -74,20 +76,3 @@ def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data
         return_testcase_registers(test_data, params)
 
     return test_chunks
-
-
-def _max_lmul(instr_name: str, instr_type: str, sew: int, base_lmul: float) -> float:
-    """Return the largest LMUL (at least base_lmul) that keeps every operand's EMUL * NFIELDS <= 8."""
-    info = parse_vector_instruction_info(instr_name, instr_type)
-    vector_config = get_instruction_type_config(instr_type).vector_data
-    if vector_config is None or info.whole_registers is not None or instr_type == "VMVR":
-        return base_lmul
-    cap = 8 / (max(1, (info.load_store_eew or sew) / sew) * info.segments)
-    if info.index_eew is not None:
-        cap = min(cap, 8 * sew / info.index_eew)
-    if vector_config.widened_regs:
-        cap = min(cap, 4)
-    lmul = base_lmul
-    while lmul * 2 <= cap:
-        lmul *= 2
-    return lmul

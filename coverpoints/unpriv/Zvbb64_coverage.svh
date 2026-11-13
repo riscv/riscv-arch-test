@@ -71,7 +71,9 @@ covergroup Zvbb64_vandn_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -249,7 +251,9 @@ covergroup Zvbb64_vandn_vx_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -435,7 +439,9 @@ covergroup Zvbb64_vbrev_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -571,7 +577,9 @@ covergroup Zvbb64_vbrev8_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -707,7 +715,9 @@ covergroup Zvbb64_vclz_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -843,7 +853,9 @@ covergroup Zvbb64_vcpop_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -979,7 +991,9 @@ covergroup Zvbb64_vctz_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -1115,7 +1129,9 @@ covergroup Zvbb64_vrev8_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -1281,7 +1297,9 @@ covergroup Zvbb64_vrol_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -1459,7 +1477,9 @@ covergroup Zvbb64_vrol_vx_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -1645,7 +1665,9 @@ covergroup Zvbb64_vror_vi_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -1861,7 +1883,9 @@ covergroup Zvbb64_vror_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -2039,7 +2063,9 @@ covergroup Zvbb64_vror_vx_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 

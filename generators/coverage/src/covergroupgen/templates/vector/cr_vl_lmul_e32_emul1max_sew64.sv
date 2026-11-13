@@ -20,7 +20,13 @@
         `ifdef ZVL256B_SUPPORTED
             bins one_legal = {6'b000_011};
         `endif
-
+        bins two_one = {6'b001_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins two_vlmax = {6'b001_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins two_legal = {6'b001_011};
+        `endif
     }
 
     //////////////////////////////////////////////////////////////////////////////////

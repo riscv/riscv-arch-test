@@ -32,6 +32,9 @@
         `ifdef ZVL64B_SUPPORTED
             bins four_legal = {6'b010_011};
         `endif
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////

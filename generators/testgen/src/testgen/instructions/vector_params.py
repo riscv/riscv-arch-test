@@ -106,8 +106,10 @@ def randomize_register(
         # Otherwise, generate a register aligned to emul and lmul
         alignment = max(emul, int(lmul)) if int(lmul) >= 1 else emul
 
-        # We can't take the registers from the register file yet because we want to randomly generate valid overlaps
-        return random.choice(test_data.vec_regs.free_registers(alignment, segments))
+        # We can't take the registers from the register file yet because we want to randomly generate valid overlaps.
+        # The group spans EMUL * NF registers even when it is aligned to the larger LMUL.
+        candidates = test_data.vec_regs.free_registers(emul, segments)
+        return random.choice([register for register in candidates if register % alignment == 0])
 
     if preset is not None:
         return preset  # No need to validate r and f registers

@@ -8861,7 +8861,9 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -9131,7 +9133,9 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -9393,7 +9397,9 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -9774,7 +9780,9 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -10097,7 +10105,9 @@ covergroup Vf32_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -10420,7 +10430,9 @@ covergroup Vf32_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -10752,7 +10764,9 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -11084,7 +11098,9 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -20176,7 +20192,9 @@ covergroup Vf32_vfwadd_vf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -20596,7 +20614,9 @@ covergroup Vf32_vfwadd_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -20984,7 +21004,9 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -21396,7 +21418,9 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -21729,7 +21753,9 @@ covergroup Vf32_vfwcvt_f_f_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -21892,7 +21918,9 @@ covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -22047,7 +22075,9 @@ covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -22311,7 +22341,9 @@ covergroup Vf32_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -22583,7 +22615,9 @@ covergroup Vf32_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -22864,7 +22898,9 @@ covergroup Vf32_vfwcvt_x_f_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -23145,7 +23181,9 @@ covergroup Vf32_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -23460,7 +23498,9 @@ covergroup Vf32_vfwmacc_vf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -23761,7 +23801,9 @@ covergroup Vf32_vfwmacc_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -24126,7 +24168,9 @@ covergroup Vf32_vfwmsac_vf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -24427,7 +24471,9 @@ covergroup Vf32_vfwmsac_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -24857,7 +24903,9 @@ covergroup Vf32_vfwmul_vf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -25275,7 +25323,9 @@ covergroup Vf32_vfwmul_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -25640,7 +25690,9 @@ covergroup Vf32_vfwnmacc_vf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -25941,7 +25993,9 @@ covergroup Vf32_vfwnmacc_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -26306,7 +26360,9 @@ covergroup Vf32_vfwnmsac_vf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -26607,7 +26663,9 @@ covergroup Vf32_vfwnmsac_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -27134,7 +27192,9 @@ covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -27605,7 +27665,9 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -28053,7 +28115,9 @@ covergroup Vf32_vfwsub_vf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -28473,7 +28537,9 @@ covergroup Vf32_vfwsub_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -28861,7 +28927,9 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -29273,7 +29341,9 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 

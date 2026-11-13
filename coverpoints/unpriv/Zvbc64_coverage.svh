@@ -71,7 +71,9 @@ covergroup Zvbc64_vclmul_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -249,7 +251,9 @@ covergroup Zvbc64_vclmul_vx_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -465,7 +469,9 @@ covergroup Zvbc64_vclmulh_vv_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 
@@ -643,7 +649,9 @@ covergroup Zvbc64_vclmulh_vx_cg with function sample(ins_t ins);
         bins zero           = {mask_zero            };
         bins ones           = {mask_ones            };
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
-        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `ifdef ZVL64B_SUPPORTED
+            bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        `endif
         bins random         = {mask_random          };
     }
 

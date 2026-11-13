@@ -599,4 +599,30 @@ class RISCV_instruction
     current.ma = get_vtype_ma_val(ops[offset].key);
   endfunction
 
+  // A fetch fault taken at a jalr's target.  Sail's trace logs the fault's CSR writes on the jalr record, which
+  // retired, while an RTL trace reports the fault on a trap record of its own, at the faulting address, after the
+  // jalr.  jalr_fetch_fault() is true on either record and jalr_fetch_target() is the faulting address; pair them
+  // with csr_wb of the cause CSR so that only the record carrying the fault counts.
+  function bit jalr_fetch_fault();
+    return (current.insn ==? JALR) || (current.trap && (prev.insn ==? JALR));
+  endfunction
+
+  function bit [XLEN-1:0] jalr_fetch_target();
+    return (current.insn ==? JALR) ? ((current.rs1_val + current.imm) & ~1) : current.pc_rdata;
+  endfunction
+
+  // A virtual address that is not the sign extension of its low vabits bits page faults before any walk
+  function bit va_noncanonical(bit [XLEN-1:0] va, int vabits);
+    bit [XLEN-1:0] upper = va >> (vabits - 1);
+    return (upper != '0) && (upper != ({XLEN{1'b1}} >> (vabits - 1)));
+  endfunction
+
+  // The physical address to which a top-level superpage leaf PTE (an Sv32 megapage or an Sv39 gigapage) maps va.
+  // A trace reports the PTE that a walk ends on even when the walk faults and there is no physical address.
+  function bit [63:0] superpage_pa(bit [XLEN-1:0] pte, bit [XLEN-1:0] va);
+    bit [63:0] offset = (XLEN == 32) ? 64'h3F_FFFF : 64'h3FFF_FFFF;   // 22 or 30 offset bits
+    bit [63:0] ppn    = (64'(pte) >> 10) & 64'hFFF_FFFF_FFFF;          // 22-bit (Sv32) or 44-bit (Sv39) PPN
+    return ((ppn << 12) & ~offset) | (64'(va) & offset);
+  endfunction
+
 endclass

@@ -210,15 +210,6 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         wildcard bins leaflvl_s = {8'b11?01111};
     }
 
-    PTE_canonical_i: coverpoint ins.current.pte_i[7:0] { //va.1
-        wildcard bins leaflvl_u = {8'b11?11111};
-        wildcard bins leaflvl_s = {8'b11?01111};
-    }
-    PTE_canonical_d: coverpoint ins.current.pte_d[7:0] { //va.1
-        wildcard bins leaflvl_u = {8'b11?11111};
-        wildcard bins leaflvl_s = {8'b11?01111};
-    }
-
     PTE_DAU_i: coverpoint ins.current.pte_i[7:0] {
         wildcard bins nonleaf_D_bit = {8'b10?00001};
         wildcard bins nonleaf_A_bit = {8'b01?00001};
@@ -656,53 +647,44 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        canonical_page_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48_SUPPORTED
-                bins sv48_tera_canonical = {2'b11} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-            `endif
+        // A non-canonical virtual address page faults before the walk, so no PTE is read and the access has no page
+        // type.  The crosses therefore record only what an implementation can show: the translation mode whose
+        // sign-extension rule the address breaks, the privilege mode, and the page fault, which also tells a load
+        // from a store.  Each samples only the record that writes the cause.
+        canonical_va_d: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0]
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
+            type_option.weight = 0;
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
-                bins sv39_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
-                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
+                bins sv39 = {4'b1000} iff (ins.va_noncanonical(ins.current.virt_adr_d, 39));
             `endif
-        }
-        canonical_page_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_canonical = {2'b11} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
+                bins sv48 = {4'b1001} iff (ins.va_noncanonical(ins.current.virt_adr_d, 48));
             `endif
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010} iff (ins.va_noncanonical(ins.current.virt_adr_d, 57));
+            `endif
+        }
+        // The fetch from a jalr's non-canonical target, on whichever record carries the fault
+        canonical_va_i: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0]
+            iff (ins.current.csr_wb[CSR_SCAUSE] && ins.jalr_fetch_fault()) {
+            type_option.weight = 0;
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_canonical = {2'b10} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
-                bins sv39_mega_canonical = {2'b01} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
-                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
+                bins sv39 = {4'b1000} iff (ins.va_noncanonical(ins.jalr_fetch_target(), 39));
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001} iff (ins.va_noncanonical(ins.jalr_fetch_target(), 48));
+            `endif
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010} iff (ins.va_noncanonical(ins.jalr_fetch_target(), 57));
             `endif
         }
 
-        cp_canonical_read_s: cross PTE_canonical_d, canonical_page_d, load_page_fault, read_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_u);
-        }
-        cp_canonical_read_u: cross PTE_canonical_d, canonical_page_d, load_page_fault, read_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_s);
-        }
-
-        cp_canonical_write_s: cross PTE_canonical_d, canonical_page_d, store_page_fault, write_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_u);
-        }
-        cp_canonical_write_u: cross PTE_canonical_d, canonical_page_d, store_page_fault, write_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_s);
-        }
-
-        cp_canonical_exec_s: cross PTE_canonical_i, canonical_page_i, ins_page_fault, exec_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_i.leaflvl_u);
-        }
-        cp_canonical_exec_u: cross PTE_canonical_i, canonical_page_i, ins_page_fault, exec_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_i.leaflvl_s);
-        }
+        cp_canonical_read_s:  cross priv_mode_s, canonical_va_d, load_page_fault;  //va.1
+        cp_canonical_read_u:  cross priv_mode_u, canonical_va_d, load_page_fault;  //va.1
+        cp_canonical_write_s: cross priv_mode_s, canonical_va_d, store_page_fault; //va.1
+        cp_canonical_write_u: cross priv_mode_u, canonical_va_d, store_page_fault; //va.1
+        cp_canonical_exec_s:  cross priv_mode_s, canonical_va_i, ins_page_fault;   //va.1
+        cp_canonical_exec_u:  cross priv_mode_u, canonical_va_i, ins_page_fault;   //va.1
     `endif
 endgroup
 
@@ -1405,14 +1387,6 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
     store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    // The PC of the target: a fetch that spans two parcels may report either parcel in virt_adr_i
-    i_virt_adr_misaligned: coverpoint ins.current.pc_rdata[1:0] {
-        bins aligned    = {2'b00};
-        bins misaligned = {2'b10};
-    }
-    i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {
-        // auto fill valid bit 0/1
-    }
     d_virt_adr_misaligned: coverpoint ins.current.virt_adr_d[1:0] {
         bins aligned    = {2'b00};
         bins misaligned = {2'b10};
@@ -1468,8 +1442,10 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
 
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        // Accesses land at an offset into the faulting region, which is at least 128 bytes
-        d_phys_address_nonexistent_load: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) < 64'd128) {
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent_load: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                         64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) < 64'd128) {
             // auto fill 1/0 for the physical address being valid
         }
         cp_misaligned_priority_load_s:   cross priv_mode_s, lw, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent_load {
@@ -1490,8 +1466,10 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        // Accesses land at an offset into the faulting region, which is at least 128 bytes
-        d_phys_address_nonexistent_store: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE)) < 64'd128) {
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent_store: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                         64'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE)) < 64'd128) {
             // auto fill 1/0 for the physical address being valid
         }
         cp_misaligned_priority_store_s:  cross priv_mode_s, sw, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent_store {
@@ -1512,20 +1490,28 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        // Fetches land at an offset into the faulting region, which is at least 128 bytes
-        i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)) < 64'd128) {
-            // auto fill 1/0 for the physical address being valid
+        // The fault of the fetch at a jalr's target, on whichever record carries it (see jalr_fetch_fault).  A trace
+        // need not report the PTE of a fetch that traps, so the cause stands in for the PTE and physical address:
+        // an invalid PTE page faults wherever it points, and a valid one to the faulting region access faults.
+        i_target_misaligned: coverpoint ins.jalr_fetch_target()[1:0] {
+            bins aligned    = {2'b00};
+            bins misaligned = {2'b10};
         }
-        cp_misaligned_priority_fetch_s:  cross priv_mode_s, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent {
+        i_fetch_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE] && ins.jalr_fetch_fault()) {
+            bins page_fault   = {INSTRUCTION_PAGE_FAULT};
+            bins access_fault = {INSTRUCTION_ACCESS_FAULT};
+        }
+        cp_misaligned_priority_fetch_s:  cross priv_mode_s, i_target_misaligned, i_fetch_fault {
             `ifndef ZCA_SUPPORTED
                 // Without Zca, a jalr to a misaligned target raises instruction-address-misaligned on the jalr
-                ignore_bins misaligned_target = binsof(i_virt_adr_misaligned.misaligned);
+                ignore_bins misaligned_target = binsof(i_target_misaligned.misaligned);
             `endif
         }
-        cp_misaligned_priority_fetch_u:  cross priv_mode_u, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent {
+        cp_misaligned_priority_fetch_u:  cross priv_mode_u, i_target_misaligned, i_fetch_fault {
             `ifndef ZCA_SUPPORTED
                 // Without Zca, a jalr to a misaligned target raises instruction-address-misaligned on the jalr
-                ignore_bins misaligned_target = binsof(i_virt_adr_misaligned.misaligned);
+                ignore_bins misaligned_target = binsof(i_target_misaligned.misaligned);
             `endif
         }
     `endif
@@ -1617,8 +1603,10 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         lw: coverpoint ins.current.insn {
             wildcard bins lw = {LW};
         }
-        // Accesses land at an offset into the faulting region, which is at least 128 bytes
-        d_phys_address_nonexistent_load: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) < 64'd128) {
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent_load: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                         64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)) < 64'd128) {
             // auto fill 1/0 for the physical address being valid
         }
         cp_misaligned_priority_load_m:   cross priv_mode_m, lw, d_virt_adr_misaligned, d_phys_address_nonexistent_load, d_page_table_entry_invalid {
@@ -1634,8 +1622,10 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         sw: coverpoint ins.current.insn {
             wildcard bins sw = {SW};
         }
-        // Accesses land at an offset into the faulting region, which is at least 128 bytes
-        d_phys_address_nonexistent_store: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE)) < 64'd128) {
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent_store: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                         64'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE)) < 64'd128) {
             // auto fill 1/0 for the physical address being valid
         }
         cp_misaligned_priority_store_m:  cross priv_mode_m, sw, d_virt_adr_misaligned, d_phys_address_nonexistent_store, d_page_table_entry_invalid {
@@ -1670,15 +1660,12 @@ covergroup Sv_ExceptionsZaamo_cg with function sample(ins_t ins);
     // main coverpoints
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
-        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `endif
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_AMO)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
         cp_misaligned_priority_s:        cross priv_mode_s, amoops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
             `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
                 `ifndef UDB_MISALIGNED_AMO
@@ -1747,15 +1734,12 @@ covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
 
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
-        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_AMO) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `endif
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_AMO)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
         cp_misaligned_priority_m: cross priv_mode_m, amoops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
             `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
                 `ifndef UDB_MISALIGNED_AMO
@@ -1791,15 +1775,12 @@ covergroup Sv_ExceptionsZalrsc_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `endif
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
         cp_misaligned_priority_s:        cross priv_mode_s, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
             `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
                 `ifdef UDB_LRSC_MISALIGNED_BEHAVIOR_ALWAYS_RAISE_MISALIGNED_EXCEPTION
@@ -1868,15 +1849,12 @@ covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `else
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
-                // auto fill 1/0 for the physical address being valid
-            }
-        `endif
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes.  The test maps each
+        // access with a top-level superpage, whose PTE gives the physical address even when it is invalid
+        d_phys_address_nonexistent: coverpoint ((ins.superpage_pa(ins.current.pte_d, ins.current.virt_adr_d) -
+                                                 64'(`RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
         cp_misaligned_priority_m: cross priv_mode_m, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
             `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
                 `ifdef UDB_LRSC_MISALIGNED_BEHAVIOR_ALWAYS_RAISE_MISALIGNED_EXCEPTION

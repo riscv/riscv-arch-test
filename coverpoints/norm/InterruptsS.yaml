@@ -129,9 +129,13 @@ normative_rule_definitions:
   # to a CSR on which these interrupt trap conditions expressly depend (including
   # mip, mie, mstatus, and mideleg).
   - name: intr_mip_mie_xret_csrwr
-    # cp_trigger_tsbi: taken on the xret; cp_priority_sie: taken on the write to sie
+    # These tests check that xEPC is the instruction after the CSR write (sie, hie, sstatus, hideleg, sip,
+    # mip or hvip), the T-SBI xRET, or the sret to HS-mode that enables the pending interrupt, or after
+    # the mip, sip or hvip write that raises an enabled LCOFI, STI or VS-level interrupt.
     coverpoint:
-      ["InterruptsS_cg/{cp_trigger_tsbi, cp_enable_one_tsbi, cp_priority_sie}"]
+      [
+        "InterruptsS_cg/{cp_enable_one, cp_enable_one_tsbi, cp_trigger, cp_trigger_tsbi, cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_priority_sie_split_tsbi, cp_priority_sip_split_tsbi, cp_trigger_reg_sip_ssip, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_xret_same_mode, cp_undeleg_hideleg}",
+      ]
 
   # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
   - name: intr_m_mode_highest_pri

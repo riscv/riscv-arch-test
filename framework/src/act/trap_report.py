@@ -202,9 +202,9 @@ def _decode_all_traps(
 
         mode = MODE_NAMES.get(mode_raw, f"Unknown({mode_raw})")
 
-        # Entry size should be 4 or 6 REGWIDTH words, and an exact multiple of
-        # REGWIDTH: the deadbeef fill pattern otherwise truncates to a valid size.
-        if entry_bytes % regwidth or entry_size not in (4, 6):
+        # Entry size should be 4 or 6 REGWIDTH words (one more for an interrupt), and an
+        # exact multiple of REGWIDTH: the deadbeef fill pattern otherwise truncates to a valid size.
+        if entry_bytes % regwidth or entry_size not in (4, 5, 6, 7):
             break
         if pos + entry_size > len(raw_words):
             break
@@ -223,13 +223,18 @@ def _decode_all_traps(
 
         if is_interrupt:
             xip_val = raw_words[pos + 2]
+            # The last word is xEPC when the test checked where the interrupt was taken, else 0
+            if raw_words[pos + entry_size - 1]:
+                xepc = raw_words[pos + entry_size - 1]
+                test_label = _find_nearest_label(xepc, sorted_addrs, symbols)
         else:
             # XEPC is recorded raw by the trap handler
             xepc = raw_words[pos + 2]
             test_label = _find_nearest_label(xepc, sorted_addrs, symbols)
         # Words 3-5 are the same for interrupts and exceptions
         xtval = raw_words[pos + 3]
-        if entry_size == 6:
+        # Words 4-5 with H; an interrupt's xEPC word comes after them
+        if entry_size == (7 if is_interrupt else 6):
             mtval2 = raw_words[pos + 4]
             xtinst = raw_words[pos + 5]
 

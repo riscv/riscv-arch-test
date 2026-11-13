@@ -33,6 +33,12 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     sstatus_sie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0] {
         bins one = {1};
     }
+    sstatus_sie_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0] {
+        bins zero = {0};
+    }
+    sstatus_spie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spie")[0] {
+        // autofill 0/1
+    }
     mstatus_tw_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tw")[0] {
         bins zero = {0}; // WFI is permitted in S mode
     }
@@ -242,6 +248,25 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
                                                                      get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0]) {
         // autofill 0/1
     }
+    // cp_xret_same_mode: sret from HS-mode back to HS-mode (SPV = 0, SPP = S)
+    sret_to_hs: coverpoint `S_SRET_TO {
+        bins HS_mode = {3'b101};
+    }
+    `ifdef H_SUPPORTED
+        // cp_undeleg_hideleg: a write that clears the hideleg bit of a pending VS-level interrupt.
+        // The bin names that interrupt.
+        hideleg_undelegates_pending: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIDELEG)[15:0] &
+                                                 ~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HIDELEG)[15:0] &
+                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & 16'h0444) {
+            bins vseip = {16'h0400};
+            bins vstip = {16'h0040};
+            bins vssip = {16'h0004};
+        }
+        // hie written all 1s: the VS-level enables, which share their mie bit positions
+        hie_ones: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)[15:0] & 16'h0444) == 16'h0444) {
+            bins ones = {1'b1};
+        }
+    `endif
     sstatus_sie_on_return_one: coverpoint ((ins.current.insn == SRET) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spie")[0] :
                                                                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0]) {
         bins one = {1};
@@ -473,6 +498,14 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     `ifdef H_SUPPORTED
         cp_priority_sip_split_tsbi: cross tsbi_return_mret, sstatus_sie_on_return_one, mideleg_s_ones, sie_ones, sip_pairs_split;
         cp_priority_sie_split_tsbi: cross tsbi_return_mret, sstatus_sie_on_return_one, mideleg_s_ones, sip_all_ones, sie_pairs_split;
+    `endif
+    // One interrupt pending and enabled in sie (or hie) but masked by SIE = 0. An sret to HS-mode with
+    // SPIE = 1 enables it, so it is taken on the sret; with SPIE = 0 it stays masked.
+    cp_xret_same_mode:          cross priv_mode_hs, sret_to_hs, sstatus_sie_zero, sstatus_spie, mideleg_s_ones, walking_sie_one, sip_matches_sie_one;
+    // With SIE = 1 and hie = 1s, a VS-level interrupt pending but delegated to VS is taken in HS-mode on
+    // the write that clears its hideleg bit
+    `ifdef H_SUPPORTED
+        cp_undeleg_hideleg:     cross priv_mode_hs, sstatus_sie_one, hie_ones, hideleg_undelegates_pending;
     `endif
 
     // WFI wakes on the Sstc supervisor timer whether or not SIE is set. Not tested in U-mode: with

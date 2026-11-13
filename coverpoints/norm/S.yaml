@@ -156,7 +156,7 @@ normative_rule_definitions:
     # enables the pending interrupt
     coverpoint:
       [
-        "InterruptsS_cg/{cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_trigger_reg_sip_ssip}",
+        "InterruptsS_cg/{cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_trigger_reg_sip_ssip, cp_xret_same_mode}",
       ]
 
   # Interrupts to S-mode take priority over any interrupts to lower privilege modes.

@@ -23,8 +23,10 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_priority_enable,
     generate_cp_priority_pending,
     generate_cp_trigger_vsti_sstc,
+    generate_cp_undeleg,
     generate_cp_wfi,
     generate_cp_wfi_timeout,
+    generate_cp_xret_same_mode,
     guard_symbol,
     int_coverpoint,
     int_macro,
@@ -79,7 +81,7 @@ def _generate_cp_trigger_sm(
         f"Trigger each interrupt in {priv} mode with mie=1s x mideleg = zeros/ones x mtvec.MODE=DIRECT/VECTORED"
         " x mstatus.SIE=0/1 x mstatus.MIE=0/1",
     )
-    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
+    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
 
     for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
         macro = int_macro[int_type]
@@ -145,8 +147,7 @@ def _generate_cp_trigger_sm(
                                 int_xepc_check(
                                     test_data,
                                     f"{cp}_priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}_xepc",
-                                    check_reg,
-                                    tmp_reg,
+                                    [check_reg, tmp_reg, xepc_reg],
                                 )
                                 if int_type in csr_raised_ints
                                 else []
@@ -160,7 +161,7 @@ def _generate_cp_trigger_sm(
                             "",
                         ]
 
-    test_data.int_regs.return_registers([tmp_reg, check_reg])
+    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
 
 
 def _generate_cp_priority_mideleg(
@@ -229,6 +230,8 @@ def make_interruptssm_m(test_data: TestData) -> list[TestChunk]:
         _generate_cp_priority_mideleg,
         _generate_cp_write_stip_sstc,
         generate_cp_trigger_vsti_sstc,
+        generate_cp_xret_same_mode,
+        generate_cp_undeleg,
     ]
     return emit_interrupts(test_data, SUITE, "M", generators)
 

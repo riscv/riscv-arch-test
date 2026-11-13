@@ -27,12 +27,14 @@ exclude_extensions:
   # https://github.com/openhwfoundation/cva6/issues/3175
   # https://github.com/openhwfoundation/cva6/issues/3651
   # The priority and register-trigger tests also check that the interrupt is taken before the next
-  # instruction; on cv32a6_imac_sv32 xEPC is 4 or 8 bytes later after a write to mie, sie, mip or sip.
+  # instruction; on cv32a6_imac_sv32 xEPC is 4 or 8 bytes later after a write to mie, sie, mip, sip
+  # or mideleg.
   - InterruptsSm_priority_mip_M
   - InterruptsSm_priority_mideleg_M
   - InterruptsSm_priority_mie_M
   - InterruptsSm_trigger_M
   - InterruptsSm_trigger_S
+  - InterruptsSm_undeleg_mideleg_M
   - InterruptsS_priority_sie_S
   - InterruptsS_priority_sip_S
   - InterruptsS_trigger_S

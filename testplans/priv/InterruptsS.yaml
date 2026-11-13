@@ -127,6 +127,32 @@ coverpoints:
       RVTEST_CLR_<type>_INT for all
     expectation: highest priority enabled interrupt will fire
     bins: 21 int * 4 priv
+  - name: cp_xret_same_mode
+    goal: sret back to HS-mode enables a pending interrupt
+    description: |-
+      S-mode only
+      For <type> = {LCOFI, STI, SSI, SEI, VSTI, VSEI, VSSI}
+      write sstatus.SIE = 0
+      write sie (and hie) = <type> only
+      RVTEST_SET_<type>_INT_S
+      RVTEST_IDLE_FOR_INT
+      write sstatus.SPIE = {0/1}, SPP = S, hstatus.SPV = 0, sepc = next instruction
+      sret
+      RVTEST_CLR_<type>_INT_S
+    expectation: with SPIE = 1 the interrupt is taken at the instruction after the sret (sepc checked, Priv 1.12+); with SPIE = 0 it is not taken
+    bins: 7 int * 2 SPIE
+  - name: cp_undeleg_hideleg
+    goal: Clearing the delegation of a pending VS-level interrupt makes it taken at once in HS-mode
+    description: |-
+      if H_SUPPORTED, S-mode only
+      For <type> = {VSTI, VSEI, VSSI}
+      write hideleg = <type> only, sie = hie = 1s, sstatus.SIE = 1
+      RVTEST_SET_<type>_INT_S
+      RVTEST_IDLE_FOR_INT
+      write hideleg = 0s
+      RVTEST_CLR_<type>_INT_S
+    expectation: the interrupt is not taken while delegated to VS, then is taken in HS-mode at the instruction after the hideleg write (sepc checked, Priv 1.12+)
+    bins: 3 int
   - name: cp_wfi
     goal: WFI waits until timer interrupt
     description: |-

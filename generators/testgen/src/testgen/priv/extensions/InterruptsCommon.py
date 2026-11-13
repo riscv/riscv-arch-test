@@ -155,35 +155,46 @@ def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
 
 
 def int_xepc_clear(reg: int) -> list[str]:
-    """Clear rvtest_int_xepc, where the trap handler saves the xEPC of each interrupt. Emit right
-    before the instruction that enables a pending interrupt (see int_xepc_check)."""
+    """Clear rvtest_int_xepc, where the trap handler saves the xEPC of the first and of the last
+    interrupt. Emit right before the instruction that enables a pending interrupt (see int_xepc_check).
+    """
     return [
         f"LA(x{reg}, rvtest_int_xepc)",
         f"SREG x0, 0(x{reg}) # no interrupt taken yet",
+        f"SREG x0, REGWIDTH(x{reg})",
     ]
 
 
-def int_xepc_check(test_data: TestData, label: str, reg: int, addr_reg: int) -> list[str]:
-    """Record where an interrupt enabled by the preceding CSR write or xRET was taken.
+def int_xepc_check(test_data: TestData, label: str, regs: list[int]) -> list[str]:
+    """Record where the interrupts enabled by the preceding CSR write or xRET were taken.
 
     The conditions for taking an interrupt must be evaluated immediately after an xRET or an explicit
     write to a CSR they depend on (norm:intr_mip_mie_xret_csrwr), so a pending interrupt that becomes
-    enabled is taken before the next instruction. A T-SBI call ends with its ecall, so the next
-    instruction is also where the T-SBI xRET returns. The signature gets xEPC - ``label``, which is 0
-    when the interrupt is taken at once and 4 or 8 when one or two more instructions retire first,
-    or 0 when no interrupt was taken since int_xepc_clear.
+    enabled is taken before the next instruction, ``label``. A T-SBI call ends with its ecall, so the
+    next instruction is also where the T-SBI xRET returns. When the handler of one interrupt returns
+    to ``label``, its xRET enables the next pending one, which is taken there too.
+
+    The signature gets 1 when no interrupt was taken since int_xepc_clear. Otherwise it gets
+    (first xEPC - ``label``) | (last xEPC - first xEPC): 0 when every interrupt was taken at ``label``,
+    and nonzero when one was taken early or late (4 or 8 when one or two more instructions retire).
+    Uses the three registers in ``regs``.
     """
+    res, first, tmp = regs
     # The rule is new in Priv-v1.12; earlier harts may take the interrupt a few instructions later.
     return [
-        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
         f"{label}: # an interrupt enabled by the previous instruction is taken here",
-        f"LA(x{reg}, rvtest_int_xepc)",
-        f"LREG x{reg}, 0(x{reg}) # xEPC of the last interrupt, 0 if none was taken",
-        f"beqz x{reg}, 1f",
-        f"LA(x{addr_reg}, {label})",
-        f"sub x{reg}, x{reg}, x{addr_reg} # xEPC - {label}: 0 when taken before the next instruction",
+        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
+        f"LA(x{tmp}, rvtest_int_xepc)",
+        f"LREG x{first}, 0(x{tmp}) # xEPC of the first interrupt, 0 if none was taken",
+        f"LREG x{res}, REGWIDTH(x{tmp}) # xEPC of the last interrupt",
+        f"LI(x{tmp}, 1)",
+        f"beqz x{first}, 1f # no interrupt was taken: record 1",
+        f"sub x{res}, x{res}, x{first} # last - first",
+        f"LA(x{tmp}, {label})",
+        f"sub x{first}, x{first}, x{tmp} # first - {label}",
+        f"or x{tmp}, x{res}, x{first} # 0 when every interrupt was taken at {label}",
         "1:",
-        write_sigupd(reg, test_data),
+        write_sigupd(tmp, test_data),
         "#endif // SM1P12P0_OR_LATER_SUPPORTED",
     ]
 
@@ -310,7 +321,7 @@ def generate_cp_priority(
         coverpoint,
         f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending",
     )
-    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
+    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
 
     types = suite.priority_types
     if vary == "mideleg":
@@ -403,7 +414,7 @@ def generate_cp_priority(
                     write_sigupd(check_reg, test_data),
                     *int_xepc_clear(tmp_reg),
                     *enable,
-                    *int_xepc_check(test_data, f"{coverpoint}_{case_name}_xepc", check_reg, tmp_reg),
+                    *int_xepc_check(test_data, f"{coverpoint}_{case_name}_xepc", [check_reg, tmp_reg, xepc_reg]),
                     *_raise(raised, pair, "CLR", priv),
                     *mode_exit(suite, priv),
                     f"#endif // {guard_symbol(second)}",
@@ -411,7 +422,7 @@ def generate_cp_priority(
                     "",
                 ]
 
-    test_data.int_regs.return_registers([tmp_reg, check_reg])
+    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
 
 
 def generate_cp_priority_pending(
@@ -426,6 +437,130 @@ def generate_cp_priority_enable(
 ) -> None:
     """Priority of enabled interrupts: all pending, pair enabled."""
     generate_cp_priority(test_data, test_chunks, suite, priv, "ie")
+
+
+def generate_cp_xret_same_mode(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
+    """xRET from the boot mode back to itself restores the global enable from xPIE.
+
+    One interrupt is pending and enabled in the enable CSR, but masked by mstatus.MIE = 0 (sstatus.SIE = 0).
+    With xPIE = 1 the xRET enables it, so it is taken at the xRET's target, the next instruction
+    (norm:intr_mip_mie_xret_csrwr). With xPIE = 0 it stays masked. VS-level interrupts are never taken
+    in M-mode, so InterruptsSm records no interrupt for them.
+    """
+
+    ######################################
+    coverpoint = "cp_xret_same_mode"
+    ######################################
+    m = suite.boot == "M"
+    csr = suite.status["csr"]
+    xie, xpie, xpp = ("MIE", "MPIE", "MPP") if m else ("SIE", "SPIE", "SPP")
+    xepc, xret = ("mepc", "mret") if m else ("sepc", "sret")
+    ie_bit, pie_bit, pp_bits = (0x8, 0x80, 0x1800) if m else (0x2, 0x20, 0x100)
+    tc = test_data.new_test_chunk(test_chunks, f"xret_same_mode_{priv}")
+    tc.section_header = comment_banner(
+        coverpoint,
+        f"{xret} to {priv}-mode with {csr}.{xie} = 0, {xpie} = 0/1 and one pending interrupt enabled in {suite.ie}",
+    )
+    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
+
+    for int_type in suite.types:
+        macro = int_macro[int_type]
+        guard = guard_symbol(int_type)
+        for pie in [0, 1]:
+            case_name = f"priv_{priv}_{int_type}_{xpie.lower()}_{pie}"
+            label = f"{coverpoint}_{case_name}_xepc"
+            tc.code += [
+                f"#ifdef {guard}",
+                *suite.deleg,
+                f"LI(x{tmp_reg}, {ie_bit:#x})",
+                f"csrc {csr}, x{tmp_reg} # {csr}.{xie} = 0",
+                f"LI(x{tmp_reg}, {1 << int_bit[int_type]:#x})",
+                *write_ie(suite, tmp_reg, f"{int_type} only"),
+                test_data.add_testcase(case_name, coverpoint, suite.covergroup),
+                f"RVTEST_SET_{macro}_INT_{priv} # pending, masked by {csr}.{xie} = 0",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until the interrupt is pending",
+                f"LI(x{tmp_reg}, {pie_bit:#x})",
+                f"{'csrs' if pie else 'csrc'} {csr}, x{tmp_reg} # {csr}.{xpie} = {pie}",
+                f"LI(x{tmp_reg}, {pp_bits:#x})",
+                f"csrs {csr}, x{tmp_reg} # {csr}.{xpp} = {priv}",
+                *(
+                    []
+                    if m
+                    else [
+                        "#ifdef H_SUPPORTED",
+                        f"LI(x{tmp_reg}, 0x80)",
+                        f"csrc hstatus, x{tmp_reg} # hstatus.SPV = 0: sret stays in HS-mode",
+                        "#endif // H_SUPPORTED",
+                    ]
+                ),
+                f"LA(x{tmp_reg}, {label})",
+                f"csrw {xepc}, x{tmp_reg} # {xret} to the next instruction",
+                *int_xepc_clear(tmp_reg),
+                f"{xret} # {csr}.{xie} = {xpie} = {pie}",
+                *int_xepc_check(test_data, label, [check_reg, tmp_reg, xepc_reg]),
+                f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
+                f"#endif // {guard}",
+                "",
+            ]
+
+    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
+
+
+def generate_cp_undeleg(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
+    """A delegation write that takes back a pending, enabled interrupt.
+
+    InterruptsSm in M-mode delegates one S-level interrupt with mideleg, and InterruptsS in HS-mode one
+    VS-level interrupt with hideleg, so the pending interrupt is not taken in the current mode. Clearing
+    the delegation bit makes it a pending, enabled interrupt of the current mode, which is taken before
+    the next instruction (norm:intr_mip_mie_xret_csrwr).
+    """
+
+    m = suite.boot == "M"
+    deleg_csr, deleg_guard = ("mideleg", "S_SUPPORTED") if m else ("hideleg", "H_SUPPORTED")
+    ######################################
+    coverpoint = f"cp_undeleg_{deleg_csr}"
+    ######################################
+    csr = suite.status["csr"]
+    xie, ie_bit = ("MIE", 0x8) if m else ("SIE", 0x2)
+    # mideleg delegates the S-level interrupts (SEI raised through mip.SEIP, as in cp_priority);
+    # hideleg delegates the VS-level ones
+    types = ["MIP_SEIP", "STI", "SSI", "LCOFI"] if m else list(vs_ints)
+    tc = test_data.new_test_chunk(test_chunks, f"undeleg_{deleg_csr}_{priv}")
+    tc.section_header = comment_banner(
+        coverpoint,
+        f"Clear the {deleg_csr} bit of a pending interrupt enabled by {suite.ie} = 1s and {csr}.{xie} = 1 in {priv}-mode",
+    )
+    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
+
+    tc.code.append(f"#ifdef {deleg_guard}")
+    for int_type in types:
+        macro = int_macro[int_type]
+        guard = guard_symbol(int_type)
+        case_name = f"priv_{priv}_{int_type}"
+        label = f"{coverpoint}_{case_name}_xepc"
+        tc.code += [
+            f"#ifdef {guard}",
+            f"LI(x{tmp_reg}, {1 << int_bit[int_type]:#x})",
+            f"csrw {deleg_csr}, x{tmp_reg} # {deleg_csr} = {int_type}",
+            f"LI(x{tmp_reg}, -1)",
+            *write_ie(suite, tmp_reg, "1s"),
+            f"LI(x{tmp_reg}, {ie_bit:#x})",
+            f"csrs {csr}, x{tmp_reg} # {csr}.{xie} = 1",
+            test_data.add_testcase(case_name, coverpoint, suite.covergroup),
+            f"RVTEST_SET_{macro}_INT_{priv} # pending, but delegated below {priv}-mode",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until the interrupt is pending",
+            *int_xepc_clear(tmp_reg),
+            f"csrw {deleg_csr}, zero # {int_type} is now taken in {priv}-mode",
+            *int_xepc_check(test_data, label, [check_reg, tmp_reg, xepc_reg]),
+            f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
+            f"#endif // {guard}",
+            "",
+        ]
+    tc.code.append(f"#endif // {deleg_guard}")
+
+    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
 
 
 def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:

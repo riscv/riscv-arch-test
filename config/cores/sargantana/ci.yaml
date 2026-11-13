@@ -130,6 +130,10 @@ exclude_extensions:
   # WFI in VU-mode with mstatus.TW = 1 raises virtual instruction instead of illegal instruction:
   # csr:csr_bsc.sv#L2536-L2541 (https://github.com/bsc-loca/sargantana/issues/121)
   - InterruptsS_wfi_timeout_VU
+  # A VS-level interrupt that hideleg delegates is taken in HS-mode, so cp_undeleg_hideleg finds it
+  # already taken before the hideleg write that should make it taken in HS-mode:
+  # csr:csr_bsc.sv#L1944-L1947 (https://github.com/bsc-loca/sargantana/issues/122)
+  - InterruptsS_undeleg_hideleg_S
   # An interrupt taken into M-mode from VS or VU sets mstatus.GVA = 1, the same bug:
   # csr:csr_bsc.sv#L2145 (https://github.com/bsc-loca/sargantana/issues/119)
   - InterruptsSm_enable_VS

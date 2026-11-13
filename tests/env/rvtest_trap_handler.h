@@ -2641,10 +2641,15 @@ sv_\__MODE__\()ip:
 
 // Save xEPC for tests that check where the interrupt was taken: right after the CSR write or
 // xRET that enabled it (norm:intr_mip_mie_xret_csrwr). Interrupts that arrive at an arbitrary
-// time are not checked, so xEPC is not in the trap signature.
+// time are not checked, so xEPC is not in the trap signature. Word 1 gets the xEPC of every
+// interrupt, and word 0 only that of the first since the test cleared it.
         csrr    T3, CSR_XEPC
         LA(     T6, rvtest_int_xepc)
-        SREG    T3, 0(T6)
+        SREG    T3, REGWIDTH(T6)                     // last interrupt
+        LREG    T2, 0(T6)
+        bnez    T2, 1f                               // not the first interrupt since the clear
+        SREG    T3, 0(T6)                            // first interrupt
+1:
 
 // Release an armed wait loop (wait_loop_arm/wait_loop in the test generator). The loop checks
 // rvtest_wait_loop's exit before each WFI or WRS and leaves when it is 0, so clearing it ends

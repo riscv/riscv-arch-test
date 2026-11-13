@@ -21,8 +21,10 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_priority_enable,
     generate_cp_priority_pending,
     generate_cp_trigger_vsti_sstc,
+    generate_cp_undeleg,
     generate_cp_wfi,
     generate_cp_wfi_timeout,
+    generate_cp_xret_same_mode,
     guard_symbol,
     int_coverpoint,
     int_macro,
@@ -69,7 +71,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
         f"Trigger each interrupt in {priv} mode with sie=1s (and hie=1s with H) x stvec.MODE=DIRECT/VECTORED"
         " x sstatus.SIE=0/1",
     )
-    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
+    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
 
     for int_type in [*supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
         if priv in ("U", "VS", "VU") and int_type == "SSTC_STCE0":
@@ -121,8 +123,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                         int_xepc_check(
                             test_data,
                             f"{cp}_priv_{priv}_{int_type}_mode_{mode}_enable_{enable}_xepc",
-                            check_reg,
-                            tmp_reg,
+                            [check_reg, tmp_reg, xepc_reg],
                         )
                         if int_type in csr_raised_ints
                         else []
@@ -135,7 +136,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     "",
                 ]
 
-    test_data.int_regs.return_registers([tmp_reg, check_reg])
+    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
 
 
 _COMMON_GENERATORS = [
@@ -149,7 +150,13 @@ _COMMON_GENERATORS = [
 @add_priv_test_generator(SUITE.name, required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """InterruptsS tests that run in S-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
+    generators = _COMMON_GENERATORS + [
+        generate_cp_wfi,
+        generate_cp_wfi_timeout,
+        generate_cp_trigger_vsti_sstc,
+        generate_cp_xret_same_mode,
+        generate_cp_undeleg,
+    ]
     return emit_interrupts(test_data, SUITE, "S", generators)
 
 

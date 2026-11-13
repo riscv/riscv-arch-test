@@ -57,6 +57,9 @@ and the code that calls it, and ask:
 - Does each test exercise what it claims, and could it pass without doing so (a check that can't fail, a value that is
   never compared, a trap that skips the instruction under test, a gate that is never true)?
 - Does each coverpoint hit the bins it should, and can a bin be hit by the wrong instruction or state?
+- Can it be made significantly simpler? Look for a function, layer or mechanism that can go; logic that repeats
+  across functions or reimplements an existing helper; general machinery with only one use; dead code and unused
+  options; and tests or probes beyond what the coverpoints need. Sketch the simpler version.
 - Is the reading of the spec right? Look it up when the change depends on it; if no riscv-isa-manual checkout is at
   hand, read the adoc from github.com/riscv/riscv-isa-manual.
 

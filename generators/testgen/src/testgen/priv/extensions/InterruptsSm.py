@@ -227,8 +227,7 @@ def _generate_cp_mip_seip(test_data: TestData, test_chunks: list[TestChunk], sui
     """mip.SEIP reads the OR of the software SEIP bit and the platform's SEI, and csrrs and csrrc write back only the
     software bit.
 
-    Needs a platform interrupt controller (RVMODEL_SET/CLR_SEXT_INT, which check_defines.h requires as a pair) that
-    can drop SEI without touching mip.SEIP.  The coverage model gates on the same macros (RVMODEL_SEXT_INT_EXTERNAL).
+    Needs a platform interrupt controller (RVMODEL_SET/CLR_SEXT_INT) that can drop SEI without touching mip.SEIP.  The coverage model gates on the same macros (RVMODEL_SEXT_INT_EXTERNAL).
     With SEI asserted and software SEIP = 0, csrrs and csrrc of mip with rs1 = 0 or SSIP return SEIP = 1.  Once the
     platform drops SEI, mip.SEIP reads 0: none of the writes set the software bit.
     """

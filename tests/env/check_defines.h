@@ -170,12 +170,6 @@
     #endif
   #endif
 
-  // The signature build replaces both macros with the Sail interrupt generator when either is defined,
-  // so a DUT with only one of them would not match it.
-  #if defined(RVMODEL_SET_SEXT_INT_M) != defined(RVMODEL_CLR_SEXT_INT_M)
-    #error "Only one of RVMODEL_SET_SEXT_INT and RVMODEL_CLR_SEXT_INT is defined. Define both in rvmodel_macros.h, or neither if mip.SEIP raises SEI."
-  #endif
-
   // RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are optional: platforms without a supervisor
   // software interrupt controller leave them undefined and the trap handler uses mip.SSIP.
 

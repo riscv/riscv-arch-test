@@ -7,11 +7,12 @@ normative_rule_definitions:
   - names: [Svrsw60t59b_reserved_bits_60_59, Svrsw60t59b_depends_on_Sv39]
     coverpoint:
       [
-        "TODO: set PTE bits 60:59 in leaf PTEs and check that accesses do not fault",
+        "Svrsw60t59b_cg/cp_{load, store, fetch}",
+        "Svrsw60t59b_H_cg/cp_vsatp_{load, store, fetch}",
       ]
 
   # If the Hypervisor (H) extension is also implemented, then bits 60-59 of the G-stage
   # PTEs are reserved for use by supervisor software and are ignored by the
   # implementation.
   - name: Svrsw60t59b_H_g_stage_reserved_bits
-    coverpoint: ["Sv_H_gstage_cg/cp_hgatp_perm"]
+    coverpoint: ["Svrsw60t59b_H_cg/cp_hgatp_{load, store, fetch}"]

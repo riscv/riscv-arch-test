@@ -176,6 +176,9 @@
 `ifdef SVPBMT_COVERAGE
   `include "Svpbmt_coverage.svh"
 `endif
+`ifdef SVRSW60T59B_COVERAGE
+  `include "Svrsw60t59b_coverage.svh"
+`endif
 `ifdef SVVPTC_COVERAGE
   `include "Svvptc_coverage.svh"
 `endif

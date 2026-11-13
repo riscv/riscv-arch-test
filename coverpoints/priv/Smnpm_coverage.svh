@@ -38,7 +38,7 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -51,10 +51,7 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
-        bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-        bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-    }
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0] {}
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins sepc     = {CSR_SEPC};
         //bins stvec    = {CSR_STVEC}; //// warl field has complex write restrictions and is not easy to test
@@ -72,9 +69,13 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;
     cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in S-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in S-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_s, satp_mode, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in S-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 endgroup
 
@@ -83,7 +84,7 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -97,7 +98,7 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef SMMPM_SUPPORTED  // mseccfg.PMM exists only with Smmpm; it must not apply here
-        mseccfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+        mseccfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "pmm") {
             bins pmm_00 = {2'b00};
             `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
                 bins pmm_10 = {2'b10};
@@ -108,14 +109,11 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-        bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-        bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-    }
-    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+    mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
+    mprv_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
-    mpp_field_s: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    mpp_field_s: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins mpp_s = {2'b01};   // effective privilege = S-mode
     }
 
@@ -133,7 +131,7 @@ covergroup Smnpm_U_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -151,9 +149,13 @@ covergroup Smnpm_U_cg with function sample(ins_t ins);
     cp_pmlen_misaligned_word: cross priv_mode_u, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, jalr_insn;
 
-    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        // Fault cross confirms lw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_load: cross priv_mode_u, pmm, a_upper_bits, lw_insn, illegal_addr_load;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        // Fault cross confirms sw executed in U-mode at the illegal address.
+        cp_hardware_csr_writes_fault_store: cross priv_mode_u, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 endgroup
 
@@ -162,7 +164,7 @@ covergroup Smnpm_USm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -176,7 +178,7 @@ covergroup Smnpm_USm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef SMMPM_SUPPORTED  // mseccfg.PMM exists only with Smmpm; it must not apply here
-        mseccfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+        mseccfg_pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "pmm") {
             bins pmm_00 = {2'b00};
             `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
                 bins pmm_10 = {2'b10};
@@ -187,10 +189,10 @@ covergroup Smnpm_USm_cg with function sample(ins_t ins);
         }
     `endif // SMMPM_SUPPORTED
 
-    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+    mprv_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
         bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
     }
-    mpp_field_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+    mpp_field_u: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
         bins mpp_u = {2'b00};   // effective privilege = U-mode
     }
 

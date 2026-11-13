@@ -76,11 +76,16 @@
 
 ##### Access faults #####
 
-# Not defined: the tests fetch, load and store at one address, and no EL2 address faults on
-# all three. Fetches fault only in the ICCM region (0xE) outside the ICCM, loads and stores
-# only in the DCCM/PIC region (0xF) outside the DCCM and PIC, and the testbench backs every
-# other address with memory.
+# Fetches fault only in the ICCM region (0xE) outside the ICCM (0xEE00_0000-0xEE00_FFFF).
+# Loads and stores fault only in the DCCM/PIC region (0xF) outside the DCCM (0xF004_0000)
+# and PIC (0xF00C_0000). The testbench backs every other address with memory.
+# No address faults for all access types, so RVMODEL_ACCESS_FAULT_ADDRESS is not defined.
 #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L265-L335
+#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/ifu/el2_ifu_ifc_ctl.sv#L238
+#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/lsu/el2_lsu_addrcheck.sv#L200
+#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0xE0000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0xF0000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0xF0000000
 
 ##### Interrupt Latency #####
 

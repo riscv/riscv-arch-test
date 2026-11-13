@@ -55,6 +55,15 @@ $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imc-pma-pmp/test_c
 $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imcb-pma-pmp/test_config.yaml
 ```
 
+CV32E40S has no testbench of its own for these tests. `.github/scripts/install-cve4.sh` builds it in
+cv32e40x-dv's core testbench, with `.github/scripts/cv32e40s_tb_wrapper.sv` in place of the CV32E40X
+wrapper, and `run-cv32e40s.sh --cfg <config> --elf <elf>` runs one test, where `<config>` is the
+configuration name without the `cv32e40s-` prefix.
+CI runs only the two configurations with PMP. With `PMP_NUM_REGIONS = 0`, CV32E40S implements 64
+read-only-zero PMP entries, so no rule can grant U-mode access, but ACT runs unprivileged tests in
+U-mode and requires at least 8 usable PMP entries, so `cv32e40s-rv32imc` and `cv32e40s-rv32imc-pma`
+cannot run.
+
 ### CV32E40X
 
 [CV32E40X](https://github.com/openhwfoundation/cv32e40x) ([docs](https://docs.openhwfoundation.org/projects/cv32e40x-user-manual/en/latest/)) is aimed at compute intensive applications and offers a general purpose extension interface by which custom instructions can be added external to the core.

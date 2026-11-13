@@ -62,14 +62,32 @@
 
 ##### Machine Timer #####
 
-# MTIME is not implemented on this DUT. Comment out to prevent testing them.
-//#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
-//#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
 #define RVMODEL_TIMER_INT_SOON_DELAY 10000
+// CLINT machine timer in mm_ram at Sail's CLINT base (matches sail.json).
+#define RVMODEL_MTIME_ADDRESS     0x0200BFF8
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
+// mm_ram's simple_interrupt_generator platform register drives irq_i[3] (MSI) and irq_i[11] (MEI).
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x80000800           ; /* set | MEI (bit 11) */             \
+    li _R2, 0x15000024           ; /* simple_interrupt_generator + 4 */ \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x00000800           ; /* clear | MEI (bit 11) */           \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_SET_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x80000008           ; /* set | MSI (bit 3) */              \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_CLR_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x00000008           ; /* clear | MSI (bit 3) */            \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
 
 #endif // _RVMODEL_MACROS_H

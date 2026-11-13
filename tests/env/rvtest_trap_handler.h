@@ -2230,9 +2230,10 @@ tsbi_instr_table:
 // or a genuine ecall exception that should be recorded in the signature).
 //
 // This section:
-//   1. Calculates the trap signature entry size (4, or 6 words for M and HS with H)
+//   1. Calculates the trap signature entry size (4, or 6 words for M and HS with H; one more for interrupts)
 //   2. Pre-increments the trap signature pointer and checks for overrun
-//   3. Records: vect+mode word, xcause, xepc/xip, xtval (with H, second trap value and xtinst)
+//   3. Records: vect+mode word, xcause, xepc/xip, xtval (with H, second trap value and xtinst),
+//      and for interrupts a last word holding xEPC when the test armed rvtest_int_xepc, else 0
 //   4. For exceptions: records xEPC and bumps past the trapping instruction
 //   5. For interrupts: dispatches to interrupt clearing routines
 //   6. Restores registers and returns via xret
@@ -2260,6 +2261,9 @@ tsbi_instr_table:
 #endif
   .endif
 .endif
+        bgez    T5, 1f                            // exception: no more words
+        addi    T2, T2, REGWIDTH                  // interrupt: one more word, xEPC or 0 (int_epc_word)
+1:
 
 \__MODE__\()trap_sig_sv:                          // compute pointer offset to M-mode's shared trap_sigptr
         .set sv_area_off, (+1*sv_area_sz)          // default: M-mode (1 area offset from sp)
@@ -2326,6 +2330,8 @@ tsbi_instr_table:
 //              = GVA/MPV/SPVP in place of xstatus[16:14] on M-mode and HS-mode traps
 // A hypervisor build adds two more words to an M-mode or HS-mode exception entry:
 // word 4 is the second trap value (mtval2 / htval) and word 5 is xtinst.
+// An interrupt entry adds a last word (word 4, or 6 for M and HS with H): xEPC when the test
+// armed rvtest_int_xepc, else 0 (see common_\__MODE__\()int_handler).
 
 sv_\__MODE__\()vect:
         LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
@@ -2608,8 +2614,9 @@ dispatch_\__MODE__\()spcl_excpt_handler:
 
 //==============================================================================
 // INTERRUPT HANDLER
-// Records xIP and, through the exception path's word 3-5 code, xtval (and with
-// H, the second trap value and xtinst), then clears the interrupt source.
+// Records xIP, the armed xEPC and, through the exception path's word 3-5 code,
+// xtval (and with H, the second trap value and xtinst), then clears the
+// interrupt source.
 //==============================================================================
 
 common_\__MODE__\()int_handler:
@@ -2639,17 +2646,26 @@ common_\__MODE__\()int_handler:
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
 
-// Save xEPC for tests that check where the interrupt was taken: right after the CSR write or
-// xRET that enabled it (norm:intr_mip_mie_xret_csrwr). Interrupts that arrive at an arbitrary
-// time are not checked, so xEPC is not in the trap signature. Word 1 gets the xEPC of every
-// interrupt, and word 0 only that of the first since the test cleared it.
-        csrr    T3, CSR_XEPC
+// Last word (word 4, or 6 for M and HS with H): xEPC when the test has armed rvtest_int_xepc,
+// and 0 otherwise. A test arms it right before a CSR write or xRET that enables an interrupt that
+// is already pending, which must then be taken before the next instruction
+// (norm:intr_mip_mie_xret_csrwr), and disarms it a few instructions later. Interrupts that
+// arrive at an arbitrary time are not armed, so their xEPC is not compared. Read xEPC before
+// the wait-loop release below rewrites it.
+        .set int_epc_word, 4
+  .ifnc \__MODE__ , V
+    #ifdef H_SUPPORTED
+        .set int_epc_word, 6
+    #endif
+  .endif
         LA(     T6, rvtest_int_xepc)
-        SREG    T3, REGWIDTH(T6)                     // last interrupt
-        LREG    T2, 0(T6)
-        bnez    T2, 1f                               // not the first interrupt since the clear
-        SREG    T3, 0(T6)                            // first interrupt
+        LREG    T2, 0(T6)                            // T2 = nonzero when armed
+        csrr    T3, CSR_XEPC
+        bnez    T2, 1f
+        li      T3, 0                                // not armed: record 0
 1:
+sv_\__MODE__\()int_epc:
+        TRAP_SIGUPD(T4, T3, int_epc_word, sv_\__MODE__\()int_epc, sv_\__MODE__\()epc_str) // write last word: xEPC or 0
 
 // Release an armed wait loop (wait_loop_arm/wait_loop in the test generator). The loop checks
 // rvtest_wait_loop's exit before each WFI or WRS and leaves when it is 0, so clearing it ends

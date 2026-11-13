@@ -28,8 +28,8 @@ from testgen.priv.extensions.InterruptsCommon import (
     guard_symbol,
     int_coverpoint,
     int_macro,
-    int_xepc_check,
-    int_xepc_clear,
+    int_xepc_arm,
+    int_xepc_disarm,
     label_coverpoint,
     mode_enter,
     mode_exit,
@@ -71,7 +71,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
         f"Trigger each interrupt in {priv} mode with sie=1s (and hie=1s with H) x stvec.MODE=DIRECT/VECTORED"
         " x sstatus.SIE=0/1",
     )
-    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
+    tmp_reg = test_data.int_regs.get_register()
 
     for int_type in [*supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
         if priv in ("U", "VS", "VU") and int_type == "SSTC_STCE0":
@@ -117,13 +117,12 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     ),
                     *mode_enter(suite, priv),
                     # A CSR write (mip, sip or hvip) raises these, so an enabled one is taken before the next instruction
-                    *(int_xepc_clear(tmp_reg) if int_type in csr_raised_ints else []),
+                    *(int_xepc_arm(tmp_reg) if int_type in csr_raised_ints else []),
                     f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
                     *(
-                        int_xepc_check(
-                            test_data,
+                        int_xepc_disarm(
                             f"{cp}_priv_{priv}_{int_type}_mode_{mode}_enable_{enable}_xepc",
-                            [check_reg, tmp_reg, xepc_reg],
+                            tmp_reg,
                         )
                         if int_type in csr_raised_ints
                         else []
@@ -136,7 +135,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     "",
                 ]
 
-    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
+    test_data.int_regs.return_register(tmp_reg)
 
 
 _COMMON_GENERATORS = [

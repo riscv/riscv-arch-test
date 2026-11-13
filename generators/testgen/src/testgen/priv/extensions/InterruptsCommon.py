@@ -31,8 +31,11 @@ sstc_ints = {"SSTC_STCE0": 5, "SSTC_STCE1": 5}
 vs_ints = {"VSEI": 10, "VSTI": 6, "VSSI": 2}
 # mip/mie bit position of every interrupt type
 int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints | vs_ints
-# Interrupts raised by a CSR write (mip, sip or hvip), which must be taken before the next instruction when enabled
-csr_raised_ints = reg_ints | vs_ints
+# Interrupts that RVTEST_SET_<int>_INT raises with a CSR write (mip, sip or hvip), directly or through
+# T-SBI, so an enabled one is taken right after that write (or the T-SBI xRET) and its xEPC is checked.
+# SSI and SEI may be raised through the platform (RVMODEL_SET_SSW_INT, RVMODEL_SET_SEXT_INT), and MSI,
+# MTI and MEI always are, so they become pending after an unspecified delay.
+csr_raised_ints = reg_ints | vs_ints | {"LCOFI": 13, "STI": 5}
 # Guard symbol and coverpoint for types that do not use the UDB_<int>_INTR_IMPL / cp_trigger defaults
 int_guard = {"MIP_SEIP": "UDB_SEI_INTR_IMPL", "MIP_SSIP": "UDB_SSI_INTR_IMPL", "SIP_SSIP": "UDB_SSI_INTR_IMPL"}
 int_guard |= {"LCOFI": "SSCOFPMF_SUPPORTED", "SIP_LCOFIP": "SSCOFPMF_SUPPORTED"}
@@ -154,47 +157,34 @@ def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
     return [f"RVTEST_TSBI_GOTO_{suite.boot}MODE # return to {suite.boot}-mode"]
 
 
-def int_xepc_clear(reg: int) -> list[str]:
-    """Clear rvtest_int_xepc, where the trap handler saves the xEPC of the first and of the last
-    interrupt. Emit right before the instruction that enables a pending interrupt (see int_xepc_check).
+def int_xepc_arm(reg: int) -> list[str]:
+    """Make the trap handler record xEPC in the trap signature entry of each interrupt.
+
+    Emit right before the CSR write or xRET that enables an interrupt that is already pending (or the
+    CSR write that raises an enabled one). Such an interrupt must be taken before the next instruction
+    (norm:intr_mip_mie_xret_csrwr), so its xEPC is the same on every hart. Interrupts that arrive after
+    an unspecified delay must not be taken while armed. The rule is new in Priv 1.12, so earlier harts
+    may take the interrupt a few instructions later and are not checked.
     """
     return [
+        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
         f"LA(x{reg}, rvtest_int_xepc)",
-        f"SREG x0, 0(x{reg}) # no interrupt taken yet",
-        f"SREG x0, REGWIDTH(x{reg})",
+        f"SREG x{reg}, 0(x{reg}) # arm: the trap handler records the xEPC of interrupts",
+        "#endif // SM1P12P0_OR_LATER_SUPPORTED",
     ]
 
 
-def int_xepc_check(test_data: TestData, label: str, regs: list[int]) -> list[str]:
-    """Record where the interrupts enabled by the preceding CSR write or xRET were taken.
-
-    The conditions for taking an interrupt must be evaluated immediately after an xRET or an explicit
-    write to a CSR they depend on (norm:intr_mip_mie_xret_csrwr), so a pending interrupt that becomes
-    enabled is taken before the next instruction, ``label``. A T-SBI call ends with its ecall, so the
-    next instruction is also where the T-SBI xRET returns. When the handler of one interrupt returns
-    to ``label``, its xRET enables the next pending one, which is taken there too.
-
-    The signature gets 1 when no interrupt was taken since int_xepc_clear. Otherwise it gets
-    (first xEPC - ``label``) | (last xEPC - first xEPC): 0 when every interrupt was taken at ``label``,
-    and nonzero when one was taken early or late (4 or 8 when one or two more instructions retire).
-    Uses the three registers in ``regs``.
+def int_xepc_disarm(label: str, reg: int) -> list[str]:
+    """Stop recording xEPC (see int_xepc_arm). ``label`` is the instruction after the CSR write or xRET,
+    where the interrupts it enables are taken; the handler of one returns there and its xRET enables the
+    next, which is taken there too. An interrupt taken in the two instructions before the disarming store
+    records its late xEPC, and a later one records 0, so both mismatch.
     """
-    res, first, tmp = regs
-    # The rule is new in Priv-v1.12; earlier harts may take the interrupt a few instructions later.
     return [
         f"{label}: # an interrupt enabled by the previous instruction is taken here",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
-        f"LA(x{tmp}, rvtest_int_xepc)",
-        f"LREG x{first}, 0(x{tmp}) # xEPC of the first interrupt, 0 if none was taken",
-        f"LREG x{res}, REGWIDTH(x{tmp}) # xEPC of the last interrupt",
-        f"LI(x{tmp}, 1)",
-        f"beqz x{first}, 1f # no interrupt was taken: record 1",
-        f"sub x{res}, x{res}, x{first} # last - first",
-        f"LA(x{tmp}, {label})",
-        f"sub x{first}, x{first}, x{tmp} # first - {label}",
-        f"or x{tmp}, x{res}, x{first} # 0 when every interrupt was taken at {label}",
-        "1:",
-        write_sigupd(tmp, test_data),
+        f"LA(x{reg}, rvtest_int_xepc)",
+        f"SREG x0, 0(x{reg}) # disarm",
         "#endif // SM1P12P0_OR_LATER_SUPPORTED",
     ]
 
@@ -220,6 +210,8 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
         bit = int_bit[int_type]
         # enable only this interrupt (fires), then every interrupt except this one (does not fire)
         for enable, ie_val in [("only", 1 << bit), ("others", ~(1 << bit))]:
+            # A CSR write raises these, so an enabled one is taken right after it: check its xEPC
+            checked = enable == "only" and int_type in csr_raised_ints
             tc.code += [
                 f"#ifdef {guard}",
                 *suite.deleg,
@@ -233,7 +225,9 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
                     suite.covergroup,
                 ),
                 *mode_enter(suite, priv),
+                *(int_xepc_arm(tmp_reg) if checked else []),
                 f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
+                *(int_xepc_disarm(f"cp_enable_priv_{priv}_{int_type}_{ie}_{enable}_xepc", tmp_reg) if checked else []),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                 f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the interrupt handler hasn't done so",
                 *mode_exit(suite, priv),
@@ -321,7 +315,7 @@ def generate_cp_priority(
         coverpoint,
         f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending",
     )
-    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
+    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     types = suite.priority_types
     if vary == "mideleg":
@@ -412,9 +406,9 @@ def generate_cp_priority(
                     f"LI(x{tmp_reg}, {raised_mask:#x})",
                     f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
                     write_sigupd(check_reg, test_data),
-                    *int_xepc_clear(tmp_reg),
+                    *int_xepc_arm(tmp_reg),
                     *enable,
-                    *int_xepc_check(test_data, f"{coverpoint}_{case_name}_xepc", [check_reg, tmp_reg, xepc_reg]),
+                    *int_xepc_disarm(f"{coverpoint}_{case_name}_xepc", tmp_reg),
                     *_raise(raised, pair, "CLR", priv),
                     *mode_exit(suite, priv),
                     f"#endif // {guard_symbol(second)}",
@@ -422,7 +416,7 @@ def generate_cp_priority(
                     "",
                 ]
 
-    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
+    test_data.int_regs.return_registers([tmp_reg, check_reg])
 
 
 def generate_cp_priority_pending(
@@ -463,7 +457,7 @@ def generate_cp_xret_same_mode(
         coverpoint,
         f"{xret} to {priv}-mode with {csr}.{xie} = 0, {xpie} = 0/1 and one pending interrupt enabled in {suite.ie}",
     )
-    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
+    tmp_reg = test_data.int_regs.get_register()
 
     for int_type in suite.types:
         macro = int_macro[int_type]
@@ -497,15 +491,15 @@ def generate_cp_xret_same_mode(
                 ),
                 f"LA(x{tmp_reg}, {label})",
                 f"csrw {xepc}, x{tmp_reg} # {xret} to the next instruction",
-                *int_xepc_clear(tmp_reg),
+                *int_xepc_arm(tmp_reg),
                 f"{xret} # {csr}.{xie} = {xpie} = {pie}",
-                *int_xepc_check(test_data, label, [check_reg, tmp_reg, xepc_reg]),
+                *int_xepc_disarm(label, tmp_reg),
                 f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
                 f"#endif // {guard}",
                 "",
             ]
 
-    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
+    test_data.int_regs.return_register(tmp_reg)
 
 
 def generate_cp_undeleg(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
@@ -532,7 +526,7 @@ def generate_cp_undeleg(test_data: TestData, test_chunks: list[TestChunk], suite
         coverpoint,
         f"Clear the {deleg_csr} bit of a pending interrupt enabled by {suite.ie} = 1s and {csr}.{xie} = 1 in {priv}-mode",
     )
-    tmp_reg, check_reg, xepc_reg = test_data.int_regs.get_registers(3)
+    tmp_reg = test_data.int_regs.get_register()
 
     tc.code.append(f"#ifdef {deleg_guard}")
     for int_type in types:
@@ -551,16 +545,16 @@ def generate_cp_undeleg(test_data: TestData, test_chunks: list[TestChunk], suite
             test_data.add_testcase(case_name, coverpoint, suite.covergroup),
             f"RVTEST_SET_{macro}_INT_{priv} # pending, but delegated below {priv}-mode",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until the interrupt is pending",
-            *int_xepc_clear(tmp_reg),
+            *int_xepc_arm(tmp_reg),
             f"csrw {deleg_csr}, zero # {int_type} is now taken in {priv}-mode",
-            *int_xepc_check(test_data, label, [check_reg, tmp_reg, xepc_reg]),
+            *int_xepc_disarm(label, tmp_reg),
             f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
             f"#endif // {guard}",
             "",
         ]
     tc.code.append(f"#endif // {deleg_guard}")
 
-    test_data.int_regs.return_registers([tmp_reg, check_reg, xepc_reg])
+    test_data.int_regs.return_register(tmp_reg)
 
 
 def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:

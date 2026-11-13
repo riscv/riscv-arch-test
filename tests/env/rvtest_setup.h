@@ -713,16 +713,6 @@
     #endif // SSTC_SUPPORTED
 
     #ifdef S_SUPPORTED
-      rvtest_set_stime_int_m:
-        li a1, 1<<5 // STIP bit
-        csrs mip, a1        // Trigger mip.STIP
-        ret
-
-      rvtest_clr_stime_int_m:
-        li a1, 1<<5 // STIP bit
-        csrc mip, a1        // Clear mip.STIP
-        ret
-
       rvtest_set_ssw_int_m:
         // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP
         #ifdef RVMODEL_SET_SSW_INT_M
@@ -898,14 +888,6 @@
       #endif // H_SUPPORTED
     #endif // SSTC_SUPPORTED
 
-    rvtest_set_stime_int_su:
-      RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<5) // set mip.STIP
-      ret
-
-    rvtest_clr_stime_int_su:
-      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<5) // clear mip.STIP
-      ret
-
     rvtest_set_ssw_int_su:
       // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP.
       // sip.SSIP is read-only zero unless SSI is delegated, so write mip.SSIP through T-SBI,
@@ -1077,14 +1059,14 @@
   rvtest_wait_loop:
     .dword 0, 0
 
-  // xEPC of the first and of the last interrupt since a test cleared them (word 0 and word 1,
-  // REGWIDTH apart), stored by common_Xint_handler. A test that enables a pending interrupt with
-  // a CSR write or an xRET clears both first and then checks that every interrupt was taken at
-  // the next instruction (int_xepc_clear and int_xepc_check in the test generator).
+  // Nonzero while a test checks where interrupts are taken: common_Xint_handler then records
+  // xEPC in the last word of each interrupt's trap-signature entry, and 0 otherwise. A test arms
+  // it right before a CSR write or xRET that enables an already pending interrupt and disarms it
+  // a few instructions later (int_xepc_arm and int_xepc_disarm in the test generator).
   .p2align 3
   .global rvtest_int_xepc
   rvtest_int_xepc:
-    .dword 0, 0
+    .dword 0
 
   // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
   .p2align 3

@@ -2607,7 +2607,7 @@
     trap_diag_field_cause_str:
         .string "XCAUSE (trap signature word 1)\n"
     trap_diag_field_epc_str:
-        .string "XEPC (trap signature word 2)\n"
+        .string "XEPC (trap signature word 2, or the last word of an interrupt entry)\n"
     trap_diag_field_tval_str:
         .string "XTVAL (trap signature word 3)\n"
     trap_diag_field_ip_str:
@@ -2646,7 +2646,10 @@
     trap_diag_hint_epc_str:
         .ascii  "RVCP: HINT: XEPC mismatch means the trap occurred at a different instruction.\n"
         .ascii  "RVCP:       This could indicate: different code layout (linker issue), instruction\n"
-        .asciz  "RVCP:       alignment difference, or a preceding instruction causing an unexpected trap.\n"
+        .ascii  "RVCP:       alignment difference, or a preceding instruction causing an unexpected trap.\n"
+        .ascii  "RVCP:       For an interrupt, the test enabled it while pending with a CSR write or\n"
+        .ascii  "RVCP:       xRET, so it must be taken before the next instruction (Priv 1.12); 0 means\n"
+        .asciz  "RVCP:       the DUT took it after the test stopped recording xEPC.\n"
     trap_diag_hint_tval_str:
         .ascii  "RVCP: HINT: XTVAL mismatch. For illegal instructions, xtval should contain the\n"
         .ascii  "RVCP:       instruction encoding (or 0). For address faults, it should contain the\n"

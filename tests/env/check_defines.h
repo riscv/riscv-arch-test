@@ -14,7 +14,8 @@
 #endif
 
 // TRAP_SIGUPD_COUNT is the number of expected traps. Each trap uses 4 signature
-// words, or 6 when H is supported.
+// words, or 6 when H is supported. An interrupt uses one more, which the counts that
+// generators set for chunks that take interrupts (SdtrigCommon) leave room for.
 #ifndef TRAP_SIGUPD_COUNT
   #define TRAP_SIGUPD_COUNT 0
 #endif

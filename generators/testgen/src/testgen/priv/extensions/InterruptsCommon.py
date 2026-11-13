@@ -125,10 +125,6 @@ class InterruptSuite:
         """Covergroup that samples this suite's testcases."""
         return f"Interrupts_{self.group}_cg" if self.group else "Interrupts_cg"
 
-    def split(self, name: str) -> str:
-        """Test file split name: ``name`` prefixed by the group, so each group's files start with its name."""
-        return f"{self.group}_{name}" if self.group else name
-
 
 Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
 
@@ -197,7 +193,7 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
     ######################################
     ie = suite.ie
     status = suite.status
-    tc = test_data.new_test_chunk(test_chunks, suite.split(f"enable_{priv}"))
+    tc = test_data.new_test_chunk(test_chunks, f"enable_{priv}")
     tc.section_header = comment_banner(
         banner,
         f"Enable each interrupt in {priv} mode with {status['csr']}.{status['field']} = 1, {ie} = only/others",
@@ -321,7 +317,7 @@ def generate_cp_priority(
     title = (
         f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending"
     )
-    tc = test_data.new_test_chunk(test_chunks, suite.split(split_name))
+    tc = test_data.new_test_chunk(test_chunks, split_name)
     tc.section_header = comment_banner(coverpoint, title)
     tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
@@ -341,8 +337,8 @@ def generate_cp_priority(
     if split_vs:
         pairs.sort(key=lambda pair: any(int_type in vs_ints for int_type in pair))
     for first, second in pairs:
-        if split_vs and tc.split_name == suite.split(split_name) and (first in vs_ints or second in vs_ints):
-            tc = test_data.new_test_chunk(test_chunks, suite.split(f"{split_name}_vs"))
+        if split_vs and tc.split_name == split_name and (first in vs_ints or second in vs_ints):
+            tc = test_data.new_test_chunk(test_chunks, f"{split_name}_vs")
             tc.section_header = comment_banner(coverpoint, title)
         pair = [first, second]
         # ie: everything is pending and only the pair is enabled; otherwise only the pair is pending
@@ -455,7 +451,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
     status = suite.status
     ie_name, ie_mask = wfi["ie"]
     ip_csr, _, ip_mask = wfi["ip"]
-    tc = test_data.new_test_chunk(test_chunks, suite.split(f"wfi_{priv}"))
+    tc = test_data.new_test_chunk(test_chunks, f"wfi_{priv}")
     tc.section_header = comment_banner(
         coverpoint,
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
@@ -525,7 +521,7 @@ def generate_cp_trigger_vsti_sstc(
     ######################################
     boot = suite.boot
     in_vs = priv == "VS"
-    tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_vsti_sstc_{priv}"))
+    tc = test_data.new_test_chunk(test_chunks, f"trigger_vsti_sstc_{priv}")
     tc.section_header = comment_banner(
         coverpoint,
         "With menvcfg.STCE = henvcfg.STCE = 1 and hie.VSTIE = 1, set "
@@ -631,7 +627,7 @@ def generate_cp_wfi_timeout(
     ######################################
     status = suite.status
     ie_name, ie_mask = suite.wfi["ie"]
-    tc = test_data.new_test_chunk(test_chunks, suite.split(f"wfi_timeout_{priv}"))
+    tc = test_data.new_test_chunk(test_chunks, f"wfi_timeout_{priv}")
     tc.section_header = comment_banner(
         coverpoint,
         f"WFI timeout in {priv} mode with {status['csr']}.{status['field']} = 0/1 x {suite.ie}.{ie_name} = 0/1",
@@ -680,4 +676,9 @@ def emit_interrupts(
         generate(test_data, test_chunks, suite, priv)
 
     test_chunks.append(test_data.end_test_chunk())
+    # Prefix split names with the group so each group's test files start with its name
+    if suite.group:
+        for tc in test_chunks:
+            if tc.split_name is not None:
+                tc.split_name = f"{suite.group}_{tc.split_name}"
     return test_chunks

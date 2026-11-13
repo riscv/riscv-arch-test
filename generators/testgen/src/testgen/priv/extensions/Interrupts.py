@@ -56,17 +56,16 @@ COVERGROUP = SUITE.covergroup
 
 
 def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
-    """Trigger each interrupt across stvec.MODE and sstatus.SIE.
+    """Raise each interrupt in ``priv`` mode with every bit of sie (and hie) set, for each stvec.MODE and sstatus.SIE.
 
-    With H, each VS-level interrupt is also triggered with hideleg delegating it to VS-mode, where vstvec.MODE and
-    vsstatus.SIE take the values of stvec.MODE and sstatus.SIE.  HS-mode and U-mode never take it; VS-mode takes it
-    when vsstatus.SIE = 1 and VU-mode always does.
+    With H, raise each VS-level interrupt again with hideleg delegating it to VS-mode, for each vstvec.MODE and
+    vsstatus.SIE.
     """
 
     ######################################
     banner = "cp_trigger / cp_trigger_reg / cp_trigger_sti_sstc"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}"))
+    tc = test_data.new_test_chunk(test_chunks, f"trigger_{priv}")
     tc.section_header = comment_banner(
         banner,
         f"Trigger each interrupt in {priv} mode with sie=1s (and hie=1s with H) x stvec.MODE=DIRECT/VECTORED"

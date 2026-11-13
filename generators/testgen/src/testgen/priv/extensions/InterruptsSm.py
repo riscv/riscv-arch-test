@@ -65,11 +65,11 @@ COVERGROUP = SUITE.covergroup
 def _generate_cp_trigger_sm(
     test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
 ) -> None:
-    """Trigger each interrupt across mideleg, mtvec.MODE, mstatus.SIE, and mstatus.MIE.
+    """Raise each interrupt in ``priv`` mode with every bit of mie set, for each mideleg = 0s/1s, mtvec.MODE,
+    mstatus.SIE and mstatus.MIE.
 
-    With H, each VS-level interrupt is also triggered with hideleg delegating it to VS-mode, where vstvec.MODE and
-    vsstatus.SIE take the values of mtvec.MODE and mstatus.SIE.  Only VS-mode (with vsstatus.SIE = 1) and VU-mode
-    take it.
+    With H, raise each VS-level interrupt again with hideleg delegating it to VS-mode, for each vstvec.MODE and
+    vsstatus.SIE.
     """
 
     ######################################
@@ -85,7 +85,7 @@ def _generate_cp_trigger_sm(
     # the interrupts raised by writing a pending bit or stimecmp, and the VS-level interrupts.
     groups = {"": [*machine_ints, *supervisor_ints], "_reg": [*reg_ints, *sstc_ints], "_vs": [*vs_ints]}
     for suffix, int_types in groups.items():
-        tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}{suffix}"))
+        tc = test_data.new_test_chunk(test_chunks, f"trigger_{priv}{suffix}")
         tc.section_header = comment_banner(banner, title)
         for int_type in int_types:
             _trigger_sm_cases(test_data, tc, suite, priv, int_type, tmp_reg)
@@ -190,7 +190,7 @@ def _generate_cp_write_stip_sstc(
     ######################################
     coverpoint = "cp_write_stip_sstc"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, suite.split("write_stip_sstc"))
+    tc = test_data.new_test_chunk(test_chunks, "write_stip_sstc")
     tc.section_header = comment_banner(
         coverpoint, "With menvcfg.STCE = 1, write stimecmp = 0s/1s x mip.STIP = 0/1 and read STIP back"
     )
@@ -235,7 +235,7 @@ def _generate_cp_mip_seip(test_data: TestData, test_chunks: list[TestChunk], sui
     ######################################
     coverpoint = "cp_mip_seip"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, suite.split("mip_seip"))
+    tc = test_data.new_test_chunk(test_chunks, "mip_seip")
     tc.section_header = comment_banner(
         coverpoint, "With the platform asserting SEI and software SEIP = 0, csrrs/csrrc mip with rs1 = 0/SSIP"
     )

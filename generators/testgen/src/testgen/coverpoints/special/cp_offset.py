@@ -53,7 +53,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 "j 2f # jump past backward branch target",
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward branch target, increment check value",
                 "j 3f # jump past backward branch",
-                test_data.add_testcase("neg", coverpoint),
+                test_data.add_testcase("neg", "cp_offset"),
                 (
                     f"2: {instr_name} x{params.rs1}, "
                     f"{f'x{params.rs2},' if params.rs2 is not None else '1,' if instr_type == 'BI' else ''} "
@@ -78,7 +78,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward jump target, increment check value",
                 "j 3f # jump past backward jump",
                 f"2: LA(x{params.rs1}, 1b) # load backward jump target",
-                test_data.add_testcase("neg", coverpoint),
+                test_data.add_testcase("neg", "cp_offset"),
                 f"{instr_name} x{params.rd}, x{params.rs1}, 0 # backward jump"
                 if instr_type == "JR"
                 else f"{instr_name} x{params.rs1} # backward jump",
@@ -99,7 +99,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 "j 2f # jump past backward jump target",
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward jump target, increment check value",
                 "j 3f # jump past backward jump",
-                test_data.add_testcase("neg", coverpoint),
+                test_data.add_testcase("neg", "cp_offset"),
                 f"2: {instr_name} 1b # backward jump",
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # jump not taken, decrement check value",
                 "3:  # done with sequence",

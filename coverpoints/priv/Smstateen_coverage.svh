@@ -304,7 +304,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         cp_jvt_access:     cross priv_mode_all_sup, csrops, jvt_csr, jvt_state;
     `endif
 
-    `ifdef SDTRIG_SUPPORTED
+    `ifdef CONTEXT_SUPPORTED
         cp_context: cross csrops, context_csrs, context_state, priv_mode_all_sup;
     `endif
 

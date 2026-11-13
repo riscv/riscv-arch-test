@@ -185,9 +185,9 @@ coverpoints:
   - heading: Tests executed in VU-mode (H_vucsr_cg)
   - name: cp_csr_insufficient_priv
     goal: CSRs other than user CSRs are inaccessible from VU-mode
-    description: In VU-mode, attempt to read each CSR number that is not a user CSR (0x100-0x3FF, 0x500-0x7FF except 0x7AA mscontext, which may be accessible from S-mode, 0x900-0xBFF, 0xD00-0xFFF) with a nonzero rd, as U_ucsr_cg/cp_csr_insufficient_priv in U-mode.  U-mode accesses are covered by the U suite.
+    description: In VU-mode, attempt to read each CSR number that is not a user CSR (0x100-0x3FF, 0x500-0x7FF except 0x7AA mscontext, which may be accessible from S-mode, 0x900-0xBFF, 0xD00-0xFFF) with a nonzero rd, as U_ucsr_cg/cp_csr_insufficient_priv in U-mode.  The custom supervisor and hypervisor CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF, 0xDC0-0xDFF, 0xEC0-0xEFF) are left out, because an implemented one raises virtual instruction.  U-mode accesses are covered by the U suite.
     expectation: Virtual instruction fault for an implemented supervisor, hypervisor or VS CSR whose access HS-mode could perform; otherwise illegal instruction fault.  rd is unchanged
-    bins: 3071 CSRs
+    bins: 2687 CSRs
     rules:
       - H_vscsrs_acc_vs
       - Zicsr_illegal_mode

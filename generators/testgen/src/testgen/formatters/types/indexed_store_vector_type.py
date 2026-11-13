@@ -7,14 +7,17 @@
 ##################################
 
 import random
+from dataclasses import replace
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    base_store_complement_fill,
     handle_parameter_exclusions,
     index_register_safety,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
+    vlmax_store_footprint,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -25,7 +28,11 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 
-def unordered_index_element_generator(element_count: int, sew: int, _register: str) -> list[int]:
+def unordered_index_element_generator(element_count: int, sew: int, register: str) -> list[int]:
+    # Only the indices need this; the stored data (vs3) is random, so a dropped or misplaced store changes memory
+    if register != "vs2":
+        return [random_int(sew, signed=False) for _ in range(element_count)]
+
     # vlmax can take on values of any power of two, from 1 to the power of two exceeding element_count
     # All items in the generated list from [0, vlmax) must be unique mod 2*vlmax for all possible vlmaxes
     # LIMITATIONS: For SEW=8, unique indices are not guaranteed
@@ -160,10 +167,27 @@ def format_vsxseg_like_type(
     setup.extend(load_code)
 
     if not params.ignore_vector_safety:
-        setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, params))
+        # The length suite uses every index up to VLMAX (see below), so all of them must be safe
+        safety_params = replace(params, vl="vlmax") if params.vector_suite == "length" else params
+        setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, safety_params))
 
-    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    offset = f"{params.rs1val_pointer_offset:+d}" if params.rs1val_pointer_offset else ""
+    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer}{offset})")
+    operands = f"(x{params.rs1}), v{params.vs2}"
+    # The length suite checks the store's whole VLMAX footprint, so writes to inactive or tail elements fail
+    footprint = params.vector_suite == "length" and not params.ignore_vector_safety
+    fill, footprint_read_back = vlmax_store_footprint(params, instr_str, operands) if footprint else ([], [])
+    setup.extend(fill)
+    # The base suite checks only element 0, so fill it with the complement of the stored data
+    complement: list[str] = []
+    complement_fill: list[str] = []
+    if params.vector_suite == "base":
+        complement, complement_fill = base_store_complement_fill(
+            params, instr_str, operands, params.sew, segments, int(max(params.lmul, 1))
+        )
+    setup.extend(complement)
     setup.append(load_test_vtype(params, random_vl_reg))
+    setup.extend(complement_fill)
 
     # We don't need random_vl_reg anymore
     if random_vl_reg.startswith("x"):
@@ -182,7 +206,12 @@ def format_vsxseg_like_type(
     test_data.vec_regs.deallocate_operand("vs2")
 
     if params.vector_suite == "length":
-        check = [read_back, *write_sigupd_v_len(test_data, params, params.lmul, segments=segments)]
+        check = [
+            *(footprint_read_back or [read_back]),
+            *write_sigupd_v_len(
+                test_data, replace(params, maskval=None) if footprint else params, params.lmul, segments=segments
+            ),
+        ]
     else:
         check = [read_back, *write_sigupd_v(test_data, params)]
 

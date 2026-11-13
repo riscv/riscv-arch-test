@@ -12,6 +12,7 @@
     Sm_mstatus_cg = new();     Sm_mstatus_cg.set_inst_name("obj_Sm_mstatus");
     Sm_mprivinst_cg = new();   Sm_mprivinst_cg.set_inst_name("obj_Sm_mprivinst");
     Sm_mcsr_cg = new();        Sm_mcsr_cg.set_inst_name("obj_Sm_mcsr");
+    Sm_reset_cg = new();       Sm_reset_cg.set_inst_name("obj_Sm_reset");
 `ifdef F_SUPPORTED
     Sm_F_cg = new();            Sm_F_cg.set_inst_name("obj_Sm_F");
 `endif

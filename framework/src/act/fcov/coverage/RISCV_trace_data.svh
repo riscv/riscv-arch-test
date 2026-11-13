@@ -63,6 +63,8 @@ class riscvTraceData
   // Control & State Registers
   logic [4095:0][(XLEN-1):0] csr   ;   // Full CSR Address range
   logic [4095:0]             csr_wb;   // CSR writeback (change) flag
+  logic [4095:0]       csr_accessed;   // CSRs read or written by earlier instructions of this trace
+  logic [63:0]      tdata1_accessed;   // Triggers, by tselect, whose tdata1 earlier instructions of this trace accessed
 
   logic                      lrsc_cancel;   // Implementation defined cancel
 

@@ -2506,11 +2506,130 @@ endgroup
 `endif
 `endif
 
+// A CSR read returns the reset value if it is the first access to that CSR in the trace.  RVVI csr_wb flags
+// every CSR an instruction reads or writes, including the implicit writes of traps and xRETs, and the trace data
+// accumulates them per trace in csr_accessed (and tdata1 accesses per trigger in tdata1_accessed).
+
+covergroup Sm_reset_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csrr: coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
+    mstatus_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_MSTATUS]) {
+        bins mstatus = {CSR_MSTATUS};
+    }
+    misa_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_MISA]) {
+        bins misa = {CSR_MISA};
+    }
+    cp_mstatus_reset: cross priv_mode_m, csrr, mstatus_first; // mstatus.MIE, MPRV and (RV64) MBE
+    cp_misa_reset:    cross priv_mode_m, csrr, misa_first;
+
+    `ifdef UDB_MXLEN_32
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            mstatush_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_MSTATUSH]) {
+                bins mstatush = {CSR_MSTATUSH};
+            }
+            cp_mstatush_reset: cross priv_mode_m, csrr, mstatush_first; // mstatush.MBE
+        `endif
+    `endif
+
+    `ifdef H_SUPPORTED
+        hgatp_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_HGATP]) {
+            bins hgatp = {CSR_HGATP};
+        }
+        vsatp_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_VSATP]) {
+            bins vsatp = {CSR_VSATP};
+        }
+        cp_hgatp_reset: cross priv_mode_m, csrr, hgatp_first; // hgatp.MODE
+        cp_vsatp_reset: cross priv_mode_m, csrr, vsatp_first; // vsatp.MODE
+    `endif
+
+    `ifdef ZICFILP_SUPPORTED
+        mseccfg_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_MSECCFG]) {
+            bins mseccfg = {CSR_MSECCFG};
+        }
+        cp_mseccfg_reset: cross priv_mode_m, csrr, mseccfg_first; // mseccfg.MLPE
+    `endif
+
+    `ifdef SMSTATEEN_SUPPORTED
+        // Each mstateen CSR is read at reset before any other access
+        mstateen_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[ins.current.insn[31:20]]) {
+            bins mstateen0 = {CSR_MSTATEEN0};
+            bins mstateen1 = {CSR_MSTATEEN1};
+            bins mstateen2 = {CSR_MSTATEEN2};
+            bins mstateen3 = {CSR_MSTATEEN3};
+            `ifdef UDB_MXLEN_32
+                bins mstateen0h = {CSR_MSTATEEN0H};
+                bins mstateen1h = {CSR_MSTATEEN1H};
+                bins mstateen2h = {CSR_MSTATEEN2H};
+                bins mstateen3h = {CSR_MSTATEEN3H};
+            `endif
+        }
+        cp_mstateen_reset: cross priv_mode_m, csrr, mstateen_first; // writable mstateen bits
+    `endif
+
+    `ifdef SMDBLTRP_SUPPORTED
+        // mstatus.MDT on RV64 and mstatush.MDT on RV32
+        `ifdef UDB_MXLEN_64
+            cp_mdt_reset: cross priv_mode_m, csrr, mstatus_first;
+        `elsif SM1P12P0_OR_LATER_SUPPORTED
+            cp_mdt_reset: cross priv_mode_m, csrr, mstatush_first;
+        `endif
+    `endif
+
+    `ifdef ZVE32X_SUPPORTED
+        vector_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[ins.current.insn[31:20]]) {
+            bins vl    = {CSR_VL};
+            bins vtype = {CSR_VTYPE};
+        }
+        cp_vector_reset: cross priv_mode_m, csrr, vector_first; // vl and vtype restorable by one vsetvl
+    `endif
+
+    `ifdef SDTRIG_SUPPORTED
+        tselect_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_TSELECT]) {
+            bins tselect = {CSR_TSELECT};
+        }
+        cp_tselect_reset: cross priv_mode_m, csrr, tselect_first;
+        `ifdef UDB_MCONTEXT_IMPLEMENTED
+            mcontext_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_MCONTEXT]) {
+                bins mcontext = {CSR_MCONTEXT};
+            }
+            cp_mcontext_reset: cross priv_mode_m, csrr, mcontext_first;
+        `endif
+        `ifdef UDB_SCONTEXT_IMPLEMENTED
+            scontext_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_SCONTEXT]) {
+                bins scontext = {CSR_SCONTEXT};
+            }
+            cp_scontext_reset: cross priv_mode_m, csrr, scontext_first;
+        `endif
+        `ifdef UDB_SDTRIG_NUM_TRIGGERS
+            // The first read of each trigger's tdata1
+            tdata1_first: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TSELECT)
+                          iff (ins.current.insn[31:20] == CSR_TDATA1 &&
+                               !ins.current.tdata1_accessed[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TSELECT) & 'h3F]) {
+                bins trigger[] = {[0:`UDB_SDTRIG_NUM_TRIGGERS-1]};
+            }
+            cp_tdata1_reset: cross priv_mode_m, csrr, tdata1_first;
+        `endif
+    `endif
+
+    // No test reads mnstatus at reset until the Sail reference model supports Smrnmi
+    `ifdef SMRNMI_SUPPORTED
+        mnstatus_first: coverpoint ins.current.insn[31:20] iff (!ins.current.csr_accessed[CSR_MNSTATUS]) {
+            bins mnstatus = {CSR_MNSTATUS};
+        }
+        cp_mnstatus_reset: cross priv_mode_m, csrr, mnstatus_first; // mnstatus.NMIE
+    `endif
+endgroup
+
 function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
+    Sm_reset_cg.sample(ins);
     `ifdef F_SUPPORTED
         Sm_F_cg.sample(ins);
     `endif

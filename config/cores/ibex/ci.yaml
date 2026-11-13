@@ -4,6 +4,10 @@
 
 ci_enabled: true
 
+exclude_extensions:
+  # misa.X is set (non-standard extensions), but Sail cannot set it yet (https://github.com/riscv/sail-riscv/issues/2067)
+  - Sm_reset
+
 apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache python3-venv"
 install_script: ".github/scripts/install-ibex.sh"
 setup_script: ".github/scripts/setup-ibex.sh"

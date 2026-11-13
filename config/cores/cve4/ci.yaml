@@ -11,6 +11,8 @@ exclude_extensions:
   # https://github.com/riscv/riscv-arch-test/pull/1710#issuecomment-5444172186
   - Exceptions_Zalrsc
   - Exceptions_Zaamo
+  # cv32e40x sets misa.X (non-standard extensions), but Sail cannot set it yet (https://github.com/riscv/sail-riscv/issues/2067)
+  - Sm_reset
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve4.sh"
 setup_script: ".github/scripts/setup-cve4.sh"

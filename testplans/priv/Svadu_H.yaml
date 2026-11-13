@@ -38,3 +38,15 @@ coverpoints:
     description: In HS-mode with menvcfg.ADUE = 0, then 1, set henvcfg.ADUE (henvcfgh on RV32) and read it back.
     expectation: henvcfg.ADUE reads as zero while menvcfg.ADUE = 0, and reads back as written while menvcfg.ADUE = 1.
     bins: HS x csrrs henvcfg (henvcfgh on RV32) x menvcfg.ADUE {0, 1}
+  - name: |-
+      cp_vsatp_adue_cbo
+      cp_hgatp_adue_cbo
+    goal: Verify that CBOs set A in the VS-stage and G-stage with ADUE = 1, that cbo.zero also sets D, and that a cache-block management instruction leaves D clear
+    description: |-
+      Zicbom and Zicboz.  In VS-mode with henvcfg enabling the CBOs:
+      cp_vsatp_adue_cbo: with menvcfg.ADUE = henvcfg.ADUE = 1 and hgatp Bare, execute the CBOs through a VS-stage leaf with A = D = 0, then read the leaf back.
+      cp_hgatp_adue_cbo: with menvcfg.ADUE = 1 and vsatp Bare, execute the CBOs through a G-stage leaf with A = D = 0, then read the leaf back.
+    expectation: "No fault.  A = 1 in the leaf.  cbo.zero sets D (cmo.adoc cbz_unperm_translate); cbo.clean, cbo.flush and cbo.inval leave D = 0 (cbm_unperm_translate)."
+    bins: |-
+      cp_vsatp_adue_cbo: VS x CBO x vsatp paged x hgatp Bare x menvcfg.ADUE = 1 x henvcfg.ADUE = 1
+      cp_hgatp_adue_cbo: VS x CBO x vsatp Bare x hgatp paged x menvcfg.ADUE = 1

@@ -140,3 +140,15 @@ coverpoints:
     id: MSTATUS_SBE_WARL MSTATUSH_SBE_WARL mstatus_sbe_implicit
     rules:
       - "[norm:MSTATUS_SBE_WARL] [norm:MSTATUSH_SBE_WARL] [norm:mstatus_sbe_implicit]"
+  - name: |-
+      cp_mprv_cbo
+      cp_mprv_cbo_m
+    goal: Verify that M-mode CBOs follow mstatus.MPRV and MPP like stores, while menvcfg enables them by the mode that executes them
+    description: "Zicbom and Zicboz.  M-mode, with the menvcfg CBIE, CBCFE and CBZE fields clear and sstatus.SUM = 0: map va_data with a kilopage supervisor leaf, then a user leaf.  For each, set mstatus.MPRV = 1 with MPP = S, then U, and execute the CBOs through va_data; with MPP = M, execute them at the physical address of the test data.  MPP and MPRV are set again before each CBO, because the mret that ends a trap handler changes them."
+    expectation: "No illegal-instruction exception: the menvcfg fields enable CBOs only in modes less privileged than M, and MPRV does not change the mode that executes the CBO.  A store page fault where the page's U does not match MPP; otherwise no fault."
+    bins: |-
+      cp_mprv_cbo: M x CBO x MPRV = 1 x MPP {S, U} x satp paged x menvcfg CBO fields clear x {no fault, store page fault}
+      cp_mprv_cbo_m: M x CBO x MPRV = 1 x MPP = M x menvcfg CBO fields clear
+    id: mstatus_mprv_ldst_op
+    rules:
+      - "[norm:mstatus_mprv_ldst_op]"

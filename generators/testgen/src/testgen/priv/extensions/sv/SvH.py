@@ -52,10 +52,12 @@ from testgen.priv.extensions.sv.SvHFenceCommon import (
     SFENCE_VMA_VS,
     fence_chunk,
 )
+from testgen.priv.extensions.sv.SvZicbo import CBOS
 from testgen.priv.registry import add_priv_test_generator
 
 # Guest accesses: a store and a load of the word at offset 8 of the test page, and a fetch of the ret at
-# offset 0.  HLV, HLVX and HSV run in HS-mode and access offset 8 of their address.
+# offset 0.  HLV, HLVX and HSV run in HS-mode and access offset 8 of their address, and the CBOs the cache block
+# at offset 0.
 OPS = {
     "store": "sw x{data}, 8(x{va})",
     "load": "lw x{data}, 8(x{va})",
@@ -63,7 +65,10 @@ OPS = {
     "hsv": "hsv.w x{data}, (x{va})",
     "hlv": "hlv.w x{data}, (x{va})",
     "hlvx": "hlvx.wu x{data}, (x{va})",
+    **{op.replace(".", "_"): f"{op} (x{{va}})" for ops in CBOS.values() for op in ops},
 }
+# The CBOs of each family, as OPS keys
+CBO_OPS = {family: tuple(op.replace(".", "_") for op in ops) for family, ops in CBOS.items()}
 LOADS = ("load", "hlv", "hlvx")
 GUEST_OPS = ("store", "load", "exec")
 

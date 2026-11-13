@@ -645,7 +645,22 @@ endgroup
 covergroup H_F_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "general/RISCV_coverage_priv_f_coverpoints.svh"
+    `include "general/RISCV_coverage_priv_fcsr_coverpoints.svh"
+
+    // norm:vsstatus_fs_op: an fp instruction is illegal when either vsstatus.FS or the HS-level sstatus.FS
+    // is Off, and changing fp state sets both to Dirty.  Which instructions change fp state is covered per
+    // instruction by Sm_F_cg, S_F_cg and U_F_cg, so H_F_cg uses one instruction of each kind.
+    deterministic_instrs_h: coverpoint ins.current.insn {
+        wildcard bins flw        = {FLW};
+        wildcard bins fadd       = {FADD_S};
+        wildcard bins feq        = {FEQ_S};  // of a signaling NaN: sets only fflags
+        wildcard bins add        = {ADD};    // must not change fp state
+        wildcard bins csrrw_fcsr = {CSRRW} iff (ins.current.insn[31:20] == CSR_FCSR);
+    }
+    nondeterministic_instrs_h: coverpoint ins.current.insn {
+        wildcard bins fsw       = {FSW};
+        wildcard bins csrr_fcsr = {CSRR} iff (ins.current.insn[31:20] == CSR_FCSR);
+    }
 
     // vsstatus.FS is sampled from vsstatus; the HS-level FS from sstatus
     vsstatus_FS: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "fs")[1:0] {
@@ -677,10 +692,18 @@ covergroup H_F_cg with function sample(ins_t ins);
         bins dirty   = {2'b11};
     }
 
+    // The fp CSRs are accessed with both fields Dirty, or with one of them Off
+    FS_access_pairs: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "fs")[1:0],
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "fs")[1:0]} {
+        bins both_dirty = {4'b1111};
+        bins vs_off     = {4'b0011};
+        bins hs_off     = {4'b1100};
+    }
+
     // main coverpoints
-    cp_fcsr_access:           cross priv_mode_vs_vu, fcsrname, csraccesses, vsstatus_FS, hsstatus_FS; // superset of ZicsrF cp_fcsr_access crossing with vsstatus.FS and sstatus.FS
-    cp_vsstatus_FS_transition: cross priv_mode_vs_vu, deterministic_instrs, vsstatus_FS, hsstatus_FS;
-    cp_vsstatus_FS_transition_nondeterministic: cross priv_mode_vs_vu, nondeterministic_instrs, vsstatus_FS_off_dirty, hsstatus_FS_off_dirty;
+    cp_fcsr_access:           cross priv_mode_vs_vu, fcsrname, csraccesses, FS_access_pairs;
+    cp_vsstatus_FS_transition: cross priv_mode_vs_vu, deterministic_instrs_h, vsstatus_FS, hsstatus_FS;
+    cp_vsstatus_FS_transition_nondeterministic: cross priv_mode_vs_vu, nondeterministic_instrs_h, vsstatus_FS_off_dirty, hsstatus_FS_off_dirty;
 endgroup
 `endif
 

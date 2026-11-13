@@ -44,11 +44,15 @@ MODE_PRIVBIT = {"Sm": 0b10000, "S": 0b01000, "U": 0b00100, "Vs": 0b00010, "Vu": 
 MODE_UDB_LETTER = {"Sm": "M", "S": "S", "U": "U", "Vs": "VS", "Vu": "VU"}
 # Test-framework behavior, not DUT parameters. The other Sdtrig defines come from the DUT's UDB configuration.
 SDTRIG_DEFINES = [
-    # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
-    "#define SDTRIG_IMPRECISE_XEPC",
     # itrigger/etrigger fire after the trap is taken, so xEPC is inside the S trap vector; the handler must not advance it
     "#define SDTRIG_XEPC_IN_VECTOR",
 ]
+# The trap handler does not record xEPC for breakpoints. Where an mcontrol6 trigger fires is the implementation's
+# choice (the spec only suggests a timing), so every section that can fire one defines this. The icount, itrigger
+# and etrigger sections do not: icount fires before the next instruction (norm:Sdtrig_icount_pending) and
+# itrigger/etrigger just before the first instruction of the trap handler (norm:Sdtrig_itrigger_timing,
+# norm:Sdtrig_etrigger_timing), so they check xEPC.
+SDTRIG_IMPRECISE_XEPC = "#define SDTRIG_IMPRECISE_XEPC"
 
 # ── mcontrol6 ───────────────────────────────────────────────────────────────
 # mcontrol6 mode bits; with all five set, bits 26:0 match priv_bits in SdtrigSm_trig_module_reg_cg
@@ -4542,9 +4546,11 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]], extra_defines: list[str]) -> None:
     """Register each Sdtrig section for ``mode`` ("Sm"/"S"/"U") as its own generator of suite ``Sdtrig{mode}``."""
     suite = f"Sdtrig{mode}"
+    # every section but icount, itrigger and etrigger skips xEPC on breakpoints
+    imprecise = [*extra_defines, SDTRIG_IMPRECISE_XEPC]
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_access(test_data: TestData) -> list[TestChunk]:
         """Access tests."""
@@ -4555,63 +4561,63 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
         # the crosses that sample them run in M-mode in both suites.
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
         )
         def make_sdtrig_csr(test_data: TestData) -> list[TestChunk]:
             """Trigger-module register tests."""
             return _with_trap_counts(_generate_csr_tests(test_data, mode))
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
         )
         def make_sdtrig_tcontrol(test_data: TestData) -> list[TestChunk]:
             """tcontrol tests."""
             return _with_trap_counts(_generate_tcontrol_tests(test_data, mode))
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
         )
         def make_sdtrig_address_matches(test_data: TestData) -> list[TestChunk]:
             """tdata2 address storage and translated execute-trigger tests."""
             return _with_trap_counts(_generate_address_matches_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_mcontrol6(test_data: TestData) -> list[TestChunk]:
         """mcontrol6 tests."""
         return _with_trap_counts(_generate_mcontrol6_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_match_size(test_data: TestData) -> list[TestChunk]:
         """mcontrol6 match x size tests (select = 1)."""
         return _with_trap_counts(_generate_match_size_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zvl32b"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zvl32b"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_vector(test_data: TestData) -> list[TestChunk]:
         """vector load/store tests."""
         return _with_trap_counts(_generate_vector_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zicbom"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zicbom"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zicbom(test_data: TestData) -> list[TestChunk]:
         """cbo.clean/flush/inval tests."""
         return _with_trap_counts(_generate_zicbom_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zicboz"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zicboz"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zicboz(test_data: TestData) -> list[TestChunk]:
         """cbo.zero tests."""
         return _with_trap_counts(_generate_zicboz_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zicbop"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zicbop"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zicbop(test_data: TestData) -> list[TestChunk]:
         """prefetch tests."""
@@ -4625,14 +4631,14 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
         return _with_trap_counts(_generate_icount_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zalrsc"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zalrsc"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zalrsc(test_data: TestData) -> list[TestChunk]:
         """lr/sc tests."""
         return _with_trap_counts(_generate_zalrsc_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zaamo"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zaamo"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zaamo(test_data: TestData) -> list[TestChunk]:
         """AMO tests."""
@@ -4675,14 +4681,14 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
             suite,
             required_extensions=required_extensions if mode == "S" else [*required_extensions, "S"],
             march_extensions=[],
-            extra_defines=extra_defines,
+            extra_defines=imprecise,
         )
         def make_sdtrig_native_triggers(test_data: TestData) -> list[TestChunk]:
             """Breakpoint delegation tests."""
             return _with_trap_counts(_generate_native_triggers_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_textra(test_data: TestData) -> list[TestChunk]:
         """textra context-match tests."""

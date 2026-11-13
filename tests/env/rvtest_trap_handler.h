@@ -2419,9 +2419,11 @@ common_\__MODE__\()excpt_handler:
 
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
-        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
-        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
-        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+        // Tests that arm mcontrol6 triggers define SDTRIG_IMPRECISE_XEPC: the spec only suggests where those
+        // fire, so DUTs take the breakpoint at different instructions and xEPC is not recorded for cause 3
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_BREAKPOINT)
+        beq     T2, T6, skpsv_\__MODE__\()epc
 #endif
         TRAP_SIGUPD_ADDR(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
 skpsv_\__MODE__\()epc:

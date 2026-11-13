@@ -41,7 +41,10 @@ normative_rule_definitions:
     coverpoint:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_priv_mode",
-        "xepc is not checked: with SDTRIG_IMPRECISE_XEPC the trap handler does not record xEPC for breakpoints, because DUTs that do not follow the suggested trigger timing take them at another instruction; only the breakpoint exception is checked",
+        "SdtrigSm_icount_cg/cp_icount_instr",
+        "SdtrigSm_itrigger_cg/cp_itrigger_s",
+        "SdtrigSm_etrigger_cg/cp_etrigger_s_deleg",
+        "xepc is checked for icount, itrigger and etrigger breakpoints. For mcontrol6 breakpoints the trap handler does not record it (SDTRIG_IMPRECISE_XEPC), because the spec only suggests where they fire",
       ]
 
   # Enter Debug Mode. dpc must contain the virtual address of the next instruction
@@ -1012,7 +1015,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_hit0_1
     coverpoint:
       [
-        "xEPC timing rule: the tests do not check xEPC on trigger breakpoints (SDTRIG_IMPRECISE_XEPC); not tested",
+        "xEPC timing rule: the tests do not check xEPC on mcontrol6 breakpoints (SDTRIG_IMPRECISE_XEPC); not tested",
       ]
 
   # xepc or dpc (depending on action) must be set to the virtual address of the next
@@ -1020,7 +1023,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_hit0_2
     coverpoint:
       [
-        "xEPC timing rule: the tests do not check xEPC on trigger breakpoints (SDTRIG_IMPRECISE_XEPC); not tested",
+        "xEPC timing rule: the tests do not check xEPC on mcontrol6 breakpoints (SDTRIG_IMPRECISE_XEPC); not tested",
       ]
 
   # xepc or dpc (depending on action) must be set to the virtual address of the next
@@ -1028,7 +1031,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_hit0_3
     coverpoint:
       [
-        "xEPC timing rule: the tests do not check xEPC on trigger breakpoints (SDTRIG_IMPRECISE_XEPC); not tested",
+        "xEPC timing rule: the tests do not check xEPC on mcontrol6 breakpoints (SDTRIG_IMPRECISE_XEPC); not tested",
       ]
 
   # If the instruction performed multiple memory accesses, all of them have been

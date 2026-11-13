@@ -60,190 +60,21 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
         }
     `endif
 
-    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == '1) {
-        `ifndef UDB_MCOUNTENABLE_EN_3
-        ignore_bins disabled_hpm3 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_4
-        ignore_bins disabled_hpm4 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_5
-        ignore_bins disabled_hpm5 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_6
-        ignore_bins disabled_hpm6 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_7
-        ignore_bins disabled_hpm7 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_8
-        ignore_bins disabled_hpm8 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_9
-        ignore_bins disabled_hpm9 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_10
-        ignore_bins disabled_hpm10 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_11
-        ignore_bins disabled_hpm11 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_12
-        ignore_bins disabled_hpm12 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_13
-        ignore_bins disabled_hpm13 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_14
-        ignore_bins disabled_hpm14 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_15
-        ignore_bins disabled_hpm15 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_16
-        ignore_bins disabled_hpm16 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_17
-        ignore_bins disabled_hpm17 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_18
-        ignore_bins disabled_hpm18 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_19
-        ignore_bins disabled_hpm19 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_20
-        ignore_bins disabled_hpm20 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_21
-        ignore_bins disabled_hpm21 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_22
-        ignore_bins disabled_hpm22 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_23
-        ignore_bins disabled_hpm23 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_24
-        ignore_bins disabled_hpm24 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_25
-        ignore_bins disabled_hpm25 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_26
-        ignore_bins disabled_hpm26 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_27
-        ignore_bins disabled_hpm27 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_28
-        ignore_bins disabled_hpm28 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_29
-        ignore_bins disabled_hpm29 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_30
-        ignore_bins disabled_hpm30 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_31
-        ignore_bins disabled_hpm31 = {1};
-        `endif
-
-            bins yes = {1};
+    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == (`UDB_MCOUNTENABLE_EN_MASK >> 3)) {
+        bins yes = {1};
     }
 
     mcounteren_stimulus_pattern_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0]) {
-        // Read-only-zero enables cannot produce these readback patterns.
-        `ifndef UDB_MCOUNTENABLE_EN_3
-        ignore_bins disabled_hpm3 = {29'h1, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_4
-        ignore_bins disabled_hpm4 = {29'h2, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_5
-        ignore_bins disabled_hpm5 = {29'h4, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_6
-        ignore_bins disabled_hpm6 = {29'h8, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_7
-        ignore_bins disabled_hpm7 = {29'h10, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_8
-        ignore_bins disabled_hpm8 = {29'h20, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_9
-        ignore_bins disabled_hpm9 = {29'h40, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_10
-        ignore_bins disabled_hpm10 = {29'h80, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_11
-        ignore_bins disabled_hpm11 = {29'h100, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_12
-        ignore_bins disabled_hpm12 = {29'h200, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_13
-        ignore_bins disabled_hpm13 = {29'h400, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_14
-        ignore_bins disabled_hpm14 = {29'h800, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_15
-        ignore_bins disabled_hpm15 = {29'h1000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_16
-        ignore_bins disabled_hpm16 = {29'h2000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_17
-        ignore_bins disabled_hpm17 = {29'h4000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_18
-        ignore_bins disabled_hpm18 = {29'h8000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_19
-        ignore_bins disabled_hpm19 = {29'h10000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_20
-        ignore_bins disabled_hpm20 = {29'h20000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_21
-        ignore_bins disabled_hpm21 = {29'h40000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_22
-        ignore_bins disabled_hpm22 = {29'h80000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_23
-        ignore_bins disabled_hpm23 = {29'h100000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_24
-        ignore_bins disabled_hpm24 = {29'h200000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_25
-        ignore_bins disabled_hpm25 = {29'h400000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_26
-        ignore_bins disabled_hpm26 = {29'h800000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_27
-        ignore_bins disabled_hpm27 = {29'h1000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_28
-        ignore_bins disabled_hpm28 = {29'h2000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_29
-        ignore_bins disabled_hpm29 = {29'h4000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_30
-        ignore_bins disabled_hpm30 = {29'h8000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_31
-        ignore_bins disabled_hpm31 = {29'h10000000, 29'h1fffffff};
-        `endif
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_MCOUNTENABLE_EN_MASK >> 3)) != 0);
 
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_MCOUNTENABLE_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -252,8 +83,15 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
     }
 
     of_stimulus_pattern: coverpoint (`OF_VEC) {
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_HPM_COUNTER_EN_MASK >> 3)) != 0);
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -262,9 +100,9 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
     }
 
     of_write_pattern: coverpoint (`OF_VEC) {
-            bins all_ones     = {29'h1FFFFFFF};
-            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101}; // even-indexed OF bits set
-            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010}; // odd-indexed OF bits set
+            bins all_ones     = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
+            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // even-indexed OF bits set
+            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // odd-indexed OF bits set
     }
 
     lcofi_ip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
@@ -398,190 +236,21 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
         }
     `endif
 
-    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == '1) {
-        `ifndef UDB_MCOUNTENABLE_EN_3
-        ignore_bins disabled_hpm3 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_4
-        ignore_bins disabled_hpm4 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_5
-        ignore_bins disabled_hpm5 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_6
-        ignore_bins disabled_hpm6 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_7
-        ignore_bins disabled_hpm7 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_8
-        ignore_bins disabled_hpm8 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_9
-        ignore_bins disabled_hpm9 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_10
-        ignore_bins disabled_hpm10 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_11
-        ignore_bins disabled_hpm11 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_12
-        ignore_bins disabled_hpm12 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_13
-        ignore_bins disabled_hpm13 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_14
-        ignore_bins disabled_hpm14 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_15
-        ignore_bins disabled_hpm15 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_16
-        ignore_bins disabled_hpm16 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_17
-        ignore_bins disabled_hpm17 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_18
-        ignore_bins disabled_hpm18 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_19
-        ignore_bins disabled_hpm19 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_20
-        ignore_bins disabled_hpm20 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_21
-        ignore_bins disabled_hpm21 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_22
-        ignore_bins disabled_hpm22 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_23
-        ignore_bins disabled_hpm23 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_24
-        ignore_bins disabled_hpm24 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_25
-        ignore_bins disabled_hpm25 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_26
-        ignore_bins disabled_hpm26 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_27
-        ignore_bins disabled_hpm27 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_28
-        ignore_bins disabled_hpm28 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_29
-        ignore_bins disabled_hpm29 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_30
-        ignore_bins disabled_hpm30 = {1};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_31
-        ignore_bins disabled_hpm31 = {1};
-        `endif
-
-            bins yes = {1};
+    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == (`UDB_MCOUNTENABLE_EN_MASK >> 3)) {
+        bins yes = {1};
     }
 
     mcounteren_stimulus_pattern_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0]) {
-        // Read-only-zero enables cannot produce these readback patterns.
-        `ifndef UDB_MCOUNTENABLE_EN_3
-        ignore_bins disabled_hpm3 = {29'h1, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_4
-        ignore_bins disabled_hpm4 = {29'h2, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_5
-        ignore_bins disabled_hpm5 = {29'h4, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_6
-        ignore_bins disabled_hpm6 = {29'h8, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_7
-        ignore_bins disabled_hpm7 = {29'h10, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_8
-        ignore_bins disabled_hpm8 = {29'h20, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_9
-        ignore_bins disabled_hpm9 = {29'h40, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_10
-        ignore_bins disabled_hpm10 = {29'h80, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_11
-        ignore_bins disabled_hpm11 = {29'h100, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_12
-        ignore_bins disabled_hpm12 = {29'h200, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_13
-        ignore_bins disabled_hpm13 = {29'h400, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_14
-        ignore_bins disabled_hpm14 = {29'h800, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_15
-        ignore_bins disabled_hpm15 = {29'h1000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_16
-        ignore_bins disabled_hpm16 = {29'h2000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_17
-        ignore_bins disabled_hpm17 = {29'h4000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_18
-        ignore_bins disabled_hpm18 = {29'h8000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_19
-        ignore_bins disabled_hpm19 = {29'h10000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_20
-        ignore_bins disabled_hpm20 = {29'h20000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_21
-        ignore_bins disabled_hpm21 = {29'h40000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_22
-        ignore_bins disabled_hpm22 = {29'h80000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_23
-        ignore_bins disabled_hpm23 = {29'h100000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_24
-        ignore_bins disabled_hpm24 = {29'h200000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_25
-        ignore_bins disabled_hpm25 = {29'h400000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_26
-        ignore_bins disabled_hpm26 = {29'h800000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_27
-        ignore_bins disabled_hpm27 = {29'h1000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_28
-        ignore_bins disabled_hpm28 = {29'h2000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_29
-        ignore_bins disabled_hpm29 = {29'h4000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_30
-        ignore_bins disabled_hpm30 = {29'h8000000, 29'h1fffffff};
-        `endif
-        `ifndef UDB_MCOUNTENABLE_EN_31
-        ignore_bins disabled_hpm31 = {29'h10000000, 29'h1fffffff};
-        `endif
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_MCOUNTENABLE_EN_MASK >> 3)) != 0);
 
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_MCOUNTENABLE_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -590,8 +259,15 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     }
 
     of_stimulus_pattern: coverpoint (`OF_VEC) {
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_HPM_COUNTER_EN_MASK >> 3)) != 0);
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -600,9 +276,9 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     }
 
     of_write_pattern: coverpoint (`OF_VEC) {
-            bins all_ones     = {29'h1FFFFFFF};
-            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101}; // even-indexed OF bits set
-            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010}; // odd-indexed OF bits set
+            bins all_ones     = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
+            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // even-indexed OF bits set
+            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // odd-indexed OF bits set
     }
 
     hpm_csr_target: coverpoint ins.current.insn[31:20] {

@@ -189,7 +189,18 @@ normative_rule_definitions:
   - names: [hip_vstip_defined_v0]
     coverpoint: ["InterruptsS_cg/cp_trigger_vsti_sstc", "Sstc_H_cg/cp_vstip"]
   - names: [hip_vstip_acc]
-    coverpoint: ["Sstc_H_cg/cp_vstip"]
+    coverpoint:
+      [
+        "Sstc_H_cg/{cp_vstip, cp_hvip_vstip_pending}",
+        "Sstc_HSm_cg/{cp_hvip_vstip_pending, cp_mip_vstip_ro}",
+      ]
+  # hvip.VSTIP is writable, also while the vstimecmp comparison holds hip.VSTIP at 1
+  - names: [hvip_acc]
+    coverpoint:
+      ["Sstc_H_cg/cp_hvip_vstip_pending", "Sstc_HSm_cg/cp_hvip_vstip_pending"]
+  # mip.VSTIP is an alias of hip.VSTIP, so M-mode writes to it are ignored
+  - names: [mip_mie_alias]
+    coverpoint: ["Sstc_HSm_cg/cp_mip_vstip_ro"]
 
   # VSTIP is set while (time + htimedelta) mod 2^64 >= vstimecmp, unsigned
   - names:

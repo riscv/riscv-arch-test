@@ -43,6 +43,13 @@ COMPARES = {
     "neg_2p31": -(1 << 31),
     "neg_2p61": -(1 << 61),
 }
+# Writes of VSTIP alone, as (instruction, rs1 value, bin): cp_hvip_vstip_pending writes hvip and cp_mip_vstip_ro mip
+VSTIP_WRITES = (
+    ("csrs", "MIP_VSTIP", "csrrs_vstip"),
+    ("csrw", "MIP_VSTIP", "csrrw_vstip"),
+    ("csrc", "MIP_VSTIP", "csrrc_vstip"),
+    ("csrw", "0", "csrrw_zero"),
+)
 
 
 def csr_op(instr: str, mode: str) -> str:
@@ -360,7 +367,13 @@ def make_sstch(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_user_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "H_vstip")
-    tc.code.extend([*_vstip_tests(test_data, _CG_H, "supervisor"), *_htimedelta_tests(test_data, _CG_H, "supervisor")])
+    tc.code.extend(
+        [
+            *_vstip_tests(test_data, _CG_H, "supervisor"),
+            *_hvip_pending_tests(test_data, _CG_H, "supervisor"),
+            *_htimedelta_tests(test_data, _CG_H, "supervisor"),
+        ]
+    )
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
@@ -411,6 +424,90 @@ def _vstip_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
         )
     lines.append("csrw hvip, zero")
     test_data.int_regs.return_registers([tmp_reg, expected_reg, count_reg])
+    return lines
+
+
+def _hvip_pending_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
+    """hvip.VSTIP stays writable while the vstimecmp comparison holds hip.VSTIP at 1.
+
+    Each write is made once hip.VSTIP has become 1 from vstimecmp = 0.  hvip is read back, then the comparison is ended,
+    by vstimecmp = all 1s or by henvcfg.STCE = 0, and hip.VSTIP must equal the written hvip.VSTIP.
+    """
+    tmp_reg, count_reg = test_data.int_regs.get_registers(2)
+    priv = "M" if mode == "machine" else "S"
+    lines = [
+        comment_banner(
+            "cp_hvip_vstip_pending",
+            "With menvcfg.STCE = henvcfg.STCE = 1, htimedelta = 0 and vstimecmp = 0, so that hip.VSTIP = 1 from the\n"
+            "comparison, set, write and clear hvip.VSTIP with hvip.VSTIP = 0/1 before.  hvip.VSTIP must read back as\n"
+            "written, and hip.VSTIP must equal it once vstimecmp = all 1s or henvcfg.STCE = 0 ends the comparison",
+        ),
+        *write64_csr("htimedelta", 0, tmp_reg),
+    ]
+    for end, (instr, value, name), before in product(("vstimecmp", "hstce"), VSTIP_WRITES, (0, 1)):
+        lines.extend(
+            [
+                *stce_tm(test_data, 1, 1, 1, 1, mode),
+                *write64_csr("vstimecmp", MASK64, tmp_reg),
+                f"LI(x{tmp_reg}, {'MIP_VSTIP' if before else 0})",
+                f"csrw hvip, x{tmp_reg}    # hvip.VSTIP = {before} while the comparison is false",
+                *write64_csr("vstimecmp", 0, tmp_reg),
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{count_reg}) # let the comparison reach hip.VSTIP",
+                f"LI(x{tmp_reg}, {value})",
+                test_data.add_testcase(f"{name}_hvip{before}_end_{end}", "cp_hvip_vstip_pending", covergroup),
+                f"{instr} hvip, x{tmp_reg}",
+                f"csrr x{tmp_reg}, hvip",
+                f"andi x{tmp_reg}, x{tmp_reg}, MIP_VSTIP",
+                write_sigupd(tmp_reg, test_data),
+                *(
+                    write64_csr("vstimecmp", MASK64, tmp_reg)
+                    if end == "vstimecmp"
+                    else write_stce(test_data, False, priv, henvcfg=True)
+                ),
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{count_reg}) # let the end of the comparison reach hip.VSTIP",
+                f"csrr x{tmp_reg}, hip",
+                f"andi x{tmp_reg}, x{tmp_reg}, MIP_VSTIP",
+                write_sigupd(tmp_reg, test_data),
+            ]
+        )
+    lines.append("csrw hvip, zero")
+    test_data.int_regs.return_registers([tmp_reg, count_reg])
+    return lines
+
+
+def _mip_vstip_tests(test_data: TestData) -> list[str]:
+    """mip.VSTIP is an alias of hip.VSTIP, which is read-only, so M-mode writes to mip change neither mip nor hvip."""
+    tmp_reg = test_data.int_regs.get_register()
+    lines = [
+        comment_banner(
+            "cp_mip_vstip_ro",
+            "With vstimecmp = all 1s, menvcfg.STCE and henvcfg.STCE = 0/1 and hvip.VSTIP = 0/1, set, write and clear\n"
+            "mip.VSTIP.  hvip.VSTIP and mip.VSTIP must keep the value of hvip.VSTIP",
+        ),
+        *write64_csr("htimedelta", 0, tmp_reg),
+    ]
+    for (m_stce, h_stce), (instr, value, name), before in product(((0, 0), (1, 0), (1, 1)), VSTIP_WRITES, (0, 1)):
+        lines.extend(
+            [
+                *stce_tm(test_data, 1, 1, 1, 1, "machine"),
+                *write64_csr("vstimecmp", MASK64, tmp_reg),
+                *stce_tm(test_data, 0, 0, 1, 1, "machine"),
+                f"LI(x{tmp_reg}, {'MIP_VSTIP' if before else 0})",
+                f"csrw hvip, x{tmp_reg}    # hvip.VSTIP = {before}",
+                *stce_tm(test_data, m_stce, h_stce, 1, 1, "machine"),
+                f"LI(x{tmp_reg}, {value})",
+                test_data.add_testcase(f"{name}_mstce{m_stce}_hstce{h_stce}_hvip{before}", "cp_mip_vstip_ro", _CG_HSM),
+                f"{instr} mip, x{tmp_reg}",
+                f"csrr x{tmp_reg}, hvip",
+                f"andi x{tmp_reg}, x{tmp_reg}, MIP_VSTIP",
+                write_sigupd(tmp_reg, test_data),
+                f"csrr x{tmp_reg}, mip",
+                f"andi x{tmp_reg}, x{tmp_reg}, MIP_VSTIP",
+                write_sigupd(tmp_reg, test_data),
+            ]
+        )
+    lines.extend([*stce_tm(test_data, 0, 0, 1, 1, "machine"), "csrw hvip, zero"])
+    test_data.int_regs.return_register(tmp_reg)
     return lines
 
 
@@ -506,7 +603,14 @@ def make_sstchsm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "HSm_vstip")
-    tc.code.extend([*_vstip_tests(test_data, _CG_HSM, "machine"), *_htimedelta_tests(test_data, _CG_HSM, "machine")])
+    tc.code.extend(
+        [
+            *_vstip_tests(test_data, _CG_HSM, "machine"),
+            *_hvip_pending_tests(test_data, _CG_HSM, "machine"),
+            *_mip_vstip_tests(test_data),
+            *_htimedelta_tests(test_data, _CG_HSM, "machine"),
+        ]
+    )
 
     tc = test_data.new_test_chunk(test_chunks, "HSm_access")
     tc.code.extend(_access_tests(test_data))

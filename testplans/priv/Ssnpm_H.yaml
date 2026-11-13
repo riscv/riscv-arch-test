@@ -17,9 +17,13 @@ description: |-
   * G stage: that GPA is translated to a host physical address using hgatp.
 notes: |-
   *Groups.*  Ssnpm_H boots to HS-mode (BOOT_TO_SMODE) and enters VS/VU with RVTEST_TSBI_GOTO_VSMODE/VUMODE.
+  Most cases run their accesses in one mode, with their checks, in one entry.  Code in VS/VU/U runs at the code
+  alias, where a PC-relative address is aliased, so HS-mode loads the test page address into a register first.
   Every coverpoint is RV64 only (pm_rv64_only).  The tests run only when VSXLEN and VUXLEN include 64, except that
-  cp_pmm_vsxl_clear needs VSXLEN to include 32 and cp_pmm_vsuxl_clear needs VUXLEN to include 32.  PMM = 10 bins exist
-  only with UDB_SUPPORTED_PMLEN_SSNPM_7 and PMM = 11 bins only with UDB_SUPPORTED_PMLEN_SSNPM_16.
+  cp_pmm_vsxl_clear needs VSXLEN to include 32 and cp_pmm_vsuxl_clear needs VUXLEN to include 32.  Those two tests are
+  off until Sail supports mixed XLEN (it ignores writes to hstatus.VSXL and vsstatus.UXL), so a hart with VSXLEN or
+  VUXLEN 32 misses their bins.  PMM = 10 bins exist only with UDB_SUPPORTED_PMLEN_SSNPM_7 and PMM = 11 bins only with
+  UDB_SUPPORTED_PMLEN_SSNPM_16.
 
   *PMM fields.*  The fields are henvcfg.PMM, senvcfg.PMM, hstatus.HUPMM, menvcfg.PMM (Smnpm) and mseccfg.PMM (Smmpm).
   menvcfg.PMM and mseccfg.PMM are set only when the extension is implemented, and only to PMLENs that Smnpm
@@ -27,7 +31,7 @@ notes: |-
   test are set to a different value, so reading the wrong field changes the result: the largest supported value (11,
   else 10) when the field under test is 00, and 00 otherwise.  The HLVX and MXR coverpoints enable every field; the
   HFENCE coverpoints leave the others at 00.  PMM values are the outermost loop because menvcfg and mseccfg need a
-  T-SBI call.
+  T-SBI call, which HS-mode skips when the value does not change.
 
   *Translation modes.*  (vsatp.MODE, hgatp.MODE) is swept over seven pairs, each bin guarded by its own support macro.
   vsatp = Bare is optional (UDB_VSSTAGE_MODE_BARE), so the pairs with vsatp = Bare are tested and sampled only with
@@ -94,14 +98,13 @@ notes: |-
   With (vsatp, hgatp) = (Bare, Bare) there is no table to leave unmapped.  A tagged address is a host physical address, so
   an unmasked tag bit must lie outside the PA width or in a PMA hole.  The access then raises an access fault and cannot
   alias DRAM.  An address faults when its highest unmasked bit is at or above the PA width, so a tag is used with
-  (Bare, Bare) only if the highest bit it leaves unmasked is at or above the PA width.  With a PA width of at most 56
-  bits, 0x0400 (bit 58), 0xFF00 and 0xFFFF (bit 63, or bit 56 with PMLEN 7) are always used, and 0x0002 (bit 49) with
-  PMM 00 or 10, and in the coverpoints that never mask (HLVX, jalr), needs PA width <= 49.  With a wider PA and PMP, the
-  test limits PMP entry 0, which the boot code sets to the whole address space, to [0, 2^49) for (Bare, Bare), so bit
-  49 makes a PMP access fault and 0x0002 is used too.  The test image must then lie below 2^49.  PMP cannot stop a bit
-  from 56 up, since pmpaddr holds only address bits 55:2.  So with (Bare, Bare) the test drops 0x0002 without PMP when
-  the PA width is above 49, and drops a tag whose highest unmasked bit is below a PA width above 56.  Those bins stay
-  missing.
+  (Bare, Bare) only if the highest bit it leaves unmasked is at or above the PA width.  An RV64 PA has at most 56 bits,
+  so 0x0400 (bit 58), 0xFF00 and 0xFFFF (bit 63, or bit 56 with PMLEN 7) are always used, and 0x0002 (bit 49) with
+  PMM 00 or 10, and in the coverpoints that never mask (HLVX, jalr), only with a PA width of at most 49 bits.  With a
+  wider PA the test drops it, and the coverage model ignores its (Bare, Bare) bins: those of cp_vs_pmm and cp_vu_pmm,
+  and of cp_hlv_*_pmm, cp_hlvx_*_pmm and cp_*_pmm_jalr, whose BARE_PAIR is (Bare, Bare) only without an x4 mode.  The
+  masking is still checked: zero extension with vsatp = Bare does not depend on hgatp, the (Bare, SvNNx4) pairs check
+  that PMM 00 and 10 keep bit 49, and PMM 11 at (Bare, Bare) checks that it is masked.
 
   *Upper-half addresses.*  pm_lo_page has bits 47 and 56 clear, where zero extension and sign extension give the same
   address.  So for PMM 10 and 11, cp_vs_pmm, cp_vu_pmm and cp_hlv_*_pmm also access A' through an address whose bit
@@ -144,7 +147,7 @@ coverpoints:
        vsatp paged: load or store/AMO page fault (non-canonical or unmapped VA).
     bins: |-
       priv_mode VS x {ld, sd} x henvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv39x4), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported; with (Bare, Bare), a tag only when the PA width or PMP stops it (see the notes)
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported; with (Bare, Bare), tag 0x0002 with PMM 00 or 10 only with a PA width of at most 49 bits (see the notes)
     rules:
       - henvcfg_pmm_op
       - ssnpm_definition
@@ -178,7 +181,7 @@ coverpoints:
        2. VS-mode executes csrw senvcfg with the PMM under test, reads senvcfg back, and returns to HS-mode, which
           records the value with sigupd(value).  This write does not change the masking of VS-mode itself, which
           follows henvcfg.PMM.
-       3. HS-mode runs the loop in VU-mode (RVTEST_TSBI_GOTO_VUMODE for each access) without writing senvcfg, so the
+       3. HS-mode runs the loop in VU-mode (one RVTEST_TSBI_GOTO_VUMODE) without writing senvcfg, so the
           accesses follow the value VS-mode wrote.  With a paged VS stage, HS-mode first sets PTE.U in the VS-stage
           leaves, which VS-mode could not execute from.
     expectation: |-
@@ -187,7 +190,7 @@ coverpoints:
     bins: |-
       priv_mode VU x writer HS-mode x {ld, sd} x senvcfg.PMM {00, 10, 11} x tag {5 patterns} x (vsatp, hgatp) {(Bare, Bare), (Bare, Sv39x4), (Bare, Sv48x4), (Bare, Sv57x4), (Sv39, Sv39x4), (Sv48, Sv48x4), (Sv57, Sv57x4)}
       cp_vu_pmm_writer_vs, the writer VS-mode: priv_mode VS x csrw x senvcfg x senvcfg.PMM after the write {00, 10, 11}.  The VU accesses that follow are the writer HS-mode bins of cp_vu_pmm.  The test runs it on BARE_PAIR and on PAGED_PAIR.
-      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported; with (Bare, Bare), a tag only when the PA width or PMP stops it (see the notes)
+      PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported; with (Bare, Bare), tag 0x0002 with PMM 00 or 10 only with a PA width of at most 49 bits (see the notes)
     rules:
       - senvcfg_pmm_ssnpm
       - senvcfg_pmm_enc

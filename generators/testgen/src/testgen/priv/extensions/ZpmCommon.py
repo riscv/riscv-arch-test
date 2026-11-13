@@ -12,6 +12,8 @@ Common code for Ssnpm (S->U), Smmpm (M-mode), SmnpmS (M->S), SmnpmU (M->U)
 test generators.
 """
 
+from dataclasses import dataclass
+
 from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
@@ -168,15 +170,31 @@ def _binname(prefix: str, upper: int, mnemonic: str) -> str:
     return f"{prefix}_up{upper:04X}_{mnemonic.replace('.', '_')}"
 
 
-def _tagged_address(base_reg: int, addr_reg: int, base: str | int, upper: int, offset: int = 0) -> list[str]:
-    """Point *base_reg* at *base* (a label or an address) and *addr_reg* at the same address with bits 63:48
-    XORed with *upper*.
+@dataclass(frozen=True)
+class HeldAddress:
+    """An address already in register x{reg}.  Code that runs in a lower mode through T-SBI runs at the code alias,
+    where a PC-relative LA gives an aliased address, so the caller loads the address before the mode switch."""
+
+    reg: int
+
+
+def _tagged_address(
+    base_reg: int, addr_reg: int, base: str | int | HeldAddress, upper: int, offset: int = 0
+) -> list[str]:
+    """Point *base_reg* at *base* (a label, an address or a register holding one) and *addr_reg* at the same address
+    with bits 63:48 XORed with *upper*.
 
     XOR equals OR for pm_lo_page, whose bits 63:48 are zero. For an upper-half base it makes
     the pointer non-canonical, so only a sign-extending mask recovers the base.
     """
+    if isinstance(base, HeldAddress):
+        load = f"mv x{base_reg}, x{base.reg}"
+    elif isinstance(base, str):
+        load = f"LA(x{base_reg}, {base})"
+    else:
+        load = f"LI(x{base_reg}, {hex(base)})"
     lines = [
-        f"LA(x{base_reg}, {base})" if isinstance(base, str) else f"LI(x{base_reg}, {hex(base)})",
+        load,
         f"LI(x{addr_reg}, {hex(upper << 48)})",
         f"xor x{addr_reg}, x{addr_reg}, x{base_reg}   # tagged pointer: bits 63:48 ^= 0x{upper:04X}",
     ]
@@ -510,7 +528,7 @@ def probe_load(
     covergroup: str,
     *,
     coverpoint: str = CP_MASKING,
-    base_address: str | int = "pm_lo_page",
+    base_address: str | int | HeldAddress = "pm_lo_page",
     offset: int = 0,
     compressed: bool = False,
     via_sp: bool = False,
@@ -568,7 +586,7 @@ def probe_store(
     covergroup: str,
     *,
     coverpoint: str = CP_MASKING,
-    base_address: str | int = "pm_lo_page",
+    base_address: str | int | HeldAddress = "pm_lo_page",
     offset: int = 0,
     compressed: bool = False,
     via_sp: bool = False,
@@ -613,12 +631,13 @@ def probe_amo(
     arch_extensions: tuple[str, ...] = (),
     *,
     coverpoint: str = CP_MASKING,
+    base_address: str | HeldAddress = "pm_lo_page",
     mode: str | None = None,
 ) -> list[str]:
     """Generate one AMO probe and record both its result and memory value.  ``mode`` runs the AMO in that mode."""
     base_reg, addr, value, result = test_data.int_regs.get_registers(4)
     lines = [
-        *_tagged_address(base_reg, addr, "pm_lo_page", upper_tag),
+        *_tagged_address(base_reg, addr, base_address, upper_tag),
         *_seed(base_reg, value),
         f"LI(x{value}, {hex(VALUE_NEW)})",
         f"LI(x{result}, {hex(SENTINEL)})",
@@ -696,6 +715,7 @@ def probe_zacas(
     covergroup: str,
     *,
     coverpoint: str = CP_MASKING,
+    base_address: str | HeldAddress = "pm_lo_page",
     mode: str | None = None,
 ) -> list[str]:
     """Generate an AMOCAS probe, using register pairs for AMOCAS.Q.  ``mode`` runs the AMOCAS in that mode."""
@@ -704,7 +724,7 @@ def probe_zacas(
         replacement = test_data.int_regs.get_register_pair()
         base_reg, addr = test_data.int_regs.get_registers(2)
         lines = [
-            *_tagged_address(base_reg, addr, "pm_lo_page", upper_tag),
+            *_tagged_address(base_reg, addr, base_address, upper_tag),
             *_seed(base_reg, comparand),
             f"sd x0, 8(x{base_reg})   # seed high dword of the 128-bit comparand",
             f"LI(x{comparand}, {hex(VALUE_OLD)})   # comparand.lo matches the seeded value",
@@ -730,7 +750,7 @@ def probe_zacas(
 
     base_reg, addr, comparand, replacement = test_data.int_regs.get_registers(4)
     lines = [
-        *_tagged_address(base_reg, addr, "pm_lo_page", upper_tag),
+        *_tagged_address(base_reg, addr, base_address, upper_tag),
         *_seed(base_reg, comparand),
         f"LI(x{comparand}, {hex(VALUE_OLD)})   # comparand matches the seeded value",
         f"LI(x{replacement}, {hex(VALUE_NEW)})",
@@ -756,6 +776,7 @@ def probe_cbo(
     covergroup: str,
     *,
     coverpoint: str = CP_MASKING,
+    base_address: str | HeldAddress = "pm_lo_page",
     mode: str | None = None,
 ) -> list[str]:
     """Generate one cache-block operation probe.  ``mode`` runs the operation in that mode.
@@ -764,7 +785,7 @@ def probe_cbo(
     """
     base_reg, addr, readback_reg = test_data.int_regs.get_registers(3)
     lines = [
-        *_tagged_address(base_reg, addr, "pm_lo_page", upper_tag),
+        *_tagged_address(base_reg, addr, base_address, upper_tag),
         *_seed(base_reg, readback_reg),
         *_in_mode(mode, [test_data.add_testcase(bin_name, coverpoint, covergroup), f"{mnemonic} 0(x{addr})"]),
     ]
@@ -784,6 +805,7 @@ def probe_vec(
     covergroup: str,
     *,
     coverpoint: str = CP_MASKING,
+    base_address: str | HeldAddress = "pm_lo_page",
     mode: str | None = None,
 ) -> list[str]:
     """Generate a two-element vector load or store probe.  ``mode`` runs the vector access in that mode."""
@@ -791,7 +813,7 @@ def probe_vec(
     is_load = readback_mnemonic is None
     initial_value = SENTINEL if is_load else VALUE_NEW
     lines = [
-        *_tagged_address(base_reg, addr, "pm_lo_page", upper_tag),
+        *_tagged_address(base_reg, addr, base_address, upper_tag),
         *_seed(base_reg, value),
         f"LI(x{value}, {hex(initial_value)})",
         "csrw vstart, x0",

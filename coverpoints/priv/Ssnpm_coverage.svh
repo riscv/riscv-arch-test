@@ -193,6 +193,38 @@ endgroup
         `endif
     `endif
 `endif
+// With (Bare, Bare) and a physical address wider than 49 bits (an RV64 one has at most 56), tag 0x0002 that masking
+// keeps reaches memory instead of faulting, so the tests leave it out.  SSNPM_H_ALL_BARE_T0002 and
+// SSNPM_H_CHOSEN_BARE_T0002: pair_all or pair_chosen has a (Bare, Bare) bin, and its crosses with tag5 ignore those bins.
+`ifdef UDB_PHYS_ADDR_WIDTH_50
+    `define SSNPM_H_PA_ABOVE_49
+`elsif UDB_PHYS_ADDR_WIDTH_51
+    `define SSNPM_H_PA_ABOVE_49
+`elsif UDB_PHYS_ADDR_WIDTH_52
+    `define SSNPM_H_PA_ABOVE_49
+`elsif UDB_PHYS_ADDR_WIDTH_53
+    `define SSNPM_H_PA_ABOVE_49
+`elsif UDB_PHYS_ADDR_WIDTH_54
+    `define SSNPM_H_PA_ABOVE_49
+`elsif UDB_PHYS_ADDR_WIDTH_55
+    `define SSNPM_H_PA_ABOVE_49
+`elsif UDB_PHYS_ADDR_WIDTH_56
+    `define SSNPM_H_PA_ABOVE_49
+`endif
+`ifdef SSNPM_H_PA_ABOVE_49
+    `ifdef UDB_VSSTAGE_MODE_BARE
+        `ifdef UDB_GSTAGE_MODE_BARE
+            `define SSNPM_H_ALL_BARE_T0002
+        `endif
+        `ifndef UDB_SV39X4_TRANSLATION
+            `ifndef UDB_SV48X4_TRANSLATION
+                `ifndef UDB_SV57X4_TRANSLATION
+                    `define SSNPM_H_CHOSEN_BARE_T0002
+                `endif
+            `endif
+        `endif
+    `endif
+`endif
 
 covergroup Ssnpm_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -614,8 +646,19 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
 
     // ---- Loads and stores in VS-mode and VU-mode ----
-    cp_vs_pmm: cross priv_mode_vs, ld_sd, henvcfg_pmm, tag5, pair_all;
-    cp_vu_pmm: cross priv_mode_vu, ld_sd, senvcfg_pmm, tag5, pair_all;
+    // The tag5 crosses ignore the bins of tag 0x0002 that the tests leave out with (Bare, Bare) (SSNPM_H_*_BARE_T0002)
+    cp_vs_pmm: cross priv_mode_vs, ld_sd, henvcfg_pmm, tag5, pair_all {
+        `ifdef SSNPM_H_ALL_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_all.bare_bare) && binsof(tag5.t0002) &&
+                binsof(henvcfg_pmm) intersect {2'b00, 2'b10};
+        `endif
+    }
+    cp_vu_pmm: cross priv_mode_vu, ld_sd, senvcfg_pmm, tag5, pair_all {
+        `ifdef SSNPM_H_ALL_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_all.bare_bare) && binsof(tag5.t0002) &&
+                binsof(senvcfg_pmm) intersect {2'b00, 2'b10};
+        `endif
+    }
     // Their upper-half accesses
     `ifdef SSNPM_H_UPPER
         cp_vs_pmm_upper: cross priv_mode_vs, ld_sd, pmm_upper_h;
@@ -640,14 +683,34 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     cp_vu_pmm_writer_vs: cross priv_mode_vs, csrw_insn, csr_senvcfg, senvcfg_pmm_written;
 
     // ---- HLV and HSV from HS-mode: henvcfg.PMM with SPVP = 1, senvcfg.PMM with SPVP = 0 ----
-    cp_hlv_hs_spvp1_pmm:     cross priv_mode_hs, hlv_hsv, spvp_vs, henvcfg_pmm, tag5, pair_chosen;
+    cp_hlv_hs_spvp1_pmm:     cross priv_mode_hs, hlv_hsv, spvp_vs, henvcfg_pmm, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002) &&
+                binsof(henvcfg_pmm) intersect {2'b00, 2'b10};
+        `endif
+    }
     cp_hlv_hs_spvp1_mxr_pmm: cross priv_mode_hs, hlv_hsv, spvp_vs, mxr_pair, pmm_tag_h, pair_chosen;
-    cp_hlv_hs_spvp0_pmm:     cross priv_mode_hs, hlv_hsv, spvp_vu, senvcfg_pmm, tag5, pair_chosen;
+    cp_hlv_hs_spvp0_pmm:     cross priv_mode_hs, hlv_hsv, spvp_vu, senvcfg_pmm, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002) &&
+                binsof(senvcfg_pmm) intersect {2'b00, 2'b10};
+        `endif
+    }
     cp_hlv_hs_spvp0_mxr_pmm: cross priv_mode_hs, hlv_hsv, spvp_vu, mxr_pair, pmm_tag_s, pair_chosen;
 
     // ---- HLV and HSV from U-mode with hstatus.HU = 1: henvcfg.PMM with SPVP = 1, hstatus.HUPMM with SPVP = 0 ----
-    cp_hlv_u_spvp1_pmm: cross priv_mode_u, hstatus_hu, hlv_hsv, spvp_vs, henvcfg_pmm, tag5, pair_chosen;
-    cp_hlv_u_spvp0_pmm: cross priv_mode_u, hstatus_hu, hlv_hsv, spvp_vu, hstatus_hupmm, tag5, pair_chosen;
+    cp_hlv_u_spvp1_pmm: cross priv_mode_u, hstatus_hu, hlv_hsv, spvp_vs, henvcfg_pmm, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002) &&
+                binsof(henvcfg_pmm) intersect {2'b00, 2'b10};
+        `endif
+    }
+    cp_hlv_u_spvp0_pmm: cross priv_mode_u, hstatus_hu, hlv_hsv, spvp_vu, hstatus_hupmm, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002) &&
+                binsof(hstatus_hupmm) intersect {2'b00, 2'b10};
+        `endif
+    }
 
     // ---- The upper-half accesses of the HLV and HSV cases ----
     `ifdef SSNPM_H_UPPER
@@ -658,8 +721,16 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     `endif
 
     // ---- HLVX is never masked, whichever PMM field applies ----
-    cp_hlvx_hs_pmm: cross priv_mode_hs, hlvx, spvp, pmm_all_same, tag5, pair_chosen;
-    cp_hlvx_u_pmm:  cross priv_mode_u, hstatus_hu, hlvx, spvp, pmm_all_same, tag5, pair_chosen;
+    cp_hlvx_hs_pmm: cross priv_mode_hs, hlvx, spvp, pmm_all_same, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002);
+        `endif
+    }
+    cp_hlvx_u_pmm:  cross priv_mode_u, hstatus_hu, hlvx, spvp, pmm_all_same, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002);
+        `endif
+    }
 
     // ---- MXR turns masking off in VS-mode and VU-mode ----
     cp_vs_mxr_pmm: cross priv_mode_vs, ld_sd, mxr_pair, pmm_tag_h, pair_chosen;
@@ -678,8 +749,16 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     `endif
 
     // ---- Instruction fetch is never masked ----
-    cp_vs_pmm_jalr: cross priv_mode_vs, jalr_insn, henvcfg_pmm, tag5, pair_chosen;
-    cp_vu_pmm_jalr: cross priv_mode_vu, jalr_insn, senvcfg_pmm, tag5, pair_chosen;
+    cp_vs_pmm_jalr: cross priv_mode_vs, jalr_insn, henvcfg_pmm, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002);
+        `endif
+    }
+    cp_vu_pmm_jalr: cross priv_mode_vu, jalr_insn, senvcfg_pmm, tag5, pair_chosen {
+        `ifdef SSNPM_H_CHOSEN_BARE_T0002
+            ignore_bins bare_bare_t0002 = binsof(pair_chosen.bare_bare) && binsof(tag5.t0002);
+        `endif
+    }
 
     // ---- Misaligned accesses, with fully masked tags ----
     cp_vs_pmlen_misaligned_word: cross priv_mode_vs, sw_lw_insn, misaligned_addr, pmm_tag_h, pair_chosen;
@@ -887,6 +966,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {2'b11};
         `endif
     }
+    // TODO: No test samples cp_pmm_vsxl_clear or cp_pmm_vsuxl_clear until Sail supports mixed XLEN (SsnpmH.py)
     `ifdef UDB_VSXLEN_32
         csr_hstatus: coverpoint ins.current.insn[31:20] {
             type_option.weight = 0;

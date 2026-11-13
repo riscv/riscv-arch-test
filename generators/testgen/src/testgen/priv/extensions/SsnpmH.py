@@ -9,21 +9,22 @@
 
 """Ssnpm H group test generator (testplans/priv/Ssnpm_H.yaml).
 
-The group boots to HS-mode.  Each guest access runs in VS-mode or VU-mode through T-SBI and is checked back in
-HS-mode, as are the HLV, HSV and HLVX accesses made from HS-mode or from U-mode with hstatus.HU = 1.  henvcfg.PMM
+The group boots to HS-mode.  Guest accesses run in VS-mode or VU-mode, entered through T-SBI, and HLV, HSV and HLVX
+run in HS-mode or in U-mode with hstatus.HU = 1.  Where a case makes several accesses in one mode, they and their
+checks run in one T-SBI entry (_stint); otherwise each access runs alone and is checked back in HS-mode.  henvcfg.PMM
 masks VS-mode, senvcfg.PMM masks VU-mode, and an HLV or HSV takes henvcfg.PMM with hstatus.SPVP = 1, and senvcfg.PMM
-from HS-mode or hstatus.HUPMM from U-mode with SPVP = 0.  The PMM fields a case does not test hold a different value:
-the largest one their extension supports when the field under test is 00, else 00.  HLVX and accesses with MXR in
+from HS-mode or hstatus.HUPMM from U-mode with SPVP = 0.  The PMM fields a case does not test hold a different
+value: the largest one their extension supports when the field under test is 00, else 00.  menvcfg.PMM and
+mseccfg.PMM take a T-SBI call, which HS-mode skips when the value does not change.  HLVX and accesses with MXR in
 effect are never masked, and those cases enable every field.
 
 The test page pm_lo_page is identity mapped in both stages, so a tag that masking clears reaches it.  A tag that
 masking keeps is non-canonical or unmapped in the VS stage when vsatp is paged, and wider than the G stage or unmapped
 in it when hgatp is paged, so the access faults, except where a case maps it to pm_gpa_alias_page on purpose: the
 HFENCE cases in the G stage and the no-HFENCE case with vsatp = Sv57 in the VS stage.  With (vsatp, hgatp) =
-(Bare, Bare) a kept tag is a physical address bit: the address faults when its highest kept bit is at or above the
-physical address width, or is a bit below 56 outside PMP entry 0, which the test limits to [0, 2^49) when the physical
-address is wider than 49 bits.  A tag that could reach memory is not used: 0x0002 (bit 49) without PMP, and, with a
-physical address wider than 56 bits, a tag whose highest kept bit is below the width.
+(Bare, Bare) a kept tag is a physical address bit, and the address faults only when its highest kept bit is at or
+above the physical address width, at most 56 bits.  So tag 0x0002 (bit 49), when masking keeps it, is used there only
+with a physical address of at most 49 bits.
 
 pm_lo_page has bits 47 and 56 clear, where sign extension (vsatp paged) and zero extension (vsatp = Bare) of the
 masked bits give the same address.  So cp_vs_pmm, cp_vu_pmm and the HLV cases also reach it through an address with
@@ -68,6 +69,7 @@ from testgen.priv.extensions.ZpmCommon import (
     SENTINEL,
     VALUE_NEW,
     VALUE_OLD,
+    HeldAddress,
     csr_op,
     data_page,
     pmm_ifdef,
@@ -118,11 +120,11 @@ _GPF_GPA = 0x17F_C000_0000
 # Sv39 and Sv48 (root entry 0xFF).  For Sv57 it is in the test image's root entry, whose identity map reaches
 # _GPF_GPA, and _split_root makes its level-3 entry free.  It holds the shadow stack page.
 _SPARE_VA = {"sv39": 0x3F_C000_0000, "sv48": 0x7FFF_C000_0000, "sv57": _GPF_GPA}
-# With (Bare, Bare) and a physical address wider than 49 bits, PMP entry 0 covers only [0, 2^49), so tag bit 49 faults
-_PMP_HOLE = "UDB_PHYS_ADDR_WIDTH > 49 && UDB_NUM_PMP_ENTRIES > 0"
 
 _FIELDS = ("henvcfg", "senvcfg", "hstatus")  # hstatus is HUPMM
 _M_FIELDS = (("menvcfg", "SMNPM"), ("mseccfg", "SMMPM"))
+# HS-mode keeps the last value written to menvcfg.PMM and mseccfg.PMM here, -1 before the first write
+_M_SHADOW = "ssnpmh_m_pmm"
 
 
 @dataclass(frozen=True)
@@ -220,45 +222,13 @@ _NEED_DEFINES = [
 # ── Translation ────────────────────────────────────────────────────────────
 
 
-def _pmp_hole(test_data: TestData, on: bool) -> list[str]:
-    """Limit PMP entry 0, which the boot code sets to the whole address space, to [0, 2^49) or give it back.
-
-    It runs only when the physical address is wider than 49 bits and the hart has PMP, so that tag bit 49, which
-    masking keeps with PMM 00 or 10, makes an address that faults with (Bare, Bare).
-    """
-    reg = test_data.int_regs.get_register()
-    value = (
-        [
-            "#ifdef UDB_PMP_TOR_SUPPORTED",
-            f"LI(x{reg}, {1 << 47:#x})   # TOR [0, 2^49)",
-            "#else",
-            f"LI(x{reg}, {(1 << 46) - 1:#x})   # NAPOT [0, 2^49)",
-            "#endif",
-        ]
-        if on
-        else [f"LI(x{reg}, -1)"]
-    )
-    lines = [
-        "RVTEST_TSBI_GOTO_MMODE",
-        *value,
-        f"csrw pmpaddr0, x{reg}",
-        "sfence.vma",
-        "hfence.gvma",
-        "RVTEST_TSBI_GOTO_SMODE",
-    ]
-    test_data.int_regs.return_register(reg)
-    return gated(lines, _PMP_HOLE)
-
-
-def _setup(test_data: TestData, pair: _Pair, user: bool, pmp_hole: bool = True) -> list[str]:
+def _setup(test_data: TestData, pair: _Pair, user: bool) -> list[str]:
     """Turn on pair's translation with the test image identity mapped in both stages.
 
-    user sets PTE.U in the VS-stage leaves, for VU-mode and for HLV, HSV and HLVX as VU (hstatus.SPVP = 0).  pmp_hole
-    limits PMP entry 0 with (Bare, Bare), for a case with tagged accesses.
+    user sets PTE.U in the VS-stage leaves, for VU-mode and for HLV, HSV and HLVX as VU (hstatus.SPVP = 0).
     """
     if pair.vs is None and pair.g is None:
-        hole = _pmp_hole(test_data, on=True) if pmp_hole else []
-        return ["csrw hgatp, zero", "csrw vsatp, zero", "hfence.gvma", "hfence.vvma", *hole]
+        return ["csrw hgatp, zero", "csrw vsatp, zero", "hfence.gvma", "hfence.vvma"]
     lines = guest_translation_setup(test_data, pair.g, pair.vs, "VUmode" if user else "VSmode")
     if user and pair.vs is not None:
         pte, addr, tmp = test_data.int_regs.get_registers(3)
@@ -270,19 +240,6 @@ def _setup(test_data: TestData, pair: _Pair, user: bool, pmp_hole: bool = True) 
             ]
         )
         test_data.int_regs.return_registers([pte, addr, tmp])
-    return lines
-
-
-def _off(test_data: TestData, target: _Target, pmp_hole: bool = True) -> list[str]:
-    """Turn guest translation off, and give PMP entry 0 back the whole address space after (Bare, Bare) when _setup
-    limited it (pmp_hole)."""
-    lines = guest_translation_teardown(test_data)
-    if not pmp_hole:
-        return lines
-    if target == _BARE_BARE:
-        lines.extend(_pmp_hole(test_data, on=False))
-    elif target == "bare":
-        lines.extend(gated(_pmp_hole(test_data, on=False), "SSNPMH_BARE_PAIR == 0"))
     return lines
 
 
@@ -339,14 +296,10 @@ def _per_pair(
 
 
 def _on(
-    test_data: TestData,
-    target: _Target,
-    user: bool,
-    extra: Callable[[_Pair], list[str]] | None = None,
-    pmp_hole: bool = True,
+    test_data: TestData, target: _Target, user: bool, extra: Callable[[_Pair], list[str]] | None = None
 ) -> list[str]:
     """Turn on the translation of target, choosing BARE_PAIR or PAGED_PAIR with the preprocessor, then add extra."""
-    return _per_pair(target, lambda pair: [*_setup(test_data, pair, user, pmp_hole), *(extra(pair) if extra else [])])
+    return _per_pair(target, lambda pair: [*_setup(test_data, pair, user), *(extra(pair) if extra else [])])
 
 
 def _wrap(target: _Target, lines: list[str]) -> list[str]:
@@ -363,16 +316,15 @@ def _name(target: _Target) -> str:
 def _tag_gate(target: _Target, tag: int, pmlen: int) -> str | None:
     """The condition for using tag with (vsatp, hgatp) = (Bare, Bare), where it is a physical address.
 
-    The highest bit that masking with pmlen keeps must make an address that faults instead of reaching memory: a bit
-    at or above the physical address width, or, with _pmp_hole, a bit outside PMP entry 0.  pmpaddr holds address
-    bits 55:2, so PMP stops only a bit below 56.
+    The highest bit that masking with pmlen keeps must be at or above the physical address width, so that the address
+    faults instead of reaching memory.  An RV64 physical address has at most 56 bits, so a bit from 56 up always is.
     """
     if target not in (_BARE_BARE, "bare"):
         return None
     top = ((tag << 48) & ((1 << (64 - pmlen)) - 1)).bit_length() - 1
-    if top < 0:
+    if not 0 <= top < 56:
         return None
-    gate = f"UDB_PHYS_ADDR_WIDTH <= {top}" + (" || UDB_NUM_PMP_ENTRIES > 0" if top < 56 else "")
+    gate = f"UDB_PHYS_ADDR_WIDTH <= {top}"
     return gate if target == _BARE_BARE else f"SSNPMH_BARE_PAIR != 0 || {gate}"
 
 
@@ -441,9 +393,21 @@ def _check_alias(test_data: TestData) -> list[str]:
 
 
 def _m_field(test_data: TestData, csr: str, ext: str, value: int | str, gate: str = "") -> list[str]:
-    """Write menvcfg.PMM or mseccfg.PMM through T-SBI when the extension that has it is implemented."""
+    """Write menvcfg.PMM or mseccfg.PMM through T-SBI when the extension that has it is implemented.  Each T-SBI call
+    is costly and the value often does not change, so HS-mode skips the write when _M_SHADOW holds the same value."""
     pmlen = None if isinstance(value, str) else _PMLEN[value]
-    return gated(set_pmm_field(csr, value, pmlen, test_data, tsbi=True), f"defined({ext}_SUPPORTED){gate}")
+    offset = 8 * [field for field, _ in _M_FIELDS].index(csr)
+    shadow, old, new = test_data.int_regs.get_registers(3)
+    check = [
+        f"LA(x{shadow}, {_M_SHADOW})",
+        f"ld x{old}, {offset}(x{shadow})",
+        f"LI(x{new}, {value})",
+        f"beq x{old}, x{new}, 1f   # {csr}.PMM already holds the value",
+        f"sd x{new}, {offset}(x{shadow})",
+    ]
+    test_data.int_regs.return_registers([shadow, old, new])
+    write = set_pmm_field(csr, value, pmlen, test_data, tsbi=True)
+    return gated([*check, *write, "1:"], f"defined({ext}_SUPPORTED){gate}")
 
 
 def _pmm_case(test_data: TestData, field: str, pmm: int, value: int | str | None = None) -> list[str]:
@@ -513,12 +477,38 @@ def _mxr(test_data: TestData, vs_mxr: int, s_mxr: int) -> list[str]:
 # ── Probes ─────────────────────────────────────────────────────────────────
 
 
-def _probe(test_data: TestData, cp: str, name: str, op: str, tag: int, mode: str, offset: int = 0) -> list[str]:
-    """op at pm_lo_page + offset tagged with tag, run in mode (VS, VU, U or HS) and checked in HS-mode."""
+def _stint(test_data: TestData, mode: str, build: Callable[[str | HeldAddress], list[str]]) -> list[str]:
+    """build's lines, given the address of pm_lo_page, run in mode (VS, VU or U) in one T-SBI entry, or in place in
+    HS-mode.  A fault traps to HS-mode, which records it and resumes at the next instruction in mode.  Code in mode runs
+    at the code alias, so HS-mode loads pm_lo_page into a register for it."""
+    if mode == "HS":
+        return build("pm_lo_page")
+    held = test_data.int_regs.get_register()
+    lines = build(HeldAddress(held))
+    test_data.int_regs.return_register(held)
+    if not lines:
+        return []
+    return [f"LA(x{held}, pm_lo_page)", f"RVTEST_TSBI_GOTO_{mode}MODE", *lines, "RVTEST_TSBI_GOTO_SMODE"]
+
+
+def _probe(
+    test_data: TestData,
+    cp: str,
+    name: str,
+    op: str,
+    tag: int,
+    mode: str,
+    offset: int = 0,
+    base: str | HeldAddress = "pm_lo_page",
+) -> list[str]:
+    """op at base + offset tagged with tag, run in mode (VS, VU or U) and checked in HS-mode, or in place when mode
+    is HS."""
     run = None if mode == "HS" else mode
     if op in ("sd", "sw", "hsv.d"):
-        return probe_store(op, "ld", tag, name, test_data, _CG, coverpoint=cp, offset=offset, mode=run)
-    return probe_load(op, tag, name, test_data, _CG, coverpoint=cp, offset=offset, mode=run)
+        return probe_store(
+            op, "ld", tag, name, test_data, _CG, coverpoint=cp, base_address=base, offset=offset, mode=run
+        )
+    return probe_load(op, tag, name, test_data, _CG, coverpoint=cp, base_address=base, offset=offset, mode=run)
 
 
 def _tag_probes(
@@ -531,12 +521,20 @@ def _tag_probes(
     mode: str,
     pmlen: int,
 ) -> list[str]:
-    """Each op at pm_lo_page with each tag, which masking with pmlen keeps or clears."""
-    lines = []
-    for tag in tags:
-        probes = [line for op in ops for line in _probe(test_data, cp, f"{prefix}_{op}_t{tag:04x}", op, tag, mode)]
-        lines.extend(gated(probes, _tag_gate(target, tag, pmlen)))
-    return lines
+    """Each op at pm_lo_page with each tag, which masking with pmlen keeps or clears, in one stint in mode."""
+
+    def build(base: str | HeldAddress) -> list[str]:
+        lines = []
+        for tag in tags:
+            probes = [
+                line
+                for op in ops
+                for line in _probe(test_data, cp, f"{prefix}_{op}_t{tag:04x}", op, tag, "HS", base=base)
+            ]
+            lines.extend(gated(probes, _tag_gate(target, tag, pmlen)))
+        return lines
+
+    return _stint(test_data, mode, build)
 
 
 def _guest_op(test_data: TestData, cp: str, name: str, mode: str, op: str, addr: int) -> list[str]:
@@ -598,19 +596,19 @@ def _upper_map(test_data: TestData, pair: _Pair, pmm: int, user: bool, unmap: bo
     return [*_page_map(test_data, mode, address, "pm_lo_page", flags, flags, unmap), "hfence.gvma", "hfence.vvma"]
 
 
-def _upper_probe(test_data: TestData, cp: str, name: str, op: str, address: int, mode: str) -> list[str]:
-    """op in mode at address, an upper-half address that masking turns into one mapped to pm_lo_page.  HS-mode seeds
-    and checks pm_lo_page through its physical address."""
+def _upper_probe(test_data: TestData, cp: str, name: str, op: str, address: int, base: str | HeldAddress) -> list[str]:
+    """op at address, an upper-half address that masking turns into one mapped to pm_lo_page, which the probe seeds and
+    checks through base, its identity-mapped address."""
     phys, addr, data = test_data.int_regs.get_registers(3)
     store = op in ("sd", "hsv.d")
-    access = [test_data.add_testcase(name, cp, _CG), f"{op} x{data}, 0(x{addr})"]
     lines = [
-        f"LA(x{phys}, pm_lo_page)",
+        f"mv x{phys}, x{base.reg}" if isinstance(base, HeldAddress) else f"LA(x{phys}, {base})",
         f"LI(x{data}, {VALUE_OLD:#x})",
         f"sd x{data}, 0(x{phys})",
         f"LI(x{addr}, {address:#x})",
         f"LI(x{data}, {VALUE_NEW if store else SENTINEL:#x})",
-        *(access if mode == "HS" else [f"RVTEST_TSBI_GOTO_{mode}MODE", *access, "RVTEST_TSBI_GOTO_SMODE"]),
+        test_data.add_testcase(name, cp, _CG),
+        f"{op} x{data}, 0(x{addr})",
         *([f"ld x{data}, 0(x{phys})"] if store else []),
         write_sigupd(data, test_data),
     ]
@@ -639,12 +637,18 @@ def _upper(
         return []
     paged = target == "paged" or (isinstance(target, _Pair) and target.vs is not None)
     base = _HIGH_VA if paged else _UPPER_GPA[pmm]
-    probes = [
-        line
-        for op in ops
-        for tag in _UPPER_TAGS[pmm]
-        for line in _upper_probe(test_data, f"{cp}_upper", f"{prefix}_{op}_t{tag:04x}", op, base ^ (tag << 48), mode)
-    ]
+    probes = _stint(
+        test_data,
+        mode,
+        lambda held: [
+            line
+            for op in ops
+            for tag in _UPPER_TAGS[pmm]
+            for line in _upper_probe(
+                test_data, f"{cp}_upper", f"{prefix}_{op}_t{tag:04x}", op, base ^ (tag << 48), held
+            )
+        ],
+    )
     gate = None
     if isinstance(target, str):
         macro, candidates = _ROLES[target]
@@ -671,7 +675,7 @@ def _ldsd(test_data: TestData, pair: _Pair, mode: str) -> list[str]:
             *_upper(test_data, pair, cp, prefix, ("ld", "sd"), pmm, mode, user),
         ]
         lines.extend(pmm_ifdef(field, pmlen, body))
-    return [*lines, *_clear_pmm(test_data), *_off(test_data, pair)]
+    return [*lines, *_clear_pmm(test_data), *guest_translation_teardown(test_data)]
 
 
 def _writer_vs(test_data: TestData, target: _Target, pmm: int) -> list[str]:
@@ -702,7 +706,7 @@ def _writer_vs(test_data: TestData, target: _Target, pmm: int) -> list[str]:
     test_data.int_regs.return_register(check)
     prefix = f"{_name(target)}_vs_writer_{label}"
     body.extend(_tag_probes(test_data, target, "cp_vu_pmm", prefix, ("ld", "sd"), (0x0400,), "VU", _PMLEN[pmm]))
-    return [*_wrap(target, [*body, *_off(test_data, target)]), *_clear_pmm(test_data)]
+    return [*_wrap(target, [*body, *guest_translation_teardown(test_data)]), *_clear_pmm(test_data)]
 
 
 # hgatp: (coverpoint suffix, [(old PMM, new PMM, tags)]) of cp_henvcfg_pmm_change_hfence and cp_hupmm_change_hfence
@@ -910,7 +914,7 @@ def _hlv(test_data: TestData, target: _Target, pmm: int) -> list[str]:
             *_tag_probes(test_data, target, cp, _name(target), ops, _TAGS, mode, _PMLEN[pmm]),
             *_upper(test_data, target, cp, _name(target), ops, pmm, mode, user=not spvp),
             *_hstatus(test_data, spvp=0, hu=0),
-            *_off(test_data, target),
+            *guest_translation_teardown(test_data),
         ]
         lines.extend(_wrap(target, body))
     return [*lines, *_clear_pmm(test_data)]
@@ -927,7 +931,7 @@ def _hlvx(test_data: TestData, target: _Target, pmm: int) -> list[str]:
                 *_all_pmm(test_data, pmm),
                 *_tag_probes(test_data, target, cp, f"{_name(target)}_spvp{spvp}", ("hlvx.wu",), _TAGS, mode, 0),
                 *_hstatus(test_data, spvp=0, hu=0),
-                *_off(test_data, target),
+                *guest_translation_teardown(test_data),
             ]
             lines.extend(_wrap(target, body))
     return [*lines, *_clear_pmm(test_data)]
@@ -958,7 +962,7 @@ def _hlv_mxr(test_data: TestData, target: _Target, pmm: int) -> list[str]:
             *_all_pmm(test_data, pmm),
             *_mxr_cases(test_data, target, pmm, cp, "HS", ("hlv.d", "hsv.d")),
             *_hstatus(test_data, spvp=0, hu=0),
-            *_off(test_data, target),
+            *guest_translation_teardown(test_data),
         ]
         lines.extend(_wrap(target, body))
     return [*lines, *_clear_pmm(test_data)]
@@ -973,7 +977,7 @@ def _guest_mxr(test_data: TestData, target: _Target, pmm: int) -> list[str]:
             *_on(test_data, target, user=mode == "VU"),
             *_all_pmm(test_data, pmm),
             *_mxr_cases(test_data, target, pmm, cp, mode, ("ld", "sd")),
-            *_off(test_data, target),
+            *guest_translation_teardown(test_data),
         ]
         lines.extend(_wrap(target, body))
     return [*lines, *_clear_pmm(test_data)]
@@ -1011,7 +1015,7 @@ def _jalr(test_data: TestData, target: _Target, pmm: int) -> list[str]:
                 write_sigupd(check, test_data),
             ]
             body.extend(gated(probe, _tag_gate(target, tag, 0)))
-        lines.extend(_wrap(target, [*body, *_off(test_data, target)]))
+        lines.extend(_wrap(target, [*body, *guest_translation_teardown(test_data)]))
     test_data.int_regs.return_registers([base, addr, check])
     return [*lines, *_clear_pmm(test_data)]
 
@@ -1025,11 +1029,19 @@ def _misaligned(test_data: TestData, target: _Target, pmm: int) -> list[str]:
             *_on(test_data, target, user=mode == "VU"),
             *_pmm_case(test_data, field, pmm),
         ]
-        for tag in _FULL_TAGS[pmm]:
-            for op in ("lw", "sw"):
-                name = f"{_name(target)}_pmm{pmm:02b}_{op}_t{tag:04x}"
-                body.extend(_probe(test_data, cp, name, op, tag, mode, offset=1))
-        lines.extend(_wrap(target, [*body, *_off(test_data, target)]))
+
+        def build(base: str | HeldAddress, cp: str = cp) -> list[str]:
+            return [
+                line
+                for tag in _FULL_TAGS[pmm]
+                for op in ("lw", "sw")
+                for line in _probe(
+                    test_data, cp, f"{_name(target)}_pmm{pmm:02b}_{op}_t{tag:04x}", op, tag, "HS", offset=1, base=base
+                )
+            ]
+
+        body.extend(_stint(test_data, mode, build))
+        lines.extend(_wrap(target, [*body, *guest_translation_teardown(test_data)]))
     return [*lines, *_clear_pmm(test_data)]
 
 
@@ -1217,7 +1229,7 @@ def _faults(test_data: TestData, target: _Target, pmm: int) -> list[str]:
             lambda pair, user=user: _fault_unmaps(test_data, pair, user, gates),
             lambda pair: pair != _BARE_BARE,
         )
-        lines.extend(_wrap(target, [*body, *unmaps, *_off(test_data, target)]))
+        lines.extend(_wrap(target, [*body, *unmaps, *guest_translation_teardown(test_data)]))
     return [*lines, *_clear_pmm(test_data)]
 
 
@@ -1272,13 +1284,13 @@ _VECTOR = (
 )
 
 
-def _sweep_probe(test_data: TestData, insn: _Insn, cp: str, name: str, tag: int, mode: str) -> list[str]:
+def _sweep_probe(test_data: TestData, insn: _Insn, cp: str, name: str, tag: int, base: str | HeldAddress) -> list[str]:
     if insn.probe == "amo":
-        return probe_amo(insn.mnemonic, insn.readback, tag, name, test_data, _CG, coverpoint=cp, mode=mode)
+        return probe_amo(insn.mnemonic, insn.readback, tag, name, test_data, _CG, coverpoint=cp, base_address=base)
     if insn.probe == "cas":
-        return probe_zacas(insn.mnemonic, tag, name, test_data, _CG, coverpoint=cp, mode=mode)
+        return probe_zacas(insn.mnemonic, tag, name, test_data, _CG, coverpoint=cp, base_address=base)
     if insn.probe == "cbo":
-        return probe_cbo(insn.mnemonic, tag, name, test_data, _CG, coverpoint=cp, mode=mode)
+        return probe_cbo(insn.mnemonic, tag, name, test_data, _CG, coverpoint=cp, base_address=base)
     if insn.probe == "load":
         return probe_load(
             insn.mnemonic,
@@ -1291,7 +1303,7 @@ def _sweep_probe(test_data: TestData, insn: _Insn, cp: str, name: str, tag: int,
             via_sp=insn.via_sp,
             float_load=insn.fp,
             arch_extensions=insn.arch,
-            mode=mode,
+            base_address=base,
         )
     return probe_store(
         insn.mnemonic,
@@ -1305,24 +1317,26 @@ def _sweep_probe(test_data: TestData, insn: _Insn, cp: str, name: str, tag: int,
         via_sp=insn.via_sp,
         fp_move_mnemonic="fmv.d.x" if insn.fp else None,
         arch_extensions=insn.arch,
-        mode=mode,
+        base_address=base,
     )
 
 
-def _sweep(test_data: TestData, cp: str, prefix: str, tag: int, mode: str) -> list[str]:
-    """One access of each pm_h_insn group at pm_lo_page tagged with tag, in mode."""
+def _sweep(test_data: TestData, cp: str, prefix: str, tag: int, base: str | HeldAddress) -> list[str]:
+    """One access of each pm_h_insn group at base tagged with tag."""
 
     def name(mnemonic: str) -> str:
         return f"{prefix}_{mnemonic}_t{tag:04x}"
 
     lines = []
     for gate, insns in groupby(_SWEEP, key=lambda insn: insn.gate):
-        probes = [line for insn in insns for line in _sweep_probe(test_data, insn, cp, name(insn.mnemonic), tag, mode)]
+        probes = [line for insn in insns for line in _sweep_probe(test_data, insn, cp, name(insn.mnemonic), tag, base)]
         lines.extend(gated(probes, gate))
     vector = [
         line
         for mnemonic, template, readback in _VECTOR
-        for line in probe_vec(64, template, readback, tag, name(mnemonic), test_data, _CG, coverpoint=cp, mode=mode)
+        for line in probe_vec(
+            64, template, readback, tag, name(mnemonic), test_data, _CG, coverpoint=cp, base_address=base
+        )
     ]
     return [*lines, *gated(vector, "defined(ZVE64X_SUPPORTED)")]
 
@@ -1335,10 +1349,16 @@ def _masking(test_data: TestData, target: _Target, pmm: int, mode: str) -> list[
         *_on(test_data, target, user=mode == "VU"),
         *_pmm_case(test_data, field, pmm),
     ]
-    for tag in _SWEEP_TAGS:
-        sweep = _sweep(test_data, cp, f"{_name(target)}_pmm{pmm:02b}", tag, mode)
-        body.extend(gated(sweep, _tag_gate(target, tag, _PMLEN[pmm])))
-    return [*_wrap(target, [*body, *_off(test_data, target)]), *_clear_pmm(test_data)]
+    prefix = f"{_name(target)}_pmm{pmm:02b}"
+
+    def build(base: str | HeldAddress) -> list[str]:
+        lines = []
+        for tag in _SWEEP_TAGS:
+            lines.extend(gated(_sweep(test_data, cp, prefix, tag, base), _tag_gate(target, tag, _PMLEN[pmm])))
+        return lines
+
+    body.extend(_stint(test_data, mode, build))
+    return [*_wrap(target, [*body, *guest_translation_teardown(test_data)]), *_clear_pmm(test_data)]
 
 
 def _ss_page(test_data: TestData, pair: _Pair, user: bool, unmap: bool = False) -> list[str]:
@@ -1457,6 +1477,7 @@ def _chunk(
     tc.code.extend([*(_DEFINES if split else _NEED_DEFINES), *build()])
     for label, value in (("pm_lo_page", VALUE_OLD), (_ALIAS, _VALUE_ALIAS), (_SS_PAGE, 0)):
         tc.raw_data.extend([f".ifndef {label}", *data_page(label, value), ".endif"])
+    tc.raw_data.extend([f".ifndef {_M_SHADOW}", ".p2align 3", f"{_M_SHADOW}:", ".dword -1, -1", ".endif"])
     tc.raw_data.extend(lower_table_data(SV57X4, VS_SV57))
     return test_data.end_test_chunk()
 
@@ -1626,8 +1647,8 @@ def _xl_clear(test_data: TestData, cp: str) -> list[str]:
     lines = cases("HS")
     if not vsxl:
         for role in ("bare", "paged"):
-            on = _on(test_data, role, user=False, pmp_hole=False)
-            body = [*on, *cases("VS", f"_{_name(role)}"), *_off(test_data, role, pmp_hole=False)]
+            on = _on(test_data, role, user=False)
+            body = [*on, *cases("VS", f"_{_name(role)}"), *guest_translation_teardown(test_data)]
             lines.extend(_wrap(role, body))
     test_data.int_regs.return_register(check)
     return [*lines, *set_pmm_field(pmm_csr, 0, 0, test_data)]
@@ -1722,19 +1743,23 @@ def make_ssnpmh_pmm11(test_data: TestData) -> list[TestChunk]:
     return _make_chosen(test_data, 0b11)
 
 
-@add_priv_test_generator(
-    "Ssnpm", required_extensions=_EXTENSIONS, march_extensions=_MARCH, extra_defines=_BOOT, params=["VSXLEN: 32"]
-)
+# TODO: Register make_ssnpmh_vsxl and make_ssnpmh_vsuxl again for full coverage once Sail supports mixed XLEN.  Sail
+# ignores writes to hstatus.VSXL and vsstatus.UXL, so its signatures keep henvcfg.PMM and senvcfg.PMM, which a hart
+# with VSXLEN or VUXLEN 32 must clear.  Until then such a hart misses cp_pmm_vsxl_clear and cp_pmm_vsuxl_clear, and an
+# RV64-only hart has neither coverpoint.
+# @add_priv_test_generator(
+#     "Ssnpm", required_extensions=_EXTENSIONS, march_extensions=_MARCH, extra_defines=_BOOT, params=["VSXLEN: 32"]
+# )
 def make_ssnpmh_vsxl(test_data: TestData) -> list[TestChunk]:
     return _make_xl(test_data, "cp_pmm_vsxl_clear")
 
 
-@add_priv_test_generator(
-    "Ssnpm",
-    required_extensions=_EXTENSIONS,
-    march_extensions=_MARCH,
-    extra_defines=_BOOT,
-    params=["VSXLEN: 64", "VUXLEN: 32"],
-)
+# @add_priv_test_generator(
+#     "Ssnpm",
+#     required_extensions=_EXTENSIONS,
+#     march_extensions=_MARCH,
+#     extra_defines=_BOOT,
+#     params=["VSXLEN: 64", "VUXLEN: 32"],
+# )
 def make_ssnpmh_vsuxl(test_data: TestData) -> list[TestChunk]:
     return _make_xl(test_data, "cp_pmm_vsuxl_clear")

@@ -89,10 +89,11 @@ implemented_extensions:
   #   docs/datasheet/cpu_isa.adoc#L702-L726
   - { name: Zkt, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
-  # Privileged 1.12: mstatush (read-only zero), menvcfg/menvcfgh (read-only zero) and mconfigptr
-  # all exist.
+  # Privileged 1.13: mstatush (read-only zero), menvcfg/menvcfgh (read-only zero) and mconfigptr
+  # all exist, and misa is read-only. The 1.13 additions that need S-mode (medelegh) are absent,
+  # as 1.13 requires for an M+U core.
   #   docs/datasheet/cpu_csr.adoc#L321-L331, #L451-L476, #L907-L917
-  - { name: Sm, version: "= 1.12.0" }
+  - { name: Sm, version: "= 1.13.0" }
   # mcyclecfgh/minstretcfgh hold MINH (bit 30) and UINH (bit 28).
   #   docs/datasheet/cpu_csr.adoc#L776-L825
   - { name: Smcntrpmf, version: "= 1.0.0" }

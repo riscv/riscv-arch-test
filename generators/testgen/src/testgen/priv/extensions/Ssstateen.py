@@ -67,6 +67,8 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     # Every combination of the bit in the lower-level CSRs that have it (hstateen0 with H, sstateen0)
     for key, cp in FEATURE_COVERPOINTS + HSTATEEN_FEATURE_COVERPOINTS:
         feat = FEATURES[key]
+        if key == "context":  # hstateen0.CONTEXT only controls scontext
+            feat = replace(feat, guard="defined(UDB_SCONTEXT_IMPLEMENTED)")
         states = [list(zip(feat.lower_csrs, bits)) for bits in product((0, 1), repeat=len(feat.lower_csrs))]
         guard = None if (key, cp) in FEATURE_COVERPOINTS else "defined(H_SUPPORTED)"
         tc = test_data.new_test_chunk(test_chunks)

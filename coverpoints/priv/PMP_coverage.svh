@@ -608,9 +608,9 @@ covergroup PMP_Sm_cg with function sample(
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_offset_cp_cfg_A_tor0: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
-      bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
-      bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
+    addr_offset_cp_cfg_A_tor0: coverpoint ins.current.eff_addr {
+      bins zero         = {0};
+      bins below_top    = {`g_tor-4};
     }
   `endif
 
@@ -924,7 +924,7 @@ covergroup PMP_Sm_cg with function sample(
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     pmpcfg_for_tor0: coverpoint {pmpcfg[0]} {
-      wildcard bins pmp0cfg_xwr111  = {8'b10001111}; //L=1,A=TOR,XWR=111
+      wildcard bins pmp0cfg_xwr000  = {8'b10001000}; //L=1,A=TOR,XWR=000
     }
 
     pmpcfg_tor_bot_L0: coverpoint ({pmpcfg[1],pmpcfg[0]}) {
@@ -940,8 +940,8 @@ covergroup PMP_Sm_cg with function sample(
       bins range = {1};
     }
 
-    pmp_addr_for_tor0: coverpoint (pmpaddr[0] & `PMP_PMPADDR_LOWMASK) {
-      bins range = {`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
+    pmp_addr_for_tor0: coverpoint pmpaddr[0] {
+      bins range = {`g_tor >> 2};
     }
 
     addr_for_tor_bot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {

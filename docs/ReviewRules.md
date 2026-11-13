@@ -1,8 +1,8 @@
 # Review rules for ACT changes
 
 These rules are distilled from maintainer reviews of ACT PRs. Each is a default, not a law: report a departure when it
-makes the change harder to read, maintain or trust, and say which rule it breaks. Apply only the sections that match
-the files the change touches.
+makes the change harder to read, maintain or trust, and say which rule it breaks. Every section can apply; [ACTBot.md](ACTBot.md)
+lists the ones each kind of change needs at least.
 
 ## 1. Scope and hygiene
 

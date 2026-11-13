@@ -13,8 +13,9 @@ simulators, `run_tests.py` or coverage, never modifies files, and never commits,
   there, so the reviewer does not share the context of whoever wrote the change. Otherwise run it in place.
 - Then fix each finding that holds up. Drop a finding only if it is wrong, and be ready to say why.
 
-Review quality matters more than speed. Follow a lead as far as it needs to go to confirm or drop a finding, but don't
-survey code the change doesn't affect.
+Review quality matters more than speed. ACTBot is a full code review plus ACT-specific checks, not a checklist: the
+rules and the related-work step add to an ordinary correctness review and never replace it. Follow each lead as far as
+it needs to go to confirm or drop a finding, including into unchanged code the change calls or relies on.
 
 ## Procedure
 
@@ -33,7 +34,9 @@ survey code the change doesn't affect.
 
 ### 2. Decide what applies
 
-Read [ReviewRules.md](ReviewRules.md). Classify the changed files and apply only the matching sections:
+Read [ReviewRules.md](ReviewRules.md) as it is on the act4 reference (`git show <act4 ref>:docs/ReviewRules.md`), so a
+change that edits the rules is reviewed against the current ones; if act4 doesn't have the file yet, read the working
+tree's. Classify the changed files; each class needs at least these sections, and any other rule that fits applies too:
 
 - docs, README, AGENTS.md: sections 1-2;
 - CI workflows, `config/`: sections 1-2 and the config rules in 6;
@@ -41,14 +44,24 @@ Read [ReviewRules.md](ReviewRules.md). Classify the changed files and apply only
 - generators, testplans, templates: sections 1-4, and 6 for spec claims;
 - coverpoints and `coverpoints/norm/`: sections 1-2, 5 and 6.
 
-For generated files under `tests/` and `coverpoints/`, check that they changed along with their generator and spot
-check one or two; don't review them line by line.
+For generated files under `tests/` and `coverpoints/`, check that they changed along with their generator, and read
+enough of them to confirm the generator does what it claims, including the edge cases below.
 
 ### 3. Review
 
-Read each changed hunk with its context, then check it against the layers it must agree with: testplan, coverpoints,
-generator, generated test, normative mapping, CTP, configs. Look up the spec when the change depends on it; if no
-riscv-isa-manual checkout is at hand, read the adoc from github.com/riscv/riscv-isa-manual.
+First review the change as you would any code change, for correctness. Read each changed hunk with the code it calls
+and the code that calls it, and ask:
+
+- Is the logic right? Look for wrong conditions, off-by-one ranges, wrong signs or widths, and RV32/RV64, E,
+  misaligned, illegal-encoding or privilege-mode cases it handles wrongly or not at all.
+- Does each test exercise what it claims, and could it pass without doing so (a check that can't fail, a value that is
+  never compared, a trap that skips the instruction under test, a gate that is never true)?
+- Does each coverpoint hit the bins it should, and can a bin be hit by the wrong instruction or state?
+- Is the reading of the spec right? Look it up when the change depends on it; if no riscv-isa-manual checkout is at
+  hand, read the adoc from github.com/riscv/riscv-isa-manual.
+
+Then apply the rules from step 2, and check the change against the layers it must agree with: testplan, coverpoints,
+generator, generated test, normative mapping, CTP, configs.
 
 Verify every candidate finding before reporting it, by quoting the code, the spec, or a generated test that shows it.
 Before calling behavior wrong, check that the spec doesn't allow it. Drop what you can't verify, or ask it as a
@@ -84,4 +97,5 @@ Return only the report:
 - "No findings." when there are none.
 
 The report holds findings and questions only. Don't list or summarize checks that passed, and don't pad it. Write
-plainly and briefly.
+each finding plainly and briefly, but report every finding you verified: brevity is about wording, not about how many
+findings to report.

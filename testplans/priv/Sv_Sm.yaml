@@ -2,7 +2,7 @@
 suite: Sv_Sm
 source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=669910453#gid=669910453
 coverpoints:
-  - heading: "General Test Environment (Sv_Sm):\n- Sm suite: boots to M-mode (BOOT_TO_MMODE) because each coverpoint needs M-mode state (mstatus.MPRV/MPP, mstatus.TVM, mstatus.SBE or an M-mode CSR access). Mode changes use RVTEST_TSBI_GOTO_*.\n- These coverpoints were split out of Sv. Faults taken in M-mode are sampled from mcause.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n- Split from Sv: the M-mode half of cp_access_m_s (now cp_access_m) and all of Sv_mstatus_mprv_cg."
+  - heading: "General Test Environment (Sv_Sm):\n- Sm suite: boots to M-mode (BOOT_TO_MMODE) because each coverpoint needs M-mode state (mstatus.MPRV/MPP, mstatus.TVM, mstatus.SBE, an M-mode CSR access, or VA 0, whose mapping can replace the boot identity map of an image linked at a low address). Mode changes use RVTEST_TSBI_GOTO_*.\n- These coverpoints were split out of Sv. Faults taken in M-mode are sampled from mcause.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n- Split from Sv: the M-mode half of cp_access_m_s (now cp_access_m), all of Sv_mstatus_mprv_cg and the VA 0 bins of Sv_VA_cg (now Sv_Sm_VA_cg)."
   - name: cp_access_m
     goal: Verify satp is readable and writable from M-mode with csrrw, csrrs and csrrc
     description: "Sv32 and Sv39 configurations, M-mode: csrrw satp with 1, csrrs with 2, csrrc with 1, reading satp back after each; and the same three accesses with satp = 0 while mstatus.TVM=1, which does not restrict M-mode."
@@ -140,3 +140,23 @@ coverpoints:
     id: MSTATUS_SBE_WARL MSTATUSH_SBE_WARL mstatus_sbe_implicit
     rules:
       - "[norm:MSTATUS_SBE_WARL] [norm:MSTATUSH_SBE_WARL] [norm:mstatus_sbe_implicit]"
+  - name: cp_VA_i_mode
+    goal: Verify instruction fetch at the lowest virtual address of the translation mode
+    description: "M-mode writes the page tables and maps a 4 KiB execute-only page at VA 0. S-mode, running from the code alias va_rvtest_code_begin, jumps (jalr) to VA 0 and returns."
+    expectation: No fault; execution runs at VA 0 and returns.
+    bins: |-
+      mode_supported x VA_i
+      = 3 bins on RV64, 1 on RV32
+    id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
+    rules:
+      - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"
+  - name: cp_VA_d_mode
+    goal: Verify loads and stores at the lowest virtual address of the translation mode
+    description: "M-mode writes the page tables and maps a 4 KiB read/write page at VA 0. S-mode, running from the code alias va_rvtest_code_begin, stores and loads at VA 0 (a word for Sv32 and Sv39, a byte for Sv48 and Sv57)."
+    expectation: No fault; each load returns the value stored.
+    bins: |-
+      mode_supported x VA_d
+      = 3 bins on RV64, 1 on RV32
+    id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
+    rules:
+      - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"

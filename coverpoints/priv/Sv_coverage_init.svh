@@ -17,6 +17,7 @@
 `ifndef EXCLUDE_SM
     Sv_Sm_satp_cg = new(); Sv_Sm_satp_cg.set_inst_name("obj_Sv_Sm_satp");
     Sv_Sm_mstatus_mprv_cg = new(); Sv_Sm_mstatus_mprv_cg.set_inst_name("obj_Sv_Sm_mstatus_mprv");
+    Sv_Sm_VA_cg = new(); Sv_Sm_VA_cg.set_inst_name("obj_Sv_Sm_VA");
 `endif // EXCLUDE_SM
 `ifdef SV_ZICBO_ANY
     Sv_Zicbo_cg = new(); Sv_Zicbo_cg.set_inst_name("obj_Sv_Zicbo");

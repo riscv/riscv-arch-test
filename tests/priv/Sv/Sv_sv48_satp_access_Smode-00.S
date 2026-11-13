@@ -35,138 +35,138 @@ RVTEST_BEGIN
 
   csrw scause, zero
 // satp.PPN points at the identity-mapped root table so the S-mode code keeps running
-  LA(x6, rvtest_Sroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, SATP_MODE_SV48 << 60)
-  or x6, x6, x15
-  csrw satp, x6
+  LA(x15, rvtest_Sroot_pg_tbl)
+  srli x15, x15, 12
+  LI(x13, SATP_MODE_SV48 << 60)
+  or x15, x15, x13
+  csrw satp, x15
 Sv_satp_cg_cp_access_s_mode_sv48:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_mode_sv48, Sv_satp_cg_cp_access_s_mode_sv48_str)
-  mv x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_mode_sv48, Sv_satp_cg_cp_access_s_mode_sv48_str)
+  mv x13, x15
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_zeros:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_zeros, Sv_satp_cg_cp_access_s_asid_zeros_str)
-  LI(x15, 0xFFFF)
-  slli x15, x15, 44
-  or x15, x6, x15
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_zeros, Sv_satp_cg_cp_access_s_asid_zeros_str)
+  LI(x13, 0xFFFF)
+  slli x13, x13, 44
+  or x13, x15, x13
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_ones:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_ones, Sv_satp_cg_cp_access_s_asid_ones_str)
-  li x8, 1
-  slli x8, x8, 44
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_ones, Sv_satp_cg_cp_access_s_asid_ones_str)
+  li x14, 1
+  slli x14, x14, 44
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_0:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_0, Sv_satp_cg_cp_access_s_asid_walk_0_str)
-  li x8, 1
-  slli x8, x8, 45
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_0, Sv_satp_cg_cp_access_s_asid_walk_0_str)
+  li x14, 1
+  slli x14, x14, 45
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_1:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_1, Sv_satp_cg_cp_access_s_asid_walk_1_str)
-  li x8, 1
-  slli x8, x8, 46
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_1, Sv_satp_cg_cp_access_s_asid_walk_1_str)
+  li x14, 1
+  slli x14, x14, 46
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_2:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_2, Sv_satp_cg_cp_access_s_asid_walk_2_str)
-  li x8, 1
-  slli x8, x8, 47
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_2, Sv_satp_cg_cp_access_s_asid_walk_2_str)
+  li x14, 1
+  slli x14, x14, 47
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_3:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_3, Sv_satp_cg_cp_access_s_asid_walk_3_str)
-  li x8, 1
-  slli x8, x8, 48
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_3, Sv_satp_cg_cp_access_s_asid_walk_3_str)
+  li x14, 1
+  slli x14, x14, 48
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_4:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_4, Sv_satp_cg_cp_access_s_asid_walk_4_str)
-  li x8, 1
-  slli x8, x8, 49
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_4, Sv_satp_cg_cp_access_s_asid_walk_4_str)
+  li x14, 1
+  slli x14, x14, 49
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_5:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_5, Sv_satp_cg_cp_access_s_asid_walk_5_str)
-  li x8, 1
-  slli x8, x8, 50
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_5, Sv_satp_cg_cp_access_s_asid_walk_5_str)
+  li x14, 1
+  slli x14, x14, 50
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_6:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_6, Sv_satp_cg_cp_access_s_asid_walk_6_str)
-  li x8, 1
-  slli x8, x8, 51
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_6, Sv_satp_cg_cp_access_s_asid_walk_6_str)
+  li x14, 1
+  slli x14, x14, 51
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_7:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_7, Sv_satp_cg_cp_access_s_asid_walk_7_str)
-  li x8, 1
-  slli x8, x8, 52
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_7, Sv_satp_cg_cp_access_s_asid_walk_7_str)
+  li x14, 1
+  slli x14, x14, 52
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_8:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_8, Sv_satp_cg_cp_access_s_asid_walk_8_str)
-  li x8, 1
-  slli x8, x8, 53
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_8, Sv_satp_cg_cp_access_s_asid_walk_8_str)
+  li x14, 1
+  slli x14, x14, 53
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_9:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_9, Sv_satp_cg_cp_access_s_asid_walk_9_str)
-  li x8, 1
-  slli x8, x8, 54
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_9, Sv_satp_cg_cp_access_s_asid_walk_9_str)
+  li x14, 1
+  slli x14, x14, 54
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_10:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_10, Sv_satp_cg_cp_access_s_asid_walk_10_str)
-  li x8, 1
-  slli x8, x8, 55
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_10, Sv_satp_cg_cp_access_s_asid_walk_10_str)
+  li x14, 1
+  slli x14, x14, 55
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_11:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_11, Sv_satp_cg_cp_access_s_asid_walk_11_str)
-  li x8, 1
-  slli x8, x8, 56
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_11, Sv_satp_cg_cp_access_s_asid_walk_11_str)
+  li x14, 1
+  slli x14, x14, 56
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_12:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_12, Sv_satp_cg_cp_access_s_asid_walk_12_str)
-  li x8, 1
-  slli x8, x8, 57
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_12, Sv_satp_cg_cp_access_s_asid_walk_12_str)
+  li x14, 1
+  slli x14, x14, 57
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_13:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_13, Sv_satp_cg_cp_access_s_asid_walk_13_str)
-  li x8, 1
-  slli x8, x8, 58
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_13, Sv_satp_cg_cp_access_s_asid_walk_13_str)
+  li x14, 1
+  slli x14, x14, 58
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_14:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_14, Sv_satp_cg_cp_access_s_asid_walk_14_str)
-  li x8, 1
-  slli x8, x8, 59
-  or x15, x6, x8
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_14, Sv_satp_cg_cp_access_s_asid_walk_14_str)
+  li x14, 1
+  slli x14, x14, 59
+  or x13, x15, x14
+  csrw satp, x13
 Sv_satp_cg_cp_access_s_asid_walk_15:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, Sv_satp_cg_cp_access_s_asid_walk_15, Sv_satp_cg_cp_access_s_asid_walk_15_str)
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_satp_cg_cp_access_s_asid_walk_15, Sv_satp_cg_cp_access_s_asid_walk_15_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -178,25 +178,25 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-Sv_satp_cg_cp_access_s_mode_sv48_str: .string "\"test: 574; cg: Sv_satp_cg; cp: cp_access_s; bin: mode_sv48\""
-Sv_satp_cg_cp_access_s_asid_zeros_str: .string "\"test: 575; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_zeros\""
-Sv_satp_cg_cp_access_s_asid_ones_str: .string "\"test: 576; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_ones\""
-Sv_satp_cg_cp_access_s_asid_walk_0_str: .string "\"test: 577; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_0\""
-Sv_satp_cg_cp_access_s_asid_walk_1_str: .string "\"test: 578; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_1\""
-Sv_satp_cg_cp_access_s_asid_walk_2_str: .string "\"test: 579; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_2\""
-Sv_satp_cg_cp_access_s_asid_walk_3_str: .string "\"test: 580; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_3\""
-Sv_satp_cg_cp_access_s_asid_walk_4_str: .string "\"test: 581; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_4\""
-Sv_satp_cg_cp_access_s_asid_walk_5_str: .string "\"test: 582; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_5\""
-Sv_satp_cg_cp_access_s_asid_walk_6_str: .string "\"test: 583; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_6\""
-Sv_satp_cg_cp_access_s_asid_walk_7_str: .string "\"test: 584; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_7\""
-Sv_satp_cg_cp_access_s_asid_walk_8_str: .string "\"test: 585; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_8\""
-Sv_satp_cg_cp_access_s_asid_walk_9_str: .string "\"test: 586; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_9\""
-Sv_satp_cg_cp_access_s_asid_walk_10_str: .string "\"test: 587; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_10\""
-Sv_satp_cg_cp_access_s_asid_walk_11_str: .string "\"test: 588; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_11\""
-Sv_satp_cg_cp_access_s_asid_walk_12_str: .string "\"test: 589; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_12\""
-Sv_satp_cg_cp_access_s_asid_walk_13_str: .string "\"test: 590; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_13\""
-Sv_satp_cg_cp_access_s_asid_walk_14_str: .string "\"test: 591; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_14\""
-Sv_satp_cg_cp_access_s_asid_walk_15_str: .string "\"test: 592; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_15\""
+Sv_satp_cg_cp_access_s_mode_sv48_str: .string "\"test: 571; cg: Sv_satp_cg; cp: cp_access_s; bin: mode_sv48\""
+Sv_satp_cg_cp_access_s_asid_zeros_str: .string "\"test: 572; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_zeros\""
+Sv_satp_cg_cp_access_s_asid_ones_str: .string "\"test: 573; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_ones\""
+Sv_satp_cg_cp_access_s_asid_walk_0_str: .string "\"test: 574; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_0\""
+Sv_satp_cg_cp_access_s_asid_walk_1_str: .string "\"test: 575; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_1\""
+Sv_satp_cg_cp_access_s_asid_walk_2_str: .string "\"test: 576; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_2\""
+Sv_satp_cg_cp_access_s_asid_walk_3_str: .string "\"test: 577; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_3\""
+Sv_satp_cg_cp_access_s_asid_walk_4_str: .string "\"test: 578; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_4\""
+Sv_satp_cg_cp_access_s_asid_walk_5_str: .string "\"test: 579; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_5\""
+Sv_satp_cg_cp_access_s_asid_walk_6_str: .string "\"test: 580; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_6\""
+Sv_satp_cg_cp_access_s_asid_walk_7_str: .string "\"test: 581; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_7\""
+Sv_satp_cg_cp_access_s_asid_walk_8_str: .string "\"test: 582; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_8\""
+Sv_satp_cg_cp_access_s_asid_walk_9_str: .string "\"test: 583; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_9\""
+Sv_satp_cg_cp_access_s_asid_walk_10_str: .string "\"test: 584; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_10\""
+Sv_satp_cg_cp_access_s_asid_walk_11_str: .string "\"test: 585; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_11\""
+Sv_satp_cg_cp_access_s_asid_walk_12_str: .string "\"test: 586; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_12\""
+Sv_satp_cg_cp_access_s_asid_walk_13_str: .string "\"test: 587; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_13\""
+Sv_satp_cg_cp_access_s_asid_walk_14_str: .string "\"test: 588; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_14\""
+Sv_satp_cg_cp_access_s_asid_walk_15_str: .string "\"test: 589; cg: Sv_satp_cg; cp: cp_access_s; bin: asid_walk_15\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

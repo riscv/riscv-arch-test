@@ -2639,6 +2639,13 @@ common_\__MODE__\()int_handler:
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
 
+// Save xEPC for tests that check where the interrupt was taken: right after the CSR write or
+// xRET that enabled it (norm:intr_mip_mie_xret_csrwr). Interrupts that arrive at an arbitrary
+// time are not checked, so xEPC is not in the trap signature.
+        csrr    T3, CSR_XEPC
+        LA(     T6, rvtest_int_xepc)
+        SREG    T3, 0(T6)
+
 // Release an armed wait loop (wait_loop_arm/wait_loop in the test generator). The loop checks
 // rvtest_wait_loop's exit before each WFI or WRS and leaves when it is 0, so clearing it ends
 // the wait. If the interrupt was taken inside the loop, between that check and the wait

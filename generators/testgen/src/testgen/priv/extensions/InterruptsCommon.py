@@ -31,6 +31,8 @@ sstc_ints = {"SSTC_STCE0": 5, "SSTC_STCE1": 5}
 vs_ints = {"VSEI": 10, "VSTI": 6, "VSSI": 2}
 # mip/mie bit position of every interrupt type
 int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints | vs_ints
+# Interrupts raised by a CSR write (mip, sip or hvip), which must be taken before the next instruction when enabled
+csr_raised_ints = reg_ints | vs_ints
 # Guard symbol and coverpoint for types that do not use the UDB_<int>_INTR_IMPL / cp_trigger defaults
 int_guard = {"MIP_SEIP": "UDB_SEI_INTR_IMPL", "MIP_SSIP": "UDB_SSI_INTR_IMPL", "SIP_SSIP": "UDB_SSI_INTR_IMPL"}
 int_guard |= {"LCOFI": "SSCOFPMF_SUPPORTED", "SIP_LCOFIP": "SSCOFPMF_SUPPORTED"}
@@ -150,6 +152,40 @@ def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
     if priv == suite.boot:
         return []
     return [f"RVTEST_TSBI_GOTO_{suite.boot}MODE # return to {suite.boot}-mode"]
+
+
+def int_xepc_clear(reg: int) -> list[str]:
+    """Clear rvtest_int_xepc, where the trap handler saves the xEPC of each interrupt. Emit right
+    before the instruction that enables a pending interrupt (see int_xepc_check)."""
+    return [
+        f"LA(x{reg}, rvtest_int_xepc)",
+        f"SREG x0, 0(x{reg}) # no interrupt taken yet",
+    ]
+
+
+def int_xepc_check(test_data: TestData, label: str, reg: int, addr_reg: int) -> list[str]:
+    """Record where an interrupt enabled by the preceding CSR write or xRET was taken.
+
+    The conditions for taking an interrupt must be evaluated immediately after an xRET or an explicit
+    write to a CSR they depend on (norm:intr_mip_mie_xret_csrwr), so a pending interrupt that becomes
+    enabled is taken before the next instruction. A T-SBI call ends with its ecall, so the next
+    instruction is also where the T-SBI xRET returns. The signature gets xEPC - ``label``, which is 0
+    when the interrupt is taken at once and 4 or 8 when one or two more instructions retire first,
+    or 0 when no interrupt was taken since int_xepc_clear.
+    """
+    # The rule is new in Priv-v1.12; earlier harts may take the interrupt a few instructions later.
+    return [
+        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
+        f"{label}: # an interrupt enabled by the previous instruction is taken here",
+        f"LA(x{reg}, rvtest_int_xepc)",
+        f"LREG x{reg}, 0(x{reg}) # xEPC of the last interrupt, 0 if none was taken",
+        f"beqz x{reg}, 1f",
+        f"LA(x{addr_reg}, {label})",
+        f"sub x{reg}, x{reg}, x{addr_reg} # xEPC - {label}: 0 when taken before the next instruction",
+        "1:",
+        write_sigupd(reg, test_data),
+        "#endif // SM1P12P0_OR_LATER_SUPPORTED",
+    ]
 
 
 def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
@@ -314,41 +350,66 @@ def generate_cp_priority(
                     "#endif // S_SUPPORTED",
                 ]
                 bin_name += f"_deleg_{deleg}"
-            tc.code += [
-                f"#ifdef {guard_symbol(first)}",
-                f"#ifdef {guard_symbol(second)}",
-                *deleg_lines,
-                f"LI(x{tmp_reg}, {status_mask:#x})",
-                f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
-                f"LI(x{tmp_reg}, 0)",
-                *write_ie(suite, tmp_reg, "0"),
-                *mode_enter(suite, priv),
-                *_raise(raised, pair, "SET", priv),
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
-                test_data.add_testcase(bin_name, _priority_label(suite, coverpoint, priv, pair), suite.covergroup),
-                tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", flavor(priv)),
-                *(
-                    [
-                        "#ifdef H_SUPPORTED",
-                        tsbi_call_or_direct(f"csrr x{tmp_reg}, hip", flavor(priv)),
-                        f"or x{check_reg}, x{check_reg}, x{tmp_reg} # the VS-level pending bits are in hip",
-                        "#endif // H_SUPPORTED",
+            # The instruction that enables the pending pair is last, so they are arbitrated together and
+            # taken in priority order, before the next instruction. It is the write to the enable CSR
+            # (through T-SBI below the CSR's mode, so the T-SBI xRET enables them). In the boot mode,
+            # the pending flavor also runs with the global enable (mstatus.MIE or sstatus.SIE) written last.
+            for last in ["ie", "status"] if vary == "ip" and priv == suite.boot else ["ie"]:
+                case_name = bin_name if last == "ie" else f"{bin_name}_status_last"
+                if last == "ie":
+                    setup = [
+                        f"LI(x{tmp_reg}, {status_mask:#x})",
+                        f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
+                        f"LI(x{tmp_reg}, 0)",
+                        *write_ie(suite, tmp_reg, "0"),
                     ]
-                    if suite.hie
-                    else []
-                ),
-                f"LI(x{tmp_reg}, {raised_mask:#x})",
-                f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
-                write_sigupd(check_reg, test_data),
-                # Enable last, so the pending interrupts are arbitrated together and taken in priority order
-                f"LI(x{tmp_reg}, {ie_after})",
-                *_enable_pair(suite, tmp_reg, ie_after, pair, priv),
-                *_raise(raised, pair, "CLR", priv),
-                *mode_exit(suite, priv),
-                f"#endif // {guard_symbol(second)}",
-                f"#endif // {guard_symbol(first)}",
-                "",
-            ]
+                    enable = [
+                        f"LI(x{tmp_reg}, {ie_after})",
+                        *_enable_pair(suite, tmp_reg, ie_after, pair, priv),
+                    ]
+                else:
+                    setup = [
+                        f"LI(x{tmp_reg}, {status_mask:#x})",
+                        f"csrc {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 0",
+                        f"LI(x{tmp_reg}, {ie_after})",
+                        *write_ie(suite, tmp_reg, f"{ie_after:#x}"),
+                    ]
+                    enable = [
+                        f"LI(x{tmp_reg}, {status_mask:#x})",
+                        f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
+                    ]
+                tc.code += [
+                    f"#ifdef {guard_symbol(first)}",
+                    f"#ifdef {guard_symbol(second)}",
+                    *deleg_lines,
+                    *setup,
+                    *mode_enter(suite, priv),
+                    *_raise(raised, pair, "SET", priv),
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
+                    test_data.add_testcase(case_name, _priority_label(suite, coverpoint, priv, pair), suite.covergroup),
+                    tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", flavor(priv)),
+                    *(
+                        [
+                            "#ifdef H_SUPPORTED",
+                            tsbi_call_or_direct(f"csrr x{tmp_reg}, hip", flavor(priv)),
+                            f"or x{check_reg}, x{check_reg}, x{tmp_reg} # the VS-level pending bits are in hip",
+                            "#endif // H_SUPPORTED",
+                        ]
+                        if suite.hie
+                        else []
+                    ),
+                    f"LI(x{tmp_reg}, {raised_mask:#x})",
+                    f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
+                    write_sigupd(check_reg, test_data),
+                    *int_xepc_clear(tmp_reg),
+                    *enable,
+                    *int_xepc_check(test_data, f"{coverpoint}_{case_name}_xepc", check_reg, tmp_reg),
+                    *_raise(raised, pair, "CLR", priv),
+                    *mode_exit(suite, priv),
+                    f"#endif // {guard_symbol(second)}",
+                    f"#endif // {guard_symbol(first)}",
+                    "",
+                ]
 
     test_data.int_regs.return_registers([tmp_reg, check_reg])
 

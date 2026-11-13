@@ -14,6 +14,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
     InterruptSuite,
+    csr_raised_ints,
     emit_interrupts,
     flavor,
     generate_cp_enable,
@@ -25,6 +26,8 @@ from testgen.priv.extensions.InterruptsCommon import (
     guard_symbol,
     int_coverpoint,
     int_macro,
+    int_xepc_check,
+    int_xepc_clear,
     label_coverpoint,
     mode_enter,
     mode_exit,
@@ -66,7 +69,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
         f"Trigger each interrupt in {priv} mode with sie=1s (and hie=1s with H) x stvec.MODE=DIRECT/VECTORED"
         " x sstatus.SIE=0/1",
     )
-    tmp_reg = test_data.int_regs.get_register()
+    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     for int_type in [*supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
         if priv in ("U", "VS", "VU") and int_type == "SSTC_STCE0":
@@ -111,7 +114,19 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                         COVERGROUP,
                     ),
                     *mode_enter(suite, priv),
+                    # A CSR write (mip, sip or hvip) raises these, so an enabled one is taken before the next instruction
+                    *(int_xepc_clear(tmp_reg) if int_type in csr_raised_ints else []),
                     f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
+                    *(
+                        int_xepc_check(
+                            test_data,
+                            f"{cp}_priv_{priv}_{int_type}_mode_{mode}_enable_{enable}_xepc",
+                            check_reg,
+                            tmp_reg,
+                        )
+                        if int_type in csr_raised_ints
+                        else []
+                    ),
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                     f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                     *mode_exit(suite, priv),
@@ -120,7 +135,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     "",
                 ]
 
-    test_data.int_regs.return_register(tmp_reg)
+    test_data.int_regs.return_registers([tmp_reg, check_reg])
 
 
 _COMMON_GENERATORS = [

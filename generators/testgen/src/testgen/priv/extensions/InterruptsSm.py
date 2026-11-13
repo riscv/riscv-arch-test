@@ -15,6 +15,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
     InterruptSuite,
+    csr_raised_ints,
     emit_interrupts,
     flavor,
     generate_cp_enable,
@@ -27,6 +28,8 @@ from testgen.priv.extensions.InterruptsCommon import (
     guard_symbol,
     int_coverpoint,
     int_macro,
+    int_xepc_check,
+    int_xepc_clear,
     label_coverpoint,
     machine_ints,
     mode_enter,
@@ -76,7 +79,7 @@ def _generate_cp_trigger_sm(
         f"Trigger each interrupt in {priv} mode with mie=1s x mideleg = zeros/ones x mtvec.MODE=DIRECT/VECTORED"
         " x mstatus.SIE=0/1 x mstatus.MIE=0/1",
     )
-    tmp_reg = test_data.int_regs.get_register()
+    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
         macro = int_macro[int_type]
@@ -135,7 +138,19 @@ def _generate_cp_trigger_sm(
                                 COVERGROUP,
                             ),
                             *mode_enter(suite, priv),
+                            # A CSR write (mip, sip or hvip) raises these, so an enabled one is taken before the next instruction
+                            *(int_xepc_clear(tmp_reg) if int_type in csr_raised_ints else []),
                             f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
+                            *(
+                                int_xepc_check(
+                                    test_data,
+                                    f"{cp}_priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}_xepc",
+                                    check_reg,
+                                    tmp_reg,
+                                )
+                                if int_type in csr_raised_ints
+                                else []
+                            ),
                             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                             f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                             *mode_exit(suite, priv),
@@ -145,7 +160,7 @@ def _generate_cp_trigger_sm(
                             "",
                         ]
 
-    test_data.int_regs.return_register(tmp_reg)
+    test_data.int_regs.return_registers([tmp_reg, check_reg])
 
 
 def _generate_cp_priority_mideleg(

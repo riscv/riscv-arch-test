@@ -26,8 +26,16 @@ exclude_extensions:
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L1854-L2008
   # https://github.com/openhwfoundation/cva6/issues/3175
   # https://github.com/openhwfoundation/cva6/issues/3651
+  # The priority and register-trigger tests also check that the interrupt is taken before the next
+  # instruction; on cv32a6_imac_sv32 xEPC is 4 or 8 bytes later after a write to mie, sie, mip or sip.
   - InterruptsSm_priority_mip_M
   - InterruptsSm_priority_mideleg_M
+  - InterruptsSm_priority_mie_M
+  - InterruptsSm_trigger_M
+  - InterruptsSm_trigger_S
+  - InterruptsS_priority_sie_S
+  - InterruptsS_priority_sip_S
+  - InterruptsS_trigger_S
   # With a delegated SEI and a non-delegated STI both pending in S- or U-mode, CVA6 takes SEI to
   # S-mode, but the M-level STI must be taken first. The decoder picks one cause in a fixed order
   # and only then applies mideleg.

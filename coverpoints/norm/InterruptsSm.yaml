@@ -322,9 +322,11 @@ normative_rule_definitions:
   # instruction or an explicit write to a CSR on which these interrupt trap conditions
   # expressly depend (including mip, mie, mstatus, and mideleg).
   - name: intr_mip_mie_xret_csrwr
+    # The priority and register-trigger tests check that xEPC is the instruction after the CSR write
+    # (mie, mstatus, mip or hvip) or the T-SBI xRET that enables the pending interrupt.
     coverpoint:
       [
-        "InterruptsSm_cg/{cp_trigger_tsbi, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_enable_one_tsbi}",
+        "InterruptsSm_cg/{cp_priority_mip, cp_priority_mie, cp_priority_mideleg, cp_priority_mip_tsbi, cp_priority_mie_tsbi, cp_priority_mideleg_tsbi, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_trigger_reg_sip_ssip}",
       ]
 
   # Multiple simultaneous interrupts destined for M-mode are handled in the

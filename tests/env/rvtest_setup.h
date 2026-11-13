@@ -1077,6 +1077,14 @@
   rvtest_wait_loop:
     .dword 0, 0
 
+  // xEPC of the last interrupt, stored by common_Xint_handler. A test that enables a pending
+  // interrupt with a CSR write or an xRET clears it first and then checks that the interrupt
+  // was taken at the next instruction (int_xepc_check in the test generator).
+  .p2align 3
+  .global rvtest_int_xepc
+  rvtest_int_xepc:
+    .dword 0
+
   // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
   .p2align 3
   rvtest_current_mode:

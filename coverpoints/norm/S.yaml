@@ -152,7 +152,12 @@ normative_rule_definitions:
   # instruction or an explicit write to a CSR on which these interrupt trap
   # conditions expressly depend (including sip, sie and sstatus).
   - name: sie_sip_strap_time_constraint
-    coverpoint: ["TODO"]
+    # xEPC is checked to be the instruction after the write to sie, sip or sstatus, or the SRET, that
+    # enables the pending interrupt
+    coverpoint:
+      [
+        "InterruptsS_cg/{cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_trigger_reg_sip_ssip}",
+      ]
 
   # Interrupts to S-mode take priority over any interrupts to lower privilege modes.
   - name: s_interrupt_priority

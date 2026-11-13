@@ -2553,6 +2553,10 @@
         .string "RVCP: END OF DEBUG INFORMATION\n\n"
     fflagsstr:
         .string "fflags\n"
+    // canary_check stores this address as a data word right after a jalr. Keep it 4-byte aligned so
+    // the word cannot decode as a jal (opcode bits 1:0 = 11): a core that fetches down the wrong path
+    // past the jalr could follow such a jal into IO space (https://github.com/bsc-loca/sargantana/issues/145).
+    .p2align 2
     canary_mismatch:
         .string "Testcase signature canary mismatch!"
     regular_sig_offset_header:

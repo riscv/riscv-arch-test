@@ -340,7 +340,9 @@
       RVMODEL_IO_INIT(T1, T2, T3)
     #endif
 
-    #ifdef S_SUPPORTED
+    // Only tests that use rvtest_Sroot_pg_tbl get it and its identity map. testgen defines
+    // RVTEST_USES_S_PAGE_TABLES in those.
+    #if defined(S_SUPPORTED) && defined(RVTEST_USES_S_PAGE_TABLES)
       rvtest_identity_map:
         // Identity maps rvtest_data_begin, forming an aligned Sv32 megapage,
         // Sv39 gigapage, Sv48 terapage and Sv57 petapage.
@@ -1109,10 +1111,14 @@
 
   // Root page tables
   #ifdef S_SUPPORTED
-    .p2align 12
-    rvtest_Sroot_pg_tbl:
-      .zero(4096)                // 4KB page table
-    #ifdef H_SUPPORTED
+    // Only tests that use them get the root page tables. testgen defines RVTEST_USES_S_PAGE_TABLES and
+    // RVTEST_USES_H_PAGE_TABLES in the tests that name them (the H ones only in tests that require H).
+    #ifdef RVTEST_USES_S_PAGE_TABLES
+      .p2align 12
+      rvtest_Sroot_pg_tbl:
+        .zero(4096)              // 4KB page table
+    #endif
+    #ifdef RVTEST_USES_H_PAGE_TABLES
       .p2align 14
       rvtest_Hroot_pg_tbl:
         .zero(16384)               // 16KB page table

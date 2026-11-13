@@ -45,18 +45,23 @@ FEATURE_COVERPOINTS = [
 
 
 def _mstateen_states(feat: StateenFeature, gate: str = "mstateen0") -> list[list[GateWrite]]:
-    """Clear the bit in `gate`, then set it and the bit in each lower-level CSR.
+    """Clear the bit in `gate`; then set it and the bit in each lower-level CSR; then clear the lower-level bits.
 
     Clearing the bit in `gate` makes it read-only zero in the lower-level CSRs, so they must be set again.
+    The last state checks that the lower-level bits restrict only the modes below their own level, never M-mode.
     """
-    return [[(gate, 0)], [(gate, 1), *((csr, 1) for csr in feat.lower_csrs)]]
+    states = [[(gate, 0)], [(gate, 1), *((csr, 1) for csr in feat.lower_csrs)]]
+    if feat.lower_csrs:
+        states.append([(gate, 1), *((csr, 0) for csr in feat.lower_csrs)])
+    return states
 
 
 def _se_tests(test_data: TestData, n: int, csr: str) -> list[str]:
-    """Access `csr` with mstateen<n>.SE<n> set and clear: sstateen<n> from S and VS-mode, hstateen<n> from HS-mode."""
+    """Access `csr` with mstateen<n>.SE<n> set and clear: sstateen<n> from M, S and VS-mode, hstateen<n> from M and
+    HS-mode.  SE<n> restricts only the modes below M, so M-mode access always succeeds."""
     if csr == "sstateen":
         feat = replace(FEATURES["se"], csrs=(f"sstateen{n}",), lower_csrs=(f"hstateen{n}",))
-        cp, modes = "cp_mstateen_se_controls_sstateen", ["S", "VS"]
+        cp, modes = "cp_mstateen_se_controls_sstateen", ["M", "S", "VS"]
     else:
         # hstateen<n>.SE<n> reads as zero while mstateen<n>.SE<n> = 0, and whether it keeps its value is unspecified,
         # so set it again after mstateen<n>.SE<n> is set again.
@@ -66,7 +71,12 @@ def _se_tests(test_data: TestData, n: int, csr: str) -> list[str]:
             guard="defined(H_SUPPORTED)",
             lower_csrs=(f"hstateen{n}",),
         )
-        cp, modes = "cp_mstateen_se_controls_hstateen", ["S"]
+        cp, modes = "cp_mstateen_se_controls_hstateen", ["M", "S"]
+        # Set hstateen<n>.SE<n> again after mstateen<n>.SE<n> is set: while it was read-only zero, the M-mode
+        # access wrote it, and its value is then up to the implementation.
+        gate = f"mstateen{n}"
+        states = [[(gate, 0)], [(gate, 1), (f"hstateen{n}", 1)]]
+        return feature_tests(test_data, CG, cp, feat, states=states, modes=modes, base="M")
     return feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat, f"mstateen{n}"), modes=modes, base="M")
 
 

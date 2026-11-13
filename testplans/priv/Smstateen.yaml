@@ -36,108 +36,153 @@ coverpoints:
   - name: cp_fcsr
     goal: fcsr controls access to fcsr when misa.F = 0
     description: |-
-      If Zfinx is supported:
-      with misa.F = 0 and mstateen0.fcsr, read and write fcsr
+      If Zfinx is supported, with misa.F = 0: With mstateen0.FCSR = 0, mstateen0.FCSR = 1 with the hstateen0 and
+      sstateen0 bit set, and mstateen0.FCSR = 1 with the hstateen0 and sstateen0 bit clear, read and write fcsr, frm
+      and fflags from M, S, U, VS and VU-mode (S, VS and VU where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.FCSR = 0, illegal instruction from S, U,
+      VS and VU-mode. With mstateen0.FCSR = 1, as hstateen0 and sstateen0 and the usual CSR privilege rules allow; a
+      clear hstateen0 and sstateen0 bit restricts only the modes below its own level.
+    bins: "3 states (fewer without H or S) x 5 modes x 3 accesses x 3 CSRs"
     rules:
       - stateen0_fcsr_op
       - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_jvt_access
     goal: jvt controls access
     description: |-
-      If Zcmt is supported:
-      With msstaten0.JVT = {0,1}, read and write jvt   from the M, S if supported, else U
-    expectation: Always successful
+      If Zcmt is supported: With mstateen0.JVT = 0, mstateen0.JVT = 1 with the hstateen0 and sstateen0 bit set, and
+      mstateen0.JVT = 1 with the hstateen0 and sstateen0 bit clear, read and write jvt from M, S, U, VS and VU-mode
+      (S, VS and VU where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.JVT = 0, illegal instruction from S, U,
+      VS and VU-mode. With mstateen0.JVT = 1, as hstateen0 and sstateen0 and the usual CSR privilege rules allow; a
+      clear hstateen0 and sstateen0 bit restricts only the modes below its own level.
     rules:
       - stateen0_jvt_op
   - name: cp_envcfg
     goal: envcfg controls access to senvcfg
-    description: With mstateen0.envcfg = {0,1}, read and write sevncfg from  M, S if supported, else U
-    expectation: Always successful
-    bins: 2 states x 2 accesses
+    description: |-
+      With mstateen0.ENVCFG = 0, mstateen0.ENVCFG = 1 with the hstateen0 bit set, and mstateen0.ENVCFG = 1 with the
+      hstateen0 bit clear, read and write senvcfg (and henvcfg with H) from M, S, U, VS and VU-mode (S, VS and VU
+      where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.ENVCFG = 0, illegal instruction from S,
+      U, VS and VU-mode. With mstateen0.ENVCFG = 1, as hstateen0 and the usual CSR privilege rules allow; a clear
+      hstateen0 bit restricts only the modes below its own level.
+    bins: "3 states (2 without H) x 5 modes x 3 accesses x CSRs"
     rules:
       - mstateen0_envcfg_op
   - name: cp_csrind
     goal: csrind controls access
     description: |-
-      If Sscsrind supported:
-      With mstateen0.CSRIND = {0, 1}, read and write siselect.  And with siselect having some value TBD, write and read sireg,
-      sireg2, sireg3, sireg4, sireg5, sireg6.  M, S if supported, else U
-    expectation: Illegal instruction if 0 except in M-mode, else successful
-    bins: 2 states x 5 modes x 3 accesses x 7 regs
+      If Sscsrind is supported: With mstateen0.CSRIND = 0, mstateen0.CSRIND = 1 with the hstateen0 bit set, and
+      mstateen0.CSRIND = 1 with the hstateen0 bit clear, read and write siselect and sireg, sireg2-6 from M, S, U,
+      VS and VU-mode (S, VS and VU where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.CSRIND = 0, illegal instruction from S,
+      U, VS and VU-mode. With mstateen0.CSRIND = 1, as hstateen0 and the usual CSR privilege rules allow; a clear
+      hstateen0 bit restricts only the modes below its own level.
+    bins: "3 states (2 without H) x 5 modes x 3 accesses x 7 CSRs"
     rules:
       - mstateen0_csrind_op
   - name: cp_aia
     goal: aia controls access
     description: |-
-      If Ssaia supported:
-      With msstateen.AIA = {0,1}, read and write all state introduced by Ssaia. M, S if supported, else U
-    expectation: Always successful
-    bins: 2 states x 2 accesses x ? regs
+      If Ssaia is supported: With mstateen0.AIA = 0, mstateen0.AIA = 1 with the hstateen0 bit set, and mstateen0.AIA
+      = 1 with the hstateen0 bit clear, read and write the state Ssaia adds from M, S, U, VS and VU-mode (S, VS and
+      VU where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.AIA = 0, illegal instruction from S, U,
+      VS and VU-mode. With mstateen0.AIA = 1, as hstateen0 and the usual CSR privilege rules allow; a clear
+      hstateen0 bit restricts only the modes below its own level.
+    bins: "3 states (2 without H) x 5 modes x 3 accesses x CSRs"
     rules:
       - mstateen0_aia_op
   - name: cp_imsic
     goal: ismic controls access
     description: |-
-      If IMSIC supported:
-      With msstateen.IMSIC = {0,1}, read and write all state introduced by IMSIC (stopei?).  M, S if supported, else U
-    expectation: Always successful
-    bins: 2 states x 2 accesses x ? regs
+      If an IMSIC is supported: With mstateen0.IMSIC = 0, mstateen0.IMSIC = 1 with the hstateen0 bit set, and
+      mstateen0.IMSIC = 1 with the hstateen0 bit clear, read and write stopei from M, S, U, VS and VU-mode (S, VS
+      and VU where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.IMSIC = 0, illegal instruction from S, U,
+      VS and VU-mode. With mstateen0.IMSIC = 1, as hstateen0 and the usual CSR privilege rules allow; a clear
+      hstateen0 bit restricts only the modes below its own level.
+    bins: "3 states (2 without H) x 5 modes x 3 accesses x CSRs"
     rules:
       - mstateen0_imsic_op
   - name: cp_context
     goal: sdtrig controls access
     description: |-
-      If Sdtrig supported:
-      With msstateen.CONTEXT = {0,1}, read and write scontext  form M, S if supported, else U
-    expectation: Always successful
-    bins: 2 states x 2 accesses
+      If Sdtrig is supported: With mstateen0.CONTEXT = 0, mstateen0.CONTEXT = 1 with the hstateen0 bit set, and
+      mstateen0.CONTEXT = 1 with the hstateen0 bit clear, read and write scontext (and hcontext where implemented)
+      from M, S, U, VS and VU-mode (S, VS and VU where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.CONTEXT = 0, illegal instruction from S,
+      U, VS and VU-mode. With mstateen0.CONTEXT = 1, as hstateen0 and the usual CSR privilege rules allow; a clear
+      hstateen0 bit restricts only the modes below its own level.
+    bins: "3 states (2 without H) x 5 modes x 3 accesses x CSRs"
     rules:
       - mstateen0_context_op
   - name: cp_p1p13
     goal: hedelegh controls access
     description: |-
-      If Sm1p13 and Hypervisor supported:
-      With msstateen.P1P13 = {0,1}, read and write hedelegh
-    expectation: Always successful
-    bins: 2 states x 2 accesses
+      If Sm1p13 and H are supported, on RV32: With mstateen0.P1P13 = {0,1}, read and write hedelegh from M, S, U, VS
+      and VU-mode (S, VS and VU where supported).
+    expectation: |-
+      Always successful from M-mode. With mstateen0.P1P13 = 0, illegal instruction from the other modes; with it 1,
+      as the usual CSR privilege rules allow.
+    bins: "2 states x 5 modes x 3 accesses"
     rules:
       - mstateen0_p1p13_op
   - name: cp_srmcfg
     goal: srmcfg controls access
     description: |-
-      If Ssqosid supported:
-      With msstateen.SRMCFG = {0,1}, read and write srmcfg  from M, S if supported, else U
-    expectation: Always successful
-    bins: 2 states x 2 accesses
+      If Ssqosid is supported: With mstateen0.SRMCFG = {0,1}, read and write srmcfg from M, S, U, VS and VU-mode (S,
+      VS and VU where supported).
+    expectation: |-
+      Always successful from M-mode. With mstateen0.SRMCFG = 0, illegal instruction from the other modes; with it 1,
+      as the usual CSR privilege rules allow.
+    bins: "2 states x 5 modes x 3 accesses"
     rules:
       - mstateen0_srmcfg_op
   - name: cp_ctr
     goal: ctr controls access
     description: |-
-      If Sctr supported:
-      With msstateen.CTR = {0,1}, read and write sctrl, sctrdepth, sctrstatus  from M, S if supported, else U
-    expectation: Always successful
-    bins: 2 states x 2 accesses x 3 regs
+      If Ssctr is supported: With mstateen0.CTR = 0, mstateen0.CTR = 1 with the hstateen0 bit set, and mstateen0.CTR
+      = 1 with the hstateen0 bit clear, read and write sctrdepth and sctrstatus from M, S, U, VS and VU-mode (S, VS
+      and VU where supported).
+    expectation: |-
+      Always successful from M-mode, whatever the bits are. With mstateen0.CTR = 0, illegal instruction from S, U,
+      VS and VU-mode. With mstateen0.CTR = 1, as hstateen0 and the usual CSR privilege rules allow; a clear
+      hstateen0 bit restricts only the modes below its own level.
+    bins: "3 states (2 without H) x 5 modes x 3 accesses x 2 CSRs"
     rules:
       - mstateen_ctr1
       - mstateen_ctr0
   - name: cp_fcsr_fp_instrs
     goal: fcsr controls floating-point instructions when misa.F = 0
     description: |-
-      If Zfinx is supported:
-      with misa.F = 0 and mstateen0.fcsr = {0,1}, execute fadd.s, fcvt.w.s, fcvt.s.w, and fclass.s from S (if supported) and U-mode
-    expectation: Illegal instruction if 0, else successful
+      If Zfinx is supported, with misa.F = 0: With mstateen0.FCSR = 0, mstateen0.FCSR = 1 with the hstateen0 and
+      sstateen0 bit set, and mstateen0.FCSR = 1 with the hstateen0 and sstateen0 bit clear, execute fadd.s,
+      fcvt.w.s, fcvt.s.w and fclass.s from M, S, U, VS and VU-mode (S, VS and VU where supported).
+    expectation: |-
+      Same as cp_fcsr.
+    bins: "3 states (fewer without H or S) x 5 modes x 4 instructions"
     rules:
       - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_mstateen_se_controls_sstateen
     goal: Bit 63 of mstateen0-3 controls access to sstateen0-3
     description: |-
-      For N = 0-3 and mstateenN bit 63 = {0,1}, read and write sstateenN from S-mode (and VS-mode if H is supported, with hstateenN bit 63 = 1), and check the value read.
-      For RV32, bit 63 is bit 31 of mstateenNh.
+      For N = 0-3: with mstateenN bit 63 = 0, = 1 with hstateenN bit 63 set, and (if H is supported) = 1 with
+      hstateenN bit 63 clear, read and write sstateenN from M, S and (if H is supported) VS-mode, and check the
+      value read. For RV32, bit 63 is bit 31 of mstateenNh and hstateenNh.
     expectation: |-
-      Illegal instruction if 0. If 1, access succeeds. sstateen1-3 read 0 (they have no defined bits).
-      Bit 63 may be read-only zero without the hypervisor extension; the bit = 1 bins are then unreachable.
-    bins: 4 CSRs * 2 states * 2 modes * 3 ops
+      Always successful from M-mode. Otherwise illegal instruction if mstateenN bit 63 = 0; if it is 1, successful
+      from S-mode, and from VS-mode virtual instruction if hstateenN bit 63 = 0, else successful. sstateen1-3 read 0
+      (they have no defined bits). Bit 63 may be read-only zero without the hypervisor extension; the bit = 1 bins
+      are then unreachable.
+    bins: "4 CSRs * 3 states (2 without H) * 3 modes (2 without H) * 3 ops"
     rules:
       - mstateen_bit_63_op
       - mstateen0_se0_op
@@ -147,10 +192,11 @@ coverpoints:
   - name: cp_mstateen_se_controls_hstateen
     goal: Bit 63 of mstateen0-3 controls access to hstateen0-3
     description: |-
-      If H is supported, for N = 0-3 and mstateenN bit 63 = {0,1}, read and write hstateenN from HS-mode.
+      If H is supported, for N = 0-3 and mstateenN bit 63 = {0,1}, read and write hstateenN from M-mode and HS-mode.
       For RV32, also access hstateenNh, where bit 63 is bit 31 of mstateenNh.
-    expectation: Illegal instruction if 0, else successful.
-    bins: 4-8 CSRs * 2 states * 3 ops
+    expectation: |-
+      Always successful from M-mode. From HS-mode, illegal instruction if 0, else successful.
+    bins: "4-8 CSRs * 2 states * 2 modes * 3 ops"
     rules:
       - mstateen_bit_63_op
       - stateen_illegal_state_access

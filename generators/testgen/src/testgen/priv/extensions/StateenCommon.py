@@ -15,7 +15,7 @@ gate the state (mstateen0, hstateen0 or sstateen0) and in the modes the state is
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from testgen.asm.csr import csr_access_test, csr_walk_test
+from testgen.asm.csr import clear_conditional_bits, csr_access_test, csr_walk_test, upper_half
 from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -38,14 +38,29 @@ CSR_GUARDS = {
     **{f"{level}stateen{n}h": "__riscv_xlen == 32" for level in "mh" for n in range(4)},
 }
 
-# TODO: Remove the unchecked bits once Sail models Smaia/Ssaia, Smctr and Zcmt
-# Bits are only unchecked when the DUT implements the extension.
-STATEEN0_UNCHECKED_BITS = [
+# TODO: Walk and check these bits everywhere once Sail models Smaia/Ssaia, Smctr, Sscsrind and Zcmt.
+# Where the DUT implements the extension, the walks and accesses neither write nor check the bit, so its
+# coverage reports missing. Without the extension, the bit is written and checked as read-only zero.
+STATEEN0_SAIL_GAP_BITS = [
     (1 << 2, "ZCMT_SUPPORTED"),  # JVT
     (1 << 54, "SSCTR_SUPPORTED"),  # CTR
     (0b11 << 58, "SSAIA_SUPPORTED"),  # IMSIC, AIA
     (1 << 60, "SSCSRIND_SUPPORTED"),  # CSRIND
 ]
+
+
+def sail_gap_bits(csr: str) -> list[tuple[int, str]] | None:
+    """The STATEEN0_SAIL_GAP_BITS in csr, as unwalked_bits for csr_walk_test and csr_access_test.
+
+    The RV32 upper halves hold the bits from 32 up, shifted down, and the 32-bit sstateen0 those below 32.
+    """
+    if csr.endswith("stateen0h"):
+        return upper_half(STATEEN0_SAIL_GAP_BITS)
+    if csr == "sstateen0":
+        return [(bits, define) for bits, define in STATEEN0_SAIL_GAP_BITS if not bits >> 32] or None
+    if csr.endswith("stateen0"):
+        return STATEEN0_SAIL_GAP_BITS
+    return None
 
 
 @dataclass(frozen=True)
@@ -174,17 +189,6 @@ def _mode_block(mode: str, base: str, body: list[str]) -> list[str]:
     return gated(block, MODE_GUARDS.get(mode))
 
 
-def _clear_unchecked(csr: str, reg: int, tmp: int) -> list[str]:
-    """Clear the STATEEN0_UNCHECKED_BITS of a value read from hstateen0 or hstateen0h."""
-    shift = 32 if csr.endswith("h") else 0
-    lines: list[str] = []
-    for bits, define in STATEEN0_UNCHECKED_BITS:
-        if bits >> shift:
-            mask = ~(bits >> shift) & ((1 << 64) - 1)
-            lines += [f"#ifdef {define}", f"LI(x{tmp}, {mask:#x})", f"and x{reg}, x{reg}, x{tmp}", "#endif"]
-    return lines
-
-
 def _csr_lines(test_data: TestData, cg: str, cp: str, csrs: tuple[str, ...], tag: str, *, readable: bool) -> list[str]:
     """Access each CSR with csrrw, csrrs and csrrc.
 
@@ -194,18 +198,23 @@ def _csr_lines(test_data: TestData, cg: str, cp: str, csrs: tuple[str, ...], tag
     lines: list[str] = []
     if readable:
         for csr in csrs:
-            lines += gated(csr_access_test(test_data, (csr, None), cg, cp, bin_prefix=f"{tag}_"), CSR_GUARDS.get(csr))
+            access = csr_access_test(
+                test_data, (csr, None), cg, cp, bin_prefix=f"{tag}_", unwalked_bits=sail_gap_bits(csr)
+            )
+            lines += gated(access, CSR_GUARDS.get(csr))
         return lines
     rd, rs = test_data.int_regs.get_registers(2)
     lines.append(f"LI(x{rs}, -1)")
     for csr in csrs:
-        access: list[str] = []
+        gap = sail_gap_bits(csr)
+        access = clear_conditional_bits(rs, rd, gap, "Do not write or check")
         for op in ("csrrw", "csrrs", "csrrc"):
             access += ["", test_data.add_testcase(f"{tag}_{csr}_{op}", cp, cg), f"{op} x{rd}, {csr}, x{rs}"]
-            if csr in ("hstateen0", "hstateen0h"):  # TODO: Remove once Sail models every hstateen0 bit
-                access += _clear_unchecked(csr, rd, rs)
-                access.append(f"LI(x{rs}, -1)")
+            if gap:
+                access.append(f"and x{rd}, x{rd}, x{rs}")
             access.append(write_sigupd(rd, test_data))
+        if gap:
+            access.append(f"LI(x{rs}, -1)")
         lines += gated(access, CSR_GUARDS.get(csr))
     test_data.int_regs.return_registers([rd, rs])
     return lines
@@ -309,16 +318,16 @@ def walk_tests(
     modes: list[str],
     base: str,
     guard: str | None = None,
-    unchecked_bits: list[tuple[int, str]] | None = None,
+    unwalked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """Walk a one and a zero through every bit of a CSR from each mode.
 
-    Each (bits, define) in `unchecked_bits` is walked but not checked when `define` is defined.
+    Each (bits, define) in `unwalked_bits` is neither walked nor checked when `define` is defined.
     """
     lines = [comment_banner(cp, f"Walking ones and zeros on {csr} from {', '.join(modes)} mode")]
     for mode in modes:
         prefix = f"{mode.lower()}_" if len(modes) > 1 else ""
-        walk = csr_walk_test(test_data, (csr, None), cg, cp, bin_prefix=prefix, unchecked_bits=unchecked_bits)
+        walk = csr_walk_test(test_data, (csr, None), cg, cp, bin_prefix=prefix, unwalked_bits=unwalked_bits)
         lines += _mode_block(mode, base, walk)
     return gated(lines, guard)
 
@@ -336,10 +345,10 @@ def stateen_walk_tests(
     """Walk each mstateen or hstateen CSR from `base` mode, and its upper half on RV32, each in a new test chunk."""
     guard_h = f"{guard} && __riscv_xlen == 32" if guard else "__riscv_xlen == 32"
     for csr in csrs:
-        unchecked = STATEEN0_UNCHECKED_BITS if csr.endswith("stateen0") else None
-        unchecked_h = [(bits >> 32, define) for bits, define in unchecked or [] if bits >> 32] or None
-        for name, cond, bits in ((csr, guard, unchecked), (f"{csr}h", guard_h, unchecked_h)):
+        for name, cond in ((csr, guard), (f"{csr}h", guard_h)):
             tc = test_data.new_test_chunk(test_chunks)
             tc.code.extend(
-                walk_tests(test_data, cg, cp, name, modes=[base], base=base, guard=cond, unchecked_bits=bits)
+                walk_tests(
+                    test_data, cg, cp, name, modes=[base], base=base, guard=cond, unwalked_bits=sail_gap_bits(name)
+                )
             )

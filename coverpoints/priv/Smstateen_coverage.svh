@@ -30,6 +30,13 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             bins VU_mode = {3'b100};
         `endif
     }
+    priv_mode_m_s_maybevs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+            bins M_mode = {3'b011};
+            bins S_mode = {3'b001};
+        `ifdef H_SUPPORTED
+            bins VS_mode = {3'b101};
+        `endif
+    }
     priv_mode_all_sup_no_m: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
             bins U_mode = {3'b000};
         `ifdef S_SUPPORTED
@@ -128,6 +135,12 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         fcsr_state: coverpoint {mstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "fcsr", 0), hstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "fcsr", 0), sstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "fcsr")} {
             wildcard bins fcsr_disabled = {3'b0??};
             bins fcsr_enabled  = {3'b111};
+            // hstateen0 and sstateen0 bits = 0 restrict only the modes below their own level
+            `ifdef H_SUPPORTED
+                bins fcsr_lower_disabled = {3'b100};
+            `elsif S_SUPPORTED
+                bins fcsr_lower_disabled = {3'b110};
+            `endif
         }
         fscr_csrs: coverpoint ins.current.insn[31:20] {
             wildcard bins frm    = {CSR_FRM};
@@ -147,6 +160,9 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         envcfg_state: coverpoint {mstateen0_bit(ins.hart, ins.issue, `SAMPLE_AFTER, "envcfg", 1), hstateen0_bit(ins.hart, ins.issue, `SAMPLE_AFTER, "envcfg", 1)} {
             wildcard bins envcfg_disabled = {2'b0?};
             bins envcfg_enabled  = {2'b11};
+            `ifdef H_SUPPORTED
+                bins envcfg_lower_disabled = {2'b10};  // hstateen0 bit = 0 restricts only VS and VU-mode
+            `endif
         }
         envcfg_csrs: coverpoint ins.current.insn[31:20] {
             bins senvcfg = {CSR_SENVCFG};
@@ -183,6 +199,9 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         context_state: coverpoint {mstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "context", 1), hstateen0_bit(ins.hart, ins.issue, `SAMPLE_CURRENT, "context", 1)} {
             wildcard bins context_disabled = {2'b0?};
             bins context_enabled  = {2'b11};
+            `ifdef H_SUPPORTED
+                bins context_lower_disabled = {2'b10};  // hstateen0 bit = 0 restricts only VS and VU-mode
+            `endif
         }
         context_csrs: coverpoint ins.current.insn[31:20] {
             `ifdef UDB_SCONTEXT_IMPLEMENTED
@@ -246,6 +265,9 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         se_state: coverpoint {mstateen_se_n(ins), hstateen_se_n(ins)} {
             wildcard bins se_disabled = {2'b0?};
             bins se_enabled  = {2'b11};
+            `ifdef H_SUPPORTED
+                bins se_lower_disabled = {2'b10};  // hstateen<n>.SE<n> = 0 restricts only VS-mode
+            `endif
         }
         // mstateen0 has only SE0 set, so every other bit of sstateen0 must be read-only zero
         `ifdef UDB_MXLEN_64
@@ -283,10 +305,10 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     cp_csr_illegal_accesses: cross priv_mode_all_sup_no_m, mstateen_csrs, csrops;
 
     `ifdef S_SUPPORTED
-        cp_mstateen_se_controls_sstateen:  cross priv_mode_s_maybevs, se_state, csrops, sstateen_csrs;
+        cp_mstateen_se_controls_sstateen:  cross priv_mode_m_s_maybevs, se_state, csrops, sstateen_csrs;
         cp_mstateen0_se0_only_sstateen0:   cross priv_mode_m_s, mstateen0_se0_only, walk_ops, walk_bit, sstateen0_csr;
         `ifdef H_SUPPORTED
-            cp_mstateen_se_controls_hstateen:     cross priv_mode_s, mstateen_se, csrops, hstateen_csrs;
+            cp_mstateen_se_controls_hstateen:     cross priv_mode_m_s, mstateen_se, csrops, hstateen_csrs;
             cp_mstateen0_se0_only_hstateen0:      cross priv_mode_m_s, mstateen0_se0_only, walk_ops, walk_bit, hstateen0_csr;
         `endif
     `endif

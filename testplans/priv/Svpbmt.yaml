@@ -147,6 +147,26 @@ coverpoints:
       - Svpbmt_depends_Sv39
       - menvcfg_pbmte_op
       - menvcfg_pbmte_fence
+  - name: nc_io_alias_s
+    goal: Verify a load through a PBMT = IO mapping returns a store made through a PBMT = NC mapping of the same page, and the reverse, from S-mode
+    description: "S-mode: va_nc maps the data page with PBMT = NC and va_io with PBMT = IO (4 KiB, PTE.U=0). After sfence.vma, sd through va_nc and ld through va_io in the next instruction; after another sfence.vma, sd through va_io and ld through va_nc. No fence or cache-block operation between the store and the load."
+    expectation: The load returns the store; accesses with two non-cacheable attributes lose no coherence.
+    bins: |-
+      nc_io_alias_d {NC store then IO load, IO store then NC load} x PBMTE_set x mode {S-mode}
+      = 2 bins on RV64 (Sv39 only)
+    id: Svpbmt_noncacheable_aliasing_no_coherence_loss
+    rules:
+      - Svpbmt_noncacheable_aliasing_no_coherence_loss
+  - name: nc_io_alias_u
+    goal: Verify a load through a PBMT = IO mapping returns a store made through a PBMT = NC mapping of the same page, and the reverse, from U-mode
+    description: "U-mode: va_nc maps the data page with PBMT = NC and va_io with PBMT = IO (4 KiB, PTE.U=1). After sfence.vma, sd through va_nc and ld through va_io in the next instruction; after another sfence.vma, sd through va_io and ld through va_nc. No fence or cache-block operation between the store and the load."
+    expectation: The load returns the store; accesses with two non-cacheable attributes lose no coherence.
+    bins: |-
+      nc_io_alias_d {NC store then IO load, IO store then NC load} x PBMTE_set x mode {U-mode}
+      = 2 bins on RV64 (Sv39 only)
+    id: Svpbmt_noncacheable_aliasing_no_coherence_loss
+    rules:
+      - Svpbmt_noncacheable_aliasing_no_coherence_loss
   - name: leaf_PTE_pbmt_reserved_enc_exec_s
     goal: Verify PBMT = 3 in a leaf PTE raises an instruction page fault on an instruction fetch from S-mode
     description: "S-mode: menvcfg.PBMTE=1. Leaf PTE with PBMT = 3 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."

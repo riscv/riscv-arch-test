@@ -24,9 +24,6 @@
 #ifdef RVTEST_VECTOR
   #include "rvtest_macros_vector.h"
 #endif
-#ifdef H_SUPPORTED
-  #include "rvtest_macros_hypervisor.h"
-#endif
 #include "rvtest_trap_handler.h"
 #include "rvtest_invisible_trap_handler.h"
 #include "rvtest_failure_code.h"

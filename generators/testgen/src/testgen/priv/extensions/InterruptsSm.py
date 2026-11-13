@@ -25,6 +25,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_wfi,
     generate_cp_wfi_timeout,
     guard_symbol,
+    ifdef,
     int_coverpoint,
     int_macro,
     label_coverpoint,
@@ -57,7 +58,7 @@ SUITE = InterruptSuite(
         "ip": ("mip", "MTIP", 0x80),
         "stce": False,
     },
-    deleg=["#ifdef S_SUPPORTED", "csrw mideleg, zero # mideleg = zeros", "#endif // S_SUPPORTED"],
+    deleg=["csrw mideleg, zero # mideleg = zeros"],
 )
 COVERGROUP = SUITE.covergroup
 
@@ -86,24 +87,18 @@ def _generate_cp_trigger_sm(
             cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type, mideleg == -1)
             # mideleg only exists with S-mode. Without it the mideleg = zeros cases still run and just
             # skip the write, while the mideleg = ones cases are meaningless and are left out entirely.
-            case_open = ["#ifdef S_SUPPORTED // only test delegation if S_SUPPORTED"] if mideleg == -1 else []
-            case_close = ["#endif // S_SUPPORTED"] if mideleg == -1 else []
-            write_open = ["#ifdef S_SUPPORTED // only write mideleg if S_SUPPORTED"] if mideleg == 0 else []
-            write_close = ["#endif // S_SUPPORTED"] if mideleg == 0 else []
+            write_mideleg = [f"LI(x{tmp_reg}, {mideleg})", f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}"]
+            if mideleg == 0:
+                write_mideleg = ifdef(suite, priv, "S_SUPPORTED", write_mideleg)
             for mode in [0, 1]:
                 for sie in [0, 1]:
                     for mie in [0, 1]:
                         modecmd = "csrs" if mode == 1 else "csrc"
                         siecmd = "csrs" if sie == 1 else "csrc"
                         miecmd = "csrs" if mie == 1 else "csrc"
-                        tc.code += [
-                            f"#ifdef {guard}",
-                            *case_open,
+                        case = [
                             f"#ifdef UDB_MTVEC_MODES_{mode}",
-                            *write_open,
-                            f"LI(x{tmp_reg}, {mideleg})",
-                            f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}",
-                            *write_close,
+                            *write_mideleg,
                             f"LI(x{tmp_reg}, 1)",
                             f"{modecmd} mtvec, x{tmp_reg} # mtvec.mode = {mode}",
                             # The trap handler clears the taken interrupt's xIE bit, so re-enable before every case
@@ -117,18 +112,21 @@ def _generate_cp_trigger_sm(
                             # The T-SBI ecall into S or U zeroes mtval again; it does not touch stval.
                             f"auipc x{tmp_reg}, 0 # nonzero valid address",
                             f"csrw mtval, x{tmp_reg} # mtval = nonzero",
-                            "#ifdef S_SUPPORTED",
-                            f"csrw stval, x{tmp_reg} # stval = nonzero",
-                            "#endif // S_SUPPORTED",
+                            *ifdef(suite, priv, "S_SUPPORTED", [f"csrw stval, x{tmp_reg} # stval = nonzero"]),
                             # Likewise the second trap value and xtinst. The ecall zeroes mtval2 and mtinst but
                             # not htval and htinst. xtinst gets a transformed load, lw x1, 0(x0).
-                            "#ifdef H_SUPPORTED",
-                            f"csrw mtval2, x{tmp_reg} # mtval2 = nonzero",
-                            f"csrw htval, x{tmp_reg} # htval = nonzero",
-                            f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
-                            f"csrw mtinst, x{tmp_reg} # mtinst = nonzero",
-                            f"csrw htinst, x{tmp_reg} # htinst = nonzero",
-                            "#endif // H_SUPPORTED",
+                            *ifdef(
+                                suite,
+                                priv,
+                                "H_SUPPORTED",
+                                [
+                                    f"csrw mtval2, x{tmp_reg} # mtval2 = nonzero",
+                                    f"csrw htval, x{tmp_reg} # htval = nonzero",
+                                    f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
+                                    f"csrw mtinst, x{tmp_reg} # mtinst = nonzero",
+                                    f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                                ],
+                            ),
                             test_data.add_testcase(
                                 f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}",
                                 cp,
@@ -140,10 +138,10 @@ def _generate_cp_trigger_sm(
                             f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                             *mode_exit(suite, priv),
                             f"#endif // UDB_MTVEC_MODES_{mode}",
-                            *case_close,
-                            f"#endif // {guard}",
-                            "",
                         ]
+                        if mideleg == -1:
+                            case = ifdef(suite, priv, "S_SUPPORTED", case)
+                        tc.code += [*ifdef(suite, priv, guard, case), ""]
 
     test_data.int_regs.return_register(tmp_reg)
 

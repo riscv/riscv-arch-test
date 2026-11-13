@@ -142,9 +142,8 @@ normative_rule_definitions:
         "Ssstrict_Sm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}",
         "Ssstrict_U_ucsr_cg/cp_csrr",
       ]
-  # Machine-mode standard read-write CSRs 0x7A0–0x7BF are reserved for use by the debug
-  # system. Of these CSRs, 0x7A0–0x7AF are accessible to machine mode, whereas
-  - name: Zicsr_debug_range
+  # Of these CSRs, 0x7A0–0x7AF are accessible to machine mode
+  - name: Zicsr_debug_m_accessible
     coverpoint:
       [
         "SdtrigSm_trig_module_reg_cg/{cp_csr_access_global, cp_csr_access_local}",

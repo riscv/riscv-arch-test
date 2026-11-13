@@ -654,6 +654,10 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
     if (m := re.fullmatch(r"cr_vl_lmul_(ei\d+_lmul\dmax)", cp)) and _is_vector(arch):
         cp = f"cr_vl_lmul_lmul{int(vl_lmul_max(m.group(1), int(_get_effew(arch))))}max"
 
+    # Element-group register bins depend on EGW = EGS * SEW; the SEW=64 (SHA-512) groups have their own templates.
+    if re.fullmatch(r"cm?p_(v[ds]\d?_)+egs4", cp) and _is_vector(arch) and _get_effew(arch) == "64":
+        cp += "_sew64"
+
     # Append SEW suffix for SEW-dependent coverpoints.
     if any(sew_cp in cp and cp not in SEW_INDEPENDENT_CPS for sew_cp in SEW_DEPENDENT_CPS):
         cp = cp + "_sew" + _get_effew(arch)

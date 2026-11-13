@@ -22,12 +22,14 @@
 covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs1_vs2_egs4
+    // cmp_vs1_vs2_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs1_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
-        `ifndef ZVL128B_SUPPORTED
+    cmp_vs1_vs2_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
+        // Registers with vs1 = vs2 (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -46,19 +48,26 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cmp_vs1_vs2_egs4////////////////////////////////////////////////
+    //// end cmp_vs1_vs2_egs4_sew64 ////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsha2ch.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -83,12 +92,14 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
     //// end cp_vd_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd_egs4
+    // cp_vd_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vd_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vd_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -107,19 +118,26 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vd_egs4////////////////////////////////////////////////
+    //// end cp_vd_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs1_edges_egs4
@@ -138,12 +156,14 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
     //// end cp_vs1_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs1_egs4
+    // cp_vs1_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
-        // VS1 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vs1_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
+        // VS1 register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -162,19 +182,26 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vs1_egs4////////////////////////////////////////////////
+    //// end cp_vs1_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2_edges_egs4
@@ -193,12 +220,14 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
     //// end cp_vs2_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_egs4
+    // cp_vs2_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vs2_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -217,76 +246,81 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vs2_egs4////////////////////////////////////////////////
+    //// end cp_vs2_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
-        // LMUL values for EGS=4, SEW=64 instructions (EGS*SEW = 64 bits per group)
-        // LMUL=8/4: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 256 bits
-        bins eight  = {3};
-        bins four   = {2};
+        // LMUL values for EGS=4, SEW=64 instructions: LMUL * VLEN must be at least EGW = 256
+        bins eight = {3};
+        bins four = {2};
         `ifdef ZVL128B_SUPPORTED
-            bins two    = {1};
+            bins two = {1};
         `endif
-        // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
-            bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
+            bins one = {0};
         `endif
     }
 
-    cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue, 4)  iff (ins.trap == 0 )  {
-        // Edge values of VL (vector length)
-        bins vl_four     = {vl_one      };
-        bins vlmax      = {vl_vlmax     };
-        bins vl_legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_egs4_sew64 : cross cp_csr_vtype_lmul_egs4_sew64, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=64
+    cr_vl_lmul_egs4_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                         3'(vl_check(ins.hart, ins.issue, 4))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
+        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=4 instructions at SEW=64.
+        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
+        // element groups for a distinct VLMAX and four for a value in between.
         `ifdef ZVL256B_SUPPORTED
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL1024B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins one_one = {6'b000_001};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins one_vlmax = {6'b000_010};
+        `endif
+        `ifdef ZVL1024B_SUPPORTED
+            bins one_legal = {6'b000_011};
         `endif
         `ifdef ZVL128B_SUPPORTED
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins two_one = {6'b001_001};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins two_vlmax = {6'b001_010};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins two_legal = {6'b001_011};
         `endif
         `ifdef ZVL64B_SUPPORTED
-            `ifndef ZVL128B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins four_one = {6'b010_001};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins four_vlmax = {6'b010_010};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins four_legal = {6'b010_011};
+        `endif
+        bins eight_one = {6'b011_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins eight_vlmax = {6'b011_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins eight_legal = {6'b011_011};
         `endif
     }
 
@@ -347,12 +381,14 @@ endgroup
 covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs1_vs2_egs4
+    // cmp_vs1_vs2_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs1_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
-        `ifndef ZVL128B_SUPPORTED
+    cmp_vs1_vs2_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
+        // Registers with vs1 = vs2 (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -371,19 +407,26 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cmp_vs1_vs2_egs4////////////////////////////////////////////////
+    //// end cmp_vs1_vs2_egs4_sew64 ////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsha2cl.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -408,12 +451,14 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
     //// end cp_vd_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd_egs4
+    // cp_vd_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vd_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vd_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -432,19 +477,26 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vd_egs4////////////////////////////////////////////////
+    //// end cp_vd_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs1_edges_egs4
@@ -463,12 +515,14 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
     //// end cp_vs1_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs1_egs4
+    // cp_vs1_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
-        // VS1 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vs1_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
+        // VS1 register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -487,19 +541,26 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vs1_egs4////////////////////////////////////////////////
+    //// end cp_vs1_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2_edges_egs4
@@ -518,12 +579,14 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
     //// end cp_vs2_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_egs4
+    // cp_vs2_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vs2_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -542,76 +605,81 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vs2_egs4////////////////////////////////////////////////
+    //// end cp_vs2_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
-        // LMUL values for EGS=4, SEW=64 instructions (EGS*SEW = 64 bits per group)
-        // LMUL=8/4: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 256 bits
-        bins eight  = {3};
-        bins four   = {2};
+        // LMUL values for EGS=4, SEW=64 instructions: LMUL * VLEN must be at least EGW = 256
+        bins eight = {3};
+        bins four = {2};
         `ifdef ZVL128B_SUPPORTED
-            bins two    = {1};
+            bins two = {1};
         `endif
-        // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
-            bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
+            bins one = {0};
         `endif
     }
 
-    cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue, 4)  iff (ins.trap == 0 )  {
-        // Edge values of VL (vector length)
-        bins vl_four     = {vl_one      };
-        bins vlmax      = {vl_vlmax     };
-        bins vl_legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_egs4_sew64 : cross cp_csr_vtype_lmul_egs4_sew64, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=64
+    cr_vl_lmul_egs4_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                         3'(vl_check(ins.hart, ins.issue, 4))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
+        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=4 instructions at SEW=64.
+        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
+        // element groups for a distinct VLMAX and four for a value in between.
         `ifdef ZVL256B_SUPPORTED
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL1024B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins one_one = {6'b000_001};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins one_vlmax = {6'b000_010};
+        `endif
+        `ifdef ZVL1024B_SUPPORTED
+            bins one_legal = {6'b000_011};
         `endif
         `ifdef ZVL128B_SUPPORTED
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins two_one = {6'b001_001};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins two_vlmax = {6'b001_010};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins two_legal = {6'b001_011};
         `endif
         `ifdef ZVL64B_SUPPORTED
-            `ifndef ZVL128B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins four_one = {6'b010_001};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins four_vlmax = {6'b010_010};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins four_legal = {6'b010_011};
+        `endif
+        bins eight_one = {6'b011_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins eight_vlmax = {6'b011_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins eight_legal = {6'b011_011};
         `endif
     }
 
@@ -672,12 +740,14 @@ endgroup
 covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs1_vs2_egs4
+    // cmp_vs1_vs2_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs1_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
-        `ifndef ZVL128B_SUPPORTED
+    cmp_vs1_vs2_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
+        // Registers with vs1 = vs2 (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -696,19 +766,26 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cmp_vs1_vs2_egs4////////////////////////////////////////////////
+    //// end cmp_vs1_vs2_egs4_sew64 ////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsha2ms.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -733,12 +810,14 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
     //// end cp_vd_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vd_egs4
+    // cp_vd_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vd_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vd_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
+        // VD register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -757,19 +836,26 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vd_egs4////////////////////////////////////////////////
+    //// end cp_vd_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs1_edges_egs4
@@ -788,12 +874,14 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
     //// end cp_vs1_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs1_egs4
+    // cp_vs1_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
-        // VS1 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vs1_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
+        // VS1 register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -812,19 +900,26 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vs1_egs4////////////////////////////////////////////////
+    //// end cp_vs1_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2_edges_egs4
@@ -843,12 +938,14 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
     //// end cp_vs2_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_egs4
+    // cp_vs2_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
-        `ifndef ZVL128B_SUPPORTED
+    cp_vs2_egs4_sew64 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment (EGS=4, SEW=64, so EGW=256 and LMUL * VLEN >= 256): a register group of LMUL starts at a
+        // multiple of LMUL, so odd registers need VLEN >= 256, registers 2 mod 4 need VLEN >= 128 and
+        // registers 4 mod 8 need VLEN >= 64
+        `ifndef ZVL256B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
             ignore_bins v5  = {v5};
@@ -867,76 +964,81 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
             ignore_bins v31 = {v31};
         `endif
 
-        `ifndef ZVL64B_SUPPORTED
+        `ifndef ZVL128B_SUPPORTED
             ignore_bins v2  = {v2};
             ignore_bins v6  = {v6};
-            ignore_bins v10  = {v10};
-            ignore_bins v14  = {v14};
-            ignore_bins v18  = {v18};
+            ignore_bins v10 = {v10};
+            ignore_bins v14 = {v14};
+            ignore_bins v18 = {v18};
             ignore_bins v22 = {v22};
             ignore_bins v26 = {v26};
             ignore_bins v30 = {v30};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v4  = {v4};
+            ignore_bins v12 = {v12};
+            ignore_bins v20 = {v20};
+            ignore_bins v28 = {v28};
+        `endif
     }
 
-    //// end cp_vs2_egs4////////////////////////////////////////////////
+    //// end cp_vs2_egs4_sew64 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_egs4_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
-        // LMUL values for EGS=4, SEW=64 instructions (EGS*SEW = 64 bits per group)
-        // LMUL=8/4: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 256 bits
-        bins eight  = {3};
-        bins four   = {2};
+        // LMUL values for EGS=4, SEW=64 instructions: LMUL * VLEN must be at least EGW = 256
+        bins eight = {3};
+        bins four = {2};
         `ifdef ZVL128B_SUPPORTED
-            bins two    = {1};
+            bins two = {1};
         `endif
-        // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
-            bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
+            bins one = {0};
         `endif
     }
 
-    cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue, 4)  iff (ins.trap == 0 )  {
-        // Edge values of VL (vector length)
-        bins vl_four     = {vl_one      };
-        bins vlmax      = {vl_vlmax     };
-        bins vl_legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_egs4_sew64 : cross cp_csr_vtype_lmul_egs4_sew64, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=64
+    cr_vl_lmul_egs4_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                         3'(vl_check(ins.hart, ins.issue, 4))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
+        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=4 instructions at SEW=64.
+        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
+        // element groups for a distinct VLMAX and four for a value in between.
         `ifdef ZVL256B_SUPPORTED
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL1024B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins one_one = {6'b000_001};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins one_vlmax = {6'b000_010};
+        `endif
+        `ifdef ZVL1024B_SUPPORTED
+            bins one_legal = {6'b000_011};
         `endif
         `ifdef ZVL128B_SUPPORTED
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins two_one = {6'b001_001};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins two_vlmax = {6'b001_010};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins two_legal = {6'b001_011};
         `endif
         `ifdef ZVL64B_SUPPORTED
-            `ifndef ZVL128B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins four_one = {6'b010_001};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins four_vlmax = {6'b010_010};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins four_legal = {6'b010_011};
+        `endif
+        bins eight_one = {6'b011_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins eight_vlmax = {6'b011_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins eight_legal = {6'b011_011};
         `endif
     }
 

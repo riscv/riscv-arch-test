@@ -3,73 +3,70 @@
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs8_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
-        // LMUL values for EGS=8, SEW=32 instructions (EGS*SEW = 256 bits per group)
-        // LMUL=8: always valid since VLEN=32 (minimum) satisfies LMUL*VLEN >= 256 bits
-        bins eight  = {3};
+        // LMUL values for EGS=8, SEW=32 instructions: LMUL * VLEN must be at least EGW = 256
+        bins eight = {3};
         `ifdef ZVL64B_SUPPORTED
-            bins four   = {2};   // LMUL=4: needs VLEN>=64 for valid configuration
+            bins four = {2};
         `endif
         `ifdef ZVL128B_SUPPORTED
-            bins two    = {1};   // LMUL=2: needs VLEN>=128
+            bins two = {1};
         `endif
         `ifdef ZVL256B_SUPPORTED
-            bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
+            bins one = {0};
         `endif
         `ifdef ZVL512B_SUPPORTED
             `ifdef UDB_ELEN_64
-                bins half    = {7};   // LMUL=1/2: needs VLEN>=512
+                bins half = {7};
             `endif
         `endif
     }
 
-    cp_csr_vl_edges_egs8 : coverpoint vl_check(ins.hart, ins.issue, 8)  iff (ins.trap == 0 )  {
-        // Edge values of VL (vector length)
-        bins vl_eight    = {vl_one      };
-        bins vlmax       = {vl_vlmax    };
-        bins vl_legal    = {vl_legal    };
-    }
-
-    cr_vl_lmul_egs8_sew32 : cross cp_csr_vtype_lmul_egs8_sew32, cp_csr_vl_edges_egs8  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
-        // Cross coverage of LMUL and VL edges for EGS=8 instructions at SEW=32
-        `ifdef ZVL512B_SUPPORTED
-            `ifndef ZVL1024B_SUPPORTED
-                ignore_bins vleight_eq_vlmax_lmulf2 = binsof(cp_csr_vtype_lmul_egs8_sew32.half) && binsof(cp_csr_vl_edges_egs8.vlmax);
+    cr_vl_lmul_egs8_sew32 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                         3'(vl_check(ins.hart, ins.issue, 8))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
+        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=8 instructions at SEW=32.
+        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
+        // element groups for a distinct VLMAX and four for a value in between.
+        `ifdef UDB_ELEN_64
+            `ifdef ZVL512B_SUPPORTED
+                bins half_one = {6'b111_001};
             `endif
-            `ifndef ZVL2048B_SUPPORTED
-                ignore_bins impossible_vl_legal_lmulf2 = binsof(cp_csr_vtype_lmul_egs8_sew32.half) && binsof(cp_csr_vl_edges_egs8.vl_legal);
+            `ifdef ZVL1024B_SUPPORTED
+                bins half_vlmax = {6'b111_010};
             `endif
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifndef ZVL512B_SUPPORTED
-                ignore_bins vleight_eq_vlmax_lmul1 = binsof(cp_csr_vtype_lmul_egs8_sew32.one) && binsof(cp_csr_vl_edges_egs8.vlmax);
-            `endif
-            `ifndef ZVL1024B_SUPPORTED
-                ignore_bins impossible_vl_legal_lmul1 = binsof(cp_csr_vtype_lmul_egs8_sew32.one) && binsof(cp_csr_vl_edges_egs8.vl_legal);
-            `endif
+            bins one_one = {6'b000_001};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins one_vlmax = {6'b000_010};
+        `endif
+        `ifdef ZVL1024B_SUPPORTED
+            bins one_legal = {6'b000_011};
         `endif
         `ifdef ZVL128B_SUPPORTED
-            `ifndef ZVL256B_SUPPORTED
-                ignore_bins vleight_eq_vlmax_lmul2 = binsof(cp_csr_vtype_lmul_egs8_sew32.two) && binsof(cp_csr_vl_edges_egs8.vlmax);
-            `endif
-            `ifndef ZVL512B_SUPPORTED
-                ignore_bins impossible_vl_legal_lmul2 = binsof(cp_csr_vtype_lmul_egs8_sew32.two) && binsof(cp_csr_vl_edges_egs8.vl_legal);
-            `endif
+            bins two_one = {6'b001_001};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins two_vlmax = {6'b001_010};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins two_legal = {6'b001_011};
         `endif
         `ifdef ZVL64B_SUPPORTED
-            `ifndef ZVL128B_SUPPORTED
-                ignore_bins vleight_eq_vlmax_lmul4 = binsof(cp_csr_vtype_lmul_egs8_sew32.four) && binsof(cp_csr_vl_edges_egs8.vlmax);
-            `endif
-            `ifndef ZVL256B_SUPPORTED
-                ignore_bins impossible_vl_legal_lmul4 = binsof(cp_csr_vtype_lmul_egs8_sew32.four) && binsof(cp_csr_vl_edges_egs8.vl_legal);
-            `endif
+            bins four_one = {6'b010_001};
         `endif
-        `ifdef ZVL32B_SUPPORTED
-            `ifndef ZVL64B_SUPPORTED
-                ignore_bins vleight_eq_vlmax_lmul8 = binsof(cp_csr_vtype_lmul_egs8_sew32.eight) && binsof(cp_csr_vl_edges_egs8.vlmax);
-            `endif
-            `ifndef ZVL128B_SUPPORTED
-                ignore_bins impossible_vl_legal_lmul8 = binsof(cp_csr_vtype_lmul_egs8_sew32.eight) && binsof(cp_csr_vl_edges_egs8.vl_legal);
-            `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins four_vlmax = {6'b010_010};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins four_legal = {6'b010_011};
+        `endif
+        bins eight_one = {6'b011_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins eight_vlmax = {6'b011_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins eight_legal = {6'b011_011};
         `endif
     }
 

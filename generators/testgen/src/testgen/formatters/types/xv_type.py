@@ -77,7 +77,7 @@ def format_xv_like_type(
     else:
         test = [f"{instr_str} x{params.rd}, v{params.vs2}"]
 
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = [write_sigupd(params.rd, test_data, "int", comment=False)]
 
     # This can only be released after sigupd
     if params.maskval:

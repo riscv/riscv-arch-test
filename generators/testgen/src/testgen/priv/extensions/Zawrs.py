@@ -12,6 +12,7 @@
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
+from testgen.asm.wait import wait_loop, wait_loop_arm
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import write_vtw
@@ -69,7 +70,7 @@ def wrs_resume_helper(
     coverpoint = "cp_wrs_resume_h" if virtual else "cp_wrs_resume"
     ######################################
 
-    r_cause, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
+    r_addr, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
 
     lower = priv != "M"
     # The resume is triggered by a timer interrupt: Sstc below M-mode when it is implemented, otherwise a machine
@@ -99,15 +100,6 @@ def wrs_resume_helper(
         )
     # VS-mode and VU-mode arm the timer after entering the mode, through T-SBI
     arm = "U" if virtual else priv
-    arm_timer = [
-        "#ifdef SSTC_SUPPORTED",
-        "# Set stimer interrupt soon",
-        f"RVTEST_SET_SSTC_INT_SOON_{arm}",
-        "#else",
-        "# Set mtimer interrupt soon",
-        f"RVTEST_SET_MTIME_INT_SOON_{arm}",
-        "#endif",
-    ]
     prefix = f"{mode}_" if virtual else ""
     for op in ["WRS.NTO", "WRS.STO"]:
         for tw_val in tw_list:
@@ -140,16 +132,26 @@ def wrs_resume_helper(
                                 tsbi_call_or_direct(f"csrs mie, x{r_temp}", priv),
                                 "#endif",
                                 *([*write_vtw(r_temp, False, priv), f"RVTEST_TSBI_GOTO_{mode}MODE"] if virtual else []),
-                                *arm_timer,
-                                "# Read the trap count after the T-SBI calls above, which trap as well",
-                                *_read_trap_count_helper(r_cause),
+                                test_data.add_testcase(
+                                    f"{prefix}tw_{tw_val}_mie_{mie_val}_sie_{sie_val}_{op}", coverpoint, covergroup
+                                ),
+                                *wait_loop_arm(test_data, r_temp, r_temp2),
+                                "#ifdef SSTC_SUPPORTED",
+                                "# Set stimer interrupt soon",
+                                f"RVTEST_SET_SSTC_INT_SOON_{arm}",
+                                "#else",
+                                "# Set mtimer interrupt soon",
+                                f"RVTEST_SET_MTIME_INT_SOON_{arm}",
+                                "#endif",
                             ]
                         )
                     else:
                         lines.extend(
                             [
-                                "# Read the trap count before arming the timer, so an early interrupt is counted",
-                                *_read_trap_count_helper(r_cause),
+                                test_data.add_testcase(
+                                    f"tw_{tw_val}_mie_{mie_val}_sie_{sie_val}_{op}", coverpoint, covergroup
+                                ),
+                                *wait_loop_arm(test_data, r_temp, r_temp2),
                                 "# Set mie.MTIE",
                                 f"LI(x{r_temp}, 0x80)",
                                 f"csrs mie, x{r_temp}",
@@ -157,54 +159,24 @@ def wrs_resume_helper(
                                 "RVTEST_SET_MTIME_INT_SOON_M",
                             ]
                         )
-
-                    lines.extend(
-                        [
-                            "# lr.w to set up reservation",
-                            f"LA(x{r_temp}, scratch)",
-                            f"lr.w x{r_temp2}, (x{r_temp})",
-                            test_data.add_testcase(
-                                f"{prefix}tw_{tw_val}_mie_{mie_val}_sie_{sie_val}_{op}", coverpoint, covergroup
-                            ),
-                            "1:",
-                            f"{op}",
-                            *_read_trap_count_helper(r_temp),
-                            f"bne x{r_cause}, x{r_temp}, 2f              # MIE=1: trap count increased -> done",
+                    # WRS can terminate early, so repeat lr.w + WRS until the timer interrupt is taken. When the
+                    # interrupt is masked (M-mode with mstatus.MIE = 0, or S-mode with sstatus.SIE = 0 and the
+                    # Sstc timer), it is never taken, so also leave once it is pending. In VS-mode and VU-mode
+                    # the interrupt goes to HS-mode or M-mode and is always taken.
+                    wait = [f"lr.w x{r_temp2}, (x{r_addr}) # reservation for WRS to wait on", op]
+                    lines.extend(["# lr.w address", f"LA(x{r_addr}, scratch)"])
+                    if priv == "M":
+                        lines += wait_loop(test_data, r_temp, wait, None if mie_val else ("mip", 0x80))
+                    elif mode == "S" and sie_val == 0:
+                        lines += [
+                            "#ifdef SSTC_SUPPORTED",
+                            *wait_loop(test_data, r_temp, wait, ("sip", 0x20)),
+                            "#else",
+                            *wait_loop(test_data, r_temp, wait),
+                            "#endif",
                         ]
-                    )
-                    # Since wrs instructions can terminate early, in order to test the resume behavior of wrs instructions,
-                    # the test repeats the instruction until timer interrupt fires. For the case where interrupt is not expected
-                    # to fire, the test repeats wrs instruction until interrupts becomes pending
-                    # Two cases where the interrupt is not expected to fire are listed below:
-                    ################## The test runs in M mode with mstatus.MIE = 0 ######################################
-                    if (priv == "M") & (mie_val == 0):
-                        lines.extend(
-                            [
-                                "# Only moves on if mstatus.MIE = 0 and mip.MTIP = 1, expect no interrupt should be taken",
-                                f"csrr x{r_temp}, mip",
-                                f"andi x{r_temp}, x{r_temp}, 0x80  # Extract mip.MTIP",
-                                f"bnez x{r_temp}, 2f              # Interrupt pending -> done",
-                            ]
-                        )
-                    ################## The test runs in S mode with sstatus.SIE = 0 ######################################
-                    if (mode == "S") & (sie_val == 0):
-                        lines.extend(
-                            [
-                                "#ifdef SSTC_SUPPORTED",
-                                "# Only moves on if SIE = 0 and sip.STIP = 1, expect no interrupt should be taken",
-                                f"csrr x{r_temp}, sip",
-                                f"andi x{r_temp}, x{r_temp}, 0x20  # Extract sip.STIP",
-                                f"bnez x{r_temp}, 2f              # Interrupt pending -> done",
-                                "#endif",
-                            ]
-                        )
-                    lines.extend(
-                        [
-                            "j 1b",
-                            "2:",
-                            write_sigupd(r_cause, test_data),
-                        ]
-                    )
+                    else:
+                        lines += wait_loop(test_data, r_temp, wait)
                     if virtual:
                         lines.append(f"RVTEST_TSBI_GOTO_{priv}MODE")
                     # Disarm the timer that was armed so no pending interrupt carries into the next testcase.
@@ -234,7 +206,7 @@ def wrs_resume_helper(
         )
     lines.append("#endif")
 
-    test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
+    test_data.int_regs.return_registers([r_addr, r_temp, r_temp2])
     return lines
 
 

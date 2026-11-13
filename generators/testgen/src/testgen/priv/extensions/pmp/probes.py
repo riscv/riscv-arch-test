@@ -393,61 +393,35 @@ def gen_rwx_tor_bot(test_data: TestData, case: str, coverpoint: Cross, region: s
     return lines
 
 
-def gen_rwx_tor_zero(
-    test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION"
-) -> list[str]:
-    return [
-        "",
-        "// Store probes",
-        f"LA(a5, {region})",
-        "LI(a4, RVTEST_PMP_RET_ENCODING)",
-        _testcase(test_data, f"{case}_1_sw_top", coverpoint, "sw"),
-        "sw a4, 0(a5)",
-        write_sigupd(14, test_data),
-        "addi a5, a5, -4",
-        _testcase(test_data, f"{case}_2_sw_top-4", coverpoint, "sw"),
-        "sw a4, 0(a5)",
-        write_sigupd(14, test_data),
-        "LI(a5, 0)",
-        _testcase(test_data, f"{case}_3_sw_zero", coverpoint, "sw"),
-        "sw a4, 0(a5)",
-        write_sigupd(14, test_data),
-        "",
-        "// Load probes",
-        f"LA(a5, {region})",
-        _testcase(test_data, f"{case}_4_lw_top", coverpoint, "lw"),
-        "lw a4, 0(a5)",
-        write_sigupd(14, test_data),
-        "addi a5, a5, -4",
-        _testcase(test_data, f"{case}_5_lw_top-4", coverpoint, "lw"),
-        "lw a4, 0(a5)",
-        write_sigupd(14, test_data),
-        "LI(a5, 0)",
-        _testcase(test_data, f"{case}_6_lw_zero", coverpoint, "lw"),
-        "lw a4, 0(a5)",
-        write_sigupd(14, test_data),
-        "",
-        "// Execute probes",
-        "RVTEST_FENCEI",
-        f"LA(a4, {region})",
-        "LA(ra, 1f)",
-        _testcase(test_data, f"{case}_7_jalr_top", coverpoint, "jalr"),
-        "jalr x0, 0(a4)",
-        "1:",
-        write_sigupd(14, test_data),
-        "addi a4, a4, -4",
-        "LA(ra, 2f)",
-        _testcase(test_data, f"{case}_8_jalr_top-4", coverpoint, "jalr"),
-        "jalr x0, 0(a4)",
-        "2:",
-        write_sigupd(14, test_data),
-        "LI(a5, 0)",
-        "LA(ra, 3f)",
-        _testcase(test_data, f"{case}_9_jalr_zero", coverpoint, "jalr"),
-        "jalr x0, 0(a5)",
-        "3:",
-        write_sigupd(14, test_data),
-    ]
+def gen_rwx_tor_zero(test_data: TestData, case: str, coverpoint: Cross) -> list[str]:
+    """sw, lw and jalr at 0 and PMP_TOR_REGION_BYTES-4, the first and last words of TOR entry 0."""
+    locations = (("zero", "0"), ("top-4", "PMP_TOR_REGION_BYTES - 4"))
+    lines = ["", "LI(a4, RVTEST_PMP_RET_ENCODING)"]
+    number = 0
+    for instruction in ("sw", "lw"):
+        for location, address in locations:
+            number += 1
+            lines.extend(
+                [
+                    f"LI(a5, {address})",
+                    _testcase(test_data, f"{case}_{number}_{instruction}_{location}", coverpoint, instruction),
+                    f"{instruction} a4, 0(a5)",
+                    write_sigupd(14, test_data),
+                ]
+            )
+    for resume, (location, address) in enumerate(locations, 1):
+        number += 1
+        lines.extend(
+            [
+                f"LI(a4, {address})",
+                f"LA(ra, {resume}f)",
+                _testcase(test_data, f"{case}_{number}_jalr_{location}", coverpoint, "jalr"),
+                "jalr x0, 0(a4)",
+                f"{resume}:",
+                write_sigupd(14, test_data),
+            ]
+        )
+    return lines
 
 
 def gen_float(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:

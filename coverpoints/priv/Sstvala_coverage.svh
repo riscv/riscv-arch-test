@@ -16,8 +16,8 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    // The instruction coverpoints and stval_address and stval_target serve crosses that a config may compile out,
-    // so only the crosses count
+    // The instruction coverpoints and stval_address, stval_target and stval_fetch_target serve crosses that a
+    // config may compile out, so only the crosses count
     loadops : coverpoint ins.current.insn {
         type_option.weight = 0;
         wildcard bins lb  = {LB};
@@ -77,6 +77,11 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         type_option.weight = 0;
         wildcard bins jalr = {JALR};
     }
+    // A fetch fault at a jalr's target, on whichever record carries it (see jalr_fetch_fault)
+    jalr_fetch : coverpoint ins.jalr_fetch_fault() {
+        type_option.weight = 0;
+        bins jalr = {1};
+    }
     illegal : coverpoint ins.current.insn {
         bins zeros = {'0};
         bins ones  = {'1};
@@ -94,6 +99,11 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins match = {1};
     }
+    stval_fetch_target : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) ==
+                                    ins.jalr_fetch_target() {
+        type_option.weight = 0;
+        bins match = {1};
+    }
     stval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == `UDB_MXLEN'(ins.current.insn) {
         bins match = {1};
     }
@@ -103,7 +113,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {1};
         }
-        cp_instr_access_fault: cross priv_mode_s_u, jalr,     instr_access_fault, stval_target;
+        cp_instr_access_fault: cross priv_mode_s_u, jalr_fetch, instr_access_fault, stval_fetch_target;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         load_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
@@ -207,7 +217,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         }
         cp_load_page_fault:  cross priv_mode_s, pf_loadops,  load_page_fault,  stval_address;
         cp_store_page_fault: cross priv_mode_s, pf_storeops, store_page_fault, stval_address;
-        cp_instr_page_fault: cross priv_mode_s, jalr,        instr_page_fault, stval_target;
+        cp_instr_page_fault: cross priv_mode_s, jalr_fetch,  instr_page_fault, stval_fetch_target;
     `endif
 endgroup
 

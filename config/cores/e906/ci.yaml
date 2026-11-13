@@ -1,0 +1,67 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the XuanTie OpenE906
+
+ci_enabled: true
+
+# Each suite below fails at T-head-Semi/opene906 c5b8789. RTL paths are relative to
+# https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/
+exclude_extensions:
+  # fmin/fmax return the canonical NaN when one operand is a signaling NaN (F 2.0 behavior; F 2.2 returns the other
+  # operand): falu/rtl/pa_fadd_single.v#L760-L761
+  - F-fmax.s
+  - F-fmin.s
+  # Fused multiply-add misses UF when the exact result is tiny but rounds up to the smallest normal:
+  # fmau/rtl/pa_fmau_frac_add.v#L427-L428 (https://github.com/XUANTIE-RV/opene906/issues/11)
+  - F-fmadd.s
+  - F-fmsub.s
+  - F-fnmadd.s
+  - F-fnmsub.s
+  - ZicsrF
+  # mtvec.MODE is hardwired to 3, CLIC mode (cp0/rtl/pa_cp0_trap_csr.v#L624), in which mcause bits 29:27 alias
+  # mstatus.MPP and MPIE, so an M-mode trap writes mcause = 0x3000_000x (cp0/rtl/pa_cp0_trap_csr.v#L879-L882).
+  - Exceptions_Sm-
+  - Exceptions_U
+  - InterruptsSm_wfi_timeout_U
+  - PMP_F_cfg_wr
+  - PMP_Sm_all_entries_check
+  - PMP_Sm_cfg_A_tor_bot
+  - PMP_Sm_cfg_napot_all
+  - PMP_Sm_cfg_tor_all
+  - PMP_Sm_cfg_XWR_all
+  - PMP_Sm_napot_legal_lxwr
+  - PMP_Sm_priority
+  - PMP_Sm_tor_legal_lxwr-02
+  - PMP_U_mprv_check-01
+  - PMP_Zaamo_cfg_wr
+  - PMP_Zca_legal_lwrx
+  - PMP_Zca_misaligned_napot
+  - PMP_Zca_misaligned_tor
+  - PMP_Zca_zcf_legal_lxwr
+  - Sm_csr_insufficient_priv
+  - Sm_csr_ro
+  - Sm_F
+  - Sm_inst
+  # LR raises the store causes 6 and 7 for a misaligned or faulting access instead of 4 and 5
+  # (lsu/rtl/pa_lsu_ag.v#L1501).
+  - Exceptions_Zalrsc
+  - PMP_Zalrsc_cfg_wr
+  # mstatus.MPP takes the unsupported value 1 (cp0/rtl/pa_cp0_trap_csr.v#L508), and mtvec.MODE reads 3
+  # (cp0/rtl/pa_cp0_trap_csr.v#L624).
+  - Sm_mcsr_walk
+  # mstatus.TW is read-only 0 although U-mode exists (cp0/rtl/pa_cp0_trap_csr.v#L556-L557).
+  - Sm_mcsr_access
+  # mhpmcounterN takes a write only while mhpmeventN selects that counter's one event (pmu/rtl/pa_hpcp_top.v#L453-L473),
+  # which Sail cannot model, and a csrw to minstret also counts itself.
+  - Sm_mcsr_cntr
+  # minstret counts ECALL, which does not retire; the increment (rtu/rtl/pa_rtu_retire.v#L455-L458 and #L1329) does
+  # not exclude excepting instructions. Sm_Zicntr also hits the mcause alias above.
+  - Sm_Zicntr
+  - U_Zicntr
+  # mret leaves mstatus.MPRV set when MPP is U, as privileged 1.11 allows; Sail 0.16 clears it regardless
+  # (https://github.com/riscv/sail-riscv/issues/2075). Drop this once ACT pins a Sail release with sail-riscv#2096.
+  - Sm_xret
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache patch"
+install_script: ".github/scripts/install-e906.sh"
+setup_script: ".github/scripts/setup-e906.sh"

@@ -1,0 +1,347 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+#
+# UDB architecture configuration for the XuanTie OpenE906, as released open source and
+# instantiated by the smart_run SoC testbench that ships with it.
+#
+# Every non-obvious value below carries the RTL or manual text it came from, with a
+# permalink pinned to T-head-Semi/opene906 commit c5b878958e73e0b8f324a8132943f184a7831c07.
+# The user manual is doc/玄铁E906用户手册(opene906)_20240627.pdf; it is quoted in the
+# Chinese original followed by a translation.
+#
+# The ISA is FIXED.  The release is generated RTL: misa, the FPU, the CLIC and PMP are not
+# behind `ifdef options, so cpu_cfig.h only sizes the caches (ICACHE_16K, DCACHE_16K), the
+# BHT (BHT_8K) and the debug unit.  It has no DSP define, and the decoder has no P opcode.
+#   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cpu/rtl/cpu_cfig.h#L130-L261
+#   Quote (datasheet, Features): "Architecture RV32IMAFC ... FPU Single precision floating
+#   point ... Instruction cache 16KB ... Data cache 16KB"
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: e906-rv32imafc-u-pmp
+description: XuanTie OpenE906 (open-source release) in its bundled smart_run SoC testbench
+implemented_extensions:
+  # misa = 0x40901125, read only: MXL=1, X(23), U(20), M(12), I(8), F(5), C(2), A(0).
+  # User manual 17.3.2 gives the reset value as 0x40901105, without F; the RTL sets F.
+  #   Quote: "assign opt_value[7:0] = {4'b0010, 4'b0101};" /
+  #          "assign extensions[25:0] = {2'b0, 4'b1001, 4'b0000, dsp_m_value[3:0],
+  #                                     4'b0001, opt_value[7:0]};"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_trap_csr.v#L570-L581
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  # Single precision only: FLEN is 32 because cpu_cfig.h does not define FPU_DOUBLE.
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cpu/rtl/cpu_cfig.h#L180-L187
+  - { name: F, version: "= 2.2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcf, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  # cycle, time and instret (and their high halves) read from U-mode when the mcounteren
+  # bit is set.  time is the SoC's pad_cpu_sys_cnt.
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_regs.v#L1357-L1392
+  - { name: Zicntr, version: "= 2.0" }
+  # hpmcounter3-31 exist and follow mcounteren (see HPM_COUNTER_EN for what they count).
+  - { name: Zihpm, version: "= 2.0.0" }
+  # mxstatus.MM resets to 1, so the LSU splits misaligned loads and stores in hardware.
+  #   Quote: "mm    <= 1'b1;"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_trap_csr.v#L1046-L1054
+  - { name: Zicclsm, version: "= 1.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  # Sm is declared at 1.11.0, the lowest version UDB offers.  The CSR decoder has no
+  # mstatush, menvcfg, mconfigptr or mseccfg, which privileged 1.12 adds.
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_regs.v#L658-L920
+  - { name: Sm, version: "= 1.11.0" }
+  # Deliberately NOT declared:
+  #   D - FPU_DOUBLE is not defined; fld/fsd and the .d operations raise illegal instruction.
+  #   P / DSP - the toolchain's -march=...pzp64 option targets E906 builds with a DSP unit,
+  #     but this release has none: misa.P is 0 and no decoder matches the P opcode (0x77).
+  #   Zcb - not implemented.  The UDB feature extractor reports it because the encodings Zcb
+  #     takes from the reserved RV32 space (bit 12 set in the C.SUB/C.XOR/C.OR/C.AND group)
+  #     do not trap: the illegal-instruction check ignores bit 12 there, and no decoder
+  #     row matches, so they retire without effect.
+  #     Quote: "8'b?1110001,  // C.AND C.OR C.XOR C.SUB" ... "decd_ill_expt = 1'b0;"
+  #     https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/idu/rtl/pa_idu_decd_rv32c.v#L541-L548
+  #   Smcsrind - not implemented.  The extractor reports it because CSR 0x350, miselect in
+  #     Smcsrind, is the CLIC mclicbase register here; mireg (0x351) does not exist.
+  #     https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_regs.v#L683
+  #   Sdtrig - tselect, tdata1-3, tinfo and tcontrol exist, but they follow the RISC-V debug
+  #     specification 0.13.2 (datasheet, "Debug Components"), not the ratified Sdtrig 1.0.
+  #   Smclic - the CLIC (mtvec.MODE = 3) is the only interrupt mode, but UDB does not model
+  #     it.  See MTVEC_MODES below.
+  #   XuanTie extensions (cache, multiply-accumulate, indexed load/store and the other
+  #     custom instructions) are not ratified; they raise illegal instruction while
+  #     mxstatus.THEADISAEE is 0, its reset value (user manual 17.6.1).
+params:
+  MXLEN: 32
+  # pmpaddr keeps written bits 29:4, address bits 31:6, and reads bits 31:30 as 0.
+  #   Quote: "pmpaddr0_value[ADDR_WIDTH-1:0] <= cp0_pmp_updt_data[ADDR_WIDTH+3:4];"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmp/rtl/pa_pmp_regs.v#L688
+  PHYS_ADDR_WIDTH: 32
+
+  MISA_CSR_IMPLEMENTED: true
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_U: false
+  # misa.X (bit 23) reads 1: the XuanTie custom instructions exist (enabled by
+  # mxstatus.THEADISAEE).
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
+
+  M_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  UXLEN: [32]
+
+  # mstatus.FS resets to 0 and takes any written value; an FP register write or an fflags
+  # update sets it to 3 (Dirty).
+  #   Quote: "fs[1:0] <= iui_regs_wdata[14:13];" / "else if(fs_dirty_upd) fs[1:0] <= 2'b11;"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_trap_csr.v#L461-L478
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  # Not every reserved encoding traps: the RV32 C.SUB-group encodings with bit 12 set
+  # retire without effect (see Zcb above).
+  TRAP_ON_RESERVED_INSTRUCTION: false
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # mtval follows user manual Table 4.3: the access address for causes 1, 4, 5, 6 and 7,
+  # the instruction encoding for cause 2, and 0 for causes 3, 8 and 11.
+  #   Quote (user manual 4.1.1, Table 4.3): "3 调试断点异常 0" ("3 breakpoint: 0")
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+
+  # Misaligned loads and stores complete in hardware while mxstatus.MM = 1 (its reset
+  # value); misaligned AMOs and LR/SC raise a misaligned exception.
+  #   Quote (user manual 17.6.1): "MM-非对齐访问控制位 1’b1：当内存访问出现地址非对齐时，
+  #   不会上报非对齐访问异常，硬件会对非对齐访问请求进行拆分处理 …… 该域复位值为 1‘b1"
+  #   ("MM, misaligned access control: 1: a misaligned access raises no misaligned
+  #   exception; the hardware splits it ... resets to 1")
+  MISALIGNED_LDST: true
+  MISALIGNED_AMO: false
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
+  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+  # Misaligned exceptions outrank access faults.
+  #   Quote (user manual 4.1.1, Table 4.2): "6 存储指令非对齐访问异常 / 4 加载指令非对齐访问异常",
+  #   above the access faults ("6 store misaligned / 4 load misaligned")
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  LRSC_RESERVATION_STRATEGY: reserve exactly enough to cover the access
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: always raise misaligned exception
+
+  # mvendorid = 0x5B7 (bank 11, offset 0x37); marchid and mimpid read 0.
+  #   Quote: "assign mvendorid_value[31:0] = 32'h5B7;" / "assign marchid_value[31:0] = 32'b0;"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_info_csr.v#L78-L97
+  VENDOR_ID_BANK: 11
+  VENDOR_ID_OFFSET: 0x37
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+
+  # mtvec.MODE is hardwired to 3 (CLIC mode), a reserved value in the privileged
+  # specification.  In that mode every exception goes to BASE, which a write sets to
+  # rs1[31:6] with bits 5:2 cleared: the same as direct mode with a 64-byte aligned BASE,
+  # so the configuration declares that.  A read of mtvec still returns MODE = 3.
+  #   Quote: "assign mtvec_mode[1:0] = 2'b11;" /
+  #          "mtvec_base[29:0] <= {iui_regs_wdata[31:6], 4'b0};" /
+  #          "assign mtvec_rslt_use_base = !minhv || !m_intr; // Non-Vec mode or expt"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_trap_csr.v#L624-L645
+  #   Quote (user manual 17.3.5): "设置异常向量表基地址和模式，写入 MTVEC，E906 模式位固定为 2’b11"
+  #   ("set the vector table base and mode by writing MTVEC; the E906 mode field is fixed
+  #   at 2'b11")
+  MTVEC_MODES: [0]
+  MTVEC_ACCESS: rw
+  # Not "retain": a write with MODE != 3 or an unaligned BASE still writes BASE[31:6].
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  MTVEC_BASE_ALIGNMENT_DIRECT: 64
+
+  # Store and LR bus errors are imprecise even with mhint.AEE = 1, which RVMODEL_BOOT sets
+  # to make load and fetch bus errors precise (user manual 17.6.3).
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_ext_csr.v#L839
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/rtu/rtl/pa_rtu_retire.v#L476
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: false
+  # WFI stalls until an interrupt is pending; in U-mode it raises illegal instruction
+  # (there is no mstatus.TW).
+  #   Quote: "assign iui_wfi_umode_inv  = regs_iui_pm[1:0] == 2'b00 && iui_inst_wfi && !rtu_yy_xx_dbgon;"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_iui.v#L456
+  WFI_FINITE: false
+  WFI_U_MODE: false
+  # In CLIC mode mie and mip read 0 and ignore writes; every interrupt, including the
+  # CLINT's timer and software interrupts, is enabled and reported through the CLIC.
+  #   Quote: "assign mie_value[31:0] = 32'b0;" / "assign mip_value[31:0] = 32'b0;"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_trap_csr.v#L614
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_trap_csr.v#L920
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  # The sysmap attribute regions are 4 KB aligned (integration manual 7.x).
+  #   Quote (integration manual): "每个地址空间上下边界是 4KB 对齐" ("each region's bounds
+  #   are 4 KB aligned")
+  PMA_GRANULARITY: 12
+
+  # Sixteen PMP entries are decoded (pmpcfg0-3, pmpaddr0-15), of which eight are usable:
+  # pmpaddr8-15 and their pmpcfg fields read 0 and ignore writes.
+  #   Quote: "assign pmpaddr8_value[ADDR_WIDTH-1:0] = {ADDR_WIDTH{1'b0}};"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmp/rtl/pa_pmp_regs.v#L779
+  # The grain is 128 bytes (G = 5): NAPOT compares address bits 31:7, pmpaddr bits 3:0 read
+  # as ones in NAPOT mode and bits 4:0 as zeros otherwise.  NA4 is not implemented (its
+  # comparator is commented out), as the privileged specification requires for G >= 1.
+  #   Quote: "assign pmpaddr0_low[4:0]  = pmp0cfg_mode[1]  ? {pmpaddr0_value[0],  4'hf} : {5{1'b0}};"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmp/rtl/pa_pmp_regs.v#L879
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmp/rtl/pa_pmp_comp_hit.v#L75-L122
+  #   Quote (datasheet, PMP): "8 regions; ... Minimum 128B address range."
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 8
+  PMP_GRANULARITY: 7
+  PMP_TOR_SUPPORTED: true
+  PMP_NA4_SUPPORTED: false
+  PMP_NAPOT_SUPPORTED: true
+
+  TIME_CSR_IMPLEMENTED: true
+  # Nine 64-bit HPM counters are implemented. Each mhpmevent accepts zero or one fixed
+  # event code; writes to the counter itself are accepted only while that event is selected.
+  # A stopped counter is still implemented: HPM_COUNTER_EN describes the hardware, not its
+  # current event selection. Other HPM counters and their selectors are read-only zero.
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmu/rtl/pa_hpcp_top.v#L430-L473
+  HPM_COUNTER_EN: [
+      false, # 0
+      false, # 1
+      false, # 2
+      true, # 3
+      true, # 4
+      false, # 5
+      false, # 6
+      false, # 7
+      true, # 8
+      true, # 9
+      false, # 10
+      false, # 11
+      false, # 12
+      true, # 13
+      true, # 14
+      true, # 15
+      true, # 16
+      true, # 17
+      false, # 18
+      false, # 19
+      false, # 20
+      false, # 21
+      false, # 22
+      false, # 23
+      false, # 24
+      false, # 25
+      false, # 26
+      false, # 27
+      false, # 28
+      false, # 29
+      false, # 30
+      false, # 31
+    ]
+  HPM_EVENTS: [0, 1, 2, 6, 7, 11, 12, 13, 14, 15]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  # mcountinhibit bits 1 (TM) and 31 read as zero:
+  #   Quote: "assign mcntinhbt_value[31:0] = {1'b0, hpm[27:0], ir, 1'b0, cy};"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/pmu/rtl/pa_hpcp_top.v#L600
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+    ]
+  # mcounteren: CY, TM, IR and HPM3, 4, 8, 9 and 13-17 are writable.
+  #   Quote: "assign mcnten_hpm[28:0] = {14'b0, mcnten_hpm17, mcnten_hpm16, mcnten_hpm15,
+  #          mcnten_hpm14, mcnten_hpm13, 3'b0, mcnten_hpm9, mcnten_hpm8,  3'b0, mcnten_hpm4,
+  #          mcnten_hpm3};"
+  #   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/cp0/rtl/pa_cp0_trap_csr.v#L655-L697
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

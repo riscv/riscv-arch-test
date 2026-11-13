@@ -1,0 +1,41 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for BlackParrot (e_bp_unicore_cfg)
+
+ci_enabled: true
+
+# black-parrot @ 909619a6. Paths are under
+#   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/
+exclude_extensions:
+  # csrr of mip or sip ORs the S-mode external interrupt line into SEIP only when the instruction in
+  # the retire stage, not the one being read, names mip or sip, so the trap handler reads sip.SEIP = 0
+  # while the line is high: bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L843-L851 (not yet reported)
+  - InterruptsS_enable_S
+  - InterruptsS_enable_U
+  - InterruptsS_priority_sip_S
+  - InterruptsS_priority_sip_U
+  - InterruptsS_trigger_S
+  - InterruptsS_trigger_U
+  - InterruptsSm_trigger_S
+  - InterruptsSm_trigger_U
+  # mcycle and minstret keep only 48 bits: bp_common/src/include/bp_common_rv64_csr_defines.svh#L617
+  # (not yet reported)
+  - Sm_mcsr_cntr
+  # stval keeps only the 39-bit virtual address width, sign-extended, so a non-canonical address is
+  # reported as a canonical one: bp_be/src/include/bp_be_defines.svh#L137
+  # (https://github.com/black-parrot/black-parrot/pull/1355)
+  - Sv_sv39_canonical
+  # Test limitation, not the core: these tests set up a page-table entry for the access-fault address
+  # with LA, which cannot reach it from the code at 0x8000_0000, so they do not assemble. BlackParrot
+  # has no address within reach where loads and stores fault: the host I/O region at physical address
+  # bit 33 faults only for fetches, by design (https://github.com/black-parrot/black-parrot/issues/1364).
+  - Sv_ExceptionsSm_sv39_exceptions
+  - Sv_ExceptionsZaamoSm_sv39_exceptions
+  - Sv_ExceptionsZaamo_sv39_exceptions
+  - Sv_ExceptionsZalrscSm_sv39_exceptions
+  - Sv_ExceptionsZalrsc_sv39_exceptions
+  - Sv_Exceptions_sv39_exceptions
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-blackparrot.sh"
+setup_script: ".github/scripts/setup-blackparrot.sh"

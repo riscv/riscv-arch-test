@@ -766,7 +766,7 @@ Zicsr_csrrc_cg_cp_rs1_b20:
 Zicsr_csrrc_cg_cp_rs1_b21:
 // perform operation
 #ifdef RVTEST_READ_ONLY_TEST_CSR
-  li x0, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+  csrrc x0, RVTEST_TEST_CSR, x0  # rs1 = x0 does not write; the result is discarded
 #else
   csrrc x0, RVTEST_TEST_CSR, x21
 #endif
@@ -1142,7 +1142,7 @@ Zicsr_csrrc_cg_cp_rs1_b31:
 Zicsr_csrrc_cg_cp_rd_b0:
 // perform operation
 #ifdef RVTEST_READ_ONLY_TEST_CSR
-  li x0, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+  csrrc x0, RVTEST_TEST_CSR, x0  # rs1 = x0 does not write; the result is discarded
 #else
   csrrc x0, RVTEST_TEST_CSR, x7
 #endif
@@ -2857,7 +2857,7 @@ Zicsr_csrrc_cg_cp_rs1_edges_0x7fffffff:
 Zicsr_csrrc_cg_cmp_rd_rs1_b0:
 // perform operation
 #ifdef RVTEST_READ_ONLY_TEST_CSR
-  li x0, 0x42 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0
+  csrrc x0, RVTEST_TEST_CSR, x0  # rs1 = x0 does not write; the result is discarded
 #else
   csrrc x0, RVTEST_TEST_CSR, x0
 #endif

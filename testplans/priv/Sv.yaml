@@ -49,7 +49,7 @@ coverpoints:
     expectation: No fault; execution runs at the extreme VA and returns.
     bins: |-
       mode_supported x VA_i
-      = 6 bins on RV64, 2 on RV32
+      = 6 bins on RV64, 1 on RV32
     id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
     rules:
       - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"
@@ -59,7 +59,7 @@ coverpoints:
     expectation: No fault; each load returns the value stored.
     bins: |-
       mode_supported x VA_d
-      = 6 bins on RV64, 2 on RV32
+      = 6 bins on RV64, 1 on RV32
     id: satp_mode_sxlen32 satp_mode_sxlen64 satp_mode_sz satp_mode_acc satp_mode_op
     rules:
       - "[norm:satp_mode_sxlen32] [norm:satp_mode_sxlen64] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:satp_mode_op]"

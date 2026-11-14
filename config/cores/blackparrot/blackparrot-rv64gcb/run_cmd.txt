@@ -1,0 +1,1 @@
+run-blackparrot.sh --elf

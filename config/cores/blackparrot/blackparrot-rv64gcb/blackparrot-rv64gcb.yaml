@@ -1,0 +1,454 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: blackparrot-rv64gcb
+description: >-
+  BlackParrot (black-parrot/black-parrot) in the default unicore configuration
+  e_bp_unicore_cfg = bp_default_cfg_p, simulated in the bp_tethered testbench.
+  Written against black-parrot 909619a68f3541a4cd0973767daf2a561d1f8c95 and checked
+  with the UDB feature extractor (riscv-arch-test PR 2442); permalinks are at that commit.
+#
+# README: "RV64IMAFDCSU_Zfencei_Zicsr User Mode 20191213 extensions with Privilege Mode 1.11
+# support ... Debug mode is NOT SUPPORTED". bp_default_cfg_p also enables Zba, Zbb and Zbs
+# ("bitmanip_support : (1 << e_zba) | (1 << e_zbb) | (1 << e_zbs)"), and misa.B is set when all
+# three are on:
+#   ",b: (bitmanip_support_p[e_zba] & bitmanip_support_p[e_zbb] & bitmanip_support_p[e_zbs])"
+#   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L98-L127
+# Zicbom and Zicboz are not claimed: the cbo instructions are decoded, but there is no menvcfg or
+# senvcfg (priv 1.11), and the maintainers do not claim them
+# (https://github.com/black-parrot/black-parrot/issues/1340).
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  - { name: B, version: "= 1.0.0" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  # cycle and instret are CSRs; time traps ("Time must be done by trapping", https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L645) and is
+  # emulated by M-mode from the CLINT's mtime (TIME_CSR_IMPLEMENTED below).
+  - { name: Zicntr, version: "= 2.0" }
+  # hpmcounter3-31 read as zero in M-mode, and mcounteren/scounteren hold no HPM bits, so S and
+  # U always trap ("mcounteren.hpm and scounteren.hpm are read-only 0", https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_checker/bp_be_instr_decoder.sv#L557-L559).
+  - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Sm, version: "= 1.11.0" }
+  - { name: S, version: "= 1.11.0" }
+  - { name: U, version: "= 1.0.0" }
+  - { name: Sv39, version: "= 1.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+  # Measured by the feature extractor: stvec accepts Direct mode, UXL is 64, and scounteren
+  # holds every bit mcounteren holds.
+  - { name: Sstvecd, version: "= 1.0.0" }
+  - { name: Ssu64xl, version: "= 1.0.0" }
+  - { name: Sscounterenw, version: "= 1.0.0" }
+params:
+  MXLEN: 64
+  # "localparam bp_proc_param_s bp_default_cfg_p = ... ,vaddr_width: 39 ,paddr_width: 40"
+  #   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/include/bp_common_aviary_cfg_pkgdef.svh#L283-L301
+  PHYS_ADDR_WIDTH: 40
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_S: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_EBREAK: true
+  # "wire [dword_width_gp-1:0] mvendorid_lo = 64'h0; ... marchid_lo = 13; ... mimpid_lo = 64'd4;"
+  #   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L83-L92
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 13
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 4
+  MISA_CSR_IMPLEMENTED: true
+  # misa.X is set: ",x: 1'b1" (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L123)
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
+  # "MISA is optionally read-write, but all fields are read-only in BlackParrot" (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L96)
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_B: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_S: false
+  MUTABLE_MISA_U: false
+  M_MODE_ENDIANNESS: little
+  S_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  SXLEN: [64]
+  UXLEN: [64]
+  # FS holds all four values; it becomes Dirty when an FP instruction retires or an FP CSR is
+  # written: "mstatus_li.fs |= {2{csr_w_v_li & csr_fany_li}}; mstatus_li.fs |=
+  # {2{retire_pkt_cast_i.instret & instr_fany_li}};" (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L834-L835)
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  MSTATUS_VS_LEGAL_VALUES: [0]
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  # mtvec and stvec hold only a word address; MODE reads 0 (Direct only) and a write of another
+  # MODE keeps the new BASE:
+  #   "`define decompress_mtvec_s(data_comp_mp) '{base : `BSG_SIGN_EXTEND(data_comp_mp.word_addr, 62)
+  #     ,mode: 2'b00 }"  https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/include/bp_common_rv64_csr_defines.svh#L899-L902
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  STVEC_MODES: [0]
+  # tval sources: "0, 3 -> instruction address; 1, 12 -> address of the faulting portion of the
+  # instruction; 2 -> instruction data; 4, 5, 6, 7, 13, 15 -> data address; 8, 9, 11 -> zero"
+  #   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L433-L444
+  # mtval/stval keep 40 bits, sign-extended on read (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/include/bp_common_rv64_csr_defines.svh#L517); the extractor reads back 64
+  # bits of ones, and no ACT test distinguishes the two.
+  MTVAL_WIDTH: 64
+  STVAL_WIDTH: 64
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  # Every CSR address the read decoder does not list traps ("default: ... csr_r_illegal_o =
+  # csr_r_v_i;", https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L585-L591); unknown opcodes trap in the instruction decoder.
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  # Loads and stores raise a misaligned exception whenever the address is not aligned to the
+  # access size; the D$ cannot perform them ("D$ can't handle misaligned accesses",
+  # https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_pipe_mem.sv#L237-L238). The check is made alongside
+  # translation, and the CSR file takes the lowest exception code, so a misaligned exception
+  # wins over an access or page fault (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/v/bp_mmu.sv#L69-L77, https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L289-L297).
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  MISALIGNED_AMO: false
+  LRSC_MISALIGNED_BEHAVIOR: always raise misaligned exception
+  # Measured by the extractor; the D$ keeps one reservation per 64-byte block.
+  LRSC_RESERVATION_STRATEGY: reserve naturally-aligned 64-byte region
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  # "localparam bp_proc_param_s bp_default_cfg_p = ... ,num_pmp : 0" and PMP CSR accesses trap:
+  #   ",`CSR_ADDR_PMPADDR : illegal_instr_o = num_pmp_p == 0;" (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_checker/bp_be_instr_decoder.sv#L551-L553)
+  NUM_PMP_ENTRIES: 0
+  # The PMA (bp_pma.sv) decides cacheability per 4 KiB page tag.
+  PMA_GRANULARITY: 12
+  # wfi traps in U-mode: "WFI always traps in U-mode, and with TW in S-mode" (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_checker/bp_be_instr_decoder.sv#L523-L529)
+  WFI_U_MODE: false
+  WFI_FINITE: false
+  # The CLINT provides msip, mtimecmp and two software-settable external-interrupt bits
+  # (bp_me_clint_slice.sv); mideleg can delegate SSI, STI and SEI (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/include/bp_common_rv64_csr_defines.svh#L858-L870).
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
+  # medeleg holds bits 15, 13:12 and 9:0 (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/include/bp_common_rv64_csr_defines.svh#L844-L856)
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # There is no time CSR; M-mode emulates it from the CLINT's mtime (RVMODEL_MTIME_ADDRESS).
+  TIME_CSR_IMPLEMENTED: false
+  # mcountinhibit, mcounteren and scounteren hold only CY and IR (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/include/bp_common_rv64_csr_defines.svh#L906-L917, #L1011-L1020);
+  # mhpmcounter3-31 and mhpmevent3-31 read as zero (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L144).
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTENABLE_EN:
+    [
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  SCOUNTENABLE_EN:
+    [
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # satp holds only MODE bit 3 and the PPN; a write of a mode other than Bare or Sv39 is ignored
+  # ("assign satp_wmask_li = satp_wdata_li.mode inside {4'd0, 4'd8} ? '1 : '0;", https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L449), and the
+  # ASID field is not stored (https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/include/bp_common_rv64_csr_defines.svh#L796-L806).
+  SATP_MODE_BARE: true
+  ASID_WIDTH: 0

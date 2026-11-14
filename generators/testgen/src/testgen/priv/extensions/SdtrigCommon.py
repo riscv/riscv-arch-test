@@ -214,29 +214,42 @@ _TCONTROL_MPTE = 0x80
 
 # ── textra (tdata3) ─────────────────────────────────────────────────────────
 _TEXTRA_DATA = 0x12345678  # the textra mcontrol6 cases' store data match (_xlen_value widens it on RV64)
-# Context and textra values are assembler expressions masked to the implemented mhvalue (MHVALUE_LEN) and svalue
-# (SVALUE_LEN) bits, so a case expected to match still matches when fewer bits are implemented.
+# Context and textra values are assembler expressions. A textra value is limited to the implemented mhvalue
+# (MHVALUE_LEN) or svalue (SVALUE_LEN) bits. A context value, and a textra value meant to match it, is also limited
+# to the implemented mcontext (DBG_HCONTEXT_WIDTH; hcontext is the same register) or scontext (DBG_SCONTEXT_WIDTH)
+# bits, because the unimplemented context bits read 0. A miss differs from the context in implemented textra bits,
+# so it still misses where the context implements fewer bits than the textra value, or none.
 _MHVALUE_MASK = "((1 << UDB_SDTRIG_TEXTRA_MHVALUE_LEN) - 1)"
 _SVALUE_MASK = "((1 << UDB_SDTRIG_TEXTRA_SVALUE_LEN) - 1)"
+_MCONTEXT_MASK = "((1 << UDB_DBG_HCONTEXT_WIDTH) - 1)"
+_SCONTEXT_MASK = "((1 << UDB_DBG_SCONTEXT_WIDTH) - 1)"
 _MCONTEXT_TEST_VALUE_RV32 = 0b010101
 _MCONTEXT_TEST_VALUE_RV64 = 0x1555
 _SCONTEXT_TEST_VALUE_RV32 = 0x1234
 _SCONTEXT_TEST_VALUE_RV64 = 0x12345678
-# (case name, rv32 mhvalue, rv64 mhvalue), per the test plan. mcontext holds the match value; "other" differs from it
+# (case name, mhvalue as an expression in the mcontext value {c}), per the test plan. "other" differs from mcontext
 # in bit 0, so it still differs with a single implemented mhvalue bit.
-_TEXTRA_MCONTEXT_CASES = (
-    ("match", _MCONTEXT_TEST_VALUE_RV32, _MCONTEXT_TEST_VALUE_RV64),
-    ("zero", 0, 0),
-    ("other", _MCONTEXT_TEST_VALUE_RV32 ^ 1, _MCONTEXT_TEST_VALUE_RV64 ^ 1),
+_TEXTRA_MCONTEXT_CASES = (("match", "{c}"), ("zero", "0"), ("other", "({c} ^ 1)"))
+# cp_textra_scontext (#2591): svalue x sbytemask; a masked byte is ignored in the compare. svalue is the scontext
+# value {c}, zero, or {c} with byte k inverted, so that it differs from scontext in byte k.
+_TEXTRA_SCONTEXT_SVALUES_RV32 = (
+    ("zero", "0"),
+    ("byte1", "({c} ^ 0xff00)"),
+    ("byte0", "({c} ^ 0xff)"),
+    ("match", "{c}"),
 )
-# cp_textra_scontext (#2591): svalue x sbytemask; a masked byte is ignored in the compare
-_TEXTRA_SCONTEXT_RV32 = [(sv, m) for sv in (0x0000, 0x0034, 0x1200, 0x1234) for m in (0b00, 0b01, 0b10, 0b11)]
-_TEXTRA_SCONTEXT_RV64 = [
-    (sv, m)
-    for sv in (0x00000000, 0x12345600, 0x12340078, 0x12005678, 0x00345678, 0x12345678)
-    for m in (0b0000, 0b0001, 0b0010, 0b0100, 0b1000, 0b1111)
-]
-# cp_textra_double_context (#2646): mcontext and scontext matched together
+_TEXTRA_SCONTEXT_SVALUES_RV64 = (
+    ("zero", "0"),
+    ("byte0", "({c} ^ 0xff)"),
+    ("byte1", "({c} ^ 0xff00)"),
+    ("byte2", "({c} ^ 0xff0000)"),
+    ("byte3", "({c} ^ 0xff000000)"),
+    ("match", "{c}"),
+)
+_TEXTRA_SCONTEXT_MASKS_RV32 = (0b00, 0b01, 0b10, 0b11)
+_TEXTRA_SCONTEXT_MASKS_RV64 = (0b0000, 0b0001, 0b0010, 0b0100, 0b1000, 0b1111)
+# cp_textra_double_context (#2646): mcontext and scontext matched together, each all ones; a mismatch is the
+# complement within the textra value bits
 _DOUBLE_MCONTEXT = (0b111111, 0x1FFF)
 _DOUBLE_SCONTEXT = (0xFFFF, 0xFFFFFFFF)
 # cp_textra_asid: satp.ASID = X = 2^ASID_WIDTH - 2, and svalue (an assembler expression in X and ASIDMAX, which
@@ -907,14 +920,24 @@ def _xlen_li_expr(reg: int, expr32: str, expr64: str) -> list[str]:
     return ["#if __riscv_xlen == 64", f"LI(x{reg}, {expr64})", "#else", f"LI(x{reg}, {expr32})", "#endif"]
 
 
-def _mhvalue(val: int) -> str:
-    """mhvalue (and the mcontext it is compared with) limited to the SDTRIG_TEXTRA_MHVALUE_LEN implemented bits."""
-    return f"(0x{val:x} & {_MHVALUE_MASK})"
+def _mhvalue(val: int | str) -> str:
+    """mhvalue limited to the SDTRIG_TEXTRA_MHVALUE_LEN implemented bits."""
+    return f"(({val if isinstance(val, str) else hex(val)}) & {_MHVALUE_MASK})"
 
 
 def _svalue(val: int | str) -> str:
-    """svalue (and the scontext it is compared with) limited to the SDTRIG_TEXTRA_SVALUE_LEN implemented bits."""
+    """svalue limited to the SDTRIG_TEXTRA_SVALUE_LEN implemented bits."""
     return f"(({val if isinstance(val, str) else hex(val)}) & {_SVALUE_MASK})"
+
+
+def _mcontext(val: int) -> str:
+    """mcontext value that mhvalue can equal: the bits both mcontext (DBG_HCONTEXT_WIDTH) and mhvalue implement."""
+    return _mhvalue(f"0x{val:x} & {_MCONTEXT_MASK}")
+
+
+def _scontext(val: int) -> str:
+    """scontext value that svalue can equal: the bits both scontext (DBG_SCONTEXT_WIDTH) and svalue implement."""
+    return _svalue(f"0x{val:x} & {_SCONTEXT_MASK}")
 
 
 def _textra_expr(
@@ -1077,49 +1100,42 @@ def _trap_textra_blocks(
     """(context, gate, context-set lines, context-clear lines, [(case, tdata3 load into x{reg})]) for the
     itrigger/etrigger textra cases: mhselect=4 with mhvalue equal to or different from mcontext, and sselect=1 with
     svalue equal to or different from scontext. Each block runs under its gate (an #if closed by #endif)."""
-    mh = {name: (v32, v64) for name, v32, v64 in _TEXTRA_MCONTEXT_CASES}
+    m32, m64 = _mcontext(_MCONTEXT_TEST_VALUE_RV32), _mcontext(_MCONTEXT_TEST_VALUE_RV64)
+    s32, s64 = _scontext(_SCONTEXT_TEST_VALUE_RV32), _scontext(_SCONTEXT_TEST_VALUE_RV64)
+    cases = [(name, value) for name, value in _TEXTRA_MCONTEXT_CASES if name in ("match", "other")]
     return [
         (
             "mcontext",
             _MCONTEXT_MATCH_GATE,
-            [
-                *_xlen_li_expr(temp_reg, _mhvalue(_MCONTEXT_TEST_VALUE_RV32), _mhvalue(_MCONTEXT_TEST_VALUE_RV64)),
-                f"csrw mcontext, x{temp_reg}",
-            ],
+            [*_xlen_li_expr(temp_reg, m32, m64), f"csrw mcontext, x{temp_reg}"],
             ["csrw mcontext, x0 # clear the test context"],
             [
                 (
                     f"mhvalue_{name}",
                     _xlen_li_expr(
                         reg,
-                        _textra_expr(32, mhselect=4, mhvalue=_mhvalue(mh[name][0])),
-                        _textra_expr(64, mhselect=4, mhvalue=_mhvalue(mh[name][1])),
+                        _textra_expr(32, mhselect=4, mhvalue=_mhvalue(value.format(c=m32))),
+                        _textra_expr(64, mhselect=4, mhvalue=_mhvalue(value.format(c=m64))),
                     ),
                 )
-                for name in ("match", "other")
+                for name, value in cases
             ],
         ),
         (
             "scontext",
             _SCONTEXT_MATCH_GATE,
-            [
-                *_xlen_li_expr(temp_reg, _svalue(_SCONTEXT_TEST_VALUE_RV32), _svalue(_SCONTEXT_TEST_VALUE_RV64)),
-                f"csrw scontext, x{temp_reg}",
-            ],
+            [*_xlen_li_expr(temp_reg, s32, s64), f"csrw scontext, x{temp_reg}"],
             ["csrw scontext, x0 # clear the test context"],
             [
                 (
                     f"svalue_{name}",
                     _xlen_li_expr(
                         reg,
-                        _textra_expr(32, sselect=1, svalue=_svalue(sv32)),
-                        _textra_expr(64, sselect=1, svalue=_svalue(sv64)),
+                        _textra_expr(32, sselect=1, svalue=_svalue(value.format(c=s32))),
+                        _textra_expr(64, sselect=1, svalue=_svalue(value.format(c=s64))),
                     ),
                 )
-                for name, sv32, sv64 in (
-                    ("match", _SCONTEXT_TEST_VALUE_RV32, _SCONTEXT_TEST_VALUE_RV64),
-                    ("zero", 0, 0),
-                )
+                for name, value in cases
             ],
         ),
     ]
@@ -4324,15 +4340,16 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(comment_banner(coverpoint, "textra mhselect=4: the trigger fires only when mhvalue equals mcontext"))
     lines.append(_MCONTEXT_MATCH_GATE)
     lines.extend(_global_ie(mode, True))
-    lines.extend(set_context("mcontext", _mhvalue(_MCONTEXT_TEST_VALUE_RV32), _mhvalue(_MCONTEXT_TEST_VALUE_RV64)))
+    m32, m64 = _mcontext(_MCONTEXT_TEST_VALUE_RV32), _mcontext(_MCONTEXT_TEST_VALUE_RV64)
+    lines.extend(set_context("mcontext", m32, m64))
     for trig_num in TRIGGERS:
         for trig_type in trig_types:
             body: list[str] = []
-            for case_name, mhv32, mhv64 in _TEXTRA_MCONTEXT_CASES:
+            for case_name, mhv in _TEXTRA_MCONTEXT_CASES:
                 tdata3 = _xlen_li_expr(
                     cfg_reg,
-                    _textra_expr(32, mhselect=4, mhvalue=_mhvalue(mhv32)),
-                    _textra_expr(64, mhselect=4, mhvalue=_mhvalue(mhv64)),
+                    _textra_expr(32, mhselect=4, mhvalue=_mhvalue(mhv.format(c=m32))),
+                    _textra_expr(64, mhselect=4, mhvalue=_mhvalue(mhv.format(c=m64))),
                 )
                 body += case(
                     f"trig_num_{trig_num}_type_{trig_type}_mhvalue_{case_name}", coverpoint, trig_num, trig_type, tdata3
@@ -4349,29 +4366,27 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(comment_banner(coverpoint, "textra sselect=1: svalue compared with scontext, sbytemask bytes ignored"))
     lines.append(_SCONTEXT_MATCH_GATE)
     lines.extend(_global_ie(mode, True))
-    lines.extend(set_context("scontext", _svalue(_SCONTEXT_TEST_VALUE_RV32), _svalue(_SCONTEXT_TEST_VALUE_RV64)))
+    s32, s64 = _scontext(_SCONTEXT_TEST_VALUE_RV32), _scontext(_SCONTEXT_TEST_VALUE_RV64)
+    lines.extend(set_context("scontext", s32, s64))
     for trig_num in TRIGGERS:
         for trig_type in trig_types:
-            body = ["#if __riscv_xlen == 64"]
-            for sv, m in _TEXTRA_SCONTEXT_RV64:
-                tdata3 = [f"LI(x{cfg_reg}, {_textra_expr(64, sselect=1, svalue=_svalue(sv), sbytemask=m)})"]
-                body += case(
-                    f"trig_num_{trig_num}_type_{trig_type}_svalue_{sv:08x}_mask_{m:04b}",
-                    coverpoint,
-                    trig_num,
-                    trig_type,
-                    tdata3,
-                )
-            body.append("#else")
-            for sv, m in _TEXTRA_SCONTEXT_RV32:
-                tdata3 = [f"LI(x{cfg_reg}, {_textra_expr(32, sselect=1, svalue=_svalue(sv), sbytemask=m)})"]
-                body += case(
-                    f"trig_num_{trig_num}_type_{trig_type}_svalue_{sv:04x}_mask_{m:02b}",
-                    coverpoint,
-                    trig_num,
-                    trig_type,
-                    tdata3,
-                )
+            body = []
+            for xlen, ctx, svalues, masks in (
+                (64, s64, _TEXTRA_SCONTEXT_SVALUES_RV64, _TEXTRA_SCONTEXT_MASKS_RV64),
+                (32, s32, _TEXTRA_SCONTEXT_SVALUES_RV32, _TEXTRA_SCONTEXT_MASKS_RV32),
+            ):
+                body.append("#if __riscv_xlen == 64" if xlen == 64 else "#else")
+                for sv_name, sv in svalues:
+                    for m in masks:
+                        svalue = _svalue(sv.format(c=ctx))
+                        tdata3 = [f"LI(x{cfg_reg}, {_textra_expr(xlen, sselect=1, svalue=svalue, sbytemask=m)})"]
+                        body += case(
+                            f"trig_num_{trig_num}_type_{trig_type}_svalue_{sv_name}_mask_{m:0{xlen // 16}b}",
+                            coverpoint,
+                            trig_num,
+                            trig_type,
+                            tdata3,
+                        )
             body.append("#endif")
             lines.extend(per_type(trig_num, trig_type, body))
     lines.extend(context_access("scontext", "csrw scontext, x0 # clear the test context"))
@@ -4390,8 +4405,10 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(_MCONTEXT_MATCH_GATE)
     lines.append(_SCONTEXT_MATCH_GATE)
     lines.extend(_global_ie(mode, True))
-    lines.extend(set_context("mcontext", *(_mhvalue(v) for v in _DOUBLE_MCONTEXT)))
-    lines.extend(set_context("scontext", *(_svalue(v) for v in _DOUBLE_SCONTEXT)))
+    mh_match = [_mcontext(v) for v in _DOUBLE_MCONTEXT]
+    sv_match = [_scontext(v) for v in _DOUBLE_SCONTEXT]
+    lines.extend(set_context("mcontext", *mh_match))
+    lines.extend(set_context("scontext", *sv_match))
     for trig_num in TRIGGERS:
         for trig_type in trig_types:
             body = []
@@ -4402,9 +4419,9 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             fields = {
                                 xl: {
                                     "mhselect": mhsel,
-                                    "mhvalue": _mhvalue(_DOUBLE_MCONTEXT[i] if mh_on else 0),
+                                    "mhvalue": mh_match[i] if mh_on else _mhvalue(f"~{mh_match[i]}"),
                                     "sselect": ssel,
-                                    "svalue": _svalue(_DOUBLE_SCONTEXT[i] if sv_on else 0),
+                                    "svalue": sv_match[i] if sv_on else _svalue(f"~{sv_match[i]}"),
                                 }
                                 for i, xl in ((0, 32), (1, 64))
                             }

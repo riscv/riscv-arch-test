@@ -573,11 +573,10 @@ covergroup H_inst_cg with function sample(ins_t ins);
             bins bare  = {0};
             bins paged = {[1:15]};
         }
-        // The instruction traps to HS-mode with a load (21) or store (23) guest-page fault.  csr_wb shows that this
-        // instruction wrote scause, so the scause of an earlier trap does not count.
-        guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-                           iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins load_store = {21, 23};
+        // The instruction traps to HS-mode (or to M-mode when medeleg cannot delegate it) with a load (21) or store
+        // (23) guest-page fault.  hs_trap counts only a trap this instruction takes, not the scause of an earlier one.
+        guest_page_fault : coverpoint hs_trap(ins) {
+            bins load_store = {6'b110101, 6'b110111};
         }
         // Guest-page faults on the final translation (vsatp Bare) and on an implicit VS-stage access
         cp_guest_page_fault: cross priv_mode_hs, hlv_hsv, vsatp_mode, guest_page_fault;

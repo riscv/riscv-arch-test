@@ -26,13 +26,28 @@ covergroup Svvptc_cg with function sample(ins_t ins);
             bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
         }
     `endif
-    store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_15
+        store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
+        }
+    `else
+        // medeleg[15] is read-only 0, so store/AMO page faults are taken in M-mode
+        store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
+        }
+    `endif
     // A fetch page fault is reported on the jump to the page.
-    fetch_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? JALR);
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_12
+        fetch_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? JALR);
+        }
+    `else
+        // medeleg[12] is read-only 0, so instruction page faults are taken in M-mode.  A fetch fault is logged on the
+        // record before it without TRAP, so the mcause write marks it.
+        fetch_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.csr_wb[CSR_MCAUSE] && ins.current.insn ==? JALR);
+        }
+    `endif
 
     `ifdef UDB_MXLEN_64
         satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {

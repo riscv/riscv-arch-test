@@ -29,18 +29,26 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         jalr : coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        instr_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {20};
-        }
-        load_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {21};
-        }
-        store_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {23};
-        }
+        // Only a guest-page fault taken in HS-mode writes htval.  One whose medeleg bit is read-only 0
+        // (MEDELEG_DELEGATABLE false) is taken in M-mode, so each fault's coverpoints need that bit.
+        `ifdef UDB_MEDELEG_DELEGATABLE_20
+            instr_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {20};
+            }
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_21
+            load_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {21};
+            }
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_23
+            store_guest_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {23};
+            }
+        `endif
         // The access whose guest physical address htval holds (>> 2): the final access, whose address has the
         // page offset of the virtual address, or the implicit read of a VS-stage PTE, after which htinst holds a
         // pseudoinstruction.  The test sets htval to a random value before each trap.
@@ -49,6 +57,10 @@ covergroup Shtvala_cg with function sample(ins_t ins);
             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) << 2) & 'hFFF) ==
                 (ins.current.eff_addr & 'hFFF)
         } {
+            // No cross uses it when no guest-page fault can be taken in HS-mode, and then it does not count
+            `ifndef UDB_MEDELEG_DELEGATABLE_20 `ifndef UDB_MEDELEG_DELEGATABLE_21 `ifndef UDB_MEDELEG_DELEGATABLE_23
+                type_option.weight = 0;
+            `endif `endif `endif
             bins final_gpa    = {2'b01};
             bins implicit_gpa = {2'b10};
         }
@@ -68,6 +80,9 @@ covergroup Shtvala_cg with function sample(ins_t ins);
             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) << 2) & 'hFFF) ==
                 (ins.current.rs1_val & 'hFFF)
         } {
+            `ifndef UDB_MEDELEG_DELEGATABLE_21 `ifndef UDB_MEDELEG_DELEGATABLE_23
+                type_option.weight = 0;
+            `endif `endif
             bins final_gpa    = {2'b01};
             bins implicit_gpa = {2'b10};
         }
@@ -76,25 +91,39 @@ covergroup Shtvala_cg with function sample(ins_t ins);
             bins on = {1};
         }
 
-        cp_load_guest_page_fault:  cross priv_mode_vs_vu, lw,   load_guest_page_fault,  htval_gpa;
-        cp_store_guest_page_fault: cross priv_mode_vs_vu, sw,   store_guest_page_fault, htval_gpa;
-        cp_instr_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, htval_gpa;
+        `ifdef UDB_MEDELEG_DELEGATABLE_21
+            cp_load_guest_page_fault:  cross priv_mode_vs_vu, lw,   load_guest_page_fault,  htval_gpa;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_23
+            cp_store_guest_page_fault: cross priv_mode_vs_vu, sw,   store_guest_page_fault, htval_gpa;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_20
+            cp_instr_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, htval_gpa;
+        `endif
         // HLV and HSV from HS-mode and U-mode (hstatus.HU = 1)
-        cp_hlv_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault,  htval_gpa_hlsv, hstatus_hu;
-        cp_hlvx_guest_page_fault:  cross priv_mode_s_u, hlvx_wu, load_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
-        cp_hsv_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
+        `ifdef UDB_MEDELEG_DELEGATABLE_21
+            cp_hlv_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault,  htval_gpa_hlsv, hstatus_hu;
+            cp_hlvx_guest_page_fault:  cross priv_mode_s_u, hlvx_wu, load_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_23
+            cp_hsv_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
+        `endif
 
         `ifdef ZAAMO_SUPPORTED
             amoswap_w : coverpoint ins.current.insn {
                 wildcard bins amoswap_w = {AMOSWAP_W};
             }
-            cp_amo_guest_page_fault: cross priv_mode_vs_vu, amoswap_w, store_guest_page_fault, htval_gpa_hlsv;
+            `ifdef UDB_MEDELEG_DELEGATABLE_23
+                cp_amo_guest_page_fault: cross priv_mode_vs_vu, amoswap_w, store_guest_page_fault, htval_gpa_hlsv;
+            `endif
         `endif
         `ifdef ZALRSC_SUPPORTED
             lr_w : coverpoint ins.current.insn {
                 wildcard bins lr_w = {LR_W};
             }
-            cp_lr_guest_page_fault:  cross priv_mode_vs_vu, lr_w, load_guest_page_fault, htval_gpa_hlsv;
+            `ifdef UDB_MEDELEG_DELEGATABLE_21
+                cp_lr_guest_page_fault:  cross priv_mode_vs_vu, lr_w, load_guest_page_fault, htval_gpa_hlsv;
+            `endif
         `endif
 
         // A 32-bit instruction two bytes below the end of a page, which IALIGN = 16 allows.  The fetch faults on its
@@ -107,8 +136,10 @@ covergroup Shtvala_cg with function sample(ins_t ins);
             htval_page_boundary_fetch : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) << 2) & 'hFFF) {
                 bins page_boundary = {0};
             }
-            cp_instr_straddle_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, straddle_fetch,
-                                                      htval_page_boundary_fetch;
+            `ifdef UDB_MEDELEG_DELEGATABLE_20
+                cp_instr_straddle_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, straddle_fetch,
+                                                          htval_page_boundary_fetch;
+            `endif
         `endif
 
         // A hart that performs misaligned accesses faults on the part in the next page, however it splits the access.
@@ -129,11 +160,19 @@ covergroup Shtvala_cg with function sample(ins_t ins);
                 bins page_boundary = {0};
             }
 
-            cp_load_straddle_guest_page_fault:  cross priv_mode_vs_vu, lw, load_guest_page_fault, straddle, htval_page_boundary;
-            cp_store_straddle_guest_page_fault: cross priv_mode_vs_vu, sw, store_guest_page_fault, straddle, htval_page_boundary;
+            `ifdef UDB_MEDELEG_DELEGATABLE_21
+                cp_load_straddle_guest_page_fault:  cross priv_mode_vs_vu, lw, load_guest_page_fault, straddle, htval_page_boundary;
+            `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_23
+                cp_store_straddle_guest_page_fault: cross priv_mode_vs_vu, sw, store_guest_page_fault, straddle, htval_page_boundary;
+            `endif
             // HLV and HSV from HS-mode and U-mode (hstatus.HU = 1)
-            cp_hlv_straddle_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
-            cp_hsv_straddle_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+            `ifdef UDB_MEDELEG_DELEGATABLE_21
+                cp_hlv_straddle_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+            `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_23
+                cp_hsv_straddle_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+            `endif
         `endif
     `endif
 endgroup

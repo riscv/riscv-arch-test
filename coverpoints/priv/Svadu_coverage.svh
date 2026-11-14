@@ -101,9 +101,17 @@ covergroup Svadu_cg with function sample(ins_t ins);
         `endif
     }
 
-    ins_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_12
+        ins_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `else
+        // medeleg[12] is read-only 0, so instruction page faults are taken in M-mode.  A fetch fault is logged on the
+        // record before it without TRAP, so the mcause write marks it.
+        ins_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.csr_wb[CSR_MCAUSE]);
+        }
+    `endif
     `ifdef UDB_MEDELEG_DELEGATABLE_13
         load_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
             bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
@@ -114,9 +122,16 @@ covergroup Svadu_cg with function sample(ins_t ins);
             bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
         }
     `endif
-    store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_15
+        store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `else
+        // medeleg[15] is read-only 0, so store/AMO page faults are taken in M-mode
+        store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `endif
 
     exec_acc: coverpoint ins.current.execute_access {
         bins set = {1};
@@ -245,10 +260,13 @@ covergroup Svadu_H_cg with function sample(ins_t ins);
         henvcfg : coverpoint ins.current.insn[31:20] {
             bins henvcfg = {CSR_HENVCFG};
         }
-        // The write pseudoinstruction that htinst holds after a guest-page fault on a VS-stage A/D update
-        htinst_write : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
-            bins write = {'h3020};
-        }
+        // The write pseudoinstruction that htinst holds after a guest-page fault on a VS-stage A/D update, which only
+        // a guest-page fault taken in HS-mode writes
+        `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+            htinst_write : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
+                bins write = {'h3020};
+            }
+        `endif `endif `endif
     `else
         menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue") {
             bins off = {0};
@@ -261,9 +279,11 @@ covergroup Svadu_H_cg with function sample(ins_t ins);
         henvcfg : coverpoint ins.current.insn[31:20] {
             bins henvcfgh = {CSR_HENVCFGH};
         }
-        htinst_write : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
-            bins write = {'h2020};
-        }
+        `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+            htinst_write : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
+                bins write = {'h2020};
+            }
+        `endif `endif `endif
     `endif
 
     // VS-stage A/D bits (hgatp = Bare): Svade faults with henvcfg.ADUE = 0; Svadu updates them with henvcfg.ADUE = 1
@@ -276,9 +296,11 @@ covergroup Svadu_H_cg with function sample(ins_t ins);
     cp_twostage_adue : cross priv_mode_vs, access, stage_modes, menvcfg_adue, henvcfg_adue {
         ignore_bins read_only = binsof(menvcfg_adue.off) && binsof(henvcfg_adue.on);
     }
-    // A guest-page fault on the implicit store that updates a VS-stage A or D bit
-    cp_implicit_gpf  : cross priv_mode_vs, access, stage_modes, htinst_write;
-    cp_hlv_implicit  : cross priv_mode_hs, hlv, stage_modes, htinst_write;
+    // A guest-page fault on the implicit store that updates a VS-stage A or D bit, taken in HS-mode
+    `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+        cp_implicit_gpf  : cross priv_mode_vs, access, stage_modes, htinst_write;
+        cp_hlv_implicit  : cross priv_mode_hs, hlv, stage_modes, htinst_write;
+    `endif `endif `endif
     // henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0
     cp_henvcfg_menvcfg : cross priv_mode_hs, csrrs, henvcfg, menvcfg_adue;
 endgroup

@@ -94,44 +94,57 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins match = {1};
     }
-    stval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == `UDB_MXLEN'(ins.current.insn) {
-        bins match = {1};
-    }
 
+    // An exception whose medeleg bit is read-only 0 (MEDELEG_DELEGATABLE false) is taken in M-mode, which does not write stval, so each
+    // exception's coverpoints need that bit
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        instr_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {1};
-        }
-        cp_instr_access_fault: cross priv_mode_s_u, jalr,     instr_access_fault, stval_target;
+        `ifdef UDB_MEDELEG_DELEGATABLE_1
+            instr_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {1};
+            }
+            cp_instr_access_fault: cross priv_mode_s_u, jalr,     instr_access_fault, stval_target;
+        `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        load_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {5};
-        }
-        cp_load_access_fault:  cross priv_mode_s_u, loadops,  load_access_fault,  stval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_5
+            load_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {5};
+            }
+            cp_load_access_fault:  cross priv_mode_s_u, loadops,  load_access_fault,  stval_address;
+        `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        store_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {7};
-        }
-        cp_store_access_fault: cross priv_mode_s_u, storeops, store_access_fault, stval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_7
+            store_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {7};
+            }
+            cp_store_access_fault: cross priv_mode_s_u, storeops, store_access_fault, stval_address;
+        `endif
     `endif
 
     // Misaligned loads and stores trap only when the implementation does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        load_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {4};
-        }
-        store_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {6};
-        }
-        cp_load_address_misaligned:  cross priv_mode_s_u, wide_loadops,  load_misaligned,  stval_address;
-        cp_store_address_misaligned: cross priv_mode_s_u, wide_storeops, store_misaligned, stval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_4
+            load_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {4};
+            }
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6
+            store_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {6};
+            }
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4
+            cp_load_address_misaligned:  cross priv_mode_s_u, wide_loadops,  load_misaligned,  stval_address;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6
+            cp_store_address_misaligned: cross priv_mode_s_u, wide_storeops, store_misaligned, stval_address;
+        `endif
         // Each misalignment of words, and of doublewords on RV64: the address offset within the access's natural
         // alignment.  A halfword can only be misaligned by 1, which the crosses above cover.
         word_loadops : coverpoint ins.current.insn {
@@ -149,8 +162,12 @@ covergroup Sstvala_cg with function sample(ins_t ins);
             type_option.weight = 0;
             bins offset[] = {[1:3]};
         }
-        cp_load_misaligned_word:  cross priv_mode_s_u, word_loadops,  load_misaligned,  word_misalignment, stval_address;
-        cp_store_misaligned_word: cross priv_mode_s_u, word_storeops, store_misaligned, word_misalignment, stval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_4
+            cp_load_misaligned_word:  cross priv_mode_s_u, word_loadops,  load_misaligned,  word_misalignment, stval_address;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6
+            cp_store_misaligned_word: cross priv_mode_s_u, word_storeops, store_misaligned, word_misalignment, stval_address;
+        `endif
         `ifdef UDB_MXLEN_64
             ld : coverpoint ins.current.insn {
                 type_option.weight = 0;
@@ -164,25 +181,36 @@ covergroup Sstvala_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 bins offset[] = {[1:7]};
             }
-            cp_load_misaligned_doubleword:  cross priv_mode_s_u, ld, load_misaligned,  doubleword_misalignment, stval_address;
-            cp_store_misaligned_doubleword: cross priv_mode_s_u, sd, store_misaligned, doubleword_misalignment, stval_address;
+            `ifdef UDB_MEDELEG_DELEGATABLE_4
+                cp_load_misaligned_doubleword:  cross priv_mode_s_u, ld, load_misaligned,  doubleword_misalignment, stval_address;
+            `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_6
+                cp_store_misaligned_doubleword: cross priv_mode_s_u, sd, store_misaligned, doubleword_misalignment, stval_address;
+            `endif
         `endif
     `endif
 
     // Misaligned fetches trap only when IALIGN = 32
     `ifndef ZCA_SUPPORTED
-        instr_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {0};
-        }
-        cp_instr_adr_misaligned_jalr: cross priv_mode_s_u, jalr, instr_misaligned, stval_target;
+        `ifdef UDB_MEDELEG_DELEGATABLE_0
+            instr_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {0};
+            }
+            cp_instr_adr_misaligned_jalr: cross priv_mode_s_u, jalr, instr_misaligned, stval_target;
+        `endif
     `endif
 
-    illegal_instruction : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-        bins scause = {2};
-    }
-    cp_illegal_instruction: cross priv_mode_s_u, illegal, illegal_instruction, stval_insn;
+    `ifdef UDB_MEDELEG_DELEGATABLE_2
+        stval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == `UDB_MXLEN'(ins.current.insn) {
+            bins match = {1};
+        }
+        illegal_instruction : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+            bins scause = {2};
+        }
+        cp_illegal_instruction: cross priv_mode_s_u, illegal, illegal_instruction, stval_insn;
+    `endif
 
     // Leaves without R, W or X under Sv39 (RV64) or Sv32 (RV32), in S-mode
     `ifdef UDB_MXLEN_64
@@ -193,26 +221,27 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         `define SSTVALA_PAGE_FAULTS
     `endif
     `ifdef SSTVALA_PAGE_FAULTS
-        instr_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {12};
-        }
-        // medeleg[13] read-only 0 sends load page faults to M-mode, which does not write stval
+        `ifdef UDB_MEDELEG_DELEGATABLE_12
+            instr_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {12};
+            }
+            cp_instr_page_fault: cross priv_mode_s, jalr,        instr_page_fault, stval_target;
+        `endif
         `ifdef UDB_MEDELEG_DELEGATABLE_13
             load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
                 iff (ins.current.csr_wb[CSR_SCAUSE]) {
                 bins scause = {13};
             }
-        `endif
-        store_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {15};
-        }
-        `ifdef UDB_MEDELEG_DELEGATABLE_13
             cp_load_page_fault:  cross priv_mode_s, pf_loadops,  load_page_fault,  stval_address;
         `endif
-        cp_store_page_fault: cross priv_mode_s, pf_storeops, store_page_fault, stval_address;
-        cp_instr_page_fault: cross priv_mode_s, jalr,        instr_page_fault, stval_target;
+        `ifdef UDB_MEDELEG_DELEGATABLE_15
+            store_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {15};
+            }
+            cp_store_page_fault: cross priv_mode_s, pf_storeops, store_page_fault, stval_address;
+        `endif
     `endif
 endgroup
 

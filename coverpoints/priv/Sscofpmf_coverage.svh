@@ -300,6 +300,16 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 bins to_u = {0};
         }
+        `ifndef UDB_MEDELEG_DELEGATABLE_8
+            mret_insn: coverpoint ins.current.insn {
+                    type_option.weight = 0;
+                    bins mret = {MRET};
+            }
+            old_mstatus_mpp_u: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
+                    type_option.weight = 0;
+                    bins to_u = {0};
+            }
+        `endif
     `else
         lcofi_ip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
                 bins one  = {1};
@@ -356,7 +366,12 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
     `endif
     `ifdef S_SUPPORTED
 
-        cp_lcofi_sip_u: cross sret_insn, old_sstatus_spp_u, sie_lcofi, sip_lcofi;
+        `ifdef UDB_MEDELEG_DELEGATABLE_8
+            cp_lcofi_sip_u: cross sret_insn, old_sstatus_spp_u, sie_lcofi, sip_lcofi;
+        `else
+            // medeleg[8] is read-only 0, so M-mode takes the T-SBI ecall from U-mode and returns with mret
+            cp_lcofi_sip_u: cross mret_insn, old_mstatus_mpp_u, sie_lcofi, sip_lcofi;
+        `endif
     `else
 
         cp_lcofi_sip_u: cross priv_mode_u, lcofi_ie, lcofi_ip;

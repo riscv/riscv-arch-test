@@ -93,30 +93,30 @@ etrigger_exception: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE
 // SdtrigS/U: {handler, fired, cause} of an exception raised in the mode the tests run in. The causes the suite
 // delegates (medeleg) are handled in S, where whether the trigger fires depends on the hart's re-entrancy option.
 // ecall from S is not delegated (the T-SBI uses it), so it is handled in M and never fires; ecall from U is delegated
-// to S. An illegal instruction is handled in S, or in M on a DUT that emulates the time CSR and forwards it. A load
-// page fault is handled in M, so has no bin, when medeleg[13] is read-only 0.
+// to S. An illegal instruction is handled in S, or in M on a DUT that emulates the time CSR and forwards it. Any cause
+// is handled in M, where it never fires, when its medeleg bit is read-only 0.
 etrigger_route: coverpoint {sdtrig_trap_handler(ins), sdtrig_bp_into(ins, CSR_MCAUSE), sdtrig_trap_cause(ins)[7:0]} {
     type_option.weight = 0;
-    `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 wildcard bins iacc = {11'b01_?_00000001}; `endif
+    `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 wildcard bins iacc = {11'b01_?_00000001, 11'b11_0_00000001}; `endif
     `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_2 wildcard bins ill  = {11'b01_?_00000010, 11'b11_0_00000010}; `endif
-    `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5 wildcard bins lacc = {11'b01_?_00000101}; `endif
-    `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_7 wildcard bins sacc = {11'b01_?_00000111}; `endif
+    `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5 wildcard bins lacc = {11'b01_?_00000101, 11'b11_0_00000101}; `endif
+    `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_7 wildcard bins sacc = {11'b01_?_00000111, 11'b11_0_00000111}; `endif
     `ifdef SDTRIG_SUITE_S
         `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_9 bins ecs = {11'b11_0_00001001}; `endif
     `else
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_8 wildcard bins ecu = {11'b01_?_00001000}; `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_8 wildcard bins ecu = {11'b01_?_00001000, 11'b11_0_00001000}; `endif
     `endif
     `ifdef UDB_MXLEN_64
         `ifdef SV39_SUPPORTED
-            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 wildcard bins ipf = {11'b01_?_00001100}; `endif
-            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 wildcard bins lpf = {11'b01_?_00001101}; `endif `endif
-            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 wildcard bins spf = {11'b01_?_00001111}; `endif
+            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 wildcard bins ipf = {11'b01_?_00001100, 11'b11_0_00001100}; `endif
+            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 wildcard bins lpf = {11'b01_?_00001101, 11'b11_0_00001101}; `endif
+            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 wildcard bins spf = {11'b01_?_00001111, 11'b11_0_00001111}; `endif
         `endif
     `else
         `ifdef SV32_SUPPORTED
-            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 wildcard bins ipf = {11'b01_?_00001100}; `endif
-            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 wildcard bins lpf = {11'b01_?_00001101}; `endif `endif
-            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 wildcard bins spf = {11'b01_?_00001111}; `endif
+            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 wildcard bins ipf = {11'b01_?_00001100, 11'b11_0_00001100}; `endif
+            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 wildcard bins lpf = {11'b01_?_00001101, 11'b11_0_00001101}; `endif
+            `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 wildcard bins spf = {11'b01_?_00001111, 11'b11_0_00001111}; `endif
         `endif
     `endif
 }

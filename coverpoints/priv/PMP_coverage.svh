@@ -3095,8 +3095,13 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
+    // menvcfg.CBIE, CBCFE, CBZE all enabled; writing all ones reads back CBIE = 01 when cbo.inval is forced to flush
     cfg_for_menvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
-        bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
+        `ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+            bins configuration = {4'b1101};
+        `else
+            bins configuration = {4'b1111};
+        `endif
     }
 
     // Compare above the grain: the test writes pmpaddr0 while the entry is OFF, so the trace

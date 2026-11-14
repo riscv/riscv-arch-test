@@ -27256,15 +27256,15 @@ covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
     //// end cp_vs2_edges_f_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew16_lmul4max
+    // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+    cr_vl_lmul_sew16 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
-        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
         // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
         // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
                 bins fourth_one = {6'b110_001};
@@ -27294,11 +27294,14 @@ covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
         bins four_one = {6'b010_001};
         bins four_vlmax = {6'b010_010};
         bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    //// end cr_vl_lmul_lmul4max_sew16////////////////////////////////////////////////
+    //// end cr_vl_lmul_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vs2_vs1_edges_fwred_sew16
@@ -27311,7 +27314,7 @@ covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
     //// end cr_vs2_vs1_edges_fwred_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic_lmul4max
+    // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
@@ -27326,11 +27329,11 @@ covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
         bins enabled = {1'b0};
     }
 
-    cr_vtype_agnostic_lmul4max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
         // Cross coverage of vector tail and mask agnostic behaviors
     }
 
-    //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -27730,15 +27733,15 @@ covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
     //// end cp_vs2_edges_f_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew16_lmul4max
+    // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cr_vl_lmul_lmul4max_sew16 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+    cr_vl_lmul_sew16 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
-        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
+        // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
         // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
         // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef UDB_ELEN_64
             `ifdef ZVL64B_SUPPORTED
                 bins fourth_one = {6'b110_001};
@@ -27768,11 +27771,14 @@ covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
         bins four_one = {6'b010_001};
         bins four_vlmax = {6'b010_010};
         bins four_legal = {6'b010_011};
+        bins eight_one = {6'b011_001};
+        bins eight_vlmax = {6'b011_010};
+        bins eight_legal = {6'b011_011};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    //// end cr_vl_lmul_lmul4max_sew16////////////////////////////////////////////////
+    //// end cr_vl_lmul_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vs2_vs1_edges_fwred_sew16
@@ -27785,7 +27791,7 @@ covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
     //// end cr_vs2_vs1_edges_fwred_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic_lmul4max
+    // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
@@ -27800,11 +27806,11 @@ covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
         bins enabled = {1'b0};
     }
 
-    cr_vtype_agnostic_lmul4max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
         // Cross coverage of vector tail and mask agnostic behaviors
     }
 
-    //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
+    //// end cr_vtype_agnostic////////////////////////////////////////////////
 
 endgroup
 // ---------------------

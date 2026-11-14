@@ -17,6 +17,15 @@ exclude_extensions:
   # exclusions can be given per config.
   - Smstateen
   - Ssstateen
+  # Zicfiss_H: Sail completes HLVX on a VS-stage shadow stack page, which is not executable
+  # (https://github.com/riscv/sail-riscv/issues/2081), and keeps a TLB-cached VS-stage shadow stack page valid
+  # after henvcfg.SSE is cleared without a fence (cp_ss_sse_change_no_fence,
+  # https://github.com/riscv/sail-riscv/issues/2083), so Spike's load page faults mismatch.
+  - Zicfiss_H-
+  # Spike's G-stage check (riscv/mmu.cc s2xlate) lets SSPOPCHK read through a G-stage leaf without W, and ignores a
+  # G-stage PBMT=IO for SS instructions, so both skip the store/AMO guest-page fault or access fault
+  # (https://github.com/riscv-software-src/riscv-isa-sim/issues/2530).
+  - Zicfiss_H_g_stage
   # Sscofpmf_Sm_access fails on rv32-max only; the other Sscofpmf groups pass. Spike hardwires mhpmcounter3..31
   # to 0 but keeps mhpmevent3..31 writable (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
   # writable_hpm_counters makes both or neither writable, so no reference config matches.

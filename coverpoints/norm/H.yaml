@@ -640,7 +640,7 @@ normative_rule_definitions:
   - names: [henvcfg_sse_op]
     coverpoint:
       [
-        "Not tested: shadow-stack instructions in VS-mode and VU-mode with henvcfg.SSE = 0 and 1 belong to ZicfissH, which has no tests yet",
+        "Zicfiss_H_cg/{cp_ssp_csr_gating_vs,cp_ss_enable_chain_cross,cp_ss_page_enc_virt,cp_envcfg_sse_rdonly0_virt}",
       ]
 
   # With Ssnpm, henvcfg.PMM enables pointer masking for VS-mode; PMM is read-only zero without Ssnpm and on RV32

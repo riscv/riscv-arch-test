@@ -11,6 +11,11 @@ coverpoints:
       Each access-fault case needs RVMODEL_ACCESS_FAULT_ADDRESS_{FETCH/LOAD/STORE} for its access type.
     expectation: Every exception traps to M-mode with mstatus.MPV = 1 and mstatus.MPP = the nominal privilege.  Misaligned fetches, loads and stores trap or complete as the reference model does.
     bins: 9 exceptions * 2 modes * 2 hedeleg (* 8 offsets for misaligned loads and stores)
+  - name: cp_software_check_to_m
+    goal: The software-check exception goes to M-mode with medeleg = 0
+    description: If Zicfilp, with medeleg = 0, hedeleg[18] = {0/1} and xLPE = 1 in the mode (menvcfg.LPE for HS, henvcfg.LPE for VS, senvcfg.LPE for U and VU), jalr from {HS, U, VS, VU} through a register other than x1, x5 and x7 to an instruction that is not an lpad.  xRET restores ELP = LP_EXPECTED, so the next instruction raises a second software-check exception before the lpad after it.
+    expectation: A software-check exception (18) into M-mode with mtval = the landing pad fault code (2) or 0 by REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK, whatever hedeleg holds.
+    bins: 4 modes * 2 hedeleg[18]
   - name: cp_ecall_to_m
     goal: ecall to M sets status bits
     description: With medeleg = 0, ecall from M/VS/VU.
@@ -88,3 +93,18 @@ coverpoints:
     bins: "3"
     notes: |-
       cp_xtinst_instr_misaligned is compiled only without Zca, and the load and store cases only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  Of the current H configurations only sargantana-rv64imafdb assembles them.
+  - name: |-
+      cp_xtinst_amo_access
+      cp_xtinst_amo_misaligned
+      cp_xtinst_lrsc_access
+      cp_xtinst_zabha_access
+      cp_xtinst_zacas_access
+      cp_xtinst_c_load_access
+      cp_xtinst_c_store_access
+      cp_xtinst_zcb_access
+      cp_xtinst_cbom_access
+      cp_xtinst_cboz_access
+    goal: AMO, LR/SC, compressed load and store, and CBO exceptions taken into M-mode write mtval2 and mtinst
+    description: As above and as in Exceptions_H, attempt amoswap.w at the AMO access-fault address and at scratch + 14 (Zaamo), lr.w and sc.w at the LR/SC access-fault address (Zalrsc), amoadd.b (Zabha) and amocas.w (Zacas) at the AMO access-fault address, c.lw and c.sw (Zca) and c.lbu (Zcb) at the access-fault address, and cbo.clean, cbo.flush, cbo.inval (Zicbom) and cbo.zero (Zicboz) at the store access-fault address.
+    expectation: The exception traps to M-mode with mtval2 = 0 and mtinst = 0 or the transformed instruction; for a compressed instruction, the transformed 32-bit equivalent with bit 1 = 0.
+    bins: "13"

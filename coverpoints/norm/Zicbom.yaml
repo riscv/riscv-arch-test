@@ -54,7 +54,11 @@ normative_rule_definitions:
   # following standard transformation is defined for cache-block management
   # instructions and cache-block zero instructions:
   - name: H_trans_cache
-    coverpoint: ["TODO: Hypervisor tests"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/{cp_xtinst_cbom_access, cp_xtinst_cboz_access}",
+        "Exceptions_HSm_cg/{cp_xtinst_cbom_access, cp_xtinst_cboz_access}",
+      ]
 
   # A cbo.clean instruction performs a clean operation on the cache block whose
   # effective address is the base address specified in rs1.

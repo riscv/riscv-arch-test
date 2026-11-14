@@ -16,9 +16,16 @@ covergroup Svvptc_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    load_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        load_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
+        }
+    `else
+        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
+        load_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
+        }
+    `endif
     store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
     }

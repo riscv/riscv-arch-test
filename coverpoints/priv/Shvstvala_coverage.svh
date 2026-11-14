@@ -186,15 +186,20 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {12};
         }
-        load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {13};
-        }
+        // medeleg[13] read-only 0 sends load page faults to M-mode, so they never reach VS-mode
+        `ifdef UDB_MEDELEG_DELEGATABLE_13
+            load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {13};
+            }
+        `endif
         store_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
             iff (ins.current.csr_wb[CSR_VSCAUSE]) {
             bins vscause = {15};
         }
-        cp_load_page_fault:  cross priv_mode_vs_vu, lw,   load_page_fault,  vstval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_13
+            cp_load_page_fault:  cross priv_mode_vs_vu, lw,   load_page_fault,  vstval_address;
+        `endif
         cp_store_page_fault: cross priv_mode_vs_vu, sw,   store_page_fault, vstval_address;
         cp_instr_page_fault: cross priv_mode_vs_vu, jalr, instr_page_fault, vstval_target;
     `endif

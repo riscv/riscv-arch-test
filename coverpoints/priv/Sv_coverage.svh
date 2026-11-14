@@ -393,9 +393,16 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     write_acc: coverpoint ins.current.write_access{
         bins set = {1};
     }
-    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins load_page_fault = {LOAD_PAGE_FAULT};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins load_page_fault = {LOAD_PAGE_FAULT};
+        }
+    `else
+        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins load_page_fault = {LOAD_PAGE_FAULT};
+        }
+    `endif
     ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
     }
@@ -880,9 +887,16 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         write_acc: coverpoint ins.current.write_access {
             bins set = {1};
         }
-        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins load_page_fault = {LOAD_PAGE_FAULT};
-        }
+        `ifdef UDB_MEDELEG_DELEGATABLE_13
+            load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+                bins load_page_fault = {LOAD_PAGE_FAULT};
+            }
+        `else
+            // medeleg[13] is read-only 0, so load page faults are taken in M-mode
+            load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+                bins load_page_fault = {LOAD_PAGE_FAULT};
+            }
+        `endif
         ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
             bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
         }
@@ -1399,9 +1413,16 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
     instr_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
-        // auto fill 0/1
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+            // auto fill 0/1
+        }
+    `else
+        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
+        load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+            // auto fill 0/1
+        }
+    `endif
     store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
@@ -1567,33 +1588,34 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
         wildcard bins lw = {LW};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_?1?1_11??}; // access faults might not be possible to delegate if they don't exist
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {16'b1011_0001_1111_1111 & `UDB_MEDELEG_DELEGATABLE_MASK};
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-            bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+            `ifdef UDB_MEDELEG_DELEGATABLE_1 bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-            bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_5 bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-            bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_7 bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
         `endif
     }
     jalr: coverpoint ins.prev.insn {
@@ -1716,28 +1738,29 @@ covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
     amoops: coverpoint ins.current.insn {
         wildcard bins amoadd_w = {AMOADD_W};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_1  bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_5  bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_7  bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_1111_111?};
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {16'b1011_0001_1111_1111 & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints
@@ -1837,28 +1860,29 @@ covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
         wildcard bins sc_w = {SC_W};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_1  bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_5  bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_7  bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_1111_111?};
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {16'b1011_0001_1111_1111 & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints
@@ -1937,10 +1961,19 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         bins bare = {0};
     }
     // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
-        wildcard bins none = {6'b0?????};
-        bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+            wildcard bins none = {6'b0?????};
+            bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
+        }
+    `else
+        // medeleg[13] is read-only 0, so a load page fault is taken in M-mode instead of HS-mode
+        trap : coverpoint ((ins.current.csr_wb[CSR_MCAUSE] && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) == `UDB_MXLEN'(LOAD_PAGE_FAULT)) ? 6'b101101 :
+                           {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]}) {
+            wildcard bins none = {6'b0?????};
+            bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
+        }
+    `endif
     vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
     vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
     `ifdef UDB_MXLEN_64
@@ -2081,17 +2114,35 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
             `endif
         `endif
     }
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
-        wildcard bins none     = {6'b0?????};
-        bins page_fault        = {6'b101100, 6'b101101, 6'b101111};
-        bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+            wildcard bins none     = {6'b0?????};
+            bins page_fault        = {6'b101100, 6'b101101, 6'b101111};
+            bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
+        }
+    `else
+        // medeleg[13] is read-only 0, so a load page fault is taken in M-mode instead of HS-mode
+        trap : coverpoint ((ins.current.csr_wb[CSR_MCAUSE] && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) == `UDB_MXLEN'(LOAD_PAGE_FAULT)) ? 6'b101101 :
+                           {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]}) {
+            wildcard bins none     = {6'b0?????};
+            bins page_fault        = {6'b101100, 6'b101101, 6'b101111};
+            bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
+        }
+    `endif
     guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
-    page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
-        bins page_fault = {6'b101100, 6'b101101, 6'b101111};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+            bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+        }
+    `else
+        // medeleg[13] is read-only 0, so a load page fault is taken in M-mode instead of HS-mode
+        page_fault : coverpoint ((ins.current.csr_wb[CSR_MCAUSE] && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) == `UDB_MXLEN'(LOAD_PAGE_FAULT)) ? 6'b101101 :
+                                 {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]}) {
+            bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+        }
+    `endif
     access_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins access_fault = {6'b100001, 6'b100101, 6'b100111};
     }
@@ -2203,7 +2254,16 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         cp_twostage_access_fault_fetch : cross priv_mode_vs, jalr, stage_modes, access_fault;
     `endif
     // Page faults go to VS-mode when hedeleg delegates them; guest-page faults cannot be delegated
-    cp_hedeleg_page_fault       : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        cp_hedeleg_page_fault       : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
+    `else
+        // medeleg[13] is read-only 0, so load page faults are taken in M-mode and never reach VS-mode
+        store_fetch : coverpoint ins.current.insn {
+            wildcard bins sw   = {SW};
+            wildcard bins jalr = {JALR};
+        }
+        cp_hedeleg_page_fault       : cross priv_mode_vs_vu, store_fetch, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
+    `endif
     cp_hedeleg_guest_page_fault : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, guest_page_fault;
     cp_stage_both_bare : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_bare;
     `ifdef ZCA_SUPPORTED
@@ -2272,10 +2332,19 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         `endif
     }
     // The load page fault (VS-stage) or load guest-page fault (G-stage) that HLVX takes on a non-executable page
-    load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
-        bins page_fault       = {6'b101101};
-        bins guest_page_fault = {6'b110101};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+            bins page_fault       = {6'b101101};
+            bins guest_page_fault = {6'b110101};
+        }
+    `else
+        // medeleg[13] is read-only 0, so a load page fault is taken in M-mode instead of HS-mode
+        load_fault : coverpoint ((ins.current.csr_wb[CSR_MCAUSE] && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) == `UDB_MXLEN'(LOAD_PAGE_FAULT)) ? 6'b101101 :
+                                 {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]}) {
+            bins page_fault       = {6'b101101};
+            bins guest_page_fault = {6'b110101};
+        }
+    `endif
     hstatus_spvp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0] {}
     vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
     sstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum")[0] {}

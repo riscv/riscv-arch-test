@@ -197,15 +197,20 @@ covergroup Sstvala_cg with function sample(ins_t ins);
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {12};
         }
-        load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_SCAUSE]) {
-            bins scause = {13};
-        }
+        // medeleg[13] read-only 0 sends load page faults to M-mode, which does not write stval
+        `ifdef UDB_MEDELEG_DELEGATABLE_13
+            load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_SCAUSE]) {
+                bins scause = {13};
+            }
+        `endif
         store_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
             iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {15};
         }
-        cp_load_page_fault:  cross priv_mode_s, pf_loadops,  load_page_fault,  stval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_13
+            cp_load_page_fault:  cross priv_mode_s, pf_loadops,  load_page_fault,  stval_address;
+        `endif
         cp_store_page_fault: cross priv_mode_s, pf_storeops, store_page_fault, stval_address;
         cp_instr_page_fault: cross priv_mode_s, jalr,        instr_page_fault, stval_target;
     `endif

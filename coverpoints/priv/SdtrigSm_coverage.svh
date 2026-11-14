@@ -328,6 +328,7 @@ covergroup SdtrigSm_etrigger_cg with function sample(ins_t ins);
     }
     // exceptions raised in S and delegated to S. ecall from S is not: the T-SBI return to M is itself one.
     // A delegated illegal instruction is not either: a DUT that emulates the time CSR forwards it in software.
+    // Nor is a load page fault when medeleg[13] is read-only 0 (here and for U below).
     etrigger_code_s_deleg: coverpoint sdtrig_trap_cause(ins)[7:0] {
         type_option.weight = 0;
         `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 bins iacc = {8'd1}; `endif
@@ -336,13 +337,13 @@ covergroup SdtrigSm_etrigger_cg with function sample(ins_t ins);
         `ifdef UDB_MXLEN_64
             `ifdef SV39_SUPPORTED
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
             `endif
         `else
             `ifdef SV32_SUPPORTED
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
             `endif
         `endif
@@ -357,13 +358,13 @@ covergroup SdtrigSm_etrigger_cg with function sample(ins_t ins);
         `ifdef UDB_MXLEN_64
             `ifdef SV39_SUPPORTED
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
             `endif
         `else
             `ifdef SV32_SUPPORTED
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
                 `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
             `endif
         `endif

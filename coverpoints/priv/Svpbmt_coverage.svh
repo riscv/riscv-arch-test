@@ -98,9 +98,16 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
     ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
     }
-    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `else
+        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `endif
     store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
     }
@@ -202,10 +209,19 @@ covergroup Svpbmt_H_cg with function sample(ins_t ins);
         bins on  = {1};
     }
     // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
-    vs_trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
-        wildcard bins none = {6'b0?????};
-        bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        vs_trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+            wildcard bins none = {6'b0?????};
+            bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
+        }
+    `else
+        // medeleg[13] is read-only 0, so a load page fault is taken in M-mode instead of HS-mode
+        vs_trap : coverpoint ((ins.current.csr_wb[CSR_MCAUSE] && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) == `UDB_MXLEN'(LOAD_PAGE_FAULT)) ? 6'b101101 :
+                              {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]}) {
+            wildcard bins none = {6'b0?????};
+            bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
+        }
+    `endif
     g_trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         wildcard bins none    = {6'b0?????};
         bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};

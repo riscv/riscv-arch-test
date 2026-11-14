@@ -478,10 +478,13 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // WFI wakes on the Sstc supervisor timer whether or not SIE is set. Not tested in U-mode: with
     // S-mode implemented, U-mode WFI traps after a bounded time (cp_wfi_timeout). VS-mode WFI waits
     // only with hstatus.VTW = 0; VU-mode WFI never waits.
+    // sie.STIE and sip.STIP are read-only zero unless mideleg can delegate STI, so the WFI cannot wake on it then.
     `ifdef SSTC_SUPPORTED
-        cp_wfi:                 cross priv_mode_s, sstatus_sie, sie_stie_one, mstatus_tw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
-        `ifdef H_SUPPORTED
-            cp_wfi_vs:          cross priv_mode_vs, sstatus_sie, sie_stie_one, mstatus_tw_zero, hstatus_vtw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            cp_wfi:                 cross priv_mode_s, sstatus_sie, sie_stie_one, mstatus_tw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+            `ifdef H_SUPPORTED
+                cp_wfi_vs:          cross priv_mode_vs, sstatus_sie, sie_stie_one, mstatus_tw_zero, hstatus_vtw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+            `endif
         `endif
     `endif
 
@@ -494,10 +497,12 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         cp_wfi_timeout_vs:          cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_one, hstatus_vtw, wfi;
         cp_wfi_timeout_vs_vtw_one:  cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_zero, hstatus_vtw_one, wfi;
         cp_wfi_timeout_vu:          cross priv_mode_vu, sstatus_sie, sie_stie, mstatus_tw, hstatus_vtw, wfi;
-        // Every TW and VTW in VS-mode: the WFI waits with TW = VTW = 0 (cp_wfi_vs, which needs Sstc) and times
-        // out otherwise
+        // Every TW and VTW in VS-mode: the WFI waits with TW = VTW = 0 (cp_wfi_vs, which needs Sstc and a
+        // delegatable STI) and times out otherwise
         `ifdef SSTC_SUPPORTED
-            cp_wfi_vs_tw_vtw:       cross priv_mode_vs, sstatus_sie, mstatus_tw, hstatus_vtw, wfi;
+            `ifdef UDB_MIDELEG_DELEGATABLE_5
+                cp_wfi_vs_tw_vtw:       cross priv_mode_vs, sstatus_sie, mstatus_tw, hstatus_vtw, wfi;
+            `endif
         `endif
     `endif
 

@@ -7,9 +7,8 @@ ci_enabled: true
 # black-parrot @ 909619a6. Paths are under
 #   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/
 exclude_extensions:
-  # csrr of mip or sip ORs the S-mode external interrupt line into SEIP only when the instruction in
-  # the retire stage, not the one being read, names mip or sip, so the trap handler reads sip.SEIP = 0
-  # while the line is high: bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L843-L851 (not yet reported)
+  # A csrr of mip or sip that is the first instruction of a trap handler reads SEIP = 0 while the
+  # S-mode external interrupt line is high (https://github.com/black-parrot/black-parrot/issues/1382)
   - InterruptsS_enable_S
   - InterruptsS_enable_U
   - InterruptsS_priority_sip_S
@@ -19,7 +18,7 @@ exclude_extensions:
   - InterruptsSm_trigger_S
   - InterruptsSm_trigger_U
   # mcycle and minstret keep only 48 bits: bp_common/src/include/bp_common_rv64_csr_defines.svh#L617
-  # (not yet reported)
+  # (https://github.com/black-parrot/black-parrot/issues/1383)
   - Sm_mcsr_cntr
   # stval keeps only the 39-bit virtual address width, sign-extended, so a non-canonical address is
   # reported as a canonical one: bp_be/src/include/bp_be_defines.svh#L137

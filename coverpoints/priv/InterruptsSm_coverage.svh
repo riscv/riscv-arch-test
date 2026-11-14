@@ -71,20 +71,27 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         `endif
     }
 
+    // Interrupt bits the mideleg pair coverpoints use: SEI, STI, SSI, and LCOFI with Sscofpmf.
+    // H hardwires mideleg bits 12, 10, 6, and 2 to 1, and Sail does not let M-level interrupts
+    // (MEI, MTI, MSI) be delegated, so both are left out.
+    `ifdef SSCOFPMF_SUPPORTED
+        `define SM_NOH_MASK 16'h2222
+    `else
+        `define SM_NOH_MASK 16'h0222
+    `endif
+    // The S-level interrupts mideleg can delegate: a bit that cannot be delegated is read-only zero
+    `define SM_NOH_DELEG_MASK (`SM_NOH_MASK & `UDB_MIDELEG_DELEGATABLE_MASK)
+
     // mideleg written all 0s or all 1s in every delegable field.
     // mideleg does not exist without S, so it becomes a trivial always-hit bin that leaves the
     // crosses below intact.
     `ifdef S_SUPPORTED
-        mideleg_both: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG)[15:0] {
-            // Sail does not let M-level interrupts be delegated (mideleg MEI, MTI, and MSI stay 0),
-            // so bits 11, 7, and 3 are don't care in ones.
-            `ifdef SSCOFPMF_SUPPORTED
-                wildcard bins ones  = {16'b??1???1???1???1?}; // LCOFI, SEI, STI, SSI delegated
-                wildcard bins zeros = {16'b??0?0?0?0?0?0?0?};
-            `else
-                wildcard bins ones  = {16'b??????1???1???1?}; // SEI, STI, SSI delegated
-                wildcard bins zeros = {16'b????0?0?0?0?0?0?};
-            `endif
+        // The S-level and M-level bits; H hardwires the VS and SGEI bits to 1, so they are left out.
+        // ones is the readback of all 1s: every interrupt mideleg can delegate (Sail lets no M-level
+        // interrupt be delegated, so MEI, MTI, and MSI read 0).
+        mideleg_both: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG)[15:0] & (`SM_NOH_MASK | 16'h0888)) {
+            bins ones  = {(`SM_NOH_MASK | 16'h0888) & `UDB_MIDELEG_DELEGATABLE_MASK};
+            bins zeros = {16'h0};
         }
     `else
         mideleg_both: coverpoint 1'b1 {
@@ -103,15 +110,6 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         mideleg_zeros: coverpoint 1'b1 {
             bins no_mideleg = {1'b1};
         }
-    `endif
-
-    // Interrupt bits the mideleg pair coverpoints use: SEI, STI, SSI, and LCOFI with Sscofpmf.
-    // H hardwires mideleg bits 12, 10, 6, and 2 to 1, and Sail does not let M-level interrupts
-    // (MEI, MTI, MSI) be delegated, so both are left out.
-    `ifdef SSCOFPMF_SUPPORTED
-        `define SM_NOH_MASK 16'h2222
-    `else
-        `define SM_NOH_MASK 16'h0222
     `endif
 
     // Interrupt bits this config supports: MEI, MTI, MSI, plus the S, Sscofpmf, and H interrupts
@@ -259,10 +257,11 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_INT_MASK) == 0);
     }
 
-    // Exactly two S-level interrupts pending (no M-level or H interrupts)
+    // Exactly two S-level interrupts pending (no M-level or H interrupts), both delegatable, so that
+    // either one can be the one mideleg delegates in cp_priority_mideleg
     `ifdef S_SUPPORTED
-        mip_pairs_noh: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & `SM_NOH_MASK) {
-            bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_NOH_MASK) == 0);
+        mip_pairs_noh: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & `SM_NOH_DELEG_MASK) {
+            bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`SM_NOH_DELEG_MASK) == 0);
         }
     `endif
 
@@ -455,8 +454,14 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
                 // VS and VU are the same: in VS, sip is vsip.
                 ignore_bins lcofi_u_has_no_sip = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
                                                  binsof(mip_walking.lcofip);
-                ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001} &&
-                                                  binsof(mip_walking.lcofip) && binsof(mideleg_both.zeros);
+                `ifdef UDB_MIDELEG_DELEGATABLE_13
+                    ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001} &&
+                                                      binsof(mip_walking.lcofip) && binsof(mideleg_both.zeros);
+                `else
+                    // mideleg can never delegate LCOFI, so S-mode can never raise it
+                    ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001} &&
+                                                      binsof(mip_walking.lcofip);
+                `endif
             `endif
             // Same for STI: sip.STIP is read-only and U cannot reach stimecmp, so every U-mode STI
             // is raised from M and taken on the mret, whatever mideleg says. VS and VU likewise.
@@ -494,7 +499,9 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     `ifdef S_SUPPORTED
         cp_trigger_reg_mip_ssip: cross csrrs_csrrsi, csr_mip, rs1_ssip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
         cp_trigger_reg_mip_seip: cross csrrs, csr_mip, rs1_seip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
-        cp_trigger_reg_sip_ssip: cross csrrs_csrrsi, csr_sip, rs1_ssip, mstatus_sie, mideleg_ssi_one, mie_ones, mtvec_both;
+        `ifdef UDB_MIDELEG_DELEGATABLE_1 // mideleg_ssi_one
+            cp_trigger_reg_sip_ssip: cross csrrs_csrrsi, csr_sip, rs1_ssip, mstatus_sie, mideleg_ssi_one, mie_ones, mtvec_both;
+        `endif
     `endif
     `ifdef SSTC_SUPPORTED
         cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, mstatus_mie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {

@@ -1,0 +1,13 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the NEORV32 processor
+
+ci_enabled: true
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache gnat"
+install_script: ".github/scripts/install-neorv32.sh"
+setup_script: ".github/scripts/setup-neorv32.sh"
+cache_inputs:
+  - .github/scripts/neorv32-act-top.vhd
+  - .github/scripts/neorv32-act-tb.sv
+  - .github/scripts/run-neorv32.sh

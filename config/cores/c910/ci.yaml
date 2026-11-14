@@ -43,6 +43,7 @@ exclude_extensions:
   - InterruptsSm_trigger_U
   # pmpaddr reads bits 8:0 as 0 in NAPOT mode and keeps bit 9 in OFF mode, against G = 10
   # (pmp/rtl/ct_pmp_regs.v#L520-L522).
+  - PMP_Sm_cfg_L_modify
   - PMP_Sm_grain
   # MPP holds the reserved value 2 (cp0/rtl/ct_cp0_regs.v#L1624-L1625); csrw minstret also counts itself; mret
   # keeps MPRV, which Sail cannot model.

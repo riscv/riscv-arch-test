@@ -72,10 +72,10 @@ RVTEST_BEGIN
   or x5, x5, x6
   csrw pmpaddr0, x5
 
-  LI(x4, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0)))
+  LI(x12, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0)))
 PMP_Sv_cg_PMP0_PTE_write_pmpcfg0:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sv_cg_PMP0_PTE_write_pmpcfg0, PMP_Sv_cg_PMP0_PTE_write_pmpcfg0_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sv_cg_PMP0_PTE_write_pmpcfg0, PMP_Sv_cg_PMP0_PTE_write_pmpcfg0_str)
   sfence.vma
   .if (UDB_PMP_GRANULARITY < 12)
 // Test case 1: PMP blocks the level 4 page table

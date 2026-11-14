@@ -21,8 +21,8 @@ progress, initially focusing on RVA23 extensions but intending to cover all rati
 extensions. The portions related to RVA23 are used as part of the RISC-V Certification Program.
 
 This document is intended to be read in
-conjunction with the Certification Requirements Documents (CRDs) defining the features in each
-certificate, and the repository
+conjunction with the https://github.com/riscv/riscv-arch-test/blob/act4/docs/crd/src/rva23_crd.adoc[Certification Requirements Document] (CRD) defining the features in each
+certificate, and the https://github.com/riscv/riscv-arch-test/blob/act4/README.md[repository]
 that contains information about how to use and contribute to the tests.
 
 include::intro.adoc[]

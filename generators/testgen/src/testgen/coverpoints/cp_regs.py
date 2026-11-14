@@ -12,7 +12,7 @@ from testgen.data.random import random_range
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.instructions.params import generate_random_params
+from testgen.instructions.params import generate_random_params, generate_random_test_params
 from testgen.instructions.vector import get_base_lmul
 from testgen.instructions.vector_params import generate_random_vector_params
 
@@ -104,7 +104,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
                 if is_vector:
                     params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rd=rd)
                 else:
-                    params = generate_random_params(test_data, instr_type, rd=rd)
+                    params = generate_random_test_params(test_data, instr_type, rd=rd)
                 desc = f"{coverpoint} (Test destination rd = x{rd})"
                 bin_name = f"b{rd}"
 
@@ -178,7 +178,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 if is_vector:
                     params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rs1=rs1)
                 else:
-                    params = generate_random_params(test_data, instr_type, rs1=rs1)
+                    params = generate_random_test_params(test_data, instr_type, rs1=rs1)
                 desc = f"{coverpoint} (Test source rs1 = x{rs1})"
                 bin_name = f"b{rs1}"
 
@@ -255,7 +255,7 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 if is_vector:
                     params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rs2=rs2)
                 else:
-                    params = generate_random_params(test_data, instr_type, rs2=rs2)
+                    params = generate_random_test_params(test_data, instr_type, rs2=rs2)
                 desc = f"{coverpoint} (Test source rs2 = x{rs2})"
                 bin_name = f"b{rs2}"
 

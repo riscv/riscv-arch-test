@@ -19,7 +19,12 @@ from testgen.asm.vector_helpers import (
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import (
+    InstructionTypeConfig,
+    VectorTypeConfig,
+    add_instruction_formatter,
+    get_instruction_type_config,
+)
 
 vvi_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=True, vector_data=VectorTypeConfig()
@@ -54,10 +59,13 @@ vvip_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"},
     imm_bits=5,
     imm_signed=False,
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, vlmax_regs={"vs2"}),
 )
 vvip_down_config = InstructionTypeConfig(
-    required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig()
+    required_params={"vd", "immval", "vs2"},
+    imm_bits=5,
+    imm_signed=False,
+    vector_data=VectorTypeConfig(vlmax_regs={"vs2"}),
 )
 vvi_egs4_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"},
@@ -132,14 +140,14 @@ def format_vvi_sat(
 def format_vvip(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_vvi_like_type(instr_str, test_data, params, "VVIP", enable_vs2_preload=True)
+    return format_vvi_like_type(instr_str, test_data, params, "VVIP")
 
 
 @add_instruction_formatter("VVIP_DOWN", vvip_down_config)
 def format_vvip_down(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_vvi_like_type(instr_str, test_data, params, "VVIP_DOWN", enable_vs2_preload=True)
+    return format_vvi_like_type(instr_str, test_data, params, "VVIP_DOWN")
 
 
 @add_instruction_formatter("VVI_EGS4", vvi_egs4_config)
@@ -163,7 +171,6 @@ def format_vvi_like_type(
     type_name: str,
     *,
     widen: set[str] | None = None,
-    enable_vs2_preload: bool = False,
     egs: int = 1,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.immval is not None, f"immval must be provided for {type_name}-type instructions"
@@ -202,7 +209,10 @@ def format_vvi_like_type(
         setup.extend(load_vxrm(params.vxrm))
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
-    vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"
+    vector_data = get_instruction_type_config(type_name).vector_data
+    assert vector_data is not None, f"{type_name}-type instructions must have vector data"
+    vs2_at_vlmax = "vs2" in vector_data.vlmax_regs
+    vs2_vl = "vlmax" if vs2_at_vlmax else params.vl
 
     to_load = [
         VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True, egs=egs),

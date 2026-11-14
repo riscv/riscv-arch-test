@@ -3312,16 +3312,6 @@ covergroup Vx64_vcompress_vm_cg with function sample(ins_t ins);
     //// end cr_vl_lmul_sew64////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_vs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_vs1_edges : cross cp_vs2_edges,cp_vs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and VS1 edges
-    }
-
-    //// end cr_vs2_vs1_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic_nomask
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -25747,28 +25737,6 @@ covergroup Vx64_vslide1down_vx_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -25794,16 +25762,6 @@ covergroup Vx64_vslide1down_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     //// end cr_vl_lmul_sew64////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and RS1 edges
-    }
-
-    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic
@@ -25910,28 +25868,6 @@ covergroup Vx64_vslide1up_vx_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -25957,16 +25893,6 @@ covergroup Vx64_vslide1up_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     //// end cr_vl_lmul_sew64////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and RS1 edges
-    }
-
-    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic
@@ -26164,6 +26090,50 @@ covergroup Vx64_vslidedown_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_slideOffsets
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Slide every element of a register group by 0, 1, 2, VLMAX/2, VLMAX-1, and VLMAX at vl = VLMAX
+    slideOffsets_vl_vlmax : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL)
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)))
+                        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0) {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_zero : coverpoint ins.current.rs1_val == 0 {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_one : coverpoint ins.current.rs1_val == 1 {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_two : coverpoint ins.current.rs1_val == 2 {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_vlmaxd2 : coverpoint ins.current.rs1_val == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) / 2) {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_vlmaxm1 : coverpoint ins.current.rs1_val == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) - 1) {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_vlmax : coverpoint ins.current.rs1_val == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    cp_custom_slideOffsets_zero    : cross slideOffsets_vl_vlmax, slideOffsets_zero;
+    cp_custom_slideOffsets_one     : cross slideOffsets_vl_vlmax, slideOffsets_one;
+    cp_custom_slideOffsets_two     : cross slideOffsets_vl_vlmax, slideOffsets_two;
+    cp_custom_slideOffsets_vlmaxd2 : cross slideOffsets_vl_vlmax, slideOffsets_vlmaxd2;
+    cp_custom_slideOffsets_vlmaxm1 : cross slideOffsets_vl_vlmax, slideOffsets_vlmaxm1;
+    cp_custom_slideOffsets_vlmax   : cross slideOffsets_vl_vlmax, slideOffsets_vlmax;
+
+    //// end cp_custom_slideOffsets////////////////////////////////////////////////
 
 
     // cp_custom_vindexVX is not applicable when SEW=64
@@ -26369,28 +26339,6 @@ covergroup Vx64_vslideup_vi_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -26416,26 +26364,6 @@ covergroup Vx64_vslideup_vi_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     //// end cr_vl_lmul_sew64////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_imm_edges_u
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_imm_edges_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins b_0 = {0};
-        bins b_1 = {1};
-        bins b_2 = {2};
-        bins b_15 = {15};
-        bins b_16 = {16};
-        bins b_30 = {30};
-        bins b_31 = {31};
-    }
-
-    cr_vs2_imm_edges : cross cp_vs2_edges,cp_imm_edges_5bit_u  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and 5 bit imm edge values (unsigned)
-    }
-
-    //// end cr_vs2_imm_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic
@@ -26467,6 +26395,50 @@ covergroup Vx64_vslideup_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_slideOffsets
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Slide every element of a register group by 0, 1, 2, VLMAX/2, VLMAX-1, and VLMAX at vl = VLMAX
+    slideOffsets_vl_vlmax : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL)
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)))
+                        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0) {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_zero : coverpoint ins.current.rs1_val == 0 {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_one : coverpoint ins.current.rs1_val == 1 {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_two : coverpoint ins.current.rs1_val == 2 {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_vlmaxd2 : coverpoint ins.current.rs1_val == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) / 2) {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_vlmaxm1 : coverpoint ins.current.rs1_val == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) - 1) {
+        bins target = {1'b1};
+    }
+
+    slideOffsets_vlmax : coverpoint ins.current.rs1_val == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    cp_custom_slideOffsets_zero    : cross slideOffsets_vl_vlmax, slideOffsets_zero;
+    cp_custom_slideOffsets_one     : cross slideOffsets_vl_vlmax, slideOffsets_one;
+    cp_custom_slideOffsets_two     : cross slideOffsets_vl_vlmax, slideOffsets_two;
+    cp_custom_slideOffsets_vlmaxd2 : cross slideOffsets_vl_vlmax, slideOffsets_vlmaxd2;
+    cp_custom_slideOffsets_vlmaxm1 : cross slideOffsets_vl_vlmax, slideOffsets_vlmaxm1;
+    cp_custom_slideOffsets_vlmax   : cross slideOffsets_vl_vlmax, slideOffsets_vlmax;
+
+    //// end cp_custom_slideOffsets////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26542,28 +26514,6 @@ covergroup Vx64_vslideup_vx_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
-        // Edges values of vs2, assuming vl = 1
-        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
-        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
-        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
-        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
-        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
-        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
-        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
-        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
-        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
-        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
-        bins random     = {vs_random    };   //  = {(SEW){random}}
-    }
-
-    //// end cp_vs2_edges////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew64
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -26589,16 +26539,6 @@ covergroup Vx64_vslideup_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     //// end cr_vl_lmul_sew64////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_rs1_edges
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cr_vs2_rs1_edges : cross cp_vs2_edges,cp_rs1_edges  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and RS1 edges
-    }
-
-    //// end cr_vs2_rs1_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic

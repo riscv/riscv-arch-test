@@ -5,9 +5,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import math
 import re
+from typing import Literal
 
 from testgen.asm.vector_helpers import get_lmul_flag
+from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector.helpers import make_and_register_edge_label
 from testgen.data.edges import VECTOR_EDGES
@@ -16,8 +19,8 @@ from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.formatters.registry import get_instruction_type_config
-from testgen.instructions.vector import get_base_lmul, parse_vector_instruction_info
-from testgen.instructions.vector_params import generate_random_vector_params
+from testgen.instructions.vector import get_base_lmul, parse_vector_instruction_info, runs_at_vlmax
+from testgen.instructions.vector_params import generate_random_vector_params, pad_label_to_vlmax
 
 
 @add_coverpoint_generator("cp_vs2_edges")
@@ -33,7 +36,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     edges = VECTOR_EDGES.vx_edges
     suffix = ""
-    vl = 1
+    vl: int | Literal["vlmax"] = 1
     lmul = get_base_lmul(instr_name, instr_type, sew)
     register = coverpoint.split("_")[1]
     ignore_vector_safety = False
@@ -74,9 +77,22 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             suffix += f"_emul{get_lmul_flag(16 / test_data.config.sew)}"
             ignore_vector_safety = True
 
+    suite: Literal["base", "length"] = "base"
+    if runs_at_vlmax(instr_name, coverpoint):
+        suite = "length"
+        vl = "vlmax"
+    # A length-suite test reads VLMAX elements of the edge register
+    vlmax_count = math.ceil(VLEN_MAX * lmul / sew)
+
+    # Any gather index in vs1 is legal, so keep its edge values instead of reducing them to [0, 2*VLMAX)
+    if register == "vs1" and type_config.vector_data.index_register == "vs1":
+        ignore_vector_safety = True
+
     test_chunks = []
     for edge in edges:
         label = make_and_register_edge_label(register, edge, suffix, test_data)
+        if suite == "length":
+            label = pad_label_to_vlmax(test_data, label, vlmax_count)
 
         presets = {f"{register}_val_pointer": label}
 
@@ -88,7 +104,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             vl=vl,
             additional_no_overlap=additional_no_overlap,
             masked=False,
-            suite="base",
+            suite=suite,
             ignore_vector_safety=ignore_vector_safety,
             **presets,
         )

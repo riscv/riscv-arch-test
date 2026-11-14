@@ -2769,7 +2769,12 @@ normative_rule_definitions:
   # not truncated to SEW bits. Destination elements OFFSET through vl-1 are written
   # if unmasked and if OFFSET &lt; vl.
   - name: vslideup_op
-    coverpoint: ["Vx16_vslideup_vx_cg/cr_vs2_rs1_edges"]
+    coverpoint:
+      [
+        "Vx16_vslideup_vx_cg/{cp_custom_slideOffsets_one, cp_custom_slideOffsets_vlmaxm1, cp_custom_slideOffsets_vlmax}",
+        "Vx16_vslideup_vx_cg/cp_rs1_edges",
+        "Vx16_vslideup_vi_cg/cp_imm_5bit_u",
+      ]
 
   # The destination vector register group for vslideup cannot overlap the source
   # vector register group, otherwise the instruction encoding is reserved.
@@ -2802,11 +2807,11 @@ normative_rule_definitions:
   # XLEN &lt; SEW, the value is sign-extended to SEW bits. If XLEN &gt; SEW, the
   # least-significant bits are copied over and the high XLEN-SEW bits are ignored.
   - name: vslide1up-vx_op
-    coverpoint: ["Vx16_vslide1up_vx_cg/cr_vs2_rs1_edges"]
+    coverpoint: ["Vx16_vslide1up_vx_cg/cp_rs1_edges"]
   # The remaining active csr:vl[]-1 elements are copied over from index i in the source
   # vector register group to index i+1 in the destination vector register group.
   - name: vslide1up-vx_op_rem_elem
-    coverpoint: ["Vx16_vslide1up_vx_cg/cr_vs2_rs1_edges"]
+    coverpoint: ["Vx16_vslide1up_vx_cg/{cp_vs2, cr_vl_lmul_sew16}"]
   # The csr:vl[] register specifies the maximum number of destination vector register
   # elements updated with source values, and remaining elements past csr:vl[] are handled
   # according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
@@ -2823,13 +2828,14 @@ normative_rule_definitions:
   # The vfslide1up instruction is defined analogously to vslide1up, but sources its
   # scalar argument from an f register.
   - name: vslide1up-vf_op
-    coverpoint: ["Vf16_vfslide1up_vf_cg/cr_vs2_fs1_edges_f_sew16"]
+    coverpoint:
+      ["Vf16_vfslide1up_vf_cg/{cp_fs1_edges_v_sew16, cp_vs2, cr_vl_lmul_sew16}"]
 
   # The insn:vslide1down[] instruction copies the first csr:vl[]-1 active elements values
   # from index i+1 in the source vector register group to index i in the destination
   # vector register group.
   - name: vslide1down-vx_op
-    coverpoint: ["Vx16_vslide1down_vx_cg/cr_vs2_rs1_edges"]
+    coverpoint: ["Vx16_vslide1down_vx_cg/{cp_vs2, cr_vl_lmul_sew16}"]
   # The csr:vl[] register specifies the maximum number of destination vector register
   # elements written with source values, and remaining elements past csr:vl[] are handled
   # according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
@@ -2851,7 +2857,10 @@ normative_rule_definitions:
   # The vfslide1down instruction is defined analogously to vslide1down, but sources
   # its scalar argument from an f register.
   - name: vslide1down-vf_op
-    coverpoint: ["Vf16_vfslide1down_vf_cg/cr_vs2_fs1_edges_f_sew16"]
+    coverpoint:
+      [
+        "Vf16_vfslide1down_vf_cg/{cp_fs1_edges_v_sew16, cp_vs2, cr_vl_lmul_sew16}",
+      ]
 
   # The index values in the second vector are treated as unsigned integers.
   - name: vrgather_vrgatherei16_vs2_uint
@@ -2940,7 +2949,7 @@ normative_rule_definitions:
   # elements of vd are treated as tail elements according to the current tail policy
   # (&lt;&lt;sec-agnostic&gt;&gt;).
   - name: vcompress_op
-    coverpoint: ["Vx16_vcompress_vm_cg/cr_vs2_vs1_edges"]
+    coverpoint: ["Vx16_vcompress_vm_cg/{cp_vs1_edges, cr_vl_lmul_sew16}"]
 
   # T`vcompress` is encoded as an unmasked instruction (vm=1).
   - name: vcompress_enc

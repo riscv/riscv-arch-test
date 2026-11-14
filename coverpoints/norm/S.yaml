@@ -56,7 +56,7 @@ normative_rule_definitions:
   # a WARL field that encodes the current value of UXLEN. In particular, an
   # implementation may make UXL be a read-only field whose value always ensures that
   # UXLEN=SXLEN.
-  # S writes UXL=1 and UXL=2 from S-mode on RV64 and checks the legalized value.
+  # S writes UXL = 0 through 3 from S-mode on RV64 and checks that UXL holds a legal value.
   - name: sstatus_uxl_sz
     coverpoint: ["S_sstatus_cg/cp_sxlen_ge_uxlen"]
 

@@ -40,6 +40,9 @@ from testgen.priv.extensions.PrivCommon import (
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
+    pmm_access_unchecked,
+    pmm_legal_values,
+    pmm_warl_fields,
     xcause_write_tests,
     xstatus_sd_tests,
     xtval_value_tests,
@@ -63,9 +66,20 @@ SM_VADDR_CSRS = {
 
 
 def _gen_misa_dependencies(
-    misa: str, mask: str, cpbin: str, comment: str, coverpoint: str, covergroup: str, test_data: TestData
+    misa: str,
+    mask: str,
+    cpbin: str,
+    comment: str,
+    coverpoint: str,
+    covergroup: str,
+    test_data: TestData,
+    fail: str | None = None,
 ) -> str:
-    """Generate tests for misa dependencies."""
+    """Generate tests for misa dependencies.
+
+    Write *misa*, read it back and record 1 if the readback masked by *mask* equals *fail* (by default the written
+    value), which is an illegal outcome.
+    """
     r1, rmask, rfail, rorig = test_data.int_regs.get_registers(4)
     lines = [
         f"# Write {comment}. Error if this reads back the same.",
@@ -76,6 +90,7 @@ def _gen_misa_dependencies(
         f"csrw misa, x{rfail} # attempt to write misa",
         f"csrr x{r1}, misa # read back",
         f"csrw misa, x{rorig} # restore original value of misa",
+        *([f"LI(x{rfail}, {fail}) # Illegal combination of the checked bits"] if fail is not None else []),
         f"and x{r1}, x{r1}, x{rmask} # Mask off don't care bits",
         f"xor x{r1}, x{r1}, x{rfail} # Zero result means failing condition observed",
         f"seqz x{r1}, x{r1}  # 1 indicates illegal outcome.  Ref model should always produce 0",
@@ -517,9 +532,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
-        (0 << 0)  # Smepmp MML not supported TODO: change these to 1 when Sail implements & boot code sets it up
-        | (0 << 1)  # Smepmp MMWP not supported
-        | (0 << 2)  # Smepmp RLB not supported
+        (1 << 0)  # Smepmp MML: read-only zero without Smepmp (MSECCFG_SMEPMP_UNCHECKED)
+        | (1 << 1)  # Smepmp MMWP
+        | (1 << 2)  # Smepmp RLB
         | (1 << 8)  # USEED User mode seed access
         | (1 << 9)  # SSEED Supervisor mode seed access
         | (1 << 10)  # MLPE Machine landing pads enabled
@@ -584,11 +599,18 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
-    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
-    # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
-    csr_mcountinhibit = ("mcountinhibit", 0b111)
+    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED.  Its writable bits are
+    # the mcountinhibit.writable_bits Sail parameter.  The bit of a counter that is not implemented
+    # (COUNTINHIBIT_EN false) is WARL with no specified value: it may be read-only zero or read-only one
+    # (CV32E20), which Sail cannot model, so it is walked but not checked.  Bit 1 is always read-only zero.
+    csr_mcountinhibit = ("mcountinhibit", None)
+    mcountinhibit_unchecked = [(1 << n, f"!defined(UDB_COUNTINHIBIT_EN_{n})") for n in range(32) if n != 1]
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
+    # Smepmp's MML and MMWP are sticky and the reference model has no Smepmp, so with Smepmp mseccfg bits 2:0
+    # are neither written nor checked.  Without Smepmp they are read-only zero.
+    mseccfg_unchecked = [(0b111, "SMEPMP_SUPPORTED"), *pmm_access_unchecked("SMMPM")]
+    menvcfg_unchecked = pmm_access_unchecked("SMNPM")
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
@@ -622,16 +644,36 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.extend(
+        csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
+    )
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            unchecked_bits=menvcfg_unchecked,
+        )
+    )
     tc.code.append("#endif")
 
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_mseccfg, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(
+            test_data,
+            csr_mseccfg,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            unchecked_bits=mseccfg_unchecked,
+        )
+    )
     tc.code.append("#endif")
 
     tc.code.append("\n// Read-Only CSRs")
@@ -678,8 +720,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc = test_data.new_test_chunk(test_chunks)
-    # MPP: 0b10 is always reserved; 0b01 (S-mode) is only legal when the config has S-mode
+    # MPP: 0b10 is always reserved; 0b01 (S-mode) is only legal when the config has S-mode.  A reserved write
+    # must leave MPP holding an implemented mode: M, S with S-mode, U with U-mode.
     warl_fields = [("mpp", 11, 2, 0b10), ("mpp", 11, 2, 0b01, "S_SUPPORTED")]
+    mpp_legal = {"mpp": [(0b11, None), (0b01, "S_SUPPORTED"), (0b00, "U_SUPPORTED")]}
     tc.code.extend(
         csr_walk_test(
             test_data,
@@ -688,6 +732,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
+            legal_values=mpp_legal,
         )
     )
 
@@ -736,20 +781,37 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.extend(
+        csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
+    )
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=[("cbie", 4, 2, 0b10), *pmm_warl_fields("SMNPM")],
+            maskedwrites=True,
+            legal_values=pmm_legal_values("SMNPM"),
+        )
     )
     tc.code.append("#endif")
 
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    warl_fields = [("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_mseccfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_mseccfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=pmm_warl_fields("SMMPM"),
+            maskedwrites=True,
+            unchecked_bits=[(0b111, "SMEPMP_SUPPORTED")],
+            legal_values=pmm_legal_values("SMMPM"),
+        )
     )
     tc.code.append("#endif")
 
@@ -805,7 +867,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     for csr in S_CSRS:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
+    tc.code.extend(
+        csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, unchecked_bits=pmm_access_unchecked("SSNPM"))
+    )
     tc.code.extend(["", "#endif // S1P12P0_OR_LATER_SUPPORTED"])
 
     ######################################
@@ -1001,8 +1065,18 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
                 test_data,
             ),
             _gen_misa_dependencies(
+                "0b00000101000000000010010000",
+                "0b00000000000000000010010000",
+                "h1e1",
+                "H = 1, E = 1 (S = 1, U = 1 so that H may be kept)",
+                coverpoint,
+                covergroup,
+                test_data,
+                fail="0b00000000000000000010010000",
+            ),
+            _gen_misa_dependencies(
                 "0b00000000000000000000000000",
-                "0b00000000000000000000000000",
+                "0b00000000000000000100010000",
                 "i0e0",
                 "I = 0, E = 0",
                 coverpoint,
@@ -1753,6 +1827,54 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _mstatus_xl_tests(test_data: TestData) -> list[str]:
+    """RV64: from M-mode write mstatus.SXL and mstatus.UXL = 0 through 3 and check that each reads back a legal value
+    (cp_mstatus_sxl, cp_mstatus_uxl)."""
+    covergroup = "Sm_mstatus_cg"
+    save_reg, val_reg, tmp_reg = test_data.int_regs.get_registers(3)
+    lines = [
+        "",
+        "#if __riscv_xlen == 64",
+        comment_banner(
+            "cp_mstatus_sxl, cp_mstatus_uxl",
+            "From M-mode write mstatus.SXL and mstatus.UXL = 0, 1, 2 and 3 and read the field back.  Each is read-only\n"
+            "zero without its mode, and otherwise a WARL field encoding SXLEN or UXLEN: 2 where that XLEN is fixed\n"
+            "at 64, and 1 or 2 where it may be 32.",
+        ),
+        f"csrr x{save_reg}, mstatus",
+    ]
+    for field, shift, mode_define, xlen in (("sxl", 34, "S_SUPPORTED", "SXLEN"), ("uxl", 32, "U_SUPPORTED", "UXLEN")):
+        coverpoint = f"cp_mstatus_{field}"
+        for value in range(4):
+            lines.extend(
+                [
+                    "",
+                    f"LI(x{tmp_reg}, {~(3 << shift) & 0xFFFFFFFFFFFFFFFF})  # clear {field.upper()}",
+                    f"and x{val_reg}, x{save_reg}, x{tmp_reg}",
+                    f"LI(x{tmp_reg}, {value << shift})",
+                    f"or x{val_reg}, x{val_reg}, x{tmp_reg}    # {field.upper()} = {value}",
+                    test_data.add_testcase(f"{field}_write_{value}", coverpoint, covergroup),
+                    f"csrw mstatus, x{val_reg}",
+                    f"csrr x{val_reg}, mstatus",
+                    f"csrw mstatus, x{save_reg}    # restore mstatus",
+                    f"srli x{val_reg}, x{val_reg}, {shift}",
+                    f"andi x{val_reg}, x{val_reg}, 3    # {field.upper()}",
+                    f"#if !defined({mode_define})",
+                    f"# Without the mode, {field.upper()} is read-only zero",
+                    f"#elif defined(UDB_{xlen}_64) && !defined(UDB_{xlen}_32)",
+                    f"# {xlen} is fixed at 64, so {field.upper()} reads 2",
+                    "#else",
+                    f"addi x{val_reg}, x{val_reg}, -1",
+                    f"sltiu x{val_reg}, x{val_reg}, 2    # 1 if {field.upper()} is 1 or 2",
+                    "#endif",
+                    write_sigupd(val_reg, test_data),
+                ]
+            )
+    lines.append("#endif // __riscv_xlen == 64")
+    test_data.int_regs.return_registers([save_reg, val_reg, tmp_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Sm",
     required_extensions=["Sm"],
@@ -1768,6 +1890,10 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.begin_test_chunk("mstatus_sd")
     tc.code.extend(xstatus_sd_tests(test_data, "mstatus", "Sm_mstatus_cg", "cp_mstatus_sd_write"))
+    test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("mstatus_xl")
+    tc.code.extend(_mstatus_xl_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("inst")

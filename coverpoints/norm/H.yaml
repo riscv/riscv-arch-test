@@ -620,10 +620,7 @@ normative_rule_definitions:
 
   # The hypervisor extension depends on RV32I or RV64I, not RV32E or RV64E
   - names: [H_requires_i]
-    coverpoint:
-      [
-        "Not tested: configuration requirement; the I suite tests registers x16 through x31",
-      ]
+    coverpoint: ["Sm_mcsr_cg/cp_misa_dependencies"]
 
   # Sha depends on: H, Ssstateen, Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa
   - name: Sha_dep

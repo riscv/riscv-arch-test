@@ -16,7 +16,13 @@ from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.PrivCommon import S_SSTATUS_MASK, addr_csr_tests
+from testgen.priv.extensions.PrivCommon import (
+    S_SSTATUS_MASK,
+    addr_csr_tests,
+    pmm_access_unchecked,
+    pmm_legal_values,
+    pmm_warl_fields,
+)
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown, per_xlen
 from testgen.priv.extensions.sv.page_tables import SV_MODES, PteFlags, SvMode, write_pte
 
@@ -33,6 +39,8 @@ class HCsr:
         addresses (addr_csr_tests)
     gate: preprocessor condition under which the CSR exists
     warl_fields: WARL fields with reserved encodings, as for csr_walk_test
+    legal_values: legal values of WARL fields, as for csr_walk_test
+    access_unchecked: unchecked_bits of the access test, as for csr_access_test
     setup, restore: lines before and after the test that make the CSR accessible or its value visible
     asm: the operand instructions use when the assembler does not know the name (an encoding.h constant)
     """
@@ -44,6 +52,8 @@ class HCsr:
     vaddr: bool = False
     gate: str | None = None
     warl_fields: tuple[tuple, ...] = ()
+    legal_values: dict[str, list[tuple[int, str | None]]] | None = None
+    access_unchecked: tuple[tuple[int, str], ...] = ()
     setup: tuple[str, ...] = ()
     restore: tuple[str, ...] = ()
     asm: str = ""
@@ -65,8 +75,9 @@ HSTATUS_MASK = (
     | (1 << 21)  # VTW:   Virtual Timeout Wait
     | (1 << 22)  # VTSR:  Virtual Trap SRET
     | (0 << 32)  # VSXL is WARL and VS-mode XLEN is not changeable in Sail yet; should be tested in Xlen suite
-    | (0 << 48)  # HUPMM is tested in the Ssnpm suite
+    | (3 << 48)  # HUPMM: pointer masking for HLV/HSV (Ssnpm), read-only zero without Ssnpm
 )
+HSTATUS_WARL = tuple(pmm_warl_fields("SSNPM", "hupmm", 48))
 
 # hedeleg bits the spec requires to be writable (1-8, 12, 13, 15) or read-only zero (9-11, 16, 20-23).
 # Bits 14 and 17 are unconstrained.
@@ -79,8 +90,12 @@ HEDELEG_P113_WRITABLE = (1 << 18) | (1 << 19)
 P113_GATE = "defined(SM1P13P0_OR_LATER_SUPPORTED)"
 # hideleg: VS-level interrupts 2, 6 and 10 are writable; 1, 5, 9 and 12 are read-only zero.
 HIDELEG_MASK = 0x1666
-# The VS-level interrupts (MIP_VS_MASK).  hie.SGEIE is left out: it is writable only if GEILEN > 0 (hie_acc).
+# The VS-level interrupts (MIP_VS_MASK)
 VS_INTERRUPTS = 0x444
+# Standard portion (bits 15:0) of hie and hvip, except bit 13 (LCOFI), which Shlcofideleg can make writable in hvip.
+# Only the VS-level bits and hie.SGEIE (when GEILEN > 0) are writable; the rest are read-only zero (hie_acc,
+# hvip_sz_op).
+HIE_HVIP_MASK = 0xFFFF & ~(1 << 13)
 # hip also has the read-only SGEIP, which is zero while no guest external interrupt is pending (MIP_HS_MASK)
 HIP_MASK = 0x1444
 # henvcfg fields, as for menvcfg in Sm
@@ -92,11 +107,12 @@ HENVCFG_MASK = (
     | (1 << 6)  # CBCFE
     | (1 << 7)  # CBZE
     | (3 << 32)  # PMM
+    | (1 << 59)  # DTE
     | (1 << 61)  # ADUE
     | (1 << 62)  # PBMTE
     | (1 << 63)  # STCE
 )
-HENVCFG_WARL = (("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01))
+HENVCFG_WARL = (("cbie", 4, 2, 0b10), *pmm_warl_fields("SSNPM"))
 
 # vsie and vsip show only interrupts delegated by hideleg.  vstimecmp is accessible below M-mode
 # only with menvcfg.STCE = 1, and hedelegh only with mstateen0.P1P13 = 1.
@@ -118,16 +134,30 @@ P1P13_OFF = ("#ifdef SMSTATEEN_SUPPORTED", "RVTEST_TSBI_CSR_CLEAR(CSR_MSTATEEN0H
 H_M_CSRS = [HCsr("mtval2", zero=True), HCsr("mtinst", zero=True)]
 
 H_HS_CSRS = [
-    HCsr("hstatus", HSTATUS_MASK, masked=True),
+    HCsr(
+        "hstatus",
+        HSTATUS_MASK,
+        masked=True,
+        warl_fields=HSTATUS_WARL,
+        legal_values=pmm_legal_values("SSNPM", "hupmm"),
+        access_unchecked=tuple(pmm_access_unchecked("SSNPM", 48)),
+    ),
     HCsr("hedeleg", HEDELEG_MASK),
     HCsr("hideleg", HIDELEG_MASK),
-    HCsr("hie", VS_INTERRUPTS),
+    HCsr("hie", HIE_HVIP_MASK),
     HCsr("hcounteren"),
     HCsr("hgeie"),
-    HCsr("henvcfg", HENVCFG_MASK, masked=True, warl_fields=HENVCFG_WARL),
+    HCsr(
+        "henvcfg",
+        HENVCFG_MASK,
+        masked=True,
+        warl_fields=HENVCFG_WARL,
+        legal_values=pmm_legal_values("SSNPM"),
+        access_unchecked=tuple(pmm_access_unchecked("SSNPM")),
+    ),
     HCsr("htval", zero=True),
     HCsr("hip", HIP_MASK),
-    HCsr("hvip", VS_INTERRUPTS),
+    HCsr("hvip", HIE_HVIP_MASK),
     HCsr("htinst", zero=True),
     HCsr("hgatp", zero=True),
     HCsr("htimedelta", gate="defined(ZICNTR_SUPPORTED)"),
@@ -206,7 +236,14 @@ def hcsr_tests(
             test_data.int_regs.return_registers([save_reg, ones_reg, check_reg])
         else:
             coverpoint = "cp_hcsr_access_masked" if csr.masked else "cp_hcsr_access"
-            lines = csr_access_test(test_data, (csr.operand, csr.mask), covergroup, coverpoint, maskedwrites=csr.masked)
+            lines = csr_access_test(
+                test_data,
+                (csr.operand, csr.mask),
+                covergroup,
+                coverpoint,
+                maskedwrites=csr.masked,
+                unchecked_bits=list(csr.access_unchecked) or None,
+            )
         tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(csr_access_test(test_data, ("hgeip", None), covergroup, "cp_hcsr_access_ro"))
@@ -244,6 +281,7 @@ def hcsr_tests(
                 coverpoint,
                 warl_fields=list(csr.warl_fields) or None,
                 maskedwrites=csr.masked,
+                legal_values=csr.legal_values,
             )
             tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
     addr_csr_tests(

@@ -224,7 +224,20 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
         htimedelta_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HTIMEDELTA) {
             bins zero = {64'h0};
         }
+        // csrs henvcfg setting STCE, and menvcfg.STCE when it runs
+        henvcfg_stce_set: coverpoint ins.current.insn {
+            wildcard bins csrs = {CSRRS} iff (ins.current.insn[31:20] == CSR_HENVCFG & ins.current.rs1_val[63]);
+        }
+        menvcfg_stce: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")[0] {
+            // autofill 0/1
+        }
     `else
+        henvcfg_stce_set: coverpoint ins.current.insn {
+            wildcard bins csrs = {CSRRS} iff (ins.current.insn[31:20] == CSR_HENVCFGH & ins.current.rs1_val[31]);
+        }
+        menvcfg_stce: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")[0] {
+            // autofill 0/1
+        }
         vstimecmp_val: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTIMECMPH),
                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTIMECMP)} {
             bins zero = {64'h0};
@@ -272,6 +285,8 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
     // hip.VSTIP is hvip.VSTIP | (menvcfg.STCE & henvcfg.STCE & time + htimedelta >= vstimecmp), unsigned
     cp_vstip:                     cross priv_mode_hs, csrr, hip, stce_pair, hvip_vstip, vstimecmp_val, htimedelta_zero;
     cp_htimedelta:                cross priv_mode_hs, csrr, hip, stce_pair_ones, htimedelta_val, vstimecmp_delta;
+    // henvcfg.STCE is read-only zero while menvcfg.STCE = 0
+    cp_henvcfg_stce:              cross priv_mode_hs, henvcfg_stce_set, menvcfg_stce;
 endgroup
 
 // Sm tests are not part of a certificate without Sm (EXCLUDE_SM), so neither is their covergroup

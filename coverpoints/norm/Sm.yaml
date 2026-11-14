@@ -303,7 +303,12 @@ normative_rule_definitions:
   # For RV64 harts, the csr::[sxl] and csr::[uxl] fields are WARL fields that control the
   # value of XLEN for S-mode and U-mode, respectively.
   - name: mstatus_sxl_uxl_warl_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      [
+        "S_sstatus_cg/cp_sxlen_ge_uxlen",
+        "Sm_mstatus_cg/cp_mstatus_sxl",
+        "Sm_mstatus_cg/cp_mstatus_uxl",
+      ]
 
   # The encoding of these fields is the same as the csr::[mxl] field of csr:misa[], shown
   # in &lt;&lt;norm:misa_mxl_enc&gt;&gt;.
@@ -313,32 +318,34 @@ normative_rule_definitions:
   # When MXLEN=32, the csr::[sxl] and csr::[uxl] fields do not exist, and SXLEN=32 and
   # UXLEN=32.
   - name: mstatus_sxl_uxl_sxlen_uxlen_mxlen32
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint: ["Definition, checked through UDB"]
 
   # When MXLEN=64, if S-mode is not supported, then SXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of SXLEN.
   - name: mstatus_sxl_acc_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sxl"]
 
   # an implementation may make SXL be a read-only field whose value always ensures
   # that SXLEN=MXLEN.
   - name: mstatus_sxl_rdonly_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sxl"]
 
   # When MXLEN=64, if U-mode is not supported, then UXL is read-only zero.
   # Otherwise, it is a WARL field that encodes the current value of UXLEN.
   - name: mstatus_uxl_acc_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      ["S_sstatus_cg/cp_sxlen_ge_uxlen", "Sm_mstatus_cg/cp_mstatus_uxl"]
 
   # an implementation may make UXL be a read-only field whose value always ensures
   # that UXLEN=MXLEN or UXLEN=SXLEN.
   - name: mstatus_uxl_rdonly_mxlen64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      ["S_sstatus_cg/cp_sxlen_ge_uxlen", "Sm_mstatus_cg/cp_mstatus_uxl"]
 
   # If S-mode is implemented, the set of legal values that the UXL field may assume
   # excludes those that would cause UXLEN to be greater than SXLEN.
   - name: mstatus_uxl_legal_vals_smode
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint: ["S_sstatus_cg/cp_sxlen_ge_uxlen"]
 
   # When MPRV=0, explicit memory accesses behave as normal, using the translation
   # and protection mechanisms of the current privilege mode. When MPRV=1, load and
@@ -445,8 +452,7 @@ normative_rule_definitions:
   - name: mstatus_mstatush_xbe_warl
     coverpoint:
       [
-        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus",
-        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatush",
+        "TODO: write MBE, SBE and UBE and check that they read back a supported endianness (0 on little-endian harts)",
       ]
 
   # The TVM (Trap Virtual Memory) bit is a WARL field that supports intercepting
@@ -1286,7 +1292,11 @@ normative_rule_definitions:
   # csr:mhpmevent3[]&amp;#8205;&amp;#8211;&amp;#8205;csr:mhpmevent31[], are 64-bit WARL
   # registers that control which event causes the corresponding counter to increment.
   - name: mhpmevent_sz_warl_op
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access",
+        "Not tested: the value read back; the reference model has no parameter for the legal event selectors",
+      ]
 
   # The meaning of these events is defined by the platform, but event 0 is defined
   # to mean "no event."
@@ -1428,7 +1438,9 @@ normative_rule_definitions:
   # other invalid address that mepc is capable of holding.
   - name: mepc_inv_addr_conv
     coverpoint:
-      ["Sm_mcsr_cg/cp_mepc_vaddr_walk1", "Sm_mcsr_cg/cp_mepc_vaddr_walk0"]
+      [
+        "TODO: write invalid (non-canonical) addresses to mepc and check that it reads back an invalid address",
+      ]
 
   - name: mepc_enc_img
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
@@ -1526,7 +1538,9 @@ normative_rule_definitions:
   # other invalid address that mtval is capable of holding.
   - name: mtval_inv_addr_conv
     coverpoint:
-      ["Sm_mcsr_cg/cp_mtval_vaddr_walk1", "Sm_mcsr_cg/cp_mtval_vaddr_walk0"]
+      [
+        "TODO: write invalid (non-canonical) addresses to mtval and check that it reads back an invalid address",
+      ]
 
   # The mconfigptr register is an MXLEN-bit read-only CSR formatted as shown in mconfigptr_enc_img
   - name: mconfigptr_sz_acc

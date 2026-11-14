@@ -184,6 +184,33 @@ S_CSRS = [
 S_CSR_SENVCFG = ("senvcfg", None)
 
 
+def pmm_warl_fields(ext: str, name: str = "pmm", lsb: int = 32) -> list[tuple]:
+    """csr_walk_test warl_fields for a PMM field governed by pointer-masking extension ext (SMMPM, SMNPM, SSNPM).
+
+    01 is reserved.  10 (PMLEN 7) and 11 (PMLEN 16) are legal only where the config supports that PMLEN; a hart
+    without them may legalize the write to any legal value.  Without the extension the field is read-only zero,
+    so it is checked exactly.
+    """
+    return [
+        (name, lsb, 2, 0b01),
+        *(
+            (name, lsb, 2, pmm, f"defined(UDB_SUPPORTED_PMLEN_{ext}_{pmlen}) || !defined({ext}_SUPPORTED)")
+            for pmm, pmlen in ((0b10, 7), (0b11, 16))
+        ),
+    ]
+
+
+def pmm_legal_values(ext: str, name: str = "pmm") -> dict[str, list[tuple[int, str | None]]]:
+    """csr_walk_test legal_values for a PMM field: 00, and 10 and 11 where the config supports PMLEN 7 and 16."""
+    return {name: [(0b00, None), (0b10, f"UDB_SUPPORTED_PMLEN_{ext}_7"), (0b11, f"UDB_SUPPORTED_PMLEN_{ext}_16")]}
+
+
+def pmm_access_unchecked(ext: str, lsb: int = 32) -> list[tuple[int, str]]:
+    """csr_access_test unchecked_bits for a PMM field: its all-ones write (PMM = 11) is legalized in an
+    implementation-defined way where the config has the extension without PMLEN 16 (pmm_warl_fields checks it)."""
+    return [(3 << lsb, f"defined({ext}_SUPPORTED) && !defined(UDB_SUPPORTED_PMLEN_{ext}_16)")]
+
+
 def _vaddr_walk_step(
     test_data: TestData,
     csr_name: str,

@@ -29,7 +29,7 @@ normative_rule_definitions:
         "Sstc_cg/{cp_supervisor_stce, cp_user_stce}",
         "Sstc_Sm_cg/cp_machine_stce",
         "Sstc_H_cg/{cp_hs_vstimecmp_accessible, cp_vs_stimecmp_accessible, cp_vu_timecmp_inaccessible}",
-        "Sstc_H_cg/cp_vstip",
+        "Sstc_H_cg/{cp_vstip, cp_henvcfg_stce}",
         "InterruptsSm_cg/cp_trigger_sti_sstc",
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]

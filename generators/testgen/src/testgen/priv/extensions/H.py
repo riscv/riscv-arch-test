@@ -12,6 +12,8 @@ The suite boots to HS-mode.  The HS-mode handler takes traps from U, VS and VU (
 Tests that need mstatus.TVM = 1 are in the Sm suite's Sm_H group.
 """
 
+from typing import Literal
+
 from testgen.asm.csr import csr_access_test, gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
@@ -25,6 +27,7 @@ from testgen.priv.extensions.HCommon import (
     REPLICAS,
     HCsr,
     guest_page_fault_tests,
+    hcsr_semantics_tests,
     hcsr_tests,
     hlv_tests,
     replica_read,
@@ -95,6 +98,58 @@ S_UNREPLICATED_CSRS = [
 # scountinhibit raises illegal instruction with menvcfg.CDE = 0, as boot leaves it, and virtual instruction in
 # VS-mode and VU-mode with CDE = 1
 SCOUNTINHIBIT = HCsr("scountinhibit", gate="defined(SSCCFG_SUPPORTED)")
+
+
+def hcsr_write_denial_tests(
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    csrs: list[HCsr],
+    covergroup: str,
+    mode: Literal["U", "VU"],
+    chunk_name: str,
+) -> None:
+    """Write H/VS CSRs from U or VU and verify the trapping instruction does not modify rd.
+
+    Trap signatures independently check the exception cause. In VU, a write disallowed in HS (notably to read-only hgeip)
+    causes illegal instruction rather than virtual instruction.
+    """
+    for offset in range(0, len(csrs), 16):
+        # Match the H suite's convention: mark only the first chunk as a named split.
+        tc = test_data.new_test_chunk(test_chunks, chunk_name if offset == 0 else None)
+        if offset == 0:
+            tc.section_header = comment_banner("cp_csr_write_denied", f"Denied H CSR writes from {mode}-mode")
+        group = csrs[offset : offset + 16]
+        src, rd = test_data.int_regs.get_registers(2)
+        code: list[str] = []
+
+        # Setup and cleanup run in HS-mode, never in U/VU.  These conditions are
+        # required for certain CSRs (vsie/vsip delegation, vstimecmp STCE,
+        # hedelegh state-enable) to test the intended permission check.
+        for csr in group:
+            if csr.setup:
+                code.extend(gated(list(csr.setup), csr.gate))
+        code.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
+        for csr in group:
+            code.extend(
+                gated(
+                    [
+                        f"LI(x{src}, -1)",
+                        f"LI(x{rd}, 42)",
+                        test_data.add_testcase(
+                            f"{mode.lower()}_{csr.name}_write_denied", "cp_csr_write_denied", covergroup
+                        ),
+                        f"csrrw x{rd}, {csr.operand}, x{src}",
+                        write_sigupd(rd, test_data),
+                    ],
+                    csr.gate,
+                )
+            )
+        code.append("RVTEST_TSBI_GOTO_SMODE")
+        for csr in reversed(group):
+            if csr.restore:
+                code.extend(gated(list(csr.restore), csr.gate))
+        tc.code.extend(code)
+        test_data.int_regs.return_registers([src, rd])
 
 
 def _csr_trap_test(test_data: TestData, csr: HCsr, covergroup: str, coverpoint: str) -> list[str]:
@@ -274,6 +329,12 @@ def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     csr_ro_write_tests(
         test_data, test_chunks, VU_CG, USER_RO_CSR_RANGES, "vucsr_ro", mode="VU", csrs_per_chunk=CSRS_PER_CHUNK
     )
+    hcsr_write_denial_tests(test_data, test_chunks, HS_VS_CSRS, VU_CG, "VU", "vucsr_write")
+
+
+def _u_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """Ensure U-mode writes to H/VS CSRs are denied, not just reads."""
+    hcsr_write_denial_tests(test_data, test_chunks, HS_VS_CSRS, INST_CG, "U", "ucsr_write")
 
 
 def _xret_tests(test_data: TestData) -> list[str]:
@@ -412,6 +473,7 @@ def make_h(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the H hypervisor testsuite."""
     test_chunks: list[TestChunk] = []
     hcsr_tests(test_data, test_chunks, [*H_HS_CSRS, *H_VS_CSRS], HS_CG)
+    hcsr_semantics_tests(test_data, test_chunks, [*H_HS_CSRS, *H_VS_CSRS], HS_CG)
 
     tc = test_data.new_test_chunk(test_chunks, "hscsr_fields")
     tc.code.extend(
@@ -427,6 +489,7 @@ def make_h(test_data: TestData) -> list[TestChunk]:
 
     _vs_csr_tests(test_data, test_chunks)
     _vu_csr_tests(test_data, test_chunks)
+    _u_csr_tests(test_data, test_chunks)
 
     tc = test_data.new_test_chunk(test_chunks, "inst")
     tc.code.extend(

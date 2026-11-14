@@ -366,7 +366,9 @@ coverpoints:
       PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
     rules:
       - pm_mxr_exception
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vs_pmm.
+    notes: |-
+      vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vs_pmm.
+      The test (Ssnpm_H_<hgatp mode>_mxr) runs only with vsatp = Bare and hgatp = Sv57x4 or Sv48x4, and the largest supported PMM in every field; the paged pairs are not yet tested.
   - name: cp_vu_mxr_pmm
     goal: vsstatus.MXR = 1 or sstatus.MXR = 1 turns senvcfg.PMM pointer masking off in VU-mode
     description: |-
@@ -379,7 +381,9 @@ coverpoints:
       PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
     rules:
       - pm_mxr_exception
-    notes: vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vu_pmm.
+    notes: |-
+      vsstatus.MXR = 0 and sstatus.MXR = 0 is cp_vu_pmm.
+      Tested as cp_vs_mxr_pmm.
   - name: cp_vs_pmlen_masking
     goal: henvcfg.PMM ignores the upper PMLEN bits of the address for every kind of memory-accessing instruction in VS-mode
     description: |-
@@ -823,4 +827,29 @@ coverpoints:
       PMM 10 and 11 only when PMLEN 7 and 16 are supported; only when vsstatus.UXL = 01 is writable
     rules:
       - pm_uxl_clear
+      - pmlen_illegal_warl
+  - name: |-
+      cp_henvcfg_pmm_rsv
+      cp_hstatus_hupmm_rsv
+    goal: Verify that the reserved PMM = 01 is never stored in henvcfg.PMM or hstatus.HUPMM.
+    description: |-
+      In HS-mode with vsatp and hgatp Bare: csrrw henvcfg with PMM = 01, and csrrw hstatus with HUPMM = 01, each with
+      the other bits unchanged; read the field back and record whether it is 00 or a supported value. Then write
+      henvcfg.PMM = 01 again and, with hstatus.SPVP = 1, hlv.d through an untagged pointer.
+    expectation: Each field reads back 00 or a supported value. hlv.d returns the seeded value.
+    bins: 2 (henvcfg.PMM, hstatus.HUPMM)
+    rules:
+      - henvcfg_pmm_op
+      - pmlen_illegal_warl
+  - name: |-
+      cp_henvcfg_pmm_unsupported
+      cp_hstatus_hupmm_unsupported
+    goal: Verify that henvcfg.PMM and hstatus.HUPMM do not store a PMM value whose PMLEN is not supported.
+    description: |-
+      In HS-mode, for each of PMM = 10 (PMLEN 7) and 11 (PMLEN 16) whose PMLEN is not supported: csrrw henvcfg with
+      PMM set to it, and csrrw hstatus with HUPMM set to it, each with the other bits unchanged; read the field back
+      and record whether it is 00 or a supported value.
+    expectation: Each field reads back 00 or a supported value (WARL).
+    bins: 1 per unsupported PMLEN for each field (0-4)
+    rules:
       - pmlen_illegal_warl

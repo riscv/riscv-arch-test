@@ -82,6 +82,8 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     cp_zicfilp_lpad_valid_execution: cross priv_mode_m, lpe_enabled, lp_branch_prev, lpad_valid, x7_low_bits;
 
     cp_zicfilp_lpad_missing_instruction_exception: cross priv_mode_m, lpe_enabled, lp_branch_prev, not_lpad;
+    // Only auipc with rd = x0 is a landing pad
+    cp_lpad_near_miss: cross priv_mode_m, lpe_enabled, lp_branch_prev, lpad_near_miss;
 
     cp_zicfilp_lpad_label_mismatch: cross priv_mode_m, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_mismatch_only, x7_label_nonzero, x7_low_bits;
 
@@ -134,6 +136,24 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
 
     // An illegal instruction in M-mode with ELP=NO_LP_EXPECTED traps into M-mode and saves MPELP=0
     cp_pelp_trap_entry_zicfilp: cross priv_mode_m, lpe_enabled, elp_before, illegal;
+
+    // With MLPE=0 and a software-written MPELP=1, an ebreak traps into M-mode and must still write MPELP=0
+    mlpe_off_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "mlpe")[0] {
+        bins off = {1'b0};
+    }
+    `ifdef UDB_MXLEN_32
+        mpelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpelp")[0] {
+            bins one = {1'b1};
+        }
+    `else
+        mpelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpelp")[0] {
+            bins one = {1'b1};
+        }
+    `endif
+    ebreak_instr: coverpoint ins.current.insn {
+        bins ebreak = {EBREAK};
+    }
+    cp_pelp_trap_entry_lpe_off: cross priv_mode_m, mlpe_off_before, mpelp_stale, ebreak_instr;
 
     // A software-guarded branch (rs1 = x1/x5/x7) with MLPE=1 leaves ELP clear, so an illegal instruction at its target
     // saves MPELP=0
@@ -246,6 +266,8 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     cp_zicfilp_lpad_valid_execution: cross priv_mode_s, lpe_enabled, lp_branch_prev, lpad_valid, x7_low_bits;
 
     cp_zicfilp_lpad_missing_instruction_exception: cross priv_mode_s, lpe_enabled, lp_branch_prev, not_lpad;
+    // Only auipc with rd = x0 is a landing pad
+    cp_lpad_near_miss: cross priv_mode_s, lpe_enabled, lp_branch_prev, lpad_near_miss;
 
     cp_zicfilp_lpad_label_mismatch: cross priv_mode_s, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_mismatch_only, x7_label_nonzero, x7_low_bits;
 
@@ -280,6 +302,18 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
 
     // An illegal instruction in S-mode with ELP=NO_LP_EXPECTED traps into S-mode and saves SPELP=0
     cp_pelp_trap_entry_zicfilp: cross priv_mode_s, lpe_enabled, elp_before, illegal;
+
+    // With menvcfg.LPE=0 and a software-written SPELP=1, an ebreak traps into S-mode and must still write SPELP=0
+    menvcfg_lpe_off: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "lpe")[0] {
+        bins off = {1'b0};
+    }
+    spelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spelp")[0] {
+        bins one = {1'b1};
+    }
+    ebreak_instr: coverpoint ins.current.insn {
+        bins ebreak = {EBREAK};
+    }
+    cp_pelp_trap_entry_lpe_off: cross priv_mode_s, menvcfg_lpe_off, spelp_stale, ebreak_instr;
 
     // A software-guarded branch (rs1 = x1/x5/x7) with menvcfg.LPE=1 leaves ELP clear, so an illegal instruction
     // at its target saves SPELP=0
@@ -389,6 +423,8 @@ covergroup Zicfilp_U_cg with function sample(ins_t ins);
     cp_zicfilp_lpad_valid_execution: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_valid, x7_low_bits;
 
     cp_zicfilp_lpad_missing_instruction_exception: cross priv_mode_u, lpe_enabled, lp_branch_prev, not_lpad;
+    // Only auipc with rd = x0 is a landing pad
+    cp_lpad_near_miss: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_near_miss;
 
     cp_zicfilp_lpad_label_mismatch: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_mismatch_only, x7_label_nonzero, x7_low_bits;
 
@@ -467,6 +503,8 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     cp_zicfilp_lpad_valid_execution: cross priv_mode_vs_vu, lpe_enabled, lp_branch_prev, lpad_valid, x7_low_bits;
 
     cp_zicfilp_lpad_missing_instruction_exception: cross priv_mode_vs_vu, lpe_enabled, lp_branch_prev, not_lpad;
+    // Only auipc with rd = x0 is a landing pad
+    cp_lpad_near_miss: cross priv_mode_vs_vu, lpe_enabled, lp_branch_prev, lpad_near_miss;
 
     cp_zicfilp_lpad_label_mismatch: cross priv_mode_vs_vu, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_mismatch_only, x7_label_nonzero, x7_low_bits;
 
@@ -579,7 +617,7 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     spelp_operand: coverpoint ins.current.rs1_val[23] {
         bins spelp = {1'b1};
     }
-    cp_vs_sstatus_spelp: cross priv_mode_vs, sstatus_spelp_write, spelp_operand;
+    cp_vs_sstatus_spelp: cross priv_mode_vs, sstatus_spelp_write, spelp_operand, henvcfg_lpe_before;
 
     // SRET from HS-mode to HS-mode (hstatus.SPV = 0) restores ELP from sstatus.SPELP when menvcfg.LPE = 1, and clears
     // sstatus.SPELP, not vsstatus.SPELP, which the test gives the opposite value

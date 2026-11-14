@@ -11,7 +11,7 @@ coverpoints:
       - mcause (WLRL), mstatus/h (WPRI), menvcfg/h (WPRI), mseccfg/h (WPRI) could be weird/hard to model
   - name: cp_mcsrwalk
     goal: Walking 1s and 0s in each writeable M-mode CSR
-    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value."
+    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value.  menvcfg.CDE (menvcfgh bit 28 on RV32) is walked and checked as read-only zero when Smcdeleg is not supported; with Smcdeleg it is left out because Sail does not model Smcdeleg."
     expectation: Writable bits match reference model.
     bins: 14 regs * (64 set + 64 clear)
   - name: cp_misa_mxl
@@ -119,6 +119,15 @@ coverpoints:
     expectation: shouldn't trap on either TVM.  Value is not predictable.
   - name: cp_satp_from_s
     description: If S is supported, read satp with mstatus.TVM=0/1 from S mode
+  - name: cp_satp_mode_unsupported
+    goal: Verify that a write of satp with an unsupported MODE has no effect.
+    description: "If S is supported, from M-mode set satp to Sv39 with ASID = 1 and PPN = 1 (Bare when Sv39 is not supported), then write satp with ASID = 2, PPN = 2 and each MODE the hart cannot hold, and read satp back. SXLEN = 64: the reserved MODEs 1-7 and 11-13, and Sv39, Sv48 or Sv57 when not supported. SXLEN = 32: Sv32 when not supported. The custom MODEs 14 and 15 are not written."
+    expectation: satp reads back unchanged; no field is modified.
+    bins: "SXLEN = 64: 10 reserved, plus 1 for each unsupported mode of Sv39, Sv48 and Sv57; SXLEN = 32: 1 without Sv32, else none"
+    rules:
+      - satp_mode_op_unsupported
+      - satp_mode_sxlen64
+      - satp_mode_enc
   - name: cp_shadow
     goal: Check subset
     description: |-
@@ -543,6 +552,11 @@ coverpoints:
     description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  In VS-mode (entered with T-SBI), write sepc (vsepc) with bit 1 set, execute sret with sstatus.SPP = S, then write and read sepc.  Write and read vsepc in M-mode and in HS-mode.  Then set misa.C again in M-mode and read vsepc.
     expectation: While misa.C = 0, vsepc reads with bit 1 clear in every mode and sret returns to the masked address; after misa.C is set again, vsepc reads with bit 1 set.  Match reference model.
     bins: 2 modes + 1 + 1
+  - name: cp_hideleg_high_roz
+    goal: hideleg bits XLEN-1:16 are read-only zero where mideleg is zero
+    description: Clear mideleg[XLEN-1:16].  Write hideleg with all ones (csrrw) and set every bit of hideleg (csrrs), and read hideleg back after each.  Boot leaves mvien at zero.
+    expectation: With Smaia, hideleg[XLEN-1:16] reads 0, because a bit of hideleg for interrupts 13-63 is read-only zero when that bit of mideleg and of mvien is zero.  Without Smaia no rule constrains those bits, so the readback is checked only with Smaia.
+    bins: 2 forms
   - heading: mstatus.TVM and hstatus.VTVM (Sm_H_tvm_cg)
   - name: cp_tvm_hs
     goal: TVM traps access to satp and hgatp, but not vsatp; VTVM does not affect HS-mode
@@ -554,6 +568,18 @@ coverpoints:
     description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VS-mode read and write satp
     expectation: Virtual instruction fault if VTVM = 1. TVM does not affect VS-mode.
     bins: 2 TVM * 2 VTVM * 2 accesses
+  - name: |-
+      cp_tvm_vs_atp
+      cp_tvm_vu_atp
+    goal: mstatus.TVM does not change how VS-mode and VU-mode accesses to satp, vsatp and hgatp trap
+    description: With mstatus.TVM = {0/1} (and hstatus.VTVM = {0/1} in VS-mode), in VS-mode and VU-mode access satp, vsatp and hgatp with csrr, csrrw, csrrs (nonzero rs1) and csrrwi.  The writes are zero.  Record rd.
+    expectation: In VS-mode, satp (vsatp) raises virtual instruction only if VTVM = 1.  VS-mode vsatp and hgatp, and every VU-mode access, raise virtual instruction for both TVM values.  A trapping access leaves rd unchanged.
+    bins: VS 3 CSRs * 4 forms * 2 TVM * 2 VTVM + VU 3 CSRs * 4 forms * 2 TVM
+    rules:
+      - mstatus_modes
+      - hstatus_vtvm_op
+      - H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
+      - H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
   - name: cp_hfence
     goal: Basic fence
     description: Execute hfence.vvma, hfence.gvma in {M, HS, VS, U, VU mode} cross with mstatus.TVM = {0,1} and with hstatus.VTVM = {0,1}

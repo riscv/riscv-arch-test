@@ -8,6 +8,8 @@ normative_rule_definitions:
         "Sscofpmf_Sm_cg/cp_minh_inhibits_mmode",
         "Sscofpmf_S_cg/cp_sinh_inhibits_smode",
         "Sscofpmf_U_cg/cp_uinh_inhibits_umode",
+        "{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/cp_xinh_freeze_holds_count",
+        "Sscofpmf_H_cg/cp_virt_xinh_filter",
       ]
 
   - name: mhpmevent_of_op

@@ -58,7 +58,11 @@ normative_rule_definitions:
 
   # An SRET instruction sets the SDT bit to 0.
   - name: sstatus_sdt_sret
-    coverpoint: ["TODO: covered by the Ssdbltrp suite (not yet written)"]
+    coverpoint:
+      [
+        "Ssdbltrp_H_cg/cp_hs_sret_vsstatus_sdt (SRET in HS-mode)",
+        "TODO: SRET in S-mode without H is covered by the Ssdbltrp suite (not yet written)",
+      ]
 
   # The Ssdbltrp extension adds the double-trap-enable (DTE) field in menvcfg. When menvcfg.DTE is
   # zero, the implementation behaves as though Ssdbltrp is not implemented.

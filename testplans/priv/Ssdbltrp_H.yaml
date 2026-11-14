@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssdbltrp_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1156592509#gid=1156592509
+notes: |
+  covergroup Ssdbltrp_H
+  The tests boot to HS-mode and set menvcfg.DTE (through T-SBI) and henvcfg.DTE, so sstatus.SDT and vsstatus.SDT are writable.
+  After each SRET the test returns to HS-mode and records vsstatus.SDT and the HS-level sstatus.SDT.
+coverpoints:
+  - name: cp_hs_sret_vsstatus_sdt
+    goal: SRET from HS-mode clears vsstatus.SDT only when it returns to VU-mode
+    description: With menvcfg.DTE = henvcfg.DTE = 1, vsstatus.SDT = 1 and sstatus.SDT = 1, execute SRET in HS-mode with (hstatus.SPV, sstatus.SPP) = (1, 0) to VU-mode, (1, 1) to VS-mode and (0, 1) to HS-mode.  Return to HS-mode and read vsstatus and sstatus.
+    expectation: vsstatus.SDT = 0 after the return to VU-mode and 1 after the returns to VS-mode and HS-mode.  sstatus.SDT = 0 in every case.
+    bins: 3 targets
+    rules:
+      - sret_dt
+      - sstatus_sdt_sret
+  - name: cp_vs_sret_vsstatus_sdt
+    goal: SRET in VS-mode clears vsstatus.SDT
+    description: With menvcfg.DTE = henvcfg.DTE = 1 and vsstatus.SDT = 1, execute SRET in VS-mode with vsstatus.SPP = 0 (to VU-mode) and 1 (to VS-mode).  Return to HS-mode and read vsstatus and sstatus.
+    expectation: vsstatus.SDT = 0 in both cases.
+    bins: 2 targets
+    rules:
+      - sret_dt
+  - heading: Not tested
+  - goal: henvcfg.DTE = 0 makes vsstatus.SDT read-only zero, and a trap into VS-mode with vsstatus.SDT = 1 is a double trap
+    status: Not tested
+    rules:
+      - henvcfg_dte_op
+      - vsstatus_sdt_op

@@ -32,19 +32,19 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // PMPU cp_pmpaddr_access_u and cp_pmpcfg_access_u
-//   Write every pmpaddr and pmpcfg CSR from U mode; each traps with an illegal instruction.
+//   Write every pmpaddr and pmpcfg CSR from U mode; each traps with an illegal instruction, and the trapping read leaves its destination register unchanged.
 /////////////////////////////////
 
   RVTEST_PMP_SET_BACKGROUND x4
 
 PMP_U_cg_cp_pmpaddr_access_u_write_all:
 // Write all ones to every pmpaddr CSR from U mode
-  LI(x4, -1)
+  LI(x12, -1)
   .set pmpaddri, CSR_PMPADDR0
   .rept 64
   RVTEST_TSBI_GOTO_UMODE
 99:
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x4, 99b, PMP_U_cg_cp_pmpaddr_access_u_write_all_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x12, 99b, PMP_U_cg_cp_pmpaddr_access_u_write_all_str)
   nop
   RVTEST_TSBI_GOTO_MMODE
   .set pmpaddri, pmpaddri+1
@@ -56,7 +56,7 @@ PMP_U_cg_cp_pmpcfg_access_u_write_all:
   .rept 16
   RVTEST_TSBI_GOTO_UMODE
 99:
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x4, 99b, PMP_U_cg_cp_pmpcfg_access_u_write_all_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x12, 99b, PMP_U_cg_cp_pmpcfg_access_u_write_all_str)
   nop
   RVTEST_TSBI_GOTO_MMODE
   .set pmpcfgi, pmpcfgi+1

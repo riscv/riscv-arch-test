@@ -26,6 +26,7 @@ coverpoints:
       cp_exception_priority_zicfilp
       cp_lpad_nop_no_lp_expected_zicfilp
       cp_lpad_alignment_exception_zicfilp
+      cp_lpad_near_miss
       cp_pelp_trap_entry_zicfilp
       cp_pelp_trap_entry_guarded_zicfilp
       cp_pelp_trap_entry_guarded_zicfilp_c
@@ -81,11 +82,11 @@ coverpoints:
       = 16 bins
   - name: cp_vs_sstatus_spelp
     goal: sstatus.SPELP accessed in VS-mode is vsstatus.SPELP
-    description: In VS-mode, set and then clear sstatus.SPELP with csrrs and csrrc, and read sstatus back.  After each write, HS-mode reads vsstatus.SPELP.
-    expectation: sstatus.SPELP read in VS-mode and vsstatus.SPELP read in HS-mode both hold the value VS-mode wrote.
+    description: With henvcfg.LPE = {0, 1}, in VS-mode set and then clear sstatus.SPELP with csrrs and csrrc, and read sstatus back.  After each write, HS-mode reads vsstatus.SPELP.
+    expectation: sstatus.SPELP read in VS-mode and vsstatus.SPELP read in HS-mode both hold the value VS-mode wrote, whatever henvcfg.LPE is.
     bins: |-
-      priv_mode VS x {csrrs, csrrc} sstatus x rs1 bit 23 (SPELP) set
-      = 2 bins
+      priv_mode VS x {csrrs, csrrc} sstatus x rs1 bit 23 (SPELP) set x henvcfg.LPE {0, 1}
+      = 4 bins
   - name: cp_hs_sret_to_hs_spelp
     goal: SRET from HS-mode to HS-mode restores ELP from sstatus.SPELP and clears it, leaving vsstatus.SPELP alone
     description: |-

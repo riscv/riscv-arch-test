@@ -14,7 +14,10 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
+    CSR_CHECK_REG,
     LOCKED_LXWR_CASES,
+    PARTIAL_CASES,
+    PARTIAL_DATA,
     REGION_BLOBS,
     RETURN_TRAMPOLINE,
     TOR_ENTRIES,
@@ -24,6 +27,7 @@ from testgen.priv.extensions.pmp.helpers import (
     entry_walk,
     lxwr_walk_body,
     napot_mask_defines,
+    partial_match_body,
     set_pmpaddr,
     set_pmpcfg,
     zero_pmp_regs,
@@ -112,6 +116,70 @@ def _make_pmpcfg_walk_chunk(test_data: TestData, number: int, byte: int) -> Test
 
 
 #####################################################################
+# pmpcfg_xwr: every XWR value, including the reserved R=0/W=1
+#####################################################################
+
+_XWR_VALUES = ("000", "001", "010", "011", "100", "101", "110", "111")
+
+
+def _make_pmpcfg_xwr_chunk(test_data: TestData) -> TestChunk:
+    chunk = test_data.begin_test_chunk("Sm_pmpcfg_xwr")
+    chunk.section_header = comment_banner(
+        "cp_pmpcfg_xwr_all and cp_pmpcfg_rw01_rsv",
+        "Write pmpcfg0 with pmp0cfg = L = 0, A = OFF or NAPOT and each XWR value, and read it back.\n"
+        "A legal XWR reads back as written. R = 0, W = 1 is reserved, and the WARL field may read back\n"
+        "any legal value, so for those writes the test records only whether pmp0cfg reads R = 0, W = 1.",
+    )
+    chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
+    for amode in ("off", "napot"):
+        block: list[str] = []
+        for xwr in _XWR_VALUES:
+            value = cfg_byte(f"0{xwr}", amode, "0")
+            block.extend(
+                ["", f"// pmp0cfg = L = 0, A = {amode.upper()}, XWR = {xwr}", f"LI(x{CSR_CHECK_REG}, {value})"]
+            )
+            if xwr[1:] == "10":
+                block.extend(
+                    [
+                        test_data.add_testcase(f"{amode}_xwr{xwr}", "cp_pmpcfg_rw01_rsv", "PMP_Sm_cg"),
+                        f"csrw pmpcfg0, x{CSR_CHECK_REG}",
+                        f"csrr x{CSR_CHECK_REG}, pmpcfg0",
+                        f"andi x{CSR_CHECK_REG}, x{CSR_CHECK_REG}, PMP_W | PMP_R",
+                        f"xori x{CSR_CHECK_REG}, x{CSR_CHECK_REG}, PMP_W",
+                        f"snez x{CSR_CHECK_REG}, x{CSR_CHECK_REG}  // 1 unless pmp0cfg reads R = 0, W = 1",
+                        write_sigupd(CSR_CHECK_REG, test_data),
+                    ]
+                )
+            else:
+                block.extend(
+                    [
+                        test_data.add_testcase(f"{amode}_xwr{xwr}", "cp_pmpcfg_xwr_all", "PMP_Sm_cg"),
+                        gen_csr_write_sigupd(CSR_CHECK_REG, "pmpcfg0", test_data),
+                    ]
+                )
+        chunk.code.extend(["#ifdef UDB_PMP_NAPOT_SUPPORTED", *block, "#endif"] if amode == "napot" else block)
+    chunk.code.extend(["", "csrw pmpcfg0, x0"])
+    return test_data.end_test_chunk()
+
+
+#####################################################################
+# na4_boundary / tor_boundary: an entry that matches part of an access
+#####################################################################
+
+
+def _make_partial_chunk(test_data: TestData, amode: str, part: int) -> TestChunk:
+    chunk = test_data.begin_test_chunk(f"Sm_{amode}_boundary-{part:02d}")
+    chunk.section_header = comment_banner(
+        f"cp_{amode}_boundary",
+        f"sd and ld in M mode at an aligned doubleword whose lower or upper word is a {amode.upper()} region with\n"
+        "XWR = 111: the entry matches only part of each access, so both fault, with L = 0 as well as L = 1.",
+    )
+    chunk.code.extend(partial_match_body(test_data, amode, PARTIAL_CASES[part - 1]))
+    chunk.raw_data.extend(PARTIAL_DATA)
+    return test_data.end_test_chunk()
+
+
+#####################################################################
 # cfg_*: pmpcfg A/L/XWR enforcement
 #####################################################################
 
@@ -133,18 +201,23 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
     chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
 
     def add_csr_checks(name: str, const: str | None, csrs: tuple[int, ...]) -> None:
+        # x13 holds the value for every CSR; the readback overwrites CSR_CHECK_REG.
         for csr in csrs:
             chunk.code.extend(
                 [
+                    f"mv x{CSR_CHECK_REG}, x{13 if const else 0}",
                     test_data.add_testcase(
                         f"{name}_pmpcfg{csr}", f"cp_cfg_A_all_{'odd' if csr % 2 else 'even'}", "PMP_Sm_cg"
                     ),
-                    gen_csr_write_sigupd(4 if const else 0, f"pmpcfg{csr}", test_data),
+                    gen_csr_write_sigupd(CSR_CHECK_REG, f"pmpcfg{csr}", test_data),
                 ]
             )
 
     for name in amodes:
         const = None if name == "OFF" else f"PMP_{name}"
+        if name == "NAPOT":
+            # Without NAPOT, cp_cfg_A_napot_unsupported checks only that A does not read back NAPOT.
+            chunk.code.extend(["", "#ifdef UDB_PMP_NAPOT_SUPPORTED"])
         chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
         if const:
             rv32_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(4))
@@ -152,9 +225,9 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
             chunk.code.extend(
                 [
                     "#if __riscv_xlen == 64",
-                    f"LI(x4, {rv64_bytes})",
+                    f"LI(x13, {rv64_bytes})",
                     "#else",
-                    f"LI(x4, {rv32_bytes})",
+                    f"LI(x13, {rv32_bytes})",
                     "#endif",
                 ]
             )
@@ -166,6 +239,82 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
         chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
         add_csr_checks(name, const, (5, 7, 9, 11, 13, 15))
         chunk.code.append("#endif")
+        if name == "NAPOT":
+            chunk.code.append("#endif // UDB_PMP_NAPOT_SUPPORTED")
+    return test_data.end_test_chunk()
+
+
+# ---------------------------------------------------------------------------
+# cfg_A_unsupported: an unsupported A mode is not stored
+# ---------------------------------------------------------------------------
+
+
+def _bytes(value: int, xlen: int) -> str:
+    """``value`` in every byte of an XLEN-bit register."""
+    return hex(int.from_bytes(bytes([value]) * (xlen // 8), "little"))
+
+
+def _li_xlen(reg: int, value: int) -> list[str]:
+    """Load ``value`` repeated in every byte of ``reg``."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"LI(x{reg}, {_bytes(value, 64)})",
+        "#else",
+        f"LI(x{reg}, {_bytes(value, 32)})",
+        "#endif",
+    ]
+
+
+def _make_a_unsupported_chunk(test_data: TestData, name: str, amode: int) -> TestChunk:
+    """Write the unsupported address-matching mode ``name`` (A = ``amode``) into every pmpcfg byte."""
+    chunk = test_data.begin_test_chunk(f"Sm_cfg_A_{name.lower()}_unsupported")
+    chunk.section_header = comment_banner(
+        f"cp_cfg_A_{name.lower()}_unsupported",
+        f"{name} is not supported. Write every byte of every pmpcfg CSR with L = 0, XWR = 111 and A = OFF,\n"
+        f"then with the same bytes and A = {name}, and read the CSR back. A is WARL, so it may read back\n"
+        f"any supported mode: the test records only whether some byte reads A = {name}. The other bits\n"
+        "are checked exactly; they read XWR = 111 whether the second write updates them or is ignored.",
+    )
+    chunk.code.extend(zero_pmp_regs())
+    xwr = 0x07  # L = 0, A = OFF, XWR = 111
+    rd = CSR_CHECK_REG
+
+    def csr_checks(csrs: tuple[int, ...]) -> None:
+        for csr in csrs:
+            chunk.code.extend(
+                [
+                    "",
+                    f"// pmpcfg{csr}: XWR = 111 with A = OFF, then with A = {name}",
+                    *_li_xlen(13, xwr),
+                    f"csrw pmpcfg{csr}, x13",
+                    *_li_xlen(13, xwr | amode),
+                    *_li_xlen(14, 0xFF & ~0x18),
+                    test_data.add_testcase(f"pmpcfg{csr}", f"cp_cfg_A_{name.lower()}_unsupported", "PMP_Sm_cg"),
+                    f"csrrw x0, pmpcfg{csr}, x13",
+                    f"csrr x{rd}, pmpcfg{csr}",
+                    f"and x14, x{rd}, x14  // every bit but A, checked exactly",
+                    write_sigupd(14, test_data),
+                    f"xor x{rd}, x{rd}, x13  // the A bits of a byte become 00 where it reads A = {name}",
+                    *_li_xlen(15, 0x18),
+                    f"and x{rd}, x{rd}, x15",
+                    f"srli x15, x{rd}, 1",
+                    f"or x{rd}, x{rd}, x15",
+                    *_li_xlen(15, 0x08),
+                    f"and x{rd}, x{rd}, x15",
+                    f"xor x{rd}, x{rd}, x15  // 0 unless some byte reads A = {name}",
+                    write_sigupd(rd, test_data),
+                    f"csrw pmpcfg{csr}, x0",
+                ]
+            )
+
+    csr_checks((0, 2))
+    chunk.code.append("#if __riscv_xlen == 32")
+    csr_checks((1, 3))
+    chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64"])
+    csr_checks((4, 6, 8, 10, 12, 14))
+    chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
+    csr_checks((5, 7, 9, 11, 13, 15))
+    chunk.code.append("#endif")
     return test_data.end_test_chunk()
 
 
@@ -330,16 +479,20 @@ def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
 # cfg_L_modify_{off,tor,napot}: locked entries reject writes
 # ---------------------------------------------------------------------------
 
-#: (name, setup lines with {cfg} = the entry-1 configuration, CSR, source register)
+#: (name, setup lines with {cfg} = the entry-1 configuration and {r} = CSR_CHECK_REG, CSR, source register)
 _L_MODIFY_STEPS = (
-    ("write_pmpaddr1", "addi x4, x0, 0x100", "pmpaddr1", 4),
-    ("write_pmpcfg0", "LI(x4, {cfg})", "pmpcfg0", 4),
-    ("modify_pmpcfg0", "addi x5, x4, 7", "pmpcfg0", 5),
-    ("modify_pmpaddr0", "addi x4, x0, -1", "pmpaddr0", 4),
-    ("clear_pmpaddr1", "", "pmpaddr1", 0),
-    ("clear_pmpcfg0", "", "pmpcfg0", 0),
+    ("write_pmpaddr1", "addi x{r}, x0, 0x100", "pmpaddr1", CSR_CHECK_REG),
+    ("write_pmpcfg0", "LI(x{r}, {cfg})", "pmpcfg0", CSR_CHECK_REG),
+    ("modify_pmpcfg0", "addi x5, x{r}, 7", "pmpcfg0", 5),
+    # All ones in the implemented address bits only: bits above the physical address width are WARL.
+    ("modify_pmpaddr0", "LI(x{r}, ((1 << (UDB_PHYS_ADDR_WIDTH - 2)) - 1))", "pmpaddr0", CSR_CHECK_REG),
+    ("clear_pmpaddr1", "mv x{r}, x0", "pmpaddr1", CSR_CHECK_REG),
+    ("clear_pmpcfg0", "mv x{r}, x0", "pmpcfg0", CSR_CHECK_REG),
 )
-_L_MODIFY_RESET = (("reset_pmpaddr0", "", "pmpaddr0", 0), ("reset_pmpcfg0", "", "pmpcfg0", 0))
+_L_MODIFY_RESET = (
+    ("reset_pmpaddr0", "mv x{r}, x0", "pmpaddr0", CSR_CHECK_REG),
+    ("reset_pmpcfg0", "mv x{r}, x0", "pmpcfg0", CSR_CHECK_REG),
+)
 
 
 def _make_l_modify_chunk(test_data: TestData, amode: str) -> TestChunk:
@@ -359,7 +512,9 @@ def _make_l_modify_chunk(test_data: TestData, amode: str) -> TestChunk:
         )
         steps = [*_L_MODIFY_STEPS, *(_L_MODIFY_RESET if lock == 0 else [])]
         for step, setup, csr, src in steps:
-            chunk.code.extend(setup.format(cfg=cfg_byte(f"{lock}111", amode, "PMP1_CFG_SHIFT")).splitlines())
+            chunk.code.extend(
+                setup.format(cfg=cfg_byte(f"{lock}111", amode, "PMP1_CFG_SHIFT"), r=CSR_CHECK_REG).splitlines()
+            )
             chunk.code.extend(
                 [
                     f"{test_data.add_testcase(f'L{lock}_{step}', 'cp_cfg_L_modify', 'PMP_Sm_cg')}",
@@ -944,6 +1099,7 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
         *(_make_xwr_all_chunk(test_data, part) for part in range(1, 5)),
         _make_grain_chunk(test_data),
         _make_grain_check_chunk(test_data),
+        _make_pmpcfg_xwr_chunk(test_data),
     ]
 
 
@@ -972,6 +1128,37 @@ def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
         _make_amode_all_chunk(test_data, "na4"),
         _make_legal_chunk(test_data, "na4"),
     ]
+
+
+# NA4 is not selectable when G >= 1, so PMP_NA4_SUPPORTED is false there too.
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: false"],
+)
+def make_pmpsm_no_na4(test_data: TestData) -> list[TestChunk]:
+    return [_make_a_unsupported_chunk(test_data, "NA4", 0x10)]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: false"],
+)
+def make_pmpsm_no_tor(test_data: TestData) -> list[TestChunk]:
+    return [_make_a_unsupported_chunk(test_data, "TOR", 0x08)]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: false"],
+)
+def make_pmpsm_no_napot(test_data: TestData) -> list[TestChunk]:
+    return [_make_a_unsupported_chunk(test_data, "NAPOT", 0x18)]
 
 
 @add_priv_test_generator(
@@ -1007,3 +1194,24 @@ def make_pmpsm_tor(test_data: TestData) -> list[TestChunk]:
         *(_make_tor_check_chunk(test_data, part) for part in (1, 2, 3)),
         *(_make_legal_chunk(test_data, "tor", part) for part in (1, 2)),
     ]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
+)
+def make_pmpsm_na4_boundary(test_data: TestData) -> list[TestChunk]:
+    return [_make_partial_chunk(test_data, "na4", part) for part in (1, 2)]
+
+
+# A 4-byte TOR region needs a 4-byte grain.
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true", "PMP_GRANULARITY: 2"],
+)
+def make_pmpsm_tor_boundary(test_data: TestData) -> list[TestChunk]:
+    return [_make_partial_chunk(test_data, "tor", part) for part in (1, 2)]

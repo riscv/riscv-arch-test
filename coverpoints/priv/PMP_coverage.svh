@@ -441,6 +441,45 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   cp_pmpaddr_access_s: cross priv_mode_s, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_s: cross priv_mode_s, csrrw, pmpcfg_entries ;
 
+  // cp_na4_boundary and cp_tor_boundary: an aligned ld or sd whose lower or upper word is the whole region of
+  // an L = {0, 1}, XWR = 111 entry. The entry matches only part of the access, so the access faults.
+  `ifdef UDB_MXLEN_64
+    ld_sd_instr: coverpoint ins.current.insn {
+      wildcard bins ld = {LD};
+      wildcard bins sd = {SD};
+    }
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[7:0] {
+        bins L0 = {8'h17};
+        bins L1 = {8'h97};
+      }
+      // Access address minus the NA4 region base: 0 when the region is the lower word, -4 when the upper word
+      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
+        bins lower = {64'h0};
+        bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
+      }
+      cp_na4_boundary: cross priv_mode_s, pmp0cfg_na4_xwr111, na4_dword_half, ld_sd_instr;
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      `ifdef UDB_PMP_GRANULARITY_2
+        // Entry 1: TOR, XWR = 111; entry 0: OFF, no permissions, only the bottom of the region
+        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[15:0] {
+          bins L0 = {16'h0F00};
+          bins L1 = {16'h8F00};
+        }
+        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR1)) -
+                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0))) {
+          bins one_word = {64'h1};
+        }
+        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
+          bins lower = {64'h0};
+          bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
+        }
+        cp_tor_boundary: cross priv_mode_s, pmp1cfg_tor_xwr111, tor_4byte_region, tor_dword_half, ld_sd_instr;
+      `endif
+    `endif
+  `endif
+
 endgroup
 
 function void pmp_S_sample(int hart, int issue, ins_t ins);
@@ -1338,6 +1377,31 @@ covergroup PMP_Sm_cg with function sample(
     `endif
   }
   `endif
+
+  legal_pmpcfg_csrs: coverpoint ins.current.insn[31:20] {   // Every pmpcfg CSR of this XLEN
+    bins pmpcfg0   = {CSR_PMPCFG0};
+    bins pmpcfg2   = {CSR_PMPCFG2};
+    `ifdef UDB_MXLEN_32
+      bins pmpcfg1   = {CSR_PMPCFG1};
+      bins pmpcfg3   = {CSR_PMPCFG3};
+    `endif
+    `ifdef UDB_NUM_PMP_ENTRIES_64
+      bins pmpcfg4   = {CSR_PMPCFG4};
+      bins pmpcfg6   = {CSR_PMPCFG6};
+      bins pmpcfg8   = {CSR_PMPCFG8};
+      bins pmpcfg10  = {CSR_PMPCFG10};
+      bins pmpcfg12  = {CSR_PMPCFG12};
+      bins pmpcfg14  = {CSR_PMPCFG14};
+      `ifdef UDB_MXLEN_32
+        bins pmpcfg5   = {CSR_PMPCFG5};
+        bins pmpcfg7   = {CSR_PMPCFG7};
+        bins pmpcfg9   = {CSR_PMPCFG9};
+        bins pmpcfg11  = {CSR_PMPCFG11};
+        bins pmpcfg13  = {CSR_PMPCFG13};
+        bins pmpcfg15  = {CSR_PMPCFG15};
+      `endif
+    `endif
+  }
 //-------------------------------------------------------
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
@@ -1401,7 +1465,9 @@ covergroup PMP_Sm_cg with function sample(
       `ifdef UDB_PMP_NA4_SUPPORTED
         bins NA4   = {32'b00010000000100000001000000010000};
       `endif
-      bins NAPOT = {32'b00011000000110000001100000011000};
+      `ifdef UDB_PMP_NAPOT_SUPPORTED
+        bins NAPOT = {32'b00011000000110000001100000011000};
+      `endif
     `endif
     `ifdef UDB_MXLEN_64
       `ifdef UDB_PMP_TOR_SUPPORTED
@@ -1410,7 +1476,9 @@ covergroup PMP_Sm_cg with function sample(
       `ifdef UDB_PMP_NA4_SUPPORTED
         bins NA4   = {64'b0001000000010000000100000001000000010000000100000001000000010000};
       `endif
-      bins NAPOT = {64'b0001100000011000000110000001100000011000000110000001100000011000};
+      `ifdef UDB_PMP_NAPOT_SUPPORTED
+        bins NAPOT = {64'b0001100000011000000110000001100000011000000110000001100000011000};
+      `endif
     `endif
   }
 
@@ -1505,6 +1573,42 @@ covergroup PMP_Sm_cg with function sample(
   cp_cfg_A_all_even: cross priv_mode_m, rs1_val_for_pmpcfg_A, csrrw, legal_pmpcfg_entries_even ;
   `ifdef UDB_MXLEN_32
     cp_cfg_A_all_odd: cross priv_mode_m, rs1_val_for_pmpcfg_A, csrrw, legal_pmpcfg_entries_odd ;
+  `endif
+
+  // cp_cfg_A_na4_unsupported, cp_cfg_A_tor_unsupported and cp_cfg_A_napot_unsupported: csrrw of each pmpcfg CSR with L = 0, XWR = 111
+  // and an unsupported A in every byte
+  `ifndef UDB_PMP_NA4_SUPPORTED
+    rs1_val_pmpcfg_na4_xwr: coverpoint ins.current.rs1_val {
+      `ifdef UDB_MXLEN_32
+        bins na4_xwr = {32'h17171717};
+      `endif
+      `ifdef UDB_MXLEN_64
+        bins na4_xwr = {64'h1717171717171717};
+      `endif
+    }
+    cp_cfg_A_na4_unsupported: cross priv_mode_m, rs1_val_pmpcfg_na4_xwr, csrrw, legal_pmpcfg_csrs ;
+  `endif
+  `ifndef UDB_PMP_TOR_SUPPORTED
+    rs1_val_pmpcfg_tor_xwr: coverpoint ins.current.rs1_val {
+      `ifdef UDB_MXLEN_32
+        bins tor_xwr = {32'h0f0f0f0f};
+      `endif
+      `ifdef UDB_MXLEN_64
+        bins tor_xwr = {64'h0f0f0f0f0f0f0f0f};
+      `endif
+    }
+    cp_cfg_A_tor_unsupported: cross priv_mode_m, rs1_val_pmpcfg_tor_xwr, csrrw, legal_pmpcfg_csrs ;
+  `endif
+  `ifndef UDB_PMP_NAPOT_SUPPORTED
+    rs1_val_pmpcfg_napot_xwr: coverpoint ins.current.rs1_val {
+      `ifdef UDB_MXLEN_32
+        bins napot_xwr = {32'h1f1f1f1f};
+      `endif
+      `ifdef UDB_MXLEN_64
+        bins napot_xwr = {64'h1f1f1f1f1f1f1f1f};
+      `endif
+    }
+    cp_cfg_A_napot_unsupported: cross priv_mode_m, rs1_val_pmpcfg_napot_xwr, csrrw, legal_pmpcfg_csrs ;
   `endif
 
   cp_cfg_A_OFF_all_read : cross priv_mode_m, pmpcfgA_OFF, read_instr_lw, addr_in_region;
@@ -1626,6 +1730,66 @@ covergroup PMP_Sm_cg with function sample(
 
   cp_grain_check_write: cross priv_mode_m, pmpcfg_for_cp_grain_check, value_to_write, csrw_to_pmpaddr0;
   cp_grain_check_read: cross priv_mode_m, pmpcfg_for_cp_grain_check, csrr_to_pmpaddr0;
+
+  // cp_pmpcfg_xwr_all and cp_pmpcfg_rw01_rsv: csrrw pmpcfg0 with pmp0cfg L = 0, A = OFF or NAPOT, each XWR
+  pmpcfg0_csrrw: coverpoint ins.current.insn {
+    wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_PMPCFG0);
+  }
+  pmp0cfg_xwr: coverpoint ins.current.rs1_val[2:0] iff (ins.current.rs1_val[7] == 1'b0) {
+    bins xwr[] = {[0:7]};
+  }
+  pmp0cfg_a_off_napot: coverpoint ins.current.rs1_val[4:3] {
+    bins off = {2'b00};
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      bins napot = {2'b11};
+    `endif
+  }
+  // R = 0, W = 1 is reserved while mseccfg.MML = 0
+  pmp0cfg_rw01: coverpoint ins.current.rs1_val[7:0] {
+    wildcard bins w_only = {8'b000??010};
+    wildcard bins xw     = {8'b000??110};
+  }
+  cp_pmpcfg_xwr_all: cross priv_mode_m, pmpcfg0_csrrw, pmp0cfg_xwr, pmp0cfg_a_off_napot;
+  cp_pmpcfg_rw01_rsv: cross priv_mode_m, pmpcfg0_csrrw, pmp0cfg_rw01;
+
+  // cp_na4_boundary and cp_tor_boundary: an aligned ld or sd whose lower or upper word is the whole region of
+  // an L = {0, 1}, XWR = 111 entry. The entry matches only part of the access, so the access faults.
+  `ifdef UDB_MXLEN_64
+    ld_sd_instr: coverpoint ins.current.insn {
+      wildcard bins ld = {LD};
+      wildcard bins sd = {SD};
+    }
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[7:0] {
+        bins L0 = {8'h17};
+        bins L1 = {8'h97};
+      }
+      // Access address minus the NA4 region base: 0 when the region is the lower word, -4 when the upper word
+      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
+        bins lower = {64'h0};
+        bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
+      }
+      cp_na4_boundary: cross priv_mode_m, pmp0cfg_na4_xwr111, na4_dword_half, ld_sd_instr;
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      `ifdef UDB_PMP_GRANULARITY_2
+        // Entry 1: TOR, XWR = 111; entry 0: OFF, no permissions, only the bottom of the region
+        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[15:0] {
+          bins L0 = {16'h0F00};
+          bins L1 = {16'h8F00};
+        }
+        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR1)) -
+                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0))) {
+          bins one_word = {64'h1};
+        }
+        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
+          bins lower = {64'h0};
+          bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
+        }
+        cp_tor_boundary: cross priv_mode_m, pmp1cfg_tor_xwr111, tor_4byte_region, tor_dword_half, ld_sd_instr;
+      `endif
+    `endif
+  `endif
 
 endgroup
 
@@ -2550,6 +2714,45 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   cp_pmpaddr_access_u: cross priv_mode_u, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_u: cross priv_mode_u, csrrw, pmpcfg_entries ;
+
+  // cp_na4_boundary and cp_tor_boundary: an aligned ld or sd whose lower or upper word is the whole region of
+  // an L = {0, 1}, XWR = 111 entry. The entry matches only part of the access, so the access faults.
+  `ifdef UDB_MXLEN_64
+    ld_sd_instr: coverpoint ins.current.insn {
+      wildcard bins ld = {LD};
+      wildcard bins sd = {SD};
+    }
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[7:0] {
+        bins L0 = {8'h17};
+        bins L1 = {8'h97};
+      }
+      // Access address minus the NA4 region base: 0 when the region is the lower word, -4 when the upper word
+      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
+        bins lower = {64'h0};
+        bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
+      }
+      cp_na4_boundary: cross priv_mode_u, pmp0cfg_na4_xwr111, na4_dword_half, ld_sd_instr;
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      `ifdef UDB_PMP_GRANULARITY_2
+        // Entry 1: TOR, XWR = 111; entry 0: OFF, no permissions, only the bottom of the region
+        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[15:0] {
+          bins L0 = {16'h0F00};
+          bins L1 = {16'h8F00};
+        }
+        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR1)) -
+                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0))) {
+          bins one_word = {64'h1};
+        }
+        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
+          bins lower = {64'h0};
+          bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
+        }
+        cp_tor_boundary: cross priv_mode_u, pmp1cfg_tor_xwr111, tor_4byte_region, tor_dword_half, ld_sd_instr;
+      `endif
+    `endif
+  `endif
 
 endgroup
 

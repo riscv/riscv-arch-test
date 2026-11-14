@@ -10,6 +10,7 @@
 from collections.abc import Callable, Iterable
 
 from testgen.asm.csr import gen_csr_write_sigupd
+from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.extensions.pmp.probes import Cross, ProbeGenerator, covergroup
 
@@ -129,12 +130,18 @@ def set_pmpcfg(entry: int, value: str) -> list[str]:
     return lines
 
 
+#: Register that ``gen_csr_write_sigupd`` writes to a CSR and reads the CSR back into. It must not be
+#: x4 (DEFAULT_TEMP_REG, into which the self-check loads the expected value) or x0, the trap handler's
+#: temporaries, or a0/a1, which T-SBI calls clobber.
+CSR_CHECK_REG = 12
+
+
 def write_pmpcfg0(test_data: TestData, value: str, name: str, coverpoint: str) -> list[str]:
     """Write pmpcfg0 and register its readback as a testcase of ``coverpoint``, which samples pmpcfg0."""
     return [
-        f"LI(x4, {value})",
+        f"LI(x{CSR_CHECK_REG}, {value})",
         test_data.add_testcase(name, coverpoint, covergroup(test_data)),
-        gen_csr_write_sigupd(4, "pmpcfg0", test_data),
+        gen_csr_write_sigupd(CSR_CHECK_REG, "pmpcfg0", test_data),
         "sfence.vma",
     ]
 
@@ -214,6 +221,69 @@ def entry_walk(
         lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         lines.extend(probe_generator(test_data, f"{case_prefix}{entry}", coverpoint, region))
     return lines
+
+
+#####################################################################
+# Partial match: an NA4 or 4-byte TOR region over half of a doubleword
+#####################################################################
+
+#: An aligned doubleword. An NA4 entry 0, or a 4-byte TOR entry 1, covers its lower or upper word.
+PARTIAL_DWORD = "PMP_PARTIAL_DWORD"
+PARTIAL_DATA = [".balign 8", f"{PARTIAL_DWORD}:", ".dword 0x0123456789ABCDEF"]
+_PARTIAL_SENTINEL = "0x5A5A5A5A5A5A5A5A"
+
+
+def partial_match_body(
+    test_data: TestData, amode: str, cases: Iterable[tuple[int, str]], lower_mode: str | None = None
+) -> list[str]:
+    """sd and ld at PARTIAL_DWORD for each (L, half) in ``cases``, with an L, XWR = 111 entry over that word.
+
+    The entry matches only part of each access, so both accesses raise an access fault whatever L and XWR
+    are, also in M-mode with L = 0. ld leaves its destination holding a sentinel. Locking the entry is
+    permanent, so a case with L = 1 must be the last one of its chunk.
+    """
+    coverpoint = f"cp_{amode}_boundary"
+    group = covergroup(test_data)
+    lines = [*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"]
+    for lock, half in cases:
+        lines.extend(
+            [
+                "",
+                f"// PMP configuration: L = {lock}, A = {amode.upper()}, XWR = 111 over the {half} word of a doubleword",
+                f"LA(x5, {PARTIAL_DWORD})",
+                *(["addi x5, x5, 4"] if half == "upper" else []),
+                "srl x5, x5, PMP_SHIFT",
+                "csrw pmpaddr0, x5",
+            ]
+        )
+        if amode == "na4":
+            lines.extend(set_pmpcfg(0, cfg_byte(f"{lock}111", "na4", cfg_shift(0))))
+        else:
+            # Entry 0 stays OFF and only bounds the 4-byte TOR region of entry 1.
+            lines.extend(
+                ["addi x5, x5, 1", "csrw pmpaddr1, x5", *set_pmpcfg(1, cfg_byte(f"{lock}111", "tor", cfg_shift(1)))]
+            )
+        lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
+        if lower_mode:
+            lines.append(f"RVTEST_TSBI_GOTO_{lower_mode}MODE")
+        lines.extend(
+            [
+                f"LA(a5, {PARTIAL_DWORD})",
+                f"LI(a4, {_PARTIAL_SENTINEL})",
+                test_data.add_testcase(f"L{lock}_{half}_sd", coverpoint, group),
+                "sd a4, 0(a5)",
+                test_data.add_testcase(f"L{lock}_{half}_ld", coverpoint, group),
+                "ld a4, 0(a5)",
+                write_sigupd(14, test_data),
+            ]
+        )
+        if lower_mode:
+            lines.append("RVTEST_TSBI_GOTO_MMODE")
+    return lines
+
+
+#: The cases of the two chunks of each address mode. Entry 0 or 1 is locked in the last case of each.
+PARTIAL_CASES = (((0, "lower"), (0, "upper"), (1, "lower")), ((1, "upper"),))
 
 
 #####################################################################

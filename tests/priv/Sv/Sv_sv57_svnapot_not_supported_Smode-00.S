@@ -72,34 +72,34 @@ RVTEST_BEGIN
   PTE_SETUP_SV57(rvtest_data_1, ((1 << 63) | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x14, (va_data >> 12) << 12)
-  LA(x6, rvtest_data_1)
-  slli x6, x6, 52
-  srli x6, x6, 52
-  add x14, x14, x6
+  LI(x9, (va_data >> 12) << 12)
+  LA(x14, rvtest_data_1)
+  slli x14, x14, 52
+  srli x14, x14, 52
+  add x9, x9, x14
   addi x15, x15, 16
 
 // Store
 Sv_add_feature_cg_cp_svnapot_write_fault_test1_store:
-  sw x15, 20(x14)
+  sw x15, 20(x9)
   nop
 
 // Load
 Sv_add_feature_cg_cp_svnapot_read_fault_test1_load:
-  lw x9, 20(x14)
+  lw x8, 20(x9)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec:
-  jalr ra, x14, 0
+  jalr ra, x9, 0
   nop
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_svnapot_write_fault_test1_store, Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec, Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load, Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec, Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str)
 
 #endif
 
@@ -116,7 +116,7 @@ RVTEST_DATA_BEGIN
   .p2align 16
 rvtest_data_1:
   nop
-  addi x8, x15, 4
+  addi x13, x15, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -139,9 +139,9 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str: .string "\"test: 493; cg: Sv_add_feature_cg; cp: cp_svnapot_write_fault; bin: test1_store\""
-Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str: .string "\"test: 494; cg: Sv_add_feature_cg; cp: cp_svnapot_read_fault; bin: test1_load\""
-Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str: .string "\"test: 495; cg: Sv_add_feature_cg; cp: cp_svnapot_exec_fault; bin: test1_exec\""
+Sv_add_feature_cg_cp_svnapot_write_fault_test1_store_str: .string "\"test: 494; cg: Sv_add_feature_cg; cp: cp_svnapot_write_fault; bin: test1_store\""
+Sv_add_feature_cg_cp_svnapot_read_fault_test1_load_str: .string "\"test: 495; cg: Sv_add_feature_cg; cp: cp_svnapot_read_fault; bin: test1_load\""
+Sv_add_feature_cg_cp_svnapot_exec_fault_test1_exec_str: .string "\"test: 496; cg: Sv_add_feature_cg; cp: cp_svnapot_exec_fault; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

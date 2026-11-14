@@ -125,9 +125,11 @@ The hypervisor tests of these extensions are the H groups of their suites: see <
 
 The hypervisor landing pad tests are the <<t-Zicfilp_H-coverpoints,Zicfilp_H>> and <<t-Zicfilp_SmH-coverpoints,Zicfilp_SmH>> groups of the Zicfilp suite.
 
-==== SsdbltrpH Hypervisor Double Trap
+==== Ssdbltrp Hypervisor Double Trap
 
-include::{testplansdir}/priv/SsdbltrpH.adoc[]
+The hypervisor double trap tests are the H group of the Ssdbltrp suite.
+
+include::{testplansdir}/priv/Ssdbltrp_H.adoc[]
 
 ==== Hypervisor Pointer Masking
 

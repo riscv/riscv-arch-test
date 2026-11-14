@@ -135,6 +135,18 @@ coverpoints:
     bins: 16 CSRs
     rules:
       - pmp_csr_mode
+  - heading: Partial match
+  - name: |-
+      cp_na4_boundary
+      cp_tor_boundary
+    goal: Verify that an aligned doubleword that only half matches an NA4 or TOR entry fails from U-mode, even though the entry grants XWR=111.
+    description: "RV64 only; cp_tor_boundary also needs G = 0. Entry 0: L={0,1}, A=NA4, XWR=111 over the lower or upper word of an aligned doubleword; or entry 1: L={0,1}, A=TOR, XWR=111 over that word (entry 0: OFF, pmpaddr1 = pmpaddr0 + 1). sd and ld on the doubleword from U-mode; ld's destination holds a sentinel beforehand."
+    expectation: Store/AMO or load access fault; ld leaves its destination unchanged.
+    bins: 2 L × 2 halves × 2 accesses = 8, per address mode
+    rules:
+      - pmp_full_match_required
+      - pmp_check_priv_modes
+      - pmp_access_fault_exception
   - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
   - name: cp_none
     goal: Verify that a U-mode access that matches no entry fails when PMP entries are implemented.

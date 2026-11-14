@@ -1062,6 +1062,25 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+def _generate_page_access_ad_s(test_data: TestData) -> list[str]:
+    """Ordinary stores and AMOs to an SS page from S-mode for each pte.A/D."""
+    lines: list[str] = []
+    for a_bit, d_bit in SS_PAGE_AD:
+        lines.extend(
+            [
+                f"# --- pte.A={a_bit}, pte.D={d_bit} ---",
+                *_smode_prologue(test_data, ss_perms=ss_perms_ad(a_bit, d_bit)),
+                *page_access_ad_cases(test_data, f"a{a_bit}_d{d_bit}", _CG_S, "_s"),
+                *SATP_OFF,
+            ]
+        )
+    return vm_section(
+        "cp_ss_page_access_store_ad_s and cp_ss_page_access_amo_ad_s",
+        "Ordinary stores and AMOs to an SS page with each pte.A/D: a store/AMO access fault, never a page fault",
+        lines,
+    )
+
+
 @add_priv_test_generator(
     "Zicfiss",
     required_extensions=["Sm", "S", "Zicfiss"],
@@ -1577,6 +1596,10 @@ def make_zicfisss(test_data: TestData) -> list[TestChunk]:
         tc.code.extend(page_table_data_section())
         tc.code.extend(section(test_data))
         test_chunks.append(test_data.end_test_chunk())
+    tc = test_data.begin_test_chunk("S_page_access_ad")
+    tc.code.extend(page_table_data_section())
+    tc.code.extend(_generate_page_access_ad_s(test_data))
+    test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 
 
@@ -1905,7 +1928,8 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
                 ]
             )
         # cp_ssamoswap_reg_edges: all distinct, rd=x0, rs2=x0, rd==rs1. rd records the value the
-        # previous swap stored; a load of the location records what this one stored.
+        # previous swap stored; a load of the location records what this one stored. rd==rs2 is in
+        # _generate_ssamoswap_rd_eq_rs2.
         for name, form, rd in (
             ("distinct", f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})", rd_reg),
             ("rd_x0", f"ssamoswap.{width} x0, x{rs2_reg}, (x{addr_reg})", None),
@@ -1929,6 +1953,33 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
     lines.extend(_SATP_OFF)
     test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, seed_reg])
     return vm_section(coverpoint, "SSAMOSWAP.W/.D swap, sign-extension, ordering bits and register edges", lines)
+
+
+def _generate_ssamoswap_rd_eq_rs2(test_data: TestData) -> list[str]:
+    """SSAMOSWAP with rd == rs2: memory gets the original rs2, and rd the value memory held before."""
+    coverpoint = "cp_ssamoswap_reg_edges"
+    lines = _umode_prologue(test_data)
+    addr_reg, data_reg = test_data.int_regs.get_registers(2)
+    for width in SSAMOSWAP_WIDTHS:
+        lines.extend(
+            ssamoswap_only(
+                width,
+                [
+                    f"LI(x{addr_reg}, ZICFISS_VA_SS)",
+                    f"LI(x{data_reg}, 0x6B6B6B6B)",
+                    f"ssamoswap.{width} x0, x{data_reg}, (x{addr_reg})   # seed the location",
+                    f"LI(x{data_reg}, 0x3C3C3C3C)",
+                    test_data.add_testcase(f"ssamoswap_{width}_rd_eq_rs2", coverpoint, _CG_U),
+                    f"ssamoswap.{width} x{data_reg}, x{data_reg}, (x{addr_reg})",
+                    write_sigupd(data_reg, test_data),
+                    f"l{width} x{data_reg}, 0(x{addr_reg})   # the original rs2",
+                    write_sigupd(data_reg, test_data),
+                ],
+            )
+        )
+    lines.extend(_SATP_OFF)
+    test_data.int_regs.return_registers([addr_reg, data_reg])
+    return vm_section(coverpoint, "SSAMOSWAP.W/.D with rd == rs2", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -2075,6 +2126,70 @@ def _generate_page_ad_bits(test_data: TestData) -> list[str]:
             ]
         )
     return vm_section(coverpoint, "PTE A/D bits on the shadow stack page", lines)
+
+
+# ---------------------------------------------------------------------------
+# cp_ss_page_access_store_ad / cp_ss_page_access_amo_ad
+# ---------------------------------------------------------------------------
+
+
+def page_access_ad_cases(test_data: TestData, tag: str, cg: str, suffix: str = "") -> list[str]:
+    """Ordinary stores and AMOs to the SS page at ZICFISS_VA_SS. The caller maps the page with some pte.A/D.
+
+    An ordinary store or AMO to an SS page raises a store/AMO access fault before A and D are
+    examined, so the fault is never a store/AMO page fault, whatever A and D are. AMOs record rd,
+    which the fault leaves unchanged; the trap record holds the cause of every fault.
+    """
+    addr_reg, data_reg = test_data.int_regs.get_registers(2)
+    lines = [f"LI(x{addr_reg}, ZICFISS_VA_SS)"]
+    for mnemonic in ("sb", "sh", "sw", "sd"):
+        store = [
+            f"LI(x{data_reg}, 0xDEADBEEF)",
+            test_data.add_testcase(f"{mnemonic}_on_ss_page_{tag}", f"cp_ss_page_access_store_ad{suffix}", cg),
+            f"{mnemonic} x{data_reg}, 0(x{addr_reg})",
+        ]
+        lines.extend(rv64_only(store) if mnemonic == "sd" else store)
+    # Zicfiss requires Zaamo, so the ordinary AMOs are always present.
+    for mnemonic in ("amoswap.w", "amoadd.w", "amoor.w", "amoswap.d", "amoadd.d"):
+        amo = [
+            f"LI(x{data_reg}, 0x1)",
+            test_data.add_testcase(
+                f"{mnemonic.replace('.', '_')}_on_ss_page_{tag}", f"cp_ss_page_access_amo_ad{suffix}", cg
+            ),
+            f"{mnemonic} x{data_reg}, x{data_reg}, (x{addr_reg})",
+            write_sigupd(data_reg, test_data),
+        ]
+        lines.extend(rv64_only(amo) if mnemonic.endswith(".d") else amo)
+    test_data.int_regs.return_registers([addr_reg, data_reg])
+    return lines
+
+
+#: pte.A and pte.D of the SS page for cp_ss_page_access_*_ad
+SS_PAGE_AD = ((0, 0), (1, 0), (0, 1), (1, 1))
+
+
+def ss_perms_ad(a_bit: int, d_bit: int) -> str:
+    """The SS page encoding (xwr = 010) with the given A and D bits."""
+    return " | ".join(["PTE_W", "PTE_V"] + (["PTE_A"] if a_bit else []) + (["PTE_D"] if d_bit else []))
+
+
+def _generate_page_access_ad(test_data: TestData) -> list[str]:
+    """Ordinary stores and AMOs to an SS page from U-mode for each pte.A/D."""
+    lines: list[str] = []
+    for a_bit, d_bit in SS_PAGE_AD:
+        lines.extend(
+            [
+                f"# --- pte.A={a_bit}, pte.D={d_bit} ---",
+                *_umode_prologue(test_data, ss_perms=ss_perms_ad(a_bit, d_bit)),
+                *page_access_ad_cases(test_data, f"a{a_bit}_d{d_bit}", _CG_U),
+                *_SATP_OFF,
+            ]
+        )
+    return vm_section(
+        "cp_ss_page_access_store_ad and cp_ss_page_access_amo_ad",
+        "Ordinary stores and AMOs to an SS page with each pte.A/D: a store/AMO access fault, never a page fault",
+        lines,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -2513,6 +2628,8 @@ def make_zicfissu(test_data: TestData) -> list[TestChunk]:
         (_generate_page_access, None),
         (_generate_vector, None),
         (_generate_page_ad_bits, "U_page_ad_bits"),
+        (_generate_page_access_ad, "U_page_access_ad"),
+        (_generate_ssamoswap_rd_eq_rs2, "U_ssamoswap_rd_eq_rs2"),
     ):
         tc = test_data.begin_test_chunk(split_name)
         tc.code.extend(page_table_data_section())

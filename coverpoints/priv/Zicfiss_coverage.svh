@@ -323,6 +323,26 @@ covergroup Zicfiss_S_cg with function sample(ins_t ins);
     `endif
     cp_ss_page_access_store_misaligned_s: cross priv_mode_s, ordinary_storeops, store_addr_lsb, pte_ss_page;
 
+    // Ordinary stores and AMOs to an SS page with each pte.A/D. The shadow-stack access fault comes
+    // before pte.A/D are examined. pte.A is bit 6 and pte.D is bit 7.
+    pte_ad: coverpoint ins.current.pte_d[7:6] {
+        bins a0_d0 = {2'b00};
+        bins a1_d0 = {2'b01};
+        bins a0_d1 = {2'b10};
+        bins a1_d1 = {2'b11};
+    }
+    ordinary_amoops: coverpoint ins.current.insn {
+        wildcard bins amoswap_w = {AMOSWAP_W};
+        wildcard bins amoadd_w  = {AMOADD_W};
+        wildcard bins amoor_w   = {AMOOR_W};
+        `ifdef UDB_MXLEN_64
+            wildcard bins amoswap_d = {AMOSWAP_D};
+            wildcard bins amoadd_d  = {AMOADD_D};
+        `endif
+    }
+    cp_ss_page_access_store_ad_s:  cross priv_mode_s, ordinary_storeops, pte_ss_page, pte_ad;
+    cp_ss_page_access_amo_ad_s:    cross priv_mode_s, ordinary_amoops, pte_ss_page, pte_ad;
+
 endgroup
 `endif
 
@@ -391,11 +411,13 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     // rd is insn[11:7], rs1 insn[19:15], rs2 insn[24:20].
     swap_reg_edge: coverpoint {ins.current.insn[11:7] == 5'd0,
                                ins.current.insn[24:20] == 5'd0,
-                               ins.current.insn[11:7] == ins.current.insn[19:15]} {
-        bins all_distinct = {3'b000};
-        bins rd_eq_rs1    = {3'b001};
-        bins rs2_x0       = {3'b010};
-        bins rd_x0        = {3'b100};
+                               ins.current.insn[11:7] == ins.current.insn[19:15],
+                               ins.current.insn[11:7] == ins.current.insn[24:20]} {
+        bins all_distinct = {4'b0000};
+        bins rd_eq_rs2    = {4'b0001};
+        bins rd_eq_rs1    = {4'b0010};
+        bins rs2_x0       = {4'b0100};
+        bins rd_x0        = {4'b1000};
     }
 
     // ── Enable-chain (SSE) building blocks ────────────────────────────────
@@ -601,6 +623,9 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     cp_ss_page_access_store:       cross priv_mode_u, ordinary_storeops, pte_ss_page;
     cp_ss_page_access_load:        cross priv_mode_u, ordinary_loadops, pte_ss_page, sstatus_mxr;
     cp_ss_page_access_amo:         cross priv_mode_u, ordinary_amoops, pte_ss_page;
+    // The shadow-stack access fault comes before pte.A/D are examined
+    cp_ss_page_access_store_ad:    cross priv_mode_u, ordinary_storeops, pte_ss_page, pte_ad;
+    cp_ss_page_access_amo_ad:      cross priv_mode_u, ordinary_amoops, pte_ss_page, pte_ad;
     `ifdef ZICBOM_SUPPORTED
         cp_ss_page_access_cbo:     cross priv_mode_u, cbo_ops, pte_ss_page;
     `endif

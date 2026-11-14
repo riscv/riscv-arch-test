@@ -268,6 +268,67 @@ def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) 
         test_chunks.append(end_sv_test(test_data, regs))
 
 
+_SFENCE_ASID_PAGES = (
+    ".p2align 12",
+    "sfence_asid_page_a:",
+    ".4byte 0x0a0a0a0a",
+    ".skip 4092",
+    "sfence_asid_page_b:",
+    ".4byte 0x0b0b0b0b",
+    ".skip 4092",
+)
+
+
+def _t_sfence_asid_len(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    """sfence.vma x0, rs2 with rs2 = the current ASID and bits ASIDMAX-1:ASIDLEN set must ignore those bits.
+
+    Only when ASIDLEN < ASIDMAX. S-mode loads through a non-global leaf for page A, which may cache the
+    translation, then points the leaf at page B and runs the fence. The next load must read page B. A hart
+    that caches nothing passes.
+    """
+    asid_max = 9 if sv.xlen == 32 else 16
+    left, right = (1, 23) if sv.xlen == 32 else (4, 48)
+    regs = SvRegs.allocate(test_data)
+    chunk = begin_sv_test(
+        test_data, regs, sv, "Smode", f"{sv.name}_sfence_asid_len_Smode", coverpoint="cp_sfence_asid_len"
+    )
+    label = test_data.add_testcase("asid_high_bits", "cp_sfence_asid_len", "Sv_sfence_cg")
+    sig_label = label.removesuffix(":")
+    addr, load, asid, high = (f"x{reg}" for reg in (regs.addr, regs.load, regs.scratch, regs.result))
+    chunk.code.extend(
+        [
+            f"#if UDB_ASID_WIDTH < {asid_max}",
+            "// Load through a non-global leaf for page A",
+            *create_page_mapping(sv, leaf_level=0, leaf_flags=PteFlags(), physical_address="sfence_asid_page_a"),
+            "sfence.vma",
+            load_constant(addr, "va_data"),
+            f"lw {load}, 0({addr})",
+            write_sigupd(regs.load, test_data, label=sig_label),
+            "",
+            "// Point the leaf at page B",
+            *create_page_mapping(sv, leaf_level=0, leaf_flags=PteFlags(), physical_address="sfence_asid_page_b"),
+            "",
+            "// rs2 = the current ASID with the unimplemented bits ASIDMAX-1:ASIDLEN set",
+            f"csrr {asid}, satp",
+            f"slli {asid}, {asid}, {left}",
+            f"srli {asid}, {asid}, {right}",
+            f"LI({high}, (((1 << {asid_max}) - 1) >> UDB_ASID_WIDTH) << UDB_ASID_WIDTH)",
+            f"or {asid}, {asid}, {high}",
+            label,
+            f"sfence.vma x0, {asid}",
+            "",
+            "// The fence removes the translation for page A, so the load reads page B",
+            load_constant(addr, "va_data"),
+            f"lw {load}, 0({addr})",
+            write_sigupd(regs.load, test_data, label=sig_label),
+            "#endif",
+        ]
+    )
+    chunk.raw_data.extend([*sv_data(sv, regs), *_SFENCE_ASID_PAGES])
+    chunk.trap_sigupd_count = trap_sigupd_count()
+    test_chunks.append(end_sv_test(test_data, regs))
+
+
 def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     left, right = (1, 23) if sv.xlen == 32 else (4, 48)
     for mode in ("Smode", "Umode"):
@@ -1194,6 +1255,7 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     _t_invalid_pte(test_data, test_chunks, sv)
     _t_canonical(test_data, test_chunks, sv)
     _t_global_pte(test_data, test_chunks, sv)
+    _t_sfence_asid_len(test_data, test_chunks, sv)
     _t_misaligned_page(test_data, test_chunks, sv)
     _t_mstatus_mxr(test_data, test_chunks, sv)
     _t_nleaf_pte_dau(test_data, test_chunks, sv)

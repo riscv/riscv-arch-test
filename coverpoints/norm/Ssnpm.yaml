@@ -30,6 +30,7 @@ normative_rule_definitions:
         "Ssnpm_cg/cp_pmlen_masking",
         "Ssnpm_H_cg/cp_vu_pmlen_masking",
         "S_scsr_cg/cp_scsrwalk/senvcfg (the walk writes the reserved PMM=0b01)",
+        "Ssnpm_Sm_cg/cp_senvcfg_pmm_rsv",
       ]
 
   # If the Ssnpm extension is implemented, the PMM field enables or disables pointer masking for VS-mode.

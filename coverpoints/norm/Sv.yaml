@@ -55,14 +55,17 @@ normative_rule_definitions:
   # a later version of this specification. The remaining MODE settings are reserved for
   # future use and may define different interpretations of the other fields in satp.
   - name: satp_mode_sxlen64
-    coverpoint: ["Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}"]
+    coverpoint:
+      [
+        "Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}",
+        "Sm_mcsr_cg/cp_satp_mode_unsupported",
+      ]
 
   # Implementations are not required to support all MODE settings, and if satp is
   # written with an unsupported MODE, the entire write has no effect; no fields in satp
   # are modified.
   - name: satp_mode_op_unsupported
-    coverpoint:
-      ["TODO: write an unsupported satp.MODE and check that satp is unchanged"]
+    coverpoint: ["Sm_mcsr_cg/cp_satp_mode_unsupported"]
 
   # The number of ASID bits is UNSPECIFIED and may be zero.
   - name: asidlen
@@ -89,7 +92,7 @@ normative_rule_definitions:
       [
         "Sv_VA_cg/mode_supported",
         "Svbare_cg/{satp_bare, cp_satp_bare_load, cp_satp_bare_store, cp_satp_bare_exec}",
-        "TODO: write reserved and custom MODE values (see satp_mode_op_unsupported)",
+        "Sm_mcsr_cg/cp_satp_mode_unsupported",
       ]
 
   # The satp CSR is considered active when the effective privilege mode is S-mode or
@@ -191,7 +194,11 @@ normative_rule_definitions:
   # ASIDLEN<ASIDMAX, the implementation shall ignore bits ASIDMAX-1:ASIDLEN of the value
   # held in rs2.
   - name: sfence_vma_rs2_bits
-    coverpoint: ["TODO: SFENCE.VMA with reserved rs2 bits set is not exercised"]
+    coverpoint:
+      [
+        "Sv_sfence_cg/cp_sfence_asid_len (bits ASIDMAX-1:ASIDLEN, only when ASIDLEN < ASIDMAX)",
+        "Not tested: the reserved bits SXLEN-1:ASIDMAX are a should",
+      ]
 
   # An implicit read of the memory-management data structures may return any translation
   # for an address that was valid at any time since the most recent SFENCE.VMA that
@@ -983,7 +990,7 @@ normative_rule_definitions:
 
   # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
   - names: [henvcfg_pbmte_op, Svpbmt_vsatp_stage_override_rule]
-    coverpoint: ["Svpbmt_H_cg/cp_vsatp_pbmt"]
+    coverpoint: ["Svpbmt_H_cg/{cp_vsatp_pbmt, cp_hlv_pbmt}"]
 
   - names: [menvcfg_pbmte_op, Svpbmt_hgatp_stage_override_rule]
     coverpoint: ["Svpbmt_H_cg/cp_hgatp_pbmt"]
@@ -994,7 +1001,7 @@ normative_rule_definitions:
       [
         "Sv_H_vsstage_cg/cp_vsatp_svade",
         "Sv_H_twostage_cg/cp_twostage_svade",
-        "Svadu_H_cg/{cp_vsatp_adue,cp_twostage_adue}",
+        "Svadu_H_cg/{cp_vsatp_adue,cp_twostage_adue,cp_hlv_adue}",
       ]
 
   - name: menvcfg_adue_op

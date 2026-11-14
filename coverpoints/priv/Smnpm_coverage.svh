@@ -123,6 +123,32 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
     `else
         cp_pm_mprv_mpp_s: cross priv_mode_m, pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_s;
     `endif // SMMPM_SUPPORTED
+
+    // csrrw menvcfg with the reserved PMM = 01
+    menvcfg_csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_MENVCFG);
+    }
+    pmm_rsv_written: coverpoint ins.current.rs1_val[33:32] {
+        bins w01_reserved = {2'b01};
+    }
+    cp_menvcfg_pmm_rsv: cross priv_mode_m, menvcfg_csrrw, pmm_rsv_written;
+    // csrrw menvcfg with PMM = 10 or 11 where that PMLEN (7 or 16) is not supported
+    `ifndef UDB_SUPPORTED_PMLEN_SMNPM_7
+        pmm_unsupported_written: coverpoint ins.current.rs1_val[33:32] {
+            bins w10_pmlen7 = {2'b10};
+            `ifndef UDB_SUPPORTED_PMLEN_SMNPM_16
+                bins w11_pmlen16 = {2'b11};
+            `endif
+        }
+        cp_menvcfg_pmm_unsupported: cross priv_mode_m, menvcfg_csrrw, pmm_unsupported_written;
+    `else
+        `ifndef UDB_SUPPORTED_PMLEN_SMNPM_16
+            pmm_unsupported_written: coverpoint ins.current.rs1_val[33:32] {
+                bins w11_pmlen16 = {2'b11};
+            }
+            cp_menvcfg_pmm_unsupported: cross priv_mode_m, menvcfg_csrrw, pmm_unsupported_written;
+        `endif
+    `endif
 endgroup
 `endif // EXCLUDE_SM
 

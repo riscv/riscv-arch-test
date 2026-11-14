@@ -59,7 +59,7 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
 
-  LI(x15, 0x800) // Test signature initialization
+  LI(x9, 0x800) // Test signature initialization
 
 
 // 512GB page at level 3
@@ -68,34 +68,34 @@ RVTEST_BEGIN
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 54) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x15, x15, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x8, x8, x13
+  addi x9, x9, 16
 
 // Store
 Sv_add_feature_cg_cp_reserved_write_fault_test1_store:
-  sw x15, 20(x13)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_add_feature_cg_cp_reserved_read_fault_test1_load:
-  lw x14, 20(x13)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec:
-  jalr ra, x13, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_write_fault_test1_store, Sv_add_feature_cg_cp_reserved_write_fault_test1_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_read_fault_test1_load, Sv_add_feature_cg_cp_reserved_read_fault_test1_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_write_fault_test1_store, Sv_add_feature_cg_cp_reserved_write_fault_test1_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_read_fault_test1_load, Sv_add_feature_cg_cp_reserved_read_fault_test1_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec_str)
 
 
 // 512GB page at level 3
@@ -104,34 +104,34 @@ Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 55) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x15, x15, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x8, x8, x13
+  addi x9, x9, 16
 
 // Store
 Sv_add_feature_cg_cp_reserved_write_fault_test2_store:
-  sw x15, 20(x13)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_add_feature_cg_cp_reserved_read_fault_test2_load:
-  lw x14, 20(x13)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec:
-  jalr ra, x13, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_write_fault_test2_store, Sv_add_feature_cg_cp_reserved_write_fault_test2_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_read_fault_test2_load, Sv_add_feature_cg_cp_reserved_read_fault_test2_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_write_fault_test2_store, Sv_add_feature_cg_cp_reserved_write_fault_test2_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_read_fault_test2_load, Sv_add_feature_cg_cp_reserved_read_fault_test2_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec_str)
 
 
 // 512GB page at level 3
@@ -140,34 +140,34 @@ Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 56) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x15, x15, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x8, x8, x13
+  addi x9, x9, 16
 
 // Store
 Sv_add_feature_cg_cp_reserved_write_fault_test3_store:
-  sw x15, 20(x13)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_add_feature_cg_cp_reserved_read_fault_test3_load:
-  lw x14, 20(x13)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec:
-  jalr ra, x13, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_write_fault_test3_store, Sv_add_feature_cg_cp_reserved_write_fault_test3_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_read_fault_test3_load, Sv_add_feature_cg_cp_reserved_read_fault_test3_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_write_fault_test3_store, Sv_add_feature_cg_cp_reserved_write_fault_test3_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_read_fault_test3_load, Sv_add_feature_cg_cp_reserved_read_fault_test3_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec_str)
 
 
 // 512GB page at level 3
@@ -176,34 +176,34 @@ Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 57) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x15, x15, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x8, x8, x13
+  addi x9, x9, 16
 
 // Store
 Sv_add_feature_cg_cp_reserved_write_fault_test4_store:
-  sw x15, 20(x13)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_add_feature_cg_cp_reserved_read_fault_test4_load:
-  lw x14, 20(x13)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec:
-  jalr ra, x13, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_write_fault_test4_store, Sv_add_feature_cg_cp_reserved_write_fault_test4_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_read_fault_test4_load, Sv_add_feature_cg_cp_reserved_read_fault_test4_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_write_fault_test4_store, Sv_add_feature_cg_cp_reserved_write_fault_test4_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_read_fault_test4_load, Sv_add_feature_cg_cp_reserved_read_fault_test4_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec_str)
 
 
 // 512GB page at level 3
@@ -212,34 +212,34 @@ Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 58) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x15, x15, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x8, x8, x13
+  addi x9, x9, 16
 
 // Store
 Sv_add_feature_cg_cp_reserved_write_fault_test5_store:
-  sw x15, 20(x13)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_add_feature_cg_cp_reserved_read_fault_test5_load:
-  lw x14, 20(x13)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec:
-  jalr ra, x13, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_write_fault_test5_store, Sv_add_feature_cg_cp_reserved_write_fault_test5_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_read_fault_test5_load, Sv_add_feature_cg_cp_reserved_read_fault_test5_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_write_fault_test5_store, Sv_add_feature_cg_cp_reserved_write_fault_test5_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_read_fault_test5_load, Sv_add_feature_cg_cp_reserved_read_fault_test5_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec_str)
 
 
 // 512GB page at level 3
@@ -248,34 +248,34 @@ Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 59) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x15, x15, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x8, x8, x13
+  addi x9, x9, 16
 
 // Store
 Sv_add_feature_cg_cp_reserved_write_fault_test6_store:
-  sw x15, 20(x13)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_add_feature_cg_cp_reserved_read_fault_test6_load:
-  lw x14, 20(x13)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec:
-  jalr ra, x13, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_write_fault_test6_store, Sv_add_feature_cg_cp_reserved_write_fault_test6_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_read_fault_test6_load, Sv_add_feature_cg_cp_reserved_read_fault_test6_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_write_fault_test6_store, Sv_add_feature_cg_cp_reserved_write_fault_test6_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_read_fault_test6_load, Sv_add_feature_cg_cp_reserved_read_fault_test6_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec_str)
 
 
 // 512GB page at level 3
@@ -284,34 +284,34 @@ Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 60) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x15, x15, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x8, x8, x13
+  addi x9, x9, 16
 
 // Store
 Sv_add_feature_cg_cp_reserved_write_fault_test7_store:
-  sw x15, 20(x13)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_add_feature_cg_cp_reserved_read_fault_test7_load:
-  lw x14, 20(x13)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_add_feature_cg_cp_reserved_exec_fault_test7_exec:
-  jalr ra, x13, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_write_fault_test7_store, Sv_add_feature_cg_cp_reserved_write_fault_test7_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_read_fault_test7_load, Sv_add_feature_cg_cp_reserved_read_fault_test7_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_exec_fault_test7_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test7_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_reserved_write_fault_test7_store, Sv_add_feature_cg_cp_reserved_write_fault_test7_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_reserved_read_fault_test7_load, Sv_add_feature_cg_cp_reserved_read_fault_test7_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_add_feature_cg_cp_reserved_exec_fault_test7_exec, Sv_add_feature_cg_cp_reserved_exec_fault_test7_exec_str)
 
 #endif
 
@@ -328,7 +328,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi x9, x15, 4
+  addi x14, x9, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -348,27 +348,27 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_add_feature_cg_cp_reserved_write_fault_test1_store_str: .string "\"test: 367; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test1_store\""
-Sv_add_feature_cg_cp_reserved_read_fault_test1_load_str: .string "\"test: 368; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test1_load\""
-Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec_str: .string "\"test: 369; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test1_exec\""
-Sv_add_feature_cg_cp_reserved_write_fault_test2_store_str: .string "\"test: 370; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test2_store\""
-Sv_add_feature_cg_cp_reserved_read_fault_test2_load_str: .string "\"test: 371; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test2_load\""
-Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec_str: .string "\"test: 372; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test2_exec\""
-Sv_add_feature_cg_cp_reserved_write_fault_test3_store_str: .string "\"test: 373; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test3_store\""
-Sv_add_feature_cg_cp_reserved_read_fault_test3_load_str: .string "\"test: 374; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test3_load\""
-Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec_str: .string "\"test: 375; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test3_exec\""
-Sv_add_feature_cg_cp_reserved_write_fault_test4_store_str: .string "\"test: 376; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test4_store\""
-Sv_add_feature_cg_cp_reserved_read_fault_test4_load_str: .string "\"test: 377; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test4_load\""
-Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec_str: .string "\"test: 378; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test4_exec\""
-Sv_add_feature_cg_cp_reserved_write_fault_test5_store_str: .string "\"test: 379; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test5_store\""
-Sv_add_feature_cg_cp_reserved_read_fault_test5_load_str: .string "\"test: 380; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test5_load\""
-Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec_str: .string "\"test: 381; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test5_exec\""
-Sv_add_feature_cg_cp_reserved_write_fault_test6_store_str: .string "\"test: 382; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test6_store\""
-Sv_add_feature_cg_cp_reserved_read_fault_test6_load_str: .string "\"test: 383; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test6_load\""
-Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec_str: .string "\"test: 384; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test6_exec\""
-Sv_add_feature_cg_cp_reserved_write_fault_test7_store_str: .string "\"test: 385; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test7_store\""
-Sv_add_feature_cg_cp_reserved_read_fault_test7_load_str: .string "\"test: 386; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test7_load\""
-Sv_add_feature_cg_cp_reserved_exec_fault_test7_exec_str: .string "\"test: 387; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test7_exec\""
+Sv_add_feature_cg_cp_reserved_write_fault_test1_store_str: .string "\"test: 368; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test1_store\""
+Sv_add_feature_cg_cp_reserved_read_fault_test1_load_str: .string "\"test: 369; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test1_load\""
+Sv_add_feature_cg_cp_reserved_exec_fault_test1_exec_str: .string "\"test: 370; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test1_exec\""
+Sv_add_feature_cg_cp_reserved_write_fault_test2_store_str: .string "\"test: 371; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test2_store\""
+Sv_add_feature_cg_cp_reserved_read_fault_test2_load_str: .string "\"test: 372; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test2_load\""
+Sv_add_feature_cg_cp_reserved_exec_fault_test2_exec_str: .string "\"test: 373; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test2_exec\""
+Sv_add_feature_cg_cp_reserved_write_fault_test3_store_str: .string "\"test: 374; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test3_store\""
+Sv_add_feature_cg_cp_reserved_read_fault_test3_load_str: .string "\"test: 375; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test3_load\""
+Sv_add_feature_cg_cp_reserved_exec_fault_test3_exec_str: .string "\"test: 376; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test3_exec\""
+Sv_add_feature_cg_cp_reserved_write_fault_test4_store_str: .string "\"test: 377; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test4_store\""
+Sv_add_feature_cg_cp_reserved_read_fault_test4_load_str: .string "\"test: 378; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test4_load\""
+Sv_add_feature_cg_cp_reserved_exec_fault_test4_exec_str: .string "\"test: 379; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test4_exec\""
+Sv_add_feature_cg_cp_reserved_write_fault_test5_store_str: .string "\"test: 380; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test5_store\""
+Sv_add_feature_cg_cp_reserved_read_fault_test5_load_str: .string "\"test: 381; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test5_load\""
+Sv_add_feature_cg_cp_reserved_exec_fault_test5_exec_str: .string "\"test: 382; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test5_exec\""
+Sv_add_feature_cg_cp_reserved_write_fault_test6_store_str: .string "\"test: 383; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test6_store\""
+Sv_add_feature_cg_cp_reserved_read_fault_test6_load_str: .string "\"test: 384; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test6_load\""
+Sv_add_feature_cg_cp_reserved_exec_fault_test6_exec_str: .string "\"test: 385; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test6_exec\""
+Sv_add_feature_cg_cp_reserved_write_fault_test7_store_str: .string "\"test: 386; cg: Sv_add_feature_cg; cp: cp_reserved_write_fault; bin: test7_store\""
+Sv_add_feature_cg_cp_reserved_read_fault_test7_load_str: .string "\"test: 387; cg: Sv_add_feature_cg; cp: cp_reserved_read_fault; bin: test7_load\""
+Sv_add_feature_cg_cp_reserved_exec_fault_test7_exec_str: .string "\"test: 388; cg: Sv_add_feature_cg; cp: cp_reserved_exec_fault; bin: test7_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

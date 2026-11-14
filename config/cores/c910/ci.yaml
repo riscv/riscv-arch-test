@@ -43,6 +43,7 @@ exclude_extensions:
   - InterruptsSm_trigger_U
   # pmpaddr reads bits 8:0 as 0 in NAPOT mode and keeps bit 9 in OFF mode, against G = 10
   # (pmp/rtl/ct_pmp_regs.v#L520-L522).
+  - PMP_Sm_cfg_L_modify
   - PMP_Sm_grain
   # MPP holds the reserved value 2 (cp0/rtl/ct_cp0_regs.v#L1624-L1625); csrw minstret also counts itself; mret
   # keeps MPRV, which Sail cannot model.
@@ -61,6 +62,10 @@ exclude_extensions:
   # minstret counts ECALL, which does not retire (rtu/rtl/ct_rtu_retire.v#L1768-L1769).
   - S_Zicntr
   - U_Zicntr
+  # pmpcfg.A stores NA4, which is not selectable with G = 10 (pmp/rtl/ct_pmp_regs.v#L162).
+  - PMP_Sm_cfg_A_na4_unsupported
+  # A satp write with a reserved MODE still writes ASID and PPN (mmu/rtl/ct_mmu_regs.v#L629-L650).
+  - Sm_satp_mode_unsupported
 
 apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache patch"
 install_script: ".github/scripts/install-c910.sh"

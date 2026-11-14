@@ -26,7 +26,7 @@ or 16 (11) only when the configuration supports that PMLEN.
 
 from collections.abc import Sequence
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown
@@ -35,6 +35,8 @@ from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
     csr_op,
     data_page,
+    generate_pmm_unsupported_tests,
+    generate_pmm_write_tests,
     pmm_ifdef,
     probe_load,
     probe_store,
@@ -175,6 +177,37 @@ def _make_ssnpmh(test_data: TestData, g: SvMode) -> list[TestChunk]:
     tc.code.extend(lines)
     end(tc)
 
+    tc = begin(
+        "mxr",
+        "cp_vs_mxr_pmm, cp_vu_mxr_pmm",
+        "With every PMM field enabled, ld and sd in VS-mode and VU-mode at tagged addresses with (vsstatus.MXR,\n"
+        "sstatus.MXR) = (1, 0), (0, 1) and (1, 1).  MXR is in effect when either is 1, which turns masking off, so\n"
+        "each access raises a guest-page fault",
+    )
+    lines = _set_all_pmm(test_data, _OTHER_ON)
+    for vs_mxr, hs_mxr in ((1, 0), (0, 1), (1, 1)):
+        lines.extend(
+            [
+                *csr_op("csrs" if vs_mxr else "csrc", "vsstatus", "SSTATUS_MXR", test_data),
+                *csr_op("csrs" if hs_mxr else "csrc", "sstatus", "SSTATUS_MXR", test_data),
+            ]
+        )
+        for mode in ("VS", "VU"):
+            coverpoint = f"cp_{mode.lower()}_mxr_pmm"
+            for op in ("ld", "sd"):
+                for bit in _tags(g):
+                    name = f"{g.name}_{mode.lower()}_{op}_vsmxr{vs_mxr}_smxr{hs_mxr}_bit{bit}"
+                    lines.extend(_probe(test_data, name, coverpoint, op, bit, mode))
+    lines.extend(
+        [
+            *csr_op("csrc", "sstatus", "SSTATUS_MXR", test_data),
+            *csr_op("csrc", "vsstatus", "SSTATUS_MXR", test_data),
+            *_set_all_pmm(test_data, 0),
+        ]
+    )
+    tc.code.extend(lines)
+    end(tc)
+
     return chunks
 
 
@@ -196,3 +229,38 @@ def make_ssnpmh_sv57x4(test_data: TestData) -> list[TestChunk]:
 )
 def make_ssnpmh_sv48x4(test_data: TestData) -> list[TestChunk]:
     return _make_ssnpmh(test_data, SV48X4)
+
+
+# The reserved PMM = 01 in henvcfg.PMM and hstatus.HUPMM, written from HS-mode with vsatp and hgatp Bare
+@add_priv_test_generator(
+    "Ssnpm",
+    required_extensions=["H", "Ssnpm"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_ssnpmh_pmm_rsv(test_data: TestData) -> list[TestChunk]:
+    tc = test_data.begin_test_chunk("H_pmm_rsv")
+    tc.raw_data.extend(data_page("pm_lo_page"))
+    val = test_data.int_regs.get_register()
+    tc.code = [
+        comment_banner(
+            "cp_henvcfg_pmm_rsv, cp_hstatus_hupmm_rsv, cp_henvcfg_pmm_unsupported, cp_hstatus_hupmm_unsupported",
+            "Write the reserved PMM = 01 to henvcfg.PMM and hstatus.HUPMM from HS-mode and read each back: it must\n"
+            "read 00 or a supported PMLEN. With henvcfg.PMM = 01 written, hlv.d through an untagged pointer with\n"
+            "hstatus.SPVP = 1, which henvcfg.PMM governs, must read the seeded value. Then write 10 and 11 to each\n"
+            "field where that PMLEN is not supported; each must also read back a legal value.",
+        ),
+        *generate_pmm_write_tests("henvcfg", test_data, _CG, "cp_henvcfg_pmm_rsv", writes=(0b01,)),
+        *generate_pmm_write_tests("hstatus", test_data, _CG, "cp_hstatus_hupmm_rsv", writes=(0b01,)),
+        *set_pmm_field("henvcfg", 0b01, None, test_data),
+        *csr_op("csrs", "hstatus", "HSTATUS_SPVP", test_data),
+        f"LA(x{val}, pm_lo_page)",
+        f"hlv.d x{val}, (x{val})  # untagged, so not affected by PMLEN",
+        write_sigupd(val, test_data),
+        *csr_op("csrc", "hstatus", "HSTATUS_SPVP", test_data),
+        *set_pmm_field("henvcfg", 0b00, 0, test_data),
+        # Last: the testcases of unsupported PMLENs are compiled out on harts that support them.
+        *generate_pmm_unsupported_tests("henvcfg", test_data, _CG, "cp_henvcfg_pmm_unsupported"),
+        *generate_pmm_unsupported_tests("hstatus", test_data, _CG, "cp_hstatus_hupmm_unsupported"),
+    ]
+    test_data.int_regs.return_register(val)
+    return [test_data.end_test_chunk()]

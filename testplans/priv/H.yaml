@@ -24,7 +24,7 @@ coverpoints:
       cp_hcsr_access_zero: htval, htinst, hgatp and vsatp need only hold zero, so their readback is checked only after writing 0 and after clearing every bit.  Every bit of hedelegh (RV32, Priv 1.13) is reserved, so cp_hcsr_access and cp_hcsrwalk check that each reads zero, as for medelegh in Sm.
       cp_hcsr_access_masked: hstatus and henvcfg (and henvcfgh on RV32) are written only with their checked fields, because the others are WLRL, WARL with reserved encodings, or change the endianness or XLEN.
       cp_hcsr_access_ro: hgeip is read-only.
-      hedeleg bits 1-8, 12, 13 and 15 must be writable and 9-11, 16 and 20-23 read-only zero; bits 14 and 17 are not checked.  With Priv 1.13, writing all 1s also checks that bits 18 and 19 are writable; without Zca (IALIGN = 32), that bit 0 is writable.  hie.SGEIE is checked by InterruptsH, because it is writable only if GEILEN > 0.
+      hedeleg bits 1-8, 12, 13 and 15 must be writable and 9-11, 16 and 20-23 read-only zero; bits 14 and 17 are not checked.  With Priv 1.13, writing all 1s also checks that bits 18 and 19 are writable; without Zca (IALIGN = 32), that bit 0 is writable.  hie and hip are walked across bits 15:0, so the reference model checks hie.SGEIE (writable only if GEILEN > 0) and the read-only zero bits; Interrupts_cg also reads hie.SGEIE (cp_hie_gilen).
     expectation: All registers are accessible, and checked fields read back as written. Writes to hgeip raise illegal instruction.
     bins: 5 * (14-17 + 9-11)
     rules:

@@ -26,15 +26,15 @@ exclude_extensions:
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L1854-L2008
   # https://github.com/openhwfoundation/cva6/issues/3175
   # https://github.com/openhwfoundation/cva6/issues/3651
-  - InterruptsSm_priority_mip_M
-  - InterruptsSm_priority_mideleg_M
+  - Interrupts_Sm_priority_mip_M
+  - Interrupts_Sm_priority_mideleg_M
   # With a delegated SEI and a non-delegated STI both pending in S- or U-mode, CVA6 takes SEI to
   # S-mode, but the M-level STI must be taken first. The decoder picks one cause in a fixed order
   # and only then applies mideleg.
   # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/core/decoder.sv#L1947-L2008
   # https://github.com/openhwfoundation/cva6/issues/3199
-  - InterruptsSm_priority_mideleg_S
-  - InterruptsSm_priority_mideleg_U
+  - Interrupts_Sm_priority_mideleg_S
+  - Interrupts_Sm_priority_mideleg_U
   # With pmpcfg.A = NAPOT, pmpaddr bit 0 reads as 1. With G = 1 no bit is forced, so a written 0
   # must read back as 0. CVA6 applies the G = 2 rule in NAPOT mode and the G = 1 rule otherwise.
   # The trailing "-" keeps PMP_Sm_grain_check, which passes.

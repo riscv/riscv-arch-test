@@ -24,6 +24,8 @@ normative_rule_definitions:
         "Ssnpm_H_cg/{cp_vs_pmlen_zicfiss_amo, cp_vu_pmlen_zicfiss_amo, cp_vs_pmlen_zicfiss_ssp, cp_vu_pmlen_zicfiss_ssp}",
         "Ssnpm_H_cg/{cp_vs_pmm, cp_vu_pmm}",
         "Ssnpm_H_cg/{cp_hlv_hs_spvp1_pmm, cp_hlv_hs_spvp0_pmm}",
+        "Ssnpm_H_cg/{cp_vs_pmm_upper, cp_vu_pmm_upper, cp_hlv_hs_spvp1_pmm_upper, cp_hlv_hs_spvp0_pmm_upper}",
+        "Ssnpm_H_cg/{cp_hlv_u_spvp1_pmm_upper, cp_hlv_u_spvp0_pmm_upper}",
       ]
 
   # When applied to a physical address, including guest-physical addresses (i.e.,
@@ -38,6 +40,8 @@ normative_rule_definitions:
         "Ssnpm_H_cg/{cp_vs_pmm, cp_vu_pmm}",
         "Ssnpm_H_cg/{cp_hlv_hs_spvp1_pmm, cp_hlv_hs_spvp0_pmm}",
         "Ssnpm_H_cg/{cp_vs_pmlen_masking, cp_vu_pmlen_masking}",
+        "Ssnpm_H_cg/{cp_vs_pmm_upper, cp_vu_pmm_upper, cp_hlv_hs_spvp1_pmm_upper, cp_hlv_hs_spvp0_pmm_upper}",
+        "Ssnpm_H_cg/{cp_hlv_u_spvp1_pmm_upper, cp_hlv_u_spvp0_pmm_upper}",
       ]
 
   # When pointer masking is enabled, the ignore transformation will be applied to
@@ -142,6 +146,7 @@ normative_rule_definitions:
         "Smnpm_USm_cg/cp_pm_mprv_mpp_u",
         "Ssnpm_H_cg/{cp_hlv_hs_spvp0_pmm, cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp0_pmm, cp_hlv_u_spvp1_pmm, cp_hlv_hs_spvp0_mxr_pmm, cp_hlv_hs_spvp1_mxr_pmm}",
         "Ssnpm_H_cg/{cp_hupmm_change_hfence, cp_hupmm_change_hfence_sv48x4, cp_hlv_u_spvp0_sv48x4_pmm}",
+        "Ssnpm_H_cg/{cp_hlv_hs_spvp0_pmm_upper, cp_hlv_hs_spvp1_pmm_upper, cp_hlv_u_spvp0_pmm_upper, cp_hlv_u_spvp1_pmm_upper}",
       ]
 
   # When MXR is in effect at the effective privilege mode where explicit memory

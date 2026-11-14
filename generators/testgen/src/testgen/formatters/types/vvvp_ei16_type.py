@@ -55,7 +55,7 @@ def format_vvvp_ei16_type(
 
     # Setup Mask
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True))
+        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_reg=params.vd))
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
     vs1_vl = "vlmax" if params.vs1 == params.vs2 else params.vl

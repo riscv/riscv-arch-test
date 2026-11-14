@@ -41,7 +41,7 @@ def _append_sig_reg_reset(test_file_chunks: list[TestChunk]) -> None:
 
 
 def generate_unpriv_extension_tests(
-    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path, is_vector: bool = False
+    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path, is_vector: bool, is_priv: bool
 ) -> None:
     """
     Generate tests for all instructions in a given unprivileged testsuite.
@@ -55,6 +55,8 @@ def generate_unpriv_extension_tests(
         is_vector: Set in vector test suites
     """
     # Read testplan for this testsuite
+    if is_priv:
+        testplan_dir = testplan_dir / "priv"
     instructions = read_testplan(testplan_dir / f"{testsuite}.csv")
     if testsuite == "I" and E_ext:
         testsuite = "E"

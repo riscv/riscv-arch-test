@@ -60,14 +60,16 @@ vsox_config = InstructionTypeConfig(
 
 vsuxseg_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "vs2"},
-    instruction_class=["store", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(random_element_generator=unordered_index_element_generator, index_register="vs2"),
+    instruction_class=["store", "indexed"],
+    vector_data=VectorTypeConfig(
+        random_element_generator=unordered_index_element_generator, index_register="vs2", segmented_regs={"vs3"}
+    ),
 )
 
 vsoxseg_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "vs2"},
-    instruction_class=["store", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(index_register="vs2"),
+    instruction_class=["store", "indexed"],
+    vector_data=VectorTypeConfig(index_register="vs2", segmented_regs={"vs3"}),
 )
 
 
@@ -122,9 +124,12 @@ def format_vsxseg_like_type(
     assert params.lmul is not None, f"lmul must be provided for {instr_type}-type instructions"
     assert test_data.test_chunk is not None, f"format_{instr_type.lower()}_type must be used with an active TestChunk"
 
+    if params.rs1val_pointer != "RVMODEL_ACCESS_FAULT_ADDRESS":
+        test_data.test_chunk.vector_labels.append(
+            (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer])
+        )
     test_data.test_chunk.vector_labels.extend(
         [
-            (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer]),
             (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer]),
             (params.vs3_val_pointer, *test_data.vector_labels[params.vs3_val_pointer]),
         ]

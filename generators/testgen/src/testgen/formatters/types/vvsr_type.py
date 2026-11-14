@@ -87,7 +87,7 @@ def format_vvsr_like_type(
     load_vd = True
     mask_copy_reg = None
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True, vd_v0=params.vd == 0))
+        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_reg=params.vs2, vd_v0=params.vd == 0))
         if params.vector_suite == "length" and params.vd == 0:
             mask_copy_reg = test_data.vec_regs.get_register(lmul=1)
             setup.extend(

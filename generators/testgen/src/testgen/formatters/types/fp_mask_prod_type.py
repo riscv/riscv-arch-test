@@ -86,7 +86,7 @@ def format_fp_mask_producing_type(
     mask_copy_reg = None
     load_vd = True
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True, vd_v0=params.vd == 0))
+        setup.extend(prep_mask_v(params.maskval, test_data, params, vd_v0=params.vd == 0))
         if 0 in vec_regs_to_setup:
             vec_regs_to_setup.remove(0)
 

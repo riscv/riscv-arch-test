@@ -192,7 +192,9 @@ def make_cp_custom_indexed_overlap(
     """
 
     config = get_instruction_type_config(instr_type)
-    assert "segmented" not in config.instruction_class, "Overlaps are prohibited for segmented load/stores"
+    assert config.vector_data is not None and config.vector_data.segmented_regs == set(), (
+        "Overlaps are prohibited for segmented load/stores"
+    )
 
     info = parse_vector_instruction_info(instr_name, instr_type)
     index_eew = info.index_eew

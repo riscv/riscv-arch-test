@@ -17,11 +17,7 @@ from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 
 def get_extensions(testplan_dir: Path) -> list[str]:
     """Get the list of extensions from the testplan directory."""
-    extensions: list[str] = []
-    for testplan in testplan_dir.glob("*.csv"):
-        extension = testplan.stem
-        extensions.append(extension)
-    return extensions
+    return [testplan.stem for testplan in (*testplan_dir.glob("*.csv"), *testplan_dir.glob("priv/*.csv"))]
 
 
 @dataclass
@@ -35,6 +31,7 @@ class TestPlanData:
     sews_supported: list[int]
     extra_extensions: tuple[str, ...]
     coverpoints: list[str]
+    is_priv: bool
 
 
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
@@ -94,6 +91,8 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
             # Some cp_custom coverpoints are aggregators for other generators
             coverpoints = expand_coverpoints(coverpoints)
 
+            is_priv = testplan_path.parent.stem == "priv"
+
             instructions.append(
                 TestPlanData(
                     instr_name=instr,
@@ -103,6 +102,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     sews_supported=sews,
                     extra_extensions=extra_extensions,
                     coverpoints=coverpoints,
+                    is_priv=is_priv,
                 )
             )
     return instructions

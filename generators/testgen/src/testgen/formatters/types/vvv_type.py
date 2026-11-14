@@ -236,7 +236,7 @@ def format_vvv_like_type(
 
     # Setup Mask
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True))
+        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_reg=params.vd))
 
     # Setup VXRM (if necessary)
     if params.vxrm is not None:

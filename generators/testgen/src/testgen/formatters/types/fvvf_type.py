@@ -171,7 +171,7 @@ def format_fvvf_like_type(
 
     # Setup Mask
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True))
+        setup.extend(prep_mask_v(params.maskval, test_data, params))
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
     vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"

@@ -15,10 +15,14 @@ _Contributors to all versions of the spec in alphabetical order_
 
 _This document is released under a Creative Commons Attribution 4.0 International License._
 
-This Certification Test Plan (CTP) is a work in progress.  It describes the coverpoints and tests
-being developed by the RISC-V Certification Steering Committee.  It is intended to be read in
-conjunction with the Certification Requirements Documents (CRDs) defining the features in each
-certificate, and the https://github.com/riscv/riscv-arch-test[riscv-arch-test] repository
+This Certification Test Plan (CTP) describes the test strategy, test plans, coverpoints and tests
+in the https://github.com/riscv/riscv-arch-test[riscv-arch-test] repository. This is a work in
+progress, initially focusing on RVA23 extensions but intending to cover all ratified RISC-V
+extensions. The portions related to RVA23 are used as part of the RISC-V Certification Program.
+
+This document is intended to be read in
+conjunction with the https://github.com/riscv/riscv-arch-test/blob/act4/docs/crd/src/rva23_crd.adoc[Certification Requirements Document] (CRD) defining the features in each
+certificate, and the https://github.com/riscv/riscv-arch-test/blob/act4/README.md[repository]
 that contains information about how to use and contribute to the tests.
 
 include::intro.adoc[]

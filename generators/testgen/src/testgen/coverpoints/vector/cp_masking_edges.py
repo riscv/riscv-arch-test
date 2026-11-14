@@ -9,11 +9,11 @@
 from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.params import PresetMask
-from testgen.data.random import random_range
+from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
-from testgen.instructions.vector import get_base_lmul
+from testgen.instructions.vector import get_base_lmul, get_max_lmul
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -36,14 +36,21 @@ def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data
         PresetMask.VLMAX_D2_P1_ONES,
         "cp_mask_random",
     ]
-    test_data.register_vector_data(
-        "cp_mask_random", test_data.config.sew, random_elements=VLEN_MAX // test_data.config.sew
-    )
+    sew = test_data.config.sew
+    # Mask element 0 inactive and element 1 active, so the random mask is never zero, all ones,
+    # VLMAX-1 ones or VLMAX/2+1 ones, whatever VLMAX is
+    random_mask = [random_int(sew) & ((1 << sew) - 1) for _ in range(VLEN_MAX // sew)]
+    random_mask[0] = (random_mask[0] & ~0b11) | 0b10
+    test_data.register_vector_data("cp_mask_random", sew, elements=random_mask)
 
     test_chunks = []
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    base_lmul = get_base_lmul(instr_name, instr_type, sew)
+    # VLMAX-1 ones and the random mask need VLMAX >= 2 and VLMAX/2+1 ones needs VLMAX >= 8 to differ
+    # from all ones and zero. Run them at the largest legal LMUL so they do at the smallest VLEN that allows it.
+    max_lmul = get_max_lmul(instr_name, instr_type, sew, config.vector_data)
 
     for m in cp_masking_edges_data:
+        lmul = base_lmul if m in (PresetMask.ONES, PresetMask.ZEROS) else max_lmul
         vma = random_range(0, 1)
         vta = random_range(0, 1)
 

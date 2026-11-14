@@ -57,9 +57,9 @@ vfsgnjn.vf,FVVF,x,x,,x,x,x,x,x,,x,,x,x,,,,f,,,v,x,x,x,x,x,,,x,,,,,,,x,,,,,,,,,,
 vfsgnjx.vv,FVVV,x,x,,x,x,x,x,x,,x,x,,x,x,x,x,f,f,f,,,x,x,x,x,,,x,,,,,,,x,,,,,,,,,,
 vfsgnjx.vf,FVVF,x,x,,x,x,x,x,x,,x,,x,x,,,,f,,,v,x,x,x,x,x,,,x,,,,,,,x,,,,,,,,,,
 vfredosum.vs,FVVSR,x,x,,x,x,x,x,x,,x,x,,x,x,x,x,f,f,f,,,x,x,x,x,von,v,x,,,,,,,x,,,x,x,,,x,nv_nx,,
-vfwredosum.vs,FWVWSR,x,x,,x,x,,x,emul2,,x,emul2,,,emul2,,,f,f_emul2,fwred,,,x,lmul4max,lmul4max,x,vn,v,x,,,,,,,x,,,,x,,,x,nv_nx,,wred
+vfwredosum.vs,FWVWSR,x,x,,x,x,,x,emul2,,x,emul2,,,emul2,,,f,f_emul2,fwred,,,x,x,x,x,vn,v,x,,,,,,,x,,,,x,,,x,nv_nx,,wred
 vfredusum.vs,FVVSRU,x,x,,x,x,x,x,x,,x,x,,x,x,x,x,f,f,f,,,x,x,x,x,von,v,x,,,,,,,x,,,,,,,x,nv_nx,,
-vfwredusum.vs,FWVWSRU,x,x,,x,x,,x,emul2,,x,emul2,,,emul2,,,f,f_emul2,fwred,,,x,lmul4max,lmul4max,x,vn,v,x,,,,,,,x,,,,,,,x,nv_nx,,wred
+vfwredusum.vs,FWVWSRU,x,x,,x,x,,x,emul2,,x,emul2,,,emul2,,,f,f_emul2,fwred,,,x,x,x,x,vn,v,x,,,,,,,x,,,,,,,x,nv_nx,,wred
 vfredmax.vs,FVVSR,x,x,,x,x,x,x,x,,x,x,,x,x,x,x,f,f,f,,,x,x,x,x,v,,x,,,,,,,x,,,,,,,x,nv,,
 vfredmin.vs,FVVSR,x,x,,x,x,x,x,x,,x,x,,x,x,x,x,f,f,f,,,x,x,x,x,v,,x,,,,,,,x,,,,,,,x,nv,,
 vmfeq.vv,FMVV,x,x,,x,x,x,x,x,,x,x,,,,x,,f,f,f,,,x,x,x,x,v,,x,,,,,,,x,,,,,,,x,nv,,

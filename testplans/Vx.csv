@@ -171,8 +171,8 @@ vnclipu.wv,VWV,x,x,x,x,x,,x,x,,emul2,,x,,,,,x,,,emul2,x,wv,wv,,,,,,x,lmul4max,lm
 vnclipu.wx,VWX,x,x,x,x,x,,x,x,,emul2,,,x,,,,,,,emul2,,,,x,wx,wx,,,x,lmul4max,lmul4max,x,,x,shift_wx,,,
 vnclipu.wi,VWI,x,x,x,x,x,,x,x,,emul2,,,,u,,,,,,emul2,,,,,,,wiu,wi,x,lmul4max,lmul4max,x,,x,shift_wi,,x,
 vredsum.vs,VVSR,x,x,x,x,x,x,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,,x,red,,,
-vwredsum.vs,WVWSR,x,x,x,x,x,,x,emul2,,x,,emul2,,,,,emul2,,,x,emul2,wred,,,,,,,x,lmul4max,lmul4max,x,,x,wred,,,x
-vwredsumu.vs,WVWSR,x,x,x,x,x,,x,emul2,,x,,emul2,,,,,emul2,,,x,emul2,wred,,,,,,,x,lmul4max,lmul4max,x,,x,wred,,,x
+vwredsum.vs,WVWSR,x,x,x,x,x,,x,emul2,,x,,emul2,,,,,emul2,,,x,emul2,wred,,,,,,,x,x,x,x,,x,wred,,,x
+vwredsumu.vs,WVWSR,x,x,x,x,x,,x,emul2,,x,,emul2,,,,,emul2,,,x,emul2,wred,,,,,,,x,x,x,x,,x,wred,,,x
 vredmax.vs,VVSR,x,x,x,x,x,x,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,,x,red,,,
 vredmaxu.vs,VVSR,x,x,x,x,x,x,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,,x,red,,,
 vredmin.vs,VVSR,x,x,x,x,x,x,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,,x,red,,,

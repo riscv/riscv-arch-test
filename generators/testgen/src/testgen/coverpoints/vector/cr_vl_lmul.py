@@ -28,37 +28,14 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
     sew = test_data.config.sew
 
-    eew = None
-    max_emul = 8
     egs = 1
     config = get_instruction_type_config(instr_type)
     assert config.vector_data is not None
     can_mask = config.vector_data.maskable
-    if coverpoint.startswith("cr_vl_lmul_"):
-        suffix = coverpoint[len("cr_vl_lmul_") :]
-
-        # Capture _e8
-        eew_match = re.match(r"^e(\d+)", suffix)
-        if eew_match is not None:
-            eew = int(eew_match.group(1))
-
-        # Capture _lmulXmax or _emulXmax
-        emul_match = re.search(r"[el]mul(\d)max", suffix)
-        if emul_match is not None:
-            max_emul = int(emul_match.group(1))
-
-        # Capture _egsX
-        egs_match = re.search(r"egs(\d)", suffix)
-        if egs_match:
-            egs = int(egs_match.group(1))
-
-    # Determine maximum supported lmul
-    if eew is None:
-        max_lmul = max_emul
-    elif eew / sew > 1:
-        max_lmul = max_emul / (eew / sew)
-    else:
-        max_lmul = max_emul
+    suffix = coverpoint.removeprefix("cr_vl_lmul_")
+    if egs_match := re.search(r"egs(\d)", suffix):
+        egs = int(egs_match.group(1))
+    max_lmul = vl_lmul_max(suffix, sew)
 
     max_lmul = int(math.log2(max_lmul))
     min_lmul = min(get_legal_lmuls(sew))
@@ -99,3 +76,18 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
             return_testcase_registers(test_data, params)
 
     return test_chunks
+
+
+def vl_lmul_max(suffix: str, sew: int) -> float:
+    """Return the largest LMUL that the cr_vl_lmul_<suffix> coverpoint covers at an SEW.
+
+    e<EEW>[_emul<N>max]: unit-stride or strided data of EEW, so EMUL = EEW / SEW * LMUL <= N (default 8).
+    ei<EEW>_lmul<N>max: indexed segments, so data EMUL = LMUL <= N and index EMUL = EEW / SEW * LMUL <= 8.
+    lmul<N>max: LMUL <= N. Anything else: LMUL <= 8.
+    """
+    cap = int(m.group(1)) if (m := re.search(r"[el]mul(\d)max", suffix)) else 8
+    if m := re.match(r"ei(\d+)", suffix):
+        return min(cap, 8 * sew / int(m.group(1)))
+    if m := re.match(r"e(\d+)", suffix):
+        return min(8, cap * sew / int(m.group(1)))
+    return cap

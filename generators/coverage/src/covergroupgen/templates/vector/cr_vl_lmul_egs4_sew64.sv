@@ -3,57 +3,55 @@
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
-        // LMUL values for EGS=4, SEW=64 instructions (EGS*SEW = 64 bits per group)
-        // LMUL=8/4: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 256 bits
-        bins eight  = {3};
-        bins four   = {2};
+        // LMUL values for EGS=4, SEW=64 instructions: LMUL * VLEN must be at least EGW = 256
+        bins eight = {3};
+        bins four = {2};
         `ifdef ZVL128B_SUPPORTED
-            bins two    = {1};
+            bins two = {1};
         `endif
-        // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
-            bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
+            bins one = {0};
         `endif
     }
 
-    cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue, 4)  iff (ins.trap == 0 )  {
-        // Edge values of VL (vector length)
-        bins vl_four     = {vl_one      };
-        bins vlmax      = {vl_vlmax     };
-        bins vl_legal      = {vl_legal     };
-    }
-
-    cr_vl_lmul_egs4_sew64 : cross cp_csr_vtype_lmul_egs4_sew64, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=64
+    cr_vl_lmul_egs4_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                         3'(vl_check(ins.hart, ins.issue, 4))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
+        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=4 instructions at SEW=64.
+        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
+        // element groups for a distinct VLMAX and four for a value in between.
         `ifdef ZVL256B_SUPPORTED
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL1024B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul1 = binsof(cp_csr_vtype_lmul_egs4_sew64.one) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins one_one = {6'b000_001};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins one_vlmax = {6'b000_010};
+        `endif
+        `ifdef ZVL1024B_SUPPORTED
+            bins one_legal = {6'b000_011};
         `endif
         `ifdef ZVL128B_SUPPORTED
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL512B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew64.two) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins two_one = {6'b001_001};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins two_vlmax = {6'b001_010};
+        `endif
+        `ifdef ZVL512B_SUPPORTED
+            bins two_legal = {6'b001_011};
         `endif
         `ifdef ZVL64B_SUPPORTED
-            `ifndef ZVL128B_SUPPORTED
-                // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
-                ignore_bins vlfour_eq_vlmax_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif
-            `ifndef ZVL256B_SUPPORTED
-                // In this case, there are two valid vls, so vl_legal is not possible to hit
-                ignore_bins impossible_vl_legal_lmul4 = binsof(cp_csr_vtype_lmul_egs4_sew64.four) && binsof(cp_csr_vl_edges_egs4.vl_legal);
-            `endif
+            bins four_one = {6'b010_001};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins four_vlmax = {6'b010_010};
+        `endif
+        `ifdef ZVL256B_SUPPORTED
+            bins four_legal = {6'b010_011};
+        `endif
+        bins eight_one = {6'b011_001};
+        `ifdef ZVL64B_SUPPORTED
+            bins eight_vlmax = {6'b011_010};
+        `endif
+        `ifdef ZVL128B_SUPPORTED
+            bins eight_legal = {6'b011_011};
         `endif
     }
 

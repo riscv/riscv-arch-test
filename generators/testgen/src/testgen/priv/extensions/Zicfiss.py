@@ -2483,7 +2483,8 @@ def _generate_misaligned_store_u(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Zicfiss",
-    required_extensions=["S", "Zicfiss"],
+    # Every section runs under translation (vm_section), which ZICFISS_VM_SUPPORTED needs Sv39 or Sv32 for
+    required_extensions=["S", "Zicfiss", ["Sv32", "Sv39"]],
     # Zicfiss implies Zimop and Zaamo; name them for the assembler.
     march_extensions=["Zicfiss", "Zimop", "Zaamo"],
 )

@@ -10,6 +10,40 @@
 
 `define COVER_PMP
 
+// TOR twins. Each test that checks a feature with a NAPOT region has a twin, run when TOR is supported,
+// that bounds the same bytes with a TOR entry i: pmpaddr[i-1] holds the region's base and pmpaddr[i]
+// its top. pmp_tor_entry returns the lowest-numbered such entry, the one that decides an access to the
+// region, or 0 when there is none. pmpaddr values are compared on the code-size-invariant low bits
+// above the grain (TOR and OFF entries read bits G-1:0 of pmpaddr as zero).
+`define PMP_TOR_ADDRMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
+`define PMP_TOR_TWIN_BASE (`PMP_NAPOT_REGION_START >> 2)
+`define PMP_TOR_TWIN_TOP ((`PMP_NAPOT_REGION_START + `g_napot) >> 2)
+// Zaamo and Zalrsc place their region at PMP_SPECIAL_REGION_START
+`define PMP_TOR_SPECIAL_BASE (`PMP_SPECIAL_REGION_START >> 2)
+`define PMP_TOR_SPECIAL_TOP ((`PMP_SPECIAL_REGION_START + `g_napot) >> 2)
+// The highest entry a TOR twin uses: pmpaddr[background - 1] is the bottom of a TOR background entry.
+// The Sm walks stop at entry 13, below the background entry of a 16-entry PMP.
+`define PMP_TOR_TOP_ENTRY (`UDB_NUM_USABLE_PMP_ENTRIES - 3)
+`define PMP_TOR_WALK_TOP ((`PMP_TOR_TOP_ENTRY < 13) ? `PMP_TOR_TOP_ENTRY : 13)
+
+function automatic int pmp_tor_entry(logic [7:0] pmpcfg [63:0], logic [`UDB_MXLEN-1:0] pmpaddr [62:0],
+                                     logic [`UDB_MXLEN-1:0] base, logic [`UDB_MXLEN-1:0] top);
+  for (int i = 1; i < 63; i++) begin
+    if (pmpcfg[i][4:3] == 2'b01 &&
+        (pmpaddr[i-1] & `PMP_TOR_ADDRMASK) == (base & `PMP_TOR_ADDRMASK) &&
+        (pmpaddr[i] & `PMP_TOR_ADDRMASK) == (top & `PMP_TOR_ADDRMASK))
+      return i;
+  end
+  return 0;
+endfunction
+
+// The configuration of the entry pmp_tor_entry returns, or 0 when there is none
+function automatic logic [7:0] pmp_tor_cfg(logic [7:0] pmpcfg [63:0], logic [`UDB_MXLEN-1:0] pmpaddr [62:0],
+                                           logic [`UDB_MXLEN-1:0] base, logic [`UDB_MXLEN-1:0] top);
+  int entry = pmp_tor_entry(pmpcfg, pmpaddr, base, top);
+  return (entry == 0) ? 8'h00 : pmpcfg[entry];
+endfunction
+
 `ifndef PMP_HAS_SV
   `ifdef SV32_SUPPORTED
     `define PMP_HAS_SV
@@ -42,11 +76,16 @@
   `endif
 `endif
 
-// PMP_HSvZicbo needs a NAPOT entry the size of the 4 KiB test page (a grain of at most 4 KiB) below the background
-// entry
+// PMP_HSvZicbo needs a NAPOT entry, or a TOR entry, the size of the 4 KiB test page (a grain of at most 4 KiB) below
+// the background entry
+`ifdef UDB_PMP_NAPOT_SUPPORTED
+  `define PMP_HSVZICBO_AMODE
+`elsif UDB_PMP_TOR_SUPPORTED
+  `define PMP_HSVZICBO_AMODE
+`endif
 `ifdef H_SUPPORTED
   `ifdef PMP_HAS_CBO
-    `ifdef UDB_PMP_NAPOT_SUPPORTED
+    `ifdef PMP_HSVZICBO_AMODE
       `ifdef UDB_PMP_GRANULARITY_2
         `define PMP_COVER_HSVZICBO
       `elsif UDB_PMP_GRANULARITY_3
@@ -81,7 +120,7 @@
 
 
 `ifdef F_SUPPORTED
-covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, logic [7:0] tor_cfg);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -103,6 +142,7 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
     wildcard bins fsd = {FSD};
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins cfg_l000 = {54'b????????????????????????????????????????10011000_100000};
     wildcard bins cfg_l001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -111,13 +151,30 @@ covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],log
     wildcard bins cfg_l101 = {54'b????????10011101????????????????????????????????_????10};
     wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
   }
+  `endif
 
   fs_mstatus: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "fs")[1:0]!=0) {
     bins non_zero = {1};
   }
 
-  cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_napot_region;
-  cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_napot_region;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_napot_region;
+    cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_napot_region;
+  `endif
+
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // TOR twin: the deciding entry is a locked TOR region over the same bytes
+    legal_lxwr_tor: coverpoint tor_cfg {
+      bins cfg_l000 = {8'b10001000};
+      bins cfg_l001 = {8'b10001001};
+      bins cfg_l011 = {8'b10001011};
+      bins cfg_l100 = {8'b10001100};
+      bins cfg_l101 = {8'b10001101};
+      bins cfg_l111 = {8'b10001111};
+    }
+    cp_cfg_R_tor: cross priv_mode_m, fs_mstatus, legal_lxwr_tor, read_fp_instr, addr_in_napot_region;
+    cp_cfg_W_tor: cross priv_mode_m, fs_mstatus, legal_lxwr_tor, write_fp_instr, addr_in_napot_region;
+  `endif
 
 endgroup
 
@@ -159,12 +216,12 @@ function void pmp_F_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_F_cg.sample(ins, pmpcfg, pmp_hit);
+  PMP_F_cg.sample(ins, pmpcfg, pmp_hit, pmp_tor_cfg(pmpcfg, pmpaddr, `PMP_TOR_TWIN_BASE, `PMP_TOR_TWIN_TOP));
 endfunction
 `endif
 
 `ifdef S_SUPPORTED
-covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
+covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [7:0] tor_cfg);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -174,6 +231,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
   // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   addr_offset_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};                // Access exactly at the region base
     bins below_base   = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes below the region
@@ -181,6 +239,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins highest_word = {(`PMP_NAPOT_REGION_START + `g_napot - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
     bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};     // Access exactly at the end of the region
   }
+  `endif
 
   addr_offset_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};      // Access exactly at the region base
@@ -232,9 +291,11 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
     bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
   }
+  `endif
 
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
   // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
@@ -243,6 +304,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins cfg_1000 = {54'b????????????????????????????????????????10011000_100000};
     wildcard bins cfg_1001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -257,6 +319,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins cfg_0101 = {54'b????????00011101????????????????????????????????_????10};
     wildcard bins cfg_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
+  `endif
 
 
   pmpaddr_entries: coverpoint ins.current.insn[31:20] {
@@ -359,12 +422,14 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins S_mode = {2'b01};
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
     bins cfg_1000 = {8'b10011000};
     bins cfg_1111 = {8'b10011111};
     bins cfg_0000 = {8'b00011000};
     bins cfg_0111 = {8'b00011111};
   }
+  `endif
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = OFF, pmpcfg_i.XWR = 000, pmpaddr_i = all 1s
   cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)} {
@@ -372,6 +437,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   }
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = NAPOT, all legal pmpcfg_i.XWR, pmpaddr_i = `STANDARD_REGION
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   cfg_A_napot: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins napot_lwxr_0000 = {54'b????????????????????????????????????????00011000_100000};
     wildcard bins napot_lwxr_0001 = {54'b????????????????????????????????00011001????????_?10000};
@@ -380,6 +446,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins napot_lwxr_0101 = {54'b????????00011101????????????????????????????????_????10};
     wildcard bins napot_lwxr_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // pmpcfg_i.L = 0, pmpcfg_i.A = NA4, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION
@@ -407,18 +474,53 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
-  cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
-  cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // TOR twins: the deciding entry is a TOR region over the same bytes as the NAPOT tests' region
+    legal_lxwr_tor: coverpoint tor_cfg {
+      bins cfg_1000 = {8'b10001000};
+      bins cfg_1001 = {8'b10001001};
+      bins cfg_1011 = {8'b10001011};
+      bins cfg_1100 = {8'b10001100};
+      bins cfg_1101 = {8'b10001101};
+      bins cfg_1111 = {8'b10001111};
+      bins cfg_0000 = {8'b00001000};
+      bins cfg_0001 = {8'b00001001};
+      bins cfg_0011 = {8'b00001011};
+      bins cfg_0100 = {8'b00001100};
+      bins cfg_0101 = {8'b00001101};
+      bins cfg_0111 = {8'b00001111};
+    }
+    // cp_mprv_*_tor: entry 1, L = {0, 1}, XWR = {000, 111}
+    lxwr_tor: coverpoint tor_cfg {
+      bins cfg_1000 = {8'b10001000};
+      bins cfg_1111 = {8'b10001111};
+      bins cfg_0000 = {8'b00001000};
+      bins cfg_0111 = {8'b00001111};
+    }
+    cp_cfg_X_tor: cross priv_mode_s, legal_lxwr_tor, exec_instr, addr_in_napot_region ;
+    cp_cfg_R_tor: cross priv_mode_s, legal_lxwr_tor, read_instr, addr_in_napot_region ;
+    cp_cfg_W_tor: cross priv_mode_s, legal_lxwr_tor, write_instr, addr_in_napot_region ;
+    cp_mprv_tor_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr_tor, exec_instr, addr_in_napot_region ;
+    cp_mprv_tor_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr_tor, read_instr_lw, addr_in_napot_region ;
+    cp_mprv_tor_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr_tor, write_instr_sw, addr_in_napot_region ;
+  `endif
+
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
+    cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
+    cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
+  `endif
 
   cp_cfg_A_off_jalr: cross priv_mode_s, cfg_A_off, exec_instr, addr_in_region ;
   cp_cfg_A_off_lw: cross priv_mode_s, cfg_A_off, read_instr_lw, addr_in_region ;
   cp_cfg_A_off_sw: cross priv_mode_s, cfg_A_off, write_instr_sw, addr_in_region ;
 
   // Access at start of region, start - 4, start + 4, highest word in region, just beyond top of the region
-  cp_cfg_A_napot_jalr: cross priv_mode_s, cfg_A_napot, exec_instr, addr_offset_napot ;
-  cp_cfg_A_napot_lw: cross priv_mode_s, cfg_A_napot, read_instr_lw, addr_offset_napot ;
-  cp_cfg_A_napot_sw: cross priv_mode_s, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_A_napot_jalr: cross priv_mode_s, cfg_A_napot, exec_instr, addr_offset_napot ;
+    cp_cfg_A_napot_lw: cross priv_mode_s, cfg_A_napot, read_instr_lw, addr_offset_napot ;
+    cp_cfg_A_napot_sw: cross priv_mode_s, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
@@ -434,9 +536,11 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     cp_cfg_A_tor_sw: cross priv_mode_s, cfg_A_tor, write_instr_sw, addr_offset_tor ;
   `endif
 
-  cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
-  cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
-  cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
+    cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
+    cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
+  `endif
 
   cp_pmpaddr_access_s: cross priv_mode_s, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_s: cross priv_mode_s, csrrw, pmpcfg_entries ;
@@ -541,7 +645,8 @@ function void pmp_S_sample(int hart, int issue, ins_t ins);
           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
-  PMP_S_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
+  PMP_S_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit,
+                     pmp_tor_cfg(pmpcfg, pmpaddr, `PMP_TOR_TWIN_BASE, `PMP_TOR_TWIN_TOP));
 endfunction
 
 `endif
@@ -564,7 +669,9 @@ covergroup PMP_Sm_cg with function sample(
                     logic [14:0] pmpcfg_l,            // first 15 regions L fields
                     logic [47:0] pmpcfg_L,            // next 48 regions L fields
                     logic [14:0] pmp_hit,             // for first 15 regions indicating hit of pmp_entry
-                    logic [47:0] pmp_HIT              // for next 48 regions indicating hit of pmp_entry
+                    logic [47:0] pmp_HIT,             // for next 48 regions indicating hit of pmp_entry
+                    int tor_entry,                    // TOR twins: the entry deciding an access to the region (pmp_tor_entry)
+                    logic [7:0] tor_cfg               // and its configuration
                     );
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -575,11 +682,13 @@ covergroup PMP_Sm_cg with function sample(
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};   // NAPOT/OFF region-under-test start
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
     bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
     bins just_beyond  = {(`PMP_NAPOT_REGION_START+`g_napot) & `PMP_ADDR_LOWMASK};
   }
+  `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     address_offsets_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
@@ -591,6 +700,7 @@ covergroup PMP_Sm_cg with function sample(
     }
   `endif
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   address_offsets_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
     bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
@@ -598,6 +708,7 @@ covergroup PMP_Sm_cg with function sample(
     bins just_beyond  = {(`PMP_NAPOT_REGION_START+`g_napot) & `PMP_ADDR_LOWMASK};
     bins highest_word  = {(`PMP_NAPOT_REGION_START +`g_napot-4) & `PMP_ADDR_LOWMASK};
   }
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     addr_offset_cp_cfg_A_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
@@ -649,6 +760,7 @@ covergroup PMP_Sm_cg with function sample(
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins cfg_l000 = {54'b????????????????????????????????????????10011000_100000};
     wildcard bins cfg_l001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -657,6 +769,7 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins cfg_l101 = {54'b????????10011101????????????????????????????????_????10};
     wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
   }
+  `endif
 
 //-------------------------------------------------------
   `ifdef UDB_PMP_TOR_SUPPORTED
@@ -862,6 +975,7 @@ covergroup PMP_Sm_cg with function sample(
     }
   `endif
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   pmpcfgA_NAPOT: coverpoint {pmpcfg_a,pmpcfg_l,pmpcfg_x,pmpcfg_wr,pmp_hit} {
     wildcard bins NAPOT0  = {105'b????????????????????????????11_??????????????1_??????????????0_????????????????????????????00_??????????????1};
     wildcard bins NAPOT1  = {105'b??????????????????????????11??_?????????????1?_?????????????0?_??????????????????????????00??_?????????????10};
@@ -879,23 +993,28 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins NAPOT13 = {105'b??11??????????????????????????_?1?????????????_?0?????????????_??00??????????????????????????_?10000000000000};
     wildcard bins NAPOT14 = {105'b11????????????????????????????_1??????????????_0??????????????_00????????????????????????????_100000000000000};
   }
+  `endif
 //-------------------------------------------------------
   `ifndef UDB_PMP_GRANULARITY_2
     pmpcfg0_A_mode_was_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00000???};
     }
 
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     pmpcfg0_A_mode_was_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00011???};
     }
+    `endif
 
     pmpcfg0_A_mode_is_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00000???};
     }
 
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     pmpcfg0_A_mode_is_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)} {
       wildcard bins OFF = {8'b00011???};
     }
+    `endif
 
     `ifdef UDB_PMP_TOR_SUPPORTED
       pmpcfg0_A_mode_is_TOR: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)} {
@@ -994,6 +1113,7 @@ covergroup PMP_Sm_cg with function sample(
     }
   `endif
 
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     legal_RWX_L_NAPOT: coverpoint {pmpcfg_l[5:0], pmpcfg_a[11:0], pmpcfg_x[5:0], pmpcfg_wr[11:0], pmp_hit[5:0]} { // pmpcfg.RWX = legal combinations, pmpcfg.L = 1 and pmpcfg.A = 3
     wildcard bins pmp1cfg_lxwr_1000  = {42'b1?????_11??????????_0?????_00??????????_100000};
     wildcard bins pmp1cfg_lxwr_1001  = {42'b?1????_??11????????_?0????_??01????????_?10000};
@@ -1014,10 +1134,12 @@ covergroup PMP_Sm_cg with function sample(
       wildcard bins pmp0cfg_lxwr_1101  = {42'b????1?_????????10??_????1?_????????01??_????10};
       wildcard bins pmp0cfg_lxwr_1111  = {42'b?????1_??????????10_?????1_??????????11_?????1};
     }
+    `endif
   `endif
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   X0: coverpoint {pmpcfg_x, pmpcfg_l, pmpcfg_a, pmp_hit} { // pmpcfg.X = 0, pmpcfg.L = 1 and pmpcfg.A = 3
     wildcard bins pmp0cfg_x0   = {75'b??????????????0_??????????????1_????????????????????????????11_??????????????1};
     wildcard bins pmp1cfg_x0   = {75'b?????????????0?_?????????????1?_??????????????????????????11??_?????????????1?};
@@ -1035,7 +1157,9 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins pmp13cfg_x0  = {75'b?0?????????????_?1?????????????_??11??????????????????????????_?1?????????????};
     wildcard bins pmp14cfg_x0  = {75'b0??????????????_1??????????????_11????????????????????????????_1??????????????};
   }
+  `endif
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   X1: coverpoint {pmpcfg_x, pmpcfg_l, pmpcfg_a, pmp_hit} { // pmpcfg.X = 1, pmpcfg.L = 1 and pmpcfg.A = 3
     wildcard bins pmp0cfg_x1   = {75'b??????????????1_??????????????1_????????????????????????????11_??????????????1};
     wildcard bins pmp1cfg_x1   = {75'b?????????????1?_?????????????1?_??????????????????????????11??_?????????????1?};
@@ -1053,9 +1177,11 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins pmp13cfg_x1  = {75'b?1?????????????_?1?????????????_??11??????????????????????????_?1?????????????};
     wildcard bins pmp14cfg_x1  = {75'b1??????????????_1??????????????_11????????????????????????????_1??????????????};
   }
+  `endif
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   RW00: coverpoint {pmpcfg_wr, pmpcfg_l, pmpcfg_a, pmp_hit} { // pmpcfg.RW = 0, pmpcfg.L = 1 and pmpcfg.A = 3
     wildcard bins pmp0cfg_rw00   = {90'b????????????????????????????00_??????????????1_????????????????????????????11_??????????????1};
     wildcard bins pmp1cfg_rw00   = {90'b??????????????????????????00??_?????????????1?_??????????????????????????11??_?????????????1?};
@@ -1073,7 +1199,9 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins pmp13cfg_rw00  = {90'b??00??????????????????????????_?1?????????????_??11??????????????????????????_?1?????????????};
     wildcard bins pmp14cfg_rw00  = {90'b00????????????????????????????_1??????????????_11????????????????????????????_1??????????????};
   }
+  `endif
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   RW11: coverpoint {pmpcfg_wr, pmpcfg_l, pmpcfg_a, pmp_hit} { // pmpcfg.RW = 3, pmpcfg.L = 1 and pmpcfg.A = 3
     wildcard bins pmp0cfg_rw11     = {90'b????????????????????????????11_??????????????1_????????????????????????????11_??????????????1};
     wildcard bins pmp1cfg_rw11     = {90'b??????????????????????????11??_?????????????1?_??????????????????????????11??_?????????????1?};
@@ -1091,7 +1219,9 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins pmp13cfg_rw11    = {90'b??11??????????????????????????_?1?????????????_??11??????????????????????????_?1?????????????};
     wildcard bins pmp14cfg_rw11    = {90'b11????????????????????????????_1??????????????_11????????????????????????????_1??????????????};
   }
+  `endif
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   RW10: coverpoint {pmpcfg_wr, pmpcfg_l, pmpcfg_a, pmp_hit} { // pmpcfg.RW = 1, pmpcfg.L = 1 and pmpcfg.A = 3
     wildcard bins pmp0cfg_rw10     = {90'b????????????????????????????01_??????????????1_????????????????????????????11_??????????????1};
     wildcard bins pmp1cfg_rw10     = {90'b??????????????????????????01??_?????????????1?_??????????????????????????11??_?????????????1?};
@@ -1109,9 +1239,11 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins pmp13cfg_rw10    = {90'b??01??????????????????????????_?1?????????????_??11??????????????????????????_?1?????????????};
     wildcard bins pmp14cfg_rw10    = {90'b01????????????????????????????_1??????????????_11????????????????????????????_1??????????????};
   }
+  `endif
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   RWX000: coverpoint {pmpcfg_wr, pmpcfg_x, pmpcfg_l, pmpcfg_a, pmp_hit} { // pmpcfg.RWX = 0, pmpcfg.L = 0 and pmpcfg.A = 3
     wildcard bins pmp0cfg_rwx000  = {105'b????????????????????????????00_??????????????0_??????????????0_????????????????????????????11_??????????????1};
     wildcard bins pmp1cfg_rwx000  = {105'b??????????????????????????00??_?????????????0?_?????????????0?_??????????????????????????11??_?????????????10};
@@ -1129,6 +1261,7 @@ covergroup PMP_Sm_cg with function sample(
     wildcard bins pmp13cfg_rwx000 = {105'b??00??????????????????????????_?0?????????????_?0?????????????_??11??????????????????????????_?10000000000000};
     wildcard bins pmp14cfg_rwx000 = {105'b00????????????????????????????_0??????????????_0??????????????_11????????????????????????????_100000000000000};
   }
+  `endif
 
 //-------------------------------------------------------
 
@@ -1142,7 +1275,9 @@ covergroup PMP_Sm_cg with function sample(
     `ifdef UDB_PMP_TOR_SUPPORTED
       bins TOR   = {1};
     `endif
-    bins NAPOT = {3};
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      bins NAPOT = {3};
+    `endif
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
@@ -1341,6 +1476,7 @@ covergroup PMP_Sm_cg with function sample(
 //-------------------------------------------------------
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     pmp64: coverpoint {pmpcfg_L, pmpcfg_X, pmpcfg_WR, pmp_HIT} {
       wildcard bins pmp15cfg = {240'b???????????????????????????????????????????????1_???????????????????????????????????????????????1_??????????????????????????????????????????????????????????????????????????????????????????????01_???????????????????????????????????????????????1};
       wildcard bins pmp16cfg = {240'b??????????????????????????????????????????????1?_??????????????????????????????????????????????1?_????????????????????????????????????????????????????????????????????????????????????????????01??_??????????????????????????????????????????????10};
@@ -1390,6 +1526,7 @@ covergroup PMP_Sm_cg with function sample(
       wildcard bins pmp61cfg = {240'b??1?????????????????????????????????????????????_??1?????????????????????????????????????????????_????01??????????????????????????????????????????????????????????????????????????????????????????_??1000000000000000000000000000000000000000000000};
       wildcard bins pmp62cfg = {240'b?1??????????????????????????????????????????????_?1??????????????????????????????????????????????_??01????????????????????????????????????????????????????????????????????????????????????????????_?10000000000000000000000000000000000000000000000};
     }
+    `endif
   `endif
 
   rs1_val_for_pmpcfg_A: coverpoint ins.current.rs1_val {
@@ -1417,15 +1554,18 @@ covergroup PMP_Sm_cg with function sample(
 //-------------------------------------------------------
 
   // Setting all 7 pmpcfg entries to NAPOT and rotating through the 6 legal XWR values.
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   pmp_entries_setup: coverpoint {pmpcfg_a[13:0], pmpcfg_l[6:0], pmpcfg_x[6:0], pmpcfg_wr[13:0]} {
     bins napot_legal_xwr = {42'b11_1111_1111_1111_1111111_0101010_00_1101_0011_0100};
   }
+  `endif
 
   // 7 overlapping NAPOT regions all based at PMP_NAPOT_PRIORITY_REGION_START, with
   // sizes g_napot, 2x, 4x, 8x, 16x, 32x, 64x. The base is aligned to the
   // largest region size so every NAPOT entry is naturally aligned.
   // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1),
   // compared on bits >= G because each is written while its entry is OFF.
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   napot_priority_regions: coverpoint (
                    ((pmpaddr[6] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
                    ((pmpaddr[5] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
@@ -1437,9 +1577,11 @@ covergroup PMP_Sm_cg with function sample(
                    ) {
     bins napot_regions = {1};
   }
+  `endif
 
   // Address at the last word of each overlapping NAPOT region.
   // Region i has size (1<<i)*g_napot, so its last word is at REGIONSTART + (1<<i)*g_napot - 4.
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   addr_offset_for_priority_check: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_end_of_region6 = {(`PMP_NAPOT_PRIORITY_REGION_START + 64*`g_napot - 4) & `PMP_ADDR_LOWMASK};
     bins at_end_of_region5 = {(`PMP_NAPOT_PRIORITY_REGION_START + 32*`g_napot - 4) & `PMP_ADDR_LOWMASK};
@@ -1449,17 +1591,21 @@ covergroup PMP_Sm_cg with function sample(
     bins at_end_of_region1 = {(`PMP_NAPOT_PRIORITY_REGION_START +  2*`g_napot - 4) & `PMP_ADDR_LOWMASK};
     bins at_end_of_region0 = {(`PMP_NAPOT_PRIORITY_REGION_START +  1*`g_napot - 4) & `PMP_ADDR_LOWMASK};
   }
+  `endif
 
 //-------------------------------------------------------
 
   // {NAPOT, OFF, NAPOT, OFF} and {1111, 1000, 1101, 1000}
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   cfg_first_four_entries: coverpoint {pmpcfg[3],pmpcfg[2],pmpcfg[1],pmpcfg[0]} {
     bins cfg_regions = {32'h9F809D80};
   }
+  `endif
 
   // pmpaddr0 and pmpaddr2 are OFF but set to the access address (PMP_NAPOT_REGION_START >> 2),
   // verifying they are ignored. pmpaddr1 and pmpaddr3 are NAPOT covering PMP_NAPOT_REGION_START.
   // All four are written while OFF, so they are compared on bits >= G.
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   first_four_pmp_entries: coverpoint (
                     ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
                     ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
@@ -1468,6 +1614,7 @@ covergroup PMP_Sm_cg with function sample(
                     ) {
     bins pmp_entries = {1};
   }
+  `endif
 
 //-------------------------------------------------------
 
@@ -1482,23 +1629,132 @@ covergroup PMP_Sm_cg with function sample(
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_m, legal_lxwr, exec_instr, addr_in_region ;
-  cp_cfg_R: cross priv_mode_m, legal_lxwr, read_instr, addr_in_region ;
-  cp_cfg_W: cross priv_mode_m, legal_lxwr, write_instr, addr_in_region ;
+  // cp_cfg_A_accept: csrrw of pmpcfg0 with pmp0cfg = L = 0, XWR = 000 and each A encoding (every hart;
+  // the readback is checked against the reference model's TOR, NA4 and NAPOT support)
+  rs1_val_pmp0cfg_a: coverpoint ins.current.rs1_val {
+    bins off   = {0};
+    bins tor   = {8'h08};
+    bins na4   = {8'h10};
+    bins napot = {8'h18};
+  }
+  csr_is_pmpcfg0: coverpoint ins.current.insn[31:20] {
+    bins pmpcfg0 = {CSR_PMPCFG0};
+  }
+  cp_cfg_A_accept: cross priv_mode_m, rs1_val_pmp0cfg_a, csrrw, csr_is_pmpcfg0 ;
 
-  cp_cfg_X1_all: cross priv_mode_m, exec_instr, X1, addr_in_region ;
-  cp_cfg_X0_all: cross priv_mode_m, exec_instr, X0, addr_in_region ;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // TOR twins (see pmp_tor_entry): the deciding entry is a TOR region over the same bytes as the
+    // NAPOT tests' region, at most entry PMP_TOR_TOP_ENTRY (13 for the walks)
+    tor_entry_walk: coverpoint tor_entry {
+      bins entry[] = {[1:`PMP_TOR_WALK_TOP]};
+    }
+    // Odd entries 1, 3, 5, ...: index (entry - 1) / 2
+    tor_entry_odd: coverpoint (tor_entry >> 1) iff (tor_entry[0]) {
+      bins entry[] = {[0:(`PMP_TOR_WALK_TOP - 1) / 2]};
+    }
+    tor_entry_odd_all: coverpoint (tor_entry >> 1) iff (tor_entry[0]) {
+      bins entry[] = {[0:(`PMP_TOR_TOP_ENTRY - 1) / 2]};
+    }
+    tor_rwx000: coverpoint tor_cfg {          // L = 0, A = TOR, XWR = 000
+      bins l0_xwr000 = {8'b00001000};
+    }
+    tor_x0: coverpoint tor_cfg {              // L = 1, A = TOR, X = 0
+      wildcard bins x0 = {8'b100010??};
+    }
+    tor_x1: coverpoint tor_cfg {              // L = 1, A = TOR, X = 1
+      wildcard bins x1 = {8'b100011??};
+    }
+    tor_rw00: coverpoint tor_cfg {            // L = 1, A = TOR, WR = 00
+      wildcard bins rw00 = {8'b10001?00};
+    }
+    tor_rw10: coverpoint tor_cfg {            // L = 1, A = TOR, WR = 01 (R only)
+      wildcard bins rw10 = {8'b10001?01};
+    }
+    tor_rw11: coverpoint tor_cfg {            // L = 1, A = TOR, WR = 11
+      wildcard bins rw11 = {8'b10001?11};
+    }
+    tor_xr_locked: coverpoint tor_cfg {       // L = 1, A = TOR, XWR = 101
+      bins l1_xwr101 = {8'b10001101};
+    }
 
-  cp_cfg_Rw00_all: cross priv_mode_m, read_instr, RW00, addr_in_region ;
-  cp_cfg_Rw10_all: cross priv_mode_m, read_instr, RW10, addr_in_region ;
-  cp_cfg_Rw11_all: cross priv_mode_m, read_instr, RW11, addr_in_region ;
-  cp_cfg_rW00_all: cross priv_mode_m, write_instr, RW00, addr_in_region ;
-  cp_cfg_rW10_all: cross priv_mode_m, write_instr, RW10, addr_in_region ;
-  cp_cfg_rW11_all: cross priv_mode_m, write_instr, RW11, addr_in_region ;
+    // Three nested TOR regions with a common base on entries 1, 3 and 5, of g_napot times 1, 2 and 4,
+    // XWR = 000, 101, 011; entries 0, 2 and 4 hold the base
+    priority_tor_setup: coverpoint (
+                   ({pmpcfg[5], pmpcfg[4], pmpcfg[3], pmpcfg[2], pmpcfg[1], pmpcfg[0]} == 48'h8B008D008800) &&
+                   ((pmpaddr[0] & `PMP_TOR_ADDRMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_TOR_ADDRMASK)) &&
+                   ((pmpaddr[2] & `PMP_TOR_ADDRMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_TOR_ADDRMASK)) &&
+                   ((pmpaddr[4] & `PMP_TOR_ADDRMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_TOR_ADDRMASK)) &&
+                   ((pmpaddr[1] & `PMP_TOR_ADDRMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 1*`g_napot) >> 2) & `PMP_TOR_ADDRMASK)) &&
+                   ((pmpaddr[3] & `PMP_TOR_ADDRMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 2*`g_napot) >> 2) & `PMP_TOR_ADDRMASK)) &&
+                   ((pmpaddr[5] & `PMP_TOR_ADDRMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 4*`g_napot) >> 2) & `PMP_TOR_ADDRMASK))
+                   ) {
+      bins tor_regions = {1};
+    }
+    addr_offset_for_priority_tor: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
+      bins at_end_of_region2 = {(`PMP_NAPOT_PRIORITY_REGION_START + 4*`g_napot - 4) & `PMP_ADDR_LOWMASK};
+      bins at_end_of_region1 = {(`PMP_NAPOT_PRIORITY_REGION_START + 2*`g_napot - 4) & `PMP_ADDR_LOWMASK};
+      bins at_end_of_region0 = {(`PMP_NAPOT_PRIORITY_REGION_START + 1*`g_napot - 4) & `PMP_ADDR_LOWMASK};
+    }
 
-  cp_cfg_L_access_exec: cross priv_mode_m, exec_instr, RWX000, addr_in_region ;
-  cp_cfg_L_access_read: cross priv_mode_m, read_instr_lw, RWX000, addr_in_region ;
-  cp_cfg_L_access_write: cross priv_mode_m, write_instr_sw, RWX000, addr_in_region ;
+    // Entries 3..0 = TOR XWR = 111, OFF, TOR XR, OFF, all L = 1; entries 0 and 2 hold the base, 1 and 3 the top
+    cfg_first_four_entries_tor: coverpoint {pmpcfg[3],pmpcfg[2],pmpcfg[1],pmpcfg[0]} {
+      bins cfg_regions = {32'h8F808D80};
+    }
+    first_four_pmp_entries_tor: coverpoint (
+                    ((pmpaddr[0] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_BASE & `PMP_TOR_ADDRMASK)) &&
+                    ((pmpaddr[1] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_TOP & `PMP_TOR_ADDRMASK)) &&
+                    ((pmpaddr[2] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_BASE & `PMP_TOR_ADDRMASK)) &&
+                    ((pmpaddr[3] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_TOP & `PMP_TOR_ADDRMASK))
+                    ) {
+      bins pmp_entries = {1};
+    }
+
+    cp_cfg_X1_all_tor: cross priv_mode_m, exec_instr, tor_entry_odd, tor_x1, addr_in_region ;
+    cp_cfg_X0_all_tor: cross priv_mode_m, exec_instr, tor_entry_odd, tor_x0, addr_in_region ;
+
+    cp_cfg_Rw00_all_tor: cross priv_mode_m, read_instr, tor_entry_odd, tor_rw00, addr_in_region ;
+    cp_cfg_Rw10_all_tor: cross priv_mode_m, read_instr, tor_entry_odd, tor_rw10, addr_in_region ;
+    cp_cfg_Rw11_all_tor: cross priv_mode_m, read_instr, tor_entry_odd, tor_rw11, addr_in_region ;
+    cp_cfg_rW00_all_tor: cross priv_mode_m, write_instr, tor_entry_odd, tor_rw00, addr_in_region ;
+    cp_cfg_rW10_all_tor: cross priv_mode_m, write_instr, tor_entry_odd, tor_rw10, addr_in_region ;
+    cp_cfg_rW11_all_tor: cross priv_mode_m, write_instr, tor_entry_odd, tor_rw11, addr_in_region ;
+
+    cp_cfg_L_access_exec_tor: cross priv_mode_m, exec_instr, tor_entry_walk, tor_rwx000, addr_in_region ;
+    cp_cfg_L_access_read_tor: cross priv_mode_m, read_instr_lw, tor_entry_walk, tor_rwx000, addr_in_region ;
+    cp_cfg_L_access_write_tor: cross priv_mode_m, write_instr_sw, tor_entry_walk, tor_rwx000, addr_in_region ;
+
+    cp_priority_tor_lw: cross priv_mode_m, priority_tor_setup, addr_offset_for_priority_tor, read_instr_lw ;
+    cp_priority_tor_sw: cross priv_mode_m, priority_tor_setup, addr_offset_for_priority_tor, write_instr_sw ;
+    cp_priority_tor_jalr: cross priv_mode_m, priority_tor_setup, addr_offset_for_priority_tor, exec_instr ;
+
+    cp_priority_off_tor_lw: cross priv_mode_m, cfg_first_four_entries_tor, first_four_pmp_entries_tor, read_instr_lw ;
+    cp_priority_off_tor_sw: cross priv_mode_m, cfg_first_four_entries_tor, first_four_pmp_entries_tor, write_instr_sw ;
+    cp_priority_off_tor_jalr: cross priv_mode_m, cfg_first_four_entries_tor, first_four_pmp_entries_tor, exec_instr ;
+
+    cp_all_entries_tor_lw: cross priv_mode_m, read_instr_lw, tor_entry_odd_all, tor_xr_locked, addr_in_region ;
+    cp_all_entries_tor_sw: cross priv_mode_m, write_instr_sw, tor_entry_odd_all, tor_xr_locked, addr_in_region ;
+    cp_all_entries_tor_jalr: cross priv_mode_m, exec_instr, tor_entry_odd_all, tor_xr_locked, addr_in_region ;
+  `endif
+
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_X: cross priv_mode_m, legal_lxwr, exec_instr, addr_in_region ;
+    cp_cfg_R: cross priv_mode_m, legal_lxwr, read_instr, addr_in_region ;
+    cp_cfg_W: cross priv_mode_m, legal_lxwr, write_instr, addr_in_region ;
+
+    cp_cfg_X1_all: cross priv_mode_m, exec_instr, X1, addr_in_region ;
+    cp_cfg_X0_all: cross priv_mode_m, exec_instr, X0, addr_in_region ;
+
+    cp_cfg_Rw00_all: cross priv_mode_m, read_instr, RW00, addr_in_region ;
+    cp_cfg_Rw10_all: cross priv_mode_m, read_instr, RW10, addr_in_region ;
+    cp_cfg_Rw11_all: cross priv_mode_m, read_instr, RW11, addr_in_region ;
+    cp_cfg_rW00_all: cross priv_mode_m, write_instr, RW00, addr_in_region ;
+    cp_cfg_rW10_all: cross priv_mode_m, write_instr, RW10, addr_in_region ;
+    cp_cfg_rW11_all: cross priv_mode_m, write_instr, RW11, addr_in_region ;
+
+    cp_cfg_L_access_exec: cross priv_mode_m, exec_instr, RWX000, addr_in_region ;
+    cp_cfg_L_access_read: cross priv_mode_m, read_instr_lw, RWX000, addr_in_region ;
+    cp_cfg_L_access_write: cross priv_mode_m, write_instr_sw, RWX000, addr_in_region ;
+  `endif
 
   cp_cfg_L_modify: cross priv_mode_m, lock_checking, pmp_region, pmp_csr_to_write ;
 
@@ -1511,11 +1767,13 @@ covergroup PMP_Sm_cg with function sample(
   cp_cfg_A_OFF_all_write : cross priv_mode_m, pmpcfgA_OFF, write_instr_sw, addr_in_region;
   cp_cfg_A_OFF_all_exec : cross priv_mode_m, pmpcfgA_OFF, exec_instr, addr_in_region;
 
-  cp_cfg_A_napot_all: cross priv_mode_m, pmpcfgA_NAPOT, read_instr_lw, addr_offset_cp_cfg_A_napot_all;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_A_napot_all: cross priv_mode_m, pmpcfgA_NAPOT, read_instr_lw, addr_offset_cp_cfg_A_napot_all;
 
-  cp_cfg_A_napot_x : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, exec_instr;
-  cp_cfg_A_napot_r : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, read_instr_lw;
-  cp_cfg_A_napot_w : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, write_instr_sw;
+    cp_cfg_A_napot_x : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, exec_instr;
+    cp_cfg_A_napot_r : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, read_instr_lw;
+    cp_cfg_A_napot_w : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, write_instr_sw;
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     cp_cfg_A_NA4_all: cross priv_mode_m, pmpcfgA_NA4, read_instr_lw, addr_offset_cp_cfg_A_na4 ;
@@ -1583,18 +1841,20 @@ covergroup PMP_Sm_cg with function sample(
     cp_pmpcfg_zero: cross priv_mode_m, cp_zero_rs1, csrrw, legal_pmpcfg_entries_odd ;
   `endif
 
-  `ifdef UDB_NUM_PMP_ENTRIES_64
-    cp_pmp64_write: cross priv_mode_m, write_instr_sw, pmp64;
-    cp_pmp64_read: cross priv_mode_m, read_instr_lw, pmp64;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    `ifdef UDB_NUM_PMP_ENTRIES_64
+      cp_pmp64_write: cross priv_mode_m, write_instr_sw, pmp64;
+      cp_pmp64_read: cross priv_mode_m, read_instr_lw, pmp64;
+    `endif
+
+    cp_priority_lw: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, read_instr_lw ;
+    cp_priority_sw: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, write_instr_sw ;
+    cp_priority_jalr: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, exec_instr ;
+
+    cp_priority_off_lw: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, read_instr_lw ;
+    cp_priority_off_sw: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, write_instr_sw ;
+    cp_priority_off_jalr: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, exec_instr ;
   `endif
-
-  cp_priority_lw: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, read_instr_lw ;
-  cp_priority_sw: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, write_instr_sw ;
-  cp_priority_jalr: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, exec_instr ;
-
-  cp_priority_off_lw: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, read_instr_lw ;
-  cp_priority_off_sw: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, write_instr_sw ;
-  cp_priority_off_jalr: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, exec_instr ;
 
   cp_none_lw: cross priv_mode_m, all_pmp_entries_off, all_pmpaddr_zero, read_instr_lw ;
   cp_none_sw: cross priv_mode_m, all_pmp_entries_off, all_pmpaddr_zero, write_instr_sw ;
@@ -1615,12 +1875,16 @@ covergroup PMP_Sm_cg with function sample(
   SIGUPD(t2) # read back pmpaddr0, which should have G trailing 0s*/
   `ifndef UDB_PMP_GRANULARITY_2
     cp_grain_OFF_to_OFF : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_OFF ;
-    cp_grain_OFF_to_NAPOT : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_NAPOT ;
-    cp_grain_NAPOT_to_OFF : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_OFF ;
-    cp_grain_NAPOT_to_NAPOT : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_NAPOT ;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      cp_grain_OFF_to_NAPOT : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_NAPOT ;
+      cp_grain_NAPOT_to_OFF : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_OFF ;
+      cp_grain_NAPOT_to_NAPOT : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_NAPOT ;
+    `endif
     `ifdef UDB_PMP_TOR_SUPPORTED
       cp_grain_OFF_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_TOR ;
-      cp_grain_NAPOT_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_TOR ;
+      `ifdef UDB_PMP_NAPOT_SUPPORTED
+        cp_grain_NAPOT_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_TOR ;
+      `endif
     `endif
   `endif
 
@@ -1638,6 +1902,7 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   logic [95:0] pmpcfg_WR, pmpcfg_A;      // for next 48 Regions
   logic [14:0] pmpcfg_x, pmpcfg_l, pmp_hit;   // for first 15 Regions
   logic [47:0] pmpcfg_X, pmpcfg_L, pmp_HIT;   // for next 48 Regions
+  int tor_entry;                              // TOR twins: see pmp_tor_entry
 
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
@@ -2271,11 +2536,13 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_l")[0]
           };
   `endif
-  PMP_Sm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
+  tor_entry = pmp_tor_entry(pmpcfg, pmpaddr, `PMP_TOR_TWIN_BASE, `PMP_TOR_TWIN_TOP);
+  PMP_Sm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT,
+                   tor_entry, (tor_entry == 0) ? 8'h00 : pmpcfg[tor_entry]);
 endfunction
 
 `ifdef U_SUPPORTED
-covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, logic [7:0] tor_cfg);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -2285,6 +2552,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
   // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   addr_offset_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base    = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};           // Access exactly at the region base
     bins below_base    = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes below the region
@@ -2292,6 +2560,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins highest_word = {(`PMP_NAPOT_REGION_START + `g_napot - 4) & `PMP_ADDR_LOWMASK};  // Access at the last word in region
     bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};      // Access exactly at the end of the region
   }
+  `endif
 
   addr_offset_na4: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins at_base  = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};     // Access exactly at the region base
@@ -2343,9 +2612,11 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
     bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
   }
+  `endif
 
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
   // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
@@ -2354,6 +2625,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins cfg_1000 = {54'b????????????????????????????????????????10011000_100000};
     wildcard bins cfg_1001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -2368,6 +2640,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins cfg_0101 = {54'b????????00011101????????????????????????????????_????10};
     wildcard bins cfg_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
+  `endif
 
   pmpaddr_entries: coverpoint ins.current.insn[31:20] {
     bins pmpaddr0   = {CSR_PMPADDR0};
@@ -2469,12 +2742,14 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     bins U_mode = {2'b00};
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
     bins cfg_1000 = {8'b10011000};
     bins cfg_1111 = {8'b10011111};
     bins cfg_0000 = {8'b00011000};
     bins cfg_0111 = {8'b00011111};
   }
+  `endif
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = OFF, pmpcfg_i.XWR = 000, pmpaddr_i = all 1s
   cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)} {
@@ -2482,6 +2757,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   }
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = NAPOT, all legal pmpcfg_i.XWR, pmpaddr_i = `STANDARD_REGION
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   cfg_A_napot: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins napot_lwxr_0000 = {54'b????????????????????????????????????????00011000_100000};
     wildcard bins napot_lwxr_0001 = {54'b????????????????????????????????00011001????????_?10000};
@@ -2490,6 +2766,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     wildcard bins napot_lwxr_0101 = {54'b????????00011101????????????????????????????????_????10};
     wildcard bins napot_lwxr_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // pmpcfg_i.L = 0, pmpcfg_i.A = NA4, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION
@@ -2517,18 +2794,53 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_u, legal_lxwr, exec_instr, addr_in_napot_region ;
-  cp_cfg_R: cross priv_mode_u, legal_lxwr, read_instr, addr_in_napot_region ;
-  cp_cfg_W: cross priv_mode_u, legal_lxwr, write_instr, addr_in_napot_region ;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // TOR twins: the deciding entry is a TOR region over the same bytes as the NAPOT tests' region
+    legal_lxwr_tor: coverpoint tor_cfg {
+      bins cfg_1000 = {8'b10001000};
+      bins cfg_1001 = {8'b10001001};
+      bins cfg_1011 = {8'b10001011};
+      bins cfg_1100 = {8'b10001100};
+      bins cfg_1101 = {8'b10001101};
+      bins cfg_1111 = {8'b10001111};
+      bins cfg_0000 = {8'b00001000};
+      bins cfg_0001 = {8'b00001001};
+      bins cfg_0011 = {8'b00001011};
+      bins cfg_0100 = {8'b00001100};
+      bins cfg_0101 = {8'b00001101};
+      bins cfg_0111 = {8'b00001111};
+    }
+    // cp_mprv_*_tor: entry 1, L = {0, 1}, XWR = {000, 111}
+    lxwr_tor: coverpoint tor_cfg {
+      bins cfg_1000 = {8'b10001000};
+      bins cfg_1111 = {8'b10001111};
+      bins cfg_0000 = {8'b00001000};
+      bins cfg_0111 = {8'b00001111};
+    }
+    cp_cfg_X_tor: cross priv_mode_u, legal_lxwr_tor, exec_instr, addr_in_napot_region ;
+    cp_cfg_R_tor: cross priv_mode_u, legal_lxwr_tor, read_instr, addr_in_napot_region ;
+    cp_cfg_W_tor: cross priv_mode_u, legal_lxwr_tor, write_instr, addr_in_napot_region ;
+    cp_mprv_tor_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr_tor, exec_instr, addr_in_napot_region ;
+    cp_mprv_tor_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr_tor, read_instr_lw, addr_in_napot_region ;
+    cp_mprv_tor_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr_tor, write_instr_sw, addr_in_napot_region ;
+  `endif
+
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_X: cross priv_mode_u, legal_lxwr, exec_instr, addr_in_napot_region ;
+    cp_cfg_R: cross priv_mode_u, legal_lxwr, read_instr, addr_in_napot_region ;
+    cp_cfg_W: cross priv_mode_u, legal_lxwr, write_instr, addr_in_napot_region ;
+  `endif
 
   cp_cfg_A_off_jalr: cross priv_mode_u, cfg_A_off, exec_instr, addr_in_region ;
   cp_cfg_A_off_lw: cross priv_mode_u, cfg_A_off, read_instr_lw, addr_in_region ;
   cp_cfg_A_off_sw: cross priv_mode_u, cfg_A_off, write_instr_sw, addr_in_region ;
 
   // Access at start of region, start - 4, start + 4, highest word in region, just beyond top of the region
-  cp_cfg_A_napot_jalr: cross priv_mode_u, cfg_A_napot, exec_instr, addr_offset_napot ;
-  cp_cfg_A_napot_lw: cross priv_mode_u, cfg_A_napot, read_instr_lw, addr_offset_napot ;
-  cp_cfg_A_napot_sw: cross priv_mode_u, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_A_napot_jalr: cross priv_mode_u, cfg_A_napot, exec_instr, addr_offset_napot ;
+    cp_cfg_A_napot_lw: cross priv_mode_u, cfg_A_napot, read_instr_lw, addr_offset_napot ;
+    cp_cfg_A_napot_sw: cross priv_mode_u, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
@@ -2544,9 +2856,11 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     cp_cfg_A_tor_sw: cross priv_mode_u, cfg_A_tor, write_instr_sw, addr_offset_tor ;
   `endif
 
-  cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
-  cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
-  cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
+    cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
+    cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
+  `endif
 
   cp_pmpaddr_access_u: cross priv_mode_u, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_u: cross priv_mode_u, csrrw, pmpcfg_entries ;
@@ -2652,12 +2966,13 @@ function void pmp_U_sample(int hart, int issue, ins_t ins);
           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_a")[1:0]
           };
   `endif
-  PMP_U_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
+  PMP_U_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit,
+                     pmp_tor_cfg(pmpcfg, pmpaddr, `PMP_TOR_TWIN_BASE, `PMP_TOR_TWIN_TOP));
 endfunction
 `endif
 
 `ifdef ZAAMO_SUPPORTED
-covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, logic [7:0] tor_cfg);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -2688,6 +3003,7 @@ covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
     `endif
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins cfg_l000 = {54'b????????????????????????????????????????10011000_100000};
     wildcard bins cfg_l001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -2696,8 +3012,24 @@ covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
     wildcard bins cfg_l101 = {54'b????????10011101????????????????????????????????_????10};
     wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
   }
+  `endif
 
-  cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
+  `endif
+
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // TOR twin: the deciding entry is a locked TOR region over the same bytes
+    legal_lxwr_tor: coverpoint tor_cfg {
+      bins cfg_l000 = {8'b10001000};
+      bins cfg_l001 = {8'b10001001};
+      bins cfg_l011 = {8'b10001011};
+      bins cfg_l100 = {8'b10001100};
+      bins cfg_l101 = {8'b10001101};
+      bins cfg_l111 = {8'b10001111};
+    }
+    cp_cfg_RW_tor: cross priv_mode_m, legal_lxwr_tor, atomic_intrs, rs1_in_region;
+  `endif
 
 endgroup
 
@@ -2739,12 +3071,12 @@ function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_Zaamo_cg.sample(ins, pmpcfg, pmp_hit);
+  PMP_Zaamo_cg.sample(ins, pmpcfg, pmp_hit, pmp_tor_cfg(pmpcfg, pmpaddr, `PMP_TOR_SPECIAL_BASE, `PMP_TOR_SPECIAL_TOP));
 endfunction
 `endif
 
 `ifdef ZALRSC_SUPPORTED
-covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, logic [7:0] tor_cfg);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -2764,6 +3096,7 @@ covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0
     `endif
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins cfg_l000 = {54'b????????????????????????????????????????10011000_100000};
     wildcard bins cfg_l001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -2772,8 +3105,24 @@ covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0
     wildcard bins cfg_l101 = {54'b????????10011101????????????????????????????????_????10};
     wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
   }
+  `endif
 
-  cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
+  `endif
+
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // TOR twin: the deciding entry is a locked TOR region over the same bytes
+    legal_lxwr_tor: coverpoint tor_cfg {
+      bins cfg_l000 = {8'b10001000};
+      bins cfg_l001 = {8'b10001001};
+      bins cfg_l011 = {8'b10001011};
+      bins cfg_l100 = {8'b10001100};
+      bins cfg_l101 = {8'b10001101};
+      bins cfg_l111 = {8'b10001111};
+    }
+    cp_cfg_RW_tor: cross priv_mode_m, legal_lxwr_tor, atomic_intrs, rs1_in_region;
+  `endif
 
 endgroup
 
@@ -2817,12 +3166,13 @@ function void pmp_Zalrsc_sample(int hart, int issue, ins_t ins);
                  ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_Zalrsc_cg.sample(ins, pmpcfg, pmp_hit);
+  PMP_Zalrsc_cg.sample(ins, pmpcfg, pmp_hit, pmp_tor_cfg(pmpcfg, pmpaddr, `PMP_TOR_SPECIAL_BASE, `PMP_TOR_SPECIAL_TOP));
 endfunction
 `endif
 
 `ifdef ZCA_SUPPORTED
-covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0]);
+covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0],
+                                            logic [7:0] tor_cfg);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -2883,6 +3233,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
     `endif
   }
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
     wildcard bins cfg_1000 = {54'b????????????????????????????????????????10011000_100000};
     wildcard bins cfg_1001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -2891,6 +3242,7 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
     wildcard bins cfg_1101 = {54'b????????10011101????????????????????????????????_????10};
     wildcard bins cfg_1111 = {54'b10011111????????????????????????????????????????_?????1};
   }
+  `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     addr_in_consecutive_regions: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
@@ -2927,12 +3279,14 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
   `endif
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): see addr_in_consecutive_regions_napot.
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   addr_adjacent_to_pmp_boundary_napot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
     bins just_below_pmp = {(`PMP_NAPOT_REGION_START - 2) & `PMP_ADDR_LOWMASK};          // 2 bytes before region start (possible straddle)
     bins at_start_pmp   = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};              // aligned to start of region
     bins at_end_pmp     = {(`PMP_NAPOT_REGION_START + `g_napot - 2) & `PMP_ADDR_LOWMASK}; // 2 bytes before end → straddles out
     bins just_above_pmp = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};     // just outside region
   }
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     addr_adjacent_to_na4_boundary: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
@@ -2946,25 +3300,33 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
 
   // First three consecutive standard napot regions.
   // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   cfg_consecutive_napot: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[23:0]) {
     bins locked_napot_regions = {24'b100110001001111110011111};
   }
+  `endif
 
   // Region 0 is `STANDARD_REGION (PMP_NAPOT_REGION_START-based); regions 1/2 are consecutive g_napot
   // steps from that same base, not from PMP_REGION_START, to stay consistent with region 0.
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   pmpaddr_consecutive_napot: coverpoint ( ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((((`PMP_NAPOT_REGION_START+2**(`k+4)) >> 2) | (2**`k - 1))) & `PMP_PMPADDR_LOWMASK))   &&
                                           ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((((`PMP_NAPOT_REGION_START+2**(`k+3)) >> 2) | (2**`k - 1))) & `PMP_PMPADDR_LOWMASK))   &&
                                           ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK))) {
     bins first_three_regions = {1};
   }
+  `endif
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   napot_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
     bins address = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK}; // NAPOT region with LXWR 1111
   }
+  `endif
 
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
   napot_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0]) {
     bins napot_lxwr = {8'b10011111}; // NAPOT region with LXWR 1111
   }
+  `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // First three consecutive standard tor regions.
@@ -3019,16 +3381,54 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
     bins locked_off_regions = {24'b100001111000011110000111};
   }
 
-  cp_cfg_R: cross priv_mode_m, legal_lxwr, addr_in_napot_region, read_c_instr {
-    ignore_bins ig1 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_lwsp);
-    `ifdef UDB_MXLEN_64
-      ignore_bins ig2 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_ldsp);
-    `endif
-  }
-  cp_cfg_W: cross priv_mode_m, legal_lxwr, addr_in_napot_region, write_c_instr;
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_cfg_R: cross priv_mode_m, legal_lxwr, addr_in_napot_region, read_c_instr {
+      ignore_bins ig1 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_lwsp);
+      `ifdef UDB_MXLEN_64
+        ignore_bins ig2 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_ldsp);
+      `endif
+    }
+    cp_cfg_W: cross priv_mode_m, legal_lxwr, addr_in_napot_region, write_c_instr;
+  `endif
 
-  cp_misaligned_napot: cross priv_mode_m, cfg_consecutive_napot, pmpaddr_consecutive_napot, addr_in_consecutive_regions_napot, exec_c_instr;
-  cp_cret_napot: cross priv_mode_m, napot_setup, napot_region, exec_c_instr, addr_adjacent_to_pmp_boundary_napot;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // TOR twin: the deciding entry is a locked TOR region over the same bytes
+    legal_lxwr_tor: coverpoint tor_cfg {
+      bins cfg_1000 = {8'b10001000};
+      bins cfg_1001 = {8'b10001001};
+      bins cfg_1011 = {8'b10001011};
+      bins cfg_1100 = {8'b10001100};
+      bins cfg_1101 = {8'b10001101};
+      bins cfg_1111 = {8'b10001111};
+    }
+    // read_c_instr without c.lwsp and c.ldsp, which cp_cfg_R leaves out at the region
+    read_c_instr_tor: coverpoint ins.current.insn {
+      wildcard bins c_lw   = {C_LW};
+      `ifdef UDB_MXLEN_64
+        wildcard bins c_ld   = {C_LD};
+      `endif
+      `ifdef ZCF_SUPPORTED
+        wildcard bins c_flw   = {C_FLW};
+        wildcard bins c_flwsp = {C_FLWSP};
+      `endif
+      `ifdef ZCD_SUPPORTED
+        wildcard bins c_fld   = {C_FLD};
+        wildcard bins c_fldsp = {C_FLDSP};
+      `endif
+      `ifdef ZCB_SUPPORTED
+        wildcard bins c_lbu = {C_LBU};
+        wildcard bins c_lh  = {C_LH};
+        wildcard bins c_lhu = {C_LHU};
+      `endif
+    }
+    cp_cfg_R_tor: cross priv_mode_m, legal_lxwr_tor, addr_in_napot_region, read_c_instr_tor;
+    cp_cfg_W_tor: cross priv_mode_m, legal_lxwr_tor, addr_in_napot_region, write_c_instr;
+  `endif
+
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
+    cp_misaligned_napot: cross priv_mode_m, cfg_consecutive_napot, pmpaddr_consecutive_napot, addr_in_consecutive_regions_napot, exec_c_instr;
+    cp_cret_napot: cross priv_mode_m, napot_setup, napot_region, exec_c_instr, addr_adjacent_to_pmp_boundary_napot;
+  `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     cp_misaligned_tor: cross priv_mode_m, cfg_consecutive_tor, pmpaddr_consecutive_tor, addr_in_consecutive_regions, exec_c_instr;
@@ -3082,7 +3482,7 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMP_Zca_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);
+  PMP_Zca_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr, pmp_tor_cfg(pmpcfg, pmpaddr, `PMP_TOR_TWIN_BASE, `PMP_TOR_TWIN_TOP));
 endfunction
 `endif
 
@@ -3090,8 +3490,11 @@ endfunction
 `define PMPZICBO_REGION_SHIFT ((`UDB_PMP_GRANULARITY > 12) ? `UDB_PMP_GRANULARITY : 12)
 `define PMPZICBO_PMPADDR_MASK ((2 ** (`PMPZICBO_REGION_SHIFT - 3)) - 1)
 `define PMPZICBO_STANDARD_REGION ((`PMP_SPECIAL_REGION_START >> 2) | `PMPZICBO_PMPADDR_MASK)
+// TOR twins bound the same page: pmpaddr[i-1] = base, pmpaddr[i] = base + page
+`define PMPZICBO_TOR_TOP ((`PMP_SPECIAL_REGION_START + (2 ** `PMPZICBO_REGION_SHIFT)) >> 2)
 
-covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0]);
+covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0],
+                                              logic [7:0] tor_cfg);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -3101,10 +3504,12 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
 
     // Compare above the grain: the test writes pmpaddr0 while the entry is OFF, so the trace
     // records it with bits G-1:0 read as zero, and does not record it again once the entry is NAPOT.
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
                                  (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)) {
         bins region = {1};
     }
+    `endif
 
     addr_in_region: coverpoint (ins.current.rs1_val & `PMP_ADDR_LOWMASK) {
         bins address = {`PMP_SPECIAL_REGION_START & `PMP_ADDR_LOWMASK};
@@ -3139,6 +3544,7 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
     }
 
     // NAPOT regions 5, 4, 3, 2, 1, and 0.
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
         wildcard bins cfg_l000 = {54'b????????????????????????????????????????10011000_100000};
         wildcard bins cfg_l001 = {54'b????????????????????????????????10011001????????_?10000};
@@ -3147,21 +3553,52 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
         wildcard bins cfg_l101 = {54'b????????10011101????????????????????????????????_????10};
         wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
     }
+    `endif
 
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     wr_combinations: coverpoint pmpcfg[0] {
         bins cfg_l000 = {8'b10011000};
         bins cfg_l001 = {8'b10011001};
         bins cfg_l011 = {8'b10011011};
     }
+    `endif
 
-    cp_prefetch_w: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_w_instr, addr_in_region;
-    cp_prefetch_r: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_r_instr, addr_in_region;
-    cp_prefetch_i: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_i_instr, addr_in_region;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+      cp_prefetch_w: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_w_instr, addr_in_region;
+      cp_prefetch_r: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_r_instr, addr_in_region;
+      cp_prefetch_i: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_i_instr, addr_in_region;
 
-    cp_cbo_zero:  cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_zero_instr;
-    cp_cbo_inval: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_inval_instr;
-    cp_cbo_flush: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_flush_instr;
-    cp_cbo_clean: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_clean_instr;
+      cp_cbo_zero:  cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_zero_instr;
+      cp_cbo_inval: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_inval_instr;
+      cp_cbo_flush: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_flush_instr;
+      cp_cbo_clean: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_clean_instr;
+    `endif
+
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      // TOR twins: the deciding entry is a locked TOR region over the same page
+      legal_lxwr_tor: coverpoint tor_cfg {
+        bins cfg_l000 = {8'b10001000};
+        bins cfg_l001 = {8'b10001001};
+        bins cfg_l011 = {8'b10001011};
+        bins cfg_l100 = {8'b10001100};
+        bins cfg_l101 = {8'b10001101};
+        bins cfg_l111 = {8'b10001111};
+      }
+      wr_combinations_tor: coverpoint tor_cfg {
+        bins cfg_l000 = {8'b10001000};
+        bins cfg_l001 = {8'b10001001};
+        bins cfg_l011 = {8'b10001011};
+      }
+
+      cp_prefetch_w_tor: cross priv_mode_m, legal_lxwr_tor, cfg_for_menvcfg, prefetch_w_instr, addr_in_region;
+      cp_prefetch_r_tor: cross priv_mode_m, legal_lxwr_tor, cfg_for_menvcfg, prefetch_r_instr, addr_in_region;
+      cp_prefetch_i_tor: cross priv_mode_m, legal_lxwr_tor, cfg_for_menvcfg, prefetch_i_instr, addr_in_region;
+
+      cp_cbo_zero_tor:  cross priv_mode_m, wr_combinations_tor, cfg_for_menvcfg, cbo_zero_instr;
+      cp_cbo_inval_tor: cross priv_mode_m, wr_combinations_tor, cfg_for_menvcfg, cbo_inval_instr;
+      cp_cbo_flush_tor: cross priv_mode_m, wr_combinations_tor, cfg_for_menvcfg, cbo_flush_instr;
+      cp_cbo_clean_tor: cross priv_mode_m, wr_combinations_tor, cfg_for_menvcfg, cbo_clean_instr;
+    `endif
 
 endgroup
 
@@ -3204,7 +3641,8 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
                   (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)); // above the grain, as pmpaddr_region
   end
 
-  PMP_Zicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);
+  PMP_Zicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr,
+                     pmp_tor_cfg(pmpcfg, pmpaddr, `PMP_TOR_SPECIAL_BASE, `PMPZICBO_TOR_TOP));
 endfunction
 `endif
 
@@ -3213,14 +3651,18 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
     //pte permission for leaf PTEs
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     PTE_i: coverpoint ins.current.pte_i[7:0] {
         wildcard bins leaflvl_u = {8'b11?11111};
         wildcard bins leaflvl_s = {8'b11?01111};
     }
+    `endif
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     PTE_d: coverpoint ins.current.pte_d[7:0] {
         wildcard bins leaflvl_u = {8'b11?11111};
         wildcard bins leaflvl_s = {8'b11?01111};
     }
+    `endif
 
     `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
@@ -3314,56 +3756,105 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
         wildcard bins jalr = {JALR};
     }
 
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     PMP0_PTE: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {        // PMP permissions of PTE
         wildcard bins noread   = {8'b?????100};
     }
+    `endif
 
-    // pmp.2
-    pmp0_pte_noread_s:  cross PageType_d, PMP0_PTE, load_acc_fault, priv_mode_s, lw;
-    pmp0_pte_noread_u:  cross PageType_d, PMP0_PTE, load_acc_fault, priv_mode_u, lw;
-    pmp0_pte_nowrite_s: cross PageType_d, PMP0_PTE, store_acc_fault, priv_mode_s, sw;
-    pmp0_pte_nowrite_u: cross PageType_d, PMP0_PTE, store_acc_fault, priv_mode_u, sw;
-    pmp0_pte_noexec_s:  cross PageType_i, PMP0_PTE, ins_acc_fault, priv_mode_s, jalr;
-    pmp0_pte_noexec_u:  cross PageType_i, PMP0_PTE, ins_acc_fault, priv_mode_u, jalr;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+        // pmp.2
+        pmp0_pte_noread_s:  cross PageType_d, PMP0_PTE, load_acc_fault, priv_mode_s, lw;
+        pmp0_pte_noread_u:  cross PageType_d, PMP0_PTE, load_acc_fault, priv_mode_u, lw;
+        pmp0_pte_nowrite_s: cross PageType_d, PMP0_PTE, store_acc_fault, priv_mode_s, sw;
+        pmp0_pte_nowrite_u: cross PageType_d, PMP0_PTE, store_acc_fault, priv_mode_u, sw;
+        pmp0_pte_noexec_s:  cross PageType_i, PMP0_PTE, ins_acc_fault, priv_mode_s, jalr;
+        pmp0_pte_noexec_u:  cross PageType_i, PMP0_PTE, ins_acc_fault, priv_mode_u, jalr;
 
 
-    PMP0_PA: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {       // PMP permissions of (translated) phys addr region
-        wildcard bins noread   = {8'b?????100};
-        wildcard bins nowrite  = {8'b?????101};
-        wildcard bins noexe    = {8'b?????011};
-    }
+        `ifdef UDB_PMP_NAPOT_SUPPORTED
+        PMP0_PA: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {       // PMP permissions of (translated) phys addr region
+            wildcard bins noread   = {8'b?????100};
+            wildcard bins nowrite  = {8'b?????101};
+            wildcard bins noexe    = {8'b?????011};
+        }
+        `endif
 
-    // pmp.1
-    pmp0_PA_noread_s: cross PTE_d, PageType_d, PMP0_PA, load_acc_fault, priv_mode_s, read_acc {
-        ignore_bins ig1 = binsof(PMP0_PA.nowrite);
-        ignore_bins ig2 = binsof(PMP0_PA.noexe);
-        ignore_bins ig3 = binsof(PTE_d.leaflvl_u);
-    }
-    pmp0_PA_noread_u: cross PTE_d, PageType_d, PMP0_PA, load_acc_fault, priv_mode_u, read_acc {
-        ignore_bins ig1 = binsof(PMP0_PA.nowrite);
-        ignore_bins ig2 = binsof(PMP0_PA.noexe);
-        ignore_bins ig3 = binsof(PTE_d.leaflvl_s);
-    }
-    pmp0_PA_nowrite_s: cross PTE_d, PageType_d, PMP0_PA, store_acc_fault, priv_mode_s, write_acc {
-        ignore_bins ig1 = binsof(PMP0_PA.noread);
-        ignore_bins ig2 = binsof(PMP0_PA.noexe);
-        ignore_bins ig3 = binsof(PTE_d.leaflvl_u);
-    }
-    pmp0_PA_nowrite_u: cross PTE_d, PageType_d, PMP0_PA, store_acc_fault, priv_mode_u, write_acc {
-        ignore_bins ig1 = binsof(PMP0_PA.noread);
-        ignore_bins ig2 = binsof(PMP0_PA.noexe);
-        ignore_bins ig3 = binsof(PTE_d.leaflvl_s);
-    }
-    pmp0_PA_noexec_s: cross PTE_i, PageType_i, PMP0_PA, ins_acc_fault, priv_mode_s, exec_acc {
-        ignore_bins ig1 = binsof(PMP0_PA.nowrite);
-        ignore_bins ig2 = binsof(PMP0_PA.noread);
-        ignore_bins ig3 = binsof(PTE_i.leaflvl_u);
-    }
-    pmp0_PA_noexec_u: cross PTE_i, PageType_i, PMP0_PA, ins_acc_fault, priv_mode_u, exec_acc {
-        ignore_bins ig1 = binsof(PMP0_PA.nowrite);
-        ignore_bins ig2 = binsof(PMP0_PA.noread);
-        ignore_bins ig3 = binsof(PTE_i.leaflvl_s);
-    }
+        // pmp.1
+        pmp0_PA_noread_s: cross PTE_d, PageType_d, PMP0_PA, load_acc_fault, priv_mode_s, read_acc {
+            ignore_bins ig1 = binsof(PMP0_PA.nowrite);
+            ignore_bins ig2 = binsof(PMP0_PA.noexe);
+            ignore_bins ig3 = binsof(PTE_d.leaflvl_u);
+        }
+        pmp0_PA_noread_u: cross PTE_d, PageType_d, PMP0_PA, load_acc_fault, priv_mode_u, read_acc {
+            ignore_bins ig1 = binsof(PMP0_PA.nowrite);
+            ignore_bins ig2 = binsof(PMP0_PA.noexe);
+            ignore_bins ig3 = binsof(PTE_d.leaflvl_s);
+        }
+        pmp0_PA_nowrite_s: cross PTE_d, PageType_d, PMP0_PA, store_acc_fault, priv_mode_s, write_acc {
+            ignore_bins ig1 = binsof(PMP0_PA.noread);
+            ignore_bins ig2 = binsof(PMP0_PA.noexe);
+            ignore_bins ig3 = binsof(PTE_d.leaflvl_u);
+        }
+        pmp0_PA_nowrite_u: cross PTE_d, PageType_d, PMP0_PA, store_acc_fault, priv_mode_u, write_acc {
+            ignore_bins ig1 = binsof(PMP0_PA.noread);
+            ignore_bins ig2 = binsof(PMP0_PA.noexe);
+            ignore_bins ig3 = binsof(PTE_d.leaflvl_s);
+        }
+        pmp0_PA_noexec_s: cross PTE_i, PageType_i, PMP0_PA, ins_acc_fault, priv_mode_s, exec_acc {
+            ignore_bins ig1 = binsof(PMP0_PA.nowrite);
+            ignore_bins ig2 = binsof(PMP0_PA.noread);
+            ignore_bins ig3 = binsof(PTE_i.leaflvl_u);
+        }
+        pmp0_PA_noexec_u: cross PTE_i, PageType_i, PMP0_PA, ins_acc_fault, priv_mode_u, exec_acc {
+            ignore_bins ig1 = binsof(PMP0_PA.nowrite);
+            ignore_bins ig2 = binsof(PMP0_PA.noread);
+            ignore_bins ig3 = binsof(PTE_i.leaflvl_s);
+        }
+    `endif
+
+    `ifdef UDB_PMP_TOR_SUPPORTED
+        // TOR twins: entry 1 is a TOR region over the same bytes (the page table, or the translated data page),
+        // L = 0; entry 0 is OFF and holds the base
+        PTE_i_s: coverpoint ins.current.pte_i[7:0] {
+            wildcard bins leaflvl_s = {8'b11?01111};
+        }
+        PTE_i_u: coverpoint ins.current.pte_i[7:0] {
+            wildcard bins leaflvl_u = {8'b11?11111};
+        }
+        PTE_d_s: coverpoint ins.current.pte_d[7:0] {
+            wildcard bins leaflvl_s = {8'b11?01111};
+        }
+        PTE_d_u: coverpoint ins.current.pte_d[7:0] {
+            wildcard bins leaflvl_u = {8'b11?11111};
+        }
+        PMP1_PTE_TOR: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {
+            bins noread = {8'b00001100};
+        }
+        PMP1_PA_TOR_noread: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {
+            bins noread = {8'b00001100};
+        }
+        PMP1_PA_TOR_nowrite: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {
+            bins nowrite = {8'b00001101};
+        }
+        PMP1_PA_TOR_noexec: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {
+            bins noexec = {8'b00001011};
+        }
+
+        pmp_tor_pte_noread_s:  cross PageType_d, PMP1_PTE_TOR, load_acc_fault, priv_mode_s, lw;
+        pmp_tor_pte_noread_u:  cross PageType_d, PMP1_PTE_TOR, load_acc_fault, priv_mode_u, lw;
+        pmp_tor_pte_nowrite_s: cross PageType_d, PMP1_PTE_TOR, store_acc_fault, priv_mode_s, sw;
+        pmp_tor_pte_nowrite_u: cross PageType_d, PMP1_PTE_TOR, store_acc_fault, priv_mode_u, sw;
+        pmp_tor_pte_noexec_s:  cross PageType_i, PMP1_PTE_TOR, ins_acc_fault, priv_mode_s, jalr;
+        pmp_tor_pte_noexec_u:  cross PageType_i, PMP1_PTE_TOR, ins_acc_fault, priv_mode_u, jalr;
+
+        pmp_tor_PA_noread_s:  cross PTE_d_s, PageType_d, PMP1_PA_TOR_noread, load_acc_fault, priv_mode_s, read_acc;
+        pmp_tor_PA_noread_u:  cross PTE_d_u, PageType_d, PMP1_PA_TOR_noread, load_acc_fault, priv_mode_u, read_acc;
+        pmp_tor_PA_nowrite_s: cross PTE_d_s, PageType_d, PMP1_PA_TOR_nowrite, store_acc_fault, priv_mode_s, write_acc;
+        pmp_tor_PA_nowrite_u: cross PTE_d_u, PageType_d, PMP1_PA_TOR_nowrite, store_acc_fault, priv_mode_u, write_acc;
+        pmp_tor_PA_noexec_s:  cross PTE_i_s, PageType_i, PMP1_PA_TOR_noexec, ins_acc_fault, priv_mode_s, exec_acc;
+        pmp_tor_PA_noexec_u:  cross PTE_i_u, PageType_i, PMP1_PA_TOR_noexec, ins_acc_fault, priv_mode_u, exec_acc;
+    `endif
 endgroup
 
 function void pmp_Sv_sample(int hart, int issue, ins_t ins);
@@ -3418,15 +3909,30 @@ covergroup PMP_SvZicbo_cg with function sample(ins_t ins);
         `endif
     }
 
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     PMP_perm: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
         wildcard bins rw_unset   = {8'b?????100};
     }
+    `endif
 
 
-    cp_PA_PMP_rw_unset_cbo_s:  cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
-    cp_PA_PMP_rw_unset_cbo_u:  cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
-    cp_PTE_PMP_rw_unset_cbo_s: cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
-    cp_PTE_PMP_rw_unset_cbo_u: cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+        cp_PA_PMP_rw_unset_cbo_s:  cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
+        cp_PA_PMP_rw_unset_cbo_u:  cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
+        cp_PTE_PMP_rw_unset_cbo_s: cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
+        cp_PTE_PMP_rw_unset_cbo_u: cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
+    `endif
+
+    `ifdef UDB_PMP_TOR_SUPPORTED
+        // TOR twins: entry 1 is a TOR region (L = 0, XWR = 100) over the same bytes; entry 0 is OFF and holds the base
+        PMP_perm_tor: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {
+            bins rw_unset = {8'b00001100};
+        }
+        cp_PA_PMP_rw_unset_cbo_s_tor:  cross PTE_s, PageType_d, PMP_perm_tor, cbo_ins, store_acc_fault, priv_mode_s;
+        cp_PA_PMP_rw_unset_cbo_u_tor:  cross PTE_u, PageType_d, PMP_perm_tor, cbo_ins, store_acc_fault, priv_mode_u;
+        cp_PTE_PMP_rw_unset_cbo_s_tor: cross PTE_s, PageType_d, PMP_perm_tor, cbo_ins, store_acc_fault, priv_mode_s;
+        cp_PTE_PMP_rw_unset_cbo_u_tor: cross PTE_u, PageType_d, PMP_perm_tor, cbo_ins, store_acc_fault, priv_mode_u;
+    `endif
 
 endgroup
 
@@ -3465,13 +3971,25 @@ covergroup PMP_HSvZicbo_cg with function sample(ins_t ins);
             bins g  = {'h341};
         }
     `endif
-    // PMP entry 0 covers the test page with no permissions, or with read permission only
-    pmp_xwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
-        bins none = {8'b00011000};
-        bins r    = {8'b00011001};
-    }
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+        // PMP entry 0 covers the test page with no permissions, or with read permission only
+        pmp_xwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
+            bins none = {8'b00011000};
+            bins r    = {8'b00011001};
+        }
 
-    cp_pmp: cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
+        cp_pmp: cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
+    `endif
+
+    `ifdef UDB_PMP_TOR_SUPPORTED
+        // TOR twin: entry 1 is a TOR region over the test page; entry 0 is OFF and holds the base
+        pmp_xwr_tor: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:0] {
+            bins none = {16'b00001000_00000000};
+            bins r    = {16'b00001001_00000000};
+        }
+
+        cp_pmp_tor: cross priv_mode_vs_vu, cbo, stage, pmp_xwr_tor;
+    `endif
 endgroup
 
 function void pmp_HSvZicbo_sample(int hart, int issue, ins_t ins);
@@ -3570,18 +4088,37 @@ covergroup PMP_Svadu_cg with function sample(ins_t ins);
         }
     `endif
 
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     PMP_pagetable: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {      // PMP permission of page table
         wildcard bins w_unset = {8'b??????01};
     }
+    `endif
 
-    Abit_unset_pmpW_unset_exec_s:  cross PTE_Abit_unset_s_i, PageType_i, Svadu_enabled, PMP_pagetable, jalr, ins_acc_fault, priv_mode_s;
-    Abit_unset_pmpW_unset_exec_u:  cross PTE_Abit_unset_u_i, PageType_i, Svadu_enabled, PMP_pagetable, jalr, ins_acc_fault, priv_mode_u;
-    Abit_unset_pmpW_unset_read_s:  cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, lw, load_acc_fault, priv_mode_s;
-    Abit_unset_pmpW_unset_read_u:  cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, lw, load_acc_fault, priv_mode_u;
-    Abit_unset_pmpW_unset_write_s: cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_s;
-    Abit_unset_pmpW_unset_write_u: cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_u;
-    Dbit_unset_pmpW_unset_write_s: cross PTE_Dbit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_s;
-    Dbit_unset_pmpW_unset_write_u: cross PTE_Dbit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_u;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
+        Abit_unset_pmpW_unset_exec_s:  cross PTE_Abit_unset_s_i, PageType_i, Svadu_enabled, PMP_pagetable, jalr, ins_acc_fault, priv_mode_s;
+        Abit_unset_pmpW_unset_exec_u:  cross PTE_Abit_unset_u_i, PageType_i, Svadu_enabled, PMP_pagetable, jalr, ins_acc_fault, priv_mode_u;
+        Abit_unset_pmpW_unset_read_s:  cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, lw, load_acc_fault, priv_mode_s;
+        Abit_unset_pmpW_unset_read_u:  cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, lw, load_acc_fault, priv_mode_u;
+        Abit_unset_pmpW_unset_write_s: cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_s;
+        Abit_unset_pmpW_unset_write_u: cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_u;
+        Dbit_unset_pmpW_unset_write_s: cross PTE_Dbit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_s;
+        Dbit_unset_pmpW_unset_write_u: cross PTE_Dbit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_u;
+    `endif
+
+    `ifdef UDB_PMP_TOR_SUPPORTED
+        // TOR twins: entry 1 is a TOR region (L = 0, XWR = 101) over the page table; entry 0 is OFF and holds the base
+        PMP_pagetable_tor: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[15:8] {
+            bins w_unset = {8'b00001101};
+        }
+        Abit_unset_pmpW_unset_tor_exec_s:  cross PTE_Abit_unset_s_i, PageType_i, Svadu_enabled, PMP_pagetable_tor, jalr, ins_acc_fault, priv_mode_s;
+        Abit_unset_pmpW_unset_tor_exec_u:  cross PTE_Abit_unset_u_i, PageType_i, Svadu_enabled, PMP_pagetable_tor, jalr, ins_acc_fault, priv_mode_u;
+        Abit_unset_pmpW_unset_tor_read_s:  cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable_tor, lw, load_acc_fault, priv_mode_s;
+        Abit_unset_pmpW_unset_tor_read_u:  cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable_tor, lw, load_acc_fault, priv_mode_u;
+        Abit_unset_pmpW_unset_tor_write_s: cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable_tor, sw, store_acc_fault, priv_mode_s;
+        Abit_unset_pmpW_unset_tor_write_u: cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable_tor, sw, store_acc_fault, priv_mode_u;
+        Dbit_unset_pmpW_unset_tor_write_s: cross PTE_Dbit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable_tor, sw, store_acc_fault, priv_mode_s;
+        Dbit_unset_pmpW_unset_tor_write_u: cross PTE_Dbit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable_tor, sw, store_acc_fault, priv_mode_u;
+    `endif
 
 endgroup
 

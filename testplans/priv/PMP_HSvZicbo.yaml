@@ -3,8 +3,9 @@ suite: PMP_HSvZicbo
 notes: |
   PMP_HSvZicbo boots to M-mode, which programs PMP, and delegates nothing, so every trap is taken in M-mode.
   It runs with Sv39x4 and VS-stage Sv39 on RV64, or Sv32x4 and VS-stage Sv32 on RV32, and needs at least two PMP
-  entries, NAPOT support and a PMP granularity of at most 4 KiB.  PMP entry 0 is a NAPOT region covering the
-  4 KiB test page; the last entry is the background region.  The guest translation and other CBO cases are in the Sv suite's Sv_HZicbo group.
+  entries, NAPOT or TOR support and a PMP granularity of at most 4 KiB.  PMP entry 0 is a NAPOT region covering the
+  4 KiB test page (cp_pmp, PMP_NAPOT_SUPPORTED only), or entry 1 a TOR region over the same page with entry 0 OFF
+  holding its base (cp_pmp_tor, PMP_TOR_SUPPORTED only); the last entry is the background region.  The guest translation and other CBO cases are in the Sv suite's Sv_HZicbo group.
 coverpoints:
   - name: cp_pmp
     goal: PMP checks the final supervisor physical address of a CBO from VS-mode and VU-mode
@@ -19,3 +20,13 @@ coverpoints:
       cbo.clean/flush/inval only with Zicbom, cbo.zero only with Zicboz
     notes: |-
       XWR = 001 follows cmo.adoc cbm_access (a cache-block management instruction may access a block whenever a load or a store may), as Sail and Spike do; machine.adoc pmp_cbm_fault defers to it.
+  - name: cp_pmp_tor
+    goal: PMP checks the final supervisor physical address of a CBO from VS-mode and VU-mode (TOR region)
+    description: |-
+      PMP_TOR_SUPPORTED only. TOR twin of cp_pmp: the same cases, with PMP entry 1 a TOR region over the test page (pmpaddr0 = base, pmpaddr1 = top) and entry 0 OFF.
+    expectation: |-
+      As cp_pmp.
+    bins: |-
+      As cp_pmp, with pmp1cfg XWR {000, 001}
+    rules:
+      - pmp_a_field_tor

@@ -120,20 +120,20 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpaddr1_str: .string "\"test: 1; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_write_pmpaddr1\""
-PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpcfg0_str: .string "\"test: 2; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_write_pmpcfg0\""
-PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0_str: .string "\"test: 3; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_modify_pmpcfg0\""
-PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0_str: .string "\"test: 4; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_modify_pmpaddr0\""
-PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1_str: .string "\"test: 5; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_clear_pmpaddr1\""
-PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0_str: .string "\"test: 6; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_clear_pmpcfg0\""
-PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0_str: .string "\"test: 7; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_reset_pmpaddr0\""
-PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0_str: .string "\"test: 8; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_reset_pmpcfg0\""
-PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpaddr1_str: .string "\"test: 9; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_write_pmpaddr1\""
-PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpcfg0_str: .string "\"test: 10; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_write_pmpcfg0\""
-PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0_str: .string "\"test: 11; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_modify_pmpcfg0\""
-PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0_str: .string "\"test: 12; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_modify_pmpaddr0\""
-PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1_str: .string "\"test: 13; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_clear_pmpaddr1\""
-PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0_str: .string "\"test: 14; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_clear_pmpcfg0\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpaddr1_str: .string "\"test: 769; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_write_pmpaddr1\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_write_pmpcfg0_str: .string "\"test: 770; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_write_pmpcfg0\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpcfg0_str: .string "\"test: 771; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_modify_pmpcfg0\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_modify_pmpaddr0_str: .string "\"test: 772; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_modify_pmpaddr0\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpaddr1_str: .string "\"test: 773; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_clear_pmpaddr1\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_clear_pmpcfg0_str: .string "\"test: 774; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_clear_pmpcfg0\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpaddr0_str: .string "\"test: 775; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_reset_pmpaddr0\""
+PMP_Sm_cg_cp_cfg_L_modify_L0_reset_pmpcfg0_str: .string "\"test: 776; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L0_reset_pmpcfg0\""
+PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpaddr1_str: .string "\"test: 777; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_write_pmpaddr1\""
+PMP_Sm_cg_cp_cfg_L_modify_L1_write_pmpcfg0_str: .string "\"test: 778; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_write_pmpcfg0\""
+PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpcfg0_str: .string "\"test: 779; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_modify_pmpcfg0\""
+PMP_Sm_cg_cp_cfg_L_modify_L1_modify_pmpaddr0_str: .string "\"test: 780; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_modify_pmpaddr0\""
+PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpaddr1_str: .string "\"test: 781; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_clear_pmpaddr1\""
+PMP_Sm_cg_cp_cfg_L_modify_L1_clear_pmpcfg0_str: .string "\"test: 782; cg: PMP_Sm_cg; cp: cp_cfg_L_modify; bin: L1_clear_pmpcfg0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

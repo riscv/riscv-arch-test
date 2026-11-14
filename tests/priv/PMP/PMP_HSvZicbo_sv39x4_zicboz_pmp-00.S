@@ -12,8 +12,8 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'H', 'Zicboz']
 # params:
 #   NUM_PMP_ENTRIES: '>1'
-#   PMP_NAPOT_SUPPORTED: true
 #   PMP_GRANULARITY: '<=12'
+#   PMP_NAPOT_SUPPORTED: true
 #   SV39X4_TRANSLATION: true
 #   SV39_VSMODE_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicboz_zicsr_zifencei

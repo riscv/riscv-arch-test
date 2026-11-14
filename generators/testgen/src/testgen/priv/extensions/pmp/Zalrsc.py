@@ -12,8 +12,10 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
+    TOR_TWIN_BYTES,
     lxwr_walk_body,
     make_exec_region,
+    tor_twin_parts,
 )
 from testgen.priv.extensions.pmp.probes import (
     gen_lrsc,
@@ -26,7 +28,7 @@ from testgen.priv.registry import add_priv_test_generator
     "PMP",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zalrsc", "Sm"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzalrsc(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("Zalrsc_cfg_wr")
@@ -42,3 +44,32 @@ def make_pmpzalrsc(test_data: TestData) -> list[TestChunk]:
     )
     chunk.raw_data.extend(make_exec_region(pad=None))
     return [test_data.end_test_chunk()]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Zalrsc", "Sm"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzalrsc_tor(test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for part, cases in enumerate(tor_twin_parts(LOCKED_LXWR_CASES), start=1):
+        chunk = test_data.begin_test_chunk(f"Zalrsc_cfg_wr_tor-{part:02d}")
+        chunk.section_header = comment_banner(
+            "cp_cfg_RW_tor", "LR/SC pairs against a locked TOR region with each legal XWR."
+        )
+        chunk.code.extend(
+            lxwr_walk_body(
+                test_data,
+                cases,
+                "tor",
+                {lxwr: gen_lrsc_success if lxwr in ("1011", "1111") else gen_lrsc for lxwr, _ in cases},
+                "cp_cfg_RW_tor",
+                first=3 * part - 2,
+                tor_bytes=TOR_TWIN_BYTES,
+            )
+        )
+        chunk.raw_data.extend(make_exec_region(pad=None))
+        chunks.append(test_data.end_test_chunk())
+    return chunks

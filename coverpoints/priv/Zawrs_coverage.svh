@@ -160,10 +160,18 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
     mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
+    // wrs resumes on the Sstc supervisor timer when STI can be delegated (sie.STIE is read-only zero otherwise), else
+    // on the machine timer
     `ifdef SSTC_SUPPORTED
-        sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
-            bins one = {1};
-        }
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
+                bins one = {1};
+            }
+        `else
+            mie_mtie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "mtie")) {
+                bins one = {1};
+            }
+        `endif
     `else
         mie_mtie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "mtie")) {
             bins one = {1};
@@ -171,14 +179,16 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
     `endif
 
     `ifdef SSTC_SUPPORTED
-        `ifdef UDB_MXLEN_64
-            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
-                bins one  = {1};
-            }
-        `else
-            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
-                bins one  = {1};
-            }
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            `ifdef UDB_MXLEN_64
+                menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
+                    bins one  = {1};
+                }
+            `else
+                menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
+                    bins one  = {1};
+                }
+            `endif
         `endif
     `endif
 
@@ -190,8 +200,13 @@ covergroup Zawrs_S_cg with function sample(ins_t ins);
     cp_wrs_no_res:          cross mstatus_tw_zero, mstatus_mie_zero, mstatus_sie_zero, priv_mode_s, mie_zeros, sc_w, wrs_ops;
 
     `ifdef SSTC_SUPPORTED
-        cp_wrs_resume:      cross mstatus_tw_zero, sie_stie_one, menvcfg_STCE_one,
-            mstatus_mie, mstatus_sie, priv_mode_s, wrs_ops, lr_w;
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            cp_wrs_resume:      cross mstatus_tw_zero, sie_stie_one, menvcfg_STCE_one,
+                mstatus_mie, mstatus_sie, priv_mode_s, wrs_ops, lr_w;
+        `elsif UDB_MTI_INTR_IMPL
+            cp_wrs_resume:      cross mstatus_tw_zero, mie_mtie_one,
+                mstatus_mie, mstatus_sie, priv_mode_s, wrs_ops, lr_w;
+        `endif
     `elsif UDB_MTI_INTR_IMPL
         cp_wrs_resume:      cross mstatus_tw_zero, mie_mtie_one,
             mstatus_mie, mstatus_sie, priv_mode_s, wrs_ops, lr_w;
@@ -274,18 +289,25 @@ covergroup Zawrs_U_cg with function sample(ins_t ins);
             bins one = {1};
         }
     `endif
+    // wrs resumes on the Sstc supervisor timer when STI can be delegated (sie.STIE is read-only zero otherwise), else
+    // on the machine timer
     `ifdef SSTC_SUPPORTED
-        sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
-            bins one = {1};
-        }
-        `ifdef UDB_MXLEN_64
-            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
-                bins one  = {1};
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
+                bins one = {1};
             }
-
+            `ifdef UDB_MXLEN_64
+                menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
+                    bins one  = {1};
+                }
+            `else
+                menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
+                    bins one  = {1};
+                }
+            `endif
         `else
-            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
-                bins one  = {1};
+            mie_mtie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "mtie")) {
+                bins one = {1};
             }
         `endif
     `else
@@ -306,11 +328,19 @@ covergroup Zawrs_U_cg with function sample(ins_t ins);
         `endif
         wrs_ops;
     `ifdef SSTC_SUPPORTED
-        cp_wrs_resume:      cross mstatus_tw_zero, sie_stie_one, menvcfg_STCE_one,
-            `ifdef S_SUPPORTED
-                mstatus_sie,
-            `endif
-            mstatus_mie, priv_mode_u, wrs_ops, lr_w;
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            cp_wrs_resume:      cross mstatus_tw_zero, sie_stie_one, menvcfg_STCE_one,
+                `ifdef S_SUPPORTED
+                    mstatus_sie,
+                `endif
+                mstatus_mie, priv_mode_u, wrs_ops, lr_w;
+        `elsif UDB_MTI_INTR_IMPL
+            cp_wrs_resume:      cross mstatus_tw_zero, mie_mtie_one,
+                `ifdef S_SUPPORTED
+                    mstatus_sie,
+                `endif
+                mstatus_mie, priv_mode_u, wrs_ops, lr_w;
+        `endif
     `elsif UDB_MTI_INTR_IMPL
         cp_wrs_resume:      cross mstatus_tw_zero, mie_mtie_one,
             `ifdef S_SUPPORTED
@@ -444,17 +474,25 @@ covergroup Zawrs_H_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
+    // wrs resumes on the Sstc supervisor timer when STI can be delegated (sie.STIE is read-only zero otherwise), else
+    // on the machine timer
     `ifdef SSTC_SUPPORTED
-        sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
-            bins one = {1};
-        }
-        `ifdef UDB_MXLEN_64
-            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
-                bins one  = {1};
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            sie_stie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SIE, "stie")) {
+                bins one = {1};
             }
+            `ifdef UDB_MXLEN_64
+                menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "stce")) {
+                    bins one  = {1};
+                }
+            `else
+                menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
+                    bins one  = {1};
+                }
+            `endif
         `else
-            menvcfg_STCE_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "stce")) {
-                bins one  = {1};
+            mie_mtie_one: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "mtie")) {
+                bins one = {1};
             }
         `endif
     `else
@@ -469,8 +507,13 @@ covergroup Zawrs_H_cg with function sample(ins_t ins);
     cp_wrs_no_res_h:        cross priv_mode_vs_vu, mstatus_tw_zero, hstatus_vtw_zero, mstatus_mie_zero, mstatus_sie_zero, mie_zeros, sc_w, wrs_ops;
 
     `ifdef SSTC_SUPPORTED
-        cp_wrs_resume_h:    cross priv_mode_vs_vu, mstatus_tw_zero, hstatus_vtw_zero, sie_stie_one, menvcfg_STCE_one,
-            mstatus_mie, mstatus_sie, wrs_ops, lr_w;
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            cp_wrs_resume_h:    cross priv_mode_vs_vu, mstatus_tw_zero, hstatus_vtw_zero, sie_stie_one, menvcfg_STCE_one,
+                mstatus_mie, mstatus_sie, wrs_ops, lr_w;
+        `elsif UDB_MTI_INTR_IMPL
+            cp_wrs_resume_h:    cross priv_mode_vs_vu, mstatus_tw_zero, hstatus_vtw_zero, mie_mtie_one,
+                mstatus_mie, mstatus_sie, wrs_ops, lr_w;
+        `endif
     `elsif UDB_MTI_INTR_IMPL
         cp_wrs_resume_h:    cross priv_mode_vs_vu, mstatus_tw_zero, hstatus_vtw_zero, mie_mtie_one,
             mstatus_mie, mstatus_sie, wrs_ops, lr_w;

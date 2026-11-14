@@ -41,7 +41,7 @@ coverpoints:
       cross lr instruction to set up reservation.
       mstatus.TW = 0
       hstatus.VTW = 0
-      sie.STIE = 1 and menvcfg.STCE = 1 with Sstc, otherwise mie.MTIE = 1
+      sie.STIE = 1 and menvcfg.STCE = 1 with Sstc when mideleg can delegate STI, otherwise mie.MTIE = 1
       mstatus.MIE = {0/1}
       mstatus.SIE = {0/1}
       Enter {VS/VU} mode, set up timer to interrupt soon through T-SBI
@@ -51,7 +51,7 @@ coverpoints:
     rules:
       - Zawrs_exec_resume_rules
     notes: |-
-      Not generated without a timer interrupt (needs Sstc or MTI_INTR_IMPL).
+      Not generated without a timer interrupt (needs Sstc with a delegatable STI, or MTI_INTR_IMPL).
   - name: cp_wrs_interrupt_h
     goal: A pending, locally enabled VS-level interrupt ends a VS-mode WRS even when it is globally disabled
     description: |-

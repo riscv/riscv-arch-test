@@ -73,9 +73,14 @@ def wrs_resume_helper(
     r_addr, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
 
     lower = priv != "M"
-    # The resume is triggered by a timer interrupt: Sstc below M-mode when it is implemented, otherwise a machine
-    # timer interrupt
-    guard = "#if defined(SSTC_SUPPORTED) || defined(UDB_MTI_INTR_IMPL)" if lower else "#ifdef UDB_MTI_INTR_IMPL"
+    # The resume is triggered by a timer interrupt: below M-mode the Sstc supervisor timer when it is implemented and
+    # mideleg can delegate STI (otherwise sie.STIE and sip.STIP are read-only zero), else a machine timer interrupt
+    sstc = "#if defined(SSTC_SUPPORTED) && defined(UDB_MIDELEG_DELEGATABLE_5)"
+    guard = (
+        "#if (defined(SSTC_SUPPORTED) && defined(UDB_MIDELEG_DELEGATABLE_5)) || defined(UDB_MTI_INTR_IMPL)"
+        if lower
+        else "#ifdef UDB_MTI_INTR_IMPL"
+    )
     lines = [
         comment_banner(coverpoint, f"Generate {mode} mode WRS instruction resume when interrupt pending tests"),
         guard,
@@ -90,7 +95,7 @@ def wrs_resume_helper(
     if lower:
         lines.extend(
             [
-                "#ifdef SSTC_SUPPORTED",
+                sstc,
                 "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP, then disarm the comparator",
                 "# so whatever stimecmp held before does not raise STIP once STIE is set",
                 *write_stce(test_data, True, priv),
@@ -122,7 +127,7 @@ def wrs_resume_helper(
                         lines.extend(
                             [
                                 *_sstatus_sie(priv, r_temp, sie_val),
-                                "#ifdef SSTC_SUPPORTED",
+                                sstc,
                                 "# Set sie.STIE",
                                 f"LI(x{r_temp}, 0x20)",
                                 tsbi_call_or_direct(f"csrs sie, x{r_temp}", priv),
@@ -136,7 +141,7 @@ def wrs_resume_helper(
                                     f"{prefix}tw_{tw_val}_mie_{mie_val}_sie_{sie_val}_{op}", coverpoint, covergroup
                                 ),
                                 *wait_loop_arm(test_data, r_temp, r_temp2),
-                                "#ifdef SSTC_SUPPORTED",
+                                sstc,
                                 "# Set stimer interrupt soon",
                                 f"RVTEST_SET_SSTC_INT_SOON_{arm}",
                                 "#else",
@@ -169,7 +174,7 @@ def wrs_resume_helper(
                         lines += wait_loop(test_data, r_temp, wait, None if mie_val else ("mip", 0x80))
                     elif mode == "S" and sie_val == 0:
                         lines += [
-                            "#ifdef SSTC_SUPPORTED",
+                            sstc,
                             *wait_loop(test_data, r_temp, wait, ("sip", 0x20)),
                             "#else",
                             *wait_loop(test_data, r_temp, wait),
@@ -180,12 +185,12 @@ def wrs_resume_helper(
                     if virtual:
                         lines.append(f"RVTEST_TSBI_GOTO_{priv}MODE")
                     # Disarm the timer that was armed so no pending interrupt carries into the next testcase.
-                    # Below M-mode that is the supervisor timer with Sstc, and mtimecmp is written through T-SBI
-                    # only without Sstc (for example on M+U cores). RVA23 mandates Sstc, so it never does.
+                    # Below M-mode that is the supervisor timer with Sstc and a delegatable STI, and mtimecmp is
+                    # written through T-SBI only otherwise (for example on M+U cores).
                     if lower:
                         lines.extend(
                             [
-                                "#ifdef SSTC_SUPPORTED",
+                                sstc,
                                 f"RVTEST_CLR_SSTC_INT_{priv}",
                                 "#else",
                                 f"RVTEST_CLR_MTIME_INT_{priv}",
@@ -198,7 +203,7 @@ def wrs_resume_helper(
     if lower:
         lines.extend(
             [
-                "#ifdef SSTC_SUPPORTED",
+                sstc,
                 "# Restore the boot value of menvcfg.STCE so mip.STIP is writable again",
                 *write_stce(test_data, False, priv),
                 "#endif",

@@ -388,7 +388,7 @@ def _any_xlen_exclusion(
     rv_marker: str, instr_keys: list[tuple[str, str]], tp: dict[tuple[str, str], list[str]]
 ) -> bool:
     """Check if any instruction lacks the given RV marker (meaning it's XLEN-specific)."""
-    return any(rv_marker not in tp[key] for key in instr_keys)
+    return any(rv_marker not in tp[key] for key in instr_keys if key in tp)
 
 
 def _ffLS_feasible(instr: str, sew: int) -> bool:
@@ -532,7 +532,7 @@ def _gen_instrs(
 
             # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
             # VCS requires coverpoints to be declared before cross references.
-            early_cps = ("cp_frm_2", "cp_frm_3", "cp_frm_4", "std_vec")
+            early_cps = ("cp_frm_2", "cp_frm_3", "cp_frm_4", "std_vec", "std_trap_vec")
             ordered_cps = sorted(
                 cps, key=lambda cp: (0 if cp.startswith(early_cps) else 2 if cp.startswith("cr_") else 1, cp)
             )
@@ -590,26 +590,23 @@ def _gen_covergroup_samples(
     for key in sorted(set(instr_keys).union(*extras.values())):
         instr = key[0]
         extra_rows = [extension for extension, group in sorted(extras.items()) if key in group]
-        cps = tp[key] if key in tp else extras[extra_rows[0]][key]
-        if not _matches_xlen(cps, has_rv32, has_rv64):
-            continue
 
-        if extra_rows:
-            base_calls = [customize_template(templates, template, arch, instr, effew=effew)] if key in tp else []
-            extra_calls = {
-                ext: customize_template(templates, template, _extra_name(arch, ext), instr, effew=effew)
-                for ext in extra_rows
-            }
-            if not base_calls and len(extra_calls) == 1:
-                ((ext, call),) = extra_calls.items()
-                lines.append(_guard(ext, _gen_sample_arm(templates, instr, [call])))
-            else:
-                guarded_calls = [_guard(ext, call) for ext, call in extra_calls.items()]
-                lines.append(_gen_sample_arm(templates, instr, base_calls + guarded_calls))
-            continue
+        if key in tp and _matches_xlen(tp[key], has_rv32, has_rv64):
+            base_calls = [customize_template(templates, template, arch, instr, effew=effew)]
+        else:
+            base_calls = []
 
-        call = customize_template(templates, template, arch, instr, effew=effew)
-        lines.append(_gen_sample_arm(templates, instr, [call]))
+        extra_calls = {
+            ext: customize_template(templates, template, _extra_name(arch, ext), instr, effew=effew)
+            for ext in extra_rows
+            if _matches_xlen(extras[ext][key], has_rv32, has_rv64)
+        }
+        if not base_calls and len(extra_calls) == 1:
+            ((ext, call),) = extra_calls.items()
+            lines.append(_guard(ext, _gen_sample_arm(templates, instr, [call])))
+        elif len(base_calls) + len(extra_calls) > 0:
+            guarded_calls = [_guard(ext, call) for ext, call in extra_calls.items()]
+            lines.append(_gen_sample_arm(templates, instr, base_calls + guarded_calls))
 
     return "".join(lines)
 
@@ -702,7 +699,10 @@ def _write_extension_files(
                 )
             )
             for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
-                if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
+                if any(
+                    _any_xlen_exclusion(exclude_marker, relevant_instrs, testplan)
+                    for testplan in [tp, *extras.values()]
+                ):
                     lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
                     lines.append(
                         _gen_covergroup_samples(
@@ -715,7 +715,7 @@ def _write_extension_files(
     else:
         lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True, extras=extras))
         for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
-            if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
+            if any(_any_xlen_exclusion(exclude_marker, all_keys, testplan) for testplan in [tp, *extras.values()]):
                 lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
                 lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, rv32, rv64, extras=extras))
                 lines.append(customize_template(templates, "end", arch))

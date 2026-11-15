@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 INSTALL_DIR="${1:?Usage: install-blackparrot.sh <install-dir>}"
 BP_REPO="https://github.com/black-parrot/black-parrot.git"
-BP_COMMIT="909619a68f3541a4cd0973767daf2a561d1f8c95" # master, 2026-11-10
+BP_COMMIT="18bad897633ffd57394746cfc31496e26d20ff0a" # master, 2026-11-15
 VERILATOR_VERSION="v5.052"
 # The default unicore configuration: bp_unicore_cfg_p = bp_default_cfg_p
 BP_CFG="e_bp_unicore_cfg"

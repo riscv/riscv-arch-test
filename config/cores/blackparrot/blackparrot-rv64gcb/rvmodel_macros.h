@@ -3,7 +3,7 @@
 // Copyright (c) 2026, Harvey Mudd College
 // SPDX-License-Identifier: Apache-2.0
 //
-// Addresses are from black-parrot @ 909619a68f3541a4cd0973767daf2a561d1f8c95:
+// Addresses are from black-parrot @ 18bad897633ffd57394746cfc31496e26d20ff0a:
 //   host device (bp_nonsynth_host): bp_common/src/include/bp_common_host_pkgdef.svh
 //   CLINT: bp_common/src/include/bp_common_clint_pkgdef.svh, bp_me/src/v/dev/bp_me_clint_slice.sv
 
@@ -29,7 +29,7 @@
 
 // The host device ends the simulation on a write to the finish register:
 //   "else if (finish_w_v_li && ~|data_lo[0+:byte_width_gp]) ... [BSG-PASS] ... $finish;"
-//   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_top/test/common/bp_nonsynth_host.sv#L107-L119
+//   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/bp_top/test/common/bp_nonsynth_host.sv#L107-L119
 // finish_base_addr_gp = 0x0_2000 in the host device at 0x0010_0000.
 #define BP_HOST_PUTCHAR_ADDR 0x00101000
 #define BP_HOST_FINISH_ADDR  0x00102000
@@ -53,7 +53,7 @@
 
 // Each byte stored to the putchar register is printed with $write:
 //   "else if (putchar_w_v_li) begin $write("%c", data_lo[0+:byte_width_gp]); ..."
-//   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_top/test/common/bp_nonsynth_host.sv#L92-L96
+//   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/bp_top/test/common/bp_nonsynth_host.sv#L92-L96
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
   li _R2, BP_HOST_PUTCHAR_ADDR ;                       \
 1:                           ;                       \
@@ -70,7 +70,7 @@
 // physical address width set raises an access fault:
 //   "// Fault if accessing an address > physically supported
 //    wire eaddr_oob_fault_v = ~trans_r & |r_etag_r[etag_width_p-1:ptag_width_p];"
-//   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_common/src/v/bp_mmu.sv#L163-L164
+//   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/bp_common/src/v/bp_mmu.sv#L163-L164
 // No lower address faults for loads and stores: the "host I/O" region, physical address bit 33
 // and up, is by design checked only for fetches
 // (https://github.com/black-parrot/black-parrot/issues/1364).
@@ -99,7 +99,7 @@
 // The CLINT holds msip at offset 0 and two software-settable external-interrupt bits at
 // 0xC000 (M) and 0xC008 (S):
 //   "assign m_external_irq_o = plic_r[0]; assign s_external_irq_o = plic_r[1];"
-//   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_me/src/v/dev/bp_me_clint_slice.sv#L196-L197
+//   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/bp_me/src/v/dev/bp_me_clint_slice.sv#L196-L197
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 #define BP_MEIP_ADDRESS      (CLINT_BASE_ADDRESS + 0xC000)
 #define BP_SEIP_ADDRESS      (CLINT_BASE_ADDRESS + 0xC008)

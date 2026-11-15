@@ -1,11 +1,11 @@
 /* Copyright (c) 2026, Harvey Mudd College
  * SPDX-License-Identifier: Apache-2.0
  *
- * Linker script for BlackParrot in the bp_tethered testbench (black-parrot @ 909619a6).
+ * Linker script for BlackParrot in the bp_tethered testbench (black-parrot @ 18bad897).
  *
  * The testbench's configuration loader sets the reset PC to the DRAM base:
  *   "write_register(j, cfg_reg_npc_gp, 0, dram_base_addr_gp);"
- *   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/bp_top/test/common/bp_nonsynth_cfg_loader.sv#L88
+ *   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/bp_top/test/common/bp_nonsynth_cfg_loader.sv#L88
  * with "localparam dram_base_addr_gp = 40'h00_8000_0000;" (bp_common_addr_pkgdef.svh#L27).
  * The DRAM model holds 64 MiB ("localparam mem_size_p = 2**26;", bp_nonsynth_dram.sv#L95).
  */

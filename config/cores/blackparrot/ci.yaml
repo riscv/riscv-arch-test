@@ -4,21 +4,12 @@
 
 ci_enabled: true
 
-# black-parrot @ 909619a6. Paths are under
-#   https://github.com/black-parrot/black-parrot/blob/909619a68f3541a4cd0973767daf2a561d1f8c95/
+# black-parrot @ 18bad897. Paths are under
+#   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/
 exclude_extensions:
-  # A csrr of mip or sip that is the first instruction of a trap handler reads SEIP = 0 while the
-  # S-mode external interrupt line is high (https://github.com/black-parrot/black-parrot/issues/1382)
-  - InterruptsS_enable_S
-  - InterruptsS_enable_U
-  - InterruptsS_priority_sip_S
-  - InterruptsS_priority_sip_U
-  - InterruptsS_trigger_S
-  - InterruptsS_trigger_U
-  - InterruptsSm_trigger_S
-  - InterruptsSm_trigger_U
-  # mcycle and minstret keep only 48 bits: bp_common/src/include/bp_common_rv64_csr_defines.svh#L617
-  # (https://github.com/black-parrot/black-parrot/issues/1383)
+  # mcycle and minstret keep only 48 bits (https://github.com/black-parrot/black-parrot/issues/1383):
+  # 17a2c059 widened their types, but writes still go through the 48-bit compress_mcounter_s,
+  # bp_common/src/include/bp_common_rv64_csr_defines.svh#L1000-L1001
   - Sm_mcsr_cntr
   # stval keeps only the 39-bit virtual address width, sign-extended, so a non-canonical address is
   # reported as a canonical one: bp_be/src/include/bp_be_defines.svh#L137

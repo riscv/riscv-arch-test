@@ -2,7 +2,7 @@
 
 [BlackParrot](https://github.com/black-parrot/black-parrot) is a Linux-capable RV64GC core from the
 University of Washington and Boston University. It is tested in its `bp_tethered` testbench under
-Verilator, pinned to black-parrot `909619a6`, in the default unicore configuration
+Verilator, pinned to black-parrot `18bad897`, in the default unicore configuration
 `e_bp_unicore_cfg` (`bp_default_cfg_p`): 32 KB I$, 32 KB write-back D$, Sv39, no PMP, and a 128 KB
 L2 in front of the testbench DRAM.
 

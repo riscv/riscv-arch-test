@@ -555,7 +555,7 @@ if __name__ == '__main__':
     import_all_modules(priv)
 
     testplans = readTestplans(priv=True)
-    main_testgen_extensions = ["ExceptionsVx"]
+    main_testgen_extensions = ["ExceptionsV"]
     extensions = [testplan for testplan in testplans.keys() if testplan not in main_testgen_extensions]
 
     generated_files: dict[str, set[pathlib.Path]] = {extension: set() for extension in extensions}
@@ -613,8 +613,8 @@ if __name__ == '__main__':
         # picks up every chunk independently, each with its own RVTEST_BEGIN/END
         # wrapper, signature region, and SIGUPD_COUNT. Other priv arches keep a
         # single file (CHUNK_SIZE >= len(instructions)).
-        if extension.startswith("SsstrictV"):
-            CHUNK_SIZE = 25
+        if extension.startswith("Ssstrict"):
+            CHUNK_SIZE = 250
         elif extension.startswith("MisalignV"):
             CHUNK_SIZE = len(instructions) // 2
         else:
@@ -651,7 +651,7 @@ if __name__ == '__main__':
             # insert generic header
             insertTemplate(chunk_basename, 0, "testgen_header.S", priv=True, vdsew=64)
 
-            if extension == "SsstrictV":
+            if extension.startswith("Ssstrict"):
                 writeLine("")
                 writeLine("// Every testcase instruction in this file is a reserved encoding: the point of")
                 writeLine("// the suite is that the DUT must raise an illegal-instruction trap on it. They")
@@ -664,8 +664,6 @@ if __name__ == '__main__':
             for instruction in chunk_instructions:
                 coverpoints = list(testplans[extension][instruction])
                 makeTest(coverpoints, instruction)
-
-            insertTemplate(chunk_basename, 0, "cp_vstart_gt_vl_setup.S")
 
             # The framework's RVTEST_CODE_END (tests/env/rvtest_setup.h) hardcodes x2
             # as the signature pointer for its final check_trap_sig_offset SIGUPD.

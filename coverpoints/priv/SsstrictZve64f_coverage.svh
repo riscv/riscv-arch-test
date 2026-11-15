@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SSSTRICTZVE64F
-covergroup SsstrictZve64f_vfncvt_f_x_w_sew32_cg with function sample(ins_t ins);
+covergroup SsstrictZve64f_vfncvt_f_x_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ covergroup SsstrictZve64f_vfncvt_f_x_w_sew32_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64f_vfncvt_f_xu_w_sew32_cg with function sample(ins_t ins);
+covergroup SsstrictZve64f_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ covergroup SsstrictZve64f_vfncvt_f_xu_w_sew32_cg with function sample(ins_t ins)
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg with function sample(ins_t ins);
+covergroup SsstrictZve64f_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ covergroup SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg with function sample(ins_t i
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t ins);
+covergroup SsstrictZve64f_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +134,7 @@ covergroup SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg with function sample(ins_t 
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64f_vfwcvt_x_f_v_sew32_cg with function sample(ins_t ins);
+covergroup SsstrictZve64f_vfwcvt_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ covergroup SsstrictZve64f_vfwcvt_x_f_v_sew32_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg with function sample(ins_t ins);
+covergroup SsstrictZve64f_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,58 +185,26 @@ covergroup SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg with function sample(ins_t ins)
 endgroup
 // ---------------------
 function void ssstrictzve64f_sample(int hart, int issue, ins_t ins);
-    // Want to sample only if the SEW matches the target SEW of the file, some tests require
-    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
-    // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
-            default: ; // a case needs at least one item, and some configurations select none
-        endcase
-    end
-    // Want to sample only if the SEW matches the target SEW of the file, some tests require
-    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
-    // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
-            default: ; // a case needs at least one item, and some configurations select none
-        endcase
-    end
-    // Want to sample only if the SEW matches the target SEW of the file, some tests require
-    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
-    // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+
+    case (traceDataQ[hart][issue][0].inst_name)
         "vfncvt.f.x.w"     : begin
-            SsstrictZve64f_vfncvt_f_x_w_sew32_cg.sample(ins);
+            SsstrictZve64f_vfncvt_f_x_w_cg.sample(ins);
         end
         "vfncvt.f.xu.w"     : begin
-            SsstrictZve64f_vfncvt_f_xu_w_sew32_cg.sample(ins);
+            SsstrictZve64f_vfncvt_f_xu_w_cg.sample(ins);
         end
         "vfwcvt.rtz.x.f.v"     : begin
-            SsstrictZve64f_vfwcvt_rtz_x_f_v_sew32_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_rtz_x_f_v_cg.sample(ins);
         end
         "vfwcvt.rtz.xu.f.v"     : begin
-            SsstrictZve64f_vfwcvt_rtz_xu_f_v_sew32_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_rtz_xu_f_v_cg.sample(ins);
         end
         "vfwcvt.x.f.v"     : begin
-            SsstrictZve64f_vfwcvt_x_f_v_sew32_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_x_f_v_cg.sample(ins);
         end
         "vfwcvt.xu.f.v"     : begin
-            SsstrictZve64f_vfwcvt_xu_f_v_sew32_cg.sample(ins);
+            SsstrictZve64f_vfwcvt_xu_f_v_cg.sample(ins);
         end
-            default: ; // a case needs at least one item, and some configurations select none
-        endcase
-    end
-    // Want to sample only if the SEW matches the target SEW of the file, some tests require
-    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
-    // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
-            default: ; // a case needs at least one item, and some configurations select none
-        endcase
-    end
+        default: ; // a case needs at least one item, and some configurations select none
+    endcase
 endfunction

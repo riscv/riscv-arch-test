@@ -17,7 +17,11 @@ from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 
 def get_extensions(testplan_dir: Path) -> list[str]:
     """Get the list of extensions from the testplan directory."""
-    return [testplan.stem for testplan in (*testplan_dir.glob("*.csv"), *testplan_dir.glob("priv/*.csv"))]
+    return [
+        testplan.stem
+        for testplan in (*testplan_dir.glob("*.csv"), *testplan_dir.glob("priv/*.csv"))
+        if not testplan.stem.startswith(("SsstrictV", "SsstrictZv"))
+    ]
 
 
 @dataclass

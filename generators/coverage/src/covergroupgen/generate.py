@@ -70,7 +70,7 @@ _VECTOR_TESTGEN_COMMON = _load_testgen_script("vector_testgen_common.py")
 
 
 # Vector extension prefixes used to identify vector architectures.
-VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv", "SsstrictV", "SsstrictZv")
+VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv")
 
 # Priv tests that are driven by csvs (only for Vector Priv)
 PRIV_TESTPLAN_PREFIXES = ("Exceptions", "Ssstrict")

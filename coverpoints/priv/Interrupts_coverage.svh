@@ -1347,9 +1347,12 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
     `ifdef SM_WFI_PRIV
         cp_wfi:                 cross `SM_WFI_PRIV, mstatus_mie, mie_mtie_one, mstatus_tw_zero, wfi, mideleg_zeros;
     `endif
-    // VS-mode WFI waits only with hstatus.VTW = 0; VU-mode WFI never waits.
+    // VS-mode WFI waits only with hstatus.VTW = 0; VU-mode WFI never waits. Like cp_wfi, it waits for
+    // the machine timer, so it needs MTI.
     `ifdef H_SUPPORTED
-        cp_wfi_vs:              cross priv_mode_vs, mstatus_mie, mie_mtie_one, mstatus_tw_zero, hstatus_vtw_zero, wfi, mideleg_zeros;
+        `ifdef UDB_MTI_INTR_IMPL
+            cp_wfi_vs:          cross priv_mode_vs, mstatus_mie, mie_mtie_one, mstatus_tw_zero, hstatus_vtw_zero, wfi, mideleg_zeros;
+        `endif
     `endif
 
     // mstatus.TW = 1 traps WFI in every mode below M, so the timeout applies whenever any lower mode

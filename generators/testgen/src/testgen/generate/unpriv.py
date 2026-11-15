@@ -10,7 +10,7 @@
 
 from pathlib import Path
 
-from testgen.constants import INDENT, TESTCASES_PER_FILE, VLEN_MAX, get_flen_for_extensions
+from testgen.constants import INDENT, PRIV_TRAP_SIGUPD_COUNT, TESTCASES_PER_FILE, VLEN_MAX, get_flen_for_extensions
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
@@ -153,6 +153,9 @@ def _generate_unpriv_tests_for_instruction(
             ]
         else:
             extra_defines = []
+
+        if is_priv:
+            extra_defines.append(f"#define TRAP_SIGUPD_COUNT {PRIV_TRAP_SIGUPD_COUNT}")
 
         generated_files.add(
             write_test_file(

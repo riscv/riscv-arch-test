@@ -763,6 +763,8 @@ def prep_vstart(
     params: InstructionParams,
     vstart_val: Literal["one", "vlmaxm1", "vlmaxd2", "random", "vstart_gt_vl"],
     is_mask_ls: bool,
+    eew_override: int | None,
+    lmul_override: float | None,
 ) -> list[str]:
     """
     Prepares vl and vstart for the given value. For vstart_val in {one, vlmaxm1, vlmaxd2, random}, vstart
@@ -771,15 +773,19 @@ def prep_vstart(
 
     Optional Args:
         is_mask_ls: Flag for mask load/stores. These use units of bytes for vstart while vl is in bits
+        eew_override: Used when vstart and vl are calculated using a different EEW
     """
 
     assert params.lmul is not None, "LMUL must be provided for vector tests"
     assert params.sew is not None, "SEW must be provided for vector tests"
 
+    eew = eew_override if eew_override is not None else params.sew
+    lmul = lmul_override if lmul_override is not None else params.lmul
+
     vstart_reg, vlmax_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
     lines = [
         f"# Load vstart={vstart_val}",
-        f"vsetvli x{vlmax_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+        f"vsetvli x{vlmax_reg}, x0, e{eew}, m{get_lmul_flag(lmul)}, ta, ma",
     ]
 
     if is_mask_ls:
@@ -871,6 +877,9 @@ def prep_vstart(
                 ]
             )
             test_data.int_regs.return_register(vl_reg)
+
+    if eew_override and vstart_val != "vstart_gt_vl":
+        lines.append(reload_vtype(params, "x0"))
 
     lines.append(f"csrw vstart, x{vstart_reg}")
     test_data.int_regs.return_registers([vstart_reg, vlmax_reg])

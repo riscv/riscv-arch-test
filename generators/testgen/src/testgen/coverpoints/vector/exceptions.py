@@ -154,19 +154,6 @@ def cp_vstart(
 
     instr_info = parse_vector_instruction_info(instr_name, instr_type)
 
-    max_multiplier = max(
-        instr_info.get_size_multiplier(reg, sew, instr_type_config.vector_data)
-        for sew in sews
-        for reg in instr_type_config.required_params
-    )
-    max_lmul = int(8 / max_multiplier)
-    if max_lmul * instr_info.segments > 8:
-        max_lmul = 8 // instr_info.segments
-
-    if instr_info.whole_registers is not None:
-        # The EVL in these cases is calculated as if LMUL=nreg
-        max_lmul = instr_info.whole_registers
-
     # vstart is in units of bytes for these instructions
     is_mask_ls = instr_type in {"VSM", "VLM"}
 
@@ -197,6 +184,9 @@ def cp_vstart(
             else:
                 raise ValueError(f"Could not find legal lmul to run {instr_name}")
 
+            if instr_info.whole_registers is not None:
+                lmul = instr_info.whole_registers
+
             bin_name = f"{vstart_val}_sew_{sew}"
             label_line = test_data.add_testcase(bin_name, coverpoint, f"{test_data.config.testsuite}_{instr_name}_cg")
             register_data = get_register_data_labels(instr_info, instr_type_config, sew, test_data)
@@ -208,10 +198,15 @@ def cp_vstart(
 
             if instr_type_config.vector_data.require_zero_vstart:
                 # These instructions always trap, so we should never sigupd
-                check = ""
+                check = "#endif" if setup.startswith("#if") else ""
                 tc.sigupd_count = prior_sigupd_count
 
-            pre_vstart = "\n".join(prep_vstart(test_data, params, vstart_val, is_mask_ls))
+            eew_override = lmul_override = None
+            if instr_info.load_store_eew is not None:
+                eew_override = instr_info.load_store_eew
+                lmul_override = lmul * (eew_override / sew) if instr_info.whole_registers is None else lmul
+
+            pre_vstart = "\n".join(prep_vstart(test_data, params, vstart_val, is_mask_ls, eew_override, lmul_override))
             post_vstart = "\n".join(
                 [
                     write_sigupd(None, test_data, "vstart"),
@@ -221,14 +216,12 @@ def cp_vstart(
 
             tc.code.extend(
                 [
-                    f"#if ({int(sew * max_multiplier)} <= UDB_ELEN)",
                     setup,
                     pre_vstart,
                     label_line,
                     test,
                     post_vstart,
                     check,
-                    "#endif",
                 ]
             )
             return_testcase_registers(test_data, params)
@@ -307,10 +300,12 @@ def cp_exceptionsv_address_fault(
         )
         label_line = test_data.add_testcase(f"sew{sew}", coverpoint)
         setup, test, _check = format_instruction(instr_name, instr_type, test_data, params)
+        # We throw out check where the endif is found
+        endif = "#endif" if setup.startswith("#if") else ""
 
         # Discard SIGUPD because this must fault
         tc.sigupd_count = 0
-        tc.code.extend([setup, label_line, test])
+        tc.code.extend([setup, label_line, test, endif])
 
         tc = test_data.end_test_chunk()
         return_testcase_registers(test_data, params)
@@ -340,7 +335,7 @@ def cp_misalignv(instr_name: str, instr_type: str, coverpoint: str, test_data: T
             tc = test_data.begin_test_chunk()
             label_line = test_data.add_testcase(f"sew{sew}_offset{offset}", coverpoint)
             setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-            add_offset = f"addi {params.rs1}, {params.rs1}, {offset}"
+            add_offset = f"addi x{params.rs1}, x{params.rs1}, {offset}"
 
             tc.code.extend([setup, add_offset, label_line, test, check])
 
@@ -396,7 +391,7 @@ def cp_mstatus_v(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
             # Re-Enable the mstatus bits after the test
             reenable_mstatus_bits = [
-                f"LI(x{temp_reg}, {FS_MASK, VS_MASK})",
+                f"LI(x{temp_reg}, {FS_MASK | VS_MASK})",
                 tsbi_call(f"csrs mstatus, x{temp_reg}"),
             ]
             test_data.int_regs.return_register(temp_reg)

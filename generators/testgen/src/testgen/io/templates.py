@@ -108,6 +108,7 @@ def canonicalize_extensions(
         instr_name: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
         extra_extensions: Optional. Extensions a testplan row requires beyond the testsuite's own.
     """
+    testsuite = testsuite.removeprefix("ExceptionsV")
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = (
         required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z0-9]*", testsuite)

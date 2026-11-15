@@ -62,7 +62,10 @@ def generate_unpriv_extension_tests(
         testsuite = "E"
 
     # Create testsuite-wide test configuration
-    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
+    if is_priv:
+        output_dir = output_test_dir / "priv" / testsuite
+    else:
+        output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
@@ -93,10 +96,13 @@ def generate_unpriv_extension_tests(
                 test_configs[instr_data.extra_extensions],
                 output_dir,
                 is_vector,
+                is_priv,
             )
         )
 
-    for stale_file in set(output_dir.glob("*.S")) - generated_files:
+    # Priv generates both xlens in the same directory
+    glob = f"*_rv{xlen}*.S" if is_priv else "*.S"
+    for stale_file in set(output_dir.glob(glob)) - generated_files:
         stale_file.unlink()
 
 
@@ -106,7 +112,8 @@ def _generate_unpriv_tests_for_instruction(
     coverpoints: list[str],
     test_config: TestConfig,
     output_dir: Path,
-    is_vector: bool = False,
+    is_vector: bool,
+    is_priv: bool,
 ) -> set[Path]:
     """
     Generate tests for a specific instruction based on its coverpoints.
@@ -119,6 +126,7 @@ def _generate_unpriv_tests_for_instruction(
         test_config: Test configuration
         output_dir: Directory to output generated tests
         is_vector: Set in vector test suites
+        is_priv: Set for csv-driven priv tests
     """
     test_data = TestData(test_config, instr_name)
     all_test_chunks: list[TestChunk] = []
@@ -147,7 +155,9 @@ def _generate_unpriv_tests_for_instruction(
             extra_defines = []
 
         generated_files.add(
-            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines)
+            write_test_file(
+                test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines, csv_driven_priv=is_priv
+            )
         )
 
     # Clean up (make sure all registers were returned)

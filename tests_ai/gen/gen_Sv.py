@@ -2129,9 +2129,12 @@ def gen_satp() -> list[SvTest]:
         rule_text="[the 20-bit VPN] is translated into a 22-bit physical page number (PPN)",
         context="RV32 only. Sv32 physical addresses are 34 bits: PTE.PPN[1] is 12 bits (PTE bits 31:20), so PPN bits "
         "21:20 select physical addresses at and above 4 GiB. The algorithm never ignores high PPN bits "
-        "(<<sv32algorithm>> note), so such a PTE is not a page fault and does not alias page P below 4 GiB.",
-        plan="Leaves whose PPN is P's plus 2^20 or 2^21 (PA + 4 GiB, + 8 GiB): lw raises no page fault: it either "
-        "raises a load access fault or reads data other than P's signature. P's own mapping reads P.",
+        "(<<sv32algorithm>> note), so such a PTE is not a page fault, and on a hart whose physical addresses are "
+        "narrower than the PA it selects (UDB_PHYS_ADDR_WIDTH) the access faults. RV32 cannot reach those "
+        "addresses without translation, so below that width (where a platform may alias memory) only the absence "
+        "of a page fault is checked.",
+        plan="Leaves whose PPN is P's plus 2^20 or 2^21 (PA + 4 GiB, + 8 GiB): lw raises no page fault, and raises a "
+        "load access fault when the PA bit is at or above UDB_PHYS_ADDR_WIDTH. P's own mapping reads P.",
     )
     t.page("P")
     with t.rv32_only():
@@ -2143,24 +2146,57 @@ def gen_satp() -> list[SvTest]:
         pt.leaf(va + 0x2000, t.page("P"), LEAF, ppn_add=1 << 21)
         pt.on()
         s_load(t, va, t.page_id("P"), "P's own mapping")
-        for k, note in ((1, "PPN bit 20 (PA bit 32)"), (2, "PPN bit 21 (PA bit 33)")):
-            high_ppn_load(t, va + k * 0x1000, t.page_id("P"), note)
+        for k, bit in ((1, 20), (2, 21)):
+            high_ppn_load(t, va + k * 0x1000, t.page_id("P"), bit + 12)
         satp_off(t)
     tests.append(t)
     return tests
 
 
-def high_ppn_load(t: SvTest, va: int, pid: int, note: str) -> None:
-    """lw through a leaf whose PPN has a high bit added: an access fault, or data that is not page pid's
-    signature; never a page fault."""
+# Registers that carry the untranslated outcome (xcause or all ones) and data of each high-PPN case to the
+# translated load; nothing in the Sv generator or the framework's trap path uses them.
+PPN_SAVE = (("x18", "x19"), ("x20", "x21"), ("x22", "x23"), ("x24", "x25"))
+
+
+def pa_beyond(pa_bit: int) -> str:
+    """Preprocessor condition: physical address bit pa_bit is at or above the hart's physical address width, so
+    an access there must raise an access fault. Without the UDB parameter, nothing is assumed."""
+    return f"defined(UDB_PHYS_ADDR_WIDTH) && UDB_PHYS_ADDR_WIDTH <= {pa_bit}"
+
+
+def bare_high_load(t: SvTest, page: str, pid: int, pa_bit: int, save: tuple[str, str]) -> None:
+    """With satp Bare, S-mode lw of page's physical address with pa_bit added: it reads memory or raises a load
+    access fault (a platform may alias memory, or not have it). The outcome and data go to the save registers
+    for high_ppn_load's comparison."""
+    t.load("x7", lsig(pid) ^ 1, "preset: not P's signature")
+    t.la("x6", page)
+    t.emit(f"li x8, {hex(1 << pa_bit)}")
+    t.emit("add x6, x6, x8")
+    win(t, None, "S", ["lw x7, 0(x6)"], ["ok", AF["load"]], f"untranslated lw of P's PA + 2^{pa_bit}")
+    t.emit(f"mv {save[0]}, x14  // outcome: xcause, or all ones for no trap")
+    t.emit(f"mv {save[1]}, x7  // data, or the preset after a fault")
+
+
+def high_ppn_load(t: SvTest, va: int, pid: int, pa_bit: int, save: tuple[str, str] | None = None) -> None:
+    """lw through a leaf whose PPN has PA bit pa_bit added: never a page fault; an access fault when pa_bit is
+    beyond the physical address width; and, with `save` (from bare_high_load of the same physical address), the
+    same outcome and data as the untranslated load. A platform may alias memory below its physical address
+    width, so the untranslated load is the reference there, not page P's signature."""
+    note = f"PPN bit {pa_bit - 12} (PA bit {pa_bit})"
     t.load("x7", lsig(pid) ^ 1, "preset: not P's signature")
     t.emit(f"li x6, {hex(va)}")
     exp = ["ok", AF["load"]] if MUT != "high_ppn_page_fault" else LOAD_PF
     lab = win(t, None, "S", ["lw x7, 0(x6)"], exp, f"lw with {note}", tval=[0, va])
-    t.load("x8", lsig(pid), "P's signature")
-    t.emit("xor x8, x8, x7")
-    t.emit("snez x8, x8")
-    t.check_bool("x8", lab, f"{note}: does not alias the page below")
+    with t.only_if(pa_beyond(pa_bit)):
+        t.check("x14", AF["load"], lab, f"{note}, at or above UDB_PHYS_ADDR_WIDTH: load access fault")
+    if save is None:
+        return
+    t.emit(f"xor x8, x14, {save[0]}")
+    t.emit("seqz x8, x8")
+    t.check_bool("x8", lab, f"{note}: faults exactly when the untranslated lw of the same physical address does")
+    t.emit(f"xor x8, x7, {save[1]}")
+    t.emit("seqz x8, x8")
+    t.check_bool("x8", lab, f"{note}: reads what the untranslated lw of the same physical address reads")
 
 
 def q_load(t: SvTest, pid: int, desc: str) -> str:
@@ -2987,23 +3023,30 @@ def gen_scheme(sch: str) -> list[SvTest]:
         f"satp_ppn_{S}_sz",
         sch,
         "44-bit PPN",
-        ctx + f"{S} physical addresses are 56 bits: PTE.PPN is PTE bits 53:10. High PPN bits select physical "
-        "addresses far beyond memory, which raise access faults; the algorithm never ignores high PPN bits "
-        "(<<sv32algorithm>> note), so these leaves neither page-fault nor alias the page below.",
-        "Leaves with P's PPN plus 2^43, 2^38, 2^30 and 2^20 (PA bits 55, 50, 42, 32): lw raises a load access "
-        "fault or reads data other than P's signature, never a page fault. P's own leaf reads P.",
+        ctx + f"{S} physical addresses are 56 bits: PTE.PPN is PTE bits 53:10. The algorithm never ignores high "
+        "PPN bits (<<sv32algorithm>> note), so a leaf with a high PPN bit set accesses that physical address: "
+        "never a page fault, an access fault at or above the hart's physical address width "
+        "(UDB_PHYS_ADDR_WIDTH), and below it whatever an untranslated access of the same physical address "
+        "finds (a platform may alias memory there, so page P's signature is not a fault).",
+        "Leaves with P's PPN plus 2^43, 2^38, 2^30 and 2^20 (PA bits 55, 50, 42, 32). With satp Bare, S-mode lw "
+        "of each physical address records its outcome (data or load access fault). Translated, lw of each "
+        "leaf raises no page fault, raises a load access fault if the PA bit is at or above UDB_PHYS_ADDR_WIDTH, "
+        "and matches the untranslated outcome and data. P's own leaf reads P.",
     )
     t.page("P")
 
     def ppn_body(pt: SvPT) -> None:
         va = pt.va_t + 0x41000
         pt.leaf(va, t.page("P"), LEAF)
-        for k, bit in enumerate((43, 38, 30, 20), 1):
+        bits = (43, 38, 30, 20)
+        for k, bit in enumerate(bits, 1):
             pt.leaf(va + k * 0x1000, t.page("P"), LEAF, ppn_add=1 << bit)
+        for bit, save in zip(bits, PPN_SAVE):
+            bare_high_load(t, t.page("P"), t.page_id("P"), bit + 12, save)
         pt.on()
         s_load(t, va, t.page_id("P"), "P's own mapping")
-        for k, bit in enumerate((43, 38, 30, 20), 1):
-            high_ppn_load(t, va + k * 0x1000, t.page_id("P"), f"PPN bit {bit} (PA bit {bit + 12})")
+        for k, (bit, save) in enumerate(zip(bits, PPN_SAVE), 1):
+            high_ppn_load(t, va + k * 0x1000, t.page_id("P"), bit + 12, save)
 
     sch_run(t, sch, ppn_body)
     tests.append(t)

@@ -30,7 +30,8 @@ all of them. Mutants are named `Sv:<mutant>`.
   `satp_ppn_Sv*`, `satp_mode_sxlen32`) require the scheme's extension and are not probed. They cover:
   - the walk depth, V=0 at each level, a pointer at the last level, and D/A/U in pointers (reserved);
   - every VPN bit, sign extension, and the extremes of the VA space;
-  - the PTE stride and PPN width (high PPN bits give access faults, never page faults or aliases);
+  - the PTE stride and PPN width (high PPN bits never page-fault, access-fault at or above `UDB_PHYS_ADDR_WIDTH`,
+    and on RV64 match an untranslated access of the same physical address, which a platform may alias);
   - leaves at every level, superpage size, alignment and misalignment (each lower PPN field).
 - **Permissions.** `load_/store_/fetch_page_fault_*` sweep all 16 R/W/X/U encodings, including the reserved W-only
   encoding and a last-level pointer, × S/U × SUM × MXR. The U=1 half of each sweep is in `<rule>_U1.S`, so every

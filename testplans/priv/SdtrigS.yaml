@@ -518,18 +518,15 @@ coverpoints:
       tdata1.select = 1 (data)
       tdata1.XSL= 010
       tdata1.match = {1/9}
-      if RV32:
-      tdata2 = 0xFFFFFFFF
-      for x in 0:min(UDB_SDTRIG_MCONTROL6_MASKMAX6, XLEN-1)-1 tdata2[x] = 0 (legal NAPOT sizes only)
-      perform SW{0x0}, {0x12345678}, {0xFFFFFFFF} to scratch
-      if RV64:
-      tdata2 = 0xFFFFFFFFFFFFFFFF
-      for x in 0:min(UDB_SDTRIG_MCONTROL6_MASKMAX6, XLEN-1)-1 tdata2[x] = 0 (legal NAPOT sizes only)
-      perform SD{0x0}, {0x123456789ABCDEF0},{0xFFFFFFFFFFFFFFFF} to scratch
+      for x in 0:min(UDB_SDTRIG_MCONTROL6_MASKMAX6, XLEN-1)-1 (legal NAPOT sizes only):
+      tdata2 = all ones except tdata2[x] = 0, a range of 2^(x+1) masking bits x:0
+      perform SW (RV32) / SD (RV64) to scratch of:
+      zero, range_low (all ones above x, bits x:0 clear), outside (all ones but bit x+1), all ones
     expectation: |-
-      Breakpoint exception if the store data meets the condition set by tdata1.match
-      (zero bit x is a NAPOT range of 2^(x+1) bytes, so every range from 2^1 to 2^min(maskmax6, XLEN-1) is tested)
-    bins: legal matches (up to 2) * min(UDB_SDTRIG_MCONTROL6_MASKMAX6, XLEN-1) values * 3 ops
+      Breakpoint exception if the store data meets the condition set by tdata1.match: with match = 1, range_low and
+      ones fire and zero and outside do not, so a range one bit too narrow or too wide is caught
+      (every range from 2^1 to 2^min(maskmax6, XLEN-1) is tested)
+    bins: legal matches (up to 2) * min(UDB_SDTRIG_MCONTROL6_MASKMAX6, XLEN-1) values * 4 stores
     rules:
       - Sdtrig_mcontrol6_match_napot
       - Sdtrig_mcontrol6_match_not_napot

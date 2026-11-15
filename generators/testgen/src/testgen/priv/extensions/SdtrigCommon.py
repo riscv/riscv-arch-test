@@ -2994,15 +2994,23 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         for match in (1, 9):
             lines.append(f"\n# Match = {match}")
             lines.append(f"#ifdef {_match_legal(match)}")
-            for xlen, store, store_values in (
-                (32, "sw", (0x00000000, 0x12345678, 0xFFFFFFFF)),
-                (64, "sd", (0x0000000000000000, 0x123456789ABCDEF0, 0xFFFFFFFFFFFFFFFF)),
-            ):
+            for xlen, store in ((32, "sw"), (64, "sd")):
+                ones = (1 << xlen) - 1
                 lines.append(f"#if __riscv_xlen == {xlen}")
                 # tdata2 is all ones except bit zero_bit, a NAPOT range of 2^(zero_bit+1) bytes; every range from 2^1
-                # to 2^maskmax6 is supported (norm:Sdtrig_mcontrol6_napot_range), and M > 0 needs zero_bit < XLEN-1
+                # to 2^maskmax6 is supported (norm:Sdtrig_mcontrol6_napot_range), and M > 0 needs zero_bit < XLEN-1.
+                # The range is all ones above zero_bit. range_low (bits zero_bit:0 clear) matches only if every bit
+                # tdata2 masks is ignored, ones (bit zero_bit set) only if bit zero_bit is, and outside (all ones but
+                # bit zero_bit+1) must not match, so a range one bit too narrow or too wide is caught
                 for zero_bit in range(xlen - 1):
-                    tdata2 = ((1 << xlen) - 1) & ~(1 << zero_bit)
+                    tdata2 = ones & ~(1 << zero_bit)
+                    range_low = ones & ~((2 << zero_bit) - 1)
+                    store_values = (
+                        ("zero", 0),
+                        ("range_low", range_low),
+                        ("outside", ones ^ (2 << zero_bit)),
+                        ("ones", ones),
+                    )
                     lines.extend(
                         [
                             f"\n#if UDB_SDTRIG_MCONTROL6_MASKMAX6 > {zero_bit}",
@@ -3010,8 +3018,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                             f"LA(x{addr_reg}, scratch)",
                         ]
                     )
-                    for data in store_values:
-                        binname = f"RV{xlen}_trig_num_{trig_num}_match_{match}_zero_bit_{zero_bit}_data_{data:x}"
+                    for label, data in store_values:
+                        binname = f"RV{xlen}_trig_num_{trig_num}_match_{match}_zero_bit_{zero_bit}_{label}"
                         lines.extend(
                             [
                                 _add_tc(test_data, binname, coverpoint, covergroup),
@@ -3025,6 +3033,75 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
             lines.append(f"#endif // {_match_legal(match)}")
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b010)))
         lines.extend(_close_gates(gates))
+
+    ######################################
+    coverpoint = "cp_mcontrol6_match_napot_adr"
+    ######################################
+    # SdtrigSm only: NAPOT range matching does not depend on the mode. A select = 0 load trigger on every legal range
+    # of 2^(zero_bit+1) bytes. tdata2 is computed from the address of scratch at run time. inside loads from the
+    # address in scratch's range whose bits zero_bit:0 all differ from tdata2's (bit zero_bit set, the bits below it
+    # clear), so it matches only if every masked bit is ignored. That address need not be accessible: with match = 1
+    # the breakpoint is taken before the access (an address breakpoint has priority over access faults), and with
+    # match = 9 inside loads from scratch itself. outside loads from scratch with tdata2 in the adjacent range (bit
+    # zero_bit+1 flipped), so a range one bit too wide is caught. Every load that does not fire reads scratch.
+    if mode == "Sm":
+        lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
+        lines.extend(_global_ie(mode, True))
+        lines.append(comment_banner(coverpoint, "mcontrol6 NAPOT and not-NAPOT address matches on every legal range"))
+        for trig_num in TRIGGERS:
+            gates = _mcontrol6_gates(trig_num, mode)
+            lines.extend(gates)
+            lines.extend(_xsl_ifdefs(0b001))
+            lines.extend(_select_trigger(temp_reg, trig_num, mode))
+            for match in (1, 9):
+                lines.append(f"\n# Match = {match}")
+                lines.append(f"#ifdef {_match_legal(match)}")
+                for xlen in (32, 64):
+                    ones = (1 << xlen) - 1
+                    lines.append(f"#if __riscv_xlen == {xlen}")
+                    for zero_bit in range(xlen - 1):
+                        low = (2 << zero_bit) - 1  # the bits the range masks, zero_bit:0
+                        lines.append(f"\n#if UDB_SDTRIG_MCONTROL6_MASKMAX6 > {zero_bit}")
+                        for case in ("inside", "outside"):
+                            # tdata2: scratch's range (inside) or the adjacent one (outside), bit zero_bit clear
+                            tdata2 = [
+                                f"LA(x{temp_reg}, scratch)",
+                                f"LI(x{data_reg}, 0x{ones & ~low:x})",
+                                f"and x{temp_reg}, x{temp_reg}, x{data_reg} # base of scratch's range",
+                                *(
+                                    [f"LI(x{data_reg}, 0x{low + 1:x})", f"xor x{temp_reg}, x{temp_reg}, x{data_reg}"]
+                                    if case == "outside"
+                                    else []
+                                ),
+                                f"LI(x{data_reg}, 0x{low >> 1:x})",
+                                f"or x{temp_reg}, x{temp_reg}, x{data_reg} # bits zero_bit-1:0 set",
+                            ]
+                            if case == "inside" and match == 1:
+                                address = [
+                                    f"LA(x{addr_reg}, scratch)",
+                                    f"LI(x{data_reg}, 0x{ones & ~low:x})",
+                                    f"and x{addr_reg}, x{addr_reg}, x{data_reg}",
+                                    f"LI(x{data_reg}, 0x{(low + 1) >> 1:x})",
+                                    f"or x{addr_reg}, x{addr_reg}, x{data_reg} # bit zero_bit set, bits below clear",
+                                ]
+                            else:
+                                address = [f"LA(x{addr_reg}, scratch)"]
+                            binname = f"RV{xlen}_trig_num_{trig_num}_match_{match}_zero_bit_{zero_bit}_{case}"
+                            lines.extend(
+                                [
+                                    _add_tc(test_data, binname, coverpoint, covergroup),
+                                    *address,
+                                    *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=0b001, match=match),
+                                    f"lb x{data_reg}, 0(x{addr_reg})",
+                                    *_disable_trigger(mode),
+                                    *_sign_trap_count(temp_reg, test_data),
+                                ]
+                            )
+                        lines.append("#endif // UDB_SDTRIG_MCONTROL6_MASKMAX6")
+                    lines.append("#endif // __riscv_xlen")
+                lines.append(f"#endif // {_match_legal(match)}")
+            lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b001)))
+            lines.extend(_close_gates(gates))
 
     ######################################
     coverpoint = "cp_mcontrol6_napot_allones"
@@ -3328,6 +3405,9 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
 #     can), as they would on a hart that ignored size or matched the access's own width.
 # The mask matches (4, 5, 12, 13) and NAPOT (1, 9) follow the XLEN-half reading of riscv-isa-manual#3461 that
 # Sail 0.16, Whisper and ImperasDV implement; the other matches compare the low N bits of the value and tdata2.
+# NAPOT ranges are 2^1, masking only bit 0: tdata2 is legal only if the range is at most 2^maskmax6
+# (norm:Sdtrig_mcontrol6_match_napot_legal), and every hart with NAPOT supports 2^1 (norm:Sdtrig_mcontrol6_napot_range).
+# cp_mcontrol6_match_napot tests the wider ranges.
 
 _MS_MATCHES = (0, 1, 2, 3, 4, 5, 8, 9, 12, 13)
 _MS_SIZE_CODE = {8: 1, 16: 2, 32: 3, 64: 5}
@@ -3385,11 +3465,9 @@ def _ms_data_groups(match: int, n: int, xlen: int) -> list[tuple[int, list, list
         groups = [(above | d, [("value", d)], [("below", d - 1), ("one", 1)])]
     elif base == 3:  # lt
         groups = [(above | d, [("below", d - 1), ("one", 1)], [("value", d)])]
-    elif base == 1:  # NAPOT over bits 3:0
-        lo = d & ~0xF
-        groups = [
-            (above | lo | 0x7, [("range_lo", lo), ("range_hi", lo | 0xF)], [("bit4", lo ^ 0x10), ("topbit", lo ^ top)])
-        ]
+    elif base == 1:  # NAPOT over bit 0
+        lo = d & ~1
+        groups = [(above | lo, [("range_lo", lo), ("range_hi", lo | 1)], [("bit1", lo ^ 2), ("topbit", lo ^ top)])]
     elif base == 4:  # mask low: bit 0 compared, bit 1 masked off
         mask = _ms_mask(half) & ~0b10
         groups = [((mask << half) | (d & mask), [("value", d), ("unmasked_bit1", d ^ 2)], [("masked_bit0", d ^ 1)])]
@@ -3425,7 +3503,8 @@ def _ms_exec_groups(match: int, n: int, xlen: int, rd: int) -> list[tuple[int, l
             0: [(above | d, [("value", d)], [("imm0", d ^ step), ("bit12", d ^ (1 << 12))])],
             2: [(above | d, [("value", d)], [("below", d - step), ("c_nop", 0x0001)])],
             3: [(above | d, [("below", d - step), ("c_nop", 0x0001)], [("value", d)])],
-            1: [(above | d | 0x3, [("bit2_0", d), ("bit2_1", d | 0x4)], [("bit3", d ^ 0x8), ("bit12", d ^ (1 << 12))])],
+            # NAPOT over bit 0: the range's other value, d ^ 1 (c.addi4spn), would write a register
+            1: [(above | d & ~1, [("value", d)], [("imm0", d ^ step), ("bit12", d ^ (1 << 12))])],
             4: [
                 (
                     ((_ms_mask(half) & ~0x8) << half) | (d & ~0x8),
@@ -3451,17 +3530,12 @@ def _ms_exec_groups(match: int, n: int, xlen: int, rd: int) -> list[tuple[int, l
                     [("value", _MS_ADDI_LT), ("signed_below", d)],
                 )
             ],
-            1: [
-                (
-                    above | d | 0xFFFF,
-                    [("rs1_0", d), ("rs1_3", d | 0x18000)],
-                    [("bit17", d ^ (1 << 17)), ("bit31", d ^ (1 << 31))],
-                )
-            ],
+            # NAPOT over bit 0: the range's other value, d ^ 1, is a 16-bit encoding
+            1: [(above | d & ~1, [("value", d)], [("rs1_bit0", d ^ step), ("bit31", d ^ (1 << 31))])],
             # not-equal: everything but the disarming csrw fires
             8: [(above | disarm, [("rd", rd_write), ("bit14", imm_write)], [("value", disarm)])],
-            # not-NAPOT over bits 13:0, which holds the disarming csrw and the rd variant
-            9: [(above | (disarm & ~0x3FFF) | 0x1FFF, [("bit14", imm_write)], [("value", disarm), ("rd", rd_write)])],
+            # not-NAPOT over bit 0: everything but the disarming csrw fires
+            9: [(above | disarm & ~1, [("rd", rd_write), ("bit14", imm_write)], [("value", disarm)])],
             # mask low, addi: bit 15 compared, bit 13 (funct3: addi -> slti) masked off
             4: [
                 (

@@ -241,6 +241,28 @@ function automatic logic [1:0] sdtrig_size_data_case(ins_t ins);
     mask = (8 * bytes >= XLEN) ? '1 : ((XLEN'(1) << (8 * bytes)) - 1);
     return ((ins.current.rs2_val & mask) == ins.current.csr[CSR_TDATA2]) ? 2'd1 : 2'd2;
 endfunction
+// cp_mcontrol6_match_napot: the store data against tdata2's NAPOT range (bits zero_bit:0 masked): 0 = zero,
+// 1 = range_low (all masked bits clear), 2 = outside (all ones but bit zero_bit+1), 3 = ones, 4 = other
+function automatic logic [2:0] sdtrig_napot_data_case(ins_t ins);
+    logic [XLEN-1:0] t    = ins.current.csr[CSR_TDATA2];
+    logic [XLEN-1:0] low  = t ^ (t + XLEN'(1));  // bits zero_bit:0
+    logic [XLEN-1:0] base = t & ~low;
+    if (ins.current.rs2_val == '0) return 3'd0;
+    if (ins.current.rs2_val == '1) return 3'd3;
+    if (ins.current.rs2_val == base) return 3'd1;
+    if (ins.current.rs2_val == ~(low + XLEN'(1))) return 3'd2;
+    return 3'd4;
+endfunction
+// cp_mcontrol6_match_napot_adr, for a load at rs1: 1 = inside tdata2's NAPOT range, 2 = in the adjacent range (bit
+// zero_bit+1 flipped), 0 = anything else
+function automatic logic [1:0] sdtrig_napot_adr_case(ins_t ins);
+    logic [XLEN-1:0] t    = ins.current.csr[CSR_TDATA2];
+    logic [XLEN-1:0] low  = t ^ (t + XLEN'(1));
+    logic [XLEN-1:0] diff = (ins.current.rs1_val ^ t) & ~low;
+    if (diff == '0) return 2'd1;
+    if (diff == low + XLEN'(1)) return 2'd2;
+    return 2'd0;
+endfunction
 // cp_mcontrol6_match_size_*: an execute fire is sampled on the record before the matched instruction (see
 // sdtrig_exec_fired), where tdata1 is read after; every other record reads tdata1 from before it, so a target that
 // itself rewrites tdata1 (a csrw tdata1 that does not fire) is sampled with the trigger that saw it

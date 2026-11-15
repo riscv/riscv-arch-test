@@ -135,7 +135,9 @@ def _generate_unpriv_tests_for_instruction(
     # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
         # Skip cp_asm_count, std_vec, and std_trap_vec if mixed with other coverpoints
-        if coverpoint.startswith(("cp_asm_count", "std_vec", "std_trap_vec")) and len(coverpoints) > 1:
+        if len(coverpoints) > 1 and (
+            coverpoint == "cp_asm_count" or coverpoint.startswith(("std_vec", "std_trap_vec"))
+        ):
             continue
 
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))

@@ -116,7 +116,9 @@ def format_mmm(
 def format_mvv(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_mask_producing_type(instr_str, test_data, params, "MVV", {"vd", "vs1", "vs2"}, {"vd"})
+    return format_mask_producing_type(
+        instr_str, test_data, params, "MVV", {"vd", "vs1", "vs2"}, {"vd"}, lmul_aligned_reg=params.vs1
+    )
 
 
 @add_instruction_formatter("MVX", mvx_config)

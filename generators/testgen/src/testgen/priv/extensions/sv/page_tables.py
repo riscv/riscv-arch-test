@@ -212,6 +212,12 @@ def _check_macro_stage(mode: SvMode) -> None:
         )
 
 
+def _pte_setup_macro(macro: str, mode: SvMode, address: str) -> str:
+    """The PTE_SETUP_* macro that loads ``address``: the _FIXED variant, which uses LI_FIXED_LEN, for an
+    RVMODEL_* address, and otherwise the variant that uses LA."""
+    return f"{macro}_{mode.suffix}{'_FIXED' if 'RVMODEL_' in address else ''}"
+
+
 def write_pte(
     mode: SvMode,
     *,
@@ -297,9 +303,9 @@ def create_page_walk(
         table_address = table_addresses.get(pte_level, mode.page_table_label(table_level))
         if regs is None:
             _check_macro_stage(mode)
+            macro = _pte_setup_macro("PTE_SETUP", mode, table_address)
             lines.append(
-                f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(permissions)}), "
-                f"{virtual_address}, LEVEL{pte_level})"
+                f"{macro}({table_address}, ({_pte_expression(permissions)}), {virtual_address}, LEVEL{pte_level})"
             )
         else:
             lines.extend(
@@ -330,7 +336,8 @@ def create_nonleaf_pte(
         raise ValueError(f"Non-leaf level {level} is outside 1..{mode.levels - 1}")
     _check_macro_stage(mode)
     table_address = table_address or mode.page_table_label(level - 1)
-    return f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
+    macro = _pte_setup_macro("PTE_SETUP", mode, table_address)
+    return f"{macro}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_leaf_pte(
@@ -348,7 +355,8 @@ def create_leaf_pte(
     if superpage is None:
         superpage = level > 0
     macro = "SUPERPAGE_PTE_SETUP" if superpage and level > 0 else "PTE_SETUP"
-    return f"{macro}_{mode.suffix}({physical_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
+    macro = _pte_setup_macro(macro, mode, physical_address)
+    return f"{macro}({physical_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_page_mapping(

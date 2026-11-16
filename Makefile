@@ -5,7 +5,7 @@
 
 ########## Runtime Options ##########
 # CONFIG_FILES is required when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
-# `make coverage` uses CONFIG_FILES if set, otherwise it defaults to the Sail max configs.
+# `make coverage` uses CONFIG_FILES if set, otherwise it defaults to the Sail max configs. Only Sail configurations are supported for coverage.
 CONFIG_FILES ?=
 
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
@@ -125,7 +125,7 @@ help:
 	  'elfs (default)'      'Generate tests and compile self-checking ELFs for $$(CONFIG_FILES)' \
 	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
 	  'vector-tests'        'Generate vector test sources' \
-	  'coverage'            'Build with coverage instrumentation for $$(CONFIG_FILES) (default: Sail max)' \
+	  'coverage'            'Build with coverage instrumentation for Sail configs in $$(CONFIG_FILES) (default: Sail max)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
 	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
 	@printf '\n\033[1mGenerators:\033[0m\n'

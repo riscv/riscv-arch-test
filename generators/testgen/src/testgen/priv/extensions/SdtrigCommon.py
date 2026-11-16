@@ -47,11 +47,11 @@ SDTRIG_DEFINES = [
     # itrigger/etrigger fire after the trap is taken, so xEPC is inside the S trap vector; the handler must not advance it
     "#define SDTRIG_XEPC_IN_VECTOR",
 ]
-# The trap handler does not record xEPC for breakpoints. Where an mcontrol6 trigger fires is the implementation's
-# choice (the spec only suggests a timing), so every section that can fire one defines this. The icount, itrigger
-# and etrigger sections do not: icount fires before the next instruction (norm:Sdtrig_icount_pending) and
-# itrigger/etrigger just before the first instruction of the trap handler (norm:Sdtrig_itrigger_timing,
-# norm:Sdtrig_etrigger_timing), so they check xEPC.
+# When this is defined, the trap handler does not record xEPC for breakpoints. Where an mcontrol6 trigger fires is
+# the implementation's choice (the spec only suggests a timing), so every section that can fire one defines this.
+# The icount, itrigger and etrigger sections do not: icount fires before the next instruction
+# (norm:Sdtrig_icount_pending) and itrigger/etrigger just before the first instruction of the trap handler
+# (norm:Sdtrig_itrigger_timing, norm:Sdtrig_etrigger_timing), so they check xEPC.
 SDTRIG_IMPRECISE_XEPC = "#define SDTRIG_IMPRECISE_XEPC"
 
 # ── mcontrol6 ───────────────────────────────────────────────────────────────

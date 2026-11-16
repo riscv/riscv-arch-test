@@ -15,7 +15,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
-from types import ModuleType
 
 from rich import print as rprint
 from rich.progress import (
@@ -43,170 +42,11 @@ def _progress(description: str) -> Progress:
     )
 
 
-def _load_testgen_script(filename: str) -> ModuleType:
-    """Load a module from ``generators/testgen/scripts/`` by file path.
-
-    That directory is not a Python package, so its helpers (the single source
-    of truth for several vector rules) must be imported by path. These modules
-    are large, so they are loaded once into module-level globals rather than
-    per use.
-    """
-    import importlib.util
-
-    repo_root = Path(__file__).resolve().parents[4]
-    mod_path = repo_root / "generators" / "testgen" / "scripts" / filename
-    if not mod_path.exists():
-        raise FileNotFoundError(f"Required testgen script not found: {mod_path}")
-    spec = importlib.util.spec_from_file_location(mod_path.stem, mod_path)
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Could not create import spec for {mod_path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-# Loaded once at import; both are large testgen modules consulted per instruction.
-_VECTOR_TESTGEN_COMMON = _load_testgen_script("vector_testgen_common.py")
-
-
 # Vector extension prefixes used to identify vector architectures.
 VECTOR_PREFIXES = ("Zv", "V", "ExceptionsV", "ExceptionsZv")
 
 # Priv tests that are driven by csvs (only for Vector Priv)
 PRIV_TESTPLAN_PREFIXES = ("Exceptions", "Ssstrict")
-
-# Map instruction Type code → (has_vd_reg_group, has_vs1_reg_group, has_vs2_reg_group).
-# Used to suppress per-operand off_group / overlap crosses for instructions whose
-# encoding hardcodes an operand field (e.g. vid.v has no vs1/vs2 registers — those
-# bits are part of the opcode, so unaligned-vs1 / unaligned-vs2 bins can never fire).
-# vd is recorded as "present" for stores (the vs3 data register lives in the rd field
-# and still has an EMUL-aligned register group constraint).
-_TYPE_OPERANDS: dict[str, tuple[bool, bool, bool]] = {
-    "VVVM": (True, True, True),
-    "VVV": (True, True, True),
-    "VVVMR": (True, True, True),
-    "VVIM": (True, False, True),
-    "VVI": (True, False, True),
-    "VVXM": (True, False, True),
-    "VVX": (True, False, True),
-    "VVFM": (True, False, True),
-    "VVM": (True, False, True),
-    "VV": (True, False, True),
-    "VVR": (True, True, False),
-    "VFVM": (True, False, True),
-    "VI": (True, False, False),
-    "VM": (True, False, False),
-    "VF": (True, False, False),
-    "FV": (False, False, True),
-    "XV": (False, False, True),
-    "XVM": (False, False, True),
-    "VX": (True, False, False),
-    "VXM": (True, False, False),
-    "VXVM": (True, False, True),
-    "VXXM": (True, False, False),
-    "VSX": (True, False, False),
-    "VSXM": (True, False, False),
-    "VSXVM": (True, False, True),
-    "VSXXM": (True, False, False),
-    # Vector integer types from Vx.csv
-    "WVV": (True, True, True),
-    "WVX": (True, False, True),
-    "WVV_ACC": (True, True, True),
-    "WVX_ACC": (True, False, True),
-    "WWV": (True, True, True),
-    "WWX": (True, False, True),
-    "VWV": (True, True, True),
-    "VWX": (True, False, True),
-    "VWI": (True, False, True),
-    "VVV_ACC": (True, True, True),
-    "VVX_ACC": (True, False, True),
-    "VVV_SAT": (True, True, True),
-    "VVX_SAT": (True, False, True),
-    "VVI_SAT": (True, False, True),
-    "VVSR": (True, True, True),
-    "WVWSR": (True, True, True),
-    "MVV": (True, True, True),
-    "MVX": (True, False, True),
-    "MVI": (True, False, True),
-    "MVVM": (True, True, True),
-    "MVXM": (True, False, True),
-    "MVIM": (True, False, True),
-    "MMM": (True, True, True),
-    "MM": (True, False, True),
-    "VVVP": (True, True, True),
-    "VVXP": (True, False, True),
-    "VVIP": (True, False, True),
-    "VEXT": (True, False, True),
-    "VMVR": (True, False, True),
-    "VCOMPRESS": (True, True, True),
-    "VID": (True, False, False),
-}
-
-
-def _operand_presence(instr_type: str) -> tuple[bool, bool, bool]:
-    """Return (has_vd, has_vs1, has_vs2) register-group presence for a given Type.
-
-    Unknown types default to (True, True, True) so we don't accidentally drop bins
-    for new types that are added without updating this table.
-    """
-    return _TYPE_OPERANDS.get(instr_type, (True, True, True))
-
-
-def _max_legal_lmul_for_instruction(instr: str) -> int:
-    """Return the largest legal LMUL for ``instr`` (≤ 8).
-
-    Mirrors the rules in ``priv/_ssstrictv_helpers.max_legal_lmul``:
-
-    * Segment LS instructions require ``NF * EMUL ≤ 8`` so EMUL ≤ 8/NF.
-    * Widening / narrowing ops have an operand with EEW = 2*SEW so EMUL = 2*LMUL,
-      capping LMUL at 4.
-    * Otherwise LMUL ≤ 8.
-    """
-    _c = _VECTOR_TESTGEN_COMMON
-    nf = _c.getInstructionSegments(instr)
-    if nf and nf > 1:
-        cap = 8 // nf
-        for m in (8, 4, 2, 1):
-            if m <= cap:
-                return m
-        return 1
-    if instr in _c.vd_widen_ins or instr in _c.vs2_widen_ins:
-        return 4
-    return 8
-
-
-_LMUL_CROSS_RE = re.compile(r"cp_ssstrictv_lmul(\d+)_(vd|vs1|vs2)_off_group")
-
-
-def _filter_per_operand_crosses(rendered: str, has_vd: bool, has_vs1: bool, has_vs2: bool, max_lmul: int) -> str:
-    """Drop cross lines tied to operands the instruction's Type does not encode.
-
-    The ``cp_ssstrictv_lmulgt1_off_group`` template emits one cross per (lmul,
-    operand) pair. Two reasons we may drop a cross:
-
-    * Operand absent in the Type encoding (e.g. ``vid.v`` has no vs1/vs2).
-    * The (LMUL, instruction) combination is illegal — e.g. widening ops cap at
-      LMUL=4 because vd has EEW=2*SEW, and segment LS caps at LMUL=8/NF.
-    """
-    if has_vd and has_vs1 and has_vs2 and max_lmul >= 8:
-        return rendered
-    out_lines: list[str] = []
-    for line in rendered.splitlines(keepends=True):
-        stripped = line.lstrip()
-        m = _LMUL_CROSS_RE.search(stripped)
-        if m and stripped.startswith("cp_ssstrictv_lmul"):
-            lmul = int(m.group(1))
-            role = m.group(2)
-            if role == "vd" and not has_vd:
-                continue
-            if role == "vs1" and not has_vs1:
-                continue
-            if role == "vs2" and not has_vs2:
-                continue
-            if lmul > max_lmul:
-                continue
-        out_lines.append(line)
-    return "".join(out_lines)
 
 
 def _write_if_changed(path: Path, content: str) -> None:
@@ -538,14 +378,11 @@ def _gen_instrs(
             )
             # Per-operand cross filtering depends only on the instruction, so resolve
             # its operand presence and max LMUL once rather than per coverpoint.
-            has_vd, has_vs1, has_vs2 = _operand_presence(_instr_type)
-            max_lmul = _max_legal_lmul_for_instruction(instr)
             for cp in ordered_cps:
                 resolved = _resolve_coverpoint(cp, instr, sew, templates)
                 if resolved is None:
                     continue
-                rendered = customize_template(templates, resolved, arch, instr) + "\n"
-                covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))
+                covergroup_lines.append(customize_template(templates, resolved, arch, instr) + "\n")
 
             # Instruction footer
             covergroup_lines.append(customize_template(templates, "endgroup", name, instr))

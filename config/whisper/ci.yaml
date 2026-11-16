@@ -20,6 +20,9 @@ exclude_extensions:
   # vsiselect, vstopi, vstopei, hvien), where Sail raises illegal instruction because it lacks them.
   - Ssstrict_S_CSR
   - Ssstrict_H_vs_CSR
+  # RV32: Whisper maps stimecmph in VS-mode to sstatus, not vstimecmph, so the VS timer
+  # interrupt never fires (https://github.com/tenstorrent/whisper/issues/372).
+  - InterruptsS_trigger_vsti_sstc_VS
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

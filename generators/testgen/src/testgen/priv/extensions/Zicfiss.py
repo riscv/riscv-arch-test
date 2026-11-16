@@ -2174,7 +2174,7 @@ def _generate_page_access(test_data: TestData) -> list[str]:
     # too, so they are left set afterwards.
     def cbo_enables(op: str) -> list[str]:
         return [
-            f"LI(x{data_reg}, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)",
+            f"LI(x{data_reg}, MENVCFG_CBIE_ENABLE | MENVCFG_CBCFE | MENVCFG_CBZE)",
             tsbi_call(f"{op} menvcfg, x{data_reg}"),
             f"LI(x{data_reg}, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)",
             tsbi_call(f"{op} senvcfg, x{data_reg}"),

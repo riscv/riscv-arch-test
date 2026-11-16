@@ -1316,9 +1316,10 @@
       // menvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
       // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
       // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
+      //   (01, flush, when FORCE_UPGRADE_CBO_INVAL_TO_FLUSH makes 11 illegal)
       #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
         #ifdef SM1P12P0_OR_LATER_SUPPORTED
-          li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
+          li t0, MENVCFG_CBIE_ENABLE | MENVCFG_CBCFE | MENVCFG_CBZE
           csrw menvcfg, t0
           #if __riscv_xlen == 32
             csrw menvcfgh, zero // Clear upper bits if they exist

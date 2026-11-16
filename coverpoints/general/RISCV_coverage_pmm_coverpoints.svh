@@ -186,7 +186,7 @@
             `endif // ZCMOP_SUPPORTED
         }
         // Tag in bits 63:48 of ssp before the push or pop; same patterns as a_upper_bits.
-        ssp_upper_bits: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") >> 48) {
+        ssp_upper_bits: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP) >> 48) {
             type_option.weight = 0;
             bins upper_0000 = {16'h0000};
             bins upper_0001 = {16'h0001};
@@ -198,7 +198,7 @@
             bins upper_FF00 = {16'hFF00};
         }
         // A shadow-stack instruction always faults with satp Bare, so only translated modes are covered.
-        satp_mode_zicfiss: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+        satp_mode_zicfiss: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
             type_option.weight = 0;
             `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
@@ -216,7 +216,7 @@
          wildcard bins sw  = {SW};
          wildcard bins lw  = {LW};
     }
-    satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+    satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
         type_option.weight = 0;
         bins bare = {4'b0000};
         `ifdef SV39_SUPPORTED
@@ -229,14 +229,19 @@
             bins sv57 = {4'b1010};
         `endif
     }
-    satp_mode_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+    satp_mode_mprv: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
         type_option.weight = 0;
         bins bare = {4'b0000};
         `ifdef SV39_SUPPORTED
             bins sv39 = {4'b1000};
         `endif
     }
-    a_upper_bits: coverpoint ((ins.current.rs1_val + ins.current.imm)>> 48) {
+    // A prefetch is an ori with rd = x0, which a run that does not collect Zicbop coverage decodes as ori, setting no
+    // eff_addr.  Take its address from the encoding: rs1 (bits 19:15) plus bits 31:25 shifted left by 5.
+    a_upper_bits: coverpoint ((((ins.current.insn ==? PREFETCH_I) || (ins.current.insn ==? PREFETCH_R) ||
+                                 (ins.current.insn ==? PREFETCH_W)) ?
+                                (ins.prev.x_wdata[ins.current.insn[19:15]] + `UDB_MXLEN'(signed'({ins.current.insn[31:25], 5'b0}))) :
+                                ins.current.eff_addr) >> 48) {
         type_option.weight = 0;
         bins upper_0000 = {16'h0000};   // Unaffected by pointer masking
         bins upper_0001 = {16'h0001};   // Bit 48 masked if PMLEN=16 but not 7
@@ -247,7 +252,7 @@
         bins upper_FE00 = {16'hFE00};   // Bits 63:57 masked if PMLEN=16 or 7
         bins upper_FF00 = {16'hFF00};   // Bits 63:56 masked if PMLEN=16, only partially if PMLEN=7
     }
-    a_upper_bits_mprv: coverpoint ((ins.current.rs1_val + ins.current.imm)>> 48) {
+    a_upper_bits_mprv: coverpoint (ins.current.eff_addr >> 48) {
         type_option.weight = 0;
         bins upper_0000 = {16'h0000};   // no tag: masking is a no-op, the control case
         bins upper_0001 = {16'h0001};   // bit 48   -- stripped by PMLEN=16 only
@@ -263,7 +268,7 @@
     }
 
     // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
-    misaligned_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(3)) {
+    misaligned_addr: coverpoint (ins.current.eff_addr & `UDB_MXLEN'(3)) {
         type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
     }
@@ -274,7 +279,7 @@
             wildcard bins lw = {LW};
         }
         // Exception should write xtval with masked version of pointer.
-        illegal_addr_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(64'h0000_FFFF_FFFF_FFFF)) {
+        illegal_addr_load: coverpoint (ins.current.eff_addr & `UDB_MXLEN'(64'h0000_FFFF_FFFF_FFFF)) {
             type_option.weight = 0;
             bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD & 64'h0000_FFFF_FFFF_FFFF};
         }
@@ -285,7 +290,7 @@
             wildcard bins sw = {SW};
         }
         // Exception should write xtval with masked version of pointer.
-        illegal_addr_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(64'h0000_FFFF_FFFF_FFFF)) {
+        illegal_addr_store: coverpoint (ins.current.eff_addr & `UDB_MXLEN'(64'h0000_FFFF_FFFF_FFFF)) {
             type_option.weight = 0;
             bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE & 64'h0000_FFFF_FFFF_FFFF};
         }

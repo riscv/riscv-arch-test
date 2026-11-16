@@ -63,9 +63,12 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # are mirrored over the same way. In VS/VU, sip/sie are vsip/vsie and are not mirrored.
     # The other way round, traps and xrets log only mstatus, so its sstatus fields are mirrored
     # into sstatus to keep reads of sstatus current after a trap.
+    # fflags and frm are fields of fcsr. Sail logs only the name accessed, and a vector FP instruction
+    # logs fcsr, so all three are rewritten together to keep them consistent.
     SIP, MIP, SIE, MIE, MIDELEG = 0x144, 0x344, 0x104, 0x304, 0x303
     HIP, HIE, HVIP = 0x644, 0x604, 0x645
     MSTATUS, SSTATUS = 0x300, 0x100
+    FFLAGS, FRM, FCSR = 0x001, 0x002, 0x003
     H_BITS, VS_BITS = 0x1444, 0x444
     # SD (bit 63, or 31 on RV32), UXL, SDT, SPELP, MXR, SUM, XS, FS, VS, SPP, UBE, SPIE, SIE
     SSTATUS_BITS = 0x8000_0003_818D_E762
@@ -81,6 +84,17 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
         if csr_num == MSTATUS:
             return SSTATUS_BITS
         return csr_state.get(MIDELEG, 0) & ~H_BITS
+
+    def fcsr_views(csr_num: int, csr_val: int) -> dict[int, int]:
+        """Values of fflags, frm, and fcsr after an access to ``csr_num``."""
+        fcsr = csr_state.get(FCSR, 0)
+        if csr_num == FFLAGS:
+            fcsr = (fcsr & ~0x1F) | (csr_val & 0x1F)
+        elif csr_num == FRM:
+            fcsr = (fcsr & ~0xE0) | ((csr_val & 0x7) << 5)
+        else:
+            fcsr = csr_val
+        return {FFLAGS: fcsr & 0x1F, FRM: (fcsr >> 5) & 0x7, FCSR: fcsr}
 
     # TODO: Add support for parsing traps, interrupts, and the remaining VM signals
 
@@ -153,6 +167,10 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                             if reg == "CSR":
                                 csr_num, csr_val = int(reg_num, 16), int(reg_val, 16)
                                 csr_state[csr_num] = csr_val
+                                if csr_num in (FFLAGS, FRM, FCSR):
+                                    for view_num, view_val in fcsr_views(csr_num, csr_val).items():
+                                        csr_state[view_num] = view_val
+                                        reg_writes[("CSR", f"{view_num:03x}")] = f"{view_val:016x}"
                                 m_num = s_view_of.get(csr_num)
                                 if m_num is not None and not (prev_mode in ("VS", "VU") and csr_num in (SIP, SIE)):
                                     mask = view_mask(csr_num)

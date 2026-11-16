@@ -25,8 +25,8 @@ vec_access: coverpoint ins.current.insn {
     `endif
 }
 // the trigger watches the direction of the access: load (x/s/l = 001) for vle, store (010) for vse
-vec_xsl: coverpoint {ins.current.insn[6:0] == 7'b0100111, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0],
-                     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+vec_xsl: coverpoint {ins.current.insn[6:0] == 7'b0100111, get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "execute")[0],
+                     get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "store")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "load")[0]} {
     type_option.weight = 0;
     bins access_direction = {4'b0_001, 4'b1_010};
 }
@@ -40,30 +40,30 @@ vec_masked: coverpoint ins.current.insn[25] {
 }
 // vl = 1 accesses only the element at the base; vsetivli with AVL 9 gives a vl that reaches base + 8 (vl = VLMAX < 9
 // for SEW 64 at VLEN 128)
-vec_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vl", "vl") == 1 ? 2'd1 :
-                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vl", "vl") * sdtrig_vec_eew_bytes(ins.current.insn) > 8 ? 2'd2 : 2'd0) {
+vec_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VL) == 1 ? 2'd1 :
+                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VL) * sdtrig_vec_eew_bytes(ins.current.insn) > 8 ? 2'd2 : 2'd0) {
     type_option.weight = 0;
     bins one       = {2'd1};
     bins reaches_8 = {2'd2};
 }
-vec_vl_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vl", "vl") {
+vec_vl_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VL) {
     type_option.weight = 0;
     bins one = {1};
 }
-vec_vl_reaches_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vl", "vl") * sdtrig_vec_eew_bytes(ins.current.insn) > 8 {
+vec_vl_reaches_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VL) * sdtrig_vec_eew_bytes(ins.current.insn) > 8 {
     type_option.weight = 0;
     bins reaches_8 = {1'b1};
 }
 // tdata2 relative to the base address in rs1
-vec_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
+vec_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) {
     type_option.weight = 0;
-    wildcard bins base        = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val);
-    wildcard bins base_plus_8 = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val + 8);
+    wildcard bins base        = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) == ins.current.rs1_val);
+    wildcard bins base_plus_8 = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) == ins.current.rs1_val + 8);
     bins zero                 = {'0};
 }
-vec_tdata2_plus_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
+vec_tdata2_plus_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) {
     type_option.weight = 0;
-    wildcard bins base_plus_8 = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val + 8);
+    wildcard bins base_plus_8 = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) == ins.current.rs1_val + 8);
 }
 // v0 mask bit of the element at base + 8
 vec_element_8: coverpoint ins.current.v_wdata[0][8 / sdtrig_vec_eew_bytes(ins.current.insn)] {

@@ -73,6 +73,45 @@ c_park_done_hart:
 c_test_exit_returned:
   j     c_test_exit_returned
 
+// C interface to T-SBI: a0 = operation code, a1 and a2 = arguments; result in a0.
+// The RV64 ABI sign-extends the 32-bit operation code. T-SBI expects it zero-extended.
+.global tsbi_call
+tsbi_call:
+#if __riscv_xlen == 64
+  slli  a0, a0, 32
+  srli  a0, a0, 32
+#endif
+  ecall
+  ret
+
+// T-SBI privilege-mode switches for C. Each returns to its caller in the new mode.
+.global tsbi_goto_mmode
+tsbi_goto_mmode:
+  RVTEST_TSBI_GOTO_MMODE
+  ret
+
+.global tsbi_goto_smode
+tsbi_goto_smode:
+  RVTEST_TSBI_GOTO_SMODE
+  ret
+
+.global tsbi_goto_umode
+tsbi_goto_umode:
+  RVTEST_TSBI_GOTO_UMODE
+  ret
+
+#ifdef H_SUPPORTED
+.global tsbi_goto_vsmode
+tsbi_goto_vsmode:
+  RVTEST_TSBI_GOTO_VSMODE
+  ret
+
+.global tsbi_goto_vumode
+tsbi_goto_vumode:
+  RVTEST_TSBI_GOTO_VUMODE
+  ret
+#endif
+
 // Route pass/fail through ACT cleanup so DUT trap state is unwound normally.
 .global c_halt_pass
 c_halt_pass:

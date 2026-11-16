@@ -17,7 +17,7 @@
     }
 
     // mstatus.FS before the instruction was not Dirty (Off=0, Initial=1, Clean=2)
-    mstatus_fs_prev_not_dirty : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+    mstatus_fs_prev_not_dirty : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs") {
         bins not_dirty = {[0:2]};
     }
 

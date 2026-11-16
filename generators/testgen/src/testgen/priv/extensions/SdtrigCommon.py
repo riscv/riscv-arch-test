@@ -576,7 +576,7 @@ def _cause_exception(
             raise ValueError("addr_reg is required for instruction access fault")
 
         return [
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
             f"jalr ra, 0(x{addr_reg})",
             "nop # spacer; trap handler returns here",
         ]
@@ -589,7 +589,7 @@ def _cause_exception(
             raise ValueError("addr_reg is required for load access fault")
 
         return [
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
             f"lw x{data_reg}, 0(x{addr_reg}) # load access fault",
         ]
 
@@ -597,7 +597,7 @@ def _cause_exception(
         if addr_reg is None or data_reg is None:
             raise ValueError("addr_reg and data_reg are required for store access fault")
         return [
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
             f"sw x0, 0(x{addr_reg}) # store access fault",
             "nop # spacer; trap handler returns here",
         ]

@@ -66,7 +66,7 @@
 
   invisible_Mtime_read:
     // T6 is saved by the trap entry, so it is free here.
-    li      \VALUE_REG, RVMODEL_MTIME_ADDRESS
+    LI_FIXED_LEN(\VALUE_REG, RVMODEL_MTIME_ADDRESS)
     #if UDB_MXLEN == 32
       lw      \DEST_REG, 4(\VALUE_REG)
       lw      \VALUE_REG, 0(\VALUE_REG)

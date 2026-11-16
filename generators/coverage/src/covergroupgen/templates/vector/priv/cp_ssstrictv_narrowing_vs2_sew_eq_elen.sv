@@ -6,7 +6,7 @@
     // Narrowing with SEW=ELEN: source EEW = 2*SEW > ELEN, must trap
     // LMUL=1, registers chosen to avoid overlap traps (vd=8, vs2=10, vs1=12)
 
-    vtype_lmul_1_e4a27f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_1_e4a27f: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one = {0};
     }
 

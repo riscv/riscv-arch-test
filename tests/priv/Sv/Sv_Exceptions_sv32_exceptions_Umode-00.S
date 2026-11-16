@@ -136,7 +136,7 @@ Sv_Exceptions_cg_cp_misaligned_priority_fetch_u_test2_exec:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -160,7 +160,7 @@ Sv_Exceptions_cg_cp_store_page_fault_u_test3_store:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -184,7 +184,7 @@ Sv_Exceptions_cg_cp_load_page_fault_u_test3_load:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -208,7 +208,7 @@ Sv_Exceptions_cg_cp_instr_page_fault_u_test3_exec:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -233,7 +233,7 @@ Sv_Exceptions_cg_cp_misaligned_priority_store_u_test4_store:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -258,7 +258,7 @@ Sv_Exceptions_cg_cp_misaligned_priority_load_u_test4_load:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -354,7 +354,7 @@ Sv_Exceptions_cg_cp_misaligned_priority_fetch_u_test6_exec:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -378,7 +378,7 @@ Sv_Exceptions_cg_cp_store_page_fault_u_test7_store:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -402,7 +402,7 @@ Sv_Exceptions_cg_cp_load_page_fault_u_test7_load:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -426,7 +426,7 @@ Sv_Exceptions_cg_cp_instr_page_fault_u_test7_exec:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -451,7 +451,7 @@ Sv_Exceptions_cg_cp_misaligned_priority_store_u_test8_store:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14
@@ -476,7 +476,7 @@ Sv_Exceptions_cg_cp_misaligned_priority_load_u_test8_load:
   sfence.vma
 
   LI(x9, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x14, x14, 10
   srli x14, x14, 10
   add x9, x9, x14

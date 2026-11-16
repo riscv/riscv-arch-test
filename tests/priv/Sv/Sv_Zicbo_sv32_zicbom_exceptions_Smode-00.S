@@ -312,7 +312,7 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_s_test9_inval:
   sfence.vma
 
   LI(x14, (va_data >> 22) << 22)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 10
   srli x6, x6, 10
   add x14, x14, x6

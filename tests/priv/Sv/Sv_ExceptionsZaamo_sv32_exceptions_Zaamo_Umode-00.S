@@ -106,7 +106,7 @@ Sv_ExceptionsZaamo_cg_cp_misaligned_priority_u_test2_amoadd:
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x14, x14, 10
   srli x14, x14, 10
   add x15, x15, x14
@@ -129,7 +129,7 @@ Sv_ExceptionsZaamo_cg_cp_misaligned_priority_u_test3_amoadd:
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x14, x14, 10
   srli x14, x14, 10
   add x15, x15, x14
@@ -194,7 +194,7 @@ Sv_ExceptionsZaamo_cg_cp_misaligned_priority_u_test6_amoadd:
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x14, x14, 10
   srli x14, x14, 10
   add x15, x15, x14
@@ -217,7 +217,7 @@ Sv_ExceptionsZaamo_cg_cp_misaligned_priority_u_test7_amoadd:
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
+  LI_FIXED_LEN(x14, RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
   slli x14, x14, 10
   srli x14, x14, 10
   add x15, x15, x14

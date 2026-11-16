@@ -2,8 +2,8 @@
 // cp_ssstrict_ls_nf_eew_emul8 — EMUL=8, NFIELDS>=2: EMUL*NFIELDS >= 16 > 8 (reserved, must trap)
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    emul_8_ls : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
-                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],
+    emul_8_ls : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")[1:0],
                  ins.current.insn[14:12]} {
         bins emul_eq_8 = {{3'b011, 2'b00, 3'b000},  // EEW=SEW LMUL=8 (8/8)
                           {3'b011, 2'b01, 3'b101},  //                (16/16)

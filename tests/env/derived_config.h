@@ -58,13 +58,15 @@
   #endif
 #endif
 
-// MENVCFG_CBIE_ENABLE: the menvcfg.CBIE value that enables cbo.inval. With
-// FORCE_UPGRADE_CBO_INVAL_TO_FLUSH the legal values are only 00 and 01, so tests write 01 (flush);
-// writing 11 would make the result depend on how the implementation legalizes it.
+// MENVCFG_CBIE_ENABLE: menvcfg with its 2-bit CBIE field (bits 5:4) set to the value that enables
+// cbo.inval. It is positioned like MENVCFG_CBIE so it can be ORed with MENVCFG_CBCFE and MENVCFG_CBZE.
+// Normally CBIE = 11 (invalidate). With FORCE_UPGRADE_CBO_INVAL_TO_FLUSH the only legal values are
+// 00 and 01, so use CBIE = 01 (flush): writing 11 would leave the result to the implementation's
+// legalization.
 #ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
-  #define MENVCFG_CBIE_ENABLE 0x10
+  #define MENVCFG_CBIE_ENABLE (1 << 4)     // CBIE = 01
 #else
-  #define MENVCFG_CBIE_ENABLE MENVCFG_CBIE
+  #define MENVCFG_CBIE_ENABLE MENVCFG_CBIE // CBIE = 11
 #endif
 
 #endif // DERIVED_CONFIG_H

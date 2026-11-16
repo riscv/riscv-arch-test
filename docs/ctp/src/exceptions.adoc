@@ -54,6 +54,19 @@ include::{testplansdir}/priv/Exceptions_ZicboU.adoc[]
 
 include::{testplansdir}/priv/Exceptions_ZicboSm.adoc[]
 
+==== Exceptions_HSm and Exceptions_H Hypervisor Exceptions
+
+Exceptions_HSm boots to M-mode with nothing delegated and checks that exceptions from VS and VU reach M-mode whatever
+hedeleg holds, ecall and ebreak from every mode, sret in VS-mode with mstatus.TSR = 1, HLV/HSV misaligned and access
+faults taken in M-mode, and mtval2/mtinst.  Exceptions_H boots to HS-mode, walks hedeleg for exceptions from VS and VU,
+checks that exceptions from HS and U ignore hedeleg, ecalls into HS-mode and VS-mode, vstvec, the virtual-instruction
+exceptions, HLV/HSV privilege and priority, and hstatus.GVA, htval and htinst.  The trap handlers check htinst and
+mtinst on every recorded trap.  The misaligned cp_xtinst cases run only on harts that trap misaligned accesses.
+
+include::{testplansdir}/priv/Exceptions_HSm.adoc[]
+
+include::{testplansdir}/priv/Exceptions_H.adoc[]
+
 ==== Exceptions Normative Rules
 
 The rules apply to all Exceptions groups.

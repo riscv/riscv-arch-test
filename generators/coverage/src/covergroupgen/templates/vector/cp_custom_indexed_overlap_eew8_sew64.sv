@@ -12,9 +12,9 @@
 
     // SEW=64, EEW=8 -> rule (c). LMUL = 8 -> vd aligned to 8, max v24.
     cp_custom_indexed_overlap_eew8_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
-        (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") < 4) &
+        (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") < 4) &
         (ins.get_vr_reg(ins.current.vs2) > ins.get_vr_reg(ins.current.vd)) &
-        (ins.get_vr_reg(ins.current.vs2) < ins.get_vr_reg(ins.current.vd) + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+        (ins.get_vr_reg(ins.current.vs2) < ins.get_vr_reg(ins.current.vd) + (1 << get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"))) &
         (ins.trap == 0)
     ) {
         bins v0  = {v0};

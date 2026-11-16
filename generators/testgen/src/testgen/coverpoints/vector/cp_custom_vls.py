@@ -62,7 +62,8 @@ def make_cp_custom_ffLS_update_vl(
     return test_chunks
 
 
-@add_coverpoint_generator("cp_custom_ffLS")
+@add_coverpoint_generator("cp_custom_ff_load")
+@add_coverpoint_generator("cp_custom_ff_store")
 def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """
     Coverpoint that generates a test where an exception is raised, causing a change in vl to be observed.
@@ -75,6 +76,8 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
+
+    op = "LOAD" if "load" in get_instruction_type_config(instr_type).instruction_class else "STORE"
 
     test_chunks = []
     for sew in sews:
@@ -113,14 +116,14 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
         if needs_endif:
             check += "\n#endif"
 
-        setup += f"\nLI (x{params.rs1}, RVMODEL_ACCESS_FAULT_ADDRESS)"  # Hardcode the load
+        setup += f"\nLI_FIXED_LEN (x{params.rs1}, RVMODEL_ACCESS_FAULT_ADDRESS_{op})"  # Hardcode the load
 
         tc.code.extend([setup, label_line, test, check])
 
         if ifdef != "":
             tc.code.insert(0, f"#ifdef {ifdef}")
             tc.code.append("#endif")
-        tc.code.insert(0, "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+        tc.code.insert(0, f"#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_{op}")
         tc.code.append("#endif")
 
         tc = test_data.end_test_chunk()

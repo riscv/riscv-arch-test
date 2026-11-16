@@ -45,8 +45,13 @@
   },
 
   "csr": {
-    "misa": { "reset": "0x800000000020112f" }, // acdfimv + B (bit 1). Whisper derives misa from the
+    "misa": {
+      "reset": "0x800000000020112f",
+      "mask": "0x4",
+      "poke_mask": "0x4"
+    }, // acdfimv + B (bit 1). Whisper derives misa from the
     // ISA string but always sets S and U, so set it explicitly.
+    // misa.C is writable, so tests can clear it and run with IALIGN = 32 (MUTABLE_MISA_C).
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"

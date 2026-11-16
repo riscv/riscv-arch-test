@@ -83,7 +83,10 @@ coverpoints:
     description: ecall from supervisor mode throws ecall supervisor exception (trap and mcause)
     expectation: ecall to M-mode (should not be delegated to S-mode because there would be no path to M-mode)
     bins: "1"
-  - name: cp_misaligned_priority
+  - name: |-
+      cp_misaligned_priority_load
+      cp_misaligned_priority_store
+      cp_misaligned_priority_fetch
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing  access fault and misaligned
     expectation: System-dependent
@@ -98,4 +101,4 @@ coverpoints:
     expectation: xpie gets xie, xie gets 0
     bins: 3 modes * 2 medleg * 2 mie * 2 sie
   - heading: "Note: instruction/load/store fault pages are being tested in Sv_Exceptions"
-  - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec.  Also, cp_misaligned_priority is not split here."
+  - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec.  cp_misaligned_priority is split by access type."

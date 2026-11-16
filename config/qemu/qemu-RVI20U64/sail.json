@@ -18,7 +18,7 @@
     // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
     // bits; this value then defines the number, upto 56, of the lowest
     // bits of the CSRs that are used as the event selector.
-    "hpmevent_width_bits": 56,
+    "hpmevent_width_bits": 64,
     "mcountinhibit": {
       // Whether the `mcountinhibit` CSR is implemented.
       "supported": true,
@@ -168,7 +168,7 @@
       // reserved rounding mode statically encoded in the instruction.
       // "Fcsr_RM_Fatal"  – raise a Sail exception, stopping execution.
       // "Fcsr_RM_Illegal" – treat it as an illegal instruction.
-      "fcsr_rm": "Fcsr_RM_Fatal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
       // The configuration option determines how to handle the reserved behavior `pmpcfg_with_R0W1`.
       // "PMP_Fatal"  – raise a Sail exception, stopping execution.
       // "PMP_ClearPermissions" – convert a PMP entry with R=0, W=1 to R=0, W=0, X=0.
@@ -438,7 +438,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 1,
+    "archid": 42,
     "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
@@ -549,7 +549,7 @@
       //                      if that flag is already set.
       // - Fflags_Dirty_Instruction: Set FS/SD when we execute an instruction that
       //                             might set a flag, even if it actually doesn't.
-      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+      "fflags_dirty_policy": "Fflags_Dirty_Flag"
     },
     "D": {
       "mutable_misa": false,

@@ -435,9 +435,9 @@ def _resolve_coverpoint(cp: str, instr: str, sew: int | None, templates: dict[st
     # Strip the SEW suffix
     cp = cleaned_cp
 
-    # cp_custom_ffLS requires LMUL=2; Use a fallback when this isn't possible
-    if cp == "cp_custom_ffLS" and not _ffLS_feasible(instr, sew):
-        cp = "cp_custom_ffLS_lmul_lt2"
+    # cp_custom_ff_load/store requires LMUL=2; Use a fallback when this isn't possible
+    if cp.startswith("cp_custom_ff") and not _ffLS_feasible(instr, sew):
+        cp += "_lmul_lt2"
 
         eew_m = re.search(r"e(\d+)ff", instr)
         eew = int(eew_m.group(1)) if eew_m else 0

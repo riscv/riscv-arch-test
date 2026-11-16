@@ -279,12 +279,16 @@ def cp_vill(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     return [tc]
 
 
-@add_coverpoint_generator("cp_exceptionsv_ffLS")  # Fault on first element (OK)
-@add_coverpoint_generator("cp_exceptionsv_address_fault")  # Generate Address Fault test
+@add_coverpoint_generator("cp_exceptionsv_ff_load")
+@add_coverpoint_generator("cp_exceptionsv_ff_store")
+@add_coverpoint_generator("cp_exceptionsv_address_fault_load")
+@add_coverpoint_generator("cp_exceptionsv_address_fault_store")
 def cp_exceptionsv_address_fault(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     sews, coverpoint = extract_coverpoint_sews(coverpoint)
+
+    op = "LOAD" if "load" in get_instruction_type_config(instr_type).instruction_class else "STORE"
 
     test_chunks: list[TestChunk] = []
     for sew in sews:
@@ -295,7 +299,7 @@ def cp_exceptionsv_address_fault(
             instr_type,
             get_base_lmul(instr_name, instr_type, sew),
             sew,
-            rs1val_pointer="RVMODEL_ACCESS_FAULT_ADDRESS",
+            rs1val_pointer=f"RVMODEL_ACCESS_FAULT_ADDRESS_{op}",
             vl=1,
         )
         label_line = test_data.add_testcase(f"sew{sew}", coverpoint)
@@ -304,8 +308,9 @@ def cp_exceptionsv_address_fault(
         endif = "#endif" if setup.startswith("#if") else ""
 
         # Discard SIGUPD because this must fault
+        ifdef = f"#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_{op}"
         tc.sigupd_count = 0
-        tc.code.extend([setup, label_line, test, endif])
+        tc.code.extend([ifdef, setup, label_line, test, endif, "#endif"])
 
         tc = test_data.end_test_chunk()
         return_testcase_registers(test_data, params)

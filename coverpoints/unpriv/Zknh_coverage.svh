@@ -1151,8 +1151,9 @@ endgroup
 // ---------------------
 `endif
 function void zknh_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "sha256sig0"     : begin
             Zknh_sha256sig0_cg.sample(ins);
         end

@@ -46,8 +46,13 @@
 
   "csr": {
     "time": { "exists": "false" }, // Exercise M-mode emulation of time reads from S-mode and U-mode.
-    "misa": { "reset": "0x800000000030112f" }, // acdfimuv + B (bit 1). Whisper derives misa from the
+    "misa": {
+      "reset": "0x800000000030112f",
+      "mask": "0x4",
+      "poke_mask": "0x4"
+    }, // acdfimuv + B (bit 1). Whisper derives misa from the
     // ISA string but always sets S and U, so set it explicitly.
+    // misa.C is writable, so tests can clear it and run with IALIGN = 32 (MUTABLE_MISA_C).
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"

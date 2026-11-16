@@ -2045,8 +2045,9 @@ covergroup SsstrictZve32f_vmfne_vv_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void ssstrictzve32f_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "vfadd.vf"     : begin
             SsstrictZve32f_vfadd_vf_cg.sample(ins);
         end

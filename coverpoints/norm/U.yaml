@@ -97,9 +97,11 @@ normative_rule_definitions:
       [
         "Sm_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "Sm_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
         "S_V_cg/cp_sstatus_vs_set_dirty_arithmetic",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_arithmetic",
         "U_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
       ]
 
@@ -111,7 +113,7 @@ normative_rule_definitions:
         "S_Zicntr_cg/cp_mcounteren_access_s",
         "U_Zicntr_cg/cp_mcounteren_access_u",
         "Sm_Zicntr_cg/cp_mcounteren_access_m",
-        "ZicntrH_cg/cp_mcounteren_access_vs",
+        "H_Zicntr_cg/cp_mcounteren_access_vs",
       ]
 
   # The settings in this register only control accessibility. The act of reading or

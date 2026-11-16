@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ziccif
+description: Ziccif requires main memory regions with the coherence and cacheability PMAs to support instruction fetch, with naturally aligned fetches of up to min(ILEN, XLEN) bits atomic.
+notes: These tests run on a single hart, so they cannot check fetch atomicity, which is only observable when another hart or agent modifies the code being fetched concurrently. They show basic functionality of the extension and are largely redundant with the I and Zca suites.
+coverpoints:
+  - name: cp_ziccif_fetch
+    goal: Fetch and execute instructions from main memory
+    description: Execute add with three distinct registers from main memory; if Zca is supported, execute c.add
+    expectation: Each instruction executes and writes the sum to rd
+    bins: "2 (1 without Zca)"

@@ -1980,7 +1980,7 @@ covergroup SsstrictZvfh_vfwadd_wv_cg with function sample(ins_t ins);
 
 
     // Widening with vs2 == vs1: same register read at different EEWs, must trap
-    vtype_lmul_widen_src: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_widen_src: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins half = {7};
         bins one  = {0};
         bins two  = {1};
@@ -2807,7 +2807,7 @@ covergroup SsstrictZvfh_vfwsub_wv_cg with function sample(ins_t ins);
 
 
     // Widening with vs2 == vs1: same register read at different EEWs, must trap
-    vtype_lmul_widen_src: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_widen_src: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins half = {7};
         bins one  = {0};
         bins two  = {1};
@@ -3112,8 +3112,9 @@ covergroup SsstrictZvfh_vmfne_vv_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void ssstrictzvfh_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "vfadd.vf"     : begin
             SsstrictZvfh_vfadd_vf_cg.sample(ins);
         end

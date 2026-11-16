@@ -86,7 +86,7 @@ def format_vsseg_like_type(
     assert params.lmul is not None, f"lmul must be provided for {instr_type}-type instructions"
     assert test_data.test_chunk is not None, f"format_{instr_type.lower()}_type must be used with an active TestChunk"
 
-    if params.rs1val_pointer != "RVMODEL_ACCESS_FAULT_ADDRESS":
+    if params.rs1val_pointer != "RVMODEL_ACCESS_FAULT_ADDRESS_STORE":
         test_data.test_chunk.vector_labels.append(
             (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer])
         )

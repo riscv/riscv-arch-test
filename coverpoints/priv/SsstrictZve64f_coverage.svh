@@ -185,8 +185,9 @@ covergroup SsstrictZve64f_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void ssstrictzve64f_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "vfncvt.f.x.w"     : begin
             SsstrictZve64f_vfncvt_f_x_w_cg.sample(ins);
         end

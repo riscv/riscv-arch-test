@@ -6,6 +6,7 @@
 ##################################
 
 import itertools
+import random
 
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
@@ -137,9 +138,16 @@ def make_voffgroup_vd(instr_name: str, instr_type: str, coverpoint: str, test_da
     for v, sew in itertools.product(range(test_data.vec_regs.reg_count), sews):
         if v % lmul == 0:
             continue
+
+        # Allocate one misaligned and two aligned operands
         test_data.vec_regs.allocate_operand("vd", v, 1)
+        vs1 = random.choice(test_data.vec_regs.free_registers(lmul, 1))
+        test_data.vec_regs.allocate_operand("vs1", vs1, lmul)
+        vs2 = random.choice(test_data.vec_regs.free_registers(lmul, 1))
+        test_data.vec_regs.allocate_operand("vs2", vs2, lmul)
+
         params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul, sew, suite="length", vl="vlmax", vd=v
+            test_data, instr_name, instr_type, lmul, sew, suite="length", vl="vlmax", vd=v, vs1=vs1, vs2=vs2
         )
         desc = f"cp_custom_voffgroup_vd_lmul{lmul} (lmul={lmul}, vd=v{v}, sew={sew})"
         bin_name = f"cp_custom_voffgroup_vd_lmul{lmul}_b{v}_sew{sew}"
@@ -161,9 +169,16 @@ def make_voffgroup_vs1(instr_name: str, instr_type: str, coverpoint: str, test_d
     for v, sew in itertools.product(range(test_data.vec_regs.reg_count), sews):
         if v % lmul == 0:
             continue
+
+        # Allocate one misaligned and two aligned operands
         test_data.vec_regs.allocate_operand("vs1", v, 1)
+        vd = random.choice(test_data.vec_regs.free_registers(lmul, 1))
+        test_data.vec_regs.allocate_operand("vd", vd, lmul)
+        vs2 = random.choice(test_data.vec_regs.free_registers(lmul, 1))
+        test_data.vec_regs.allocate_operand("vs2", vs2, lmul)
+
         params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul, sew, suite="length", vl="vlmax", vs1=v
+            test_data, instr_name, instr_type, lmul, sew, suite="length", vl="vlmax", vs1=v, vd=vd, vs2=vs2
         )
         desc = f"cp_custom_voffgroup_vs1_lmul{lmul} (lmul={lmul}, vs1=v{v}, sew={sew})"
         bin_name = f"cp_custom_voffgroup_vs1_lmul{lmul}_b{v}_sew{sew}"
@@ -185,9 +200,16 @@ def make_voffgroup_vs2(instr_name: str, instr_type: str, coverpoint: str, test_d
     for v, sew in itertools.product(range(test_data.vec_regs.reg_count), sews):
         if v % lmul == 0:
             continue
+
+        # Allocate one misaligned and two aligned operands
         test_data.vec_regs.allocate_operand("vs2", v, 1)
+        vd = random.choice(test_data.vec_regs.free_registers(lmul, 1))
+        test_data.vec_regs.allocate_operand("vd", vd, lmul)
+        vs1 = random.choice(test_data.vec_regs.free_registers(lmul, 1))
+        test_data.vec_regs.allocate_operand("vs1", vs1, lmul)
+
         params = generate_random_vector_params(
-            test_data, instr_name, instr_type, lmul, sew, suite="length", vl="vlmax", vs2=v
+            test_data, instr_name, instr_type, lmul, sew, suite="length", vl="vlmax", vs2=v, vd=vd, vs1=vs1
         )
         desc = f"cp_custom_voffgroup_vs2_lmul{lmul} (lmul={lmul}, vs2=v{v}, sew={sew})"
         bin_name = f"cp_custom_voffgroup_vs2_lmul{lmul}_b{v}_sew{sew}"

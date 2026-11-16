@@ -12,6 +12,7 @@ from pathlib import Path
 
 from testgen.constants import INDENT, PRIV_TRAP_SIGUPD_COUNT, TESTCASES_PER_FILE, VLEN_MAX, get_flen_for_extensions
 from testgen.coverpoints import generate_tests_for_coverpoint
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
@@ -135,9 +136,8 @@ def _generate_unpriv_tests_for_instruction(
     # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
         # Skip cp_asm_count, std_vec, and std_trap_vec if mixed with other coverpoints
-        if len(coverpoints) > 1 and (
-            coverpoint == "cp_asm_count" or coverpoint.startswith(("std_vec", "std_trap_vec"))
-        ):
+        _, cleaned_cp = extract_coverpoint_sews(coverpoint)
+        if cleaned_cp in ["cp_asm_count", "std_vec", "std_trap_vec"] and len(coverpoints) > 1:
             continue
 
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))

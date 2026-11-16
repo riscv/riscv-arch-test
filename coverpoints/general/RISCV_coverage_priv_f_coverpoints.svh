@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Floating-point CSR and instruction coverpoints common to Sm_F_cg, S_F_cg and U_F_cg
+//   Floating-point CSR and instruction coverpoints common to Sm_F_cg, S_F_cg, H_F_cg and U_F_cg
 //   Coverpoints that name mstatus/sstatus stay in each covergroup.
 //
 ///////////////////////////////////////////

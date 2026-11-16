@@ -26,82 +26,82 @@ covergroup ZvknedZve32x_vaesdf_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -151,7 +151,7 @@ covergroup ZvknedZve32x_vaesdf_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -205,7 +205,7 @@ covergroup ZvknedZve32x_vaesdf_vs_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -231,7 +231,7 @@ covergroup ZvknedZve32x_vaesdf_vs_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -306,15 +306,9 @@ covergroup ZvknedZve32x_vaesdf_vs_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -380,82 +374,82 @@ covergroup ZvknedZve32x_vaesdf_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -505,7 +499,7 @@ covergroup ZvknedZve32x_vaesdf_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -559,7 +553,7 @@ covergroup ZvknedZve32x_vaesdf_vv_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -585,7 +579,7 @@ covergroup ZvknedZve32x_vaesdf_vv_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -660,15 +654,9 @@ covergroup ZvknedZve32x_vaesdf_vv_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -695,82 +683,82 @@ covergroup ZvknedZve32x_vaesdm_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -820,7 +808,7 @@ covergroup ZvknedZve32x_vaesdm_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -874,7 +862,7 @@ covergroup ZvknedZve32x_vaesdm_vs_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -900,7 +888,7 @@ covergroup ZvknedZve32x_vaesdm_vs_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -975,15 +963,9 @@ covergroup ZvknedZve32x_vaesdm_vs_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -1049,82 +1031,82 @@ covergroup ZvknedZve32x_vaesdm_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -1174,7 +1156,7 @@ covergroup ZvknedZve32x_vaesdm_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -1228,7 +1210,7 @@ covergroup ZvknedZve32x_vaesdm_vv_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -1254,7 +1236,7 @@ covergroup ZvknedZve32x_vaesdm_vv_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -1329,15 +1311,9 @@ covergroup ZvknedZve32x_vaesdm_vv_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -1364,82 +1340,82 @@ covergroup ZvknedZve32x_vaesef_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -1489,7 +1465,7 @@ covergroup ZvknedZve32x_vaesef_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -1543,7 +1519,7 @@ covergroup ZvknedZve32x_vaesef_vs_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -1569,7 +1545,7 @@ covergroup ZvknedZve32x_vaesef_vs_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -1644,15 +1620,9 @@ covergroup ZvknedZve32x_vaesef_vs_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -1718,82 +1688,82 @@ covergroup ZvknedZve32x_vaesef_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -1843,7 +1813,7 @@ covergroup ZvknedZve32x_vaesef_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -1897,7 +1867,7 @@ covergroup ZvknedZve32x_vaesef_vv_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -1923,7 +1893,7 @@ covergroup ZvknedZve32x_vaesef_vv_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -1998,15 +1968,9 @@ covergroup ZvknedZve32x_vaesef_vv_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -2033,82 +1997,82 @@ covergroup ZvknedZve32x_vaesem_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -2158,7 +2122,7 @@ covergroup ZvknedZve32x_vaesem_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -2212,7 +2176,7 @@ covergroup ZvknedZve32x_vaesem_vs_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -2238,7 +2202,7 @@ covergroup ZvknedZve32x_vaesem_vs_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -2313,15 +2277,9 @@ covergroup ZvknedZve32x_vaesem_vs_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -2387,82 +2345,82 @@ covergroup ZvknedZve32x_vaesem_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vd_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vd_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vd_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vd_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vd_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vd_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vd_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vd_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vd_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vd_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vd_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vd_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vd_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vd_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vd_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vd)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -2512,7 +2470,7 @@ covergroup ZvknedZve32x_vaesem_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -2566,7 +2524,7 @@ covergroup ZvknedZve32x_vaesem_vv_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -2592,7 +2550,7 @@ covergroup ZvknedZve32x_vaesem_vv_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -2667,15 +2625,9 @@ covergroup ZvknedZve32x_vaesem_vv_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -2779,7 +2731,7 @@ covergroup ZvknedZve32x_vaeskf1_vi_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vd_egs4////////////////////////////////////////////////
 
-    cp_vl_0_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
         bins zero = {0};
     }
 
@@ -2788,82 +2740,82 @@ covergroup ZvknedZve32x_vaeskf1_vi_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vs2_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vs2_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vs2_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vs2_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vs2_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vs2_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vs2_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vs2_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vs2_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vs2_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vs2_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vs2_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vs2_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vs2_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vs2_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -2912,7 +2864,7 @@ covergroup ZvknedZve32x_vaeskf1_vi_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -2938,7 +2890,7 @@ covergroup ZvknedZve32x_vaeskf1_vi_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -2990,15 +2942,9 @@ covergroup ZvknedZve32x_vaeskf1_vi_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -3068,7 +3014,7 @@ covergroup ZvknedZve32x_vaeskf2_vi_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -3118,7 +3064,7 @@ covergroup ZvknedZve32x_vaeskf2_vi_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vd_egs4////////////////////////////////////////////////
 
-    cp_vl_0_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
         bins zero = {0};
     }
 
@@ -3127,82 +3073,82 @@ covergroup ZvknedZve32x_vaeskf2_vi_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4_byte_0 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[7:0])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 0);
     }
 
     cp_vs2_edges_egs4_byte_1 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[15:8])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 1);
     }
 
     cp_vs2_edges_egs4_byte_2 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[23:16])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 2);
     }
 
     cp_vs2_edges_egs4_byte_3 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[31:24])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 3);
     }
 
     cp_vs2_edges_egs4_byte_4 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[39:32])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 4);
     }
 
     cp_vs2_edges_egs4_byte_5 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[47:40])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 5);
     }
 
     cp_vs2_edges_egs4_byte_6 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[55:48])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 6);
     }
 
     cp_vs2_edges_egs4_byte_7 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[63:56])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 7);
     }
 
     cp_vs2_edges_egs4_byte_8 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[71:64])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 8);
     }
 
     cp_vs2_edges_egs4_byte_9 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[79:72])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 9);
     }
 
     cp_vs2_edges_egs4_byte_10 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[87:80])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 10);
     }
 
     cp_vs2_edges_egs4_byte_11 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[95:88])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 11);
     }
 
     cp_vs2_edges_egs4_byte_12 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[103:96])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 12);
     }
 
     cp_vs2_edges_egs4_byte_13 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[111:104])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 13);
     }
 
     cp_vs2_edges_egs4_byte_14 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[119:112])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 14);
     }
 
     cp_vs2_edges_egs4_byte_15 : coverpoint (ins.get_vr_val_lmul4(ins.current.vs2)[127:120])
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         bins subbyte[] = {[0:255]} with (item % 16 == 15);
     }
 
@@ -3251,7 +3197,7 @@ covergroup ZvknedZve32x_vaeskf2_vi_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -3277,7 +3223,7 @@ covergroup ZvknedZve32x_vaeskf2_vi_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -3353,15 +3299,9 @@ covergroup ZvknedZve32x_vaeskf2_vi_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -3388,7 +3328,7 @@ covergroup ZvknedZve32x_vaesz_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -3443,7 +3383,7 @@ covergroup ZvknedZve32x_vaesz_vs_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -3497,7 +3437,7 @@ covergroup ZvknedZve32x_vaesz_vs_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs4_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs4_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=4, SEW=32 instructions (EGS*SEW = 128 bits per group)
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
@@ -3523,7 +3463,7 @@ covergroup ZvknedZve32x_vaesz_vs_sew32_cg with function sample(ins_t ins);
         bins vl_legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs4_sew32 : cross cp_csr_vtype_lmul_egs4_sew32, cp_csr_vl_edges_egs4  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=4 instructions at SEW=32
         `ifdef ZVL256B_SUPPORTED
             `ifndef ZVL512B_SUPPORTED
@@ -3585,15 +3525,9 @@ covergroup ZvknedZve32x_vaesz_vs_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -3609,30 +3543,31 @@ endgroup
 // ---------------------
 `endif
 function void zvkned_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
 `ifdef ZVE32X_SUPPORTED
         "vaesdf.vs"     : begin
             ZvknedZve32x_vaesdf_vs_sew32_cg.sample(ins);
@@ -3694,9 +3629,9 @@ function void zvkned_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

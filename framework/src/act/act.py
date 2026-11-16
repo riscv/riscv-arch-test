@@ -61,8 +61,7 @@ def run_act(
     ] = 0,
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
-    debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
-    fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    debug: Annotated[bool, typer.Option(help="Enable debug output (objdumps, trace files, and trap reports)")] = False,
     clean_intermediates: Annotated[bool, typer.Option(help="Delete intermediate build/ dirs")] = False,
     verbose: Annotated[
         bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
@@ -85,9 +84,6 @@ def run_act(
     if verbose:
         debug = True
         jobs = 1
-
-    if debug and fast:
-        raise typer.BadParameter("--debug and --fast cannot be used together")
 
     if debug and clean_intermediates:
         raise typer.BadParameter("--debug and --clean-intermediates cannot be used together")
@@ -156,11 +152,11 @@ def run_act(
                 coverage,
                 coverage_simulator,
                 debug,
-                fast,
                 verbose,
                 dry_run,
                 enable_experimental_extensions,
                 exclude_sm,
+                max(1, jobs // len(config_files)),
             )
         )
 

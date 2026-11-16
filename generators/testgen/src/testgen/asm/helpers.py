@@ -38,12 +38,44 @@ def comment_banner(title: str, description: str | None = None) -> str:
     return "\n".join(lines)
 
 
+def load_constant(reg: str, value: str) -> str:
+    """Load a constant into reg. Use LI_FIXED_LEN if the value depends on an RVMODEL_* macro.
+
+    Code that loads a DUT-dependent value must be the same length for every DUT.
+    """
+    macro = "LI_FIXED_LEN" if "RVMODEL_" in value else "LI"
+    return f"{macro}({reg}, {value})"
+
+
 def arch_block(lines: list[str], *extensions: str) -> list[str]:
     """Enable *extensions* around *lines*, or return *lines* unchanged if none are given."""
     if not extensions:
         return lines
     adds = ", ".join(f"+{e.lower()}" for e in extensions)
     return [".option push", f".option arch, {adds}", *lines, ".option pop"]
+
+
+def gated(lines: list[str], gate: str | None) -> list[str]:
+    """Wrap *lines* in ``#if gate``, or return *lines* unchanged if gate is None."""
+    if gate is None:
+        return lines
+    return [f"#if {gate}", *lines, f"#endif // {gate}"]
+
+
+def write64_csr(csr: str, value: int, reg: int) -> list[str]:
+    """Write a 64-bit value to a CSR, and to its upper-half CSR first on RV32."""
+    value &= (1 << 64) - 1
+    return [
+        "#if __riscv_xlen == 64",
+        f"LI(x{reg}, {value:#x})",
+        f"csrw {csr}, x{reg}",
+        "#else",
+        f"LI(x{reg}, {value >> 32:#x})",
+        f"csrw {csr}h, x{reg}",
+        f"LI(x{reg}, {value & 0xFFFFFFFF:#x})",
+        f"csrw {csr}, x{reg}",
+        "#endif",
+    ]
 
 
 def lrsc_retry_loop(label: str, counter_reg: int, sc_rd: int) -> tuple[list[str], list[str]]:

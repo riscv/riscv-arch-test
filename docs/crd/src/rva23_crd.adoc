@@ -1,4 +1,5 @@
-= RVA23 Certification Requirements Document (rev 0.4)
+= RVA23 Certification Requirements Document
+:revnumber: 1.0
 :description: RVA23 CRD (Certification Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -31,6 +32,9 @@ a| * Removed "custom M-mode"; made clarifications.
 | October 16, 2026
 | 0.4
 a| * Editorial and technical review.
+| October 27, 2026
+| 1.0
+a| * Approved by vote of the Certification Steering Committee.
 
 |===
 

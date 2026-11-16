@@ -104,12 +104,12 @@ Sv_Exceptions_cg_cp_instr_page_fault_s_test1_exec:
   addi x13, x13, 16
 
 // Store
-Sv_Exceptions_cg_cp_misaligned_priority_s_test2_store:
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test2_store:
   sw x13, 20(x15)
   nop
 
 // Load
-Sv_Exceptions_cg_cp_misaligned_priority_s_test2_load:
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test2_load:
   lw x14, 20(x15)
   nop
 
@@ -119,18 +119,18 @@ Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test2_exec:
   nop
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_s_test2_store, Sv_Exceptions_cg_cp_misaligned_priority_s_test2_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test2_store, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test2_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_s_test2_load, Sv_Exceptions_cg_cp_misaligned_priority_s_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test2_load, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test2_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test2_exec, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test2_exec_str)
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 10
   srli x6, x6, 10
   add x15, x15, x6
@@ -141,31 +141,59 @@ Sv_Exceptions_cg_cp_store_page_fault_s_test3_store:
   sw x13, 20(x15)
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_store_page_fault_s_test3_store, Sv_Exceptions_cg_cp_store_page_fault_s_test3_store_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x13, x13, 16
+
 // Load
 Sv_Exceptions_cg_cp_load_page_fault_s_test3_load:
   lw x14, 20(x15)
   nop
+
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_load_page_fault_s_test3_load, Sv_Exceptions_cg_cp_load_page_fault_s_test3_load_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Execute
 Sv_Exceptions_cg_cp_instr_page_fault_s_test3_exec:
   jalr ra, x15, 0
   nop
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_store_page_fault_s_test3_store, Sv_Exceptions_cg_cp_store_page_fault_s_test3_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_load_page_fault_s_test3_load, Sv_Exceptions_cg_cp_load_page_fault_s_test3_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Exceptions_cg_cp_instr_page_fault_s_test3_exec, Sv_Exceptions_cg_cp_instr_page_fault_s_test3_exec_str)
 
 #endif
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 10
   srli x6, x6, 10
   add x15, x15, x6
@@ -173,24 +201,54 @@ Sv_Exceptions_cg_cp_instr_page_fault_s_test3_exec:
   addi x13, x13, 16
 
 // Store
-Sv_Exceptions_cg_cp_misaligned_priority_s_test4_store:
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test4_store:
   sw x13, 20(x15)
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test4_store, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test4_store_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x15, x15, 2
+  addi x13, x13, 16
+
 // Load
-Sv_Exceptions_cg_cp_misaligned_priority_s_test4_load:
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test4_load:
   lw x14, 20(x15)
   nop
+
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test4_load, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test4_load_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x15, x15, 2
+  addi x13, x13, 16
 
 // Execute
 Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test4_exec:
   jalr ra, x15, 0
   nop
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_s_test4_store, Sv_Exceptions_cg_cp_misaligned_priority_s_test4_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_s_test4_load, Sv_Exceptions_cg_cp_misaligned_priority_s_test4_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test4_exec, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test4_exec_str)
 
@@ -240,12 +298,12 @@ Sv_Exceptions_cg_cp_instr_page_fault_s_test5_exec:
   addi x13, x13, 16
 
 // Store
-Sv_Exceptions_cg_cp_misaligned_priority_s_test6_store:
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test6_store:
   sw x13, 20(x15)
   nop
 
 // Load
-Sv_Exceptions_cg_cp_misaligned_priority_s_test6_load:
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test6_load:
   lw x14, 20(x15)
   nop
 
@@ -255,18 +313,18 @@ Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test6_exec:
   nop
 
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_s_test6_store, Sv_Exceptions_cg_cp_misaligned_priority_s_test6_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test6_store, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test6_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_s_test6_load, Sv_Exceptions_cg_cp_misaligned_priority_s_test6_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test6_load, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test6_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test6_exec, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test6_exec_str)
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 10
   srli x6, x6, 10
   add x15, x15, x6
@@ -277,31 +335,59 @@ Sv_Exceptions_cg_cp_store_page_fault_s_test7_store:
   sw x13, 20(x15)
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_store_page_fault_s_test7_store, Sv_Exceptions_cg_cp_store_page_fault_s_test7_store_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x13, x13, 16
+
 // Load
 Sv_Exceptions_cg_cp_load_page_fault_s_test7_load:
   lw x14, 20(x15)
   nop
+
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_load_page_fault_s_test7_load, Sv_Exceptions_cg_cp_load_page_fault_s_test7_load_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Execute
 Sv_Exceptions_cg_cp_instr_page_fault_s_test7_exec:
   jalr ra, x15, 0
   nop
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_store_page_fault_s_test7_store, Sv_Exceptions_cg_cp_store_page_fault_s_test7_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_load_page_fault_s_test7_load, Sv_Exceptions_cg_cp_load_page_fault_s_test7_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Exceptions_cg_cp_instr_page_fault_s_test7_exec, Sv_Exceptions_cg_cp_instr_page_fault_s_test7_exec_str)
 
 #endif
 
-#ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 10
   srli x6, x6, 10
   add x15, x15, x6
@@ -309,24 +395,54 @@ Sv_Exceptions_cg_cp_instr_page_fault_s_test7_exec:
   addi x13, x13, 16
 
 // Store
-Sv_Exceptions_cg_cp_misaligned_priority_s_test8_store:
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test8_store:
   sw x13, 20(x15)
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test8_store, Sv_Exceptions_cg_cp_misaligned_priority_store_s_test8_store_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x15, x15, 2
+  addi x13, x13, 16
+
 // Load
-Sv_Exceptions_cg_cp_misaligned_priority_s_test8_load:
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test8_load:
   lw x14, 20(x15)
   nop
+
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test8_load, Sv_Exceptions_cg_cp_misaligned_priority_load_s_test8_load_str)
+
+#endif
+
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
+  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x15, (va_data >> 22) << 22)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x15, x15, x6
+  addi x15, x15, 2
+  addi x13, x13, 16
 
 // Execute
 Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test8_exec:
   jalr ra, x15, 0
   nop
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Exceptions_cg_cp_misaligned_priority_s_test8_store, Sv_Exceptions_cg_cp_misaligned_priority_s_test8_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Exceptions_cg_cp_misaligned_priority_s_test8_load, Sv_Exceptions_cg_cp_misaligned_priority_s_test8_load_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test8_exec, Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test8_exec_str)
 
@@ -363,26 +479,26 @@ rvtest_slvl0_pg_tbl:
 Sv_Exceptions_cg_cp_store_page_fault_s_test1_store_str: .string "\"test: 1; cg: Sv_Exceptions_cg; cp: cp_store_page_fault_s; bin: test1_store\""
 Sv_Exceptions_cg_cp_load_page_fault_s_test1_load_str: .string "\"test: 2; cg: Sv_Exceptions_cg; cp: cp_load_page_fault_s; bin: test1_load\""
 Sv_Exceptions_cg_cp_instr_page_fault_s_test1_exec_str: .string "\"test: 3; cg: Sv_Exceptions_cg; cp: cp_instr_page_fault_s; bin: test1_exec\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test2_store_str: .string "\"test: 4; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test2_store\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test2_load_str: .string "\"test: 5; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test2_load\""
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test2_store_str: .string "\"test: 4; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_store_s; bin: test2_store\""
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test2_load_str: .string "\"test: 5; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_load_s; bin: test2_load\""
 Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test2_exec_str: .string "\"test: 6; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_fetch_s; bin: test2_exec\""
 Sv_Exceptions_cg_cp_store_page_fault_s_test3_store_str: .string "\"test: 7; cg: Sv_Exceptions_cg; cp: cp_store_page_fault_s; bin: test3_store\""
 Sv_Exceptions_cg_cp_load_page_fault_s_test3_load_str: .string "\"test: 8; cg: Sv_Exceptions_cg; cp: cp_load_page_fault_s; bin: test3_load\""
 Sv_Exceptions_cg_cp_instr_page_fault_s_test3_exec_str: .string "\"test: 9; cg: Sv_Exceptions_cg; cp: cp_instr_page_fault_s; bin: test3_exec\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test4_store_str: .string "\"test: 10; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test4_store\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test4_load_str: .string "\"test: 11; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test4_load\""
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test4_store_str: .string "\"test: 10; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_store_s; bin: test4_store\""
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test4_load_str: .string "\"test: 11; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_load_s; bin: test4_load\""
 Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test4_exec_str: .string "\"test: 12; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_fetch_s; bin: test4_exec\""
 Sv_Exceptions_cg_cp_store_page_fault_s_test5_store_str: .string "\"test: 13; cg: Sv_Exceptions_cg; cp: cp_store_page_fault_s; bin: test5_store\""
 Sv_Exceptions_cg_cp_load_page_fault_s_test5_load_str: .string "\"test: 14; cg: Sv_Exceptions_cg; cp: cp_load_page_fault_s; bin: test5_load\""
 Sv_Exceptions_cg_cp_instr_page_fault_s_test5_exec_str: .string "\"test: 15; cg: Sv_Exceptions_cg; cp: cp_instr_page_fault_s; bin: test5_exec\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test6_store_str: .string "\"test: 16; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test6_store\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test6_load_str: .string "\"test: 17; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test6_load\""
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test6_store_str: .string "\"test: 16; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_store_s; bin: test6_store\""
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test6_load_str: .string "\"test: 17; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_load_s; bin: test6_load\""
 Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test6_exec_str: .string "\"test: 18; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_fetch_s; bin: test6_exec\""
 Sv_Exceptions_cg_cp_store_page_fault_s_test7_store_str: .string "\"test: 19; cg: Sv_Exceptions_cg; cp: cp_store_page_fault_s; bin: test7_store\""
 Sv_Exceptions_cg_cp_load_page_fault_s_test7_load_str: .string "\"test: 20; cg: Sv_Exceptions_cg; cp: cp_load_page_fault_s; bin: test7_load\""
 Sv_Exceptions_cg_cp_instr_page_fault_s_test7_exec_str: .string "\"test: 21; cg: Sv_Exceptions_cg; cp: cp_instr_page_fault_s; bin: test7_exec\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test8_store_str: .string "\"test: 22; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test8_store\""
-Sv_Exceptions_cg_cp_misaligned_priority_s_test8_load_str: .string "\"test: 23; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_s; bin: test8_load\""
+Sv_Exceptions_cg_cp_misaligned_priority_store_s_test8_store_str: .string "\"test: 22; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_store_s; bin: test8_store\""
+Sv_Exceptions_cg_cp_misaligned_priority_load_s_test8_load_str: .string "\"test: 23; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_load_s; bin: test8_load\""
 Sv_Exceptions_cg_cp_misaligned_priority_fetch_s_test8_exec_str: .string "\"test: 24; cg: Sv_Exceptions_cg; cp: cp_misaligned_priority_fetch_s; bin: test8_exec\""
 
 // End of test data section and model specific data

@@ -12,7 +12,9 @@ coverpoints:
   - name: cp_store_page_fault_m
     goal: Store Page Fault
     description: store to address that causes store page fault because mstatus.MPRV=1 and  mstatus.MPP={01, 00}
-  - name: cp_misaligned_priority_m
+  - name: |-
+      cp_misaligned_priority_load_m
+      cp_misaligned_priority_store_m
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
     expectation: M-mode needs MPRV to S or U mode to be able to cause access fault.  No fetch fault occurs because MPRV does not affect fetch privilege.

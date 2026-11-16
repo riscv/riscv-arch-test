@@ -11,19 +11,19 @@
                 bins posQNaN = {1};
         }
 
-        fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fflags", "fflags") {
+        fp_flags_clear : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags") {
                 bins clear = {0};
         }
 
-        vtype_prev_vill_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        vtype_prev_vill_clear: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
                 bins vill_not_set = {0};
         }
 
-        vl_zero : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") == 0 {
+        vl_zero : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL, "vl") == 0 {
                 bins zero = {1};
         }
 
-        vstart_zero : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 {
+        vstart_zero : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART, "vstart") == 0 {
                 bins zero = {1};
         }
 

@@ -9,11 +9,21 @@
 
 """Functions for generating vector CSR and vtype/vl/vstart tests in M-, S- and U-mode."""
 
+import itertools
+
 from testgen.asm.csr import gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.PrivCommon import STATUS_CSR, gen_status_read_sigupd, set_status_fields
+from testgen.priv.extensions.PrivCommon import (
+    STATUS_CSR,
+    gen_status_read_sigupd,
+    hs_status_values,
+    hs_tag,
+    off_status_pairs,
+    off_tag,
+    set_status_fields,
+)
 
 # LMUL = 1 before the vmv.v.i v1/v2 setup: an earlier testcase leaves LMUL = 2, where v1 is a
 # misaligned register group (a reserved encoding) that only harts with Ssstrict must trap.
@@ -56,12 +66,12 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int, covergroup: str, priv: str
                 continue
             # A write that changes vector state must set xstatus.VS to Dirty, so preset the
             # CSR to a value the operation changes: 0 for csrrs/csrrw of all 1s, 1 for csrrc.
-            for vs in (1, 2, 3):
+            for vs, hs in itertools.product((1, 2, 3), hs_status_values(priv, include_off=False)):
                 lines.extend(
                     [
                         f"csrwi {csr}, {1 if op == 'csrrc' else 0}  # preset so {op} changes {csr}",
-                        *set_status_fields(temp_reg, priv, vs=vs),
-                        test_data.add_testcase(f"{csr}_{op}_vs{vs}", coverpoint, covergroup),
+                        *set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs),
+                        test_data.add_testcase(f"{csr}_{op}_vs{vs}{hs_tag(hs)}", coverpoint, covergroup),
                         f"{op} x0, {csr}, x{save_reg}",
                         f"LI(x{temp_reg}, MSTATUS_VS)",
                         gen_status_read_sigupd(check_reg, test_data, priv, temp_reg),
@@ -80,7 +90,7 @@ def _gen_vcsrs_walking1s(
     coverpoint = "cp_vcsrs_walking1s"
     walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3)
     for idx, csr in enumerate(_VECTOR_CSRS_WR):
-        tc = test_data.new_test_chunk(test_chunks, "V_vcsr")
+        tc = test_data.new_test_chunk(test_chunks, f"V_vcsr_{priv}")
         if idx == 0:
             tc.section_header = comment_banner(
                 coverpoint, "csrrw walking-1s into vstart/vxsat/vxrm/vcsr (covers walking_ones_rs1 bins 0..XLEN-1)"
@@ -116,21 +126,23 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
             "VS=Initial(1)/Clean(2)/Dirty(3) -> vadd.vv -> expect Dirty",
         ),
     ]
-    for vs in (1, 2, 3):
+    for vs, hs in itertools.product((1, 2, 3), hs_status_values(priv, include_off=False)):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
         lines.append("vmv.v.i v2, 2")
-        lines.extend(set_status_fields(temp_reg, priv, vs=vs))
-        lines.append(test_data.add_testcase(f"vadd_vs{vs}", f"cp_{status}_vs_set_dirty_arithmetic", covergroup))
+        lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
+        lines.append(
+            test_data.add_testcase(f"vadd_vs{vs}{hs_tag(hs)}", f"cp_{status}_vs_set_dirty_arithmetic", covergroup)
+        )
         lines.append("vadd.vv v3, v1, v2")
         lines.append(gen_status_read_sigupd(check_reg, test_data, priv))
 
     lines.append(comment_banner(f"cp_{status}_vs_set_dirty_csr", "VS=Initial/Clean/Dirty -> vsetvli -> expect Dirty"))
-    for vs in (1, 2, 3):
+    for vs, hs in itertools.product((1, 2, 3), hs_status_values(priv, include_off=False)):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
-        lines.extend(set_status_fields(temp_reg, priv, vs=vs))
-        lines.append(test_data.add_testcase(f"vsetvli_vs{vs}", f"cp_{status}_vs_set_dirty_csr", covergroup))
+        lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
+        lines.append(test_data.add_testcase(f"vsetvli_vs{vs}{hs_tag(hs)}", f"cp_{status}_vs_set_dirty_csr", covergroup))
         lines.append(f"vsetvli x{temp_reg}, x0, e16, m2, tu, mu")
         lines.append(gen_status_read_sigupd(check_reg, test_data, priv))
     test_data.int_regs.return_registers([check_reg])
@@ -146,21 +158,27 @@ def _gen_status_vs_off(test_data: TestData, temp_reg: int, covergroup: str, priv
             "VS=Off -> vector arithmetic traps illegal-instruction",
         ),
     ]
-    lines.extend(set_status_fields(temp_reg, priv, vs=3))
-    lines.append(_VSET_M1)
-    lines.append("vmv.v.i v1, 1")
-    lines.append("vmv.v.i v2, 2")
-    lines.extend(set_status_fields(temp_reg, priv, vs=0))
-    lines.append(test_data.add_testcase("vadd_vs_off", f"cp_{status}_vs_off_arithmetic", covergroup))
-    lines.append("vadd.vv v3, v1, v2  # traps: VS=Off")
-    lines.extend(set_status_fields(temp_reg, priv, vs=3))
+    for vs, hs in off_status_pairs(priv):
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append(_VSET_M1)
+        lines.append("vmv.v.i v1, 1")
+        lines.append("vmv.v.i v2, 2")
+        lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
+        lines.append(
+            test_data.add_testcase(f"vadd_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_arithmetic", covergroup)
+        )
+        lines.append("vadd.vv v3, v1, v2  # traps: VS=Off")
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append("")
 
     lines.append(comment_banner(f"cp_{status}_vs_off_csr", "VS=Off -> vsetvli traps illegal-instruction"))
-    lines.extend(set_status_fields(temp_reg, priv, vs=3))
-    lines.extend(set_status_fields(temp_reg, priv, vs=0))
-    lines.append(test_data.add_testcase("vsetvli_vs_off", f"cp_{status}_vs_off_csr", covergroup))
-    lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
-    lines.extend(set_status_fields(temp_reg, priv, vs=3))
+    for vs, hs in off_status_pairs(priv):
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.extend(set_status_fields(temp_reg, priv, vs=vs, hs_vs=hs))
+        lines.append(test_data.add_testcase(f"vsetvli_vs_off{off_tag(vs, hs)}", f"cp_{status}_vs_off_csr", covergroup))
+        lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
+        lines.extend(set_status_fields(temp_reg, priv, vs=3))
+        lines.append("")
     return lines
 
 
@@ -566,7 +584,7 @@ def _gen_vl_walking1s_sew_lmul(
     first = True
     for sew_name, sew_v in _SEW_VALUES:
         for lmul_name, _ in _LMUL_VALUES:
-            tc = test_data.new_test_chunk(test_chunks, "V_vl_walk")
+            tc = test_data.new_test_chunk(test_chunks, f"V_vl_walk_{priv}")
             if first:
                 tc.section_header = comment_banner(
                     coverpoint, "csrrw vl walking-1s after vsetivli for each (sew, lmul)"
@@ -608,11 +626,10 @@ def gen_v_tests(test_data: TestData, priv: str, covergroup: str) -> list[TestChu
     """Generate vector CSR, vset* and xstatus.VS tests in privilege mode priv ("M", "S" or "U")."""
     test_chunks: list[TestChunk] = []
     temp_reg = test_data.int_regs.get_register()
-
-    tc = test_data.begin_test_chunk("V_vcsr")
+    tc = test_data.begin_test_chunk(f"V_vcsr_{priv}")
     tc.code.extend(_gen_vcsrrswc(test_data, temp_reg, covergroup, priv))
     _gen_vcsrs_walking1s(test_data, temp_reg, test_chunks, covergroup, priv)
-    tc = test_data.new_test_chunk(test_chunks, "V_vcsr")
+    tc = test_data.new_test_chunk(test_chunks, f"V_vcsr_{priv}")
     tc.code.extend(_gen_vstart_oob(test_data, temp_reg, covergroup, priv))
 
     for gen in (
@@ -629,7 +646,7 @@ def gen_v_tests(test_data: TestData, priv: str, covergroup: str) -> list[TestChu
         _gen_avl_corners,
         _gen_vsetivli_avl_edges,
     ):
-        tc = test_data.new_test_chunk(test_chunks, "V_vset")
+        tc = test_data.new_test_chunk(test_chunks, f"V_vset_{priv}")
         tc.code.extend(gen(test_data, temp_reg, covergroup, priv))
 
     _gen_vl_walking1s_sew_lmul(test_data, temp_reg, test_chunks, covergroup, priv)

@@ -22,23 +22,17 @@ coverpoints:
       - stateen_warl_access
       - stateen_unimplemented_state_roz
       - stateen_reserved_roz
+      - mstateen0_fcsr_roz
   - name: cp_csr_illegal_accesses
     goal: Each stateen CSR allows read/write access from its own and higher privilege modes and denies read/writeaccess from lower privilege modes
     description: |-
-      In Umode, write mstateen0-3 with all ones, and read it back.
+      In U-mode (and S, VS and VU-mode if supported), write mstateen0-3 with all ones, and read it back.
       For RV32, also write msstateen0-3h
     expectation: Illegal instruction
     bins: 4-8CSRs
     rules:
       - stateen_op
       - stateen_illegal_state_access
-  - name: cp_fcsr_ro_zero
-    goal: Test if fcsr bit is read-only zero when misa.F=1
-    description: Write 1 to mstateen0.FCSR and read back
-    expectation: Expect 0 if misa.F = 1
-    bins: "1"
-    rules:
-      - mstateen0_fcsr_roz
   - name: cp_fcsr
     goal: fcsr controls access to fcsr when misa.F = 0
     description: |-
@@ -46,6 +40,7 @@ coverpoints:
       with misa.F = 0 and mstateen0.fcsr, read and write fcsr
     rules:
       - stateen0_fcsr_op
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_jvt_access
     goal: jvt controls access
     description: |-
@@ -67,8 +62,8 @@ coverpoints:
       If Sscsrind supported:
       With mstateen0.CSRIND = {0, 1}, read and write siselect.  And with siselect having some value TBD, write and read sireg,
       sireg2, sireg3, sireg4, sireg5, sireg6.  M, S if supported, else U
-    expectation: Always successful
-    bins: 2 states x 2 accesses x 6 regs
+    expectation: Illegal instruction if 0 except in M-mode, else successful
+    bins: 2 states x 5 modes x 3 accesses x 7 regs
     rules:
       - mstateen0_csrind_op
   - name: cp_aia
@@ -126,15 +121,6 @@ coverpoints:
     rules:
       - mstateen_ctr1
       - mstateen_ctr0
-  - name: cp_fcsr_lower
-    goal: fcsr controls access to fcsr when misa.F = 0
-    description: |-
-      If Zfinx is supported:
-      with misa.F = 0 and mstateen0.fcsr, read and write fcsr, frm, fflags from the next lower mode (S if supported, else U).
-      Also try executing fadd.s, flw, fcvt.w.s, fcvt.s.w, fmv.x.w, fmv.w.x, fclass.s. M, S if supported, else U
-    expectation: Illegal instruction if 0, else successful
-    rules:
-      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_fcsr_fp_instrs
     goal: fcsr controls floating-point instructions when misa.F = 0
     description: |-
@@ -143,26 +129,46 @@ coverpoints:
     expectation: Illegal instruction if 0, else successful
     rules:
       - stateen0_fcsr0_misa_f0_illegal_fpu_instr
-  - name: cp_mstateen0_se0_controls_sstateen0
-    goal: mstateen.SE0 controls access to sstateen0
-    description: For mstateen0.SE0 = {0,1} write and read back sstateen0.
-    expectation: Access fault if 0, success if 1.
-    bins: 2 SE0*2R/W
+  - name: cp_mstateen_se_controls_sstateen
+    goal: Bit 63 of mstateen0-3 controls access to sstateen0-3
+    description: |-
+      For N = 0-3 and mstateenN bit 63 = {0,1}, read and write sstateenN from S-mode (and VS-mode if H is supported, with hstateenN bit 63 = 1), and check the value read.
+      For RV32, bit 63 is bit 31 of mstateenNh.
+    expectation: |-
+      Illegal instruction if 0. If 1, access succeeds. sstateen1-3 read 0 (they have no defined bits).
+      Bit 63 may be read-only zero without the hypervisor extension; the bit = 1 bins are then unreachable.
+    bins: 4 CSRs * 2 states * 2 modes * 3 ops
     rules:
       - mstateen_bit_63_op
       - mstateen0_se0_op
-  - name: cp_mstateen_se_controls_sstateen123
-    goal: Bit 63 of mstateen1-3 controls access to sstateen1-3
+      - stateen_illegal_state_access
+      - stateen_reserved_roz
+      - sstateen_vsmode_access_roz
+  - name: cp_mstateen_se_controls_hstateen
+    goal: Bit 63 of mstateen0-3 controls access to hstateen0-3
     description: |-
-      For N = 1-3 and mstateenN bit 63 = {0,1}, read and write sstateenN from S-mode, and check the value read.
-      For RV32, bit 63 is bit 31 of mstateenNh.
-    expectation: |-
-      Illegal instruction if 0. If 1, access succeeds and sstateenN reads 0 (it has no defined bits).
-      Bit 63 may be read-only zero without the hypervisor extension; the bit = 1 bins are then unreachable.
-    bins: 3 CSRs * 2 states * 3 ops
+      If H is supported, for N = 0-3 and mstateenN bit 63 = {0,1}, read and write hstateenN from HS-mode.
+      For RV32, also access hstateenNh, where bit 63 is bit 31 of mstateenNh.
+    expectation: Illegal instruction if 0, else successful.
+    bins: 4-8 CSRs * 2 states * 3 ops
     rules:
       - mstateen_bit_63_op
       - stateen_illegal_state_access
-      - stateen_reserved_roz
+  - name: cp_mstateen0_se0_only_sstateen0
+    goal: Bits that are zero in mstateen0 are read-only zero in sstateen0
+    description: |-
+      With only mstateen0.SE0 set, set a walking one in sstateen0 with csrs and clear a walking zero with csrc, from M-mode and S-mode.
+    expectation: Every sstateen0 bit other than read-only ones stays zero.
+    rules:
+      - mstateen_lower_priv_roz
+  - name: cp_mstateen0_se0_only_hstateen0
+    goal: Bits that are zero in mstateen0 are read-only zero in hstateen0
+    description: |-
+      If H is supported, with only mstateen0.SE0 set, set a walking one in hstateen0 with csrs and clear a walking zero with csrc, from M-mode and HS-mode.
+    expectation: Every hstateen0 bit other than read-only ones stays zero.
+    rules:
+      - mstateen_lower_priv_roz
   - heading: "Note: All of these tests are performed in M-mode unless otherwise noted."
+  - heading: "Note: The feature and sstateen tests set and clear the mstateen bit and run from M, S, U, and (with H) VS and VU-mode. Each sets the bit in hstateen0 and sstateen0 after changing the mstateen bit, so only the mstateen bit changes the result. The coverpoints sample the bit in all three CSRs."
+  - heading: "Note: Tests that set mstateen to all ones and vary hstateen0 and sstateen0 are in Ssstateen."
   - heading: "Note: Smstateen implies U-mode (otherwise there is no need for this extension)"

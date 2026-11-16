@@ -74,11 +74,16 @@
 
 ##### Access faults #####
 
-# Not defined: ACT needs one address where both fetches and loads/stores fault, and EH1 has
-# none. Fetches fault only in the ICCM region (0xE) outside the ICCM, and loads/stores only in
-# the DCCM/PIC region (0xF) outside the DCCM and PIC; elsewhere accesses go to the system bus.
+# Fetches fault only in the ICCM region (0xE) outside the ICCM (0xEE00_0000-0xEE07_FFFF).
+# Loads and stores fault only in the DCCM/PIC region (0xF) outside the DCCM (0xF004_0000)
+# and PIC (0xF00C_0000). Elsewhere, accesses go to the system bus.
+# No address that faults for all access types, so RVMODEL_ACCESS_FAULT_ADDRESS is not defined.
 #   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L247
-//#define RVMODEL_ACCESS_FAULT_ADDRESS
+#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/tools/Makefile#L16
+#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/ifu/ifu_ifc_ctl.sv#L273
+#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0xE0000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0xF0000000
+#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0xF0000000
 
 ##### Interrupt Latency #####
 

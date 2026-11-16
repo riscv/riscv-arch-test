@@ -10,7 +10,7 @@ normative_rule_definitions:
       ["Ssstateen_cg/cp_csr_illegal_accesses", "Ssstateen_cg/cp_walking_ones"]
 
   - name: sstateen_user_access_control
-    coverpoint: ["Ssstateen_cg/{cp_jvt, cp_fcsr_lower}"]
+    coverpoint: ["Ssstateen_cg/{cp_jvt, cp_fcsr}"]
 
   - name: sstateen_ro1_bits
     coverpoint: ["Ssstateen_cg/cp_walking_ones"]

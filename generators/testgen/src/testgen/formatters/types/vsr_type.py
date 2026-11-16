@@ -44,7 +44,7 @@ def format_vsr_type(
     assert params.lmul is not None, "lmul must be provided for VSR-type instructions"
     assert test_data.test_chunk is not None, "format_vsr_type must be used with an active TestChunk"
 
-    if params.rs1val_pointer != "RVMODEL_ACCESS_FAULT_ADDRESS":
+    if params.rs1val_pointer != "RVMODEL_ACCESS_FAULT_ADDRESS_STORE":
         test_data.test_chunk.vector_labels.append(
             (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer])
         )

@@ -22,14 +22,33 @@ covergroup Za64rs_cg with function sample(ins_t ins);
     sc_w_instr: coverpoint ins.current.insn {
         wildcard bins sc_w = {SC_W};
     }
-    lr_w_base_aligned: coverpoint ins.prev.rs1_val[5:0] {
-        bins aligned_64 = {6'd0};
+    // Offset of the LR address inside its naturally aligned 64-byte block.
+    lr_off_w: coverpoint ins.prev.rs1_val[5:0] {
+        bins off[] = {[6'd0 : 6'd60]} with (item % 4 == 0);
     }
-    sc_offset: coverpoint ins.current.rs1_val[6:0] {
-         bins offset_aligned[] = {[7'd0 : 7'd64]} with (item % 4 == 0);
+    // SC at the first word of the next block, or the last word of the previous block.
+    sc_side_w: coverpoint ins.current.rs1_val[5:0] {
+        bins next = {6'd0} iff (ins.current.rs1_val == (((ins.prev.rs1_val >> 6) << 6) + 64));
+        bins prev = {6'd60} iff (ins.current.rs1_val == (((ins.prev.rs1_val >> 6) << 6) - 4));
     }
+    cp_za64rs: cross sc_w_instr, lr_w_instr, lr_off_w, sc_side_w;
 
-    cp_za64rs: cross  sc_w_instr, sc_offset, lr_w_instr, lr_w_base_aligned ;
+    `ifdef UDB_MXLEN_64
+    lr_d_instr: coverpoint ins.prev.insn {
+        wildcard bins lr_d = {LR_D};
+    }
+    sc_d_instr: coverpoint ins.current.insn {
+        wildcard bins sc_d = {SC_D};
+    }
+    lr_off_d: coverpoint ins.prev.rs1_val[5:0] {
+        bins off[] = {[6'd0 : 6'd56]} with (item % 8 == 0);
+    }
+    sc_side_d: coverpoint ins.current.rs1_val[5:0] {
+        bins next = {6'd0} iff (ins.current.rs1_val == (((ins.prev.rs1_val >> 6) << 6) + 64));
+        bins prev = {6'd56} iff (ins.current.rs1_val == (((ins.prev.rs1_val >> 6) << 6) - 8));
+    }
+    cp_za64rs_d: cross sc_d_instr, lr_d_instr, lr_off_d, sc_side_d;
+    `endif
 
 endgroup
 

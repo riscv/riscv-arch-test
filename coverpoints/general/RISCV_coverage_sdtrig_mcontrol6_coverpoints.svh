@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////
 // the second trigger n of a chained pair n-1, n of mcontrol6 triggers
-triggernum_chain: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tselect", "tselect") {
+triggernum_chain: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TSELECT) {
     type_option.weight = 0;
     `ifdef SDTRIG_CHAIN_PAIR_1 bins pair_1 = {1}; `endif
     `ifdef SDTRIG_CHAIN_PAIR_2 bins pair_2 = {2}; `endif
@@ -31,7 +31,7 @@ triggernum_chain: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "ts
     `ifdef SDTRIG_CHAIN_PAIR_15 bins pair_15 = {15}; `endif
 }
 // the last trigger of a chain of 3 or more starting at trigger 0 (configured last, so selected at the store)
-triggernum_chain_end: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tselect", "tselect") {
+triggernum_chain_end: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TSELECT) {
     type_option.weight = 0;
     `ifdef SDTRIG_CHAIN_3 bins length_3 = {2}; `endif
     `ifdef SDTRIG_CHAIN_4 bins length_4 = {3}; `endif
@@ -48,12 +48,10 @@ triggernum_chain_end: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,
     `ifdef SDTRIG_CHAIN_15 bins length_15 = {14}; `endif
     `ifdef SDTRIG_CHAIN_16 bins length_16 = {15}; `endif
 }
-tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
+tdata1_m: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "m")[0] {
     type_option.weight = 0;
-    bins disabled = {1'b0};
-    bins enabled  = {1'b1};
 }
-tdata1_match_cmp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
+tdata1_match_cmp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "match")[3:0] {
     type_option.weight = 0;
     bins equal = {4'd0};
     `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_2 bins ge        = {4'd2}; `endif
@@ -77,7 +75,7 @@ tdata2_ls_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val   
     bins scratch_plus_8 = {2'd1};
     bins zero           = {2'd2};
 }
-tdata1_size_ls: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0] {
+tdata1_size_ls: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "size")[2:0] {
     type_option.weight = 0;
     bins any = {3'd0};
     `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_1 bins b8  = {3'd1}; `endif
@@ -109,7 +107,7 @@ store_data_cmp: coverpoint (ins.current.rs2_val == '0       ? 3'd0 :
     bins ones  = {3'd4};
 }
 `ifdef SDTRIG_MATCH_NAPOT
-    tdata1_match_napot: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
+    tdata1_match_napot: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "match")[3:0] {
         type_option.weight = 0;
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_1 bins napot     = {4'd1}; `endif
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_9 bins not_napot = {4'd9}; `endif
@@ -131,7 +129,7 @@ store_data_cmp: coverpoint (ins.current.rs2_val == '0       ? 3'd0 :
     }
 `endif
 `ifdef SDTRIG_MATCH_MASK
-    tdata1_match_mask: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
+    tdata1_match_mask: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "match")[3:0] {
         type_option.weight = 0;
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_4  bins mask_low      = {4'd4};  `endif
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_5  bins mask_high     = {4'd5};  `endif
@@ -299,8 +297,8 @@ load_store_instr: coverpoint ins.current.insn {
         wildcard bins c_fsdsp = {C_FSDSP};
     `endif
 }
-// cp_mcontrol6_size_data: a select = data store trigger with size = N on an sb/sh/sw/sd
-tdata1_size_data: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0] {
+// cp_mcontrol6_size_data, cp_mcontrol6_match_size_{store,load}: the size of a select = data load or store trigger
+tdata1_size_data: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "size")[2:0] {
     type_option.weight = 0;
     `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_1 bins b8  = {3'd1}; `endif
     `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_2 bins b16 = {3'd2}; `endif
@@ -321,7 +319,7 @@ size_data_outcome: coverpoint sdtrig_bp_taken(ins) == (sdtrig_size_data_case(ins
 }
 // cp_mcontrol6_match_size_*: the match, size and case of a select = 1 trigger (sdtrig_ms_case)
 `ifdef SDTRIG_SIZE_DATA
-    ms_match: coverpoint get_csr_val(ins.hart, ins.issue, sdtrig_ms_when(ins), "tdata1", "match")[3:0] {
+    ms_match: coverpoint get_csr_field(ins.hart, ins.issue, sdtrig_ms_when(ins), CSR_TDATA1, "match")[3:0] {
         type_option.weight = 0;
         bins equal = {4'd0};
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_1  bins napot         = {4'd1};  `endif
@@ -333,15 +331,6 @@ size_data_outcome: coverpoint sdtrig_bp_taken(ins) == (sdtrig_size_data_case(ins
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_9  bins not_napot     = {4'd9};  `endif
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_12 bins not_mask_low  = {4'd12}; `endif
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_13 bins not_mask_high = {4'd13}; `endif
-    }
-    ms_size_data: coverpoint get_csr_val(ins.hart, ins.issue, sdtrig_ms_when(ins), "tdata1", "size")[2:0] {
-        type_option.weight = 0;
-        `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_1 bins b8  = {3'd1}; `endif
-        `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_2 bins b16 = {3'd2}; `endif
-        `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_3 bins b32 = {3'd3}; `endif
-        `ifdef UDB_MXLEN_64
-            `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_5 bins b64 = {3'd5}; `endif
-        `endif
     }
     ms_store_case: coverpoint sdtrig_ms_case(ins, 3'b010) {
         type_option.weight = 0;
@@ -360,7 +349,7 @@ size_data_outcome: coverpoint sdtrig_bp_taken(ins) == (sdtrig_size_data_case(ins
     // On RV64 the high half of an instruction is 0, so mask high (5) and not mask high (13) on a 32-bit
     // instruction either fire on every instruction, including the csrw that disarms the trigger, or on none:
     // only the never-firing groups are tested, and the crosses leave those matches out
-    ms_match_exec: coverpoint get_csr_val(ins.hart, ins.issue, sdtrig_ms_when(ins), "tdata1", "match")[3:0] {
+    ms_match_exec: coverpoint get_csr_field(ins.hart, ins.issue, sdtrig_ms_when(ins), CSR_TDATA1, "match")[3:0] {
         type_option.weight = 0;
         bins equal = {4'd0};
         `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_1  bins napot         = {4'd1};  `endif
@@ -377,7 +366,7 @@ size_data_outcome: coverpoint sdtrig_bp_taken(ins) == (sdtrig_size_data_case(ins
             `ifdef UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES_13 bins not_mask_high = {4'd13}; `endif
         `endif
     }
-    ms_size_exec: coverpoint get_csr_val(ins.hart, ins.issue, sdtrig_ms_when(ins), "tdata1", "size")[2:0] {
+    ms_size_exec: coverpoint get_csr_field(ins.hart, ins.issue, sdtrig_ms_when(ins), CSR_TDATA1, "size")[2:0] {
         type_option.weight = 0;
         `ifdef SDTRIG_MATCH_SIZE_EXEC16 bins b16 = {3'd2}; `endif
         `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_3 bins b32 = {3'd3}; `endif
@@ -390,7 +379,7 @@ size_data_outcome: coverpoint sdtrig_bp_taken(ins) == (sdtrig_size_data_case(ins
     `ifdef SDTRIG_MATCH_SIZE_EXEC16
         // a 32-bit instruction against a size = 2 trigger: a 32-bit trigger's own disarming csrw rules out
         // some tdata2 values for 16-bit instructions on size = 3, so only this direction is required
-        ms_size_exec16: coverpoint get_csr_val(ins.hart, ins.issue, sdtrig_ms_when(ins), "tdata1", "size")[2:0] {
+        ms_size_exec16: coverpoint get_csr_field(ins.hart, ins.issue, sdtrig_ms_when(ins), CSR_TDATA1, "size")[2:0] {
             type_option.weight = 0;
             bins b16 = {3'd2};
         }
@@ -406,23 +395,21 @@ chain_store_x0: coverpoint ins.current.insn[24:20] {
     type_option.weight = 0;
     bins x0 = {5'd0};
 }
-chain_store_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins.current.imm) {
+chain_store_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.eff_addr) {
     type_option.weight = 0;
     bins watched = {1'b1};
 }
 chain_fired: coverpoint sdtrig_bp_taken(ins) {
     type_option.weight = 0;
-    bins fired     = {1'b1};
-    bins not_fired = {1'b0};
 }
 `ifndef SDTRIG_SUITE_SM
 // SdtrigS/U cp_mcontrol6_priv_bits: a sw to the address watched by an mcontrol6 store trigger (select = 0, store = 1)
 // and whether it fired as the trigger's m/s/u bits require (sdtrig_priv_bits_outcome)
 priv_bits_sw: coverpoint ins.current.insn iff (
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0] == 4'd6 &&
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "store")[0] &&
-        !get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "select")[0] &&
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata2", "tdata2") == ins.current.rs1_val + ins.current.imm) {
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] == 4'd6 &&
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "store")[0] &&
+        !get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "select")[0] &&
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA2) == ins.current.eff_addr) {
     type_option.weight = 0;
     wildcard bins sw = {SW};
 }

@@ -21,6 +21,30 @@
     `endif
 `endif
 
+// scause must hold every code 0-31 from Ss1p12; before that, only the codes of supported causes
+`ifdef S1P12P0_OR_LATER_SUPPORTED
+    `define SCAUSE_HOLDS_SOFTWARE_CHECK
+    `define SCAUSE_HOLDS_COUNTER_OVERFLOW
+`endif
+`ifdef SOFTWARE_CHECK_SUPPORTED
+    `ifndef SCAUSE_HOLDS_SOFTWARE_CHECK
+        `define SCAUSE_HOLDS_SOFTWARE_CHECK
+    `endif
+`endif
+`ifdef SSCOFPMF_SUPPORTED
+    `ifndef SCAUSE_HOLDS_COUNTER_OVERFLOW
+        `define SCAUSE_HOLDS_COUNTER_OVERFLOW
+    `endif
+`endif
+`ifdef S1P12P0_OR_LATER_SUPPORTED
+    `define SCAUSE_HOLDS_H_CAUSES
+`endif
+`ifdef H_SUPPORTED
+    `ifndef SCAUSE_HOLDS_H_CAUSES
+        `define SCAUSE_HOLDS_H_CAUSES
+    `endif
+`endif
+
 covergroup S_scause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -54,19 +78,23 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins b_15_store_page_fault = {15};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             // Exception code is required to hold the values 0-31 in Ss1p12 or higher.
-            bins b_10_ecall_vs = {10}; // only can be triggered in hardware if H supported but scause must be able to hold 0-31
             bins b_11_ecall_m = {11}; // never delegated to S mode but scause must be able to hold 0-31
             bins b_14_reserved = {14};
             bins b_16_double_trap = {16}; // never delegated to S mode
             bins b_17_reserved = {17};
-            bins b_18_software_check = {18}; // only can be triggered in hardware if SOFTWARE_CHECK_SUPPORTED but scause must be able to hold 0-31
             bins b_19_hardware_error = {19}; // scause must be able to hold 0-31
-            // These can only be triggered in hardware if H supported, but scause must be able to hold 0-31
+            bins b_31_24_custom[] = {[24:31]}; // scause must be able to hold 0-31
+        `endif
+        `ifdef SCAUSE_HOLDS_SOFTWARE_CHECK
+            bins b_18_software_check = {18}; // Zicfilp or Zicfiss, or any code 0-31 in Ss1p12 or higher
+        `endif
+        `ifdef SCAUSE_HOLDS_H_CAUSES
+            // H, or any code 0-31 in Ss1p12 or higher
+            bins b_10_ecall_vs = {10};
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};
             bins b_22_virtual_instruction = {22};
             bins b_23_store_guest_page_fault = {23};
-            bins b_31_24_custom[] = {[24:31]}; // scause must be able to hold 0-31
         `endif
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
@@ -82,16 +110,21 @@ covergroup S_scause_cg with function sample(ins_t ins);
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             // scause Exception Code required to hold the values 0-31
             bins b_0_reserved = {0};
-            bins b_2_vs_software = {2};
             bins b_4_reserved = {4};
-            bins b_6_vs_timer = {6};
             bins b_8_reserved = {8};
-            bins b_10_vs_external = {10};
-            bins b_12_supervisor_guest_external = {12};
-            bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
-            bins b_31_16_custom[] = {[31:16]}; // designated for platform use
+            bins b_31_16_custom[] = {[16:31]}; // designated for platform use
+        `endif
+        `ifdef SCAUSE_HOLDS_COUNTER_OVERFLOW
+            bins b_13_counter_overflow = {13}; // Sscofpmf, or any code 0-31 in Ss1p12 or higher
+        `endif
+        `ifdef SCAUSE_HOLDS_H_CAUSES
+            // H, or any code 0-31 in Ss1p12 or higher
+            bins b_2_vs_software = {2};
+            bins b_6_vs_timer = {6};
+            bins b_10_vs_external = {10};
+            bins b_12_supervisor_guest_external = {12};
         `endif
     }
 
@@ -152,11 +185,11 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-    old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
+    old_sstatus_spp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0] {
     }
-    old_sstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] {
+    old_sstatus_spie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spie")[0] {
     }
-    old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
+    old_sstatus_sie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0] {
     }
     // main coverpoints
     cp_sprivinst: cross priv_mode_s, privinstrs;
@@ -357,7 +390,7 @@ covergroup S_F_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_priv_f_coverpoints.svh"
 
-    sstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+    sstatus_FS: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "fs")[1:0] {
         bins off     = {2'b00};
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins initial_state = {2'b01};
@@ -367,7 +400,7 @@ covergroup S_F_cg with function sample(ins_t ins);
         `endif
         bins dirty   = {2'b11};
     }
-    sstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+    sstatus_FS_off_dirty: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "fs")[1:0] {
         bins off     = {2'b00};
         bins dirty   = {2'b11};
     }
@@ -477,7 +510,7 @@ covergroup S_V_cg with function sample(ins_t ins);
 
     // Initial and Clean only when MSTATUS_VS_LEGAL_VALUES includes them (otherwise a write
     // of either reads back as Dirty)
-    sstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+    sstatus_vs_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "vs") {
         `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
             bins first = {1};
         `endif
@@ -487,7 +520,7 @@ covergroup S_V_cg with function sample(ins_t ins);
         bins dirty  = {3};
     }
 
-    sstatus_vs_inactive    : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+    sstatus_vs_inactive    : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "vs") {
         bins inactive = {0};
     }
 
@@ -495,12 +528,12 @@ covergroup S_V_cg with function sample(ins_t ins);
     cp_sstatus_vs_set_dirty_csr         : cross priv_mode_s, std_vec,        vsetvli_instruction,                    sstatus_vs_on;
     cp_sstatus_vs_set_dirty_vcsr        : cross priv_mode_s, vcsrs_writable, csrops,                                 sstatus_vs_on;
 
-    cp_sstatus_vs_off_arithmetic        : cross priv_mode_s, sstatus_vs_inactive,     vector_vector_arithmetic_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 );
-    cp_sstatus_vs_off_csr               : cross priv_mode_s, sstatus_vs_inactive,     vsetvli_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 );
+    cp_sstatus_vs_off_arithmetic        : cross priv_mode_s, sstatus_vs_inactive,     vector_vector_arithmetic_instruction iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 );
+    cp_sstatus_vs_off_csr               : cross priv_mode_s, sstatus_vs_inactive,     vsetvli_instruction iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 );
 
 endgroup
 `endif
@@ -512,10 +545,10 @@ covergroup S_VF_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_priv_vf_coverpoints.svh"
 
     //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero;
-    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") != 0
+    std_trap_vec : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
+                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "vs") != 0
                     }
     {
         bins true = {1'b1};
@@ -523,7 +556,7 @@ covergroup S_VF_cg with function sample(ins_t ins);
 
     // Initial and Clean only when MSTATUS_FS_LEGAL_VALUES includes them (otherwise a write
     // of either reads back as Dirty)
-    sstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+    sstatus_fs_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "fs") {
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins first_state = {1};
         `endif
@@ -533,7 +566,7 @@ covergroup S_VF_cg with function sample(ins_t ins);
         bins dirty  = {3};
     }
 
-    sstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+    sstatus_fs_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "fs") {
         bins off = {0};
     }
 
@@ -551,13 +584,13 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // counter access in supervisor mode
 
-    mcounteren_ones: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren"){
+    mcounteren_ones: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN){
         bins ones = {32'b11111111111111111111111111111111};
     }
-    mcounteren_zeros: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren"){
+    mcounteren_zeros: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN){
         bins zeros = {32'b0};
     }
-    counters_scounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[31:0]} {
+    counters_scounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCOUNTEREN)[31:0]} {
     bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
     bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
     bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -932,7 +965,7 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
         `endif
     `endif
 }
-    counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[31:0] } {
+    counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN)[31:0] } {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -1316,8 +1349,100 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     cp_mcounteren_access_s: cross csraccess, counters_mcounteren, priv_mode_s;
     cp_scounteren_access_s: cross csraccess, counters_scounteren, mcounteren_ones, priv_mode_s;
     cp_scounteren_access_u: cross csraccess, counters_scounteren, mcounteren_ones, priv_mode_u;
-    cp_mscounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren") == get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren"));
+    cp_mscounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN) == get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCOUNTEREN));
     cp_mcounter_inc_inaccessible: cross mcounteren_zeros, priv_mode_s;
+
+    // ---- instret delta coverpoints ----
+
+    ecall: coverpoint ins.current.insn {
+        bins ecall = {ECALL};
+    }
+    ebreak: coverpoint ins.current.insn {
+        bins ebreak = {EBREAK};
+    }
+    insn_lw: coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    adr_misaligned_1: coverpoint ins.current.eff_addr[2:0] {
+        bins one = {3'b001};  // scratch + 1
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        illegal_address: coverpoint ins.current.eff_addr {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
+        }
+    `endif
+    wfi: coverpoint ins.current.insn {
+        bins wfi = {WFI};
+    }
+    insn_add: coverpoint ins.current.insn {
+        wildcard bins add = {ADD};
+    }
+    insn_sret: coverpoint ins.current.insn {
+        wildcard bins sret = {SRET};
+    }
+    `ifdef ZAWRS_SUPPORTED
+        wrs_nto: coverpoint ins.current.insn {
+            bins wrs_nto = {WRS_NTO};
+        }
+        wrs_sto: coverpoint ins.current.insn {
+            bins wrs_sto = {WRS_STO};
+        }
+    `endif
+    prev_instret_read: coverpoint ins.prev.insn {
+        wildcard bins csrr_instret = {32'b110000000010_00000_010_?????_1110011};  // csrr rd, instret (0xC02)
+    }
+    prev_ecall_li: coverpoint ins.prev.insn {
+        bins li_a0 = {32'h07300513};  // addi a0, x0, 0x73 (RVTEST_TSBI_ECALL_TEST)
+    }
+    mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE)[31:0] {
+        bins zero = {0};
+    }
+    mstatus_sie_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0] {
+        bins zero = {0};
+    }
+    `ifdef UDB_SSI_INTR_IMPL
+        mip_ssip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "ssip")[0] {
+            bins one = {1};
+        }
+        mie_ssie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "ssie")[0] {
+            bins one = {1};
+        }
+    `endif
+    `ifdef SSTC_SUPPORTED
+        mip_stip_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "stip")[0] {
+            bins zero = {0};
+        }
+        mie_stie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "stie")[0] {
+            bins one = {1};
+        }
+    `endif
+
+    // retiring instructions
+    cp_instret_add:  cross priv_mode_s, insn_add, prev_instret_read;
+    cp_instret_sret: cross priv_mode_s, insn_sret, prev_instret_read;
+
+    // instructions that trap before retiring
+    cp_instret_ecall:  cross priv_mode_s, ecall, prev_ecall_li;
+    cp_instret_ebreak: cross priv_mode_s, ebreak, prev_instret_read;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+        cp_instret_load_access_fault: cross priv_mode_s, insn_lw, illegal_address, prev_instret_read;
+    `endif
+    cp_instret_load_misaligned: cross priv_mode_s, insn_lw, adr_misaligned_1, prev_instret_read;
+
+    // wfi and wrs; the wfi cases wake on delegated supervisor interrupts that sstatus.SIE = 0 keeps from being taken
+    `ifdef UDB_WFI_FINITE
+        cp_instret_wfi_timeout: cross priv_mode_s, wfi, mie_zero, prev_instret_read;
+    `endif
+    `ifdef UDB_SSI_INTR_IMPL
+        cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
+    `endif
+    `ifdef SSTC_SUPPORTED
+        cp_instret_wfi_wake: cross priv_mode_s, wfi, mip_stip_zero, mie_stie_one, mstatus_sie_zero;
+    `endif
+    `ifdef ZAWRS_SUPPORTED
+        cp_instret_wrs_nto: cross priv_mode_s, wrs_nto, prev_instret_read;
+        cp_instret_wrs_sto: cross priv_mode_s, wrs_sto, prev_instret_read;
+    `endif
 endgroup
 `endif
 

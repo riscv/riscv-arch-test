@@ -10,41 +10,51 @@ ci_enabled: false
 
 # OpenXiangShan/XiangShan @ e7bab53 (kunminghu-v2), KunminghuV2Config, against Sail 0.16. The full suite was
 # measured on 2026-10-01 (3564 of 3631 tests pass). On 2026-10-20 the suites affected by later config changes
-# (M, F, U, S, Sm, Zicntr, Zifencei, PMPSm, Sscofpmf*, Smstateen, Ssstateen, Sdtrig*, Ssstrict*) were rerun:
+# (M, F, U, S, Sm, Zicntr, Zifencei, PMP_Sm, Sscofpmf*, Smstateen, Ssstateen, Sdtrig*, Ssstrict*) were rerun:
 # 473 of 557 pass, and every remaining failure is in one of these suites.
-#   S, Sm             menvcfg.FIOM and senvcfg.FIOM are read-only zero although satp.MODE is not
-#                     always Bare (norm:menvcfg_fiom_rdonly0_ok); NewCSR/CSRBundles.scala L79. mstatus.SDT
-#                     stays writable, and writing 1 clears SIE, while menvcfg.DTE = 0, when the hart must
-#                     behave as though Ssdbltrp is not implemented (norm:menvcfg_dte_op); NewCSR/MachineLevel.scala
-#                     L584 gates only the sstatus view on DTE.
-#   Zicntr, Sscofpmf_Sm
-#                     Counter reads are not ordered after older instructions (norm:csr_access_order):
-#                     two instret reads 8 instructions apart differ by 0-21, and mhpmcounter11 read right
-#                     after the counted load is still 0 (and its overflow bit still clear). Counters are
-#                     missing from CSROoORead.waitForwardInOrderCsrReadList.
-#   SsstrictV, Ssstrict_S, Ssstrict_Sm, Ssstrict_U
-#                     Reserved vector encodings that read one register with two EEWs execute instead of
-#                     raising illegal-instruction (norm:vreg_source_eew_rsv): v0 as both mask and source
-#                     (vadd.vv v4,v0,v8,v0.t; vsseg5e32.v v0,(t1),v0.t) and a widening multiply-add whose
-#                     vs2 is the upper half of vd (vwmaccu.vv v14,v9,v15,v0.t). With menvcfg.STCE = 0,
-#                     vstimecmp is still accessible from HS-mode (NewCSR/CSRPermitModule.scala L225-L227).
-#                     The CSR walks also differ on the AIA, Sscsrind and Smrnmi CSRs (mtopi, stopi, vstopi,
-#                     miselect/mireg, siselect/sireg, vsiselect/vsireg, mn*), which XiangShan implements and
-#                     Sail 0.16 does not.
-#   Smstateen         mstateen0.CSRIND, AIA and IMSIC are writable (XiangShan implements Sscsrind and
-#                     Smaia), but Sail 0.16 has no Sscsrind or Smaia and no sail.json setting for these bits,
-#                     so it reads them as zero.
-#   PMPSm             PMPSm_cfg_A_tor_zero stores to and loads from physical address 0. The SimTop PMA
-#                     table makes 0x0-0x0FFF_FFFF readable and writable I/O with no device behind it, and
-#                     the bus error is not reported: the store is dropped and the load returns 0. Sail has
-#                     no memory there and takes an access fault.
-#   SdtrigSm, SdtrigS, SdtrigU
-#                     XiangShan implements no tdata3, so an access raises illegal-instruction. tdata3 "is
-#                     optional if no implemented triggers use it", and mcontrol6 uses it (textra32/64 is
-#                     tdata3 for types 2-6), so riscv-unified-db requires TDATA3_IMPLEMENTED with mcontrol6
-#                     and the config claims it. In SdtrigS and SdtrigU the trapping T-SBI access never
-#                     returns, so those tests time out.
-exclude_extensions: "S,Sm,Zicntr,Sscofpmf_Sm,SsstrictV,Ssstrict_S,Ssstrict_Sm,Ssstrict_U,Smstateen,PMPSm,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions:
+  # menvcfg.FIOM and senvcfg.FIOM are read-only zero although satp.MODE is not
+  # always Bare (norm:menvcfg_fiom_rdonly0_ok); NewCSR/CSRBundles.scala L79. mstatus.SDT
+  # stays writable, and writing 1 clears SIE, while menvcfg.DTE = 0, when the hart must
+  # behave as though Ssdbltrp is not implemented (norm:menvcfg_dte_op); NewCSR/MachineLevel.scala
+  # L584 gates only the sstatus view on DTE.
+  - S
+  - Sm
+  # Counter reads are not ordered after older instructions (norm:csr_access_order):
+  # two instret reads 8 instructions apart differ by 0-21, and mhpmcounter11 read right
+  # after the counted load is still 0 (and its overflow bit still clear). Counters are
+  # missing from CSROoORead.waitForwardInOrderCsrReadList.
+  - Zicntr
+  - Sscofpmf_Sm
+  # Reserved vector encodings that read one register with two EEWs execute instead of
+  # raising illegal-instruction (norm:vreg_source_eew_rsv): v0 as both mask and source
+  # (vadd.vv v4,v0,v8,v0.t; vsseg5e32.v v0,(t1),v0.t) and a widening multiply-add whose
+  # vs2 is the upper half of vd (vwmaccu.vv v14,v9,v15,v0.t). With menvcfg.STCE = 0,
+  # vstimecmp is still accessible from HS-mode (NewCSR/CSRPermitModule.scala L225-L227).
+  # The CSR walks also differ on the AIA, Sscsrind and Smrnmi CSRs (mtopi, stopi, vstopi,
+  # miselect/mireg, siselect/sireg, vsiselect/vsireg, mn*), which XiangShan implements and
+  # Sail 0.16 does not.
+  - SsstrictV
+  - Ssstrict_S
+  - Ssstrict_Sm
+  - Ssstrict_U
+  # mstateen0.CSRIND, AIA and IMSIC are writable (XiangShan implements Sscsrind and
+  # Smaia), but Sail 0.16 has no Sscsrind or Smaia and no sail.json setting for these bits,
+  # so it reads them as zero.
+  - Smstateen
+  # PMP_Sm_cfg_A_tor_zero stores to and loads from physical address 0. The SimTop PMA
+  # table makes 0x0-0x0FFF_FFFF readable and writable I/O with no device behind it, and
+  # the bus error is not reported: the store is dropped and the load returns 0. Sail has
+  # no memory there and takes an access fault.
+  - PMP_Sm
+  # XiangShan implements no tdata3, so an access raises illegal-instruction. tdata3 "is
+  # optional if no implemented triggers use it", and mcontrol6 uses it (textra32/64 is
+  # tdata3 for types 2-6), so riscv-unified-db requires TDATA3_IMPLEMENTED with mcontrol6
+  # and the config claims it. In SdtrigS and SdtrigU the trapping T-SBI access never
+  # returns, so those tests time out.
+  - SdtrigSm
+  - SdtrigS
+  - SdtrigU
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache clang"
 install_script: ".github/scripts/install-xiangshan.sh"

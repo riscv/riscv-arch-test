@@ -57,7 +57,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit        [4:0]  uimm5    = instr[19:15];
   automatic bit        [5:0]  uimm6_v  = {instr[26], instr[19:15]};
   automatic bit signed [4:0]  imm5     = instr[19:15];
-  automatic int cimm5 = (instr[24:20] == 0) ? -1 : instr[24:20];
+  automatic int cimm5 = (instr[24:20] == 0) ? -1 : int'(instr[24:20]);
 
   // Compressed immediates
   automatic bit signed [5:0]  immCIType     = {instr[12], instr[6:2]};
@@ -93,10 +93,11 @@ function string disassemble (logic [31:0] instrRaw);
     PAUSE:   $sformat(decoded, "pause");
   `endif
   `ifdef ZICBOP_COVERAGE
-    // Zicbop Extension (note these are hints)
-    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immIType, rs1);
-    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
-    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
+    // Zicbop Extension (note these are hints). Bits 24:20 select the prefetch, and the offset is bits
+    // 31:25 shifted left by 5, which is immSType as rd = 0.
+    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immSType, rs1);
+    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immSType, rs1);
+    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immSType, rs1);
   `endif
   `ifdef ZIHINTNTL_COVERAGE
     NTL_ALL: $sformat(decoded, "ntl.all");

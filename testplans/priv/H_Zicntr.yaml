@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: H_Zicntr
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2079344243#gid=2079344243
+notes: |-
+  H_Zicntr boots to HS-mode and delegates nothing (hedeleg = 0), so the HS-mode handler takes the illegal- and virtual-instruction traps from U, VS and VU.  The M-mode reads are in Sm_Zicntr_H.
+  Each counter-enable walk writes a walking 1 and then a walking 0 to one counter-enable register, with the others preset to all 1s or all 0s.  After each write it reads the counter whose bit is set or clear (and its high half on RV32) and attempts to write it.  The counters are cycle, time, instret and each hpmcounter that HPM_COUNTER_EN implements.  A write to a counter raises illegal instruction in every mode, because the counters are read-only CSRs, so the write is not HS-qualified.
+  xcounteren fields are WARL and may be read-only zero.  The coverpoints sample the accessed counter's own bit in each counter-enable register, and a counter has bins only when its MCOUNTENABLE_EN, HCOUNTENABLE_EN and SCOUNTENABLE_EN bits are set (writable).
+coverpoints:
+  - heading: in HS mode
+  - name: cp_scounteren_access_hs
+    goal: vscounters
+    description: Write walking 1s and 0s to scounteren with mcounteren = all 1s, hcounteren = all 0s.  Read from corresponding counter and counterh in HS-mode and attempt to write it
+    expectation: Reads always succeed, because HS-mode ignores scounteren and hcounteren; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x scounteren bit {0, 1}"
+  - name: cp_delta_hs
+    goal: htimedelta does not affect time in HS mode
+    description: "With htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh; 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values: compare against a baseline time read just before with htimedelta = 0."
+    expectation: 0 <= time - baseline < 2^30 in all circumstances
+    bins: 7 htimedelta values * time (and timeh on RV32)
+    notes: |-
+      On RV32 each read of time reads timeh, time and timeh again, and repeats if timeh changed, so a carry between the reads cannot fail the check.  The same applies to every cp_delta row.
+  - heading: in VS mode
+  - name: cp_mcounteren_access_vs
+    goal: vscounters
+    description: Write walking 1s and 0s to mcounteren with hcounteren = all 1s and scounteren = all 0s.  Read from corresponding counter and counterh in VS-mode and attempt to write it
+    expectation: Reads raise illegal instruction when the mcounteren bit is 0 and succeed when it is 1, because VS-mode ignores scounteren; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x mcounteren bit {0, 1}"
+  - name: cp_mcounteren_access_vs_h0
+    goal: vscounters
+    description: Write walking 1s and 0s to mcounteren with hcounteren = all 0s and scounteren = all 0s.  Read from corresponding counter and counterh in VS-mode and attempt to write it
+    expectation: Reads raise illegal instruction when the mcounteren bit is 0 and virtual instruction when it is 1, because the hcounteren bit is 0; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x mcounteren bit {0, 1}"
+  - name: cp_hcounteren_access_vs
+    goal: vscounters
+    description: Write walking 1s and 0s to hcounteren with mcounteren = all 1s  and scounteren = all 0s.  Read from corresponding counter and counterh in VS-mode and attempt to write it
+    expectation: Reads raise virtual instruction when the hcounteren bit is 0 and succeed when it is 1; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x hcounteren bit {0, 1}"
+  - name: cp_delta_vs
+    goal: htimedelta affects time in VS mode
+    description: "With htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh; 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values: compare against a baseline time read just before with htimedelta = 0."
+    expectation: (time - baseline - htimedelta) mod 2^64 < 2^30 for each htimedelta, so time + htimedelta wraps modulo 2^64
+    bins: 7 htimedelta values * time (and timeh on RV32)
+  - heading: in U mode
+  - name: cp_scounteren_access_u
+    goal: vscounters
+    description: Write walking 1s and 0s to scounteren with mcounteren = all 1s, hcounteren = all 0s.  Read from corresponding counter and counterh in U-mode and attempt to write it
+    expectation: Reads raise illegal instruction when the scounteren bit is 0 and succeed when it is 1, because U-mode ignores hcounteren; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x scounteren bit {0, 1}"
+  - name: cp_delta_u
+    goal: htimedelta does not affect time in U mode
+    description: "With htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh; 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values: compare against a baseline time read just before with htimedelta = 0."
+    expectation: 0 <= time - baseline < 2^30 in all circumstances
+    bins: 7 htimedelta values * time (and timeh on RV32)
+  - heading: in VU mode
+  - name: cp_mcounteren_access_vu
+    goal: vscounters
+    description: Write walking 1s and 0s to mcounteren with hcounteren = scounteren = all 1s.  Read from corresponding counter and counterh in VU-mode and attempt to write it
+    expectation: Reads raise illegal instruction when the mcounteren bit is 0 and succeed when it is 1; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x mcounteren bit {0, 1}"
+  - name: cp_mcounteren_access_vu_hs0
+    goal: vscounters
+    description: Write walking 1s and 0s to mcounteren with hcounteren = scounteren = all 0s.  Read from corresponding counter and counterh in VU-mode and attempt to write it
+    expectation: Reads raise illegal instruction when the mcounteren bit is 0 and virtual instruction when it is 1, because the hcounteren and scounteren bits are 0; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x mcounteren bit {0, 1}"
+  - name: cp_hcounteren_access_vu
+    goal: vscounters
+    description: Write walking 1s and 0s to hcounteren with mcounteren = scounteren = all 1s.  Read from corresponding counter and counterh in VU-mode and attempt to write it
+    expectation: Reads raise virtual instruction when the hcounteren bit is 0 and succeed when it is 1; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x hcounteren bit {0, 1}"
+  - name: cp_scounteren_access_vu
+    goal: vscounters
+    description: Write walking 1s and 0s to scounteren with mcounteren = hcounteren = all 1s.  Read from corresponding counter and counterh in VU-mode and attempt to write it
+    expectation: Reads raise virtual instruction when the scounteren bit is 0 and succeed when it is 1; writes raise illegal instruction
+    bins: "{csrr, csrw} x counters x scounteren bit {0, 1}"
+  - name: cp_delta_vu
+    goal: htimedelta affects time in VU mode
+    description: "With htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh; 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values: compare against a baseline time read just before with htimedelta = 0."
+    expectation: (time - baseline - htimedelta) mod 2^64 < 2^30 for each htimedelta, so time + htimedelta wraps modulo 2^64
+    bins: 7 htimedelta values * time (and timeh on RV32)

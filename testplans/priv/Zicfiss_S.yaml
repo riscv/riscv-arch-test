@@ -1,0 +1,144 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zicfiss_S
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=2131039413#gid=2131039413
+description: |
+  General Test Environment (S/HS-mode execution):
+  - Same base environment as Zicfiss_U, but tests execute in S/HS-mode. menvcfg.SSE alone gates S/HS; senvcfg.SSE does NOT gate S/HS.
+  - S-mode counterparts of the Zicfiss_U instruction-behaviour coverpoints (listed in the bookkeeping row below) run from S-mode;
+    they are not duplicated as rows here. Only S-specific control behaviour is listed below.
+coverpoints:
+  - name: cp_ssp_csr_gating_s
+    goal: Verify ssp CSR accessibility from S/HS-mode depends only on menvcfg.SSE, not senvcfg.SSE
+    description: |-
+      From S/HS-mode attempt ssp read and write for each combination of (menvcfg.SSE, senvcfg.SSE).
+      senvcfg.SSE is deliberately swept to prove it has no effect at S/HS level.
+    expectation: |-
+      menvcfg.SSE=1: access allowed from S/HS for BOTH values of senvcfg.SSE -- senvcfg.SSE gates U-mode only.
+      menvcfg.SSE=0: illegal-instruction exception.
+    bins: menvcfg.SSE {0,1} x senvcfg.SSE {0,1} x csr_op {read, write} x result {ok, illegal_instruction}
+  - name: cp_ssamoswap_sse_gating_s
+    goal: Verify SSAMOSWAP from S/HS-mode is illegal only when menvcfg.SSE=0, whatever senvcfg.SSE is
+    description: |-
+      From S/HS-mode, execute SSAMOSWAP.W and SSAMOSWAP.D (RV64) against the shadow stack page for each combination of (menvcfg.SSE, senvcfg.SSE).
+      senvcfg.SSE is swept to show that it has no effect at S/HS. The U-mode version, cp_ssamoswap_sse_gating, cannot show this, because senvcfg.SSE gates U-mode too.
+    expectation: |-
+      menvcfg.SSE=0: illegal-instruction exception; rd and memory are unchanged.
+      menvcfg.SSE=1: the swap is performed for both values of senvcfg.SSE.
+    bins: priv_mode {S} x instr {SSAMOSWAP.W, SSAMOSWAP.D} x (menvcfg.SSE, senvcfg.SSE) {(0,0), (1,0), (1,1)}
+  - name: |-
+      cp_ss_page_enc
+      cp_ss_page_enc_load
+      cp_ss_page_enc_store
+    goal: Verify the pte.xwr=010 encoding is recognised as an SS page, and is reserved when SSE is off
+    description: |-
+      With menvcfg.SSE=1 build a PTE with R=0, W=1, X=0 and use it as a shadow stack from S-mode (SSPUSH, plus ordinary loads and stores).
+      Repeat with menvcfg.SSE=0. The U-mode accesses, including senvcfg.SSE=0, are cp_menvcfg_sse_ss_page on Zicfiss_Sm.
+    expectation: |-
+      menvcfg.SSE=1: the page is a valid SS page. SS stores succeed, ordinary loads succeed, no exception.
+      menvcfg.SSE=0: the encoding is reserved, so the PTE is invalid and access raises a page-fault.
+    bins: menvcfg.SSE {0,1} x mode {S} x access {ss_store, ordinary_load, ordinary_store} x result {ok, access_fault, page_fault}
+  - name: |-
+      cp_ss_page_perm_priority
+      cp_ss_page_perm_priority_load
+      cp_ss_page_perm_priority_store
+    goal: Verify U, SUM and MXR permission checks on a shadow stack page, and that they outrank the SS access-fault rule
+    description: |-
+      The shadow stack page is R=0 and may be U=0 or U=1, so the ordinary permission machinery and the Zicfiss-specific rules can both apply to the same access. This coverpoint establishes which wins.
+      Sweep, from S/HS-mode, the shadow stack page's U bit = 0/1 against sstatus.SUM = 0/1 and sstatus.MXR = 0/1, for:
+      (a) every SS instruction that accesses memory (SSPUSH, C.SSPUSH, SSPOPCHK, C.SSPOPCHK, SSAMOSWAP.W/D);
+      (b) an ordinary load from the same page, which is permitted by the shadow stack rules but still subject to U/SUM/MXR;
+      (c) an ordinary store, which the shadow stack rules forbid regardless.
+      Include the case where the permission check and the SS rule would produce DIFFERENT causes, so the priority is observable rather than coincidental.
+    expectation: |-
+      The U/SUM/MXR permission check is part of address translation and therefore resolves BEFORE any Zicfiss-specific rule. Where the two disagree, the translation fault is reported:
+       U=1, SUM=0, access from S-mode -> page-fault from the U/SUM check, NOT the SS store/AMO access-fault, even for an instruction the SS rules would also have rejected.
+       U=0, access from S-mode -> permitted by U/SUM; the SS rules then apply normally.
+      MXR governs whether the R=0 shadow stack page is readable by an ordinary load. Per [norm:ssmp_ss_load] the shadow stack is readable by any load-only instruction, so this must hold for BOTH MXR values -- an implementation that requires MXR=1 to read an SS page is wrong.
+      SS instructions themselves are unaffected by MXR: their access is a store/AMO-flavoured access, not a load.
+    bins: pte.U {0,1} x sstatus.SUM {0,1} x sstatus.MXR {0,1} x accessor {SS instr, ordinary load, ordinary store} x cause {none, page-fault from U/SUM, 7, 15} x priority {translation check wins}
+  - name: |-
+      cp_ss_unused_mop_rr7_rs2_s
+      cp_ss_unused_mop_rr7_rs1_s
+      cp_ss_unused_mop_rr7_rd_s
+      cp_ss_unused_mop_r28_rs1_s
+      cp_ss_unused_mop_r28_rd_s
+      cp_ss_unused_mop_c_s
+    goal: Verify the mop.rr.7, mop.r.28 and c.mop.n encodings that Zicfiss does not use stay Zimop/Zcmop while Zicfiss is active
+    description: |-
+      With Zicfiss active (menvcfg.SSE=1), ssp at the top of an SS page, execute the encodings Zicfiss does not use.
+      Sweep each register field over x0-x31, holding the others fixed, and skip the Zicfiss instructions:
+      mop.rr.7: rs2 (rd=rs1=x0), rs1 (rd=x0, rs2=x1), rd (rs1=x0, rs2=x1). SSPUSH is rd=rs1=x0 with rs2=x1/x5.
+      mop.r.28: rs1 (rd=x0), rd (rs1=x1). SSPOPCHK is rd=x0 with rs1=x1/x5. SSRDP is rs1=x0.
+      c.mop.3 and c.mop.7 (with Zcmop). c.mop.1 and c.mop.5 are C.SSPUSH x1 and C.SSPOPCHK x5.
+      Preload rd with a nonzero value (a framework register is saved and restored). Record rd, ssp and the word below ssp afterwards.
+    expectation: |-
+      NO exception. rd is written with 0 (unchanged when rd=x0 or for c.mop). ssp is unchanged. Nothing is pushed or checked.
+      An implementation that decodes SSPUSH, SSPOPCHK or SSRDP too loosely, for example ignoring rd or one rs field, fails here.
+    bins: field {rd, rs1, rs2} x register {x0..x31, minus the Zicfiss instructions}; c.mop {3, 7} x {no trap, no memory access, ssp unchanged, rd==0 when rd!=x0}
+  - name: cp_ss_page_access_store_misaligned_s
+    goal: Verify an ordinary store to an SS page raises a store/AMO access-fault at every address alignment
+    description: |-
+      With a page mapped as an SS page (xwr=010), execute SB, SH, SW and SD (RV64) at effective address bits [2:0] = 0..7. Most of these are misaligned.
+      Check memory is unchanged and record the trap.
+    expectation: |-
+      Every store raises a store/AMO access-fault (cause=7), including the misaligned ones: the SS page rule takes priority over address-misaligned.
+      If the implementation gives address-misaligned exceptions higher priority (MISALIGNED_LDST_EXCEPTION_PRIORITY), the result follows the reference model.
+      Memory on the SS page is unchanged.
+    bins: store {SB, SH, SW, SD} x addr[2:0] {0..7} x pte.xwr {010}
+  - name: cp_senvcfg_sse_rdonly0_s
+    goal: Verify senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0
+    description: |-
+      Direct observation of the read-only-zero rule from the mode that owns senvcfg, rather than inferring it from an ssp access.
+      From M-mode set menvcfg.SSE=0. Drop to S-mode and attempt to write senvcfg.SSE=1 using csrw, csrs and csrrw, reading the CSR back after each write.
+      Repeat the same sequence with menvcfg.SSE=1 as the positive control.
+      This is the S-mode counterpart of cp_envcfg_sse_rdonly0_senvcfg on the Zicfiss_Sm sheet, which drives the same field from M-mode.
+    expectation: |-
+      menvcfg.SSE=0: senvcfg.SSE reads back 0 after every write attempt. No exception is raised -- SSE is a WARL field, so the write is discarded rather than rejected.
+      menvcfg.SSE=1: senvcfg.SSE is writable and reads back what was written.
+      This is what makes the (menvcfg.SSE=0, senvcfg.SSE=1) combination architecturally unreachable wherever it appears as a bin on this sheet or on Zicfiss_U.
+    bins: menvcfg.SSE {0,1} x csr_op {csrw, csrs, csrrw} x written {0,1} x senvcfg.SSE readback {0 when menvcfg.SSE=0, written when menvcfg.SSE=1}
+  - name: cp_ss_non_idempotent_s
+    goal: Verify S-mode SS instructions fault when the shadow stack page is non-idempotent (Svpbmt), across menvcfg.PBMTE
+    description: |-
+      The S-mode counterpart of cp_ss_non_idempotent, with menvcfg.PBMTE added as an axis. Requires Svpbmt (RV64 only).
+      From S-mode with menvcfg.SSE=1, map the shadow stack page (xwr=010, supervisor) with pte.PBMT = PMA, NC and IO in turn, for menvcfg.PBMTE = 1 and then 0, and execute each SS instruction that accesses memory against it: SSPUSH x1/x5, C.SSPUSH x1, SSPOPCHK x1/x5, C.SSPOPCHK x5, SSAMOSWAP.W and SSAMOSWAP.D (RV64).
+      SSAMOSWAP is not executed on an NC page while PBMTE=1: an implementation may also override the AMO PMA of an NC page ([norm:Svpbmt_impl_may_override_pmas]), so its outcome is implementation-defined and no UDB parameter yet says which behavior a DUT has. Those two bins are a known coverage gap.
+    expectation: |-
+      PBMTE=1, PBMT=IO: the memory is non-idempotent, so every SS instruction raises a store/AMO access-fault (cause=7) with stval = the faulting VA (ssp-XLEN/8 for a push, ssp for a pop, rs1 for SSAMOSWAP). ssp, rd and memory are unchanged.
+      PBMTE=1, PBMT=NC or PMA: the memory is idempotent, so the access is performed. A push stores and decrements ssp, a pop loads and compares, and SSAMOSWAP swaps.
+      PBMTE=0, PBMT=NC or IO: the implementation behaves as though Svpbmt were not implemented ([norm:menvcfg_pbmte_op]), so a nonzero PBMT is reserved and the walk raises a store/AMO page-fault (cause=15) before any memory-type check.
+      PBMTE=0, PBMT=PMA: the access is performed, as for PBMTE=1.
+    bins: priv_mode {S} x instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pte.PBMT {PMA, NC, IO} x menvcfg.PBMTE {0, 1}
+  - name: |-
+      cp_sspush_s
+      cp_sspopchk_match_s
+      cp_sspopchk_mismatch_s
+      cp_sspopchk_fault_priority_s
+      cp_ssrdp_s
+      cp_ssamoswap_s
+      cp_ss_address_alignment_ssp_s
+      cp_ss_address_alignment_pop_s
+      cp_ss_address_alignment_swap_s
+      cp_ss_instr_target_page_s
+    goal: Re-run the Zicfiss_U coverpoints with the hart booted in S-mode instead of U-mode
+    description: |-
+      BOOKKEEPING ROW, not a new coverpoint. These 8 Zicfiss_U coverpoints are re-run from S-mode, sampled into Zicfiss_S_cg under the S-mode name in parentheses:
+       cp_sspush (cp_sspush_s)
+       cp_sspopchk_match (cp_sspopchk_match_s)
+       cp_sspopchk_mismatch (cp_sspopchk_mismatch_s)
+       cp_sspopchk_fault_priority (cp_sspopchk_fault_priority_s)
+       cp_ssrdp (cp_ssrdp_s)
+       cp_ssamoswap (cp_ssamoswap_s)
+       cp_ss_address_alignment (cp_ss_address_alignment_ssp_s, cp_ss_address_alignment_pop_s, cp_ss_address_alignment_swap_s)
+       cp_ss_instr_target_page (cp_ss_instr_target_page_s)
+      Mode-specific versions elsewhere: cp_ssp_csr_gating_u and cp_ssamoswap_sse_gating are replaced by cp_ssp_csr_gating_s and cp_ssamoswap_sse_gating_s on this sheet, because senvcfg.SSE gates U-mode only; cp_ss_non_idempotent by cp_ss_non_idempotent_s. The S-mode version of cp_ss_instr_inactive_u is cp_ss_instr_inactive_s on Zicfiss_Sm.
+      NOT re-run from S-mode, because their behaviour does not depend on S vs U and Zicfiss_U covers it: cp_ssp_access, the call/return sequence, cp_ss_page_access, cp_ss_page_crossing, cp_ss_page_ad_bits.
+      Two S-mode differences apply to every re-run: the enable chain is menvcfg.SSE alone (senvcfg.SSE does not gate S/HS), and the identity map carries no PTE_U, so the S-mode trap handler can fetch and traps may be delegated normally.
+    expectation: |-
+      Identical architectural results to the U-mode runs -- SS instruction behaviour does not depend on S vs U, only the enable chain does.
+      The exceptions are the coverpoints whose expectation is itself mode-dependent: the gating rows, and cp_ss_page_perm_priority on this sheet, where SUM only exists at S-mode.
+    bins: priv_mode {s} x (all bins of each reused coverpoint)
+  - goal: "PROMOTED to its own coverpoint: cp_ss_page_perm_priority, including the explicit priority claim that the translation-level U/SUM/MXR check resolves before any Zicfiss-specific rule."
+    description: Test U, SUM, MXR bits of shadow stack page, including that these have priority over the SS access fault rule.
+  - goal: "PROMOTED to its own coverpoint: cp_senvcfg_sse_rdonly0_s -- writes senvcfg.SSE from S-mode and reads back 0 while menvcfg.SSE=0. The M-mode counterpart is cp_envcfg_sse_rdonly0_senvcfg on Zicfiss_Sm."
+    description: Write m0s1 to xenvcfg.SSE and read back and make sure s shows up 0.

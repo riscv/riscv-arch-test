@@ -2,7 +2,7 @@
     // cp_custom_FPrecSqrt_flag_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0] {
+    fp_flags_clear : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0] {
         bins clear = {0};
     }
 

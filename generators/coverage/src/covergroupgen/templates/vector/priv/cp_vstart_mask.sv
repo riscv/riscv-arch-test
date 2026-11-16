@@ -9,7 +9,7 @@
         bins vstart_legal   = {vstart_legal};   // random vstart
     }
 
-    vl_eq_vlmax: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)
+    vl_eq_vlmax: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)
     {
         bins true = { 1 };
     }

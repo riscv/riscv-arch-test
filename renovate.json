@@ -45,8 +45,7 @@
       "managerFilePatterns": ["/^\\.github/scripts/install-spike\\.sh$/"],
       "matchStrings": ["SPIKE_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "riscv/riscv-isa-sim",
-      "datasourceTemplate": "git-refs",
-      "packageNameTemplate": "https://github.com/riscv/riscv-isa-sim",
+      "datasourceTemplate": "github-digest",
       "currentValueTemplate": "master"
     },
     {
@@ -55,8 +54,7 @@
       "managerFilePatterns": ["/^\\.github/scripts/install-whisper\\.sh$/"],
       "matchStrings": ["WHISPER_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "tenstorrent/whisper",
-      "datasourceTemplate": "git-refs",
-      "packageNameTemplate": "https://github.com/tenstorrent/whisper",
+      "datasourceTemplate": "github-digest",
       "currentValueTemplate": "master"
     },
     {
@@ -65,8 +63,7 @@
       "managerFilePatterns": ["/^\\.github/scripts/install-cvw\\.sh$/"],
       "matchStrings": ["CVW_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "openhwfoundation/cvw",
-      "datasourceTemplate": "git-refs",
-      "packageNameTemplate": "https://github.com/openhwfoundation/cvw",
+      "datasourceTemplate": "github-digest",
       "currentValueTemplate": "main"
     },
     {
@@ -75,8 +72,7 @@
       "managerFilePatterns": ["/^\\.github/scripts/install-cve2\\.sh$/"],
       "matchStrings": ["CVE2_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "openhwfoundation/cv32e20-dv",
-      "datasourceTemplate": "git-refs",
-      "packageNameTemplate": "https://github.com/openhwfoundation/cv32e20-dv",
+      "datasourceTemplate": "github-digest",
       "currentValueTemplate": "main"
     },
     {
@@ -85,8 +81,7 @@
       "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
       "matchStrings": ["CVE4_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "openhwfoundation/cv32e40p-dv-review",
-      "datasourceTemplate": "git-refs",
-      "packageNameTemplate": "https://github.com/openhwfoundation/cv32e40p-dv-review",
+      "datasourceTemplate": "github-digest",
       "currentValueTemplate": "main"
     },
     {
@@ -95,8 +90,7 @@
       "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
       "matchStrings": ["CVE40X_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "openhwfoundation/cv32e40x-dv",
-      "datasourceTemplate": "git-refs",
-      "packageNameTemplate": "https://github.com/openhwfoundation/cv32e40x-dv",
+      "datasourceTemplate": "github-digest",
       "currentValueTemplate": "main"
     },
     {
@@ -105,8 +99,7 @@
       "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
       "matchStrings": ["CVE40X_CORE_HASH=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "openhwfoundation/cv32e40x",
-      "datasourceTemplate": "git-refs",
-      "packageNameTemplate": "https://github.com/openhwfoundation/cv32e40x",
+      "datasourceTemplate": "github-digest",
       "currentValueTemplate": "master"
     },
     {

@@ -29,7 +29,7 @@ covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs8 : coverpoint vs_edges_check_sew32_egs8(ins.hart, ins.issue, ins.get_vr_val_lmul8(ins.current.vd))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 3)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 3)  {
         // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -87,7 +87,7 @@ covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vd_egs8 ////////////////////////////////////////////////
 
-    cp_vl_0_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
         bins zero = {0};
     }
 
@@ -96,7 +96,7 @@ covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs8 : coverpoint vs_edges_check_sew32_egs8(ins.hart, ins.issue, ins.get_vr_val_lmul8(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 3)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 3)  {
         // Edge values of vs2 (EGS=8), assuming vl = 8
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -158,7 +158,7 @@ covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs8_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs8_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs8_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=8, SEW=32 instructions (EGS*SEW = 256 bits per group)
         // LMUL=8: always valid since VLEN=32 (minimum) satisfies LMUL*VLEN >= 256 bits
         bins eight  = {3};
@@ -185,7 +185,7 @@ covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
         bins vl_legal    = {vl_legal    };
     }
 
-    cr_vl_lmul_egs8_sew32 : cross cp_csr_vtype_lmul_egs8_sew32, cp_csr_vl_edges_egs8  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs8_sew32 : cross cp_csr_vtype_lmul_egs8_sew32, cp_csr_vl_edges_egs8  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=8 instructions at SEW=32
         `ifdef ZVL512B_SUPPORTED
             `ifndef ZVL1024B_SUPPORTED
@@ -247,15 +247,9 @@ covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs8: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -415,7 +409,7 @@ covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
 
     //// end cp_vd_egs8 ////////////////////////////////////////////////
 
-    cp_vl_0_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
         bins zero = {0};
     }
 
@@ -424,7 +418,7 @@ covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs1_edges_egs8 : coverpoint vs_edges_check_sew32_egs8(ins.hart, ins.issue, ins.get_vr_val_lmul8(ins.current.vs1))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 3)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 3)  {
         // Edge values of vs1 (EGS=8), assuming vl = 8
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -487,7 +481,7 @@ covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_edges_egs8 : coverpoint vs_edges_check_sew32_egs8(ins.hart, ins.issue, ins.get_vr_val_lmul8(ins.current.vs2))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 3)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 3)  {
         // Edge values of vs2 (EGS=8), assuming vl = 8
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},
@@ -549,7 +543,7 @@ covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
     // cr_vl_lmul_egs8_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_egs8_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+    cp_csr_vtype_lmul_egs8_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // LMUL values for EGS=8, SEW=32 instructions (EGS*SEW = 256 bits per group)
         // LMUL=8: always valid since VLEN=32 (minimum) satisfies LMUL*VLEN >= 256 bits
         bins eight  = {3};
@@ -576,7 +570,7 @@ covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
         bins vl_legal    = {vl_legal    };
     }
 
-    cr_vl_lmul_egs8_sew32 : cross cp_csr_vtype_lmul_egs8_sew32, cp_csr_vl_edges_egs8  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_egs8_sew32 : cross cp_csr_vtype_lmul_egs8_sew32, cp_csr_vl_edges_egs8  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
         // Cross coverage of LMUL and VL edges for EGS=8 instructions at SEW=32
         `ifdef ZVL512B_SUPPORTED
             `ifndef ZVL1024B_SUPPORTED
@@ -638,15 +632,9 @@ covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_egs8
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vta_egs8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {}
 
-    cp_csr_vtype_vma_egs8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
-        bins undisturbed = {0};
-        bins agnostic    = {1};
-    }
+    cp_csr_vtype_vma_egs8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {}
 
     mask_enabled_agnostic_egs8: coverpoint ins.current.insn[25] {
         bins enabled = {1'b1};
@@ -662,30 +650,31 @@ endgroup
 // ---------------------
 `endif
 function void zvksh_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
 `ifdef ZVE32X_SUPPORTED
         "vsm3c.vi"     : begin
             ZvkshZve32x_vsm3c_vi_sew32_cg.sample(ins);
@@ -702,9 +691,9 @@ function void zvksh_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

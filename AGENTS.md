@@ -36,7 +36,7 @@
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build tests for one DUT configuration.
 - `make <config-target>`: build and run one or more configurations discovered from `run_cmd.txt`.
 - `EXTENSIONS=I,M make tests` or `EXTENSIONS=I make <config-target>`: restrict work to selected suites. `EXCLUDE_EXTENSIONS=Sm` applies a negative filter.
-- `FAST=True make`: omit objdump output. `DEBUG=True make EXTENSIONS=<suite>`: emit signature objdumps, reference-model traces, and trap reports. `VERBOSE=True` also serializes the build.
+- `DEBUG=True make EXTENSIONS=<suite>`: emit ELF and signature objdumps, reference-model traces, and trap reports. Objdumps are not generated without `DEBUG`. `VERBOSE=True` also serializes the build.
 - Let the project select parallelism for normal work. Use `JOBS=1` only to debug a hang or another parallel execution problem.
 - `make coverage EXTENSIONS=<suite>`: run focused coverage. Full `make coverage` is expensive.
 - Build CTP or CRD documentation from its directory. The builds use the `docs/docs-resources` submodule and Docker unless `SKIP_DOCKER=true`.
@@ -61,9 +61,10 @@
 - The framework installs trap handlers for unprivileged tests when standard machine mode is available. Unexpected traps fail the test.
 - Privileged tests should boot into their intended mode. Use T-SBI calls for operations that require a higher privilege level. Use `tsbi_call()` for supported CSR or memory instructions and `RVTEST_TSBI_GOTO_*` for mode changes.
 - Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool so they are never allocated.
+- To wait for an interrupt with WFI or WRS, use `wait_loop_arm()` and `wait_loop()` from `testgen/asm/wait.py`. A loop that checks whether the interrupt was taken and then executes the wait instruction can hang: an interrupt taken between the check and the wait is cleared by the trap handler, and the wait instruction then has nothing to wake it.
 - In generated assembly, use Python loops to emit repeated code. Avoid assembly loops so testcase labels and debug strings stay unique.
 - Do not use the target-dependent `.align` directive in assembly. Use `.p2align` or `.balign`.
-- Do not use the `la` or `li` pseduoinstructions. Use the `LA()` and `LI()` macros.
+- Do not use the `la` or `li` pseudoinstructions. Use `LA()` for labels and `LI()` for constants. Use `LI_FIXED_LEN()` for values that come from `RVMODEL_*` macros, so code size does not depend on the DUT. In generators, `load_constant()` selects `LI()` or `LI_FIXED_LEN()`.
 - Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
 
 ## Configurations And CI
@@ -88,7 +89,7 @@
 
 - Run summaries are in `work/<config>/summary.log`. Simulator logs are in `work/<config>/logs/`.
 - Passing tests print `RVCP-SUMMARY: TEST PASSED - Test File "<test_name>"`. Failures print `TEST FAILED`. `SIGRUN` means the ELF is not self-checking.
-- `DEBUG=True` adds `.sig.elf.objdump`, `.sig.log`, and `.sig.trap_report` files under `work/<config>/build/`.
+- `DEBUG=True` adds `.elf.objdump` files under `work/<config>/elfs/` and `.sig.elf.objdump`, `.sig.log`, and `.sig.trap_report` files under `work/<config>/build/`.
 - Triage failures in this order: UDB and DUT configuration, reference-model configuration, generated objdump and trace, then DUT behavior.
 - By default, ACT stops after the first failed build task and cancels active tasks. The `succeeded` value counts DAG tasks, not tests. Use `-k` to continue independent tasks.
 - To test one suite across simulators, use `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. Each failing simulator log names the first divergent testcase on its `bin:` line.

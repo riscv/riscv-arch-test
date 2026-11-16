@@ -128,7 +128,7 @@
       "fetch_access_fault": false,
       "fetch_page_fault": false,
       "software_check": false,
-      "hardware_error": true,
+      "hardware_error": false,
       "reserved_exceptions": false
     },
     "reserved_behavior": {

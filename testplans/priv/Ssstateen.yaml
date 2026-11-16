@@ -28,39 +28,110 @@ coverpoints:
       - stateen_op
       - stateen_illegal_state_access
       - sstateen_user_access_control
-  - name: cp_envcfg
-    goal: envcfg controls access to senvcfg
-    description: With mstateen0.ENVCFG = {0,1}, read and write sevncfg
-    expectation: Illegal instruction if 0, else successful
-    bins: 2 states x 2 accesses
-    rules:
-      - mstateen0_envcfg_op
-  - name: cp_fcsr_lower
-    goal: fcsr controls access to fcsr when misa.F = 0
+  - name: cp_fcsr
+    goal: hstateen0.FCSR and sstateen0.FCSR control access to fcsr when misa.F = 0
     description: |-
       If Zfinx is supported:
-      with misa.F = 0 and sstateen0.fcsr, read and write fcsr, frm, fflags from U mode. Also try executing fadd.s, flw, fcvt.w.s, fcvt.s.w, fmv.x.w, fmv.w.x, fclass.s.
-    expectation: Illegal instruction if 0, else successful
-    bins: 2 states x 2 accesses
+      with misa.F = 0, hstateen0.FCSR = {0,1} and sstateen0.FCSR = {0,1}, read and write fcsr, frm, fflags from S, U and (if H is supported) VS and VU-mode.
+    expectation: |-
+      Success from S-mode. From U-mode, illegal instruction if sstateen0.FCSR = 0, else successful.
+      From VS-mode, virtual instruction if hstateen0.FCSR = 0, else successful.
+      From VU-mode, virtual instruction if hstateen0.FCSR = 0, else illegal instruction if sstateen0.FCSR = 0, else successful.
+    bins: 4 states * 4 modes * 3 CSRs * 3 accesses
     rules:
       - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_fcsr_fp_instrs
-    goal: fcsr controls floating-point instructions when misa.F = 0
+    goal: hstateen0.FCSR and sstateen0.FCSR control floating-point instructions when misa.F = 0
     description: |-
       If Zfinx is supported:
-      with misa.F = 0 and sstateen0.fcsr = {0,1}, execute fadd.s, fcvt.w.s, fcvt.s.w, and fclass.s from S and U-mode
-    expectation: Illegal instruction if 0, else successful
+      with misa.F = 0, hstateen0.FCSR = {0,1} and sstateen0.FCSR = {0,1}, execute fadd.s, fcvt.w.s, fcvt.s.w, and fclass.s from S, U and (if H is supported) VS and VU-mode.
+    expectation: Same as cp_fcsr.
+    bins: 4 states * 4 modes * 4 instructions
     rules:
       - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_jvt
-    goal: jvt controls access
+    goal: hstateen0.JVT and sstateen0.JVT control access to jvt
     description: |-
       If Zcmt is supported:
-      With sstaten0.JVT = {0,1}, read and write jvt  from U mode
-    expectation: Illegal instruction if 0, else successful
-    bins: 2 states x 2 accesses
+      With hstateen0.JVT = {0,1} and sstateen0.JVT = {0,1}, read and write jvt from S, U and (if H is supported) VS and VU-mode.
+    expectation: Same as cp_fcsr.
+    bins: 4 states * 4 modes * 3 accesses
     rules:
       - stateen0_jvt_op
       - sstateen_user_access_control
+  - name: cp_hstateen_walking_ones
+    goal: hstateen bits are accessible
+    description: |-
+      If H is supported, write hstateen0-3 with walking ones & walking zero from HS-mode, and read each back.
+      For RV32, also write hstateen0-3h.
+    expectation: Access successful. Bits that are zero in mstateen are read-only zero.
+    bins: 4-8 CSRs * 128-64 walking ones/zero
+    rules:
+      - hstateen_rv64_csrs
+      - hstateen_ro1_bits
+      - hstateen_bit_63_writable
+      - hstateen0_enc_img
+  - name: cp_hstateen_illegal_accesses
+    goal: hstateen CSRs are accessible only from HS-mode and M-mode
+    description: |-
+      If H is supported, write hstateen0-3 with all ones, and read it back, from U, VS and VU-mode.
+      For RV32, also access hstateen0-3h.
+    expectation: Illegal instruction from U-mode. Virtual instruction from VS and VU-mode.
+    bins: 4-8 CSRs * 3 modes
+    rules:
+      - stateen_op
+      - stateen_illegal_state_access
+      - hstateen_encoding
+  - name: cp_hstateen_se_controls_sstateen
+    goal: Bit 63 of hstateen0-3 controls access to sstateen0-3 from VS-mode
+    description: |-
+      If H is supported, for N = 0-3 and hstateenN bit 63 = {0,1}, read and write sstateenN from S-mode and VS-mode, and check the value read.
+      For RV32, bit 63 is bit 31 of hstateenNh.
+    expectation: |-
+      Virtual instruction from VS-mode if 0, success if 1. Success from S-mode.
+      sstateen1-3 read 0 (they have no defined bits).
+    bins: 4 CSRs * 2 states * 2 modes * 3 ops
+    rules:
+      - hstateen_bit_63_op
+      - hstateen0_se0_op
+      - stateen_illegal_state_access
+      - stateen_reserved_roz
+      - sstateen_vsmode_access_roz
+  - name: cp_hstateen_envcfg
+    goal: hstateen0.ENVCFG controls access to senvcfg
+    description: If H is supported, with hstateen0.ENVCFG = {0,1}, read and write senvcfg from S, U, VS and VU-mode.
+    expectation: Virtual instruction if 0, else successful
+    bins: 2 states * 2 modes * 2 accesses
+    rules:
+      - hstateen0_envcfg_op
+  - name: cp_hstateen_context
+    goal: hstateen0.CONTEXT controls access to scontext
+    description: If Sdtrig is supported, with hstateen0.CONTEXT = {0,1}, read and write scontext from S, U, VS and VU-mode.
+    expectation: Virtual instruction if 0, else successful
+    bins: 2 states * 2 modes * 2 accesses
+    rules:
+      - hstateen0_context_op
+  - name: cp_hstateen_imsic
+    goal: hstateen0.IMSIC controls access to stopei and vstopei
+    description: If Ssaia is supported, with hstateen0.IMSIC = {0,1}, read and write stopei from S, U, VS and VU-mode.
+    expectation: Virtual instruction if 0, else successful
+    rules:
+      - hstateen0_imsic_op
+  - name: cp_hstateen_aia
+    goal: hstateen0.AIA controls access to Ssaia state
+    description: If Ssaia is supported, with hstateen0.AIA = {0,1}, access stopi (and sieh, siph on RV32) from S, U, VS and VU-mode.
+    expectation: Virtual instruction if 0, else successful
+    rules:
+      - hstateen0_aia_op
+  - name: cp_hstateen_csrind
+    goal: hstateen0.CSRIND controls access to siselect and sireg from VS and VU-mode
+    description: If Sscsrind is supported, with hstateen0.CSRIND = {0,1}, access siselect, sireg, and sireg2-6 from S, U, VS and VU-mode.
+    expectation: Virtual instruction if 0 in VS and VU-mode, else successful. No effect in S-mode.
+  - name: cp_hstateen_ctr
+    goal: hstateen0.CTR controls access to sctrdepth and sctrstatus
+    description: If Ssctr is supported, with hstateen0.CTR = {0,1}, access sctrdepth and sctrstatus from S, U, VS and VU-mode.
+    expectation: Virtual instruction if 0, else successful
   - heading: "Note: All of these tests are performed in S-mode unless otherwise noted."
   - heading: "Note: mstateen0.SE0 must be 1 (else sstateen0 is inaccessible)."
+  - heading: "Note: mstateen0-3 are set to all ones for all tests in this suite. The coverpoints sample the mstateen bits, so only the cases with the mstateen bit set count. Tests that vary mstateen are in Smstateen."
+  - heading: "Note: The cp_hstateen_* tests are performed in HS-mode unless otherwise noted. Feature tests run every combination of the hstateen0 and sstateen0 bit and access from S, U, VS and VU-mode, to check that each bit only affects the modes it controls."

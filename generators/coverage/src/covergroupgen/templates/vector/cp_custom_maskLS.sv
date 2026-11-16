@@ -6,7 +6,7 @@
 
     // --- EMUL >= 16 (LMUL > 1 and SEW > 8) ---
 
-    vtype_all_lmulgt1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmulgt1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two    = {1};
         bins four   = {2};
         bins eight  = {3};

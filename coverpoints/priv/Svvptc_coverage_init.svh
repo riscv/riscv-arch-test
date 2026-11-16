@@ -1,0 +1,11 @@
+///////////////////////////////////////////
+//
+// RISC-V Architectural Functional Coverage Covergroups Initialization File
+//
+// Written: David_Harris@hmc.edu October 2026
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Svvptc_cg = new(); Svvptc_cg.set_inst_name("obj_Svvptc");

@@ -283,6 +283,6 @@ def format_vvv_like_type(
         test_data.vec_regs.return_register(0)
 
     min_vlen = compute_egs_vlen(params.sew, params.lmul, egs)
-    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

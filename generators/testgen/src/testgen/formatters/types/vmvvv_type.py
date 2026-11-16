@@ -73,6 +73,6 @@ def format_vmvvv_type(
     else:
         check = [*write_sigupd_v(test_data, params)]
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
 
     return (setup, test, check)

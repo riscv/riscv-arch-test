@@ -91,6 +91,6 @@ def format_vsr_type(
     else:
         check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
 
     return (setup, test, check)

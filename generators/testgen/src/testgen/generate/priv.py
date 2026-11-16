@@ -12,7 +12,7 @@ from pathlib import Path
 from random import seed
 
 from testgen.asm.helpers import reproducible_hash
-from testgen.constants import PRIV_TRAP_SIGUPD_COUNT
+from testgen.constants import PRIV_EXCLUDE_REGS, PRIV_TRAP_SIGUPD_COUNT
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.data.test_chunk import group_test_chunks
@@ -64,14 +64,7 @@ def _generate_priv_test_entry(
     )
     test_data = TestData(test_config)
 
-    # Reserve registers for priv tests:
-    #   - x0: avoid so desired values are actually loaded into registers
-    #   - x1/ra: used as the return address for function calls
-    #   - x7 is clobbered in rtn_fm_mmode in rvtest_trap_handler.h  Might be freed up if this is redesigned.
-    #   - x10, x11, x12 (a0/a1/a2): Used by T-SBI.
-    #   - x16-x31: ensure the same test can be used for I or E bases
-    priv_exclude_regs = [0, 1, 7, 10, 11, 12, *range(16, 32)]
-    test_data.int_regs.consume_registers(priv_exclude_regs)
+    test_data.int_regs.consume_registers(PRIV_EXCLUDE_REGS)
 
     seed_key = f"{testsuite}-{entry.generator.__name__}-0"
     seed(reproducible_hash(seed_key))
@@ -93,6 +86,6 @@ def _generate_priv_test_entry(
         next_file_indices[split_name] = first_file_idx + len(test_files)
 
     # Clean up (make sure all registers were returned)
-    test_data.int_regs.return_registers(priv_exclude_regs)
+    test_data.int_regs.return_registers(PRIV_EXCLUDE_REGS)
     test_data.destroy()
     return generated_files

@@ -680,32 +680,22 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
 
 def handle_parameter_exclusions(
     lmul: float,
+    sew: int,
     setup: list[str],
     check: list[str],
     *,
-    encoded_eew: int | None = None,
-    index_eew: int | None = None,
     min_vlen: int | None = None,
 ) -> None:
     """
     Modifies setup and check in place to ensure that the test is only run if the test is supported by the core. This
-    includes, but is not limited to parameters defining support of fractional LMUL, maximum indew EEWs, minimum SEWs,
-    and ELEN.
+    includes parameters defining support of fractional LMUL and minimum required VLEN.
     """
 
     parameters_needed: list[str] = []
 
-    match lmul:
-        case 0.5:
-            parameters_needed.append("defined(LMULf2_SUPPORTED)")
-        case 0.25:
-            parameters_needed.append("defined(LMULf4_SUPPORTED)")
-        case 0.125:
-            parameters_needed.append("defined(LMULf8_SUPPORTED)")
-
-    if encoded_eew is not None:
-        parameters_needed.append(f"(UDB_ELEN >= {encoded_eew})")
-        parameters_needed.append(f"(UDB_SEW_MIN <= {encoded_eew})")
+    if lmul < 1:
+        required_sew = int(sew / lmul)
+        parameters_needed.append(f"(UDB_ELEN >= {required_sew})")
 
     if min_vlen is not None and min_vlen > 32:
         parameters_needed.append(f"defined (ZVL{min_vlen}B_SUPPORTED)")
@@ -891,7 +881,7 @@ def prep_vstart(
             )
             test_data.int_regs.return_register(vl_reg)
 
-    if eew_override and vstart_val != "vstart_gt_vl":
+    if (eew_override or lmul_override) and vstart_val != "vstart_gt_vl":
         lines.append(reload_vtype(params, "x0"))
 
     lines.append(f"csrw vstart, x{vstart_reg}")

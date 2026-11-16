@@ -97,10 +97,12 @@ def write_test_file(
     else:
         filename = f"{testsuite}-{file_idx:02d}.S"
     test_file = output_dir / filename
-    if instr_name is None or csv_driven_priv:
+    if instr_name is None:
         arch_dir = f"rv{test_config.xlen}" if test_config.xlen else ""
-    else:
+    elif not csv_driven_priv:
         arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}"
+    else:
+        arch_dir = ""
     test_file_relative = Path(arch_dir) / testsuite / filename
 
     # Test header

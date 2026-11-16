@@ -10,7 +10,14 @@
 
 from pathlib import Path
 
-from testgen.constants import INDENT, PRIV_TRAP_SIGUPD_COUNT, TESTCASES_PER_FILE, VLEN_MAX, get_flen_for_extensions
+from testgen.constants import (
+    INDENT,
+    PRIV_EXCLUDE_REGS,
+    PRIV_TRAP_SIGUPD_COUNT,
+    TESTCASES_PER_FILE,
+    VLEN_MAX,
+    get_flen_for_extensions,
+)
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.config import TestConfig
@@ -133,6 +140,9 @@ def _generate_unpriv_tests_for_instruction(
     all_test_chunks: list[TestChunk] = []
     generated_files: set[Path] = set()
 
+    if is_priv:
+        test_data.int_regs.consume_registers(PRIV_EXCLUDE_REGS)
+
     # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
         # Skip cp_asm_count, std_vec, and std_trap_vec if mixed with other coverpoints
@@ -141,6 +151,9 @@ def _generate_unpriv_tests_for_instruction(
             continue
 
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
+
+    if is_priv:
+        test_data.int_regs.return_registers(PRIV_EXCLUDE_REGS)
 
     # Split into test files and write
     test_files = split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)

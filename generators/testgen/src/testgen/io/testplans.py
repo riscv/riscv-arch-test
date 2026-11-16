@@ -218,7 +218,7 @@ def expand_coverpoints(coverpoints: list[str]) -> list[str]:
     expanded_coverpoints = []
     for coverpoint in coverpoints:
         sews, cleaned_coverpoint = extract_coverpoint_sews(coverpoint)
-        sew_suffix = "_" + "_".join(str(sew) for sew in sews)
+        sew_suffix = "_" + "_".join(str(sew) for sew in sews) if len(sews) > 0 else ""
         if cleaned_coverpoint in coverpoint_expansion_map:
             expanded_coverpoints.extend([cp + sew_suffix for cp in coverpoint_expansion_map[cleaned_coverpoint]])
         else:

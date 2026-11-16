@@ -34,6 +34,14 @@ TESTCASES_PER_PRIV_FILE = 512
 # Default number of traps allocated for a privileged test that does not specify its own count.
 PRIV_TRAP_SIGUPD_COUNT = 1500
 
+# Reserve registers for priv tests:
+#   - x0: avoid so desired values are actually loaded into registers
+#   - x1/ra: used as the return address for function calls
+#   - x7 is clobbered in rtn_fm_mmode in rvtest_trap_handler.h  Might be freed up if this is redesigned.
+#   - x10, x11, x12 (a0/a1/a2): Used by T-SBI.
+#   - x16-x31: ensure the same test can be used for I or E bases
+PRIV_EXCLUDE_REGS = [0, 1, 7, 10, 11, 12, *range(16, 32)]
+
 # =============================================================================
 # Extension Configuration
 # =============================================================================

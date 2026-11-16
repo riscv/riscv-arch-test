@@ -376,7 +376,11 @@ def cp_mstatus_v(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         lmul = get_base_lmul(instr_name, instr_type, sew)
         for vs, fs in itertools.product(vs_options, fs_options):
             params = generate_random_vector_params(
-                test_data, instr_name, instr_type, lmul, sew, rs1val_pointer="misaligned_ls_base"
+                test_data,
+                instr_name,
+                instr_type,
+                lmul,
+                sew,
             )
 
             tc = test_data.begin_test_chunk()

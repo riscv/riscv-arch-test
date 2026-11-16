@@ -25,7 +25,9 @@ _SINGLE_LETTER_EXTENSION = re.compile(r"[a-z](?:\d+p\d+)?", re.IGNORECASE)
 _MARCH_VERSION = re.compile(r"\d+p\d+$", re.IGNORECASE)
 
 # Extensions that are available only with --enable-experimental-extensions.
-EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi"})
+# The RISC-V Worlds extensions are a draft: the compilers do not know them, so they are dropped
+# from -march, and the Sail model needs --enable-experimental-extensions.
+EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi", "Smwid", "Smlwid", "Smlwidlist", "Smwiddeleg", "Sswid"})
 _EXPERIMENTAL_EXTENSIONS_LOWER = frozenset(extension.lower() for extension in EXPERIMENTAL_EXTENSIONS)
 
 

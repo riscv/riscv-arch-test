@@ -92,7 +92,7 @@
 # PMP Configuration
 --override cpu*/PMP_registers=64
 --override cpu*/PMP_grain=4   # 64-byte grains to match cache line width
---override cpu*/PMP_decompose=T  # unaligned accesses are decomposed into separate aligned accesses
+--override cpu*/PMP_decompose=F  # Zama16b: a misaligned access inside a 16-byte granule is one memory operation, PMP-checked as a whole
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
 # Pointer Masking

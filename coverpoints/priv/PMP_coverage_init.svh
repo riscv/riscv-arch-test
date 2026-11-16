@@ -24,6 +24,9 @@
 `ifdef ZALRSC_SUPPORTED
     PMP_Zalrsc_cg = new();    PMP_Zalrsc_cg.set_inst_name("obj_PMP_Zalrsc");
 `endif
+`ifdef ZACAS_SUPPORTED
+    PMP_Zacas_cg = new();    PMP_Zacas_cg.set_inst_name("obj_PMP_Zacas");
+`endif
 `ifdef ZCA_SUPPORTED
     PMP_Zca_cg = new();    PMP_Zca_cg.set_inst_name("obj_PMP_Zca");
 `endif

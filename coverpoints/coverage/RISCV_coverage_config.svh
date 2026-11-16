@@ -41,24 +41,6 @@
 `ifdef EXCEPTIONSV_COVERAGE
   `include "ExceptionsV_coverage.svh"
 `endif
-`ifdef EXCEPTIONSVF16_COVERAGE
-  `include "ExceptionsVf16_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVF32_COVERAGE
-  `include "ExceptionsVf32_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVF64_COVERAGE
-  `include "ExceptionsVf64_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVFMIN_COVERAGE
-  `include "ExceptionsVfmin_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVLS_COVERAGE
-  `include "ExceptionsVls_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVX_COVERAGE
-  `include "ExceptionsVx_coverage.svh"
-`endif
 `ifdef F_COVERAGE
   `include "F_coverage.svh"
 `endif
@@ -76,9 +58,6 @@
 `endif
 `ifdef M_COVERAGE
   `include "M_coverage.svh"
-`endif
-`ifdef MISALIGNV_COVERAGE
-  `include "MisalignV_coverage.svh"
 `endif
 `ifdef PMP_COVERAGE
   `include "PMP_coverage.svh"

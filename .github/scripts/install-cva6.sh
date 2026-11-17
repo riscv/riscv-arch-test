@@ -46,7 +46,8 @@ git init "$INSTALL_DIR/cva6"
 #    Spike's libfesvr/libriscv/libdisasm, and spike-dasm decodes the debug trace.
 bash "$INSTALL_DIR/cva6/verif/regress/install-verilator.sh"
 rm -rf "$VERILATOR_INSTALL_DIR"/build-*
-bash "$INSTALL_DIR/cva6/verif/regress/install-spike.sh"
+# CVA6's Spike bundles a yaml-cpp that declares a CMake minimum below 3.5. CMake 4 rejects it.
+CMAKE_POLICY_VERSION_MINIMUM=3.5 bash "$INSTALL_DIR/cva6/verif/regress/install-spike.sh"
 export PATH="$VERILATOR_INSTALL_DIR/bin:$PATH"
 
 # 3. Verilate one testharness per target, each in its own work-ver-<target> directory.

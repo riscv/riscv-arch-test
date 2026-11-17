@@ -847,7 +847,7 @@ coverpoints:
     expectation: Load page fault (scause = 13); stval = faulting virtual address.
     bins: |-
       reserved_PTE_d x load_page_fault x read_acc x mode
-      = 21 bins on RV64 (RV64 only)
+      = 21 bins on RV64 (RV64 only); 15 with Svrsw60t59b, where bits 60:59 do not fault
     id: Sv39_pte_future_rsv
     rules:
       - "[norm:Sv39_pte_future_rsv]"
@@ -857,7 +857,7 @@ coverpoints:
     expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
     bins: |-
       reserved_PTE_d x store_page_fault x read_acc x mode
-      = 21 bins on RV64 (RV64 only)
+      = 21 bins on RV64 (RV64 only); 15 with Svrsw60t59b, where bits 60:59 do not fault
     id: Sv39_pte_future_rsv
     rules:
       - "[norm:Sv39_pte_future_rsv]"
@@ -867,7 +867,7 @@ coverpoints:
     expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
     bins: |-
       reserved_PTE_i x ins_page_fault x read_acc x mode
-      = 21 bins on RV64 (RV64 only)
+      = 21 bins on RV64 (RV64 only); 15 with Svrsw60t59b, where bits 60:59 do not fault
     id: Sv39_pte_future_rsv
     rules:
       - "[norm:Sv39_pte_future_rsv]"

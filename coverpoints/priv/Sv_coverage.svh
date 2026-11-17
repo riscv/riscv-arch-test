@@ -51,7 +51,7 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
     }
 
     Scause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins illegal_ins  = {ILLEGAL_INSTRUCTION};
+        bins illegal_ins  = {ILLEGAL_INSTRUCTION} iff (ins.current.csr_wb[CSR_SCAUSE]);
         bins no_exception = {0};
     }
 
@@ -393,13 +393,13 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     write_acc: coverpoint ins.current.write_access{
         bins set = {1};
     }
-    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.csr_wb[CSR_SCAUSE]) {
         bins load_page_fault = {LOAD_PAGE_FAULT};
     }
-    ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+    ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.csr_wb[CSR_SCAUSE]) {
         bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
     }
-    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.csr_wb[CSR_SCAUSE]) {
         bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
     Nopagefault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL){
@@ -839,8 +839,11 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins reserved_bit_56 = {7'b0000100};
             bins reserved_bit_57 = {7'b0001000};
             bins reserved_bit_58 = {7'b0010000};
-            bins reserved_bit_59 = {7'b0100000};
-            bins reserved_bit_60 = {7'b1000000};
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifndef SVRSW60T59B_SUPPORTED
+                bins reserved_bit_59 = {7'b0100000};
+                bins reserved_bit_60 = {7'b1000000};
+            `endif
         }
         reserved_PTE_d: coverpoint ins.current.pte_d[60:54] {
             bins reserved_bit_54 = {7'b0000001};
@@ -848,8 +851,11 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins reserved_bit_56 = {7'b0000100};
             bins reserved_bit_57 = {7'b0001000};
             bins reserved_bit_58 = {7'b0010000};
-            bins reserved_bit_59 = {7'b0100000};
-            bins reserved_bit_60 = {7'b1000000};
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifndef SVRSW60T59B_SUPPORTED
+                bins reserved_bit_59 = {7'b0100000};
+                bins reserved_bit_60 = {7'b1000000};
+            `endif
         }
 
         PBMTE_unset: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "pbmte")[0] {
@@ -880,13 +886,13 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         write_acc: coverpoint ins.current.write_access {
             bins set = {1};
         }
-        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins load_page_fault = {LOAD_PAGE_FAULT};
         }
-        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
         }
-        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
         }
 
@@ -964,7 +970,7 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     tvm_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tvm")[0] {
         bins set = {1};
     }
-    Mcause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+    Mcause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins illegal_ins = {ILLEGAL_INSTRUCTION};
     }
     cp_ins: coverpoint ins.current.insn {
@@ -1040,10 +1046,10 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
         }
     `endif
 
-    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins load_page_fault = {LOAD_PAGE_FAULT};
     }
-    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
     sum_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "sum")[0] {
@@ -1083,9 +1089,21 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     }
     `ifdef UDB_MXLEN_64
         sbe_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "sbe")[0] { //ms.5
+            // mstatus.SBE can be written only when S-mode endianness is dynamic
+            `ifdef UDB_S_MODE_ENDIANNESS_LITTLE
+                bins little = {1'b0};
+            `elsif UDB_S_MODE_ENDIANNESS_BIG
+                bins big = {1'b1};
+            `endif
         }
     `else
         sbe_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "sbe")[0] { //ms.5
+            // mstatus.SBE can be written only when S-mode endianness is dynamic
+            `ifdef UDB_S_MODE_ENDIANNESS_LITTLE
+                bins little = {1'b0};
+            `elsif UDB_S_MODE_ENDIANNESS_BIG
+                bins big = {1'b1};
+            `endif
         }
     `endif
 
@@ -1396,13 +1414,13 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    instr_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+    instr_page_fault: coverpoint (ins.current.csr_wb[CSR_SCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+    load_page_fault: coverpoint (ins.current.csr_wb[CSR_SCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+    store_page_fault: coverpoint (ins.current.csr_wb[CSR_SCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
     // The PC of the target: a fetch that spans two parcels may report either parcel in virt_adr_i
@@ -1544,13 +1562,13 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         bins u_mode = {2'b00};
         bins s_mode = {2'b01};
     }
-    instr_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+    instr_page_fault: coverpoint (ins.current.csr_wb[CSR_MCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+    load_page_fault: coverpoint (ins.current.csr_wb[CSR_MCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+    store_page_fault: coverpoint (ins.current.csr_wb[CSR_MCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
     i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {

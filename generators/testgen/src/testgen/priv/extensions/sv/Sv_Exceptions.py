@@ -21,7 +21,7 @@ from testgen.priv.extensions.sv.Sv import mprv_cleanup, mstatus_setup
 from testgen.priv.registry import add_priv_test_generator
 
 # medeleg[9] would delegate the S-mode ecall that T-SBI uses to enter M-mode.
-_MEDELEG_VALUES = (*(1 << bit for bit in range(9)), 1 << 12, 1 << 13, 1 << 15, 0xB1FF)
+_MEDELEG_VALUES = (0, *(1 << bit for bit in range(9)), 1 << 12, 1 << 13, 1 << 15, 0xB1FF)
 _INVALID_VA = {"sv32": "0x90807000", "sv39": "0x1c0802000"}
 # DATA_REGION with a first word whose upper halfword is c.nop, so that on a Zca hart the misaligned fetch at
 # rvtest_data_1 + 2 runs a valid instruction and then the addi at rvtest_data_1 + 4, as the aligned fetch does.

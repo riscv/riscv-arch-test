@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
+min_version = "2026.11.0"
+
 [settings]
 experimental = true
 

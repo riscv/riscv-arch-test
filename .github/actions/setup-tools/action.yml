@@ -21,7 +21,7 @@ inputs:
   riscv-toolchain-version:
     description: RISC-V GCC toolchain version
     required: false
-    default: "2026.08.27"
+    default: "2026.10.29"
   llvm-version:
     description: LLVM version
     required: false

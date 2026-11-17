@@ -37,9 +37,6 @@
     `ifdef COVER_EXCEPTIONS
         exceptions_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_EXCEPTIONSV
-        exceptionsv_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif

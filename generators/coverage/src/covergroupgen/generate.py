@@ -568,7 +568,7 @@ def _write_extension_files(
 
         lines.append(_gen_vector_sample_lines(templates, arch, vector_instrs, tp, extras))
 
-    if len(instr_keys) > 0:
+    if len(all_filtered_keys) > 0:
         lines.append(customize_template(templates, "covergroup_case_header", arch))
         lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True, extras=filtered_extras))
         for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):

@@ -126,7 +126,9 @@ def generate_all_tests(
             for testsuite in sorted(unpriv_ext_list):
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
-                is_vector = testsuite.startswith(("V", "Zv", "ExceptionsV"))
+                # Exceptions (only vector in the csv) is included because is_vector is used to prioritize
+                # vector generation for performance
+                is_vector = testsuite.startswith(("V", "Zv", "Exceptions"))
                 is_priv = testsuite.startswith("Exceptions")
                 tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector, is_priv))
 

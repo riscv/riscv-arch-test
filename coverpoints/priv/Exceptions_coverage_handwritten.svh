@@ -10,7 +10,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_EXCEPTIONS
+// Defined in the parent Exceptions_coverage
+// `define COVER_EXCEPTIONS
 
 `ifdef ZICBOM_SUPPORTED
     `define EXCEPTIONS_ZICBO_ANY

@@ -208820,4 +208820,5 @@ function void exceptions_sample(int hart, int issue, ins_t ins);
         endcase
     end
 
-    exceptions_handwritten_sample(hart, issue, ins);endfunction
+    exceptions_handwritten_sample(hart, issue, ins);
+endfunction

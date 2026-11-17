@@ -24,6 +24,7 @@ from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, split_test_chunks
+from testgen.formatters.registry import get_instruction_type_config
 from testgen.io.templates import canonicalize_extensions
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
@@ -49,7 +50,7 @@ def _append_sig_reg_reset(test_file_chunks: list[TestChunk]) -> None:
 
 
 def generate_unpriv_extension_tests(
-    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path, is_vector: bool, is_priv: bool
+    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path, is_priv: bool
 ) -> None:
     """
     Generate tests for all instructions in a given unprivileged testsuite.
@@ -60,7 +61,6 @@ def generate_unpriv_extension_tests(
         testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'Zcb', 'Zicclsm')
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
-        is_vector: Set in vector test suites
     """
     # Read testplan for this testsuite
     if is_priv:
@@ -103,7 +103,6 @@ def generate_unpriv_extension_tests(
                 instr_data.coverpoints,
                 test_configs[instr_data.extra_extensions],
                 output_dir,
-                is_vector,
                 is_priv,
             )
         )
@@ -120,7 +119,6 @@ def _generate_unpriv_tests_for_instruction(
     coverpoints: list[str],
     test_config: TestConfig,
     output_dir: Path,
-    is_vector: bool,
     is_priv: bool,
 ) -> set[Path]:
     """
@@ -133,12 +131,14 @@ def _generate_unpriv_tests_for_instruction(
         coverpoints: List of coverpoints to generate
         test_config: Test configuration
         output_dir: Directory to output generated tests
-        is_vector: Set in vector test suites
         is_priv: Set for csv-driven priv tests
     """
     test_data = TestData(test_config, instr_name)
     all_test_chunks: list[TestChunk] = []
     generated_files: set[Path] = set()
+
+    # F-type instructions do not have a registered formatter
+    is_vector = get_instruction_type_config(instr_type).vector_data is not None if instr_type != "F" else False
 
     if is_priv:
         test_data.int_regs.consume_registers(PRIV_EXCLUDE_REGS)

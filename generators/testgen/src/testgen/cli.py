@@ -169,7 +169,6 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             testsuite=task.testsuite,
             testplan_dir=task.testplan_dir,
             output_test_dir=task.output_test_dir,
-            is_vector=task.is_vector,
             is_priv=task.is_priv,
         )
     elif isinstance(task, PrivTask):

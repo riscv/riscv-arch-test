@@ -4999,7 +4999,7 @@ covergroup Zve64x_vl1re64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew32_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -5125,15 +5125,11 @@ covergroup Zve64x_vl1re64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
@@ -5257,12 +5253,10 @@ covergroup Zve64x_vl1re64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
@@ -5906,7 +5900,7 @@ covergroup Zve64x_vl2re64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -6036,15 +6030,11 @@ covergroup Zve64x_vl2re64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew8_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8, excluding LMUL = 8
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
@@ -6172,12 +6162,10 @@ covergroup Zve64x_vl2re64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
@@ -6836,7 +6824,7 @@ covergroup Zve64x_vl4re64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew32_lmul_le_2 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -6973,15 +6961,11 @@ covergroup Zve64x_vl4re64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew8_lmul_le_2 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
     }
@@ -7116,12 +7100,10 @@ covergroup Zve64x_vl4re64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew16_lmul_le_2 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
     }
@@ -7803,7 +7785,7 @@ covergroup Zve64x_vl8re64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew32_lmul_le_1 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -7943,15 +7925,11 @@ covergroup Zve64x_vl8re64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew8_lmul_le_1 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
     }
 
@@ -8089,12 +8067,10 @@ covergroup Zve64x_vl8re64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_sew16_lmul_le_1 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
     }
 
@@ -8965,7 +8941,7 @@ covergroup Zve64x_vle64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -9065,15 +9041,11 @@ covergroup Zve64x_vle64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -9171,12 +9143,10 @@ covergroup Zve64x_vle64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -9527,7 +9497,7 @@ covergroup Zve64x_vle64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -9674,15 +9644,11 @@ covergroup Zve64x_vle64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -9857,12 +9823,10 @@ covergroup Zve64x_vle64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -14183,7 +14147,7 @@ covergroup Zve64x_vlse64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -14296,15 +14260,11 @@ covergroup Zve64x_vlse64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -14415,12 +14375,10 @@ covergroup Zve64x_vlse64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -15285,7 +15243,7 @@ covergroup Zve64x_vlseg2e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -15387,15 +15345,11 @@ covergroup Zve64x_vlseg2e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -15495,12 +15449,10 @@ covergroup Zve64x_vlseg2e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -15855,7 +15807,7 @@ covergroup Zve64x_vlseg2e64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -16004,15 +15956,11 @@ covergroup Zve64x_vlseg2e64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -16159,12 +16107,10 @@ covergroup Zve64x_vlseg2e64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -17191,7 +17137,7 @@ covergroup Zve64x_vlseg3e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -17293,12 +17239,10 @@ covergroup Zve64x_vlseg3e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -17400,12 +17344,10 @@ covergroup Zve64x_vlseg3e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -17730,7 +17672,7 @@ covergroup Zve64x_vlseg3e64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -17879,12 +17821,10 @@ covergroup Zve64x_vlseg3e64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -18033,12 +17973,10 @@ covergroup Zve64x_vlseg3e64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -19069,7 +19007,7 @@ covergroup Zve64x_vlseg4e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -19172,12 +19110,10 @@ covergroup Zve64x_vlseg4e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -19280,12 +19216,10 @@ covergroup Zve64x_vlseg4e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -19612,7 +19546,7 @@ covergroup Zve64x_vlseg4e64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -19762,12 +19696,10 @@ covergroup Zve64x_vlseg4e64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -19917,12 +19849,10 @@ covergroup Zve64x_vlseg4e64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -20967,7 +20897,7 @@ covergroup Zve64x_vlseg5e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -21070,7 +21000,7 @@ covergroup Zve64x_vlseg5e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -21175,7 +21105,7 @@ covergroup Zve64x_vlseg5e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -21476,7 +21406,7 @@ covergroup Zve64x_vlseg5e64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -21626,7 +21556,7 @@ covergroup Zve64x_vlseg5e64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -21778,7 +21708,7 @@ covergroup Zve64x_vlseg5e64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -22832,7 +22762,7 @@ covergroup Zve64x_vlseg6e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -22936,7 +22866,7 @@ covergroup Zve64x_vlseg6e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -23042,7 +22972,7 @@ covergroup Zve64x_vlseg6e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -23345,7 +23275,7 @@ covergroup Zve64x_vlseg6e64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -23496,7 +23426,7 @@ covergroup Zve64x_vlseg6e64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -23649,7 +23579,7 @@ covergroup Zve64x_vlseg6e64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -24711,7 +24641,7 @@ covergroup Zve64x_vlseg7e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -24816,7 +24746,7 @@ covergroup Zve64x_vlseg7e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -24923,7 +24853,7 @@ covergroup Zve64x_vlseg7e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -25228,7 +25158,7 @@ covergroup Zve64x_vlseg7e64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -25380,7 +25310,7 @@ covergroup Zve64x_vlseg7e64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -25534,7 +25464,7 @@ covergroup Zve64x_vlseg7e64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -26604,7 +26534,7 @@ covergroup Zve64x_vlseg8e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -26710,7 +26640,7 @@ covergroup Zve64x_vlseg8e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -26818,7 +26748,7 @@ covergroup Zve64x_vlseg8e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -27125,7 +27055,7 @@ covergroup Zve64x_vlseg8e64ff_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -27278,7 +27208,7 @@ covergroup Zve64x_vlseg8e64ff_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -27433,7 +27363,7 @@ covergroup Zve64x_vlseg8e64ff_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -28172,7 +28102,7 @@ covergroup Zve64x_vlsseg2e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -28287,15 +28217,11 @@ covergroup Zve64x_vlsseg2e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -28408,12 +28334,10 @@ covergroup Zve64x_vlsseg2e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -28982,7 +28906,7 @@ covergroup Zve64x_vlsseg3e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -29097,12 +29021,10 @@ covergroup Zve64x_vlsseg3e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -29217,12 +29139,10 @@ covergroup Zve64x_vlsseg3e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -29793,7 +29713,7 @@ covergroup Zve64x_vlsseg4e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -29909,12 +29829,10 @@ covergroup Zve64x_vlsseg4e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -30030,12 +29948,10 @@ covergroup Zve64x_vlsseg4e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -30609,7 +30525,7 @@ covergroup Zve64x_vlsseg5e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -30725,7 +30641,7 @@ covergroup Zve64x_vlsseg5e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -30843,7 +30759,7 @@ covergroup Zve64x_vlsseg5e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -31424,7 +31340,7 @@ covergroup Zve64x_vlsseg6e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -31541,7 +31457,7 @@ covergroup Zve64x_vlsseg6e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -31660,7 +31576,7 @@ covergroup Zve64x_vlsseg6e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -32246,7 +32162,7 @@ covergroup Zve64x_vlsseg7e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -32364,7 +32280,7 @@ covergroup Zve64x_vlsseg7e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -32484,7 +32400,7 @@ covergroup Zve64x_vlsseg7e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -33075,7 +32991,7 @@ covergroup Zve64x_vlsseg8e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -33194,7 +33110,7 @@ covergroup Zve64x_vlsseg8e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -33315,7 +33231,7 @@ covergroup Zve64x_vlsseg8e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -49334,7 +49250,7 @@ covergroup Zve64x_vnclip_wi_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -49615,7 +49531,7 @@ covergroup Zve64x_vnclip_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -49889,7 +49805,7 @@ covergroup Zve64x_vnclip_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -50187,7 +50103,7 @@ covergroup Zve64x_vnclipu_wi_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -50468,7 +50384,7 @@ covergroup Zve64x_vnclipu_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -50742,7 +50658,7 @@ covergroup Zve64x_vnclipu_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -51776,7 +51692,7 @@ covergroup Zve64x_vnsra_wi_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -52038,7 +51954,7 @@ covergroup Zve64x_vnsra_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -52294,7 +52210,7 @@ covergroup Zve64x_vnsra_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -52574,7 +52490,7 @@ covergroup Zve64x_vnsrl_wi_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -52836,7 +52752,7 @@ covergroup Zve64x_vnsrl_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -53092,7 +53008,7 @@ covergroup Zve64x_vnsrl_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -60450,7 +60366,7 @@ covergroup Zve64x_vse64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -60550,15 +60466,11 @@ covergroup Zve64x_vse64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -60656,12 +60568,10 @@ covergroup Zve64x_vse64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -67871,7 +67781,7 @@ covergroup Zve64x_vsse64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -67984,15 +67894,11 @@ covergroup Zve64x_vsse64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -68103,12 +68009,10 @@ covergroup Zve64x_vsse64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -68619,7 +68523,7 @@ covergroup Zve64x_vsseg2e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -68721,15 +68625,11 @@ covergroup Zve64x_vsseg2e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -68829,12 +68729,10 @@ covergroup Zve64x_vsseg2e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -69311,7 +69209,7 @@ covergroup Zve64x_vsseg3e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -69404,12 +69302,10 @@ covergroup Zve64x_vsseg3e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -69502,12 +69398,10 @@ covergroup Zve64x_vsseg3e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -70013,7 +69907,7 @@ covergroup Zve64x_vsseg4e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -70116,12 +70010,10 @@ covergroup Zve64x_vsseg4e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -70224,12 +70116,10 @@ covergroup Zve64x_vsseg4e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -70738,7 +70628,7 @@ covergroup Zve64x_vsseg5e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -70841,7 +70731,7 @@ covergroup Zve64x_vsseg5e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -70946,7 +70836,7 @@ covergroup Zve64x_vsseg5e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -71462,7 +71352,7 @@ covergroup Zve64x_vsseg6e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -71566,7 +71456,7 @@ covergroup Zve64x_vsseg6e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -71672,7 +71562,7 @@ covergroup Zve64x_vsseg6e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -72193,7 +72083,7 @@ covergroup Zve64x_vsseg7e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -72298,7 +72188,7 @@ covergroup Zve64x_vsseg7e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -72405,7 +72295,7 @@ covergroup Zve64x_vsseg7e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -72931,7 +72821,7 @@ covergroup Zve64x_vsseg8e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -73037,7 +72927,7 @@ covergroup Zve64x_vsseg8e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -73145,7 +73035,7 @@ covergroup Zve64x_vsseg8e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -74955,7 +74845,7 @@ covergroup Zve64x_vssseg2e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -75070,15 +74960,11 @@ covergroup Zve64x_vssseg2e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -75191,12 +75077,10 @@ covergroup Zve64x_vssseg2e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -75765,7 +75649,7 @@ covergroup Zve64x_vssseg3e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -75880,12 +75764,10 @@ covergroup Zve64x_vssseg3e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -76000,12 +75882,10 @@ covergroup Zve64x_vssseg3e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -76576,7 +76456,7 @@ covergroup Zve64x_vssseg4e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -76692,12 +76572,10 @@ covergroup Zve64x_vssseg4e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -76813,12 +76691,10 @@ covergroup Zve64x_vssseg4e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -77392,7 +77268,7 @@ covergroup Zve64x_vssseg5e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -77508,7 +77384,7 @@ covergroup Zve64x_vssseg5e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -77626,7 +77502,7 @@ covergroup Zve64x_vssseg5e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -78207,7 +78083,7 @@ covergroup Zve64x_vssseg6e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -78324,7 +78200,7 @@ covergroup Zve64x_vssseg6e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -78443,7 +78319,7 @@ covergroup Zve64x_vssseg6e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -79029,7 +78905,7 @@ covergroup Zve64x_vssseg7e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -79147,7 +79023,7 @@ covergroup Zve64x_vssseg7e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -79267,7 +79143,7 @@ covergroup Zve64x_vssseg7e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -79858,7 +79734,7 @@ covergroup Zve64x_vssseg8e64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -79977,7 +79853,7 @@ covergroup Zve64x_vssseg8e64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -80098,7 +79974,7 @@ covergroup Zve64x_vssseg8e64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -84823,7 +84699,7 @@ covergroup Zve64x_vwadd_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -85083,7 +84959,7 @@ covergroup Zve64x_vwadd_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -85389,7 +85265,7 @@ covergroup Zve64x_vwadd_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -85612,7 +85488,7 @@ covergroup Zve64x_vwadd_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -85915,7 +85791,7 @@ covergroup Zve64x_vwaddu_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -86167,7 +86043,7 @@ covergroup Zve64x_vwaddu_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -86465,7 +86341,7 @@ covergroup Zve64x_vwaddu_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -86688,7 +86564,7 @@ covergroup Zve64x_vwaddu_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -86871,7 +86747,7 @@ covergroup Zve64x_vwmacc_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -87052,7 +86928,7 @@ covergroup Zve64x_vwmacc_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -87235,7 +87111,7 @@ covergroup Zve64x_vwmaccsu_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -87416,7 +87292,7 @@ covergroup Zve64x_vwmaccsu_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -87599,7 +87475,7 @@ covergroup Zve64x_vwmaccu_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -87780,7 +87656,7 @@ covergroup Zve64x_vwmaccu_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -87961,7 +87837,7 @@ covergroup Zve64x_vwmaccus_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -88264,7 +88140,7 @@ covergroup Zve64x_vwmul_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -88516,7 +88392,7 @@ covergroup Zve64x_vwmul_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -88819,7 +88695,7 @@ covergroup Zve64x_vwmulsu_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -89071,7 +88947,7 @@ covergroup Zve64x_vwmulsu_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -89374,7 +89250,7 @@ covergroup Zve64x_vwmulu_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -89626,7 +89502,7 @@ covergroup Zve64x_vwmulu_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -89975,7 +89851,7 @@ covergroup Zve64x_vwredsum_vs_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -90324,7 +90200,7 @@ covergroup Zve64x_vwredsumu_vs_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -90627,7 +90503,7 @@ covergroup Zve64x_vwsub_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -90879,7 +90755,7 @@ covergroup Zve64x_vwsub_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -91177,7 +91053,7 @@ covergroup Zve64x_vwsub_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -91400,7 +91276,7 @@ covergroup Zve64x_vwsub_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -91703,7 +91579,7 @@ covergroup Zve64x_vwsubu_vv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -91955,7 +91831,7 @@ covergroup Zve64x_vwsubu_vx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -92253,7 +92129,7 @@ covergroup Zve64x_vwsubu_wv_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -92476,7 +92352,7 @@ covergroup Zve64x_vwsubu_wx_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -93834,7 +93710,7 @@ covergroup Zve64x_vloxei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -94003,15 +93879,11 @@ covergroup Zve64x_vloxei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -94182,12 +94054,10 @@ covergroup Zve64x_vloxei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -94525,7 +94395,7 @@ covergroup Zve64x_vloxseg2ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -94672,15 +94542,11 @@ covergroup Zve64x_vloxseg2ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -94825,12 +94691,10 @@ covergroup Zve64x_vloxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -95123,7 +94987,7 @@ covergroup Zve64x_vloxseg3ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -95270,12 +95134,10 @@ covergroup Zve64x_vloxseg3ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -95422,12 +95284,10 @@ covergroup Zve64x_vloxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -95768,7 +95628,7 @@ covergroup Zve64x_vloxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -95916,12 +95776,10 @@ covergroup Zve64x_vloxseg4ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -96093,12 +95951,10 @@ covergroup Zve64x_vloxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -96392,7 +96248,7 @@ covergroup Zve64x_vloxseg5ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -96540,7 +96396,7 @@ covergroup Zve64x_vloxseg5ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -96690,7 +96546,7 @@ covergroup Zve64x_vloxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -96989,7 +96845,7 @@ covergroup Zve64x_vloxseg6ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -97138,7 +96994,7 @@ covergroup Zve64x_vloxseg6ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -97289,7 +97145,7 @@ covergroup Zve64x_vloxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -97590,7 +97446,7 @@ covergroup Zve64x_vloxseg7ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -97740,7 +97596,7 @@ covergroup Zve64x_vloxseg7ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -97892,7 +97748,7 @@ covergroup Zve64x_vloxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -98243,7 +98099,7 @@ covergroup Zve64x_vloxseg8ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -98418,7 +98274,7 @@ covergroup Zve64x_vloxseg8ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -98595,7 +98451,7 @@ covergroup Zve64x_vloxseg8ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -98929,7 +98785,7 @@ covergroup Zve64x_vluxei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -99088,15 +98944,11 @@ covergroup Zve64x_vluxei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -99257,12 +99109,10 @@ covergroup Zve64x_vluxei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -99580,7 +99430,7 @@ covergroup Zve64x_vluxseg2ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -99717,15 +99567,11 @@ covergroup Zve64x_vluxseg2ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -99860,12 +99706,10 @@ covergroup Zve64x_vluxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -100138,7 +99982,7 @@ covergroup Zve64x_vluxseg3ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -100275,12 +100119,10 @@ covergroup Zve64x_vluxseg3ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -100417,12 +100259,10 @@ covergroup Zve64x_vluxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -100743,7 +100583,7 @@ covergroup Zve64x_vluxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -100881,12 +100721,10 @@ covergroup Zve64x_vluxseg4ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -101048,12 +100886,10 @@ covergroup Zve64x_vluxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -101327,7 +101163,7 @@ covergroup Zve64x_vluxseg5ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -101465,7 +101301,7 @@ covergroup Zve64x_vluxseg5ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -101605,7 +101441,7 @@ covergroup Zve64x_vluxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -101884,7 +101720,7 @@ covergroup Zve64x_vluxseg6ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -102023,7 +101859,7 @@ covergroup Zve64x_vluxseg6ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -102164,7 +102000,7 @@ covergroup Zve64x_vluxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -102445,7 +102281,7 @@ covergroup Zve64x_vluxseg7ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -102585,7 +102421,7 @@ covergroup Zve64x_vluxseg7ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -102727,7 +102563,7 @@ covergroup Zve64x_vluxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -103058,7 +102894,7 @@ covergroup Zve64x_vluxseg8ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -103223,7 +103059,7 @@ covergroup Zve64x_vluxseg8ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -103390,7 +103226,7 @@ covergroup Zve64x_vluxseg8ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -103689,7 +103525,7 @@ covergroup Zve64x_vsoxei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -103834,15 +103670,11 @@ covergroup Zve64x_vsoxei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -103985,12 +103817,10 @@ covergroup Zve64x_vsoxei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -104338,7 +104168,7 @@ covergroup Zve64x_vsoxseg2ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -104485,15 +104315,11 @@ covergroup Zve64x_vsoxseg2ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -104638,12 +104464,10 @@ covergroup Zve64x_vsoxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -104947,7 +104771,7 @@ covergroup Zve64x_vsoxseg3ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -105094,12 +104918,10 @@ covergroup Zve64x_vsoxseg3ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -105246,12 +105068,10 @@ covergroup Zve64x_vsoxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -105604,7 +105424,7 @@ covergroup Zve64x_vsoxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -105752,12 +105572,10 @@ covergroup Zve64x_vsoxseg4ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -105929,12 +105747,10 @@ covergroup Zve64x_vsoxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -106241,7 +106057,7 @@ covergroup Zve64x_vsoxseg5ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -106389,7 +106205,7 @@ covergroup Zve64x_vsoxseg5ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -106539,7 +106355,7 @@ covergroup Zve64x_vsoxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -106852,7 +106668,7 @@ covergroup Zve64x_vsoxseg6ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -107001,7 +106817,7 @@ covergroup Zve64x_vsoxseg6ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -107152,7 +106968,7 @@ covergroup Zve64x_vsoxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -107468,7 +107284,7 @@ covergroup Zve64x_vsoxseg7ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -107618,7 +107434,7 @@ covergroup Zve64x_vsoxseg7ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -107770,7 +107586,7 @@ covergroup Zve64x_vsoxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -108137,7 +107953,7 @@ covergroup Zve64x_vsoxseg8ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -108312,7 +108128,7 @@ covergroup Zve64x_vsoxseg8ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -108489,7 +108305,7 @@ covergroup Zve64x_vsoxseg8ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -108768,7 +108584,7 @@ covergroup Zve64x_vsuxei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -108903,15 +108719,11 @@ covergroup Zve64x_vsuxei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -109044,12 +108856,10 @@ covergroup Zve64x_vsuxei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew = 16 eew = 64
@@ -109377,7 +109187,7 @@ covergroup Zve64x_vsuxseg2ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -109514,15 +109324,11 @@ covergroup Zve64x_vsuxseg2ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // lmul 1 not supported for sew = 8 eew = 64
         // lmul 2 not supported for sew = 8 eew = 64
         // lmul 4 not supported for sew = 8 eew = 64
@@ -109657,12 +109463,10 @@ covergroup Zve64x_vsuxseg2ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         // lmul 2 not supported for sew =16 eew = 64
         // lmul 4 not supported for sew =16 eew = 64
@@ -109946,7 +109750,7 @@ covergroup Zve64x_vsuxseg3ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -110083,12 +109887,10 @@ covergroup Zve64x_vsuxseg3ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -110225,12 +110027,10 @@ covergroup Zve64x_vsuxseg3ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -110563,7 +110363,7 @@ covergroup Zve64x_vsuxseg4ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};
@@ -110701,12 +110501,10 @@ covergroup Zve64x_vsuxseg4ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
+        bins fourth = {6};
 
         // lmul 1/2 not supported for sew = 8 eew = 64
         // lmul 1 not supported for sew = 8 eew = 64
@@ -110868,12 +110666,10 @@ covergroup Zve64x_vsuxseg4ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul2max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         // lmul 1 not supported for sew =16 sew = 64
     }
 
@@ -111160,7 +110956,7 @@ covergroup Zve64x_vsuxseg5ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -111298,7 +111094,7 @@ covergroup Zve64x_vsuxseg5ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -111438,7 +111234,7 @@ covergroup Zve64x_vsuxseg5ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -111731,7 +111527,7 @@ covergroup Zve64x_vsuxseg6ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -111870,7 +111666,7 @@ covergroup Zve64x_vsuxseg6ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -112011,7 +111807,7 @@ covergroup Zve64x_vsuxseg6ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -112307,7 +112103,7 @@ covergroup Zve64x_vsuxseg7ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -112447,7 +112243,7 @@ covergroup Zve64x_vsuxseg7ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -112589,7 +112385,7 @@ covergroup Zve64x_vsuxseg7ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -112936,7 +112732,7 @@ covergroup Zve64x_vsuxseg8ei64_v_sew32_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         // lmul 1 not supported for sew =32 eew = 64
@@ -113101,7 +112897,7 @@ covergroup Zve64x_vsuxseg8ei64_v_sew8_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
         // lmul = 1/4 not supported for eew=64 and sew=8
@@ -113268,7 +113064,7 @@ covergroup Zve64x_vsuxseg8ei64_v_sew16_cg with function sample(ins_t ins);
 
     cp_csr_vtype_lmul_all_le_8_e64_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
         // lmul = 1/2 not supported for eew=64 and sew=16
@@ -113319,6 +113115,7 @@ endgroup
 `endif
 function void zve64x_sample(int hart, int issue, ins_t ins);
     string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
@@ -113558,6 +113355,7 @@ function void zve64x_sample(int hart, int issue, ins_t ins);
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
@@ -113797,6 +113595,7 @@ function void zve64x_sample(int hart, int issue, ins_t ins);
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
@@ -114165,6 +113964,7 @@ function void zve64x_sample(int hart, int issue, ins_t ins);
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests

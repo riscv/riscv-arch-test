@@ -41,17 +41,7 @@ class TestPlanData:
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
     """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
     # Columns that are parsed separately and should not be treated as coverpoints
-    non_coverpoint_columns = {
-        "Instruction",
-        "Type",
-        "RV32",
-        "RV64",
-        "ExtraExtensions",
-        "EFFEW8",
-        "EFFEW16",
-        "EFFEW32",
-        "EFFEW64",
-    }
+    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64", "ExtraExtensions", "VECTOR"}
     instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)

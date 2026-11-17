@@ -191,7 +191,7 @@ covergroup ZvksedZve32x_vsm4k_vi_sew32_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -419,7 +419,7 @@ covergroup ZvksedZve32x_vsm4r_vs_sew32_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -698,7 +698,7 @@ covergroup ZvksedZve32x_vsm4r_vv_sew32_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL256B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -794,6 +794,7 @@ endgroup
 `endif
 function void zvksed_sample(int hart, int issue, ins_t ins);
     string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
@@ -803,6 +804,7 @@ function void zvksed_sample(int hart, int issue, ins_t ins);
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
@@ -812,6 +814,7 @@ function void zvksed_sample(int hart, int issue, ins_t ins);
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
@@ -836,6 +839,7 @@ function void zvksed_sample(int hart, int issue, ins_t ins);
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests

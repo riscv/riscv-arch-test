@@ -123,7 +123,7 @@ runs:
         for tool in clang "clang-${major}" clang++ ld.lld lld llvm-objdump llvm-objcopy llvm-ar llvm-nm llvm-readelf llvm-readobj; do
           members+=("bin/${tool}")
         done
-        tar --zstd -xf "$archive" --directory="$tool_dir" --strip-components=1 \
+        tar --use-compress-program="zstd -d --long=31" -xf "$archive" --directory="$tool_dir" --strip-components=1 \
           --exclude="${release}/lib/clang/*/lib" "${members[@]/#/${release}/}"
         rm -f "$archive"
         "$tool_dir/bin/clang" --version

@@ -50,11 +50,6 @@ implemented_extensions:
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu
   # NOTE: only 3..6 exist; 7..31 do not, so Zihpm is implemented only in part.
   - { name: Zihpm, version: "= 2.0" }
-  # Zicntr: the unprivileged cycle and instret shadows exist in the U-mode build; there is no
-  # time CSR (TIME_CSR_IMPLEMENTED false).
-  #   Quote: "csr_cyclel =        [110000000000]" and "csr_instretl =      [110000000010]"
-  #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu
-  - { name: Zicntr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   # U-mode is optional in EL2 and enabled here (-set user_mode=1), which is the maximum
   # ratified feature set. Smepmp is deliberately left off.
@@ -263,9 +258,6 @@ params:
   HPM_COUNTER5_WIDTH: 64
   HPM_COUNTER6_WIDTH: 64
 
-  # Zicntr params: there is no time CSR.
-  TIME_CSR_IMPLEMENTED: false
-
   # mcountinhibit (0x320) DOES exist on EL2 - it replaced EH1's non-standard mgpmc.
   #   Quote: "replaces the non-standard mgpmc register of the previous VeeR generation."
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/performance.md
@@ -276,11 +268,17 @@ params:
   # read-only zero (there is no time CSR on EL2).
   #   Quote: "rvdffs #(6) mcounteren_ff (.*, ... .din({dec_csr_wrdata_r[6:2], dec_csr_wrdata_r[0]}))"
   #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv
+  # Only bits 3..6 are marked writable here. The core also makes CY (0) and IR (2)
+  # writable, but UDB requires MCOUNTENABLE_EN[0:2] to be false unless Zicntr is
+  # implemented, and EL2 cannot claim Zicntr: it has the cycle and instret shadows but no
+  # time CSR at all. (Zicntr with TIME_CSR_IMPLEMENTED false would make the tests emulate time
+  # from RVMODEL_MTIME_ADDRESS, and EL2 has no mtime.) sail.json carries the core's full mask
+  # (0x7D) so the reference model matches the hardware.
   MCOUNTENABLE_EN:
     [
-      true,
       false,
-      true,
+      false,
+      false,
       true,
       true,
       true,

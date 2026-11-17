@@ -4,15 +4,6 @@
 All of the vector privileged suites are collected in this section.
 The machine-, supervisor-, and user-mode vector CSR tests, Sm_V, Sm_VF, S_V, S_VF, U_V, and U_VF, are part of the <<Sm Machine-Mode CSRs and Instructions,Sm>>, <<S Supervisor-Mode CSRs and Instructions,S>>, and <<U User-Mode CSRs and Instructions,U>> suites and their test plans.
 
-[[MisalignV]]
-==== MisalignV Vector Misalignment
-
-MisalignV tests misaligned vector loads and stores.  Unlike scalar misaligned suites, they are privileged tests that run whether or not misaligned accesses are supported, so they may trap or not depending on TODO UDBParameter.
-
-include::{testplansdir}/priv/MisalignV.adoc[]
-
-include::norm/MisalignV_norm_rules.adoc[]
-
 ==== SsstrictV Vector Strict Decoding
 
 SsstrictV tests that reserved vector encodings trap when Ssstrict is implemented.  It includes a comprehensive set of reserved overlapping register constraints.  It also tests miscellaneous reserved conditions such as widening to unsupported SEWs, register groups not aligned to a multiple of LMUL, reserved mask overlaps, and constraints on `vsetvl*` operands.
@@ -21,28 +12,18 @@ include::{testplansdir}/priv/SsstrictV.adoc[]
 
 include::norm/SsstrictV_norm_rules.adoc[]
 
-==== ExceptionsVx Vector Integer Exceptions
+==== ExceptionsV/ExceptionsZve* Vector Integer Exceptions
 
 The vector exception tests exercise everything else that might cause exceptions aside from misalignment and reserved instructions.
 
 These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on `mstatus.VS`) related to vector integer instructions. Some tests always trap, such as access faults. Other tests may either succeed or trap depending on a parameter.  For example, an implementation may trap on nonzero `vstart` values, or may execute them in hardware.
 
-include::{testplansdir}/priv/ExceptionsVx.adoc[]
+These tests also include misaligned load/stores for all supported EEWs.
+
+include::{testplansdir}/priv/Exceptions.adoc[]
 
 include::norm/ExceptionsVx_norm_rules.adoc[]
 
-==== ExceptionsVf Vector Floating-Point Exceptions
-
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector floating-point instructions. They test operations that may either succeed or trap depending on a parameter.
-
-include::{testplansdir}/priv/ExceptionsVf.adoc[]
-
 include::norm/ExceptionsVf_norm_rules.adoc[]
-
-==== ExceptionsVls Vector Load/Store Exceptions
-
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions. They test operations that may either succeed or trap depending on a parameter.
-
-include::{testplansdir}/priv/ExceptionsVls.adoc[]
 
 include::norm/ExceptionsVls_norm_rules.adoc[]

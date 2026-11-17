@@ -1,138 +1,85 @@
 
 === V Vector Extension
 
-The vector coverpoints are intended to be flexible to support the full V extension, the Zve* embedded vector extensions, and arbitrary mixes of supported vector length (VLEN), element lengths (SEW~MIN~, ELEN), and floating-point precisions.
+The vector coverpoints are intended to be flexible to support the full V extension, the Zve* embedded vector extensions, and arbitrary mixes of supported vector length (VLEN), and floating-point precisions.
 
-The vector extension is huge.  The testplan is partitioned into three unprivileged portions discussed here, and two privileged portions (ExceptionsV, <<t-SsstrictV-coverpoints,SsstrictV>>) discussed in <<Vector Privileged Test Suites>>.
-
-The full V extension supports all selected element widths SEW={8, 16, 32, 64}.  The vector coverage files and tests are organized by SEW.  Thus, a DUT could handle any contiguous subset of SEW from SEW~MIN~ to ELEN.  For example, a DUT with SEW~MIN~=16 and ELEN=32 would support SEW={16, 32}.
+The vector extension is huge.  The testplan is partitioned into three unprivileged portions discussed here, and two privileged portions (Exceptions, <<t-SsstrictV-coverpoints,SsstrictV>>) discussed in <<Vector Privileged Test Suites>>.
 
 The tests detect VLMAX and set the vector length accordingly, up to some configurable maximum VLEN (default 4096 bits, although the vector extension theoretically supports up to 65536).  Therefore, there is no need for different test suites for different VLENs.
 
 ==== Vector File Organization
 
-<<f-vector-organization>> summarizes the structure of the coverpoint and test files for the vector extension.  The unprivileged vector tests are organized by integer (Vx), load/store (Vls), and floating-point (Vf) types of instructions. Each applies to SEW=8, 16, 32, and/or 64. The ExceptionsV, V, and SsstrictV privileged tests are described in section XREF.
+<<f-vector-organization>> summarizes the structure of the coverpoint and test files for the vector extension.  The unprivileged vector tests are organized by their containment in the Zve*, V, Zvfbf*, Zvb*, and Zvk* extensions. The Exceptions and SsstrictV privileged tests are described in section <<Vector Privileged Test Suites>>.
 
-The vector tests are organized by XLEN=32 and XLEN=64 because the scalar registers behavior differs by XLEN.  For example, vadd.vx with SEW=64 sign-extends XLEN=32 scalar registers but does not modify XLEN=64 scalar registers.  For a given XLEN, the vector tests are organized by type (Vx/Vls/Vf) and SEW (8/16/32/64).  Each directory contains a .S file for every vector instruction of that type footnote:[Certain instructions are omitted if not supported for a given SEW.  For example, widening add vwadd.vv is not supported for SEW=64, and vrgatherei16.v is not supported for SEW=8.].  Vector load/store instructions run with any SEW but also specify EEW as part of the instruction name.  For example, vle8.v and vle16.v can both be executed in either SEW=8 or SEW=16, and the EMUL behavior is different between these modes.  Therefore, all the load/store variants are included in all of Vls{8/16/32/64}.
+The vector tests are organized by XLEN=32 and XLEN=64 because the scalar registers behavior differs by XLEN.  For example, vadd.vx with SEW=64 sign-extends XLEN=32 scalar registers but does not modify XLEN=64 scalar registers.  For a given XLEN, the vector tests are organized by type (Vx/Vls/Vf) and SEW (8/16/32/64).  Each directory contains a .S file for every vector instruction of that type footnote:[Certain instructions are omitted if not supported for a given SEW.  For example, widening add vwadd.vv is not supported for SEW=64.].  Vector load/store instructions run with any SEW but also specify EEW as part of the instruction name.  For example, vle8.v and vle16.v can both be executed in either SEW=8 or SEW=16, and the EMUL behavior is different between these modes.  Therefore, all the load/store variants are included in all of Zve32x and Zve64x. When, XLEN=32, index EEWs of 64 are reserved in all vector extensions, so these index EEWs are not exercised on XLEN=32.
 
-[NOTE]
-====
-Vx and Vf are separated because certain extensions such as Zve64x do not support
-floating-point.  Vls could be lumped with Vx, but the coverpoints are so different that
-it is easier to define the tests separately, and facilitates just running integer vs. load/store tests during development.
-====
 
 [[f-vector-organization]]
 .Vector Organization
 ----
-fcov
+coverpoints
     unpriv
-        Vx8_coverage.svh
-        Vx16_coverage.svh
-        Vx32_coverage.svh
-        Vx64_coverage.svh
-        Vls8_coverage.svh
-        Vls16_coverage.svh
-        Vls32_coverage.svh
-        Vls64_coverage.svh
-        Vf8_coverage.svh
-        Vf16_coverage.svh
-        Vf32_coverage.svh
-        Vf64_coverage.svh
-      priv
-        ExceptionsVx_coverage.svh
-        ExceptionsVls_coverage.svh
-        ExceptionsVf16_coverage.svh
-        ExceptionsVf32_coverage.svh
-        ExceptionsVf64_coverage.svh
-        ExceptionsVfmin_coverage.svh
-        MisalignV_coverage.svh
+        Zve*_coverage.svh
+        V_coverage.svh
+        Zvb*_coverage.svh
+        Zvk*_coverage.svh
+    priv
+        Exceptions_coverage.svh
         SsstrictV_coverage.svh
+        SsstrictZve*_coverage.svh
         Sm_coverage.svh (Sm_V_cg, Sm_VF_cg)
         S_coverage.svh (S_V_cg, S_VF_cg)
         U_coverage.svh (U_V_cg, U_VF_cg)
 tests
     rv32
-        Vx8
+        Zve32x
             vadd.vv.S
             vadd.vx.S
             vadd.vi.S
             vsub.vv.S
             ...
-        Vx16
-            vadd.vv.S
-            ...
-        Vx32
-            vadd.vv.S
-            ...
-        Vx64
-            vadd.vv.S
-            ...
-        Vls8
             vle8.v.S
             vle16.v.S
             vle32.v.S
             vle64.v.S
-            vlseg2e8.v.S
             ...
-        Vls16
-            vle8.v.S
-            ...
-        Vls32
-            vle8.v.S
-            ...
-        Vls64
-            vle8.v.S
-            ...
-        Vf8
-            vfwcvt.f.x.v.S
-            vfncvt.x.f.w.S
-            ...
-        Vf16
+        Zve32f
             vfadd.vv.S
             vfadd.vf.S
             vfwadd.vv.S
             vfsub.vv.S
             ...
-        Vf32
-            vfadd.vv.S
-            ...
-        Vf64
-            vfadd.vv.S
+        Zve64x
             ...
     rv64
-        Vx8
-        Vx16
-        Vx32
-        Vx64
-        Vls8
-        Vls16
-        Vls32
-        Vls64
-        Vf8
-        Vf16
-        Vf32
-        Vf64
+        Zve32x
+        Zve32f
+        Zve64x
+        Zve64f
+        Zve64d
+        V
+        Zvbb
+        Zvbc
+        Zvfbfwma
+        Zvfbfmin
+        Zvfh
+        Zvkned
+        ...
     priv
-        ExceptionsVx
-        ExceptionsVls
-        ExceptionsVf16
-        ExceptionsVf32
-        MisalignV
+        Exceptions
         SsstrictV
+        SsstrictZve*
         Sm (Sm_V_*.S, Sm_VF-*.S)
         S (S_V_*.S, S_VF-*.S)
         U (U_V_*.S, U_VF-*.S)
 ----
-
-When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, `vwadd.vv` is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.
 
 The tests also account for unsupported register group overlap.  For example, a widening add `vwadd.wv v0, v2, v2`
  is unsupported because the source registers cannot be read with different EEWs.  On the other hand `vwadd.vv v0, v1, v8` with LMUL=1 is supported even though the destination vd=v0 widens to write [v0-v1], which overlaps with vs2=v1.  The tests exercise all supported overlaps, but do not attempt any unsupported overlaps because the behavior is reserved and unpredictable.
 
 ==== Vector Configuration Parameters
 
-The coverpoints and tests are parameterized by the minimum supported element width SEW~MIN~ and the maximum supported element width ELEN.  The coverpoints and tests exclude unsupported edge cases, such as widening to more than ELEN or using LMUL=1/8 with ELEN=32 but SEW~MIN~=8.
+The coverpoints and tests are parameterized by the VLEN. For example, for the EGS=4 vector crypto instructions, LMUL=1 can be used, meaning more registers are tested in cp_vd.  The coverpoints and tests exclude unsupported edge cases, such as widening to more than ELEN or using LMUL=1/8 with ELEN=32 but SEW~MIN~=8.
 
 ==== Vector Coverpoints
 
@@ -206,38 +153,34 @@ link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb4
 
 The coverpoints for each vector instruction are given in the following sections.
 
-==== Vx
+==== Zve32x
 
-The Vx testplan is the same for SEW={8, 16, 32, 64}.  Each SEW has its own coverage file (e.g. Vx8_coverages.svh) independent of XLEN, as well as tests that depend on XLEN (e.g. rv32/Vx8/vadd.vx.S).
-
-include::{testplansdir}/Vx.adoc[]
+include::{testplansdir}/Zve32x.adoc[]
 
 include::norm/Vx_norm_rules.adoc[]
 
-==== Vls
-
-include::{testplansdir}/Vls.adoc[]
-
 include::norm/Vls_norm_rules.adoc[]
 
-==== Vf
+==== Zve64x
 
-include::{testplansdir}/Vf.adoc[]
+include::{testplansdir}/Zve64x.adoc[]
+
+==== Zve32f
+
+include::{testplansdir}/Zve32f.adoc[]
 
 include::norm/Vf_norm_rules.adoc[]
 
+==== Zve64f
+
+include::{testplansdir}/Zve64f.adoc[]
+
+==== Zve64d
+
+include::{testplansdir}/Zve64d.adoc[]
+
 [NOTE]
 vfredusum.vs is difficult to test because the results depend on the ordering.  It may eventually need to exclude testing for multi-element vectors, but is presently passing multi-element vectors on the simulators tested.
-
-[[skipped-vector-tests]]
-==== Temporarily Skipped Vector Tests
-
-Some vector tests are currently skipped pending fixes to the Sail RISC-V reference model.  These can be restored by uncommenting the corresponding generation lines or removing the hardcoded skips once the upstream issues are resolved:
-
-* `vstart` coverpoint tests — skipped pending link:https://github.com/riscv/sail-riscv/pull/1703[sail-riscv PR #1703].
-* `vmv<nr>r.v` tests — skipped because Sail behavior is incorrect; tracked in link:https://github.com/riscv/sail-riscv/issues/1709[sail-riscv issue #1709].
-
-Both upstream fixes have since landed (sail-riscv PR #1703 was merged in June 2026 and issue #1709 was closed in May 2026), but the skips have not yet been removed.  The `vstart` generation lines and the `vmv<nr>r.v` tests should be re-enabled once they have been verified against a Sail build that includes those fixes.
 
 ==== Zvfh Vector Half-Precision Floating-Point Extension
 

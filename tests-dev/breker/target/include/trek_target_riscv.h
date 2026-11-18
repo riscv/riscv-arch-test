@@ -1,11 +1,11 @@
-// trek_target_riscv64.h
+// trek_target_riscv.h
 // Shared runtime for Breker Trek5 litmus tests in ACT
 // Copyright (C) 2026 Breker Verification Systems
 // Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 // SPDX-License-Identifier: Apache-2.0
 
-#ifndef TREK_TARGET_RISCV64_H
-#define TREK_TARGET_RISCV64_H
+#ifndef TREK_TARGET_RISCV_H
+#define TREK_TARGET_RISCV_H
 
 #include "riscv_arch_test_c.h"
 
@@ -76,4 +76,4 @@ int main(void)
   return trek_main();
 }
 
-#endif // TREK_TARGET_RISCV64_H
+#endif // TREK_TARGET_RISCV_H

@@ -46,7 +46,7 @@
 /*-----------------------------------------------------------------------------
  * User Include Files
  *-----------------------------------------------------------------------------*/
-#include "trek_target_riscv64.h"
+#include "trek_target_riscv.h"
 #define TREK_MBX_QUEUE
 #define TREK_USE_STDIO
 #define TREK_GLOBAL_POINTER (trek_mem_DDR0+0x00011200)

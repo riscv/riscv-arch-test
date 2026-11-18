@@ -1,22 +1,3 @@
-The comments in the Breker litmus tests in this directory quote litmus tests from
-https://github.com/litmus-tests/litmus-tests-riscv. The licence of those litmus
-tests follows.
-
-# litmus-tests-riscv
-
-This litmus-tests-riscv repository contains litmus tests for the
-RISC-V concurrency architecture.
-
-Most of the litmus tests have been automatically generated using the
-diy test generator from the diy tool suite <http://diy.inria.fr>;
-others are hand-written.  The tests are in the form used both by that
-tool suite (which also includes the litmus tool for running tests on
-hardware and the herd tool for running tests in axiomatic models) and
-by the rmem tool <http://www.cl.cam.ac.uk/users/pes20/rmem>, for
-running tests in operational models.
-
-The tests are distributed subject to the BSD 2-clause licence below.
-
 Copyright (c) 2017-2019
 
 Shaked Flur

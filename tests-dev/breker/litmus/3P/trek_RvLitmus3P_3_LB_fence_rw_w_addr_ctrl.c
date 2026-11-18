@@ -6,12 +6,6 @@
 //
 // Copyright (C) 2026 Breker Verification Systems
 // SPDX-License-Identifier: Apache-2.0
-//
-// The comments quote a litmus test from
-// https://github.com/litmus-tests/litmus-tests-riscv.
-// Copyright (c) 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
-// SPDX-License-Identifier: BSD-2-Clause
-// See LICENSE.litmus-tests-riscv in the litmus directory.
 ///////////////////////////////////////////
 
 // ##### START_TEST_CONFIG #####
@@ -172,6 +166,10 @@ trek_hart0_T0(void) {
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000087c);
       TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_3_LB_fence_rw_w_addr_ctrl_1
+      // SPDX-SnippetBegin
+      // SPDX-SnippetCopyrightText: 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
+      // SPDX-License-Identifier: BSD-2-Clause-Views
+      // SPDX-SnippetComment: Litmus test from https://github.com/litmus-tests/litmus-tests-riscv
       // RISCV 3.LB+fence.rw.w+addr+ctrl
       // "Fence.rw.wdRW Rfe DpAddrdW Rfe DpCtrldW Rfe"
       // {
@@ -186,6 +184,7 @@ trek_hart0_T0(void) {
       //              | sw x8,0(x10)  | sw x7,0(x8)    ;
       //
       // exists (0:x5=1 /\ 1:x5=1 /\ 2:x5=1)
+      // SPDX-SnippetEnd
 
       // wait for ticket 0x1
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x0000087c), 1);
@@ -392,6 +391,10 @@ trek_hart1_T0(void) {
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000087c);
       TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_3_LB_fence_rw_w_addr_ctrl_1
+      // SPDX-SnippetBegin
+      // SPDX-SnippetCopyrightText: 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
+      // SPDX-License-Identifier: BSD-2-Clause-Views
+      // SPDX-SnippetComment: Litmus test from https://github.com/litmus-tests/litmus-tests-riscv
       // RISCV 3.LB+fence.rw.w+addr+ctrl
       // "Fence.rw.wdRW Rfe DpAddrdW Rfe DpCtrldW Rfe"
       // {
@@ -406,6 +409,7 @@ trek_hart1_T0(void) {
       //              | sw x8,0(x10)  | sw x7,0(x8)    ;
       //
       // exists (0:x5=1 /\ 1:x5=1 /\ 2:x5=1)
+      // SPDX-SnippetEnd
 
       // wait for ticket 0x1
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x0000087c), 1);
@@ -599,6 +603,10 @@ trek_hart2_T0(void) {
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000087c);
       TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_3_LB_fence_rw_w_addr_ctrl_1
+      // SPDX-SnippetBegin
+      // SPDX-SnippetCopyrightText: 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
+      // SPDX-License-Identifier: BSD-2-Clause-Views
+      // SPDX-SnippetComment: Litmus test from https://github.com/litmus-tests/litmus-tests-riscv
       // RISCV 3.LB+fence.rw.w+addr+ctrl
       // "Fence.rw.wdRW Rfe DpAddrdW Rfe DpCtrldW Rfe"
       // {
@@ -613,6 +621,7 @@ trek_hart2_T0(void) {
       //              | sw x8,0(x10)  | sw x7,0(x8)    ;
       //
       // exists (0:x5=1 /\ 1:x5=1 /\ 2:x5=1)
+      // SPDX-SnippetEnd
 
       // wait for ticket 0x1
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x0000087c), 1);

@@ -6,12 +6,6 @@
 //
 // Copyright (C) 2026 Breker Verification Systems
 // SPDX-License-Identifier: Apache-2.0
-//
-// The comments quote a litmus test from
-// https://github.com/litmus-tests/litmus-tests-riscv.
-// Copyright (c) 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
-// SPDX-License-Identifier: BSD-2-Clause
-// See LICENSE.litmus-tests-riscv in the litmus directory.
 ///////////////////////////////////////////
 
 // ##### START_TEST_CONFIG #####
@@ -198,6 +192,10 @@ trek_hart0_T0(void) {
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
       TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_S_fence_tsoxx_fence_tsopx_1
+      // SPDX-SnippetBegin
+      // SPDX-SnippetCopyrightText: 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
+      // SPDX-License-Identifier: BSD-2-Clause-Views
+      // SPDX-SnippetComment: Litmus test from https://github.com/litmus-tests/litmus-tests-riscv
       // RISCV S+fence.tsoxx+fence.tsopx
       // "Fence.tsodWWXX RfeXP Fence.tsodRWPX WseXX"
       // {
@@ -212,6 +210,7 @@ trek_hart0_T0(void) {
       //  sc.w x12,x10,0(x9) |                   ;
       //
       // exists ([x]=2 /\ [y]=1 /\ 0:x12=0 /\ 0:x8=0 /\ 0:x7=1 /\ 0:x11=0 /\ 1:x10=0 /\ 1:x5=1 /\ 1:x9=0)
+      // SPDX-SnippetEnd
 
       // wait for ticket 0x1
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x00001bc4), 1);
@@ -439,6 +438,10 @@ trek_hart1_T0(void) {
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
       TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_S_fence_tsoxx_fence_tsopx_1
+      // SPDX-SnippetBegin
+      // SPDX-SnippetCopyrightText: 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
+      // SPDX-License-Identifier: BSD-2-Clause-Views
+      // SPDX-SnippetComment: Litmus test from https://github.com/litmus-tests/litmus-tests-riscv
       // RISCV S+fence.tsoxx+fence.tsopx
       // "Fence.tsodWWXX RfeXP Fence.tsodRWPX WseXX"
       // {
@@ -453,6 +456,7 @@ trek_hart1_T0(void) {
       //  sc.w x12,x10,0(x9) |                   ;
       //
       // exists ([x]=2 /\ [y]=1 /\ 0:x12=0 /\ 0:x8=0 /\ 0:x7=1 /\ 0:x11=0 /\ 1:x10=0 /\ 1:x5=1 /\ 1:x9=0)
+      // SPDX-SnippetEnd
 
       // wait for ticket 0x1
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x00001bc4), 1);

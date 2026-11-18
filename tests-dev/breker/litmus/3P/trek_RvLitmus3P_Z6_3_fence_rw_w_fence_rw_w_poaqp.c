@@ -6,6 +6,12 @@
 //
 // Copyright (C) 2026 Breker Verification Systems
 // SPDX-License-Identifier: Apache-2.0
+//
+// The comments quote a litmus test from
+// https://github.com/litmus-tests/litmus-tests-riscv.
+// Copyright (c) 2017-2019 Shaked Flur, Luc Maranget - Inria, Paris, France
+// SPDX-License-Identifier: BSD-2-Clause
+// See LICENSE.litmus-tests-riscv in the litmus directory.
 ///////////////////////////////////////////
 
 // ##### START_TEST_CONFIG #####

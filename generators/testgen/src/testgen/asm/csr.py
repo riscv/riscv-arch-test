@@ -236,6 +236,7 @@ def csr_walk_test(
     coverpoint: str,
     *,
     start_bit: int = 0,
+    end_bit: int | None = None,
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
@@ -253,6 +254,8 @@ def csr_walk_test(
         coverpoint: Coverpoint name for testcase strings
         start_bit: First bit position to walk; must be in 0..31 so the initial LI
             constant is representable on RV32 (bits 32..63 are guarded by #if __riscv_xlen == 64)
+        end_bit: Last bit position to walk, inclusive. None walks through bit 63.
+            A 32-bit CSR passes 31 so RV64 does not walk bits that read back as zero.
         walk_zeros: If True, follow the walking-1s pass with a walking-0s pass
         warl_fields: Optional list of WARL field entries. (field_name, lsb, width, reserved_value)
             marks a value that is always reserved. (field_name, lsb, width, value, gate_define)
@@ -271,6 +274,8 @@ def csr_walk_test(
             mask only when `define` is defined for the config. Starts from the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
+    last_bit = 63 if end_bit is None else end_bit
+    assert start_bit <= last_bit <= 63, f"end_bit must be in {start_bit}..63, got {end_bit}"
     csr_name, mask = csr
     if unchecked_bits and mask is None:
         mask = (1 << 64) - 1
@@ -372,7 +377,7 @@ def csr_walk_test(
     need_endif = False
 
     # Walking 1s
-    for i in range(start_bit, 64):
+    for i in range(start_bit, last_bit + 1):
         if i == 32:
             lines.append("\n#if __riscv_xlen == 64")
             need_endif = True
@@ -393,7 +398,7 @@ def csr_walk_test(
     # Walking 0s
     if walk_zeros:
         lines.append(f"LI(x{walk_reg}, {1 << start_bit})            # 1 in bit {start_bit}")
-        for i in range(start_bit, 64):
+        for i in range(start_bit, last_bit + 1):
             if i == 32:
                 lines.append("\n#if __riscv_xlen == 64")
                 need_endif = True

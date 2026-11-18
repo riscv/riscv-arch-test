@@ -4,9 +4,23 @@ source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73
 coverpoints:
   - name: cp_scounteren_writable
     goal: Check scounteren bits are writable
-    description: In S-mode, write walking 1s and walking 0s to scounteren.
-    expectation: Match reference model
-    bins: 2*XLEN
+    description: In S-mode, write walking 1s and walking 0s to scounteren[31:0].
+    expectation: Match reference model. Readbacks are the full XLEN value, so bits 63:32 stay zero.
+    bins: "64"
     rules:
       - Sscounterenw_hpmcounter_scounteren
-  - heading: Note that this overlaps tests in S_Zicntr
+  - name: cp_hpmcounter_scounteren
+    goal: An implemented hpmcounter has a writable scounteren bit
+    description: >
+      For each n in 3..31, in M-mode write all ones to mhpmcounter<n> and read it back.
+      If the value is not read-only zero, return to S-mode, write all ones to scounteren,
+      and require bit n to read back 1. A read-only-zero counter does not constrain that bit.
+    expectation: >
+      A legal hart signs 0 for every n, whether or not the reference model implements the
+      counter. A stuck scounteren bit signs n, and the signature failure names that case.
+      The coverpoint hits only the S-mode bit check, one bin per n, so it stays
+      empty when every mhpmcounter reads back zero.
+    bins: "29"
+    rules:
+      - Sscounterenw_hpmcounter_scounteren
+  - heading: Note that U-mode counteren walks overlap S_Zicntr

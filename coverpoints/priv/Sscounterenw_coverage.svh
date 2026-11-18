@@ -23,6 +23,23 @@ covergroup Sscounterenw_cg with function sample(ins_t ins);
     }
     cp_scounteren_writable: cross priv_mode_s, csrrw, scounteren_csr, scounteren_ones_zeros;
 
+    // The self-check masks the S-mode scounteren read with one bit built by slli.
+    // Bits [24:20] of that slli are the counter index, so each n in 3..31 is its own bin.
+    // Reading mhpmcounter is not sampled: that read happens even when the counter is
+    // read-only zero and the bit check is skipped.
+    `ifdef ZIHPM_SUPPORTED
+    hpm_bit_and: coverpoint ins.current.insn {
+        wildcard bins and_inst = {AND} iff (ins.trap == 0);
+    }
+    hpm_bit_slli: coverpoint ins.prev.insn {
+        wildcard bins slli = {SLLI} iff (ins.trap == 0);
+    }
+    hpm_bit_shamt: coverpoint ins.prev.insn[24:20] {
+        bins n[] = {[5'd3:5'd31]} iff (ins.trap == 0);
+    }
+    cp_hpmcounter_scounteren: cross priv_mode_s, hpm_bit_and, hpm_bit_slli, hpm_bit_shamt;
+    `endif
+
 endgroup
 
 function void sscounterenw_sample(int hart, int issue, ins_t ins);

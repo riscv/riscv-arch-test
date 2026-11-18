@@ -427,6 +427,10 @@ params:
   PMP_NA4_SUPPORTED: true
   PMP_NAPOT_SUPPORTED: true
   PMP_TOR_SUPPORTED: true
+  # Spike hardwires mhpmcounter3..31 to 0 and leaves mhpmevent3..31 writable
+  # (riscv-isa-sim#2370). Sail's writable_hpm_counters makes the counter and the
+  # event writable together, so these bits are not reconciled with sail.json 0x7.
+  # They stay true so Zihpm still reads the CSRs. Sscounterenw-4 remains open.
   HPM_COUNTER_EN:
     [
       false,

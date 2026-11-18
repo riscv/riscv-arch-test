@@ -9,8 +9,8 @@
 ///////////////////////////////////////////
 
 // ##### START_TEST_CONFIG #####
-// REQUIRED_EXTENSIONS: ['I', 'Zicsr', 'Zaamo', 'Zalrsc']
-// MARCH: rv${XLEN}i_zicsr_zifencei_zaamo_zalrsc
+// REQUIRED_EXTENSIONS: ['I', 'Zicsr', 'Zalrsc']
+// MARCH: rv${XLEN}i_zicsr_zifencei_zalrsc
 // NEEDS_SIGNATURE: false
 // MIN_HARTS: 2
 // ##### END_TEST_CONFIG #####

@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 17:44:20 2026
- * 
+ *
  * File Name: trek_RvLitmus2P_MP_fence_tsopx_fence_tsoxx.c
  * File_UUID: 0xda0cff2570af59a8
  * Generated Seed: 0x1
@@ -184,7 +184,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x0000183c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_MP_fence_tsopx_fence_tsoxx_1
       // RISCV MP+fence.tsopx+fence.tsoxx
       // "Fence.tsodWWPX RfeXX Fence.tsodRRXX FreXP"
@@ -198,7 +198,7 @@ trek_hart0_T0(void) {
       //  lr.w x8,0(x7)    | fence.tso         ;
       //  sc.w x9,x5,0(x7) | lr.w x9,0(x8)     ;
       //                   | sc.w x10,x9,0(x8) ;
-      // 
+      //
       // exists ([x]=1 /\ [y]=1 /\ 0:x9=0 /\ 0:x8=0 /\ 1:x10=0 /\ 1:x7=0 /\ 1:x6=1 /\ 1:x9=0)
 
       // wait for ticket 0x1
@@ -318,7 +318,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x6, trek_hart0_state);
   }
   case (0x6): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x2) {
       // reset thread variables
@@ -404,7 +404,7 @@ trek_hart1_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x0000183c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_MP_fence_tsopx_fence_tsoxx_1
       // RISCV MP+fence.tsopx+fence.tsoxx
       // "Fence.tsodWWPX RfeXX Fence.tsodRRXX FreXP"
@@ -418,7 +418,7 @@ trek_hart1_T0(void) {
       //  lr.w x8,0(x7)    | fence.tso         ;
       //  sc.w x9,x5,0(x7) | lr.w x9,0(x8)     ;
       //                   | sc.w x10,x9,0(x8) ;
-      // 
+      //
       // exists ([x]=1 /\ [y]=1 /\ 0:x9=0 /\ 0:x8=0 /\ 1:x10=0 /\ 1:x7=0 /\ 1:x6=1 /\ 1:x9=0)
 
       // wait for ticket 0x1
@@ -472,7 +472,7 @@ trek_hart1_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x0000183c);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x00001bc4), 1);
@@ -1065,4 +1065,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x20] __attribute__((aligned(64))) = {
   0
 };
-

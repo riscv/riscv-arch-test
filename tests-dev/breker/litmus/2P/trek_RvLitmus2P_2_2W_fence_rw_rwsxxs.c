@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 17:09:02 2026
- * 
+ *
  * File Name: trek_RvLitmus2P_2_2W_fence_rw_rwsxxs.c
  * File_UUID: 0x0c7fcebc1389415d
  * Generated Seed: 0x1
@@ -945,14 +945,14 @@ inline static int final_cond_2_2W_fence_rw_rwsxxs(int _out_0_x7,int _out_0_x8,in
   default:
     return 1;
   }
-  label37: /* occs=2 */ 
+  label37: /* occs=2 */
     switch (_out_1_x7) {
     case 0:
       goto label35;
     default:
       return 1;
     }
-  label36: /* occs=2 */ 
+  label36: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       switch (_out_0_x11) {
@@ -964,21 +964,21 @@ inline static int final_cond_2_2W_fence_rw_rwsxxs(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label35: /* occs=3 */ 
+  label35: /* occs=3 */
     switch (_out_1_x8) {
     case 0:
       goto label34;
     default:
       return 1;
     }
-  label34: /* occs=3 */ 
+  label34: /* occs=3 */
     switch (_out_1_x10) {
     case 2:
       goto label07;
     default:
       return 1;
     }
-  label33: /* occs=2 */ 
+  label33: /* occs=2 */
     switch (_out_0_x8) {
     case 1:
       switch (_out_0_x11) {
@@ -990,28 +990,28 @@ inline static int final_cond_2_2W_fence_rw_rwsxxs(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label32: /* occs=2 */ 
+  label32: /* occs=2 */
     switch (_out_0_x11) {
     case 1:
       goto label30;
     default:
       return 1;
     }
-  label31: /* occs=2 */ 
+  label31: /* occs=2 */
     switch (_out_1_x7) {
     case 1:
       goto label29;
     default:
       return 1;
     }
-  label30: /* occs=2 */ 
+  label30: /* occs=2 */
     switch (_out_1_x7) {
     case 0:
       goto label29;
     default:
       return 1;
     }
-  label29: /* occs=3 */ 
+  label29: /* occs=3 */
     switch (_out_1_x8) {
     case 0:
       switch (_out_1_x10) {
@@ -1023,140 +1023,140 @@ inline static int final_cond_2_2W_fence_rw_rwsxxs(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label28: /* occs=2 */ 
+  label28: /* occs=2 */
     switch (_out_1_x7) {
     case 2:
       goto label29;
     default:
       return 1;
     }
-  label27: /* occs=2 */ 
+  label27: /* occs=2 */
     switch (_out_1_x8) {
     case 0:
       goto label06;
     default:
       return 1;
     }
-  label26: /* occs=4 */ 
+  label26: /* occs=4 */
     switch (_out_1_x7) {
     case 0:
       goto label27;
     default:
       return 1;
     }
-  label25: /* occs=2 */ 
+  label25: /* occs=2 */
     switch (_out_1_x10) {
     case 1:
       goto label07;
     default:
       return 1;
     }
-  label24: /* occs=2 */ 
+  label24: /* occs=2 */
     switch (_out_1_x8) {
     case 0:
       goto label25;
     default:
       return 1;
     }
-  label23: /* occs=2 */ 
+  label23: /* occs=2 */
     switch (_out_1_x7) {
     case 0:
       goto label24;
     default:
       return 1;
     }
-  label22: /* occs=2 */ 
+  label22: /* occs=2 */
     switch (_out_1_x7) {
     case 1:
       goto label19;
     default:
       return 1;
     }
-  label21: /* occs=2 */ 
+  label21: /* occs=2 */
     switch (_out_0_x11) {
     case 0:
       goto label13;
     default:
       return 1;
     }
-  label20: /* occs=2 */ 
+  label20: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label21;
     default:
       return 1;
     }
-  label19: /* occs=4 */ 
+  label19: /* occs=4 */
     switch (_out_1_x8) {
     case 0:
       goto label07;
     default:
       return 1;
     }
-  label18: /* occs=3 */ 
+  label18: /* occs=3 */
     switch (_out_1_x7) {
     case 0:
       goto label19;
     default:
       return 1;
     }
-  label17: /* occs=2 */ 
+  label17: /* occs=2 */
     switch (_out_0_x11) {
     case 0:
       goto label18;
     default:
       return 1;
     }
-  label16: /* occs=3 */ 
+  label16: /* occs=3 */
     switch (_out_0_x11) {
     case 0:
       goto label02;
     default:
       return 1;
     }
-  label15: /* occs=2 */ 
+  label15: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label16;
     default:
       return 1;
     }
-  label14: /* occs=3 */ 
+  label14: /* occs=3 */
     switch (_out_0_x8) {
     case 0:
       goto label10;
     default:
       return 1;
     }
-  label13: /* occs=3 */ 
+  label13: /* occs=3 */
     switch (_out_1_x8) {
     case 1:
       goto label07;
     default:
       return 1;
     }
-  label12: /* occs=2 */ 
+  label12: /* occs=2 */
     switch (_out_1_x7) {
     case 0:
       goto label13;
     default:
       return 1;
     }
-  label11: /* occs=2 */ 
+  label11: /* occs=2 */
     switch (_out_0_x11) {
     case 0:
       goto label12;
     default:
       return 1;
     }
-  label10: /* occs=2 */ 
+  label10: /* occs=2 */
     switch (_out_0_x11) {
     case 0:
       goto label01;
     default:
       return 1;
     }
-  label09: /* occs=2 */ 
+  label09: /* occs=2 */
     switch (_out_1_x7) {
     case 0:
       switch (_out_1_x10) {
@@ -1168,63 +1168,63 @@ inline static int final_cond_2_2W_fence_rw_rwsxxs(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label08: /* occs=2 */ 
+  label08: /* occs=2 */
     switch (_out_0_x11) {
     case 1:
       goto label09;
     default:
       return 1;
     }
-  label07: /* occs=6 */ 
+  label07: /* occs=6 */
     switch (_out_1_x11) {
     case 0:
       return 0;
     default:
       return 1;
     }
-  label06: /* occs=3 */ 
+  label06: /* occs=3 */
     switch (_out_1_x10) {
     case 3:
       goto label07;
     default:
       return 1;
     }
-  label05: /* occs=2 */ 
+  label05: /* occs=2 */
     switch (_out_1_x7) {
     case 0:
       goto label06;
     default:
       return 1;
     }
-  label04: /* occs=2 */ 
+  label04: /* occs=2 */
     switch (_out_0_x11) {
     case 1:
       goto label05;
     default:
       return 1;
     }
-  label03: /* occs=3 */ 
+  label03: /* occs=3 */
     switch (_out_1_x8) {
     case 0:
       goto label00;
     default:
       return 1;
     }
-  label02: /* occs=2 */ 
+  label02: /* occs=2 */
     switch (_out_1_x7) {
     case 0:
       goto label03;
     default:
       return 1;
     }
-  label01: /* occs=3 */ 
+  label01: /* occs=3 */
     switch (_out_1_x8) {
     case 1:
       goto label00;
     default:
       return 1;
     }
-  label00: /* occs=6 */ 
+  label00: /* occs=6 */
     switch (_out_1_x11) {
     case 1:
       return 0;
@@ -1283,7 +1283,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x000039c4))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_2_2W_fence_rw_rwsxxs_1
       // RISCV 2+2W+fence.rw.rwsxxs
       // "Fence.rw.rwsWWXX WseXX Fence.rw.rwsWWXX WseXX"
@@ -1297,7 +1297,7 @@ trek_hart0_T0(void) {
       //  fence rw,rw       | fence rw,rw       ;
       //  lr.w x10,0(x5)    | lr.w x10,0(x5)    ;
       //  sc.w x11,x9,0(x5) | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (0:x7=0 /\ (0:x11=0 /\ ([x]=2 /\ (1:x11=1 /\ (1:x8=1 /\ (0:x10=1 /\ 0:x8=0 /\ (1:x10=2 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2) \/ 1:x10=1 /\ (1:x7=1 \/ 1:x7=0) \/ 1:x10=0 /\ 1:x7=0) \/ 0:x10=0 /\ 0:x8=1 /\ (1:x10=2 /\ (1:x7=2 \/ 1:x7=0) \/ 1:x10=0 /\ 1:x7=0)) \/ 0:x10=3 /\ 1:x8=0 /\ (0:x8=0 /\ 1:x7=1 /\ (1:x10=3 \/ 1:x10=2) \/ 0:x8=1 /\ 1:x7=0 /\ (1:x10=2 \/ 1:x10=3))) \/ 0:x10=4 /\ 1:x11=0 /\ (0:x8=0 /\ (1:x10=1 /\ 1:x8=1 /\ (1:x7=1 \/ 1:x7=0) \/ 1:x10=3 /\ 1:x7=1 /\ 1:x8=0) \/ 0:x8=1 /\ 1:x7=0 /\ (1:x10=0 /\ 1:x8=1 \/ 1:x10=3 /\ 1:x8=0))) \/ 1:x11=0 /\ [x]=4 /\ (1:x10=2 /\ (1:x8=1 /\ (0:x10=1 /\ 0:x8=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 0:x10=0 /\ 0:x8=1 /\ (1:x7=0 \/ 1:x7=2)) \/ 0:x10=3 /\ 1:x8=0 /\ (0:x8=0 /\ 1:x7=1 \/ 0:x8=1 /\ 1:x7=0)) \/ 1:x10=3 /\ 1:x7=2 /\ 1:x8=0 /\ (0:x10=0 /\ 0:x8=1 \/ 0:x10=1 /\ 0:x8=0)) \/ 1:x10=3 /\ 1:x11=1 /\ 1:x7=2 /\ 1:x8=0 /\ [x]=3 /\ (0:x10=0 /\ 0:x8=1 \/ 0:x10=1 /\ 0:x8=0)) \/ 0:x11=1 /\ (0:x8=0 /\ (1:x7=1 /\ (1:x10=3 /\ 1:x8=0 /\ (1:x11=0 /\ [x]=4 /\ (0:x10=4 \/ 0:x10=3 \/ 0:x10=1) \/ 1:x11=1 /\ [x]=3 /\ (0:x10=1 \/ 0:x10=3)) \/ 1:x10=1 /\ 1:x8=1 /\ (0:x10=1 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 1:x11=0 /\ [x]=4)) \/ 1:x7=0 /\ 1:x8=1 /\ (0:x10=1 /\ (1:x10=1 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=1) \/ 1:x10=0 /\ 1:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 1:x10=1 /\ 1:x11=0 /\ [x]=4)) \/ 0:x8=1 /\ 1:x7=0 /\ (1:x10=3 /\ 1:x8=0 /\ (1:x11=0 /\ [x]=4 /\ (0:x10=0 \/ 0:x10=3 \/ 0:x10=4) \/ 1:x11=1 /\ [x]=3 /\ (0:x10=3 \/ 0:x10=0)) \/ 1:x10=0 /\ 1:x8=1 /\ (0:x10=0 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=0) \/ 0:x10=4 /\ 1:x11=0 /\ [x]=4)))) \/ 1:x7=0 /\ (1:x8=0 /\ (0:x7=3 /\ (0:x11=0 /\ ([x]=2 /\ (1:x11=1 /\ (0:x10=1 /\ 0:x8=0 /\ (1:x10=3 \/ 1:x10=2 \/ 1:x10=1) \/ 0:x10=3 /\ 0:x8=1 /\ (1:x10=2 \/ 1:x10=3)) \/ 0:x10=4 /\ 1:x11=0 /\ (0:x8=0 /\ 1:x10=1 \/ 0:x8=1 /\ 1:x10=3)) \/ 1:x10=2 /\ 1:x11=0 /\ [x]=4 /\ (0:x10=1 /\ 0:x8=0 \/ 0:x10=3 /\ 0:x8=1)) \/ 0:x11=1 /\ (0:x8=0 /\ (0:x10=1 /\ (1:x10=1 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=1) \/ 1:x10=3 /\ 1:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 1:x10=1 /\ 1:x11=0 /\ [x]=4) \/ 0:x8=1 /\ 1:x10=3 /\ (0:x10=3 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=3) \/ 0:x10=4 /\ 1:x11=0 /\ [x]=4))) \/ 0:x7=4 /\ 1:x10=3 /\ 1:x11=0 /\ (0:x10=1 /\ 0:x8=0 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 0:x8=1 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=4))) \/ 0:x7=4 /\ 1:x10=0 /\ 1:x11=0 /\ 1:x8=1 /\ (0:x10=1 /\ 0:x8=0 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 0:x8=1 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=4)))))
 
       // wait for ticket 0x1
@@ -1353,7 +1353,7 @@ trek_hart0_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x000039c4);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x00001bc4), 1);
@@ -1436,7 +1436,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x6, trek_hart0_state);
   }
   case (0x6): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x2) {
       // reset thread variables
@@ -1523,7 +1523,7 @@ trek_hart1_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x000039c4))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_2_2W_fence_rw_rwsxxs_1
       // RISCV 2+2W+fence.rw.rwsxxs
       // "Fence.rw.rwsWWXX WseXX Fence.rw.rwsWWXX WseXX"
@@ -1537,7 +1537,7 @@ trek_hart1_T0(void) {
       //  fence rw,rw       | fence rw,rw       ;
       //  lr.w x10,0(x5)    | lr.w x10,0(x5)    ;
       //  sc.w x11,x9,0(x5) | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (0:x7=0 /\ (0:x11=0 /\ ([x]=2 /\ (1:x11=1 /\ (1:x8=1 /\ (0:x10=1 /\ 0:x8=0 /\ (1:x10=2 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2) \/ 1:x10=1 /\ (1:x7=1 \/ 1:x7=0) \/ 1:x10=0 /\ 1:x7=0) \/ 0:x10=0 /\ 0:x8=1 /\ (1:x10=2 /\ (1:x7=2 \/ 1:x7=0) \/ 1:x10=0 /\ 1:x7=0)) \/ 0:x10=3 /\ 1:x8=0 /\ (0:x8=0 /\ 1:x7=1 /\ (1:x10=3 \/ 1:x10=2) \/ 0:x8=1 /\ 1:x7=0 /\ (1:x10=2 \/ 1:x10=3))) \/ 0:x10=4 /\ 1:x11=0 /\ (0:x8=0 /\ (1:x10=1 /\ 1:x8=1 /\ (1:x7=1 \/ 1:x7=0) \/ 1:x10=3 /\ 1:x7=1 /\ 1:x8=0) \/ 0:x8=1 /\ 1:x7=0 /\ (1:x10=0 /\ 1:x8=1 \/ 1:x10=3 /\ 1:x8=0))) \/ 1:x11=0 /\ [x]=4 /\ (1:x10=2 /\ (1:x8=1 /\ (0:x10=1 /\ 0:x8=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 0:x10=0 /\ 0:x8=1 /\ (1:x7=0 \/ 1:x7=2)) \/ 0:x10=3 /\ 1:x8=0 /\ (0:x8=0 /\ 1:x7=1 \/ 0:x8=1 /\ 1:x7=0)) \/ 1:x10=3 /\ 1:x7=2 /\ 1:x8=0 /\ (0:x10=0 /\ 0:x8=1 \/ 0:x10=1 /\ 0:x8=0)) \/ 1:x10=3 /\ 1:x11=1 /\ 1:x7=2 /\ 1:x8=0 /\ [x]=3 /\ (0:x10=0 /\ 0:x8=1 \/ 0:x10=1 /\ 0:x8=0)) \/ 0:x11=1 /\ (0:x8=0 /\ (1:x7=1 /\ (1:x10=3 /\ 1:x8=0 /\ (1:x11=0 /\ [x]=4 /\ (0:x10=4 \/ 0:x10=3 \/ 0:x10=1) \/ 1:x11=1 /\ [x]=3 /\ (0:x10=1 \/ 0:x10=3)) \/ 1:x10=1 /\ 1:x8=1 /\ (0:x10=1 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 1:x11=0 /\ [x]=4)) \/ 1:x7=0 /\ 1:x8=1 /\ (0:x10=1 /\ (1:x10=1 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=1) \/ 1:x10=0 /\ 1:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 1:x10=1 /\ 1:x11=0 /\ [x]=4)) \/ 0:x8=1 /\ 1:x7=0 /\ (1:x10=3 /\ 1:x8=0 /\ (1:x11=0 /\ [x]=4 /\ (0:x10=0 \/ 0:x10=3 \/ 0:x10=4) \/ 1:x11=1 /\ [x]=3 /\ (0:x10=3 \/ 0:x10=0)) \/ 1:x10=0 /\ 1:x8=1 /\ (0:x10=0 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=0) \/ 0:x10=4 /\ 1:x11=0 /\ [x]=4)))) \/ 1:x7=0 /\ (1:x8=0 /\ (0:x7=3 /\ (0:x11=0 /\ ([x]=2 /\ (1:x11=1 /\ (0:x10=1 /\ 0:x8=0 /\ (1:x10=3 \/ 1:x10=2 \/ 1:x10=1) \/ 0:x10=3 /\ 0:x8=1 /\ (1:x10=2 \/ 1:x10=3)) \/ 0:x10=4 /\ 1:x11=0 /\ (0:x8=0 /\ 1:x10=1 \/ 0:x8=1 /\ 1:x10=3)) \/ 1:x10=2 /\ 1:x11=0 /\ [x]=4 /\ (0:x10=1 /\ 0:x8=0 \/ 0:x10=3 /\ 0:x8=1)) \/ 0:x11=1 /\ (0:x8=0 /\ (0:x10=1 /\ (1:x10=1 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=1) \/ 1:x10=3 /\ 1:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 1:x10=1 /\ 1:x11=0 /\ [x]=4) \/ 0:x8=1 /\ 1:x10=3 /\ (0:x10=3 /\ (1:x11=0 /\ [x]=4 \/ 1:x11=1 /\ [x]=3) \/ 0:x10=4 /\ 1:x11=0 /\ [x]=4))) \/ 0:x7=4 /\ 1:x10=3 /\ 1:x11=0 /\ (0:x10=1 /\ 0:x8=0 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 0:x8=1 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=4))) \/ 0:x7=4 /\ 1:x10=0 /\ 1:x11=0 /\ 1:x8=1 /\ (0:x10=1 /\ 0:x8=0 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=1) \/ 0:x10=4 /\ 0:x8=1 /\ (0:x11=0 /\ [x]=2 \/ 0:x11=1 /\ [x]=4)))))
 
       // wait for ticket 0x1
@@ -2229,4 +2229,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x20] __attribute__((aligned(64))) = {
   0
 };
-

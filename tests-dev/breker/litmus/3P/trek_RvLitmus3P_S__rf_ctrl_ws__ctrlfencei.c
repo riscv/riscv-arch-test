@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 19:20:30 2026
- * 
+ *
  * File Name: trek_RvLitmus3P_S__rf_ctrl_ws__ctrlfencei.c
  * File_UUID: 0x12c72d1fc72bfe19
  * Generated Seed: 0x1
@@ -167,7 +167,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00004d7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00004d78);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_S__rf_ctrl_ws__ctrlfencei_1
       // RISCV S+[rf-ctrl-ws]+ctrlfencei
       // "RfLeave DpCtrldW WsBack Rfe DpCtrlFenceIdW Wse"
@@ -182,7 +182,7 @@ trek_hart0_T0(void) {
       //              | LC00:          | LC01:          ;
       //              | sw x7,0(x8)    | fence.i        ;
       //              |                | sw x7,0(x8)    ;
-      // 
+      //
       // exists ([x]=2 /\ [y]=2 /\ 1:x5=2 /\ 2:x5=2)
 
       // wait for ticket 0x1
@@ -225,7 +225,7 @@ trek_hart0_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x00004d7c);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x00004d78), 1);
@@ -309,7 +309,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x6, trek_hart0_state);
   }
   case (0x6): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x2) {
       // reset thread variables
@@ -393,7 +393,7 @@ trek_hart1_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00004d7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00004d78);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_S__rf_ctrl_ws__ctrlfencei_1
       // RISCV S+[rf-ctrl-ws]+ctrlfencei
       // "RfLeave DpCtrldW WsBack Rfe DpCtrlFenceIdW Wse"
@@ -408,7 +408,7 @@ trek_hart1_T0(void) {
       //              | LC00:          | LC01:          ;
       //              | sw x7,0(x8)    | fence.i        ;
       //              |                | sw x7,0(x8)    ;
-      // 
+      //
       // exists ([x]=2 /\ [y]=2 /\ 1:x5=2 /\ 2:x5=2)
 
       // wait for ticket 0x1
@@ -600,7 +600,7 @@ trek_hart2_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00004d7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00004d78);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_S__rf_ctrl_ws__ctrlfencei_1
       // RISCV S+[rf-ctrl-ws]+ctrlfencei
       // "RfLeave DpCtrldW WsBack Rfe DpCtrlFenceIdW Wse"
@@ -615,7 +615,7 @@ trek_hart2_T0(void) {
       //              | LC00:          | LC01:          ;
       //              | sw x7,0(x8)    | fence.i        ;
       //              |                | sw x7,0(x8)    ;
-      // 
+      //
       // exists ([x]=2 /\ [y]=2 /\ 1:x5=2 /\ 2:x5=2)
 
       // wait for ticket 0x1
@@ -1072,4 +1072,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x30] __attribute__((aligned(64))) = {
   0
 };
-

@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 17:52:47 2026
- * 
+ *
  * File Name: trek_RvLitmus2P_R_fence_tsoxx_fence_tsoxp.c
  * File_UUID: 0x93b4f3a35266e244
  * Generated Seed: 0x1
@@ -190,7 +190,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x000039c4))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_R_fence_tsoxx_fence_tsoxp_1
       // RISCV R+fence.tsoxx+fence.tsoxp
       // "Fence.tsodWWXX WseXX Fence.tsodWRXP FrePX"
@@ -204,7 +204,7 @@ trek_hart0_T0(void) {
       //  fence.tso         | fence.tso        ;
       //  lr.w x10,0(x9)    | lw x9,0(x10)     ;
       //  sc.w x11,x6,0(x9) |                  ;
-      // 
+      //
       // exists ([x]=1 /\ [y]=2 /\ 0:x11=0 /\ 0:x8=0 /\ 0:x7=0 /\ 0:x10=0 /\ 1:x8=0 /\ 1:x7=1 /\ 1:x9=0)
 
       // wait for ticket 0x1
@@ -260,7 +260,7 @@ trek_hart0_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x000039c4);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x00001bc4), 1);
@@ -343,7 +343,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x6, trek_hart0_state);
   }
   case (0x6): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x2) {
       // reset thread variables
@@ -430,7 +430,7 @@ trek_hart1_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x000039c4))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00001bc4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_R_fence_tsoxx_fence_tsoxp_1
       // RISCV R+fence.tsoxx+fence.tsoxp
       // "Fence.tsodWWXX WseXX Fence.tsodWRXP FrePX"
@@ -444,7 +444,7 @@ trek_hart1_T0(void) {
       //  fence.tso         | fence.tso        ;
       //  lr.w x10,0(x9)    | lw x9,0(x10)     ;
       //  sc.w x11,x6,0(x9) |                  ;
-      // 
+      //
       // exists ([x]=1 /\ [y]=2 /\ 0:x11=0 /\ 0:x8=0 /\ 0:x7=0 /\ 0:x10=0 /\ 1:x8=0 /\ 1:x7=1 /\ 1:x9=0)
 
       // wait for ticket 0x1
@@ -1134,4 +1134,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x20] __attribute__((aligned(64))) = {
   0
 };
-

@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 17:14:06 2026
- * 
+ *
  * File Name: trek_RvLitmus2P_CoRW2_pospx_X.c
  * File_UUID: 0x2252d71e46b0cd36
  * Generated Seed: 0x1
@@ -190,14 +190,14 @@ inline static int final_cond_CoRW2_pospx_X(int _out_0_x7,int _out_0_x8,int _out_
   default:
     return 1;
   }
-  label02: /* occs=2 */ 
+  label02: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       return 0;
     default:
       return 1;
     }
-  label01: /* occs=3 */ 
+  label01: /* occs=3 */
     switch (_out_1_x5) {
     case 0:
       switch (_out_1_x8) {
@@ -209,7 +209,7 @@ inline static int final_cond_CoRW2_pospx_X(int _out_0_x7,int _out_0_x8,int _out_
     default:
       return 1;
     }
-  label00: /* occs=3 */ 
+  label00: /* occs=3 */
     switch (_out_1_x9) {
     case 1:
       return 0;
@@ -265,7 +265,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00001c3c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x000045c4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_CoRW2_pospx_X_1
       // RISCV CoRW2+pospx+X
       // "RfeXP PosRWPX WseXX"
@@ -277,7 +277,7 @@ trek_hart0_T0(void) {
       //  lr.w x7,0(x5)    | lw x5,0(x6)      ;
       //  sc.w x8,x6,0(x5) | lr.w x8,0(x6)    ;
       //                   | sc.w x9,x7,0(x6) ;
-      // 
+      //
       // exists (not (0:x7=0 /\ (0:x8=0 /\ (1:x8=1 /\ (1:x5=0 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1) \/ 1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1)) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ [x]=1) \/ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=0)) \/ 0:x7=2 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ (0:x8=0 /\ [x]=1 \/ 0:x8=1 /\ [x]=2)))
 
       // wait for ticket 0x1
@@ -394,7 +394,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x6, trek_hart0_state);
   }
   case (0x6): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x2) {
       // reset thread variables
@@ -478,7 +478,7 @@ trek_hart1_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00001c3c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x000045c4);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus2P_CoRW2_pospx_X_1
       // RISCV CoRW2+pospx+X
       // "RfeXP PosRWPX WseXX"
@@ -490,7 +490,7 @@ trek_hart1_T0(void) {
       //  lr.w x7,0(x5)    | lw x5,0(x6)      ;
       //  sc.w x8,x6,0(x5) | lr.w x8,0(x6)    ;
       //                   | sc.w x9,x7,0(x6) ;
-      // 
+      //
       // exists (not (0:x7=0 /\ (0:x8=0 /\ (1:x8=1 /\ (1:x5=0 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1) \/ 1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1)) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ [x]=1) \/ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=0)) \/ 0:x7=2 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ (0:x8=0 /\ [x]=1 \/ 0:x8=1 /\ [x]=2)))
 
       // wait for ticket 0x1
@@ -539,7 +539,7 @@ trek_hart1_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x00001c3c);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x000045c4), 1);
@@ -1015,4 +1015,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x20] __attribute__((aligned(64))) = {
   0
 };
-

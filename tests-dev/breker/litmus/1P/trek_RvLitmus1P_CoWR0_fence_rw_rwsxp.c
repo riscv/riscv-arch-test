@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 17:07:18 2026
- * 
+ *
  * File Name: trek_RvLitmus1P_CoWR0_fence_rw_rwsxp.c
  * File_UUID: 0xf07c2b8ae09c44dd
  * Generated Seed: 0x1
@@ -164,7 +164,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00007880))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x00008950);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus1P_CoWR0_fence_rw_rwsxp_1
       // RISCV CoWR0+fence.rw.rwsxp
       // "Fence.rw.rwsWRXP FrePX"
@@ -176,7 +176,7 @@ trek_hart0_T0(void) {
       //  sc.w x8,x6,0(x5) ;
       //  fence rw,rw      ;
       //  lw x9,0(x5)      ;
-      // 
+      //
       // exists (not (0:x7=0 /\ (0:x8=0 /\ 0:x9=1 /\ [x]=1 \/ 0:x8=1 /\ 0:x9=0 /\ [x]=0)))
 
       // wait for ticket 0x1
@@ -224,7 +224,7 @@ trek_hart0_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x00007880);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x00008950), 1);
@@ -293,7 +293,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x5, trek_hart0_state);
   }
   case (0x5): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x1) {
       // reset thread variables
@@ -416,4 +416,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x10] __attribute__((aligned(64))) = {
   0
 };
-

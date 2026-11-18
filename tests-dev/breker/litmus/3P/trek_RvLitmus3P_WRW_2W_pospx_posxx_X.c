@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 19:42:14 2026
- * 
+ *
  * File Name: trek_RvLitmus3P_WRW_2W_pospx_posxx_X.c
  * File_UUID: 0x4aaa4208bd863a52
  * Generated Seed: 0x1
@@ -1675,7 +1675,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
   default:
     return 1;
   }
-  label98: /* occs=2 */ 
+  label98: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       switch (_out_0_x8) {
@@ -1694,14 +1694,14 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label97: /* occs=3 */ 
+  label97: /* occs=3 */
     switch (_out_1_x9) {
     case 1:
       goto label59;
     default:
       return 1;
     }
-  label96: /* occs=2 */ 
+  label96: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label97;
@@ -1710,7 +1710,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label95: /* occs=2 */ 
+  label95: /* occs=2 */
     switch (_out_2_x10) {
     case 1:
       switch (_out_0_x8) {
@@ -1736,7 +1736,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label94: /* occs=3 */ 
+  label94: /* occs=3 */
     switch (_out_1_x9) {
     case 0:
       goto label36;
@@ -1750,7 +1750,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label93: /* occs=2 */ 
+  label93: /* occs=2 */
     switch (_out_1_x5) {
     case 0:
       switch (_out_1_x8) {
@@ -1762,35 +1762,35 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label92: /* occs=2 */ 
+  label92: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label38;
     default:
       return 1;
     }
-  label91: /* occs=2 */ 
+  label91: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label60;
     default:
       return 1;
     }
-  label90: /* occs=4 */ 
+  label90: /* occs=4 */
     switch (_out_1_x9) {
     case 1:
       goto label20;
     default:
       return 1;
     }
-  label89: /* occs=2 */ 
+  label89: /* occs=2 */
     switch (_out_1_x9) {
     case 1:
       goto label50;
     default:
       return 1;
     }
-  label88: /* occs=2 */ 
+  label88: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label37;
@@ -1799,14 +1799,14 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label87: /* occs=2 */ 
+  label87: /* occs=2 */
     switch (_out_2_x7) {
     case 1:
       goto label38;
     default:
       return 1;
     }
-  label86: /* occs=2 */ 
+  label86: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label87;
@@ -1815,28 +1815,28 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label85: /* occs=2 */ 
+  label85: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label32;
     default:
       return 1;
     }
-  label84: /* occs=3 */ 
+  label84: /* occs=3 */
     switch (_out_2_x8) {
     case 1:
       goto label61;
     default:
       return 1;
     }
-  label83: /* occs=2 */ 
+  label83: /* occs=2 */
     switch (_out_2_x8) {
     case 1:
       goto label39;
     default:
       return 1;
     }
-  label82: /* occs=2 */ 
+  label82: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       switch (_out_1_x9) {
@@ -1895,28 +1895,28 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label81: /* occs=2 */ 
+  label81: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label21;
     default:
       return 1;
     }
-  label80: /* occs=2 */ 
+  label80: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label79;
     default:
       return 1;
     }
-  label79: /* occs=2 */ 
+  label79: /* occs=2 */
     switch (_out_1_x9) {
     case 1:
       goto label21;
     default:
       return 1;
     }
-  label78: /* occs=2 */ 
+  label78: /* occs=2 */
     switch (_out_2_x7) {
     case 2: case 0:
       switch (_out_0_x8) {
@@ -1928,77 +1928,77 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label77: /* occs=2 */ 
+  label77: /* occs=2 */
     switch (_out_1_x9) {
     case 1:
       goto label07;
     default:
       return 1;
     }
-  label76: /* occs=2 */ 
+  label76: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label77;
     default:
       return 1;
     }
-  label75: /* occs=2 */ 
+  label75: /* occs=2 */
     switch (_out_2_x7) {
     case 1: case 0:
       goto label76;
     default:
       return 1;
     }
-  label74: /* occs=3 */ 
+  label74: /* occs=3 */
     switch (_out_0_x8) {
     case 1:
       goto label25;
     default:
       return 1;
     }
-  label73: /* occs=2 */ 
+  label73: /* occs=2 */
     switch (_out_1_x8) {
     case 3:
       goto label71;
     default:
       return 1;
     }
-  label72: /* occs=2 */ 
+  label72: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       goto label66;
     default:
       return 1;
     }
-  label71: /* occs=3 */ 
+  label71: /* occs=3 */
     switch (_out_1_x9) {
     case 1:
       goto label72;
     default:
       return 1;
     }
-  label70: /* occs=3 */ 
+  label70: /* occs=3 */
     switch (_out_1_x9) {
     case 1:
       goto label69;
     default:
       return 1;
     }
-  label69: /* occs=3 */ 
+  label69: /* occs=3 */
     switch (_out_2_x7) {
     case 1:
       goto label66;
     default:
       return 1;
     }
-  label68: /* occs=3 */ 
+  label68: /* occs=3 */
     switch (_out_2_x7) {
     case 2:
       goto label66;
     default:
       return 1;
     }
-  label67: /* occs=2 */ 
+  label67: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       switch (_out_0_x8) {
@@ -2017,7 +2017,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label66: /* occs=5 */ 
+  label66: /* occs=5 */
     switch (_out_2_x8) {
     case 0:
       switch (_out_2_x10) {
@@ -2029,91 +2029,91 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label65: /* occs=2 */ 
+  label65: /* occs=2 */
     switch (_out_1_x9) {
     case 1:
       goto label66;
     default:
       return 1;
     }
-  label64: /* occs=2 */ 
+  label64: /* occs=2 */
     switch (_out_1_x8) {
     case 1:
       goto label55;
     default:
       return 1;
     }
-  label63: /* occs=2 */ 
+  label63: /* occs=2 */
     switch (_out_1_x8) {
     case 1:
       goto label54;
     default:
       return 1;
     }
-  label62: /* occs=2 */ 
+  label62: /* occs=2 */
     switch (_out_1_x8) {
     case 4:
       goto label52;
     default:
       return 1;
     }
-  label61: /* occs=4 */ 
+  label61: /* occs=4 */
     switch (_out_2_x10) {
     case 1:
       goto label08;
     default:
       return 1;
     }
-  label60: /* occs=3 */ 
+  label60: /* occs=3 */
     switch (_out_2_x8) {
     case 0:
       goto label61;
     default:
       return 1;
     }
-  label59: /* occs=4 */ 
+  label59: /* occs=4 */
     switch (_out_2_x7) {
     case 0:
       goto label60;
     default:
       return 1;
     }
-  label58: /* occs=2 */ 
+  label58: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label59;
     default:
       return 1;
     }
-  label57: /* occs=2 */ 
+  label57: /* occs=2 */
     switch (_out_1_x8) {
     case 4:
       goto label55;
     default:
       return 1;
     }
-  label56: /* occs=2 */ 
+  label56: /* occs=2 */
     switch (_out_1_x8) {
     case 4:
       goto label54;
     default:
       return 1;
     }
-  label55: /* occs=3 */ 
+  label55: /* occs=3 */
     switch (_out_1_x9) {
     case 0:
       goto label34;
     default:
       return 1;
     }
-  label54: /* occs=3 */ 
+  label54: /* occs=3 */
     switch (_out_1_x9) {
     case 0:
       goto label31;
     default:
       return 1;
     }
-  label53: /* occs=3 */ 
+  label53: /* occs=3 */
     switch (_out_2_x10) {
     case 3: case 2:
       switch (_out_0_x8) {
@@ -2125,49 +2125,49 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label52: /* occs=5 */ 
+  label52: /* occs=5 */
     switch (_out_1_x9) {
     case 0:
       goto label40;
     default:
       return 1;
     }
-  label51: /* occs=4 */ 
+  label51: /* occs=4 */
     switch (_out_2_x7) {
     case 1:
       goto label41;
     default:
       return 1;
     }
-  label50: /* occs=2 */ 
+  label50: /* occs=2 */
     switch (_out_2_x7) {
     case 1:
       goto label21;
     default:
       return 1;
     }
-  label49: /* occs=3 */ 
+  label49: /* occs=3 */
     switch (_out_1_x9) {
     case 0:
       goto label50;
     default:
       return 1;
     }
-  label48: /* occs=2 */ 
+  label48: /* occs=2 */
     switch (_out_2_x7) {
     case 1: case 0:
       goto label26;
     default:
       return 1;
     }
-  label47: /* occs=2 */ 
+  label47: /* occs=2 */
     switch (_out_2_x10) {
     case 3: case 2:
       goto label16;
     default:
       return 1;
     }
-  label46: /* occs=2 */ 
+  label46: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       switch (_out_2_x7) {
@@ -2179,14 +2179,14 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label45: /* occs=2 */ 
+  label45: /* occs=2 */
     switch (_out_2_x10) {
     case 3: case 2:
       goto label46;
     default:
       return 1;
     }
-  label44: /* occs=2 */ 
+  label44: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       switch (_out_2_x8) {
@@ -2203,7 +2203,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label43: /* occs=2 */ 
+  label43: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       switch (_out_2_x10) {
@@ -2227,56 +2227,56 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label42: /* occs=5 */ 
+  label42: /* occs=5 */
     switch (_out_1_x9) {
     case 1:
       goto label40;
     default:
       return 1;
     }
-  label41: /* occs=3 */ 
+  label41: /* occs=3 */
     switch (_out_2_x8) {
     case 0:
       goto label32;
     default:
       return 1;
     }
-  label40: /* occs=6 */ 
+  label40: /* occs=6 */
     switch (_out_2_x7) {
     case 0:
       goto label41;
     default:
       return 1;
     }
-  label39: /* occs=3 */ 
+  label39: /* occs=3 */
     switch (_out_2_x10) {
     case 2:
       goto label08;
     default:
       return 1;
     }
-  label38: /* occs=3 */ 
+  label38: /* occs=3 */
     switch (_out_2_x8) {
     case 0:
       goto label39;
     default:
       return 1;
     }
-  label37: /* occs=3 */ 
+  label37: /* occs=3 */
     switch (_out_2_x7) {
     case 0:
       goto label38;
     default:
       return 1;
     }
-  label36: /* occs=2 */ 
+  label36: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label37;
     default:
       return 1;
     }
-  label35: /* occs=2 */ 
+  label35: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label36;
@@ -2290,7 +2290,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label34: /* occs=2 */ 
+  label34: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       switch (_out_2_x10) {
@@ -2302,35 +2302,35 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label33: /* occs=4 */ 
+  label33: /* occs=4 */
     switch (_out_1_x9) {
     case 1:
       goto label34;
     default:
       return 1;
     }
-  label32: /* occs=4 */ 
+  label32: /* occs=4 */
     switch (_out_2_x10) {
     case 3:
       goto label08;
     default:
       return 1;
     }
-  label31: /* occs=2 */ 
+  label31: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       goto label32;
     default:
       return 1;
     }
-  label30: /* occs=4 */ 
+  label30: /* occs=4 */
     switch (_out_1_x9) {
     case 1:
       goto label31;
     default:
       return 1;
     }
-  label29: /* occs=2 */ 
+  label29: /* occs=2 */
     switch (_out_2_x8) {
     case 0:
       switch (_out_0_x8) {
@@ -2349,42 +2349,42 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label28: /* occs=2 */ 
+  label28: /* occs=2 */
     switch (_out_2_x7) {
     case 2:
       goto label21;
     default:
       return 1;
     }
-  label27: /* occs=4 */ 
+  label27: /* occs=4 */
     switch (_out_1_x9) {
     case 0:
       goto label07;
     default:
       return 1;
     }
-  label26: /* occs=3 */ 
+  label26: /* occs=3 */
     switch (_out_0_x8) {
     case 0:
       goto label27;
     default:
       return 1;
     }
-  label25: /* occs=3 */ 
+  label25: /* occs=3 */
     switch (_out_1_x9) {
     case 1:
       goto label06;
     default:
       return 1;
     }
-  label24: /* occs=2 */ 
+  label24: /* occs=2 */
     switch (_out_1_x9) {
     case 1:
       goto label17;
     default:
       return 1;
     }
-  label23: /* occs=2 */ 
+  label23: /* occs=2 */
     switch (_out_2_x10) {
     case 3: case 1:
       switch (_out_0_x8) {
@@ -2396,133 +2396,133 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label22: /* occs=2 */ 
+  label22: /* occs=2 */
     switch (_out_1_x8) {
     case 4:
       goto label19;
     default:
       return 1;
     }
-  label21: /* occs=5 */ 
+  label21: /* occs=5 */
     switch (_out_2_x8) {
     case 0:
       goto label08;
     default:
       return 1;
     }
-  label20: /* occs=4 */ 
+  label20: /* occs=4 */
     switch (_out_2_x7) {
     case 0:
       goto label21;
     default:
       return 1;
     }
-  label19: /* occs=4 */ 
+  label19: /* occs=4 */
     switch (_out_1_x9) {
     case 0:
       goto label20;
     default:
       return 1;
     }
-  label18: /* occs=2 */ 
+  label18: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label19;
     default:
       return 1;
     }
-  label17: /* occs=3 */ 
+  label17: /* occs=3 */
     switch (_out_2_x7) {
     case 0:
       goto label14;
     default:
       return 1;
     }
-  label16: /* occs=5 */ 
+  label16: /* occs=5 */
     switch (_out_1_x9) {
     case 0:
       goto label17;
     default:
       return 1;
     }
-  label15: /* occs=4 */ 
+  label15: /* occs=4 */
     switch (_out_0_x8) {
     case 0:
       goto label16;
     default:
       return 1;
     }
-  label14: /* occs=4 */ 
+  label14: /* occs=4 */
     switch (_out_2_x8) {
     case 0:
       goto label00;
     default:
       return 1;
     }
-  label13: /* occs=2 */ 
+  label13: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       goto label14;
     default:
       return 1;
     }
-  label12: /* occs=2 */ 
+  label12: /* occs=2 */
     switch (_out_0_x8) {
     case 0:
       goto label13;
     default:
       return 1;
     }
-  label11: /* occs=4 */ 
+  label11: /* occs=4 */
     switch (_out_1_x9) {
     case 0:
       goto label02;
     default:
       return 1;
     }
-  label10: /* occs=6 */ 
+  label10: /* occs=6 */
     switch (_out_0_x8) {
     case 0:
       goto label11;
     default:
       return 1;
     }
-  label09: /* occs=2 */ 
+  label09: /* occs=2 */
     switch (_out_1_x8) {
     case 4:
       goto label05;
     default:
       return 1;
     }
-  label08: /* occs=6 */ 
+  label08: /* occs=6 */
     switch (_out_2_x11) {
     case 0:
       return 0;
     default:
       return 1;
     }
-  label07: /* occs=3 */ 
+  label07: /* occs=3 */
     switch (_out_2_x8) {
     case 1:
       goto label08;
     default:
       return 1;
     }
-  label06: /* occs=2 */ 
+  label06: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       goto label07;
     default:
       return 1;
     }
-  label05: /* occs=3 */ 
+  label05: /* occs=3 */
     switch (_out_1_x9) {
     case 0:
       goto label06;
     default:
       return 1;
     }
-  label04: /* occs=2 */ 
+  label04: /* occs=2 */
     switch (_out_1_x9) {
     case 0:
       switch (_out_2_x7) {
@@ -2534,7 +2534,7 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label03: /* occs=2 */ 
+  label03: /* occs=2 */
     switch (_out_1_x9) {
     case 1:
       switch (_out_2_x8) {
@@ -2551,21 +2551,21 @@ inline static int final_cond_WRW_2W_pospx_posxx_X(int _out_0_x7,int _out_0_x8,in
     default:
       return 1;
     }
-  label02: /* occs=3 */ 
+  label02: /* occs=3 */
     switch (_out_2_x8) {
     case 1:
       goto label00;
     default:
       return 1;
     }
-  label01: /* occs=2 */ 
+  label01: /* occs=2 */
     switch (_out_1_x9) {
     case 1:
       goto label02;
     default:
       return 1;
     }
-  label00: /* occs=6 */ 
+  label00: /* occs=6 */
     switch (_out_2_x11) {
     case 1:
       return 0;
@@ -2626,7 +2626,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00003a7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000291c);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_WRW_2W_pospx_posxx_X_1
       // RISCV WRW+2W+pospx+posxx+X
       // "RfeXP PosRWPX WseXX PosWWXX WseXX"
@@ -2640,7 +2640,7 @@ trek_hart0_T0(void) {
       //  sc.w x8,x6,0(x5) | lr.w x8,0(x6)    | sc.w x8,x6,0(x5)  ;
       //                   | sc.w x9,x7,0(x6) | lr.w x10,0(x5)    ;
       //                   |                  | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (2:x7=0 /\ (2:x8=0 /\ (2:x11=0 /\ (2:x10=3 /\ (0:x8=1 /\ (1:x8=4 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0) \/ 1:x5=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=3 \/ 0:x7=4) \/ 1:x5=4 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0)) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=0 /\ (1:x5=0 \/ 1:x5=3 \/ 1:x5=4) \/ 0:x7=3 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=0) \/ 0:x7=4 /\ (1:x5=0 \/ 1:x5=3 \/ 1:x5=4))) \/ 1:x9=1 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=0 /\ (0:x7=0 \/ 0:x7=3 \/ 0:x7=4) \/ 1:x8=3 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=0)) \/ 1:x5=3 /\ 1:x8=3 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=0))) \/ 0:x8=0 /\ (0:x7=4 /\ (1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=3 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=4 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=1 /\ 1:x8=1) \/ 1:x8=1 /\ 1:x9=0 /\ [x]=2 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0)) \/ 0:x7=2 /\ 1:x8=4 /\ 1:x9=0 /\ [x]=1 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=0))) \/ [x]=4 /\ (0:x7=3 /\ (0:x8=0 /\ (1:x9=1 /\ 2:x10=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=3 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0)) \/ 0:x8=1 /\ 1:x8=3 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=3 \/ 1:x5=0)) \/ 1:x8=3 /\ 1:x9=0 /\ (0:x8=1 /\ 2:x10=2 /\ (1:x5=0 /\ (0:x7=4 \/ 0:x7=2 \/ 0:x7=0) \/ 1:x5=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4)) \/ 0:x7=2 /\ 0:x8=0 /\ 2:x10=1 /\ (1:x5=0 \/ 1:x5=3))) \/ 0:x8=0 /\ 1:x9=0 /\ (0:x7=3 /\ 1:x8=4 /\ 2:x10=1 /\ [x]=2 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 0:x7=4 /\ 1:x8=3 /\ 2:x10=2 /\ [x]=1 /\ (1:x5=0 \/ 1:x5=3))) \/ 2:x11=1 /\ (0:x7=3 /\ (0:x8=0 /\ (1:x8=1 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3) \/ 1:x5=1 /\ (2:x10=3 \/ 2:x10=2 \/ 2:x10=1) \/ 1:x5=3 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3)) \/ 1:x9=1 /\ [x]=1 /\ (2:x10=1 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 2:x10=3 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 /\ (2:x10=3 \/ 2:x10=1) \/ 1:x8=3 /\ (2:x10=1 \/ 2:x10=3)) \/ 1:x5=3 /\ 1:x8=3 /\ (2:x10=1 \/ 2:x10=3))) \/ 0:x8=1 /\ (1:x8=3 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=3 \/ 2:x10=2) \/ 1:x5=3 /\ (2:x10=2 \/ 2:x10=3)) \/ 1:x9=1 /\ 2:x10=3 /\ [x]=3 /\ (1:x5=0 \/ 1:x5=3)) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3)) \/ 1:x8=3 /\ (1:x9=0 /\ (0:x7=2 /\ (0:x8=0 /\ [x]=1 /\ (1:x5=0 /\ (2:x10=3 \/ 2:x10=2 \/ 2:x10=1) \/ 1:x5=3 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3)) \/ 0:x8=1 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=3) \/ 1:x5=3 /\ (2:x10=3 \/ 2:x10=2))) \/ 0:x7=0 /\ 0:x8=1 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=3) \/ 1:x5=3 /\ (2:x10=3 \/ 2:x10=2))) \/ 0:x7=0 /\ 0:x8=1 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3 /\ (1:x5=0 \/ 1:x5=3)) \/ 0:x7=0 /\ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3)) \/ 2:x8=1 /\ (0:x8=0 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x9=0 /\ (0:x7=0 /\ (1:x8=1 /\ 2:x10=2 /\ [x]=4 \/ 1:x8=4 /\ 2:x10=1 /\ [x]=2) \/ 0:x7=2 /\ (1:x8=0 /\ 2:x10=1 /\ [x]=4 \/ 1:x8=4 /\ 2:x10=0 /\ [x]=1) \/ 0:x7=4 /\ (1:x8=0 /\ 2:x10=2 /\ [x]=1 \/ 1:x8=1 /\ 2:x10=0 /\ [x]=2)) \/ 1:x9=1 /\ (0:x7=0 /\ 2:x10=1 /\ [x]=4 /\ (1:x8=4 \/ 1:x8=1 \/ 1:x8=0) \/ 0:x7=4 /\ 2:x10=0 /\ [x]=1 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=4))) \/ 0:x7=0 /\ (2:x10=1 /\ (1:x8=4 /\ (1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=4) \/ 1:x5=4 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=4)) \/ 1:x5=1 /\ 1:x8=1 /\ 1:x9=1 /\ [x]=4) \/ 1:x5=1 /\ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ [x]=4) \/ 2:x10=0 /\ (0:x7=4 /\ (1:x8=1 /\ (1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1) \/ 1:x5=4 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1)) \/ 1:x5=4 /\ 1:x8=4 /\ 1:x9=1 /\ [x]=1) \/ 0:x7=2 /\ 1:x5=4 /\ 1:x8=4 /\ 1:x9=0 /\ [x]=1)) \/ 2:x11=1 /\ (0:x7=0 /\ (1:x8=1 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=1 \/ 2:x10=0) \/ 1:x5=1 /\ (2:x10=0 \/ 2:x10=1 \/ 2:x10=2)) \/ 1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (2:x10=0 \/ 2:x10=1) \/ 1:x5=1 /\ (2:x10=1 \/ 2:x10=0))) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ [x]=1 /\ (2:x10=0 \/ 2:x10=1)) \/ 0:x7=2 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ [x]=1 /\ (2:x10=0 \/ 2:x10=1 \/ 2:x10=2))) \/ 0:x8=1 /\ (1:x5=0 /\ (1:x8=0 /\ (1:x9=0 /\ (2:x10=2 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=2 \/ 0:x7=0) \/ 2:x11=1 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2)) \/ 2:x10=0 /\ 2:x11=1 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2)) \/ 1:x9=1 /\ 2:x10=0 /\ (0:x7=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=0) \/ 0:x7=4 /\ 2:x11=0 /\ [x]=4)) \/ 1:x8=4 /\ 2:x10=0 /\ 2:x11=0 /\ (1:x9=0 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=0))) \/ 1:x5=4 /\ 1:x8=4 /\ 2:x10=0 /\ 2:x11=0 /\ (1:x9=0 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=0))))) \/ 0:x8=0 /\ (0:x7=0 /\ (2:x7=1 /\ (2:x8=0 /\ (2:x10=3 /\ (1:x9=1 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=1 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=3 /\ (1:x8=3 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 2:x11=1 /\ [x]=3 /\ (1:x5=0 /\ (1:x8=3 \/ 1:x8=1 \/ 1:x8=0) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=3) \/ 1:x5=3 /\ 1:x8=3)) \/ 1:x9=0 /\ [x]=2 /\ (1:x8=4 /\ 2:x11=0 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 1:x8=3 /\ 2:x11=1 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 1:x8=3 /\ 1:x9=0 /\ 2:x10=2 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 2:x11=1 /\ [x]=2 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 2:x8=1 /\ (2:x10=1 /\ (1:x9=1 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=4 \/ 1:x8=1 \/ 1:x8=0) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 2:x11=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1) \/ 1:x5=1 /\ 1:x8=1)) \/ 1:x9=0 /\ [x]=2 /\ (1:x8=4 /\ 2:x11=0 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=4) \/ 1:x8=1 /\ 2:x11=1 /\ (1:x5=1 \/ 1:x5=0))) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 1:x5=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2)))) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x7=2 /\ (1:x5=0 /\ (2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)) \/ 1:x5=1 /\ (2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)))) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ (2:x7=2 /\ ([x]=1 /\ (2:x11=1 /\ (0:x7=2 /\ 2:x8=1 /\ (2:x10=2 \/ 2:x10=1) \/ 0:x7=3 /\ 2:x8=0 /\ (2:x10=1 \/ 2:x10=3)) \/ 0:x7=4 /\ 2:x11=0 /\ (2:x10=2 /\ 2:x8=1 \/ 2:x10=3 /\ 2:x8=0)) \/ 2:x10=1 /\ 2:x11=0 /\ [x]=4 /\ (0:x7=2 /\ 2:x8=1 \/ 0:x7=3 /\ 2:x8=0)) \/ 0:x7=2 /\ 2:x7=1 /\ (2:x10=1 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=1) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)))) \/ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ 2:x7=2 /\ (2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0) \/ 2:x11=1 /\ [x]=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=3)) \/ 2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 2:x11=1 /\ [x]=2 /\ (0:x7=2 \/ 0:x7=0)))))
 
       // wait for ticket 0x1
@@ -2758,7 +2758,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x6, trek_hart0_state);
   }
   case (0x6): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x2) {
       // reset thread variables
@@ -2848,7 +2848,7 @@ trek_hart1_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00003a7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000291c);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_WRW_2W_pospx_posxx_X_1
       // RISCV WRW+2W+pospx+posxx+X
       // "RfeXP PosRWPX WseXX PosWWXX WseXX"
@@ -2862,7 +2862,7 @@ trek_hart1_T0(void) {
       //  sc.w x8,x6,0(x5) | lr.w x8,0(x6)    | sc.w x8,x6,0(x5)  ;
       //                   | sc.w x9,x7,0(x6) | lr.w x10,0(x5)    ;
       //                   |                  | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (2:x7=0 /\ (2:x8=0 /\ (2:x11=0 /\ (2:x10=3 /\ (0:x8=1 /\ (1:x8=4 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0) \/ 1:x5=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=3 \/ 0:x7=4) \/ 1:x5=4 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0)) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=0 /\ (1:x5=0 \/ 1:x5=3 \/ 1:x5=4) \/ 0:x7=3 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=0) \/ 0:x7=4 /\ (1:x5=0 \/ 1:x5=3 \/ 1:x5=4))) \/ 1:x9=1 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=0 /\ (0:x7=0 \/ 0:x7=3 \/ 0:x7=4) \/ 1:x8=3 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=0)) \/ 1:x5=3 /\ 1:x8=3 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=0))) \/ 0:x8=0 /\ (0:x7=4 /\ (1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=3 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=4 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=1 /\ 1:x8=1) \/ 1:x8=1 /\ 1:x9=0 /\ [x]=2 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0)) \/ 0:x7=2 /\ 1:x8=4 /\ 1:x9=0 /\ [x]=1 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=0))) \/ [x]=4 /\ (0:x7=3 /\ (0:x8=0 /\ (1:x9=1 /\ 2:x10=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=3 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0)) \/ 0:x8=1 /\ 1:x8=3 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=3 \/ 1:x5=0)) \/ 1:x8=3 /\ 1:x9=0 /\ (0:x8=1 /\ 2:x10=2 /\ (1:x5=0 /\ (0:x7=4 \/ 0:x7=2 \/ 0:x7=0) \/ 1:x5=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4)) \/ 0:x7=2 /\ 0:x8=0 /\ 2:x10=1 /\ (1:x5=0 \/ 1:x5=3))) \/ 0:x8=0 /\ 1:x9=0 /\ (0:x7=3 /\ 1:x8=4 /\ 2:x10=1 /\ [x]=2 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 0:x7=4 /\ 1:x8=3 /\ 2:x10=2 /\ [x]=1 /\ (1:x5=0 \/ 1:x5=3))) \/ 2:x11=1 /\ (0:x7=3 /\ (0:x8=0 /\ (1:x8=1 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3) \/ 1:x5=1 /\ (2:x10=3 \/ 2:x10=2 \/ 2:x10=1) \/ 1:x5=3 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3)) \/ 1:x9=1 /\ [x]=1 /\ (2:x10=1 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 2:x10=3 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 /\ (2:x10=3 \/ 2:x10=1) \/ 1:x8=3 /\ (2:x10=1 \/ 2:x10=3)) \/ 1:x5=3 /\ 1:x8=3 /\ (2:x10=1 \/ 2:x10=3))) \/ 0:x8=1 /\ (1:x8=3 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=3 \/ 2:x10=2) \/ 1:x5=3 /\ (2:x10=2 \/ 2:x10=3)) \/ 1:x9=1 /\ 2:x10=3 /\ [x]=3 /\ (1:x5=0 \/ 1:x5=3)) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3)) \/ 1:x8=3 /\ (1:x9=0 /\ (0:x7=2 /\ (0:x8=0 /\ [x]=1 /\ (1:x5=0 /\ (2:x10=3 \/ 2:x10=2 \/ 2:x10=1) \/ 1:x5=3 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3)) \/ 0:x8=1 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=3) \/ 1:x5=3 /\ (2:x10=3 \/ 2:x10=2))) \/ 0:x7=0 /\ 0:x8=1 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=3) \/ 1:x5=3 /\ (2:x10=3 \/ 2:x10=2))) \/ 0:x7=0 /\ 0:x8=1 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3 /\ (1:x5=0 \/ 1:x5=3)) \/ 0:x7=0 /\ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3)) \/ 2:x8=1 /\ (0:x8=0 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x9=0 /\ (0:x7=0 /\ (1:x8=1 /\ 2:x10=2 /\ [x]=4 \/ 1:x8=4 /\ 2:x10=1 /\ [x]=2) \/ 0:x7=2 /\ (1:x8=0 /\ 2:x10=1 /\ [x]=4 \/ 1:x8=4 /\ 2:x10=0 /\ [x]=1) \/ 0:x7=4 /\ (1:x8=0 /\ 2:x10=2 /\ [x]=1 \/ 1:x8=1 /\ 2:x10=0 /\ [x]=2)) \/ 1:x9=1 /\ (0:x7=0 /\ 2:x10=1 /\ [x]=4 /\ (1:x8=4 \/ 1:x8=1 \/ 1:x8=0) \/ 0:x7=4 /\ 2:x10=0 /\ [x]=1 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=4))) \/ 0:x7=0 /\ (2:x10=1 /\ (1:x8=4 /\ (1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=4) \/ 1:x5=4 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=4)) \/ 1:x5=1 /\ 1:x8=1 /\ 1:x9=1 /\ [x]=4) \/ 1:x5=1 /\ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ [x]=4) \/ 2:x10=0 /\ (0:x7=4 /\ (1:x8=1 /\ (1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1) \/ 1:x5=4 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1)) \/ 1:x5=4 /\ 1:x8=4 /\ 1:x9=1 /\ [x]=1) \/ 0:x7=2 /\ 1:x5=4 /\ 1:x8=4 /\ 1:x9=0 /\ [x]=1)) \/ 2:x11=1 /\ (0:x7=0 /\ (1:x8=1 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=1 \/ 2:x10=0) \/ 1:x5=1 /\ (2:x10=0 \/ 2:x10=1 \/ 2:x10=2)) \/ 1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (2:x10=0 \/ 2:x10=1) \/ 1:x5=1 /\ (2:x10=1 \/ 2:x10=0))) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ [x]=1 /\ (2:x10=0 \/ 2:x10=1)) \/ 0:x7=2 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ [x]=1 /\ (2:x10=0 \/ 2:x10=1 \/ 2:x10=2))) \/ 0:x8=1 /\ (1:x5=0 /\ (1:x8=0 /\ (1:x9=0 /\ (2:x10=2 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=2 \/ 0:x7=0) \/ 2:x11=1 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2)) \/ 2:x10=0 /\ 2:x11=1 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2)) \/ 1:x9=1 /\ 2:x10=0 /\ (0:x7=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=0) \/ 0:x7=4 /\ 2:x11=0 /\ [x]=4)) \/ 1:x8=4 /\ 2:x10=0 /\ 2:x11=0 /\ (1:x9=0 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=0))) \/ 1:x5=4 /\ 1:x8=4 /\ 2:x10=0 /\ 2:x11=0 /\ (1:x9=0 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=0))))) \/ 0:x8=0 /\ (0:x7=0 /\ (2:x7=1 /\ (2:x8=0 /\ (2:x10=3 /\ (1:x9=1 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=1 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=3 /\ (1:x8=3 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 2:x11=1 /\ [x]=3 /\ (1:x5=0 /\ (1:x8=3 \/ 1:x8=1 \/ 1:x8=0) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=3) \/ 1:x5=3 /\ 1:x8=3)) \/ 1:x9=0 /\ [x]=2 /\ (1:x8=4 /\ 2:x11=0 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 1:x8=3 /\ 2:x11=1 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 1:x8=3 /\ 1:x9=0 /\ 2:x10=2 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 2:x11=1 /\ [x]=2 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 2:x8=1 /\ (2:x10=1 /\ (1:x9=1 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=4 \/ 1:x8=1 \/ 1:x8=0) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 2:x11=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1) \/ 1:x5=1 /\ 1:x8=1)) \/ 1:x9=0 /\ [x]=2 /\ (1:x8=4 /\ 2:x11=0 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=4) \/ 1:x8=1 /\ 2:x11=1 /\ (1:x5=1 \/ 1:x5=0))) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 1:x5=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2)))) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x7=2 /\ (1:x5=0 /\ (2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)) \/ 1:x5=1 /\ (2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)))) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ (2:x7=2 /\ ([x]=1 /\ (2:x11=1 /\ (0:x7=2 /\ 2:x8=1 /\ (2:x10=2 \/ 2:x10=1) \/ 0:x7=3 /\ 2:x8=0 /\ (2:x10=1 \/ 2:x10=3)) \/ 0:x7=4 /\ 2:x11=0 /\ (2:x10=2 /\ 2:x8=1 \/ 2:x10=3 /\ 2:x8=0)) \/ 2:x10=1 /\ 2:x11=0 /\ [x]=4 /\ (0:x7=2 /\ 2:x8=1 \/ 0:x7=3 /\ 2:x8=0)) \/ 0:x7=2 /\ 2:x7=1 /\ (2:x10=1 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=1) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)))) \/ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ 2:x7=2 /\ (2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0) \/ 2:x11=1 /\ [x]=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=3)) \/ 2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 2:x11=1 /\ [x]=2 /\ (0:x7=2 \/ 0:x7=0)))))
 
       // wait for ticket 0x1
@@ -2918,7 +2918,7 @@ trek_hart1_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x00003a7c);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x0000291c), 1);
@@ -3075,7 +3075,7 @@ trek_hart2_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00003a7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000291c);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_WRW_2W_pospx_posxx_X_1
       // RISCV WRW+2W+pospx+posxx+X
       // "RfeXP PosRWPX WseXX PosWWXX WseXX"
@@ -3089,7 +3089,7 @@ trek_hart2_T0(void) {
       //  sc.w x8,x6,0(x5) | lr.w x8,0(x6)    | sc.w x8,x6,0(x5)  ;
       //                   | sc.w x9,x7,0(x6) | lr.w x10,0(x5)    ;
       //                   |                  | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (2:x7=0 /\ (2:x8=0 /\ (2:x11=0 /\ (2:x10=3 /\ (0:x8=1 /\ (1:x8=4 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0) \/ 1:x5=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=3 \/ 0:x7=4) \/ 1:x5=4 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0)) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=0 /\ (1:x5=0 \/ 1:x5=3 \/ 1:x5=4) \/ 0:x7=3 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=0) \/ 0:x7=4 /\ (1:x5=0 \/ 1:x5=3 \/ 1:x5=4))) \/ 1:x9=1 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=0 /\ (0:x7=0 \/ 0:x7=3 \/ 0:x7=4) \/ 1:x8=3 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=0)) \/ 1:x5=3 /\ 1:x8=3 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=0))) \/ 0:x8=0 /\ (0:x7=4 /\ (1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=3 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=4 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=1 /\ 1:x8=1) \/ 1:x8=1 /\ 1:x9=0 /\ [x]=2 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0)) \/ 0:x7=2 /\ 1:x8=4 /\ 1:x9=0 /\ [x]=1 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=0))) \/ [x]=4 /\ (0:x7=3 /\ (0:x8=0 /\ (1:x9=1 /\ 2:x10=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=3 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0)) \/ 0:x8=1 /\ 1:x8=3 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=3 \/ 1:x5=0)) \/ 1:x8=3 /\ 1:x9=0 /\ (0:x8=1 /\ 2:x10=2 /\ (1:x5=0 /\ (0:x7=4 \/ 0:x7=2 \/ 0:x7=0) \/ 1:x5=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4)) \/ 0:x7=2 /\ 0:x8=0 /\ 2:x10=1 /\ (1:x5=0 \/ 1:x5=3))) \/ 0:x8=0 /\ 1:x9=0 /\ (0:x7=3 /\ 1:x8=4 /\ 2:x10=1 /\ [x]=2 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 0:x7=4 /\ 1:x8=3 /\ 2:x10=2 /\ [x]=1 /\ (1:x5=0 \/ 1:x5=3))) \/ 2:x11=1 /\ (0:x7=3 /\ (0:x8=0 /\ (1:x8=1 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3) \/ 1:x5=1 /\ (2:x10=3 \/ 2:x10=2 \/ 2:x10=1) \/ 1:x5=3 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3)) \/ 1:x9=1 /\ [x]=1 /\ (2:x10=1 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 2:x10=3 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 /\ (2:x10=3 \/ 2:x10=1) \/ 1:x8=3 /\ (2:x10=1 \/ 2:x10=3)) \/ 1:x5=3 /\ 1:x8=3 /\ (2:x10=1 \/ 2:x10=3))) \/ 0:x8=1 /\ (1:x8=3 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=3 \/ 2:x10=2) \/ 1:x5=3 /\ (2:x10=2 \/ 2:x10=3)) \/ 1:x9=1 /\ 2:x10=3 /\ [x]=3 /\ (1:x5=0 \/ 1:x5=3)) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3)) \/ 1:x8=3 /\ (1:x9=0 /\ (0:x7=2 /\ (0:x8=0 /\ [x]=1 /\ (1:x5=0 /\ (2:x10=3 \/ 2:x10=2 \/ 2:x10=1) \/ 1:x5=3 /\ (2:x10=1 \/ 2:x10=2 \/ 2:x10=3)) \/ 0:x8=1 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=3) \/ 1:x5=3 /\ (2:x10=3 \/ 2:x10=2))) \/ 0:x7=0 /\ 0:x8=1 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=3) \/ 1:x5=3 /\ (2:x10=3 \/ 2:x10=2))) \/ 0:x7=0 /\ 0:x8=1 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3 /\ (1:x5=0 \/ 1:x5=3)) \/ 0:x7=0 /\ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ 2:x10=3 /\ [x]=3)) \/ 2:x8=1 /\ (0:x8=0 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x9=0 /\ (0:x7=0 /\ (1:x8=1 /\ 2:x10=2 /\ [x]=4 \/ 1:x8=4 /\ 2:x10=1 /\ [x]=2) \/ 0:x7=2 /\ (1:x8=0 /\ 2:x10=1 /\ [x]=4 \/ 1:x8=4 /\ 2:x10=0 /\ [x]=1) \/ 0:x7=4 /\ (1:x8=0 /\ 2:x10=2 /\ [x]=1 \/ 1:x8=1 /\ 2:x10=0 /\ [x]=2)) \/ 1:x9=1 /\ (0:x7=0 /\ 2:x10=1 /\ [x]=4 /\ (1:x8=4 \/ 1:x8=1 \/ 1:x8=0) \/ 0:x7=4 /\ 2:x10=0 /\ [x]=1 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=4))) \/ 0:x7=0 /\ (2:x10=1 /\ (1:x8=4 /\ (1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=4) \/ 1:x5=4 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=4)) \/ 1:x5=1 /\ 1:x8=1 /\ 1:x9=1 /\ [x]=4) \/ 1:x5=1 /\ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ [x]=4) \/ 2:x10=0 /\ (0:x7=4 /\ (1:x8=1 /\ (1:x5=1 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1) \/ 1:x5=4 /\ (1:x9=0 /\ [x]=2 \/ 1:x9=1 /\ [x]=1)) \/ 1:x5=4 /\ 1:x8=4 /\ 1:x9=1 /\ [x]=1) \/ 0:x7=2 /\ 1:x5=4 /\ 1:x8=4 /\ 1:x9=0 /\ [x]=1)) \/ 2:x11=1 /\ (0:x7=0 /\ (1:x8=1 /\ (1:x9=0 /\ [x]=2 /\ (1:x5=0 /\ (2:x10=2 \/ 2:x10=1 \/ 2:x10=0) \/ 1:x5=1 /\ (2:x10=0 \/ 2:x10=1 \/ 2:x10=2)) \/ 1:x9=1 /\ [x]=1 /\ (1:x5=0 /\ (2:x10=0 \/ 2:x10=1) \/ 1:x5=1 /\ (2:x10=1 \/ 2:x10=0))) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=1 /\ [x]=1 /\ (2:x10=0 \/ 2:x10=1)) \/ 0:x7=2 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ [x]=1 /\ (2:x10=0 \/ 2:x10=1 \/ 2:x10=2))) \/ 0:x8=1 /\ (1:x5=0 /\ (1:x8=0 /\ (1:x9=0 /\ (2:x10=2 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=2 \/ 0:x7=0) \/ 2:x11=1 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2)) \/ 2:x10=0 /\ 2:x11=1 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2)) \/ 1:x9=1 /\ 2:x10=0 /\ (0:x7=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=0) \/ 0:x7=4 /\ 2:x11=0 /\ [x]=4)) \/ 1:x8=4 /\ 2:x10=0 /\ 2:x11=0 /\ (1:x9=0 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=0))) \/ 1:x5=4 /\ 1:x8=4 /\ 2:x10=0 /\ 2:x11=0 /\ (1:x9=0 /\ [x]=2 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 1:x9=1 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=0))))) \/ 0:x8=0 /\ (0:x7=0 /\ (2:x7=1 /\ (2:x8=0 /\ (2:x10=3 /\ (1:x9=1 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1 \/ 1:x8=3 \/ 1:x8=4) \/ 1:x5=1 /\ (1:x8=4 \/ 1:x8=3 \/ 1:x8=1) \/ 1:x5=3 /\ (1:x8=3 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 2:x11=1 /\ [x]=3 /\ (1:x5=0 /\ (1:x8=3 \/ 1:x8=1 \/ 1:x8=0) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=3) \/ 1:x5=3 /\ 1:x8=3)) \/ 1:x9=0 /\ [x]=2 /\ (1:x8=4 /\ 2:x11=0 /\ (1:x5=4 \/ 1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 1:x8=3 /\ 2:x11=1 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 1:x8=3 /\ 1:x9=0 /\ 2:x10=2 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=3 \/ 1:x5=1 \/ 1:x5=0) \/ 2:x11=1 /\ [x]=2 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=3))) \/ 2:x8=1 /\ (2:x10=1 /\ (1:x9=1 /\ (2:x11=0 /\ [x]=4 /\ (1:x5=0 /\ (1:x8=4 \/ 1:x8=1 \/ 1:x8=0) \/ 1:x5=1 /\ (1:x8=1 \/ 1:x8=4) \/ 1:x5=4 /\ 1:x8=4) \/ 2:x11=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x8=0 \/ 1:x8=1) \/ 1:x5=1 /\ 1:x8=1)) \/ 1:x9=0 /\ [x]=2 /\ (1:x8=4 /\ 2:x11=0 /\ (1:x5=0 \/ 1:x5=1 \/ 1:x5=4) \/ 1:x8=1 /\ 2:x11=1 /\ (1:x5=1 \/ 1:x5=0))) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x10=2 /\ (1:x5=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 1:x5=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2)))) \/ 1:x8=1 /\ 1:x9=0 /\ 2:x7=2 /\ (1:x5=0 /\ (2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)) \/ 1:x5=1 /\ (2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=2) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)))) \/ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ (2:x7=2 /\ ([x]=1 /\ (2:x11=1 /\ (0:x7=2 /\ 2:x8=1 /\ (2:x10=2 \/ 2:x10=1) \/ 0:x7=3 /\ 2:x8=0 /\ (2:x10=1 \/ 2:x10=3)) \/ 0:x7=4 /\ 2:x11=0 /\ (2:x10=2 /\ 2:x8=1 \/ 2:x10=3 /\ 2:x8=0)) \/ 2:x10=1 /\ 2:x11=0 /\ [x]=4 /\ (0:x7=2 /\ 2:x8=1 \/ 0:x7=3 /\ 2:x8=0)) \/ 0:x7=2 /\ 2:x7=1 /\ (2:x10=1 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=1) \/ 2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 \/ 2:x11=1 /\ [x]=3)))) \/ 0:x8=1 /\ 1:x5=0 /\ 1:x8=0 /\ 1:x9=0 /\ 2:x7=2 /\ (2:x10=3 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=4 \/ 0:x7=3 \/ 0:x7=2 \/ 0:x7=0) \/ 2:x11=1 /\ [x]=3 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=3)) \/ 2:x10=2 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=4 /\ (0:x7=0 \/ 0:x7=2 \/ 0:x7=4) \/ 2:x11=1 /\ [x]=2 /\ (0:x7=2 \/ 0:x7=0)))))
 
       // wait for ticket 0x1
@@ -3996,4 +3996,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x30] __attribute__((aligned(64))) = {
   0
 };
-

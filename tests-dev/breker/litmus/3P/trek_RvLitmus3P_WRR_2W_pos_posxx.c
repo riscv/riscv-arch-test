@@ -17,7 +17,7 @@
 
 /******************************************************************************
  * Created on Mon Nov  9 19:37:29 2026
- * 
+ *
  * File Name: trek_RvLitmus3P_WRR_2W_pos_posxx.c
  * File_UUID: 0x3b19d5dc1b48fdd9
  * Generated Seed: 0x1
@@ -315,7 +315,7 @@ inline static int final_cond_WRR_2W_pos_posxx(int _out_1_x5,int _out_1_x7,int _o
   default:
     return 1;
   }
-  label18: /* occs=2 */ 
+  label18: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       switch (_out_2_x8) {
@@ -327,35 +327,35 @@ inline static int final_cond_WRR_2W_pos_posxx(int _out_1_x5,int _out_1_x7,int _o
     default:
       return 1;
     }
-  label17: /* occs=2 */ 
+  label17: /* occs=2 */
     switch (_out_2_x10) {
     case 2:
       goto label11;
     default:
       return 1;
     }
-  label16: /* occs=2 */ 
+  label16: /* occs=2 */
     switch (_out_2_x10) {
     case 1:
       goto label11;
     default:
       return 1;
     }
-  label15: /* occs=2 */ 
+  label15: /* occs=2 */
     switch (_out_2_x8) {
     case 0:
       goto label11;
     default:
       return 1;
     }
-  label14: /* occs=3 */ 
+  label14: /* occs=3 */
     switch (_out_2_x8) {
     case 0:
       goto label10;
     default:
       return 1;
     }
-  label13: /* occs=2 */ 
+  label13: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       goto label14;
@@ -364,28 +364,28 @@ inline static int final_cond_WRR_2W_pos_posxx(int _out_1_x5,int _out_1_x7,int _o
     default:
       return 1;
     }
-  label12: /* occs=2 */ 
+  label12: /* occs=2 */
     switch (_out_2_x8) {
     case 1:
       goto label11;
     default:
       return 1;
     }
-  label11: /* occs=6 */ 
+  label11: /* occs=6 */
     switch (_out_2_x11) {
     case 0:
       goto label03;
     default:
       return 1;
     }
-  label10: /* occs=2 */ 
+  label10: /* occs=2 */
     switch (_out_2_x11) {
     case 0:
       goto label02;
     default:
       return 1;
     }
-  label09: /* occs=2 */ 
+  label09: /* occs=2 */
     switch (_out_2_x7) {
     case 0:
       switch (_out_2_x8) {
@@ -397,7 +397,7 @@ inline static int final_cond_WRR_2W_pos_posxx(int _out_1_x5,int _out_1_x7,int _o
     default:
       return 1;
     }
-  label08: /* occs=2 */ 
+  label08: /* occs=2 */
     switch (_x) {
     case 1:
       switch (_out_2_x10) {
@@ -462,28 +462,28 @@ inline static int final_cond_WRR_2W_pos_posxx(int _out_1_x5,int _out_1_x7,int _o
     default:
       return 1;
     }
-  label07: /* occs=3 */ 
+  label07: /* occs=3 */
     switch (_out_2_x11) {
     case 0:
       return 0;
     default:
       return 1;
     }
-  label06: /* occs=2 */ 
+  label06: /* occs=2 */
     switch (_out_2_x11) {
     case 1:
       return 0;
     default:
       return 1;
     }
-  label05: /* occs=2 */ 
+  label05: /* occs=2 */
     switch (_out_2_x8) {
     case 0:
       goto label06;
     default:
       return 1;
     }
-  label04: /* occs=2 */ 
+  label04: /* occs=2 */
     switch (_out_2_x11) {
     case 1: case 0:
       switch (_out_2_x7) {
@@ -500,28 +500,28 @@ inline static int final_cond_WRR_2W_pos_posxx(int _out_1_x5,int _out_1_x7,int _o
     default:
       return 1;
     }
-  label03: /* occs=5 */ 
+  label03: /* occs=5 */
     switch (_x) {
     case 3:
       return 0;
     default:
       return 1;
     }
-  label02: /* occs=4 */ 
+  label02: /* occs=4 */
     switch (_x) {
     case 1:
       return 0;
     default:
       return 1;
     }
-  label01: /* occs=2 */ 
+  label01: /* occs=2 */
     switch (_out_2_x8) {
     case 1:
       goto label02;
     default:
       return 1;
     }
-  label00: /* occs=2 */ 
+  label00: /* occs=2 */
     switch (_out_2_x10) {
     case 0:
       switch (_out_2_x11) {
@@ -648,7 +648,7 @@ trek_hart0_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00003a7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000291c);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_WRR_2W_pos_posxx_1
       // RISCV WRR+2W+pos+posxx
       // "Rfe PosRR FrePX PosWWXX WseXP"
@@ -662,7 +662,7 @@ trek_hart0_T0(void) {
       //              | lw x7,0(x6) | sc.w x8,x6,0(x5)  ;
       //              |             | lr.w x10,0(x5)    ;
       //              |             | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (2:x7=0 /\ ([x]=1 /\ (2:x8=0 /\ (2:x10=2 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=2 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1) \/ 1:x5=3 /\ (1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ 1:x7=1) \/ 2:x11=1 /\ (1:x5=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x10=1 /\ 2:x11=1 /\ (1:x5=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x8=1 /\ (2:x10=0 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=3 /\ (1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ 1:x7=1) \/ 2:x11=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x10=1 /\ 2:x11=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1) \/ 1:x5=1 /\ 1:x7=1))) \/ 2:x10=1 /\ 2:x11=0 /\ [x]=3 /\ (2:x8=0 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x8=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3))) \/ 2:x7=1 /\ (2:x10=2 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=3 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=1 /\ (1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=2 /\ (1:x7=3 \/ 1:x7=2) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x11=1 /\ [x]=2 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ (1:x7=2 \/ 1:x7=1) \/ 1:x5=2 /\ 1:x7=2)) \/ 2:x10=1 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=3 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x11=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x7=1 \/ 1:x7=0) \/ 1:x5=1 /\ 1:x7=1)))))
 
       // wait for ticket 0x1
@@ -709,7 +709,7 @@ trek_hart0_T0(void) {
         fail_iteration = uloop_count;
         trek_write32_shared(1, trek_mem_DDR0+0x00003a7c);
         break;
-      }   
+      }
 
       // wait for ticket 0x4
       __sync_fetch_and_add((volatile int*)(trek_mem_DDR0+0x0000291c), 1);
@@ -793,7 +793,7 @@ trek_hart0_run_states(void) {
     trek_write32_shared(0x6, trek_hart0_state);
   }
   case (0x6): {
-    // make sure no more data on queue thread 
+    // make sure no more data on queue thread
     trek_flush_mbox_queue();
     if (trek_read32_shared(hart0_iterations) < 0x2) {
       // reset thread variables
@@ -880,7 +880,7 @@ trek_hart1_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00003a7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000291c);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_WRR_2W_pos_posxx_1
       // RISCV WRR+2W+pos+posxx
       // "Rfe PosRR FrePX PosWWXX WseXP"
@@ -894,7 +894,7 @@ trek_hart1_T0(void) {
       //              | lw x7,0(x6) | sc.w x8,x6,0(x5)  ;
       //              |             | lr.w x10,0(x5)    ;
       //              |             | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (2:x7=0 /\ ([x]=1 /\ (2:x8=0 /\ (2:x10=2 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=2 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1) \/ 1:x5=3 /\ (1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ 1:x7=1) \/ 2:x11=1 /\ (1:x5=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x10=1 /\ 2:x11=1 /\ (1:x5=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x8=1 /\ (2:x10=0 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=3 /\ (1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ 1:x7=1) \/ 2:x11=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x10=1 /\ 2:x11=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1) \/ 1:x5=1 /\ 1:x7=1))) \/ 2:x10=1 /\ 2:x11=0 /\ [x]=3 /\ (2:x8=0 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x8=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3))) \/ 2:x7=1 /\ (2:x10=2 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=3 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=1 /\ (1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=2 /\ (1:x7=3 \/ 1:x7=2) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x11=1 /\ [x]=2 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ (1:x7=2 \/ 1:x7=1) \/ 1:x5=2 /\ 1:x7=2)) \/ 2:x10=1 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=3 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x11=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x7=1 \/ 1:x7=0) \/ 1:x5=1 /\ 1:x7=1)))))
 
       // wait for ticket 0x1
@@ -1087,7 +1087,7 @@ trek_hart2_T0(void) {
     while((uloop_count < 100) && (!trek_read32_shared(trek_mem_DDR0+0x00003a7c))){
       ++uloop_count;
       long unsigned start_ticket_num = trek_read32_shared(trek_mem_DDR0+0x0000291c);
-      TREK_UNUSED(start_ticket_num); // potentially not used 
+      TREK_UNUSED(start_ticket_num); // potentially not used
       // pss_top.riscv.rvULoops.rvLitmus.svip::RvLitmus3P_WRR_2W_pos_posxx_1
       // RISCV WRR+2W+pos+posxx
       // "Rfe PosRR FrePX PosWWXX WseXP"
@@ -1101,7 +1101,7 @@ trek_hart2_T0(void) {
       //              | lw x7,0(x6) | sc.w x8,x6,0(x5)  ;
       //              |             | lr.w x10,0(x5)    ;
       //              |             | sc.w x11,x9,0(x5) ;
-      // 
+      //
       // exists (not (2:x7=0 /\ ([x]=1 /\ (2:x8=0 /\ (2:x10=2 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=2 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1) \/ 1:x5=3 /\ (1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ 1:x7=1) \/ 2:x11=1 /\ (1:x5=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x10=1 /\ 2:x11=1 /\ (1:x5=0 /\ (1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x8=1 /\ (2:x10=0 /\ (2:x11=0 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=3 /\ (1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ 1:x7=1) \/ 2:x11=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1) \/ 1:x5=1 /\ 1:x7=1)) \/ 2:x10=1 /\ 2:x11=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1) \/ 1:x5=1 /\ 1:x7=1))) \/ 2:x10=1 /\ 2:x11=0 /\ [x]=3 /\ (2:x8=0 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=2 /\ (1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x8=1 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3))) \/ 2:x7=1 /\ (2:x10=2 /\ 2:x8=0 /\ (2:x11=0 /\ [x]=3 /\ (1:x5=0 /\ (1:x7=3 \/ 1:x7=2 \/ 1:x7=1 \/ 1:x7=0) \/ 1:x5=1 /\ (1:x7=1 \/ 1:x7=2 \/ 1:x7=3) \/ 1:x5=2 /\ (1:x7=3 \/ 1:x7=2) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x11=1 /\ [x]=2 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=2) \/ 1:x5=1 /\ (1:x7=2 \/ 1:x7=1) \/ 1:x5=2 /\ 1:x7=2)) \/ 2:x10=1 /\ 2:x8=1 /\ (2:x11=0 /\ [x]=3 /\ (1:x5=0 /\ (1:x7=0 \/ 1:x7=1 \/ 1:x7=3) \/ 1:x5=1 /\ (1:x7=3 \/ 1:x7=1) \/ 1:x5=3 /\ 1:x7=3) \/ 2:x11=1 /\ [x]=1 /\ (1:x5=0 /\ (1:x7=1 \/ 1:x7=0) \/ 1:x5=1 /\ 1:x7=1)))))
 
       // wait for ticket 0x1
@@ -1781,4 +1781,3 @@ trek_uint8_t trek_mem_DDR0[0x10000] __attribute__((aligned(64))) = {
 trek_uint8_t trek_mem_T2CMBOXES[0x30] __attribute__((aligned(64))) = {
   0
 };
-

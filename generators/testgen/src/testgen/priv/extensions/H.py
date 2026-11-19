@@ -51,7 +51,10 @@ VSSTATUS_CG = "H_vsstatus_cg"
 VU_CG = "H_vucsr_cg"
 INST_CG = "H_inst_cg"
 
-# The CSR numbers of the M-mode CSRs, which VS-mode cannot access, as in S (cp_csr_insufficient_priv)
+# The CSR numbers of the M-mode CSRs, which VS-mode and VU-mode cannot access, as in S (cp_csr_insufficient_priv).
+# Only M-mode CSRs are swept, because an access from V=1 raises illegal instruction whether or not the CSR is
+# implemented.  An implemented supervisor, hypervisor or VS CSR raises virtual instruction instead, so those are
+# accessed by name (cp_hcsr_virtualinstructionfault, cp_scsr_virtualinstructionfault).
 M_CSR_RANGES = [
     range(0x300, 0x400),
     range(0x700, 0x7AA),  # exclude 0x7AA mscontext, which is accessible from S-mode
@@ -59,23 +62,7 @@ M_CSR_RANGES = [
     range(0xB00, 0xC00),
     range(0xF00, 0x1000),
 ]
-# The CSR numbers that are not user CSRs, and the user read-only CSRs, as in U (cp_csr_insufficient_priv, cp_csr_ro).
-# 0x7AA mscontext is left out as in S, because it may be accessible from S-mode and so raise virtual instruction.
-# The custom supervisor and hypervisor CSRs are left out because VU-mode access to an implemented one raises virtual
-# instruction, and which ones are implemented is up to the implementation.
-NONUSER_CSR_RANGES = [
-    range(0x100, 0x400),
-    range(0x500, 0x5C0),
-    range(0x600, 0x6C0),
-    range(0x700, 0x7AA),
-    range(0x7AB, 0x800),
-    range(0x900, 0x9C0),
-    range(0xA00, 0xAC0),
-    range(0xB00, 0xC00),
-    range(0xD00, 0xDC0),
-    range(0xE00, 0xEC0),
-    range(0xF00, 0x1000),
-]
+# The user read-only CSR numbers VU-mode tries to write, as in U (cp_csr_ro)
 USER_RO_CSR_RANGES = [range(0xC00, 0xD00)]
 # The read-only CSR numbers VS-mode tries to write, as in S (cp_csr_ro)
 S_RO_CSR_RANGES = [range(0xC00, 0xF00)]
@@ -92,6 +79,8 @@ S_UNREPLICATED_CSRS = [
     HCsr("scounteren"),
     HCsr("senvcfg", gate="defined(S1P12P0_OR_LATER_SUPPORTED)"),
 ]
+# S CSRs that VU-mode cannot access, which raise virtual instruction because HS-mode can access them
+S_CSRS = [*(HCsr(rep.s) for rep in REPLICAS), *S_UNREPLICATED_CSRS]
 # scountinhibit raises illegal instruction with menvcfg.CDE = 0, as boot leaves it, and virtual instruction in
 # VS-mode and VU-mode with CDE = 1
 SCOUNTINHIBIT = HCsr("scountinhibit", gate="defined(SSCCFG_SUPPORTED)")
@@ -265,16 +254,30 @@ def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         test_data,
         test_chunks,
         VU_CG,
-        NONUSER_CSR_RANGES,
+        M_CSR_RANGES,
         "vucsr",
-        "In VU-mode, attempt to read each CSR that is not a user CSR.  Should throw illegal or virtual instruction",
+        "In VU-mode, attempt to read each M-mode CSR.  Should throw illegal instruction",
         mode="VU",
         csrs_per_chunk=CSRS_PER_CHUNK,
-        skip_sail_gaps=True,
     )
     csr_ro_write_tests(
         test_data, test_chunks, VU_CG, USER_RO_CSR_RANGES, "vucsr_ro", mode="VU", csrs_per_chunk=CSRS_PER_CHUNK
     )
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        "cp_hcsr_virtualinstructionfault, cp_scsr_virtualinstructionfault, cp_illegalupper",
+        "In VU-mode, access each HS and VS H CSR and each S CSR (virtual instruction when the access is legal in\n"
+        "HS-mode), and on RV64 each high-half H CSR (illegal instruction)",
+    )
+    tc.code.append("RVTEST_TSBI_GOTO_VUMODE")
+    for csr in HS_VS_CSRS:
+        tc.code.extend(_csr_trap_test(test_data, csr, VU_CG, "cp_hcsr_virtualinstructionfault"))
+    for csr in S_CSRS:
+        tc.code.extend(_csr_trap_test(test_data, csr, VU_CG, "cp_scsr_virtualinstructionfault"))
+    for csr in H_UPPER_CSRS:
+        tc.code.extend(_csr_trap_test(test_data, csr, VU_CG, "cp_illegalupper"))
+    tc.code.append("RVTEST_TSBI_GOTO_SMODE")
 
 
 def _xret_tests(test_data: TestData) -> list[str]:

@@ -586,13 +586,10 @@ def csr_insufficient_priv_tests(
     description: str,
     mode: str | None = None,
     csrs_per_chunk: int = 1,
-    skip_sail_gaps: bool = False,
 ) -> None:
     """Attempt to read each higher-privilege CSR; every read must raise illegal instruction.
 
     Each chunk of csrs_per_chunk CSRs enters mode ("VS" or "VU") from HS-mode first, if mode is given.
-    With skip_sail_gaps, the CSRs in SAIL_GAP_CSRS below M level are left out where the hart has them: from
-    VU-mode they raise virtual instruction, which Sail, lacking the CSR, cannot predict.
     """
     coverpoint = "cp_csr_insufficient_priv"
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
@@ -601,15 +598,15 @@ def csr_insufficient_priv_tests(
         tc = test_data.new_test_chunk(test_chunks, chunk_name)
         temp_reg = test_data.int_regs.get_register()
         for csr in csrs:
-            lines = [
-                test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
-                f"LI(x{temp_reg}, 42)           # known value; the trapping csrr must leave it unchanged",
-                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
-                write_sigupd(temp_reg, test_data),
-                "",
-            ]
-            m_level = (csr >> 8) & 3 == 3
-            tc.code.extend(unless_sail_gap(csr, lines) if skip_sail_gaps and not m_level else lines)
+            tc.code.extend(
+                [
+                    test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
+                    f"LI(x{temp_reg}, 42)           # known value; the trapping csrr must leave it unchanged",
+                    f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
+                    write_sigupd(temp_reg, test_data),
+                    "",
+                ]
+            )
         tc.code[:] = _in_mode(tc.code, mode)
         test_data.int_regs.return_register(temp_reg)
 

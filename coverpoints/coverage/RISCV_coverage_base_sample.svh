@@ -130,6 +130,9 @@
     `ifdef COVER_SSCOUNTERENW
         sscounterenw_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSCOUNTERENWSM
+        sscounterenwsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSNPM
         ssnpm_sample(hart, issue, ins);
     `endif

@@ -1,7 +1,8 @@
 # Parameter mappings for Sscounterenw
 #
 # Neither parameter is read by the generator. The walking signature comes from the
-# reference model's scounteren legalization. The mhpmcounter self-check does not use them.
+# reference model's scounteren legalization. SscounterenwSm probes mhpmcounter,
+# and mhpmcounterh on RV32, and does not use them.
 
 parameter_definitions:
   - name: SCOUNTENABLE_EN
@@ -14,5 +15,5 @@ parameter_definitions:
     coverpoint: ["cp_scounteren_writable"]
     effect:
       - >-
-        Expected results of the reference-model walk only. The self-check writes
-        mhpmcounter and does not consult this list.
+        Expected results of the reference-model walk only. SscounterenwSm writes
+        mhpmcounter, and mhpmcounterh on RV32, and does not consult this list.

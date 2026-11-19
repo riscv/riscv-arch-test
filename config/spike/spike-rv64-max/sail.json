@@ -33,10 +33,6 @@
     // (i.e. are not read-only zero). A set bit specifies that the
     // corresponding counter is supported. The lowest 3 bits
     // (writable_hpm_counters[2 .. 0]) are ignored.
-    // Spike hardwires mhpmcounter3..31 to 0 but leaves mhpmevent writable
-    // (riscv-isa-sim#2370). Raising this mask to match UDB HPM_COUNTER_EN would
-    // make Sail's counters writable, so 0x7 stays and Sscounterenw-4 is still open.
-    // The superset check is vacuous here; the Sscounterenw test probes mhpmcounter.
     "writable_hpm_counters": {
       "len": 32,
       "value": "0x0000_0007"

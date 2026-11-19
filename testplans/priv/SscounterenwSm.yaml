@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SscounterenwSm
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=316102369#gid=316102369
+coverpoints:
+  - name: cp_hpmcounter_scounteren
+    goal: An implemented hpmcounter has a writable scounteren bit
+    description: >
+      Boot to M-mode. For each n in 3..31, write all ones to mhpmcounter<n> and read it back.
+      On RV32 also write and read mhpmcounterh<n>, and treat the counter as implemented when
+      either half is nonzero. If it is not read-only zero, enter S-mode, write all ones to
+      scounteren, and require bit n to read back 1, then return to M-mode. A read-only-zero
+      counter does not constrain that bit. Both halves are cleared after the check.
+    expectation: >
+      A legal hart signs 0 for every n, whether or not the reference model implements the
+      counter. A stuck scounteren bit signs n, and the signature failure names that case.
+      Each bin requires scounteren[n] to be 1 and the counter to be nonzero. On RV32 the high
+      half counts, so the coverpoint stays empty when every read is zero.
+    bins: "29"
+    rules:
+      - Sscounterenw_hpmcounter_scounteren

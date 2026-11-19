@@ -2,7 +2,7 @@
 #
 # Neither parameter is read by the generator. The walking signature comes from the
 # reference model's scounteren legalization. SscounterenwSm probes mhpmcounter,
-# and mhpmcounterh on RV32, and does not use them.
+# and mhpmcounter<n>h on RV32, and does not use them.
 
 parameter_definitions:
   - name: SCOUNTENABLE_EN
@@ -16,4 +16,4 @@ parameter_definitions:
     effect:
       - >-
         Expected results of the reference-model walk only. SscounterenwSm writes
-        mhpmcounter, and mhpmcounterh on RV32, and does not consult this list.
+        mhpmcounter, and mhpmcounter<n>h on RV32, and does not consult this list.

@@ -15,7 +15,7 @@ _COVERGROUP = "SscounterenwSm_cg"
 def _generate_hpm_bit_tests(test_data: TestData) -> list[str]:
     """Require scounteren bit n to stick when hpmcounter<n> is not read-only zero.
 
-    The suite boots in M-mode. On RV32 the test ORs mhpmcounter<n> with mhpmcounterh<n>.
+    The suite boots in M-mode. On RV32 the test ORs mhpmcounter<n> with mhpmcounter<n>h.
     A nonzero read enters S-mode for the scounteren check and then returns to M-mode.
     Both halves are cleared only after that check. A legal hart signs 0. A stuck bit signs n.
     """
@@ -25,7 +25,7 @@ def _generate_hpm_bit_tests(test_data: TestData) -> list[str]:
         comment_banner(
             coverpoint,
             "For each n in 3..31, write all ones to mhpmcounter<n> and read it back.\n"
-            "On RV32 do the same for mhpmcounterh<n> and OR the two reads.\n"
+            "On RV32 do the same for mhpmcounter<n>h and OR the two reads.\n"
             "A read-only-zero counter does not constrain scounteren bit n. Otherwise enter\n"
             "S-mode, write all ones to scounteren, and require bit n to read back 1.",
         ),
@@ -40,8 +40,8 @@ def _generate_hpm_bit_tests(test_data: TestData) -> list[str]:
                 f"csrw mhpmcounter{n}, x{ones_reg}",
                 f"csrr x{read_reg}, mhpmcounter{n}",
                 "#if __riscv_xlen == 32",
-                f"csrw mhpmcounterh{n}, x{ones_reg}",
-                f"csrr x{bit_reg}, mhpmcounterh{n}",
+                f"csrw mhpmcounter{n}h, x{ones_reg}",
+                f"csrr x{bit_reg}, mhpmcounter{n}h",
                 f"or x{read_reg}, x{read_reg}, x{bit_reg}",
                 "#endif",
                 f"beqz x{read_reg}, 8f    # read-only zero: bit {n} is unconstrained",
@@ -70,7 +70,7 @@ def _generate_hpm_bit_tests(test_data: TestData) -> list[str]:
                 # Clear after the S-mode check. Coverage reads the counter while it is still nonzero.
                 f"csrw mhpmcounter{n}, zero",
                 "#if __riscv_xlen == 32",
-                f"csrw mhpmcounterh{n}, zero",
+                f"csrw mhpmcounter{n}h, zero",
                 "#endif",
                 write_sigupd(sig_reg, test_data),
             ]

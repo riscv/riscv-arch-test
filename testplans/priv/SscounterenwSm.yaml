@@ -6,7 +6,7 @@ coverpoints:
     goal: An implemented hpmcounter has a writable scounteren bit
     description: >
       Boot to M-mode. For each n in 3..31, write all ones to mhpmcounter<n> and read it back.
-      On RV32 also write and read mhpmcounterh<n>, and treat the counter as implemented when
+      On RV32 also write and read mhpmcounter<n>h, and treat the counter as implemented when
       either half is nonzero. If it is not read-only zero, enter S-mode, write all ones to
       scounteren, and require bit n to read back 1, then return to M-mode. A read-only-zero
       counter does not constrain that bit. Both halves are cleared after the check.

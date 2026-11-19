@@ -68,6 +68,31 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     cp_pmm_mxr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits_jalr, jalr_insn;
     cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
+    // cp_pmlen_misaligned_seam_sv57 and _sv48: a misaligned access whose bytes straddle bit 63 - PMLEN, the sign bit
+    // of the masked address, with the satp mode as wide as the masked address.  menvcfg.PMM masks each byte, so
+    // the bytes past the seam reach the upper half.  The size of the access is 1 << insn[13:12].
+    `ifdef UDB_MISALIGNED_LDST
+        `ifdef SV57_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
+                seam_sv57: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1010 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") == 2'b10 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 56) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv57: cross priv_mode_s, seam_insn, seam_sv57, seam_trap;
+            `endif
+        `endif
+        `ifdef SV48_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SMNPM_16
+                seam_sv48: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1001 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") == 2'b11 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 47) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv48: cross priv_mode_s, seam_insn, seam_sv48, seam_trap;
+            `endif
+        `endif
+    `endif // UDB_MISALIGNED_LDST
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         // Fault cross confirms lw executed in S-mode at the illegal address.
@@ -123,6 +148,31 @@ covergroup Smnpm_SSm_cg with function sample(ins_t ins);
     `else
         cp_pm_mprv_mpp_s: cross priv_mode_m, pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_s;
     `endif // SMMPM_SUPPORTED
+    // cp_pmlen_misaligned_seam_sv57 and _sv48: a misaligned access whose bytes straddle bit 63 - PMLEN, the sign bit
+    // of the masked address, with the satp mode as wide as the masked address.  menvcfg.PMM masks each byte, so
+    // the bytes past the seam reach the upper half.  The size of the access is 1 << insn[13:12].
+    `ifdef UDB_MISALIGNED_LDST
+        `ifdef SV57_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
+                seam_sv57: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1010 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") == 2'b10 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 56) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv57: cross priv_mode_m, mprv_bit, mpp_field_s, seam_insn, seam_sv57, seam_trap;
+            `endif
+        `endif
+        `ifdef SV48_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SMNPM_16
+                seam_sv48: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1001 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pmm") == 2'b11 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 47) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv48: cross priv_mode_m, mprv_bit, mpp_field_s, seam_insn, seam_sv48, seam_trap;
+            `endif
+        `endif
+    `endif // UDB_MISALIGNED_LDST
 endgroup
 `endif // EXCLUDE_SM
 

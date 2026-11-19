@@ -15,7 +15,9 @@ from testgen.priv.extensions.ZpmCommon import (
     MODE_GUARDS,
     MODES,
     PMLEN_BY_PMM,
+    SEAM_PAGE,
     SPLITS,
+    SV_MODES,
     build_4k_image_map,
     data_page,
     data_slvl_tables,
@@ -23,12 +25,16 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_edge_case_tests,
     generate_instruction_sweep_tests,
     generate_mprv_lower_mode_tests,
+    generate_mprv_seam_tests,
+    generate_seam_tests,
     generate_sign_extension_tests,
     generate_zicfiss_tests,
     map_pm_hi_page,
+    map_seam_pages,
     mprv_data_section,
     satp_clear,
     satp_setup,
+    seam_pages,
     set_mxr,
     set_pmm_field,
     set_sse,
@@ -63,6 +69,8 @@ def _smnpms_sweep(test_data: TestData, pmm: int) -> list[TestChunk]:
             tc.raw_data.extend(data_page("pm_lo_page"))
             if mode != "bare":
                 tc.raw_data.extend([*data_page("pm_hi_page"), *data_slvl_tables(mode), *ss_data_page(mode)])
+            if split == EDGE_CASES and seam_pages(mode, pmlen):
+                tc.raw_data.extend(data_page(SEAM_PAGE))
             if guard:
                 tc.raw_data.append(f"#endif // {guard}")
             tc.code = _smnpms_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
@@ -112,11 +120,13 @@ def _smnpms_chunk(
     """
     guard, is_bare = MODE_GUARDS[mode], mode == "bare"
     prefix = f"{label}_{mode}"
+    seam = split == EDGE_CASES and not is_bare and seam_pages(mode, pmlen) is not None
     lines = [] if not guard else [f"#ifdef {guard}"]
     if not is_bare:
         lines.extend(
             [
                 *map_pm_hi_page(mode, user=False),
+                *(map_seam_pages(mode, pmlen, user=False) if seam else []),
                 # A shadow-stack page needs a 4 KiB leaf, so the identity superpage is split.
                 "#ifdef ZICFISS_SUPPORTED",
                 *build_4k_image_map(mode, IMAGE_TABLES, [], test_data, ss_page_user=False),
@@ -144,6 +154,8 @@ def _smnpms_chunk(
                 *generate_csr_write_tests(prefix, pmlen, test_data, COVERGROUP_S, ["sepc", "sscratch"]),
             ]
         )
+        if seam:
+            lines.extend(generate_seam_tests(prefix, SV_MODES[mode], pmlen, test_data, COVERGROUP_S))
     lines.extend([*set_pmm_field("menvcfg", 0b00, 0, test_data, tsbi=True), *set_mxr(False, test_data)])
     if not is_bare:
         lines.extend([*set_sse("menvcfg", False, test_data, tsbi=True), *satp_clear()])
@@ -170,7 +182,7 @@ def make_smnpmssm(test_data: TestData) -> list[TestChunk]:
     with Smmpm alone has no menvcfg.PMM to program.
     """
     tc = test_data.begin_test_chunk("SSm")
-    tc.raw_data.extend(mprv_data_section())
+    tc.raw_data.extend(mprv_data_section(seam=True))
     tc.code = [
         *generate_mprv_lower_mode_tests(
             test_data,
@@ -179,6 +191,7 @@ def make_smnpmssm(test_data: TestData) -> list[TestChunk]:
             pmm_csr="menvcfg",
             cp="cp_pm_mprv_mpp_s",
         ),
+        *generate_mprv_seam_tests(test_data, COVERGROUP_SSM, mpp="PRV_S", pmm_csr="menvcfg"),
     ]
     return [test_data.end_test_chunk()]
 

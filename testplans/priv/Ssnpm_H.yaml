@@ -73,6 +73,7 @@ notes: |-
   * cp_*_mxr_pmm, cp_hlvx_*_pmm, cp_*_pmm_jalr: no masking, so every tag except 0x0000 is unmasked.  Tag 0x0000 never
     traps.
   * cp_*_pmlen_misaligned_word: tag 0x0000 and fully masked tags only, so no trap is expected.
+  * cp_*_pmlen_misaligned_seam_*: no trap with both seam pages mapped; once per access with the upper page unmapped.
   * cp_*_hardware_csr_writes_fault_load and _store: every access traps, once per lw (_load) or sw (_store).  The tags are 0x0000 and fully masked
     tags only.
   * cp_henvcfg_pmm_change_no_hfence: with PMM 00 the Ti access traps, except tag 0x0002 in case 5, which reaches the
@@ -765,6 +766,39 @@ coverpoints:
       PMM 10 and 11 only when PMLEN 7 and 16 are supported; each vsatp and hgatp mode only when supported
     rules:
       - pm_misaligned_equivalence
+  - name: |-
+      cp_vs_pmlen_misaligned_seam_sv57
+      cp_vs_pmlen_misaligned_seam_sv48
+    goal: Pointer masking is applied to each byte of a misaligned access in VS-mode whose bytes straddle bit XLEN-PMLEN-1, the sign bit of the masked guest virtual address
+    description: |-
+      As cp_pmlen_misaligned_seam_sv57 and cp_pmlen_misaligned_seam_sv48 in Ssnpm, in VS-mode with henvcfg.PMM, on the pairs (vsatp, hgatp) = (Sv57, Sv57x4) with PMLEN 7 and (Sv48, Sv48x4) with PMLEN 16, where the VS stage translates exactly the bits that masking keeps.  Only on harts that perform misaligned loads and stores (MISALIGNED_LDST).
+
+      Test Environment:
+       In HS-mode, identity map the test image in both stages; in the VS stage map the last page below the seam to a scratch page and the first page above it to pm_lo_page, which does not follow the scratch page in memory.
+       Set henvcfg.PMM = 10 (Sv57) or 11 (Sv48) and the other PMM fields as in the notes.
+      For each A_upper_bits in {0x0000, every masked bit set}:
+      For each instruction in {lh, lw, ld, sh, sw, sd, flw, fsw (if F), fld, fsd (if D)} and each number of bytes 1 .. size-1 below the seam:
+       Seed the last dword of the scratch page and the first dword of pm_lo_page in HS-mode, run the access alone in VS-mode, and check in HS-mode: a read's value, or both seeded dwords after a write.
+      Then clear the VS-stage leaf of the upper page, HFENCE.VVMA, and repeat every access, recording the trap.
+    expectation: "Both pages mapped: no trap; a read returns the bytes on either side of the seam and a write updates them.  Upper page unmapped: load or store/AMO page fault taken in HS-mode with stval = the upper page's guest virtual address (0xFF00_0000_0000_0000 or 0xFFFF_8000_0000_0000) and htval = 0.  A write that faults may have written its first part, so memory is not checked."
+    bins: priv_mode VS x {(Sv57, PMLEN 7), (Sv48, PMLEN 16)} x {lh, lw, ld, sh, sw, sd, flw, fsw, fld, fsd} x {completes, page fault}
+    rules:
+      - pm_misaligned_equivalence
+      - pm_csr_hw_apply
+  - name: |-
+      cp_vu_pmlen_misaligned_seam_sv57
+      cp_vu_pmlen_misaligned_seam_sv48
+    goal: Pointer masking is applied to each byte of a misaligned access in VU-mode whose bytes straddle bit XLEN-PMLEN-1, the sign bit of the masked guest virtual address
+    description: |-
+      Same test environment and loop as cp_vs_pmlen_misaligned_seam_sv57 and _sv48, except:
+       - the field under test is senvcfg.PMM;
+       - the VS-stage leaves have PTE.U = 1;
+       - the accesses run in VU-mode.
+    expectation: As cp_vs_pmlen_misaligned_seam_sv57 and _sv48, with the PMLEN of senvcfg.PMM.
+    bins: priv_mode VU x {(Sv57, PMLEN 7), (Sv48, PMLEN 16)} x {lh, lw, ld, sh, sw, sd, flw, fsw, fld, fsd} x {completes, page fault}
+    rules:
+      - pm_misaligned_equivalence
+      - pm_csr_hw_apply
   - name: cp_vs_hardware_csr_writes_fault_load
     goal: Pointer masking is applied to the addresses that hardware writes to stval and htval on a faulting access in VS-mode
     description: |-

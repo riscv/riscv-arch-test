@@ -1018,7 +1018,6 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         cp_pmm_vsuxl_clear: cross csrw_insn, vsstatus_writer, pmm_set_senvcfg, vsuxl_rv32_after;
     `endif
 
-
     // csrrw henvcfg and hstatus with the reserved PMM = 01 in henvcfg.PMM and hstatus.HUPMM
     henvcfg_csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_HENVCFG);
@@ -1068,6 +1067,7 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             cp_hstatus_hupmm_unsupported: cross priv_mode_hs, hstatus_csrrw, hstatus_hupmm_unsupported_written;
         `endif
     `endif
+
 endgroup
 `endif // H_SUPPORTED
 

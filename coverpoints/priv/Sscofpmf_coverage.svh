@@ -154,8 +154,8 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
     // cp_xinh_freeze_holds_count and cp_mcountinhibit_freeze_holds_count: a write that stops a counter that has
     // counted in M-mode only, by setting MINH or the counter's mcountinhibit bit.
     `ifdef UDB_MXLEN_64
-        minh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]} {
+        minh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT)[62:58],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT)[62:58]} {
             `ifdef H_SUPPORTED
                 bins m_frozen = {10'b01111_11111};
             `elsif S_SUPPORTED
@@ -164,7 +164,7 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
                 bins m_frozen = {10'b00100_10100};   // and SINH without S
             `endif
         }
-        m_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+        m_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58] {
             `ifdef H_SUPPORTED
                 bins m_counts = {5'b01111};
             `elsif S_SUPPORTED
@@ -174,8 +174,8 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        minh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]} {
+        minh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH)[30:26],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH)[30:26]} {
             `ifdef H_SUPPORTED
                 bins m_frozen = {10'b01111_11111};
             `elsif S_SUPPORTED
@@ -184,7 +184,7 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
                 bins m_frozen = {10'b00100_10100};   // and SINH without S
             `endif
         }
-        m_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+        m_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26] {
             `ifdef H_SUPPORTED
                 bins m_counts = {5'b01111};
             `elsif S_SUPPORTED
@@ -194,13 +194,13 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
             `endif
         }
     `endif
-    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER, `SSCOFPMF_MHPMCOUNTER) != 0) {
+    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER) != 0) {
         bins yes = {1};
     }
     cp_xinh_freeze_holds_count: cross priv_mode_m, minh_freeze, counter_moved;
     `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER],
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER]} {
+        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCOUNTINHIBIT)[`RVMODEL_HPM_COUNTER],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  CSR_MCOUNTINHIBIT)[`RVMODEL_HPM_COUNTER]} {
             bins frozen = {2'b01};
         }
         cp_mcountinhibit_freeze_holds_count: cross priv_mode_m, mcountinhibit_freeze, m_counts_xinh, counter_moved;
@@ -358,15 +358,15 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     // counted in S-mode only, by setting SINH or the counter's mcountinhibit bit. The suite reaches the M-level CSRs through T-SBI,
     // so the write that stops the counter is an M-mode instruction and the crosses have no privilege mode.
     `ifdef UDB_MXLEN_64
-        sinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]} {
+        sinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT)[62:58],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT)[62:58]} {
             `ifdef H_SUPPORTED
                 bins s_frozen = {10'b10111_11111};
             `else
                 bins s_frozen = {10'b10100_11100};
             `endif
         }
-        s_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+        s_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58] {
             `ifdef H_SUPPORTED
                 bins s_counts = {5'b10111};
             `else
@@ -374,15 +374,15 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        sinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]} {
+        sinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH)[30:26],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH)[30:26]} {
             `ifdef H_SUPPORTED
                 bins s_frozen = {10'b10111_11111};
             `else
                 bins s_frozen = {10'b10100_11100};
             `endif
         }
-        s_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+        s_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26] {
             `ifdef H_SUPPORTED
                 bins s_counts = {5'b10111};
             `else
@@ -390,13 +390,13 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
             `endif
         }
     `endif
-    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER, `SSCOFPMF_MHPMCOUNTER) != 0) {
+    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER) != 0) {
         bins yes = {1};
     }
     cp_xinh_freeze_holds_count: cross sinh_freeze, counter_moved;
     `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER],
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER]} {
+        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCOUNTINHIBIT)[`RVMODEL_HPM_COUNTER],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  CSR_MCOUNTINHIBIT)[`RVMODEL_HPM_COUNTER]} {
             bins frozen = {2'b01};
         }
         cp_mcountinhibit_freeze_holds_count: cross mcountinhibit_freeze, s_counts_xinh, counter_moved;
@@ -498,8 +498,8 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
     // counted in U-mode only, by setting UINH or the counter's mcountinhibit bit. The suite reaches the M-level CSRs through T-SBI,
     // so the write that stops the counter is an M-mode instruction and the crosses have no privilege mode.
     `ifdef UDB_MXLEN_64
-        uinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58]} {
+        uinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT)[62:58],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENT)[62:58]} {
             `ifdef H_SUPPORTED
                 bins u_frozen = {10'b11011_11111};
             `elsif S_SUPPORTED
@@ -508,7 +508,7 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
                 bins u_frozen = {10'b10000_10100};   // SINH is read-only zero without S-mode
             `endif
         }
-        u_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+        u_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT)[62:58] {
             `ifdef H_SUPPORTED
                 bins u_counts = {5'b11011};
             `elsif S_SUPPORTED
@@ -518,8 +518,8 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        uinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26]} {
+        uinh_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH)[30:26],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  `SSCOFPMF_MHPMEVENTH)[30:26]} {
             `ifdef H_SUPPORTED
                 bins u_frozen = {10'b11011_11111};
             `elsif S_SUPPORTED
@@ -528,7 +528,7 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
                 bins u_frozen = {10'b10000_10100};   // SINH is read-only zero without S-mode
             `endif
         }
-        u_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+        u_counts_xinh: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH)[30:26] {
             `ifdef H_SUPPORTED
                 bins u_counts = {5'b11011};
             `elsif S_SUPPORTED
@@ -538,13 +538,13 @@ covergroup Sscofpmf_U_cg with function sample(ins_t ins);
             `endif
         }
     `endif
-    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER, `SSCOFPMF_MHPMCOUNTER) != 0) {
+    counter_moved: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMCOUNTER) != 0) {
         bins yes = {1};
     }
     cp_xinh_freeze_holds_count: cross uinh_freeze, counter_moved;
     `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER],
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mcountinhibit", "mcountinhibit")[`RVMODEL_HPM_COUNTER]} {
+        mcountinhibit_freeze: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCOUNTINHIBIT)[`RVMODEL_HPM_COUNTER],
+                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  CSR_MCOUNTINHIBIT)[`RVMODEL_HPM_COUNTER]} {
             bins frozen = {2'b01};
         }
         cp_mcountinhibit_freeze_holds_count: cross mcountinhibit_freeze, u_counts_xinh, counter_moved;
@@ -559,13 +559,13 @@ covergroup Sscofpmf_H_cg with function sample(ins_t ins);
 
     // {MINH, SINH, UINH, VSINH, VUINH}
     `ifdef UDB_MXLEN_64
-        virt_inh_pattern : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] {
+        virt_inh_pattern : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT)[62:58] {
             bins only_vs = {5'b11101};
             bins only_vu = {5'b11110};
             bins only_u  = {5'b11011};
         }
     `else
-        virt_inh_pattern : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] {
+        virt_inh_pattern : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH)[30:26] {
             bins only_vs = {5'b11101};
             bins only_vu = {5'b11110};
             bins only_u  = {5'b11011};

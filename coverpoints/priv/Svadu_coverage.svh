@@ -283,15 +283,15 @@ covergroup Svadu_H_cg with function sample(ins_t ins);
     }
     // henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0, so (0, 1) is not a bin
     `ifdef UDB_MXLEN_64
-        adue_pair : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "adue")[0],
-                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue")[0]} {
+        adue_pair : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue")[0],
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "adue")[0]} {
             bins svade_both = {2'b00};
             bins vs_svade   = {2'b10};
             bins vs_svadu   = {2'b11};
         }
     `else
-        adue_pair : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "adue")[0],
-                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfgh", "adue")[0]} {
+        adue_pair : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue")[0],
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFGH, "adue")[0]} {
             bins svade_both = {2'b00};
             bins vs_svade   = {2'b10};
             bins vs_svadu   = {2'b11};

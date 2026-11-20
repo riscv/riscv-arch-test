@@ -506,8 +506,8 @@ covergroup H_vsstatus_cg with function sample(ins_t ins);
     csrr_vsstatus : coverpoint ins.current.insn {
         wildcard bins csrr = {CSRR} iff (ins.current.insn[31:20] == CSR_VSSTATUS);
     }
-    vsstatus_dirty : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs") == 3,
-                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") == 3} {
+    vsstatus_dirty : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "fs") == 3,
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "vs") == 3} {
         `ifdef F_SUPPORTED
             bins fs = {2'b10};
         `endif

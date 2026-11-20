@@ -138,15 +138,15 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     cp_pelp_trap_entry_zicfilp: cross priv_mode_m, lpe_enabled, elp_before, illegal;
 
     // With MLPE=0 and a software-written MPELP=1, an ebreak traps into M-mode and must still write MPELP=0
-    mlpe_off_before: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "mlpe")[0] {
+    mlpe_off_before: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "mlpe")[0] {
         bins off = {1'b0};
     }
     `ifdef UDB_MXLEN_32
-        mpelp_stale: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpelp")[0] {
+        mpelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpelp")[0] {
             bins one = {1'b1};
         }
     `else
-        mpelp_stale: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpelp")[0] {
+        mpelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpelp")[0] {
             bins one = {1'b1};
         }
     `endif
@@ -304,10 +304,10 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
     cp_pelp_trap_entry_zicfilp: cross priv_mode_s, lpe_enabled, elp_before, illegal;
 
     // With menvcfg.LPE=0 and a software-written SPELP=1, an ebreak traps into S-mode and must still write SPELP=0
-    menvcfg_lpe_off: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "lpe")[0] {
+    menvcfg_lpe_off: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "lpe")[0] {
         bins off = {1'b0};
     }
-    spelp_stale: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spelp")[0] {
+    spelp_stale: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spelp")[0] {
         bins one = {1'b1};
     }
     ebreak_instr: coverpoint ins.current.insn {

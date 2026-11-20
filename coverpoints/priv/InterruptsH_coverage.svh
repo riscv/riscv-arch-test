@@ -29,27 +29,27 @@ covergroup InterruptsH_cg with function sample(ins_t ins);
     }
     // {old VGEIN == 0, hgeip[old VGEIN], new VGEIN == 0, hgeip[new VGEIN]}; hgeip[0] reads 0.  csrrs cannot reach
     // VGEIN = 0 and csrrc cannot leave it, so each form has its own coverpoint with the transitions it can make.
-    vgein_switch_rw : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12] == 0,
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "hgeip")[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12]],
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "hstatus")[17:12] == 0,
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hgeip", "hgeip")[get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "hstatus")[17:12]]} {
+    vgein_switch_rw : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12] == 0,
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGEIP)[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12]],
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12] == 0,
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HGEIP)[get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12]]} {
         bins pending_to_zero = {4'b0110};
         bins pending_to_idle = {4'b0100};
         bins zero_to_pending = {4'b1001};
         bins idle_to_pending = {4'b0001};
     }
-    vgein_switch_set : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12] == 0,
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "hgeip")[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12]],
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "hstatus")[17:12] == 0,
-                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hgeip", "hgeip")[get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "hstatus")[17:12]]} {
+    vgein_switch_set : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12] == 0,
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGEIP)[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12]],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12] == 0,
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HGEIP)[get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12]]} {
         bins pending_to_idle = {4'b0100};
         bins zero_to_pending = {4'b1001};
         bins idle_to_pending = {4'b0001};
     }
-    vgein_switch_clear : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12] == 0,
-                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "hgeip")[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12]],
-                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "hstatus")[17:12] == 0,
-                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hgeip", "hgeip")[get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "hstatus")[17:12]]} {
+    vgein_switch_clear : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12] == 0,
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGEIP)[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12]],
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12] == 0,
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HGEIP)[get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12]]} {
         bins pending_to_zero = {4'b0110};
         bins pending_to_idle = {4'b0100};
         bins idle_to_pending = {4'b0001};

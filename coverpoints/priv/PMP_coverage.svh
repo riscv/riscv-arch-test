@@ -454,12 +454,12 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
       wildcard bins sd = {SD};
     }
     `ifdef UDB_PMP_NA4_SUPPORTED
-      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")[7:0] {
+      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[7:0] {
         bins L0 = {8'h17};
         bins L1 = {8'h97};
       }
       // Access address minus the NA4 region base: 0 when the region is the lower word, -4 when the upper word
-      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0")) << 2)) {
+      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
         bins lower = {64'h0};
         bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
       }
@@ -468,15 +468,15 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     `ifdef UDB_PMP_TOR_SUPPORTED
       `ifdef UDB_PMP_GRANULARITY_2
         // Entry 1: TOR, XWR = 111; entry 0: OFF, no permissions, only the bottom of the region
-        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")[15:0] {
+        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[15:0] {
           bins L0 = {16'h0F00};
           bins L1 = {16'h8F00};
         }
-        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr1", "pmpaddr1")) -
-                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0"))) {
+        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR1)) -
+                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0))) {
           bins one_word = {64'h1};
         }
-        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0")) << 2)) {
+        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
           bins lower = {64'h0};
           bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
         }
@@ -1762,12 +1762,12 @@ covergroup PMP_Sm_cg with function sample(
       wildcard bins sd = {SD};
     }
     `ifdef UDB_PMP_NA4_SUPPORTED
-      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")[7:0] {
+      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[7:0] {
         bins L0 = {8'h17};
         bins L1 = {8'h97};
       }
       // Access address minus the NA4 region base: 0 when the region is the lower word, -4 when the upper word
-      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0")) << 2)) {
+      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
         bins lower = {64'h0};
         bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
       }
@@ -1776,15 +1776,15 @@ covergroup PMP_Sm_cg with function sample(
     `ifdef UDB_PMP_TOR_SUPPORTED
       `ifdef UDB_PMP_GRANULARITY_2
         // Entry 1: TOR, XWR = 111; entry 0: OFF, no permissions, only the bottom of the region
-        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")[15:0] {
+        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[15:0] {
           bins L0 = {16'h0F00};
           bins L1 = {16'h8F00};
         }
-        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr1", "pmpaddr1")) -
-                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0"))) {
+        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR1)) -
+                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0))) {
           bins one_word = {64'h1};
         }
-        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0")) << 2)) {
+        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
           bins lower = {64'h0};
           bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
         }
@@ -2725,12 +2725,12 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
       wildcard bins sd = {SD};
     }
     `ifdef UDB_PMP_NA4_SUPPORTED
-      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")[7:0] {
+      pmp0cfg_na4_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[7:0] {
         bins L0 = {8'h17};
         bins L1 = {8'h97};
       }
       // Access address minus the NA4 region base: 0 when the region is the lower word, -4 when the upper word
-      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0")) << 2)) {
+      na4_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
         bins lower = {64'h0};
         bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
       }
@@ -2739,15 +2739,15 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
     `ifdef UDB_PMP_TOR_SUPPORTED
       `ifdef UDB_PMP_GRANULARITY_2
         // Entry 1: TOR, XWR = 111; entry 0: OFF, no permissions, only the bottom of the region
-        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")[15:0] {
+        pmp1cfg_tor_xwr111: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0)[15:0] {
           bins L0 = {16'h0F00};
           bins L1 = {16'h8F00};
         }
-        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr1", "pmpaddr1")) -
-                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0"))) {
+        tor_4byte_region: coverpoint (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR1)) -
+                                      64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0))) {
           bins one_word = {64'h1};
         }
-        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpaddr0", "pmpaddr0")) << 2)) {
+        tor_dword_half: coverpoint (64'(ins.current.eff_addr) - (64'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPADDR0)) << 2)) {
           bins lower = {64'h0};
           bins upper = {64'hFFFF_FFFF_FFFF_FFFC};
         }

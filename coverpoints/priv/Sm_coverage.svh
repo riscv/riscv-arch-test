@@ -2179,7 +2179,7 @@ covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrrw1 = {CSRRW} iff (ins.current.insn[31:20] == CSR_HIDELEG && ins.current.rs1_val == '1);
         wildcard bins csrrs1 = {CSRRS} iff (ins.current.insn[31:20] == CSR_HIDELEG && ins.current.rs1_val == '1);
     }
-    mideleg_high_clear : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg") >> 16) {
+    mideleg_high_clear : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIDELEG) >> 16) {
         bins zero = {0};
     }
     cp_hideleg_high_roz :   cross priv_mode_m, hideleg_set_all, mideleg_high_clear;

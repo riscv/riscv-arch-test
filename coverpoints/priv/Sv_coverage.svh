@@ -127,7 +127,7 @@ covergroup Sv_sfence_cg with function sample(ins_t ins); //sf.1
         `ifndef UDB_ASID_WIDTH_16
             sfence_rs2_asid_len: coverpoint ins.current.rs2_val iff ((ins.current.insn ==? SFENCE_VMA) && (ins.current.insn[24:20] != 5'd0)) {
                 bins cur_plus_high = {[0:$]} iff (ins.current.rs2_val ==
-                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "asid") | ((64'hFFFF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
+                    (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "asid") | ((64'hFFFF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
             }
             cp_sfence_asid_len: cross priv_mode_s, sfence_rs2_asid_len;
         `endif
@@ -135,7 +135,7 @@ covergroup Sv_sfence_cg with function sample(ins_t ins); //sf.1
         `ifndef UDB_ASID_WIDTH_9
             sfence_rs2_asid_len: coverpoint ins.current.rs2_val iff ((ins.current.insn ==? SFENCE_VMA) && (ins.current.insn[24:20] != 5'd0)) {
                 bins cur_plus_high = {[0:$]} iff (ins.current.rs2_val ==
-                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "asid") | ((32'h1FF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
+                    (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "asid") | ((32'h1FF >> `UDB_ASID_WIDTH) << `UDB_ASID_WIDTH)));
             }
             cp_sfence_asid_len: cross priv_mode_s, sfence_rs2_asid_len;
         `endif

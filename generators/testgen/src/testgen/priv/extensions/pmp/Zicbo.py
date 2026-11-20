@@ -7,6 +7,8 @@
 
 """PMP Zicbo group: cache-block and prefetch instructions checked against PMP."""
 
+from functools import partial
+
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -17,40 +19,35 @@ from testgen.priv.extensions.pmp.helpers import (
     napot_mask_defines,
 )
 from testgen.priv.extensions.pmp.probes import (
+    ProbeGenerator,
     gen_cbo,
     gen_prefetch,
 )
 from testgen.priv.registry import add_priv_test_generator
 
-_ENABLE_CBO = ["LI(t0, 0xF0)", "csrrs zero, menvcfg, t0"]
 # The locked NAPOT region is max(page, grain) bytes from TEST_FOR_EXECUTION; pad to its end so that
 # nothing the trap handler writes (e.g. the trap signature) shares it at grains above a page.
 _PAGE_REGION = [*make_exec_region(("1024", "nop"), pad=None), ".p2align 12", ".p2align (UDB_PMP_GRANULARITY)"]
 
 
-@add_priv_test_generator(
-    "PMP",
-    extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=["Sm", "Zicbom", "Zicboz"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-)
-def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
+def _make_cbo_chunks(
+    test_data: TestData, name: str, probe_generator: ProbeGenerator, coverpoints: str, instructions: str
+) -> list[TestChunk]:
     chunks = []
     for number, lxwr in ((1, "1000"), (2, "1001"), (3, "1011")):
-        chunk = test_data.begin_test_chunk(f"Zicbo_cbo_wr_{number:02d}")
+        chunk = test_data.begin_test_chunk(f"Zicbo_{name}_wr_{number:02d}")
         chunk.section_header = comment_banner(
-            "cp_cbo_zero, cp_cbo_clean, cp_cbo_flush and cp_cbo_inval",
-            f"cbo.zero/clean/flush/inval against a locked page-sized NAPOT region with WR = {lxwr[2:]}.",
+            coverpoints,
+            f"{instructions} against a locked page-sized NAPOT region with WR = {lxwr[2:]}.",
         )
         chunk.code.extend(
             lxwr_walk_body(
                 test_data,
                 [(lxwr, 0)],
                 "napot",
-                gen_cbo,
+                probe_generator,
                 lambda instruction: f"cp_cbo_{instruction.removeprefix('cbo.')}",
                 first=number,
-                extra_setup=_ENABLE_CBO,
                 napot_mask=napot_mask_defines(12),
             )
         )
@@ -62,7 +59,35 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMP",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=["Sm", "Zicbop"],
+    required_extensions=["Sm", "Zicbom"],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+)
+def make_pmpzicbo_cbom(test_data: TestData) -> list[TestChunk]:
+    return _make_cbo_chunks(
+        test_data,
+        "cbom",
+        partial(gen_cbo, instructions=("cbo.clean", "cbo.flush", "cbo.inval")),
+        "cp_cbo_clean, cp_cbo_flush and cp_cbo_inval",
+        "cbo.clean/flush/inval",
+    )
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm", "Zicboz"],
+    params=["NUM_PMP_ENTRIES: '>0'"],
+)
+def make_pmpzicbo_cboz(test_data: TestData) -> list[TestChunk]:
+    return _make_cbo_chunks(test_data, "cboz", partial(gen_cbo, instructions=("cbo.zero",)), "cp_cbo_zero", "cbo.zero")
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    # prefetch.i/r/w are HINTs (ORI with rd = x0), so the test runs with or without Zicbop
+    required_extensions=["Sm"],
+    march_extensions=["Zicbop"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpzicbo_prefetch(test_data: TestData) -> list[TestChunk]:
@@ -78,7 +103,6 @@ def make_pmpzicbo_prefetch(test_data: TestData) -> list[TestChunk]:
             "napot",
             gen_prefetch,
             lambda instruction: f"cp_prefetch_{instruction.removeprefix('prefetch.')}",
-            extra_setup=_ENABLE_CBO,
             napot_mask=napot_mask_defines(12),
         )
     )

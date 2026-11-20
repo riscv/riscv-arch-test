@@ -415,6 +415,15 @@
         SREG x31, 248(DEFAULT_TEMP_REG)
     #endif
 
+        # Report only the first failure. A trap taken while this report runs (for example, a
+        # console store that faults) reaches the trap handler, which halts on this flag before
+        # it records the trap; anything else that comes back here halts too.
+        LA(x6, failure_in_progress)
+        lw x7, 0(x6)
+        bnez x7, failedtest_reentered
+        LI(x7, 1)
+        sw x7, 0(x6)
+
     #ifdef RVTEST_VECTOR
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
         RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
@@ -1014,7 +1023,7 @@
     //   - The embedded data contains:
     //       offset 0:               RVTEST_WORD_PTR <label>  (address of failing check)
     //       offset REGWIDTH:        RVTEST_WORD_PTR <string> (failure description string)
-    //       offset 2*REGWIDTH:      .word <CSR_XEPC>         (only for some callers)
+    //       offset 2*REGWIDTH:      .word <CSR_XEPC>         (the handler's xepc; CSR_MEPC at the end of the test)
     //
     // TRAP_SIGUPD and check_trap_sig_offset copy their already-available actual
     // and expected values before jumping to their failure entry points. The
@@ -1311,6 +1320,40 @@
         SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
 
     failedtest_report:
+    #ifdef STANDARD_SM_SUPPORTED
+        # Print and halt from M-mode, where the console does not depend on the test's address
+        # translation, PMP or delegation, and an RVMODEL_HALT_FAIL that needs M-mode works.
+        # Everything above ran in the failing mode, where the test's pointers are valid; the
+        # rest reads only the failure data. A trap-handler failure names its handler's xepc CSR
+        # after the jal; mepc means the report is already in M-mode, where a T-SBI ecall from
+        # the M-mode trap handler would be a double trap with Smdbltrp.
+        lw a0, failure_type
+        LI(a1, 3)
+        bne a0, a1, 1f
+        lhu a0, 2*REGWIDTH(DEFAULT_LINK_REG)
+        LI(a1, CSR_MEPC)
+        beq a0, a1, failedtest_report_mmode
+    1:
+        # An M-mode test body may have set mstatus.MDT, which makes the ecall a double trap.
+        # A test that left M-mode with an xret also gets here; the M-mode trap handler then runs
+        # the mstatus write below in M-mode.
+        LREG a0, rvtest_current_mode
+        beqz a0, failedtest_report_mmode    # the last T-SBI mode change was to M-mode
+        # M-mode resumes after the ecall at the same address, which it can fetch only if this
+        # code runs at its link address. A test running it through another mapping of the
+        # image reports in place, as before.
+        LA(a0, failedtest_report)
+        LREG a1, failedtest_report_link
+        bne a0, a1, print_failstr
+        RVTEST_TSBI_GOTO_MMODE
+    failedtest_report_mmode:
+        LI(a0, MSTATUS_MPRV | MSTATUS_MIE)  # untranslated accesses; no interrupts while reporting
+    failedtest_report_mstatus:              # the M-mode trap handler resumes a trap here in M-mode
+        csrc CSR_MSTATUS, a0
+        LA(a0, failure_in_progress)
+        LI(a1, 2)
+        sw a1, 0(a0)                        # reporting from M-mode
+    #endif
       print_failstr:
         LA(a0, failstr)
         call rvmodel_io_write_str
@@ -1675,6 +1718,12 @@
         LA(a0, newlinestr)
         call rvmodel_io_write_str
 
+        // ---- Trap signature overflow: show the trap that overflowed it ----
+        LA(a0, trap_diag_fail_str_ptr)
+        LREG x9, 0(a0)
+        LA(a0, trap_sig_overflowstr)
+        beq x9, a0, trap_report_trap_context
+
         // ---- Subtype 0: Unknown / generic ----
         beqz x8, trap_report_generic
 
@@ -1916,6 +1965,7 @@
         LA(a0, trap_diag_generic_str)
         call rvmodel_io_write_str // print "Unrecognized trap failure..."
 
+    trap_report_trap_context:
         // Print instruction at saved mepc
         LREG a2, saved_xepc
         LA(a0, xepcinstrstr)
@@ -1995,17 +2045,22 @@
         call rvmodel_io_write_str
 
     failedtest_terminate:
-        # A failure found by the M-mode trap handler is already in M-mode trap context.
-        lw a0, failure_type
-        LI(a1, 3)
-        bne a0, a1, 1f
-        lw a0, trap_diag_mode
-        bnez a0, 1f
-        LA(T1, rvtest_fail_epilogs_mmode)
-        jr T1
-    1:
-        LA(T1, rvtest_fail_epilogs)
-        jr T1
+        # Remove the trap handlers before halting. A report printed in place, outside M-mode,
+        # switches to M-mode first.
+        lw a0, failure_in_progress
+        LI(a1, 2)
+        bne a0, a1, failedtest_terminate_lower_mode
+        LA(T2, rvtest_fail_epilogs_mmode)
+        jr T2                          # x7 does not set ELP (Zicfilp)
+    failedtest_terminate_lower_mode:
+        LA(T2, rvtest_fail_epilogs)
+        jr T2
+
+    # A failure found while another is being reported, usually a trap taken inside the report.
+    # Halt without printing or running the epilogs: the report may be what faulted. The trap
+    # handlers come here in M-mode.
+    failedtest_reentered:
+        call rvmodel_halt_fail
 
 
     # Print saved xepc, xcause, xtval, xstatus for trap failure diagnostics.
@@ -2230,6 +2285,11 @@
         .word 0
     trap_diag_mode:                              # 0=M, 1=S, 2=HS, 3=VS
         .word 0
+    failure_in_progress:                         # 1 once a failure report has started, 2 once it runs in M-mode
+        .word 0
+    .balign 8
+    failedtest_report_link:                      # link address of failedtest_report
+        RVTEST_WORD_PTR failedtest_report
     trap_diag_fail_str_ptr:                      # saved failure string pointer for dispatch
         .fill 2, 4, 0
     csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context

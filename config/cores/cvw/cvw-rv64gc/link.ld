@@ -1,6 +1,6 @@
 /* Set these to match the DUT memory map and hart count. */
 RAM_ORIGIN = 0x80000000;
-RAM_LENGTH = 0x80000000;
+RAM_LENGTH = 0x08000000; /* rv64gc/rv32gc UNCORE_RAM; the DTIM configs that share this file have 8 MiB */
 TEST_BASE = RAM_ORIGIN;
 NUM_HARTS = 1;
 

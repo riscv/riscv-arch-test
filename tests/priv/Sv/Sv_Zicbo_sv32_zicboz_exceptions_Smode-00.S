@@ -234,7 +234,7 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_s_test10_zero:
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
   // Test case 11: Leaf PTE points to the access-fault region | Test in S-Mode | expected = Store access fault
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x13, (va_data >> 22) << 22)
@@ -390,7 +390,7 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_s_test21_zero:
 
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   // Test case 22: Access fault on the page-table walk | Test in S-Mode | expected = Store access fault
-  PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
@@ -406,7 +406,7 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test22_zero:
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
   // Test case 23: Leaf PTE points to the access-fault region | Test in S-Mode | expected = Store access fault
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(x13, va_data)

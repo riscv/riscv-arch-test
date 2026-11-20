@@ -13,6 +13,7 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
+    CSR_CHECK_REG,
     LOCKED_LXWR_CASES,
     REGION_BLOBS,
     TOR_ENTRIES,
@@ -109,7 +110,7 @@ def _csr_walk(symbol: str, first: str, count: int, string_label: str, mode: Mode
         f".rept {count}",
         f"RVTEST_TSBI_GOTO_{mode.letter}MODE",
         "99:",
-        f"RVTEST_SIGUPD_CSR_WRITE({symbol}, x4, 99b, {string_label}_str)",
+        f"RVTEST_SIGUPD_CSR_WRITE({symbol}, x{CSR_CHECK_REG}, 99b, {string_label}_str)",
         "nop",
         "RVTEST_TSBI_GOTO_MMODE",
         f".set {symbol}, {symbol}+1",
@@ -122,7 +123,8 @@ def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
     chunk = test_data.begin_test_chunk(f"{mode.letter}_csr_access")
     chunk.section_header = comment_banner(
         f"{mode.suite} cp_pmpaddr_access_{low} and cp_pmpcfg_access_{low}",
-        f"Write every pmpaddr and pmpcfg CSR from {mode.letter} mode; each traps with an illegal instruction.",
+        f"Write every pmpaddr and pmpcfg CSR from {mode.letter} mode; each traps with an illegal instruction, "
+        "and the trapping read leaves its destination register unchanged.",
     )
     chunk.code.extend(
         [
@@ -130,7 +132,7 @@ def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
             "",
             test_data.add_testcase("write_all", f"cp_pmpaddr_access_{low}", covergroup(test_data)),
             f"// Write all ones to every pmpaddr CSR from {mode.letter} mode",
-            "LI(x4, -1)",
+            f"LI(x{CSR_CHECK_REG}, -1)",
             *_csr_walk("pmpaddri", "CSR_PMPADDR0", 64, test_data.current_testcase_label, mode),
             "",
             test_data.add_testcase("write_all", f"cp_pmpcfg_access_{low}", covergroup(test_data)),

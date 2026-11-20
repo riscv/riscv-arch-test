@@ -66,7 +66,7 @@ covergroup Smnpm_S_cg with function sample(ins_t ins);
     `endif // ZICFISS_SUPPORTED
     cp_pmlen_misaligned_word: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_mxr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, sw_lw_insn;
-    cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;
+    cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits_jalr, jalr_insn;
     cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
@@ -147,7 +147,7 @@ covergroup Smnpm_U_cg with function sample(ins_t ins);
     // Main Crosses
     cp_pmlen_masking : cross priv_mode_u, pmm, a_upper_bits, pm_insn;
     cp_pmlen_misaligned_word: cross priv_mode_u, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
-    cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, jalr_insn;
+    cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits_jalr, jalr_insn;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         // Fault cross confirms lw executed in U-mode at the illegal address.

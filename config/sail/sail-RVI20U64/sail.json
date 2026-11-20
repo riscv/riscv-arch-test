@@ -193,7 +193,7 @@
       // - "ExtContext_FourState" allows all values {Off, Initial, Clean, Dirty}.
       // - "ExtContext_TwoState" allows {Off, Dirty}, and writes of Initial and Clean get written as Dirty.
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
-      "fs_legal_states": "ExtContext_FourState",
+      "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
     },
     // Set the version of the privileged ISA. `"Privileged_ISA_1_13"`
@@ -268,13 +268,13 @@
         // (use `{"Some": "AlignmentException"}`).
         // This option controls scalar loads/stores.
         "load_store": {
-          "None": null
+          "Some": "AlignmentException"
         },
         // A misaligned vector load/store can be configured
         // independently of the scalar case above, but uses the same
         // option values.
         "vector": {
-          "None": null
+          "Some": "AlignmentException"
         },
         // Similarly, a misaligned AMO and LR/SC can be configured with the same
         // option values.
@@ -531,15 +531,15 @@
   "extensions": {
     "M": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "A": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "F": {
       "mutable_misa": false,
-      "supported": true,
+      "supported": false,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
       //
@@ -553,7 +553,7 @@
     },
     "D": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "C": {
       "mutable_misa": false
@@ -714,13 +714,13 @@
       "supported": false
     },
     "Zicntr": {
-      "supported": true
+      "supported": false
     },
     "Zicsr": {
-      "supported": true
+      "supported": false
     },
     "Zifencei": {
-      "supported": true
+      "supported": false
     },
     "Zihintntl": {
       "supported": false
@@ -729,16 +729,16 @@
       "supported": false
     },
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
       "supported": false
     },
     "Zmmul": {
-      "supported": true
+      "supported": false
     },
     "Zaamo": {
-      "supported": true
+      "supported": false
     },
     "Zabha": {
       "supported": false
@@ -747,7 +747,7 @@
       "supported": false
     },
     "Zalrsc": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that each memory region has a MAG
     // PMA of at least 16 bytes.  If you enable this you also need to ensure
@@ -789,13 +789,13 @@
       "supported": false
     },
     "Zca": {
-      "supported": true
+      "supported": false
     },
     "Zcf": {
       "supported": false
     },
     "Zcd": {
-      "supported": true
+      "supported": false
     },
     "Zcb": {
       "supported": false

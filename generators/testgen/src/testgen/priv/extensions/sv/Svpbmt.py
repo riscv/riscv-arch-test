@@ -318,8 +318,8 @@ def _make_zicboz_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     nonzero data, then cbo.zero the block and load from it in the very next instruction.  The load and every
     doubleword of the block must read zero, and the neighbors must keep their values.  Then cbo.zero the block
     again and store to it in the very next instruction; the store must not be lost.  The page has one mapping,
-    so the accesses are never aliased.  The block sits a quarter of the way into the page, clear of the
-    data-region routines, and the page holds a block of up to 2 KiB.
+    so the accesses are never aliased.  The block sits at page offset 0x400, clear of the data-region routines.
+    This works for blocks of up to 1 KiB; a larger block would include the routines and the lower neighbor.
     """
     regs = SvRegs.allocate(test_data)
     m = mode[0].lower()

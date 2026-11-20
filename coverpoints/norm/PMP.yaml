@@ -22,9 +22,9 @@ normative_rule_definitions:
         "PMP_U_cg/{cp_cfg_R, cp_mprv_lw}",
         "PMP_Zalrsc_cg/cp_cfg_RW",
         "PMP_Zca_cg/cp_cfg_R",
-        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
-        "PMP_H_hlv_cg/cp_pmp_hlv",
-        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
+        "PMP_H_cg/{cp_cfg_R,cp_mprv_lw}",
+        "PMP_H_hlv_cg/{cp_pmp_hlv,cp_pmp_hlvx}",
+        "PMP_H_guest_cg/cp_pmp_lr",
       ]
 
   # Attempting to execute a store instruction which accesses a physical address within
@@ -48,9 +48,9 @@ normative_rule_definitions:
         "PMP_Zca_cg/cp_cfg_W",
         "PMP_HSvZicbo_cg/cp_pmp",
         "PMP_Zicbo_cg/cp_cbo_zero",
-        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
-        "PMP_H_hlv_cg/cp_pmp_hlv",
-        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
+        "PMP_H_cg/{cp_cfg_W,cp_mprv_sw}",
+        "PMP_H_hlv_cg/cp_pmp_hsv",
+        "PMP_H_guest_cg/cp_pmp_amo",
       ]
 
   # When the L bit is set, the R/W/X permissions are enforced for all privilege modes.
@@ -179,9 +179,7 @@ normative_rule_definitions:
         "PMP_Sm_cg/{cp_cfg_X, cp_cfg_X0_all, cp_cfg_A_napot_x, cp_cfg_A_tor_x}",
         "PMP_U_cg/{cp_cfg_X, cp_mprv_jalr}",
         "PMP_Zca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}",
-        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
-        "PMP_H_hlv_cg/cp_pmp_hlv",
-        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
+        "PMP_H_cg/cp_cfg_X",
       ]
 
   # When A=0, this PMP entry is disabled and matches no addresses.

@@ -3263,8 +3263,7 @@ _HSV_OPS = (("hsv.b", False), ("hsv.h", False), ("hsv.w", False), ("hsv.d", True
 
 
 def _hlv_hsv_cases(test_data: TestData, tag: str, coverpoint: str) -> list[str]:
-    """Every HLV, HLVX and HSV at the VS-stage shadow stack page. Loads record rd; each store is
-    followed by an HLV.W of the location, which shows it unchanged."""
+    """Every HLV, HLVX and HSV at the VS-stage shadow stack page. Loads record rd."""
     addr_reg, data_reg = test_data.int_regs.get_registers(2)
     lines = [f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)"]
     for op, rv64 in _HLV_OPS:

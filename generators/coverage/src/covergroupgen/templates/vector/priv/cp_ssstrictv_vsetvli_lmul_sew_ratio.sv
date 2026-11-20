@@ -24,7 +24,7 @@
     }
 
     // vill must be set after execution (unsupported ratio)
-    vill_set_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vtype", "vill") {
+    vill_set_after: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VTYPE, "vill") {
         bins set = {1'b1};
     }
 

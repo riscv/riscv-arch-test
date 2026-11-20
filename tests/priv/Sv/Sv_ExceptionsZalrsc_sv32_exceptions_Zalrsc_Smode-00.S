@@ -114,11 +114,11 @@ Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test2_sc:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test2_sc, Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test2_sc_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
+  LI_FIXED_LEN(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
   slli x9, x9, 10
   srli x9, x9, 10
   add x15, x15, x9
@@ -140,11 +140,11 @@ Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test3_sc:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
+  LI_FIXED_LEN(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
   slli x9, x9, 10
   srli x9, x9, 10
   add x15, x15, x9
@@ -214,11 +214,11 @@ Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test6_sc:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test6_sc, Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test6_sc_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
+  LI_FIXED_LEN(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
   slli x9, x9, 10
   srli x9, x9, 10
   add x15, x15, x9
@@ -240,11 +240,11 @@ Sv_ExceptionsZalrsc_cg_cp_misaligned_priority_s_test7_sc:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 22) << 22)
-  LI(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
+  LI_FIXED_LEN(x9, RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
   slli x9, x9, 10
   srli x9, x9, 10
   add x15, x15, x9

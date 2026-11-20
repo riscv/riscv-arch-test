@@ -11,7 +11,7 @@
 from collections.abc import Callable, Mapping
 
 from testgen.asm.csr import gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, load_constant, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
@@ -134,7 +134,7 @@ def _extreme_access(
         for operation in operations
     }
     value, addr = f"x{regs.value}", f"x{regs.addr}"
-    lines = [*([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]), f"LI({addr}, {va})"]
+    lines = [*([] if mode == driver_mode else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]), load_constant(addr, va)]
     if style.startswith("rw"):
         instruction = "sw" if style == "rw_word" else "sb"
         load = "lw" if style == "rw_word" else "lbu"
@@ -195,7 +195,7 @@ def emit_access(
         level,
         name,
         driver_mode=driver_mode,
-        address=[f"LI(x{regs.addr}, {va})"] if style == "direct" else None,
+        address=[load_constant(f"x{regs.addr}", va)] if style == "direct" else None,
         setup=setup,
         cleanup=cleanup,
         repeat_setup=style == "mprv_sum_unset",

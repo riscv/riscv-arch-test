@@ -66,7 +66,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             [
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
                 test_data.add_testcase(tag, "cp_medeleg_msu_instrmisaligned", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
                 f"jalr x1, 0(x{addr_reg})  # aligned target",
                 f"jalr x1, 2(x{addr_reg})  # misaligned target",
                 "#endif",
@@ -78,7 +78,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             [
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
                 test_data.add_testcase(tag, "cp_medeleg_msu_instraccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
                 f"jalr x1, 0(x{addr_reg})",
                 "#endif",
             ]
@@ -131,7 +131,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.extend(
             [
                 test_data.add_testcase(tag, "cp_medeleg_msu_loadaccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
             ]
         )
         for op in ["lw", "lh", "lhu", "lb", "lbu"]:
@@ -170,7 +170,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.extend(
             [
                 test_data.add_testcase(tag, "cp_medeleg_msu_storeaccessfault", covergroup),
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
                 f"LI(x{data_reg}, 0xADDEDCAB)",
             ]
         )

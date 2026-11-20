@@ -56,9 +56,9 @@ covergroup Zicfiss_Sm_cg with function sample(ins_t ins);
     // menvcfg.SSE x senvcfg.SSE. menvcfg.SSE=0 forces senvcfg.SSE read-only zero. Clearing menvcfg.SSE does not re-log
     // senvcfg, so until the next senvcfg write the trace can still show senvcfg.SSE=1; ANDing with
     // menvcfg.SSE gives the effective value. An explicit senvcfg write is logged legalized.
-    sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                           ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
+    sse_state: coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1),
+                           ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1 &&
+                            get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1))} {
         bins men0_sen0 = {2'b00};
         bins men1_sen0 = {2'b10};
         bins men1_sen1 = {2'b11};
@@ -66,7 +66,7 @@ covergroup Zicfiss_Sm_cg with function sample(ins_t ins);
     // pmp0cfg R is bit 0, W is bit 1. Shadow stack instructions require read-write.
     // R=0 with W=1 is a reserved combination, so it cannot be configured.
     `ifdef ZICFISS_PMP_TEST
-        pmp0_rw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[1:0] {
+        pmp0_rw: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_xwr")[1:0] {
             bins no_perm    = {2'b00};
             bins read_only  = {2'b01};
             bins read_write = {2'b11};
@@ -101,42 +101,42 @@ covergroup Zicfiss_Sm_cg with function sample(ins_t ins);
     `endif
     // mstatus.MPRV with MPP=S makes M-mode loads and stores S-mode accesses.
     // The effective privilege mode stays M with MPRV=0, or with MPRV=1 and MPP=M.
-    mprv_eff_m: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0],
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+    mprv_eff_m: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0],
+                            get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
         wildcard bins mprv_clear = {3'b0??};
         bins mprv_mpp_m          = {3'b111};
     }
-    mprv_mpp_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0],
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+    mprv_mpp_s: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0],
+                            get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
         bins mprv_mpp_s = {3'b101};
     }
 
     // ── Enable-chain building blocks ──────────────────────────────────────
     // Zicfiss is inactive in S-mode only while menvcfg.SSE=0.
-    s_sse_inactive: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
+    s_sse_inactive: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") {
         bins sse_off = {1'b0};
     }
 
     // ── Translation-mode building blocks ──────────────────────────────────
     // SSAMOSWAP must fault at M regardless of satp.MODE, so sweep Bare vs non-Bare.
     `ifdef UDB_MXLEN_64
-        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             bins bare     = {4'b0000};
             bins translating = {[4'b1000:4'b1011]};
         }
-        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+        satp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {
             bins bare = {4'b0000};
         }
     `else
-        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {}
-        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+        satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {}
+        satp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[0] {
             bins bare = {1'b0};
         }
     `endif
     // Zicfiss active in the mode the instruction runs in: menvcfg.SSE=1, and senvcfg.SSE=1 too in U-mode.
-    ss_active_below_m: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
+    ss_active_below_m: coverpoint ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
                                    ((ins.prev.mode == 2'b01) ||
-                                    (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))) {
+                                    (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1))) {
         bins active = {1'b1};
     }
     // ── Main coverpoints ──────────────────────────────────────────────────
@@ -170,12 +170,12 @@ covergroup Zicfiss_Sm_cg with function sample(ins_t ins);
     // from S-mode is taken in M-mode and reports shadow stack fault (code 3) in mtval, or 0 if
     // the implementation provides no information.
     // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
-    sw_check_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")
-                iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
+    sw_check_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)
+                iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) == ins.current.pc_rdata)) {
         bins cause_18 = {SOFTWARE_CHECK};
     }
-    mtval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval", "mtval")
-                    iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
+    mtval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL)
+                    iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) == ins.current.pc_rdata)) {
         `ifdef UDB_REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
             bins ss_fault = {3};
         `else
@@ -222,13 +222,13 @@ covergroup Zicfiss_S_cg with function sample(ins_t ins);
 
     // ── Enable-chain building blocks ──────────────────────────────────────
     // Swept deliberately: at S/HS this must have NO effect on ssp accessibility.
-    senvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse")[0] {}
+    senvcfg_sse: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse")[0] {}
     // menvcfg.SSE=0 forces senvcfg.SSE read-only zero. Clearing menvcfg.SSE does not re-log
     // senvcfg, so until the next senvcfg write the trace can still show senvcfg.SSE=1; ANDing with
     // menvcfg.SSE gives the effective value. An explicit senvcfg write is logged legalized.
-    s_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
+    s_sse_state: coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1),
+                             ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1 &&
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1))} {
         bins men0_sen0 = {2'b00};
         bins men1_sen0 = {2'b10};
         bins men1_sen1 = {2'b11};
@@ -243,7 +243,7 @@ covergroup Zicfiss_S_cg with function sample(ins_t ins);
             bins io  = {2'b10};
         }
         // Without menvcfg.PBMTE a nonzero PBMT is reserved, so the walk page-faults.
-        menvcfg_pbmte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pbmte")[0] {}
+        menvcfg_pbmte: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pbmte")[0] {}
     `endif
     ordinary_loadops: coverpoint ins.current.insn {
         wildcard bins lb  = {LB};
@@ -256,7 +256,7 @@ covergroup Zicfiss_S_cg with function sample(ins_t ins);
 
     // U/SUM/MXR are part of address translation and resolve before any Zicfiss rule.
     // sstatus.SUM is bit 18, sstatus.MXR is bit 19.
-    sstatus_sum: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sum")[0] {}
+    sstatus_sum: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum")[0] {}
     senvcfg_csr: coverpoint ins.current.insn[31:20] {
         bins senvcfg = {CSR_SENVCFG};
     }
@@ -399,21 +399,21 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     }
 
     // ── Enable-chain (SSE) building blocks ────────────────────────────────
-    senvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse")[0] {}
+    senvcfg_sse: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse")[0] {}
     // Zicfiss active for U-mode requires BOTH menvcfg.SSE and senvcfg.SSE.
     // menvcfg.SSE=0 forces senvcfg.SSE read-only zero. Clearing menvcfg.SSE does not re-log
     // senvcfg, so until the next senvcfg write the trace can still show senvcfg.SSE=1; ANDing with
     // menvcfg.SSE gives the effective value. An explicit senvcfg write is logged legalized.
-    u_sse_active: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
-                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
+    u_sse_active: coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1),
+                              ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1 &&
+                               get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1))} {
         bins inactive_both_off = {2'b00};
         bins inactive_sen_off  = {2'b10};
         bins active            = {2'b11};
     }
-    u_sse_inactive: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                                ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1 &&
-                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
+    u_sse_inactive: coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1),
+                                ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1 &&
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1))} {
         bins both_off = {2'b00};
         bins sen_off  = {2'b10};
     }
@@ -434,13 +434,13 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
             bins io  = {2'b10};
         }
         // Without menvcfg.PBMTE a nonzero PBMT is reserved.
-        menvcfg_pbmte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pbmte") {
+        menvcfg_pbmte: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "pbmte") {
             bins enabled = {1'b1};
         }
     `endif
     // Where ssp sits inside its page. A push decrements before storing, so a pointer
     // at the page base writes into the preceding page.
-    ssp_page_offset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[11:0] {
+    ssp_page_offset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP)[11:0] {
         bins at_page_base = {12'h000};
         bins near_base    = {[12'h001:12'h010]};
         bins mid_page     = {[12'h011:12'hFEF]};
@@ -529,7 +529,7 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     jalr_instr: coverpoint ins.current.insn {
         wildcard bins jalr = {JALR};
     }
-    jalr_target_ss_page: coverpoint ((ins.current.rs1_val + ins.current.imm) & ~1) {
+    jalr_target_ss_page: coverpoint (ins.current.eff_addr & ~1) {
         `ifdef UDB_MXLEN_64
             bins ss_page = {[64'h140300000:64'h140300FFF]};
         `else
@@ -537,7 +537,7 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
         `endif
     }
     // The fetch fault is recorded with the jalr, the last instruction that retired before it.
-    scause_fetch_access: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+    scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
                          iff (ins.current.csr_wb[CSR_SEPC]) {
         bins access_fault = {INSTRUCTION_ACCESS_FAULT};
     }
@@ -651,36 +651,36 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     `include "general/Zicfiss_coverpoints.svh"
 
     // ── Enable-chain building blocks ──────────────────────────────────────
-    senvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse")[0] {}
-    henvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse")[0] {}
+    senvcfg_sse: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse")[0] {}
+    henvcfg_sse: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "sse")[0] {}
     // Exception flavour differs by which field gates: menvcfg.SSE=0 raises
     // ILLEGAL-instruction even when V=1, while henvcfg.SSE/senvcfg.SSE gating with V=1
     // raises VIRTUAL-instruction. The inactive_men_off bin below is therefore the
     // illegal-instruction case, not a virtual-instruction one.
     // VS-mode needs menvcfg.SSE and henvcfg.SSE. menvcfg.SSE=0 forces henvcfg.SSE read-only zero,
     // which the trace does not re-log, so henvcfg.SSE is sampled as its effective value.
-    vs_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                               (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1))} {
+    vs_sse_state: coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1),
+                              ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
+                               (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "sse") == 1))} {
         bins inactive_men_off = {2'b00};
         bins inactive_hen_off = {2'b10};
         bins active           = {2'b11};
     }
     // VU-mode additionally needs senvcfg.SSE. menvcfg.SSE=0 forces both children read-only zero,
     // which the trace does not re-log, so both are sampled as their effective values.
-    vu_sse_state: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                               (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1)),
-                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                               (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
+    vu_sse_state: coverpoint {((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
+                               (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "sse") == 1)),
+                              ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
+                               (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1))} {
         bins inactive_both   = {2'b00};
         bins inactive_hen_off = {2'b01};
         bins inactive_sen_off = {2'b10};
         bins active          = {2'b11};
     }
-    vu_sse_inactive: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                                  (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1)),
-                                 ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                                  (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
+    vu_sse_inactive: coverpoint {((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
+                                  (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "sse") == 1)),
+                                 ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
+                                  (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1))} {
         bins both_off = {2'b00};
         bins hen_off  = {2'b01};
         bins sen_off  = {2'b10};
@@ -688,8 +688,8 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
 
     // Read-only-zero chain: what was written into bit 3, and what reads back.
     sse_bit_written: coverpoint ins.current.rs1_val[3] {}
-    senvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "sse")[0] {}
-    henvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "henvcfg", "sse")[0] {}
+    senvcfg_sse_readback: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SENVCFG, "sse")[0] {}
+    henvcfg_sse_readback: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HENVCFG, "sse")[0] {}
     envcfg_child_csr: coverpoint ins.current.insn[31:20] {
         bins senvcfg = {CSR_SENVCFG};
         bins henvcfg = {CSR_HENVCFG};
@@ -701,11 +701,11 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     // Full three-bit enable state. Which bits actually apply depends on the mode. menvcfg.SSE=0
     // forces both children read-only zero, which the trace does not re-log, so they are sampled
     // as their effective values.
-    sse_chain: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
-                           ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)),
-                           ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1))} {
+    sse_chain: coverpoint {(get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1),
+                           ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
+                            (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "sse") == 1)),
+                           ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") == 1) &&
+                            (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "sse") == 1))} {
         bins m0s0h0 = {3'b000};
         bins m1s0h0 = {3'b100};
         bins m1s0h1 = {3'b101};
@@ -748,12 +748,12 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
                 wildcard bins hsv_d = {HSV_D};
             `endif
         }
-        hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {}
+        hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu")[0] {}
     `endif
     // Delegation of the software-check exception (cause 18).
-    medeleg_swchk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg")[18] {}
+    medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {}
     `ifdef H_SUPPORTED
-        hedeleg_swchk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[18] {}
+        hedeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[18] {}
     `endif
     // G-stage leaf encoding. xwr=010 has no shadow stack meaning at G-stage.
     g_pte_xwr: coverpoint ins.current.pte_d[3:1] {
@@ -764,17 +764,17 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     // ── Page / G-stage building blocks ────────────────────────────────────
     // vsatp.MODE=Bare makes SS instructions fault even with V=1.
     `ifdef UDB_MXLEN_64
-        vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsatp", "mode")[3:0] {
+        vsatp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSATP, "mode")[3:0] {
             bins bare        = {4'b0000};
             bins translating = {[4'b1000:4'b1011]};
         }
-        hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hgatp", "mode")[3:0] {
+        hgatp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HGATP, "mode")[3:0] {
             bins bare        = {4'b0000};
             bins translating = {[4'b1000:4'b1011]};
         }
     `else
-        vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsatp", "mode")[0] {}
-        hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hgatp", "mode")[0] {}
+        vsatp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSATP, "mode")[0] {}
+        hgatp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HGATP, "mode")[0] {}
     `endif
 
     // ── Main coverpoints ──────────────────────────────────────────────────

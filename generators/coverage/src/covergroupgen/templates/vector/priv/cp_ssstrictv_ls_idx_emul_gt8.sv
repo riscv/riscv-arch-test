@@ -4,8 +4,8 @@
 
 
     // Index EMUL = (index_EEW / SEW) * LMUL > 8 (reserved) for indexed load/store
-    vtype_width_idx_emul_gt8 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
-                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],
+    vtype_width_idx_emul_gt8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")[1:0],
                                 ins.current.insn[14:12]} {
         // Index EEW=16 (width=101): EMUL = (16/SEW)*LMUL
         `ifdef MAXINDEXEEW_GE16

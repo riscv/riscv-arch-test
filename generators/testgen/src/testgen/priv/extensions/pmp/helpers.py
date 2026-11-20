@@ -129,12 +129,18 @@ def set_pmpcfg(entry: int, value: str) -> list[str]:
     return lines
 
 
+#: Register that ``gen_csr_write_sigupd`` writes to a CSR and reads the CSR back into. It must not be
+#: x4 (DEFAULT_TEMP_REG, into which the self-check loads the expected value) or x0, the trap handler's
+#: temporaries, or a0/a1, which T-SBI calls clobber.
+CSR_CHECK_REG = 12
+
+
 def write_pmpcfg0(test_data: TestData, value: str, name: str, coverpoint: str) -> list[str]:
     """Write pmpcfg0 and register its readback as a testcase of ``coverpoint``, which samples pmpcfg0."""
     return [
-        f"LI(x4, {value})",
+        f"LI(x{CSR_CHECK_REG}, {value})",
         test_data.add_testcase(name, coverpoint, covergroup(test_data)),
-        gen_csr_write_sigupd(4, "pmpcfg0", test_data),
+        gen_csr_write_sigupd(CSR_CHECK_REG, "pmpcfg0", test_data),
         "sfence.vma",
     ]
 

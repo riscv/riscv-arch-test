@@ -23,7 +23,7 @@ SIGUPD_MARGIN = 10
 # rvtest_Sroot_pg_tbl, and the rvtest_macros.h macros that name it
 _S_PAGE_TABLE_RE = re.compile(
     r"rvtest_Sroot_pg_tbl"
-    r"|\b(?:SUPERPAGE_)?PTE_SETUP_(?:RV32|RV64|SV32|SV39|SV48|SV57)\b"
+    r"|\b(?:SUPERPAGE_)?PTE_SETUP_(?:RV32|RV64|SV32|SV39|SV48|SV57)"  # also the _FIXED variants
     r"|\bPTE_PERMUPD_RV32\b"
     r"|\bSATP_SETUP_(?:SV32|RV64)\b"
 )

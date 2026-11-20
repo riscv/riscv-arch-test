@@ -319,12 +319,15 @@ def _add_exception_cases(
 
 
 def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, family: str) -> TestChunk:
-    envmask = "MENVCFG_CBCFE | MENVCFG_CBIE" if family == "zicbom" else "MENVCFG_CBZE"
-    scratch = f"x{regs.scratch}"
-    # T-SBI calls preserve every register but a0-a2, so the mask survives for senvcfg.
-    setup = [f"LI({scratch}, {envmask})", tsbi_call(f"csrs menvcfg, {scratch}")]
-    if mode == "Umode":
-        setup.append(f"csrs senvcfg, {scratch}")
+    setup = []
+    # No envcfg bit controls prefetch, and harts without Zicbop may not have menvcfg.
+    if family != "zicbop":
+        envmask = "MENVCFG_CBCFE | MENVCFG_CBIE" if family == "zicbom" else "MENVCFG_CBZE"
+        scratch = f"x{regs.scratch}"
+        # T-SBI calls preserve every register but a0-a2, so the mask survives for senvcfg.
+        setup = [f"LI({scratch}, {envmask})", tsbi_call(f"csrs menvcfg, {scratch}")]
+        if mode == "Umode":
+            setup.append(f"csrs senvcfg, {scratch}")
     qualifier = "_exceptions" if family != "zicbop" else ""
     return begin_sv_test(
         test_data,

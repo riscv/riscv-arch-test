@@ -82,7 +82,7 @@ def emit_vsetivli(scratch: int, vl: int, sew: int, lmul: int = 1, *, ta: str = "
 def emit_init_vec(scratch: int, vreg: int, sew: int, *, label: str = "random_mask_0") -> None:
     """Initialize a single architectural vector register with a known pattern."""
     common.writeLine(f"la x{scratch}, {label}", f"# scratch <- &{label}")
-    common.writeLine(f"vle{sew}.v v{vreg}, (x{scratch})", f"# init v{vreg}")
+    common.writeLine(f"vl1re8.v v{vreg}, (x{scratch})", f"# init v{vreg}")
 
 
 def init_operand_regs(instruction: str, vec_data: dict, scratch: int,

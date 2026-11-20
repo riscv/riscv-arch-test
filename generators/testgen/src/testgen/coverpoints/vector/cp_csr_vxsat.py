@@ -6,6 +6,7 @@
 ##################################
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -22,21 +23,25 @@ def make_cp_csr_vxsat(instr_name: str, instr_type: str, coverpoint: str, test_da
         # Edges reach vxsat for all other tests
         return []
 
-    assert test_data.config.sew is not None, "SEW must be set for vector tests"
-    rs1_val = 1 << (min(test_data.config.xlen, test_data.config.sew) - 1)
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    vs2_val_pointer = "vs2_vxsat_1_case"
-    vs2_elements = [1 << (test_data.config.sew - 1)]
-    test_data.register_vector_data(vs2_val_pointer, test_data.config.sew, elements=vs2_elements)
+    test_chunks: list[TestChunk] = []
+    for sew in sews:
+        rs1_val = 1 << (min(test_data.config.xlen, sew) - 1)
 
-    params = generate_random_vector_params(
-        test_data, instr_name, instr_type, lmul=1, rs1val=rs1_val, vs2_val_pointer=vs2_val_pointer
-    )
+        vs2_val_pointer = f"vs2_vxsat_1_case_sew{sew}"
+        vs2_elements = [1 << (sew - 1)]
+        test_data.register_vector_data(vs2_val_pointer, sew, elements=vs2_elements)
 
-    desc = "vxsat"
-    bin_name = "1"
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul=1, sew=sew, rs1val=rs1_val, vs2_val_pointer=vs2_val_pointer
+        )
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
+        desc = f"vxsat (sew={sew})"
+        bin_name = f"1_sew{sew}"
 
-    return [tc]
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks

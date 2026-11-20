@@ -50,6 +50,7 @@ class VectorTypeConfig:
         mask_regs: Set of registers used as mask registers
         scalar_regs: Set of registers used as scalar registers
         widened_regs: Set of registers that are widened
+        segmented_regs: Set of registers that are segmented for segmented load-store
         maskable: Whether the instruction admits the optional v0.t operand
         random_element_generator: Add custom random element generation (used in unordered operations)
         egs: Element group size (used in vector crypto instructions)
@@ -62,6 +63,7 @@ class VectorTypeConfig:
     mask_regs: set[str] = field(default_factory=set)
     scalar_regs: set[str] = field(default_factory=set)
     widened_regs: set[str] = field(default_factory=set)
+    segmented_regs: set[str] = field(default_factory=set)
     maskable: bool = True
     random_element_generator: Callable[[int, int, str], list[int]] | None = None
     egs: int = 1
@@ -98,9 +100,7 @@ class InstructionTypeConfig:
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
     excluded_regs: dict[str, set[int]] = field(default_factory=dict)
-    instruction_class: list[Literal["load", "store", "indexed", "strided", "segmented", "vector_fp"]] = field(
-        default_factory=list
-    )
+    instruction_class: list[Literal["load", "store", "indexed", "strided", "vector_fp"]] = field(default_factory=list)
     vector_data: VectorTypeConfig | None = None
 
 

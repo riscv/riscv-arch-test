@@ -1644,31 +1644,29 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       "Vf64":  ["Zve64d"],
     }
 
-    if test.startswith(("ExceptionsV", "SsstrictV", "MisalignV")):
-      ext_parts_no_I = ['M', 'V', 'Zicsr']
-      ext_str_no_I = "_M_V_Zicsr_Zifencei"
-      # Vector-FP priv suites need scalar/vector FP extensions in -march so the
-      # assembler accepts flh/flw/fld and the matching SEW vector-FP ops. Mirror
-      # the unpriv vfloat path: F + Zfhmin (+ D when flen>32) for SEW>=16, plus
-      # Zvfh for SEW=16 vector half-FP. ExceptionsVfmin runs at SEW=16.
-      vf_match = re.search(r"ExceptionsVf(\d+)$", test)
-      is_vfmin = (test == "ExceptionsVfmin")
-      if vf_match or is_vfmin:
-        sew = int(vf_match.group(1)) if vf_match else 16
-        fp_exts = ['F', 'Zfhmin']
-        fp_exts_str = "_F_Zfhmin"
-        if flen > 32:
-          fp_exts = ['F', 'D', 'Zfhmin']
-          fp_exts_str = "_F_D_Zfhmin"
-        if sew == 16:
-          fp_exts.append('Zvfh')
-          fp_exts_str += "_Zvfh"
-        ext_parts_no_I = fp_exts + ext_parts_no_I
-        ext_str_no_I = fp_exts_str + ext_str_no_I
-      # Reserved vector encodings trap only on harts with Ssstrict, as in the scalar Ssstrict
-      # suites. Ssstrict has no assembler meaning, so -march is unchanged.
-      if test.startswith("SsstrictV"):
-        ext_parts_no_I = ext_parts_no_I + ['Ssstrict']
+    if test.startswith(("Ssstrict")):
+      ext_parts_no_I = ['Zicsr']
+      ext_str_no_I = "_Zicsr_Zifencei"
+
+      main_ext = test.removeprefix("Ssstrict")
+      ext_parts_no_I.append(main_ext)
+      ext_str_no_I += "_" + main_ext
+
+      required_base_exts = {
+        "Zve32f": ["F"],
+        "Zve64f": ["F"],
+        "Zve64d": ["F", "D"],
+        "Zvfh": ["F", "Zfhmin"],
+        "Zvfhmin": ["F", "Zfhmin"],
+      }
+
+      if main_ext in required_base_exts:
+        ext_parts_no_I.extend(required_base_exts[main_ext])
+        ext_str_no_I += "_" + "_".join(required_base_exts[main_ext])
+
+      if test.startswith("Ssstrict"):
+        ext_parts_no_I.append('Ssstrict')
+
       march = f"rv{xlen}i{ext_str_no_I}".lower()
     else:
       matched_alias = None
@@ -2569,11 +2567,11 @@ def loadVxsatMode(*scalar_registers_used):
 def getLMULIfdef(lmul):
   ifdef = ""
   if (lmul == 0.5):
-    ifdef = "TEST_LMULf2_SUPPORTED"
+    ifdef = "LMULf2_SUPPORTED"
   elif (lmul == 0.25):
-    ifdef = "TEST_LMULf4_SUPPORTED"
+    ifdef = "LMULf4_SUPPORTED"
   elif (lmul == 0.125):
-    ifdef = "TEST_LMULf8_SUPPORTED"
+    ifdef = "LMULf8_SUPPORTED"
   return ifdef
 
 def getELENIfdef(instruction):
@@ -3731,9 +3729,9 @@ def readTestplans(priv=False):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
             if (priv):
-                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MisalignV", "V", "Zv")))
+                is_vector = (arch.startswith(("SsstrictZv", "SsstrictV")))
             else:
-                is_vector = (arch.startswith("V") or arch.startswith("Zv"))
+                is_vector = False
             if is_vector:
                 with open(os.path.join(coverplanDir, file)) as csvfile:
                     reader = csv.DictReader(csvfile)

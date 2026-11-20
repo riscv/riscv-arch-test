@@ -8,9 +8,7 @@
         bins one  = {1'b1};
 
         `ifdef UDB_MXLEN_32
-            `ifdef COVER_VX64
-                ignore_bins ignore_one = { 1'b1 };
-            `endif
+            ignore_bins ignore_one = { 1'b1 };
         `endif
     }
 

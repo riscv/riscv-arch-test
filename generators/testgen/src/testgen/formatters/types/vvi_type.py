@@ -195,7 +195,7 @@ def format_vvi_like_type(
 
     # Setup Mask
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True))
+        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_reg=params.vd))
 
     # Setup VXRM (if necessary)
     if params.vxrm is not None:
@@ -237,6 +237,6 @@ def format_vvi_like_type(
         test_data.vec_regs.return_register(0)
 
     min_vlen = compute_egs_vlen(params.sew, params.lmul, egs)
-    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

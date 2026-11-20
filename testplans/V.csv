@@ -1,0 +1,9 @@
+Instruction,Type,RV32,RV64,VECTOR,cp_asm_count,cp_vd,cp_vs2,cp_vs1,cp_rs1,cp_vs3,cmp_vd_vs2,cmp_vd_vs1,cmp_vs1_vs2,cmp_vd_vs1_vs2,cp_vs2_edges,cp_vs1_edges,cr_vs2_vs1_edges,cr_vxrm_vs2_vs1_edges,cp_rs1_edges,cr_vs2_rs1_edges,cr_vxrm_vs2_rs1_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,cp_csr_vxsat,std_vec,cmp_vs3_vs2,cp_custom_ls_indexed_truncated,cp_custom_indexed_emul_data_only,cp_custom_indexed_overlap,cp_custom_ordered_index_overlap
+vmulh.vv,VVV,x,x,x,64,64,64,64,,,64,64,64,64,64,64,64,,,,,64,64,64,64,,,,,,,
+vmulh.vx,VVX,x,x,x,64,64,64,,64,,64,,,,64,,,,64,64,,64,64,64,64,,,,,,,
+vmulhu.vv,VVV,x,x,x,64,64,64,64,,,64,64,64,64,64,64,64,,,,,64,64,64,64,,,,,,,
+vmulhu.vx,VVX,x,x,x,64,64,64,,64,,64,,,,64,,,,64,64,,64,64,64,64,,,,,,,
+vmulhsu.vv,VVV,x,x,x,64,64,64,64,,,64,64,64,64,64,64,64,,,,,64,64,64,64,,,,,,,
+vmulhsu.vx,VVX,x,x,x,64,64,64,,64,,64,,,,64,,,,64,64,,64,64,64,64,,,,,,,
+vsmul.vv,VVV_SAT,x,x,x,64,64,64,64,,,64,64,64,64,64,64,64,64,,,,64,64,64,64,64,,,,,,
+vsmul.vx,VVX_SAT,x,x,x,64,64,64,,64,,64,,,,64,,,,64,64,64,64,64,64,64,no_rv32_sew64_64,,,,,,

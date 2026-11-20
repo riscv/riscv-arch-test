@@ -6,7 +6,7 @@
 
     cp_csr_vtype_lmul_all_le_8_e32_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf2_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins half   = {7};
         `endif
         bins one    = {0};

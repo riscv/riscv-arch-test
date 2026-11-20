@@ -7,7 +7,10 @@
 
 """cp_uimm coverpoint generator."""
 
+import itertools
+
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.edges import IMMEDIATE_EDGES
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -25,8 +28,11 @@ DISTINCT_BYTES = 0x8877665544332211
 def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for unsigned immediate values."""
 
-    is_vector = False
-    lmul = 0
+    is_vector = "v" in coverpoint.split("_")
+    if is_vector:
+        sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    else:
+        sews = [None]
 
     if coverpoint == "cp_uimm":
         uimm_vals = range(test_data.xlen)
@@ -39,9 +45,6 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     elif coverpoint.endswith("_2h"):
         uimm_vals = range(0, 4, 2)  # c.lh, c.lhu, c.sh halfword offsets
     elif coverpoint.endswith("_6bit_v"):
-        is_vector = True
-        assert test_data.config.sew is not None, "SEW must be set for vector tests"
-        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
         uimm_vals = IMMEDIATE_EDGES.imm_6bit_u  # vror.vi edges
     else:
         raise ValueError(f"Unknown cp_uimm coverpoint variant: {coverpoint} for {instr_name}")
@@ -50,13 +53,17 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     memval = DISTINCT_BYTES & ((1 << test_data.xlen) - 1) if coverpoint.endswith(("_2", "_2h")) else None
 
     test_chunks: list[TestChunk] = []
-    for uimm in uimm_vals:
+    for uimm, sew in itertools.product(uimm_vals, sews):
         if is_vector:
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, immval=uimm)
+            assert sew is not None
+            lmul = get_base_lmul(instr_name, instr_type, sew)
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, immval=uimm)
         else:
             params = generate_random_params(test_data, instr_type, immval=uimm, temp_val=memval, rs2val=memval)
-        desc = f"{coverpoint}: imm={uimm}"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"uimm{uimm}", coverpoint)
+        sew_desc = f", sew={sew}" if sew is not None else ""
+        sew_bin = f"_sew{sew}" if sew is not None else ""
+        desc = f"{coverpoint}: imm={uimm}{sew_desc}"
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"uimm{uimm}{sew_bin}", coverpoint)
         test_chunks.append(tc)
         return_testcase_registers(test_data, params)
 

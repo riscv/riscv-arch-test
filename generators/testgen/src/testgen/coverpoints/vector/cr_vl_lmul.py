@@ -9,6 +9,7 @@ import math
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.params import PresetMask
 from testgen.data.random import random_range
 from testgen.data.state import TestData, return_testcase_registers
@@ -25,8 +26,7 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     """
     Generate tests crossing all valid lmuls with vls chosen from VLMAX, 1 (or EGS), and a random vl.
     """
-    assert test_data.config.sew is not None, "SEW must be set for vector tests"
-    sew = test_data.config.sew
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     eew = None
     max_emul = 8
@@ -52,50 +52,53 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         if egs_match:
             egs = int(egs_match.group(1))
 
-    # Determine maximum supported lmul
-    if eew is None:
-        max_lmul = max_emul
-    elif eew / sew > 1:
-        max_lmul = max_emul / (eew / sew)
-    else:
-        max_lmul = max_emul
-
-    max_lmul = int(math.log2(max_lmul))
-    min_lmul = min(get_legal_lmuls(sew))
-
-    lmul_exponents = list(range(min_lmul, max_lmul + 1))
     vl_options = ["vlmax", egs, "random"]
 
     test_chunks = []
-    for l in lmul_exponents:
-        lmul = 2.0**l
-        for vl in vl_options:
-            vta = random_range(0, 1)
-            vma = random_range(0, 1)
-            masked = random_range(0, 1) == 1 if can_mask else False
-            maskval = PresetMask.VLMAX_M1_ONES if masked else None
-            no_overlap = _NO_OVERLAP_MASKED if masked else None
+    for sew in sews:
+        # Determine maximum supported lmul
+        if eew is None:
+            max_lmul = max_emul
+        elif eew / sew > 1:
+            max_lmul = max_emul / (eew / sew)
+        else:
+            max_lmul = max_emul
 
-            params = generate_random_vector_params(
-                test_data,
-                instr_name,
-                instr_type,
-                lmul,
-                suite="length",
-                masked=masked,
-                additional_no_overlap=no_overlap,
-                maskval=maskval,
-                vl=vl,
-                ta=vta,
-                ma=vma,
-            )
+        max_lmul = int(math.log2(max_lmul))
+        min_lmul = min(get_legal_lmuls(sew))
 
-            desc = f"cr_vl_lmul (Test lmul = {lmul}, vl = {vl})"
-            bin_name = f"cp_vl_lmul_vl_{vl}_lmul_{lmul}"
+        lmul_exponents = list(range(min_lmul, max_lmul + 1))
 
-            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        for l in lmul_exponents:
+            lmul = 2.0**l
+            for vl in vl_options:
+                vta = random_range(0, 1)
+                vma = random_range(0, 1)
+                masked = random_range(0, 1) == 1 if can_mask else False
+                maskval = PresetMask.VLMAX_M1_ONES if masked else None
+                no_overlap = _NO_OVERLAP_MASKED if masked else None
 
-            test_chunks.append(tc)
-            return_testcase_registers(test_data, params)
+                params = generate_random_vector_params(
+                    test_data,
+                    instr_name,
+                    instr_type,
+                    lmul,
+                    sew,
+                    suite="length",
+                    masked=masked,
+                    additional_no_overlap=no_overlap,
+                    maskval=maskval,
+                    vl=vl,
+                    ta=vta,
+                    ma=vma,
+                )
+
+                desc = f"cr_vl_lmul (Test lmul = {lmul}, vl = {vl}, sew={sew})"
+                bin_name = f"cp_vl_lmul_vl_{vl}_lmul_{lmul}_sew{sew}"
+
+                tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+
+                test_chunks.append(tc)
+                return_testcase_registers(test_data, params)
 
     return test_chunks

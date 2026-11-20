@@ -6,6 +6,7 @@
 ##################################
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -19,21 +20,26 @@ def make_vl_0(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     Generate length-suite tests where vl = 0.
     """
 
-    assert test_data.config.sew is not None, "SEW must be set for vector tests"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        lmul=get_base_lmul(instr_name, instr_type, test_data.config.sew),
-        suite="length",
-        vl=0,
-    )
+    test_chunks = []
+    for sew in sews:
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            get_base_lmul(instr_name, instr_type, sew),
+            sew,
+            suite="length",
+            vl=0,
+        )
 
-    desc = "cp_vl_0 (Test vl = 0)"
-    bin_name = "cp_vl_0"
+        desc = f"cp_vl_0 (Test vl = 0, sew={sew})"
+        bin_name = f"cp_vl_0_sew{sew}"
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
-    return_testcase_registers(test_data, params)
-    return [tc]
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks

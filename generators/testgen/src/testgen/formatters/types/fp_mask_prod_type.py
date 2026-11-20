@@ -47,7 +47,9 @@ fmvf_config = InstructionTypeConfig(
 def format_fmvv(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_fp_mask_producing_type(instr_str, test_data, params, "FMVV", scalar_register=False)
+    return format_fp_mask_producing_type(
+        instr_str, test_data, params, "FMVV", scalar_register=False, lmul_aligned_reg=params.vs1
+    )
 
 
 @add_instruction_formatter("FMVF", fmvf_config)
@@ -63,6 +65,8 @@ def format_fp_mask_producing_type(
     params: InstructionParams,
     type_name: str,
     scalar_register: bool,
+    *,
+    lmul_aligned_reg: int | None = None,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
     assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
@@ -86,7 +90,7 @@ def format_fp_mask_producing_type(
     mask_copy_reg = None
     load_vd = True
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True, vd_v0=params.vd == 0))
+        setup.extend(prep_mask_v(params.maskval, test_data, params, vd_v0=params.vd == 0, clobber_reg=lmul_aligned_reg))
         if 0 in vec_regs_to_setup:
             vec_regs_to_setup.remove(0)
 
@@ -191,7 +195,7 @@ def format_fp_mask_producing_type(
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
 
     handle_vector_fp(setup, check, params.csr_frm_val, test_data)
 

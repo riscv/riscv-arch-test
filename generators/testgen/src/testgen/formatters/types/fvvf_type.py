@@ -171,7 +171,7 @@ def format_fvvf_like_type(
 
     # Setup Mask
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True))
+        setup.extend(prep_mask_v(params.maskval, test_data, params))
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
     vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"
@@ -212,7 +212,7 @@ def format_fvvf_like_type(
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
 
     handle_vector_fp(setup, check, params.csr_frm_val, test_data)
 

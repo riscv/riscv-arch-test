@@ -38,24 +38,6 @@
 `ifdef EXCEPTIONS_COVERAGE
   `include "Exceptions_coverage.svh"
 `endif
-`ifdef EXCEPTIONSVF16_COVERAGE
-  `include "ExceptionsVf16_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVF32_COVERAGE
-  `include "ExceptionsVf32_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVF64_COVERAGE
-  `include "ExceptionsVf64_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVFMIN_COVERAGE
-  `include "ExceptionsVfmin_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVLS_COVERAGE
-  `include "ExceptionsVls_coverage.svh"
-`endif
-`ifdef EXCEPTIONSVX_COVERAGE
-  `include "ExceptionsVx_coverage.svh"
-`endif
 `ifdef F_COVERAGE
   `include "F_coverage.svh"
 `endif
@@ -73,9 +55,6 @@
 `endif
 `ifdef M_COVERAGE
   `include "M_coverage.svh"
-`endif
-`ifdef MISALIGNV_COVERAGE
-  `include "MisalignV_coverage.svh"
 `endif
 `ifdef PMP_COVERAGE
   `include "PMP_coverage.svh"
@@ -143,6 +122,27 @@
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
 `endif
+`ifdef SSSTRICTZVE32F_COVERAGE
+  `include "SsstrictZve32f_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE32X_COVERAGE
+  `include "SsstrictZve32x_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE64D_COVERAGE
+  `include "SsstrictZve64d_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE64F_COVERAGE
+  `include "SsstrictZve64f_coverage.svh"
+`endif
+`ifdef SSSTRICTZVE64X_COVERAGE
+  `include "SsstrictZve64x_coverage.svh"
+`endif
+`ifdef SSSTRICTZVFH_COVERAGE
+  `include "SsstrictZvfh_coverage.svh"
+`endif
+`ifdef SSSTRICTZVFHMIN_COVERAGE
+  `include "SsstrictZvfhmin_coverage.svh"
+`endif
 `ifdef SSTC_COVERAGE
   `include "Sstc_coverage.svh"
 `endif
@@ -182,41 +182,8 @@
 `ifdef U_COVERAGE
   `include "U_coverage.svh"
 `endif
-`ifdef VF16_COVERAGE
-  `include "Vf16_coverage.svh"
-`endif
-`ifdef VF32_COVERAGE
-  `include "Vf32_coverage.svh"
-`endif
-`ifdef VF64_COVERAGE
-  `include "Vf64_coverage.svh"
-`endif
-`ifdef VF8_COVERAGE
-  `include "Vf8_coverage.svh"
-`endif
-`ifdef VLS16_COVERAGE
-  `include "Vls16_coverage.svh"
-`endif
-`ifdef VLS32_COVERAGE
-  `include "Vls32_coverage.svh"
-`endif
-`ifdef VLS64_COVERAGE
-  `include "Vls64_coverage.svh"
-`endif
-`ifdef VLS8_COVERAGE
-  `include "Vls8_coverage.svh"
-`endif
-`ifdef VX16_COVERAGE
-  `include "Vx16_coverage.svh"
-`endif
-`ifdef VX32_COVERAGE
-  `include "Vx32_coverage.svh"
-`endif
-`ifdef VX64_COVERAGE
-  `include "Vx64_coverage.svh"
-`endif
-`ifdef VX8_COVERAGE
-  `include "Vx8_coverage.svh"
+`ifdef V_COVERAGE
+  `include "V_coverage.svh"
 `endif
 `ifdef ZA64RS_COVERAGE
   `include "Za64rs_coverage.svh"
@@ -371,20 +338,26 @@
 `ifdef ZMMUL_COVERAGE
   `include "Zmmul_coverage.svh"
 `endif
-`ifdef ZVBB16_COVERAGE
-  `include "Zvbb16_coverage.svh"
+`ifdef ZVBB_COVERAGE
+  `include "Zvbb_coverage.svh"
 `endif
-`ifdef ZVBB32_COVERAGE
-  `include "Zvbb32_coverage.svh"
+`ifdef ZVBC_COVERAGE
+  `include "Zvbc_coverage.svh"
 `endif
-`ifdef ZVBB64_COVERAGE
-  `include "Zvbb64_coverage.svh"
+`ifdef ZVE32F_COVERAGE
+  `include "Zve32f_coverage.svh"
 `endif
-`ifdef ZVBB8_COVERAGE
-  `include "Zvbb8_coverage.svh"
+`ifdef ZVE32X_COVERAGE
+  `include "Zve32x_coverage.svh"
 `endif
-`ifdef ZVBC64_COVERAGE
-  `include "Zvbc64_coverage.svh"
+`ifdef ZVE64D_COVERAGE
+  `include "Zve64d_coverage.svh"
+`endif
+`ifdef ZVE64F_COVERAGE
+  `include "Zve64f_coverage.svh"
+`endif
+`ifdef ZVE64X_COVERAGE
+  `include "Zve64x_coverage.svh"
 `endif
 `ifdef ZVFBFMIN_COVERAGE
   `include "Zvfbfmin_coverage.svh"
@@ -392,20 +365,14 @@
 `ifdef ZVFBFWMA_COVERAGE
   `include "Zvfbfwma_coverage.svh"
 `endif
+`ifdef ZVFH_COVERAGE
+  `include "Zvfh_coverage.svh"
+`endif
 `ifdef ZVFHMIN_COVERAGE
   `include "Zvfhmin_coverage.svh"
 `endif
-`ifdef ZVKB16_COVERAGE
-  `include "Zvkb16_coverage.svh"
-`endif
-`ifdef ZVKB32_COVERAGE
-  `include "Zvkb32_coverage.svh"
-`endif
-`ifdef ZVKB64_COVERAGE
-  `include "Zvkb64_coverage.svh"
-`endif
-`ifdef ZVKB8_COVERAGE
-  `include "Zvkb8_coverage.svh"
+`ifdef ZVKB_COVERAGE
+  `include "Zvkb_coverage.svh"
 `endif
 `ifdef ZVKG_COVERAGE
   `include "Zvkg_coverage.svh"
@@ -416,11 +383,8 @@
 `ifdef ZVKNHA_COVERAGE
   `include "Zvknha_coverage.svh"
 `endif
-`ifdef ZVKNHB32_COVERAGE
-  `include "Zvknhb32_coverage.svh"
-`endif
-`ifdef ZVKNHB64_COVERAGE
-  `include "Zvknhb64_coverage.svh"
+`ifdef ZVKNHB_COVERAGE
+  `include "Zvknhb_coverage.svh"
 `endif
 `ifdef ZVKSED_COVERAGE
   `include "Zvksed_coverage.svh"

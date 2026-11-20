@@ -175,6 +175,6 @@ def format_vv_like_type(
 
     min_vlen = compute_egs_vlen(params.sew, lmul, egs)
     # Guard on the LMUL in vtype, which differs from the lmul variable for VMVR
-    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

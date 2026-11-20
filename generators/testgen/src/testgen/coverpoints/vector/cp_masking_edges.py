@@ -5,9 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import itertools
 
 from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.params import PresetMask
 from testgen.data.random import random_range
 from testgen.data.state import TestData, return_testcase_registers
@@ -23,7 +25,8 @@ def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data
     Generate length suite tests with edge values in the mask register. Edges include zeros, ones, VLMAX-1 Ones,
     VLMAX/2 + 1 Ones, and a random mask
     """
-    assert test_data.config.sew is not None, "SEW must be set for vector tests"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+
     config = get_instruction_type_config(instr_type)
     assert config.vector_data is not None
     if not config.vector_data.maskable:
@@ -36,25 +39,25 @@ def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data
         PresetMask.VLMAX_D2_P1_ONES,
         "cp_mask_random",
     ]
-    test_data.register_vector_data(
-        "cp_mask_random", test_data.config.sew, random_elements=VLEN_MAX // test_data.config.sew
-    )
+
+    test_data.register_vector_data("cp_mask_random", 64, random_elements=VLEN_MAX // 64)
 
     test_chunks = []
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
-    for m in cp_masking_edges_data:
+    for m, sew in itertools.product(cp_masking_edges_data, sews):
         vma = random_range(0, 1)
         vta = random_range(0, 1)
 
-        desc = f"cp_masking_edges (Test v0 = {m})"
-        bin_name = f"cp_masking_edges_maskval_{m}"
+        desc = f"cp_masking_edges (Test v0 = {m}, sew={sew})"
+        bin_name = f"cp_masking_edges_maskval_{m}_sew{sew}"
 
+        lmul = get_base_lmul(instr_name, instr_type, sew)
         params = generate_random_vector_params(
             test_data,
             instr_name,
             instr_type,
             lmul,
+            sew,
             suite="length",
             masked=True,
             additional_no_overlap={("vs1", "v0"), ("vs2", "v0"), ("vd", "v0"), ("vs3", "v0")},

@@ -13,7 +13,7 @@ from testgen.constants import VLEN_MAX
 from testgen.data.random import random_int
 
 
-def generate_test_data_section(data_values: list[int], xlen: int, flen: int, vdsew: int) -> str:
+def generate_test_data_section(data_values: list[int], xlen: int, flen: int, vector_present: bool) -> str:
     """
     Generate the .data section containing all test values.
 
@@ -21,6 +21,7 @@ def generate_test_data_section(data_values: list[int], xlen: int, flen: int, vds
         data_values: List of integer values for the data section
         xlen: Target XLEN (32 or 64)
         flen: Target FLEN (0, 32, or 64)
+        vector_present: If vector is present, data should be 64-bit aligned
 
     Returns:
         Assembly code for the .data section
@@ -28,7 +29,7 @@ def generate_test_data_section(data_values: list[int], xlen: int, flen: int, vds
     lines: list[str] = []
 
     # Use .word for 32-bit, .dword for 64-bit
-    data_size = max(xlen, flen, vdsew)
+    data_size = max(xlen, flen) if not vector_present else 64
     directive = ".word" if data_size == 32 else ".dword"  # TODO: handle Q extension
 
     for value in data_values:

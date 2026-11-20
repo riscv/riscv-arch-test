@@ -493,8 +493,13 @@ typedef enum {
 } vstart_t;
 
 function vstart_t vstart_check(int hart, int issue);
-  int vstart = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, CSR_VSTART));
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
+
+  return vstart_check_vl(hart, issue, vlmax);
+endfunction
+
+function vstart_t vstart_check_vl(int hart, int issue, int vlmax);
+  int vstart = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, CSR_VSTART));
   bit legal;
   if (vstart < vlmax) legal = 1'b1; // check legal condition
   else                legal = 1'b0;

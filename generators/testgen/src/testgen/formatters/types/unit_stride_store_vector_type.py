@@ -29,8 +29,8 @@ vsus_config = InstructionTypeConfig(
 )
 vsseg_config = InstructionTypeConfig(
     required_params={"vs3", "rs1"},
-    instruction_class=["store", "segmented"],
-    vector_data=VectorTypeConfig(),
+    instruction_class=["store"],
+    vector_data=VectorTypeConfig(segmented_regs={"vs3"}),
 )
 vsm_config = InstructionTypeConfig(
     required_params={"vs3", "rs1"},
@@ -86,11 +86,12 @@ def format_vsseg_like_type(
     assert params.lmul is not None, f"lmul must be provided for {instr_type}-type instructions"
     assert test_data.test_chunk is not None, f"format_{instr_type.lower()}_type must be used with an active TestChunk"
 
-    test_data.test_chunk.vector_labels.extend(
-        [
-            (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer]),
-            (params.vs3_val_pointer, *test_data.vector_labels[params.vs3_val_pointer]),
-        ]
+    if params.rs1val_pointer != "RVMODEL_ACCESS_FAULT_ADDRESS_STORE":
+        test_data.test_chunk.vector_labels.append(
+            (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer])
+        )
+    test_data.test_chunk.vector_labels.append(
+        (params.vs3_val_pointer, *test_data.vector_labels[params.vs3_val_pointer])
     )
 
     # Extract General Instruction Info
@@ -169,6 +170,6 @@ def format_vsseg_like_type(
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_parameter_exclusions(params.lmul, setup, check, encoded_eew=eew)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
 
     return (setup, test, check)

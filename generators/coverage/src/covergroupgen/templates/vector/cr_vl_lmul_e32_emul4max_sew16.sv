@@ -6,12 +6,10 @@
 
     cp_csr_vtype_lmul_all_le_8_e32_emul4max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf4_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins fourth = {6};
         `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         // lmul 4 not supported for sew =16 eew = 32

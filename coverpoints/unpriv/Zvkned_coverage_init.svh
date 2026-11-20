@@ -10,14 +10,16 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    Zvkned_vaesdf_vs_cg = new(); Zvkned_vaesdf_vs_cg.set_inst_name("obj_Zvkned_vaesdf_vs");
-    Zvkned_vaesdf_vv_cg = new(); Zvkned_vaesdf_vv_cg.set_inst_name("obj_Zvkned_vaesdf_vv");
-    Zvkned_vaesdm_vs_cg = new(); Zvkned_vaesdm_vs_cg.set_inst_name("obj_Zvkned_vaesdm_vs");
-    Zvkned_vaesdm_vv_cg = new(); Zvkned_vaesdm_vv_cg.set_inst_name("obj_Zvkned_vaesdm_vv");
-    Zvkned_vaesef_vs_cg = new(); Zvkned_vaesef_vs_cg.set_inst_name("obj_Zvkned_vaesef_vs");
-    Zvkned_vaesef_vv_cg = new(); Zvkned_vaesef_vv_cg.set_inst_name("obj_Zvkned_vaesef_vv");
-    Zvkned_vaesem_vs_cg = new(); Zvkned_vaesem_vs_cg.set_inst_name("obj_Zvkned_vaesem_vs");
-    Zvkned_vaesem_vv_cg = new(); Zvkned_vaesem_vv_cg.set_inst_name("obj_Zvkned_vaesem_vv");
-    Zvkned_vaeskf1_vi_cg = new(); Zvkned_vaeskf1_vi_cg.set_inst_name("obj_Zvkned_vaeskf1_vi");
-    Zvkned_vaeskf2_vi_cg = new(); Zvkned_vaeskf2_vi_cg.set_inst_name("obj_Zvkned_vaeskf2_vi");
-    Zvkned_vaesz_vs_cg = new(); Zvkned_vaesz_vs_cg.set_inst_name("obj_Zvkned_vaesz_vs");
+`ifdef ZVE32X_SUPPORTED
+    ZvknedZve32x_vaesdf_vs_sew32_cg = new(); ZvknedZve32x_vaesdf_vs_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesdf_vs_sew32");
+    ZvknedZve32x_vaesdf_vv_sew32_cg = new(); ZvknedZve32x_vaesdf_vv_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesdf_vv_sew32");
+    ZvknedZve32x_vaesdm_vs_sew32_cg = new(); ZvknedZve32x_vaesdm_vs_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesdm_vs_sew32");
+    ZvknedZve32x_vaesdm_vv_sew32_cg = new(); ZvknedZve32x_vaesdm_vv_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesdm_vv_sew32");
+    ZvknedZve32x_vaesef_vs_sew32_cg = new(); ZvknedZve32x_vaesef_vs_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesef_vs_sew32");
+    ZvknedZve32x_vaesef_vv_sew32_cg = new(); ZvknedZve32x_vaesef_vv_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesef_vv_sew32");
+    ZvknedZve32x_vaesem_vs_sew32_cg = new(); ZvknedZve32x_vaesem_vs_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesem_vs_sew32");
+    ZvknedZve32x_vaesem_vv_sew32_cg = new(); ZvknedZve32x_vaesem_vv_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesem_vv_sew32");
+    ZvknedZve32x_vaeskf1_vi_sew32_cg = new(); ZvknedZve32x_vaeskf1_vi_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaeskf1_vi_sew32");
+    ZvknedZve32x_vaeskf2_vi_sew32_cg = new(); ZvknedZve32x_vaeskf2_vi_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaeskf2_vi_sew32");
+    ZvknedZve32x_vaesz_vs_sew32_cg = new(); ZvknedZve32x_vaesz_vs_sew32_cg.set_inst_name("obj_ZvknedZve32x_vaesz_vs_sew32");
+`endif

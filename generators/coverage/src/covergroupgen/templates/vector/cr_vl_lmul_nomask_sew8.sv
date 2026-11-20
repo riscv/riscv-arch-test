@@ -4,15 +4,11 @@
 
     cp_csr_vtype_lmul_all_sew8_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 8
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};

@@ -65,6 +65,6 @@ def format_vid(
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
 
     return (setup, test, check)

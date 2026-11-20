@@ -41,7 +41,6 @@ class TestConfig:
     flen: int
     testsuite: str
     E_ext: bool = False
-    sew: int | None = None
     required_extensions: list[str | list[str]] | None = None
     forbidden_extensions: list[str] | None = None
     march_extensions: list[str] | None = None

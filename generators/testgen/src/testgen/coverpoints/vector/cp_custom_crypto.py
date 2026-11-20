@@ -9,6 +9,7 @@ from csv import DictReader
 from pathlib import Path
 
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -113,6 +114,9 @@ ACT3_TEST_OFFSETS = [
 def make_act3_crypto(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    assert sews == [32], f"ACT3 crypto coverpoint only supports at SEW=32, testplan asks for {sews}"
+
     for i, (vd_ptr, vs2_ptr) in enumerate(ACT3_TEST_OFFSETS):
         vd_val_ptr = f"act3_crypto_value_{i}_vd"
         vs2_val_ptr = f"act3_crypto_value_{i}_vs2"
@@ -120,14 +124,15 @@ def make_act3_crypto(instr_name: str, instr_type: str, coverpoint: str, test_dat
         test_data.register_vector_data(vd_val_ptr, 32, elements=ACT3_TEST_DATA[vd_ptr : vd_ptr + 4])
         test_data.register_vector_data(vs2_val_ptr, 32, elements=ACT3_TEST_DATA[vs2_ptr : vs2_ptr + 4])
 
-        desc = f"ACT3 Vector Crypto Test {i}"
-        bin_name = f"test_{i}"
+        desc = f"ACT3 Vector Crypto Test {i} (sew=32)"
+        bin_name = f"test_{i}_sew32"
 
         params = generate_random_vector_params(
             test_data,
             instr_name,
             instr_type,
-            4,
+            lmul=4,
+            sew=32,
             vl=4,
             vd_val_pointer=vd_val_ptr,
             vs2_val_pointer=vs2_val_ptr,
@@ -485,10 +490,13 @@ HASH_ROUND_VALUES_512 = [
 @add_coverpoint_generator("cp_custom_nist_sha")
 def make_nist_sha(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Tests generated from NIST SHA examples"""
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    return [tc for sew in sews for tc in nist_sha_for_sew(instr_name, instr_type, coverpoint, test_data, sew)]
 
-    sew = test_data.config.sew
-    assert sew is not None, "SEW must be set for vector tests"
 
+def nist_sha_for_sew(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData, sew: int
+) -> list[TestChunk]:
     message = [
         "######################################################################################################",
         "# These tests include data from the SHA examples given by NIST. They use the data from the message",
@@ -511,22 +519,23 @@ def make_nist_sha(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         vs2 = [schedule[4], schedule[9], schedule[10], schedule[11]]
         vs1 = schedule[12:16]
 
-        vd_val_ptr = "custom_nist_sha_vd"
-        vs2_val_ptr = "custom_nist_sha_vs2"
-        vs1_val_ptr = "custom_nist_sha_vs1"
+        vd_val_ptr = f"custom_nist_sha_vd_sew{sew}"
+        vs2_val_ptr = f"custom_nist_sha_vs2_sew{sew}"
+        vs1_val_ptr = f"custom_nist_sha_vs1_sew{sew}"
 
         test_data.register_vector_data(vd_val_ptr, sew, elements=vd)
         test_data.register_vector_data(vs2_val_ptr, sew, elements=vs2)
         test_data.register_vector_data(vs1_val_ptr, sew, elements=vs1)
 
-        desc = "NIST SHA Example Message Schedule"
-        bin_name = ""
+        desc = f"NIST SHA Example Message Schedule (sew={sew})"
+        bin_name = f"sew{sew}"
 
         params = generate_random_vector_params(
             test_data,
             instr_name,
             instr_type,
             lmul=4,
+            sew=sew,
             additional_no_overlap={("vd", "vs1"), ("vd", "vs2"), ("vs2", "vs1")},
             vd_val_pointer=vd_val_ptr,
             vs1_val_pointer=vs1_val_ptr,
@@ -553,22 +562,23 @@ def make_nist_sha(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             schedule_range = range(i, i + 4) if instr_name == "vsha2cl.vv" else range(i - 2, i + 2)
             vs1 = [(schedule[j] + k[j]) & (2**sew - 1) if j >= 0 else 0 for j in schedule_range]
 
-            vd_val_ptr = f"custom_nist_sha_{i}_vd"
-            vs2_val_ptr = f"custom_nist_sha_{i}_vs2"
-            vs1_val_ptr = f"custom_nist_sha_{i}_vs1"
+            vd_val_ptr = f"custom_nist_sha_{i}_vd_sew{sew}"
+            vs2_val_ptr = f"custom_nist_sha_{i}_vs2_sew{sew}"
+            vs1_val_ptr = f"custom_nist_sha_{i}_vs1_sew{sew}"
 
             test_data.register_vector_data(vd_val_ptr, sew, elements=vd)
             test_data.register_vector_data(vs2_val_ptr, sew, elements=vs2)
             test_data.register_vector_data(vs1_val_ptr, sew, elements=vs1)
 
-            desc = f"NIST SHA Example: Test {i}"
-            bin_name = f"b{i}"
+            desc = f"NIST SHA Example: Test {i} (sew={sew})"
+            bin_name = f"b{i}_sew{sew}"
 
             params = generate_random_vector_params(
                 test_data,
                 instr_name,
                 instr_type,
                 lmul=4,
+                sew=sew,
                 additional_no_overlap={("vd", "vs1"), ("vd", "vs2"), ("vs2", "vs1")},
                 vd_val_pointer=vd_val_ptr,
                 vs1_val_pointer=vs1_val_ptr,
@@ -607,6 +617,9 @@ def make_nist_gcm(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         "######################################################################################################",
     ]
     nist_test_vectors = Path(__file__).resolve().parent / "data" / "gcm_test_vectors_wide.csv"
+
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    assert sews == [32], f"GCM vector crypto instructions are only supported at SEW=32, testplan asks for {sews}"
 
     test_chunks: list[TestChunk] = []
 
@@ -825,7 +838,7 @@ def emit(
 
     vs2_val_ptr = handle_label(vs2_val, present_labels, test_data, f"{desc}_vs2")
 
-    pretty_desc = "NIST GCM Example " + desc.replace("_", " ")
+    pretty_desc = "NIST GCM Example " + desc.replace("_", " ") + " (sew=32)"
 
     if instr_name == "vghsh.vv":
         params = generate_random_vector_params(
@@ -833,6 +846,7 @@ def emit(
             instr_name,
             instr_type,
             lmul=4,
+            sew=32,
             additional_no_overlap={("vd", "vs1"), ("vs1", "vs2"), ("vs2", "vd")},
             vs2_val_pointer=vs2_val_ptr,
             vs1_val_pointer=vs1_val_ptr,
@@ -844,12 +858,13 @@ def emit(
             instr_name,
             instr_type,
             lmul=4,
+            sew=32,
             additional_no_overlap={("vd", "vs2")},
             vs2_val_pointer=vs2_val_ptr,
             vd_val_pointer=vd_val_ptr,
         )
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, pretty_desc, desc, coverpoint)
+    tc = format_single_testcase(instr_name, instr_type, test_data, params, pretty_desc, f"{desc}_sew32", coverpoint)
     return_testcase_registers(test_data, params)
 
     return tc

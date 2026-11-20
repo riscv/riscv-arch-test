@@ -9,6 +9,7 @@
 
 from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -20,33 +21,38 @@ def make_vindex_ge_vlmax(instr_name: str, instr_type: str, coverpoint: str, test
     """
     Generate a test for gather instruction with index >= VLMAX. The result should be all elements of vd equal to 0.
     """
-    sew = test_data.config.sew
-    assert sew is not None, "SEW must be set for vector tests"
-    index_eew = 16 if instr_name.startswith("vrgatherei") else sew
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    # -1 as an unsigned index_eew-wide value is the maximum index, always >= VLMAX.
-    label = f"vs1_index_allones_sew{index_eew}"
-    if label not in test_data.vector_labels:
-        element_count = VLEN_MAX // sew  # Should be at SEW because that is where vl comes from
-        elements = [(1 << index_eew) - 1 for _ in range(element_count)]
-        test_data.register_vector_data(label, index_eew, elements=elements)
+    test_chunks = []
+    for sew in sews:
+        index_eew = 16 if instr_name.startswith("vrgatherei") else sew
 
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        lmul=1,
-        suite="length",
-        vs1_val_pointer=label,
-        ignore_vector_safety=True,
-    )
+        # -1 as an unsigned index_eew-wide value is the maximum index, always >= VLMAX.
+        label = f"vs1_index_allones_sew{index_eew}"
+        if label not in test_data.vector_labels:
+            element_count = VLEN_MAX // sew  # Should be at SEW because that is where vl comes from
+            elements = [(1 << index_eew) - 1 for _ in range(element_count)]
+            test_data.register_vector_data(label, index_eew, elements=elements)
 
-    desc = "cp_custom_vindexedges_index_ge_vlmax (vs1 all-ones: index always >= VLMAX)"
-    bin_name = "cp_custom_vindexedges_index_ge_vlmax"
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            1,
+            sew,
+            suite="length",
+            vs1_val_pointer=label,
+            ignore_vector_safety=True,
+        )
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return [tc]
+        desc = f"cp_custom_vindexedges_index_ge_vlmax (vs1 all-ones: index always >= VLMAX, sew={sew})"
+        bin_name = f"cp_custom_vindexedges_index_ge_vlmax_sew{sew}"
+
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_vindexedges_index_gt_vl_lt_vlmax")
@@ -56,35 +62,40 @@ def make_vindex_gt_vl_lt_vlmax(
     """
     Generate test of gather instruction with index > VL but < VLMAX. These elements should be read regardless of vl
     """
-    sew = test_data.config.sew
-    assert sew is not None, "SEW must be set for vector tests"
-    index_eew = 16 if instr_name.startswith("vrgatherei") else sew
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
-    # Index value 2, with lmul=2: at small VL values (< 2) this index is
-    # beyond active elements but still within VLMAX.
-    label = f"vs1_index_two_sew{index_eew}"
-    if label not in test_data.vector_labels:
-        element_count = 1
-        elements = [2 for _ in range(element_count)]
-        test_data.register_vector_data(label, index_eew, elements=elements)
+    test_chunks = []
+    for sew in sews:
+        index_eew = 16 if instr_name.startswith("vrgatherei") else sew
 
-    params = generate_random_vector_params(
-        test_data,
-        instr_name,
-        instr_type,
-        lmul=2,
-        suite="length",
-        vs1_val_pointer=label,
-        vl=1,
-        ignore_vector_safety=True,
-    )
+        # Index value 2, with lmul=2: at small VL values (< 2) this index is
+        # beyond active elements but still within VLMAX.
+        label = f"vs1_index_two_sew{index_eew}"
+        if label not in test_data.vector_labels:
+            element_count = 1
+            elements = [2 for _ in range(element_count)]
+            test_data.register_vector_data(label, index_eew, elements=elements)
 
-    desc = "cp_custom_vindexedges_index_gt_vl_lt_vlmax (vs1=2, lmul=2: index > VL < VLMAX)"
-    bin_name = "cp_custom_vindexedges_index_gt_vl_lt_vlmax"
+        params = generate_random_vector_params(
+            test_data,
+            instr_name,
+            instr_type,
+            lmul=2,
+            sew=sew,
+            suite="length",
+            vs1_val_pointer=label,
+            vl=1,
+            ignore_vector_safety=True,
+        )
 
-    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_testcase_registers(test_data, params)
-    return [tc]
+        desc = f"cp_custom_vindexedges_index_gt_vl_lt_vlmax (vs1=2, lmul=2: index > VL < VLMAX, sew={sew})"
+        bin_name = f"cp_custom_vindexedges_index_gt_vl_lt_vlmax_sew{sew}"
+
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        return_testcase_registers(test_data, params)
+        test_chunks.append(tc)
+
+    return test_chunks
 
 
 @add_coverpoint_generator("cp_custom_vindexCorners")

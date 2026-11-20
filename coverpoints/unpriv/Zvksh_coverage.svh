@@ -12,14 +12,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKSH
-`define COVER_ZVKSHCUSTOM32
-`ifdef UDB_ELEN_32
-    `define SEW_32_EQ_ELEN
-`endif
-`ifdef UDB_ELEN_64
-    `define SEW_32_EQ_ELEN_DIV_2
-`endif
-covergroup Zvksh_vsm3c_vi_cg with function sample(ins_t ins);
+`ifdef ZVE32X_SUPPORTED
+covergroup ZvkshZve32x_vsm3c_vi_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vsm3c.vi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -178,7 +172,7 @@ covergroup Zvksh_vsm3c_vi_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL512B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -269,7 +263,7 @@ covergroup Zvksh_vsm3c_vi_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Zvksh_vsm3me_vv_cg with function sample(ins_t ins);
+covergroup ZvkshZve32x_vsm3me_vv_sew32_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
     // cmp_vd_vs1_egs8
@@ -563,7 +557,7 @@ covergroup Zvksh_vsm3me_vv_cg with function sample(ins_t ins);
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
         `endif
         `ifdef ZVL512B_SUPPORTED
-            `ifdef LMULf2_SUPPORTED
+            `ifdef UDB_ELEN_64
                 bins half    = {7};   // LMUL=1/2: needs VLEN>=512
             `endif
         `endif
@@ -654,8 +648,29 @@ covergroup Zvksh_vsm3me_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 function void zvksh_sample(int hart, int issue, ins_t ins);
     string inst_name = traceDataQ[hart][issue][0].inst_name;
+
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
 
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
@@ -663,12 +678,26 @@ function void zvksh_sample(int hart, int issue, ins_t ins);
     if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2 ||
         get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
         case (inst_name)
-            "vsm3c.vi"     : begin
-                Zvksh_vsm3c_vi_cg.sample(ins);
-            end
-            "vsm3me.vv"     : begin
-                Zvksh_vsm3me_vv_cg.sample(ins);
-            end
+`ifdef ZVE32X_SUPPORTED
+        "vsm3c.vi"     : begin
+            ZvkshZve32x_vsm3c_vi_sew32_cg.sample(ins);
+        end
+`endif
+`ifdef ZVE32X_SUPPORTED
+        "vsm3me.vv"     : begin
+            ZvkshZve32x_vsm3me_vv_sew32_cg.sample(ins);
+        end
+`endif
+            default: ; // a case needs at least one item, and some configurations select none
+        endcase
+    end
+
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

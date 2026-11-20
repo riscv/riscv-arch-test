@@ -6,15 +6,11 @@
 
     cp_csr_vtype_lmul_all_le_8_e16_emul1max : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
-        `ifdef LMULf8_SUPPORTED
+        `ifdef UDB_ELEN_64
             bins eighth  = {5};
         `endif
-        `ifdef LMULf4_SUPPORTED
-            bins fourth = {6};
-        `endif
-        `ifdef LMULf2_SUPPORTED
-            bins half   = {7};
-        `endif
+        bins fourth = {6};
+        bins half   = {7};
         // LMUL=1 excluded: EEW=16, SEW=8 gives EMUL=2 > maxemul=1 (always unreachable)
     }
 

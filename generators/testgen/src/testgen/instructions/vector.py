@@ -73,7 +73,7 @@ def parse_vector_instruction_info(instruction: str, instruction_type: str) -> Ve
     # Load/Store EEW: Ends with e<eew>.v, e<eew>ff.v,
     load_store_eew_match = re.search(r"v[ls]\w*e(\d+)(?:ff)?.v", instruction)
     load_store_eew = int(load_store_eew_match.group(1)) if load_store_eew_match is not None else None
-    if instruction in ["vlm.v", "vsm.v"]:
+    if instruction in ["vlm.v", "vsm.v"] or instruction_type == "VSR":
         load_store_eew = 8  # Special case that needs to be hardcoded
     if load_store_eew not in [8, 16, 32, 64, None]:
         raise ValueError(f"Invalid EEW Parsed from Instruction: {instruction}, Parsed {load_store_eew} EEW")

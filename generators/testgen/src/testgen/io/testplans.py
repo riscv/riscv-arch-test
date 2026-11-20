@@ -12,31 +12,16 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
+
 
 def get_extensions(testplan_dir: Path) -> list[str]:
     """Get the list of extensions from the testplan directory."""
-    extensions: list[str] = []
-    for testplan in testplan_dir.glob("*.csv"):
-        extension = testplan.stem
-        if extension.startswith(("V", "Zv")):
-            extensions.extend(expand_vector_extension(extension))
-        else:
-            extensions.append(extension)
-    return extensions
-
-
-def expand_vector_extension(extension: str) -> list[str]:
-    """Expands a vector extension by adding SEW suffixes."""
-    if extension in ["Vx", "Vls", "Vf", "Zvbb", "Zvkb"]:
-        return [extension + effew for effew in ["8", "16", "32", "64"]]
-    elif extension == "ExceptionsVf":
-        return [extension + effew for effew in ["16", "32", "64"]]
-    elif extension == "Zvknhb":
-        return [extension + effew for effew in ["32", "64"]]
-    elif extension == "Zvbc":
-        return [extension + "64"]
-    else:
-        return [extension]
+    return [
+        testplan.stem
+        for testplan in (*testplan_dir.glob("*.csv"), *testplan_dir.glob("priv/*.csv"))
+        if not testplan.stem.startswith(("SsstrictV", "SsstrictZv"))
+    ]
 
 
 @dataclass
@@ -50,22 +35,13 @@ class TestPlanData:
     sews_supported: list[int]
     extra_extensions: tuple[str, ...]
     coverpoints: list[str]
+    is_priv: bool
 
 
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
     """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
     # Columns that are parsed separately and should not be treated as coverpoints
-    non_coverpoint_columns = {
-        "Instruction",
-        "Type",
-        "RV32",
-        "RV64",
-        "ExtraExtensions",
-        "EFFEW8",
-        "EFFEW16",
-        "EFFEW32",
-        "EFFEW64",
-    }
+    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64", "ExtraExtensions", "VECTOR"}
     instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)
@@ -106,8 +82,10 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                         key = key + "_" + value
                     coverpoints.append(key)
 
-            # Some cp_custom coverpoints are
+            # Some cp_custom coverpoints are aggregators for other generators
             coverpoints = expand_coverpoints(coverpoints)
+
+            is_priv = testplan_path.parent.stem == "priv"
 
             instructions.append(
                 TestPlanData(
@@ -118,6 +96,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     sews_supported=sews,
                     extra_extensions=extra_extensions,
                     coverpoints=coverpoints,
+                    is_priv=is_priv,
                 )
             )
     return instructions
@@ -202,7 +181,7 @@ def expand_coverpoints(coverpoints: list[str]) -> list[str]:
         "cp_custom_wred": [
             "cp_custom_element0Masked",
             "cp_custom_vmask_write_v0_masked",
-            "cp_custom_vreductionw_vd_vs1_emul_16",
+            "cp_custom_vreductionw_vd_vs1_emul16",
             "cp_custom_voffgroup_vd_lmul2",
             "cp_custom_voffgroup_vd_lmul4",
             "cp_custom_voffgroup_vs1_lmul2",
@@ -228,8 +207,10 @@ def expand_coverpoints(coverpoints: list[str]) -> list[str]:
 
     expanded_coverpoints = []
     for coverpoint in coverpoints:
-        if coverpoint in coverpoint_expansion_map:
-            expanded_coverpoints.extend(coverpoint_expansion_map[coverpoint])
+        sews, cleaned_coverpoint = extract_coverpoint_sews(coverpoint)
+        sew_suffix = "_" + "_".join(str(sew) for sew in sews) if len(sews) > 0 else ""
+        if cleaned_coverpoint in coverpoint_expansion_map:
+            expanded_coverpoints.extend([cp + sew_suffix for cp in coverpoint_expansion_map[cleaned_coverpoint]])
         else:
             expanded_coverpoints.append(coverpoint)
     return expanded_coverpoints

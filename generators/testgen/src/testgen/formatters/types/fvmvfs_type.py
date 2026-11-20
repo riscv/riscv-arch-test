@@ -57,7 +57,7 @@ def format_fvmvfs_type(
 
     check = [write_sigupd(params.fd, test_data, "float")]
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
     # These moves do not need frm to be set or fflags checked
 
     return (setup, test, check)

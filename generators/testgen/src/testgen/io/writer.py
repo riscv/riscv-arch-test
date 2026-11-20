@@ -53,7 +53,7 @@ def write_test_file(
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
     split_name: str | None = None,
-    vdsew: int = 0,
+    csv_driven_priv: bool = False,
 ) -> Path:
     """
     Write a single test file and return its path.
@@ -66,7 +66,7 @@ def write_test_file(
         file_idx: File index for the filename suffix (default 00)
         extra_defines: Additional #define statements for the test (e.g., trap handlers)
         split_name: Named-split label for priv tests (mutually exclusive with instr_name)
-        vdsew: EEW of the destination vector register (if applicable, used in calculation of SIG_STRIDE)
+        csv_driven_priv: Set for tests that are csv-driven priv tests
     """
     if instr_name is not None and split_name is not None:
         raise ValueError("instr_name and split_name are mutually exclusive (unpriv tests should not use split_name).")
@@ -88,7 +88,9 @@ def write_test_file(
         extra_defines.append("#define RVTEST_USES_TEST_CSR")
 
     # Construct filename and paths
-    if instr_name is not None:
+    if csv_driven_priv:
+        filename = f"{test_config.name_prefix}_rv{test_config.xlen}-{instr_name}-{file_idx:02d}.S"
+    elif instr_name is not None:
         filename = f"{test_config.name_prefix}-{instr_name}-{file_idx:02d}.S"
     elif split_name is not None:
         filename = f"{testsuite}_{split_name}-{file_idx:02d}.S"
@@ -97,12 +99,14 @@ def write_test_file(
     test_file = output_dir / filename
     if instr_name is None:
         arch_dir = f"rv{test_config.xlen}" if test_config.xlen else ""
-    else:
+    elif not csv_driven_priv:
         arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}"
+    else:
+        arch_dir = ""
     test_file_relative = Path(arch_dir) / testsuite / filename
 
     # Test header
-    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines, instr_name)
+    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
 
     # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation
@@ -122,7 +126,12 @@ def write_test_file(
     body = "".join(body_parts)
 
     # Test footer
-    test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen, vdsew)
+    test_data_section = generate_test_data_section(
+        data_values,
+        test_config.xlen,
+        test_config.flen,
+        any("#define RVTEST_VECTOR" in define for define in extra_defines),
+    )
     vector_data_section = generate_vector_data_section(vector_data_labels)
     if test_data_section != "" and vector_data_section != "":
         test_data_section += "\n"

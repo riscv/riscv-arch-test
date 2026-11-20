@@ -5,10 +5,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import itertools
 import re
 
 from testgen.asm.vector_helpers import get_egs_lmul_for_register
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -31,7 +33,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     Generates tests where the two given registers are the same register for all valid values.
     """
-    assert test_data.config.sew is not None, "SEW must be set for vector tests"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     cmp, v1, v2, *suffixes = coverpoint.split("_")
     assert cmp == "cmp"
@@ -51,30 +53,6 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
     if emul_match is not None:
         emul = int(emul_match.group(1))
 
-    sew_match = re.search(r"sew(\d+)", suffix)
-    if sew_match is not None:
-        sew = int(sew_match.group(1))
-        # This suffix means to only test one specific sew
-        if sew != test_data.config.sew:
-            return []
-    sew_lte_match = re.search(r"sew_lte_(\d+)", suffix)
-    if sew_lte_match is not None:
-        max_sew = int(sew_lte_match.group(1))
-        if test_data.config.sew > max_sew:
-            return []
-
-    if "eew_eq_sew" in suffix:
-        if info.index_eew is not None:
-            eew = info.index_eew
-        elif info.load_store_eew is not None:
-            eew = info.load_store_eew
-        else:
-            raise ValueError(f"Unable to Extract EEW from {instr_name}")
-
-        if eew != test_data.config.sew:
-            return []
-
-    # Notice the slight difference from the sew_let_(\d+) format
     lte_match = re.search(r"lte(\d+)", suffix)
     if lte_match is not None:
         upper_bound = int(lte_match.group(1)) + 1
@@ -85,14 +63,12 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
         egs = int(egs_match.group(1))
 
     test_chunks = []
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
-    no_overlap = get_overlap_constraints(info, instr_type_config, False, test_data.config.sew)
-    for v in range(lower_bound, upper_bound, emul):
+    for v, sew in itertools.product(range(lower_bound, upper_bound, emul), sews):
+        no_overlap = get_overlap_constraints(info, instr_type_config, False, sew)
         presets = {v1: v, v2: v}
 
-        if egs != 1:
-            lmul = get_egs_lmul_for_register(v, egs)
+        lmul = get_egs_lmul_for_register(v, egs) if egs != 1 else get_base_lmul(instr_name, instr_type, sew)
 
         # For certain overlaps with load/store instructions, the overlap can depend on SEW, so we do an overlap
         # check here to ensure we test a valid overlap
@@ -102,7 +78,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             info,
             no_overlap,
             lmul,
-            test_data.config.sew,
+            sew,
             instr_type_config.vector_data,
         ):
             continue
@@ -113,15 +89,16 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             test_data,
             instr_name,
             instr_type,
-            lmul=lmul,
+            lmul,
+            sew,
             additional_no_overlap=set(),
             suite="base",
             masked=False,
             **presets,
         )
 
-        desc = f"cmp_{v1}_{v2} (Test {v1} = {v2} = v{v})"
-        bin_name = f"cp_{v1}_{v2}_b{v}"
+        desc = f"cmp_{v1}_{v2} (Test {v1} = {v2} = v{v}, sew={sew})"
+        bin_name = f"cp_{v1}_{v2}_b{v}_sew{sew}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
@@ -136,7 +113,7 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
     """
     Generates tests where all three vector source operands are the same register
     """
-    assert test_data.config.sew is not None, "SEW must be set for vector tests"
+    sews, coverpoint = extract_coverpoint_sews(coverpoint)
 
     cmp, v1, v2, v3, *suffixes = coverpoint.split("_")
     assert cmp == "cmp"
@@ -154,11 +131,9 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
         egs = int(egs_match.group(1))
 
     test_chunks = []
-    lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
-    for v in range(lower_bound, upper_bound, emul):
-        if egs != 1:
-            lmul = get_egs_lmul_for_register(v, egs)
+    for v, sew in itertools.product(range(lower_bound, upper_bound, emul), sews):
+        lmul = get_egs_lmul_for_register(v, egs) if egs != 1 else get_base_lmul(instr_name, instr_type, sew)
 
         presets = {v1: v, v2: v, v3: v}
         test_data.vec_regs.allocate_operand(v1, v, int(max(lmul, 1)))
@@ -168,15 +143,16 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
             test_data,
             instr_name,
             instr_type,
-            lmul=lmul,
+            lmul,
+            sew,
             additional_no_overlap=set(),
             suite="base",
             masked=False,
             **presets,
         )
 
-        desc = f"cmp_{v1}_{v2}_{v3} (Test {v1} = {v2} = {v3} = v{v})"
-        bin_name = f"cp_{v1}_{v2}_{v3}_b{v}"
+        desc = f"cmp_{v1}_{v2}_{v3} (Test {v1} = {v2} = {v3} = v{v}, sew={sew})"
+        bin_name = f"cp_{v1}_{v2}_{v3}_b{v}_sew{sew}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 

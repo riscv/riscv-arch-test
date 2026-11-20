@@ -35,14 +35,14 @@ vlox_config = InstructionTypeConfig(
 
 vluxseg_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2"},
-    instruction_class=["load", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, index_register="vs2"),
+    instruction_class=["load", "indexed"],
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, index_register="vs2", segmented_regs={"vd"}),
 )
 
 vloxseg_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2"},
-    instruction_class=["load", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, index_register="vs2"),
+    instruction_class=["load", "indexed"],
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, index_register="vs2", segmented_regs={"vd"}),
 )
 
 
@@ -94,9 +94,12 @@ def format_vlxseg_like_type(
     assert params.lmul is not None, f"lmul must be provided for {instr_type}-type instructions"
     assert test_data.test_chunk is not None, f"format_{instr_type.lower()}_type must be used with an active TestChunk"
 
+    if params.rs1val_pointer != "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD":
+        test_data.test_chunk.vector_labels.append(
+            (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer])
+        )
     test_data.test_chunk.vector_labels.extend(
         [
-            (params.rs1val_pointer, *test_data.vector_labels[params.rs1val_pointer]),
             (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer]),
             (params.vd_val_pointer, *test_data.vector_labels[params.vd_val_pointer]),
         ]
@@ -150,6 +153,6 @@ def format_vlxseg_like_type(
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_parameter_exclusions(params.lmul, setup, check, encoded_eew=info.index_eew, index_eew=info.index_eew)
+    handle_parameter_exclusions(params.lmul, params.sew, setup, check)
 
     return (setup, test, check)

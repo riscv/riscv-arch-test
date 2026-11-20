@@ -7,7 +7,10 @@
 
 """Register coverpoint handlers (cp_fd, cp_fs1, cp_fs2, cp_fs3)."""
 
+import itertools
+
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.helpers import extract_coverpoint_sews
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -19,6 +22,12 @@ from testgen.instructions.vector_params import generate_random_vector_params
 @add_coverpoint_generator("cp_fd")
 def make_fd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for destination floating-point register coverpoints."""
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    else:
+        sews = [None]
+
     # Determine which fd registers to test based on coverpoint variant
     if coverpoint == "cp_fd":
         fd_regs = list(range(test_data.float_regs.reg_count))
@@ -27,24 +36,21 @@ def make_fd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     else:
         raise ValueError(f"Unknown cp_fd coverpoint variant: {coverpoint} for {instr_name}")
 
-    is_vector = instr_name.lower().startswith("v")
-    if is_vector:
-        assert test_data.config.sew is not None, "SEW must be set for vector tests"
-        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-    else:
-        lmul = 1  # Placeholder to keep the type-checker happy
-
     test_chunks: list[TestChunk] = []
 
     # Generate tests
-    for fd in fd_regs:
+    for fd, sew in itertools.product(fd_regs, sews):
         test_data.float_regs.consume_registers([fd])
         if is_vector:
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, fd=fd)
+            assert sew is not None
+            lmul = get_base_lmul(instr_name, instr_type, sew)
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, fd=fd)
         else:
             params = generate_random_params(test_data, instr_type, fd=fd)
-        desc = f"{coverpoint} (Test destination fd = f{fd})"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fd}", coverpoint)
+        sew_desc = f", sew={sew}" if sew is not None else ""
+        sew_bin = f"_sew{sew}" if sew is not None else ""
+        desc = f"{coverpoint} (Test destination fd = f{fd}{sew_desc})"
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fd}{sew_bin}", coverpoint)
         test_chunks.append(tc)
         return_testcase_registers(test_data, params)
 
@@ -54,6 +60,12 @@ def make_fd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 @add_coverpoint_generator("cp_fs1")
 def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for source floating-point register 1 coverpoints."""
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        sews, coverpoint = extract_coverpoint_sews(coverpoint)
+    else:
+        sews = [None]
+
     # Determine which fs1 registers to test based on coverpoint variant
     if coverpoint == "cp_fs1":
         fs1_regs = range(test_data.float_regs.reg_count)
@@ -62,24 +74,21 @@ def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     else:
         raise ValueError(f"Unknown cp_fs1 coverpoint variant: {coverpoint} for {instr_name}")
 
-    is_vector = instr_name.lower().startswith("v")
-    if is_vector:
-        assert test_data.config.sew is not None, "SEW must be set for vector tests"
-        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
-    else:
-        lmul = 1  # Placeholder to keep the type-checker happy
-
     test_chunks: list[TestChunk] = []
 
     # Generate tests
-    for fs1 in fs1_regs:
+    for fs1, sew in itertools.product(fs1_regs, sews):
         test_data.float_regs.consume_registers([fs1])
         if is_vector:
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, fs1=fs1)
+            assert sew is not None
+            lmul = get_base_lmul(instr_name, instr_type, sew)
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, sew, fs1=fs1)
         else:
             params = generate_random_params(test_data, instr_type, fs1=fs1)
-        desc = f"{coverpoint} (Test source fs1 = f{fs1})"
-        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fs1}", coverpoint)
+        sew_desc = f", sew={sew}" if sew is not None else ""
+        sew_bin = f"_sew{sew}" if sew is not None else ""
+        desc = f"{coverpoint} (Test source fs1 = f{fs1}{sew_desc})"
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fs1}{sew_bin}", coverpoint)
         test_chunks.append(tc)
         return_testcase_registers(test_data, params)
 

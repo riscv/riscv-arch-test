@@ -79,16 +79,11 @@ def randomize_register(
         preset: If a preset was passed for this register to generate_random_vector_params, it is validated here.
     """
 
-    if register_name.startswith("v"):
-        segments = info.segments
-        if (
-            instr_type_config.instruction_class
-            and "indexed" in instr_type_config.instruction_class
-            and register_name == "vs2"
-        ):
-            segments = 1
+    assert instr_type_config.vector_data is not None, "Vector Data must be provided for vector instruction types"
 
-        assert instr_type_config.vector_data is not None, "Vector Data must be provided for vector instruction types"
+    if register_name.startswith("v"):
+        segments = info.segments if register_name in instr_type_config.vector_data.segmented_regs else 1
+
         emul = int(get_register_emul(register_name, lmul, sew, instr_type_config.vector_data, info))
 
         # If the assignment was already set, validate it
@@ -103,11 +98,8 @@ def randomize_register(
                 raise ValueError(f"preset {register_name}=v{preset} not aligned to EMUL={emul}")
             return preset
 
-        # Otherwise, generate a register aligned to emul and lmul
-        alignment = max(emul, int(lmul)) if int(lmul) >= 1 else emul
-
         # We can't take the registers from the register file yet because we want to randomly generate valid overlaps
-        return random.choice(test_data.vec_regs.free_registers(alignment, segments))
+        return random.choice(test_data.vec_regs.free_registers(emul, segments))
 
     if preset is not None:
         return preset  # No need to validate r and f registers
@@ -318,7 +310,8 @@ def get_occupied_v_registers(
     smallest_emul = int(smallest_emul)
 
     # segment instructions take up consecutive registers even when lmul < 1
-    emul = math.ceil(info.get_size_multiplier(register, sew, vector_type_config) * lmul) * info.segments
+    segments = info.segments if register in vector_type_config.segmented_regs else 1
+    emul = math.ceil(info.get_size_multiplier(register, sew, vector_type_config) * lmul) * segments
     if info.whole_registers:
         emul = info.whole_registers
 
@@ -393,6 +386,7 @@ def generate_random_vector_params(
     instruction: str,
     instr_type: str,
     lmul: float,
+    sew: int,
     *,
     additional_no_overlap: set[tuple[str, str]] | None = None,
     masked: bool = False,
@@ -409,6 +403,7 @@ def generate_random_vector_params(
             name of instruction (e.g. index EEWs like in vloxei32)
         instr_type: Instruction type string that gives overlap requirements, and required registers
         lmul: The lmul that the test will be run at. Required for proper alignment
+        sew: The SEW that the tst will be run at
 
     Optional Args:
         additional_no_overlap: Set of pairs of registers that cannot overlap. Used in case where the tests
@@ -419,13 +414,6 @@ def generate_random_vector_params(
     """
 
     test_count = test_data.test_count
-
-    if "sew" in fixed_params and test_data.config.sew is not None:
-        assert test_data.config.sew == fixed_params["sew"], (
-            f"Provided SEW {fixed_params['sew']} and test_config SEW ({test_data.config.sew}) are different"
-        )
-    sew = test_data.config.sew if test_data.config.sew else fixed_params.get("sew")
-    assert sew is not None, "SEW must be set for Vector Instructions"
 
     preset_params = InstructionParams(**fixed_params)
     preset_params.sew = sew
@@ -510,10 +498,7 @@ def generate_random_vector_params(
 
     for register in sorted(registers):
         if params_dict[register] != preset_params_dict[register] and register.startswith("v"):
-            segments = info.segments
-            if "indexed" in instr_type_config.instruction_class and register == "vs2":
-                segments = 1
-
+            segments = info.segments if register in instr_type_config.vector_data.segmented_regs else 1
             width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config.vector_data, info)) * segments
             test_data.vec_regs.allocate_operand(register, params_dict[register], width, suppress_overlap=True)
 

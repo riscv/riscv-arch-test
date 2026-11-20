@@ -37,24 +37,6 @@
     `ifdef COVER_EXCEPTIONS
         exceptions_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_EXCEPTIONSVF16
-        exceptionsvf16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSVF32
-        exceptionsvf32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSVF64
-        exceptionsvf64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSVFMIN
-        exceptionsvfmin_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSVLS
-        exceptionsvls_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSVX
-        exceptionsvx_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif
@@ -72,9 +54,6 @@
     `endif
     `ifdef COVER_M
         m_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_MISALIGNV
-        misalignv_sample(hart, issue, ins);
     `endif
     `ifdef COVER_PMP
         pmp_sample(hart, issue, ins);
@@ -142,6 +121,27 @@
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSSTRICTZVE32F
+        ssstrictzve32f_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE32X
+        ssstrictzve32x_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE64D
+        ssstrictzve64d_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE64F
+        ssstrictzve64f_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVE64X
+        ssstrictzve64x_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVFH
+        ssstrictzvfh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTRICTZVFHMIN
+        ssstrictzvfhmin_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSTC
         sstc_sample(hart, issue, ins);
     `endif
@@ -181,41 +181,8 @@
     `ifdef COVER_U
         u_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_VF16
-        vf16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF32
-        vf32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF64
-        vf64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF8
-        vf8_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS16
-        vls16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS32
-        vls32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS64
-        vls64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLS8
-        vls8_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX16
-        vx16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX32
-        vx32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX64
-        vx64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VX8
-        vx8_sample(hart, issue, ins);
+    `ifdef COVER_V
+        v_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZA64RS
         za64rs_sample(hart, issue, ins);
@@ -370,20 +337,26 @@
     `ifdef COVER_ZMMUL
         zmmul_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVBB16
-        zvbb16_sample(hart, issue, ins);
+    `ifdef COVER_ZVBB
+        zvbb_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVBB32
-        zvbb32_sample(hart, issue, ins);
+    `ifdef COVER_ZVBC
+        zvbc_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVBB64
-        zvbb64_sample(hart, issue, ins);
+    `ifdef COVER_ZVE32F
+        zve32f_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVBB8
-        zvbb8_sample(hart, issue, ins);
+    `ifdef COVER_ZVE32X
+        zve32x_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVBC64
-        zvbc64_sample(hart, issue, ins);
+    `ifdef COVER_ZVE64D
+        zve64d_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVE64F
+        zve64f_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVE64X
+        zve64x_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZVFBFMIN
         zvfbfmin_sample(hart, issue, ins);
@@ -391,20 +364,14 @@
     `ifdef COVER_ZVFBFWMA
         zvfbfwma_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZVFH
+        zvfh_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZVFHMIN
         zvfhmin_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVKB16
-        zvkb16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKB32
-        zvkb32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKB64
-        zvkb64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKB8
-        zvkb8_sample(hart, issue, ins);
+    `ifdef COVER_ZVKB
+        zvkb_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZVKG
         zvkg_sample(hart, issue, ins);
@@ -415,11 +382,8 @@
     `ifdef COVER_ZVKNHA
         zvknha_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZVKNHB32
-        zvknhb32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZVKNHB64
-        zvknhb64_sample(hart, issue, ins);
+    `ifdef COVER_ZVKNHB
+        zvknhb_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZVKSED
         zvksed_sample(hart, issue, ins);

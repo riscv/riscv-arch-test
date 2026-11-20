@@ -86,7 +86,7 @@ endgroup
 // cp_tcontrol_enable, for add x0, x1, x2 watched by an M-mode execute trigger: 1 = it ran with tcontrol.mte = 0 and
 // nothing fired; 2 = with mte = 1 the trigger fired on it (mepc = tdata2); 0 = anything else
 function automatic logic [1:0] sdtrig_tcontrol_exec_outcome(ins_t ins);
-    logic mte = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mte")[0];
+    logic mte = get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TCONTROL, "mte")[0];
     if (sdtrig_exec_fired(ins) && ins.current.csr[CSR_MEPC] == ins.current.csr[CSR_TDATA2]) return mte ? 2'd2 : 2'd0;
     if (ins.current.insn == 32'h00208033 && ins.current.pc_rdata == ins.current.csr[CSR_TDATA2]) return mte ? 2'd0 : 2'd1;
     return 2'd0;
@@ -97,8 +97,8 @@ covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
 
-    mte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mte")[0] {}
-    mpte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mpte")[0] {}
+    mte: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TCONTROL, "mte")[0] {}
+    mpte: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TCONTROL, "mpte")[0] {}
     tcontrol_exec_outcome: coverpoint sdtrig_tcontrol_exec_outcome(ins) {
         bins mte_0_not_fired = {2'd1};
         bins mte_1_fired     = {2'd2};
@@ -133,8 +133,8 @@ covergroup SdtrigSm_icount_cg with function sample(ins_t ins);
 
     `ifndef UDB_SDTRIG_ICOUNT_COUNT_HARDWIRED_1
         // cp_icount_self_write: csrw tdata1 = icount with count = 100 on an icount trigger armed with count = 1, m = 1
-        icount_self_write: coverpoint {sdtrig_icount_count(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1")) == 1,
-                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1")[9],
+        icount_self_write: coverpoint {sdtrig_icount_count(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1)) == 1,
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1)[9],
                                        ins.current.rs1_val[XLEN-1:XLEN-4] == 4'd3, sdtrig_icount_count(ins.current.rs1_val) == 100} {
             type_option.weight = 0;
             bins count_one_rewritten = {4'b1111};

@@ -7,7 +7,7 @@
         bins reg[] = {[0:31]};
     }
 
-    vtype_all_lmul: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmul: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         // Fractional LMULs gated by SEW: LMUL >= SEW/ELEN required
         // mf8 never valid for FP (SEW >= 16, needs SEW <= 8)
         `ifdef COVER_VFCUSTOM16

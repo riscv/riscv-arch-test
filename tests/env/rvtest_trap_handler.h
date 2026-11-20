@@ -49,7 +49,7 @@
 //    tramp_sz + 10*8        | 8             | sved_shared   — S-mode area: saved hgatp
 //    tramp_sz + 11*8        | 8             | tentry_sv      — common handler entry point address
 //    tramp_sz + 12*8        | 8             | xedeleg_sv     — saved xEDELEG value
-//    tramp_sz + 13*8        | 8             | xtvec_new      — trampoline address currently in xTVEC
+//    tramp_sz + 13*8        | 8             | xtvec_new      — BASE (no MODE bits) currently in xTVEC
 //    tramp_sz + 14*8        | 8             | xtvec_save     — original xTVEC value before prolog
 //    tramp_sz + 15*8        | 8             | xscratch_save  — original xSCRATCH value before prolog
 //    tramp_sz + 16*8        | 8             | medeleg_illegal_sv — shadow value of medeleg[2]
@@ -214,7 +214,7 @@
 //      - csrrw sp, xSCRATCH, sp    (swap sp with save area pointer)
 //      - SREG T6, offset(sp)       (save T6 in temp save area)
 //      - jal T6, common_Xhandler   (jump to common handler, T6 = vector addr)
-//   3. ENDTEST TRAMPOLINE: 9 instructions (long jump to rvtest_Xend)
+//   3. ENDTEST TRAMPOLINE: 3 instructions (long jump to rvtest_Xend)
 //   4. COMMON HANDLER ENTRY: 5 instructions (save T5, restore xSCRATCH, jump)
 //
 // actual_tramp_sz = total bytes of trampoline code
@@ -222,7 +222,7 @@
 // sv_area_sz      = total save area per mode (trampoline save + pointers + regs)
 //==============================================================================
 
-#define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)  // total trampoline bytes
+#define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 3 + 5) * 4)  // total trampoline bytes
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                       // round up to dword alignment
 #define ptr_sv_sz       (18*8)                                           // 18 metadata slots × 8 bytes each
 #define reg_sv_sz       ( 8*REGWIDTH)                                    // 8 handler temp regs saved
@@ -267,7 +267,7 @@
                                                     //   and hideleg in the M area's slot
 #define tentry_addr_off             (tramp_sz+11*8) // offset to common handler entry point address
 #define xedeleg_sv_off              (tramp_sz+12*8) // offset to saved xEDELEG value
-#define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC value (trampoline addr)
+#define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC BASE (trampoline addr, no MODE bits)
 #define xtvec_sav_off               (tramp_sz+14*8) // offset to saved original xTVEC value
 #define xscr_save_off               (tramp_sz+15*8) // offset to saved original xSCRATCH value
 #define medeleg_illegal_sv_off      (tramp_sz+16*8) // offset to logical medeleg[2] value
@@ -1021,8 +1021,10 @@ init_\__MODE__\()tvec:
     .endif
   #endif
 #endif
+        // xtvec_new_off holds the BASE only. sv_\__MODE__\()vect subtracts it from the stub
+        // return address to find which stub ran, so the MODE bits must not be included.
+        SREG    T5, xtvec_new_off(T1)              // save new xTVEC BASE (no MODE bits) in save area
         or      T2, T5, T2                         // T2 = handler BASE + selected mode bits
-        SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
         csrw    CSR_XTVEC, T2                      // attempt to write handler address to xTVEC
 
         csrr    T5, CSR_XTVEC                      // read back xTVEC to verify it was written
@@ -1031,11 +1033,11 @@ init_\__MODE__\()tvec:
 #endif
         // xTVEC is NOT fully writable — need to copy trampoline to xTVEC target
         csrw    CSR_XTVEC, T3                      // restore original xTVEC (we'll overwrite its target)
-        SREG    T3, xtvec_new_off(T1)               // update tvec_new with the original (now-in-use) xTVEC
 
 //---------- Copy trampoline to fixed xTVEC target ----------
 init_\__MODE__\()tramp:
         andi    T2, T3, ~WDBYTMSK                 // T2 = xTVEC target address (clear mode bits)
+        SREG    T2, xtvec_new_off(T1)              // update tvec_new with the BASE of the original (now-in-use) xTVEC
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
@@ -2328,7 +2330,7 @@ tsbi_instr_table:
 // word 4 is the second trap value (mtval2 / htval) and word 5 is xtinst.
 
 sv_\__MODE__\()vect:
-        LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
+        LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address (BASE, no MODE bits)
         sub     T6, T6, T3                          // T6 = vector stub address - trampoline base = spreader offset
         slli    T4, T6, 1                           // T4 = offset * 2 (part of compression: multiply by 3)
         add     T6, T6, T4                          // T6 = offset * 3
@@ -2419,9 +2421,11 @@ common_\__MODE__\()excpt_handler:
 
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
-        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
-        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
-        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+        // Tests that arm mcontrol6 triggers define SDTRIG_IMPRECISE_XEPC: the spec only suggests where those
+        // fire, so DUTs take the breakpoint at different instructions and xEPC is not recorded for cause 3
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_BREAKPOINT)
+        beq     T2, T6, skpsv_\__MODE__\()epc
 #endif
         TRAP_SIGUPD_ADDR(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
 skpsv_\__MODE__\()epc:
@@ -2639,6 +2643,22 @@ common_\__MODE__\()int_handler:
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
 
+// Release an armed wait loop (wait_loop_arm/wait_loop in the test generator). The loop checks
+// rvtest_wait_loop's exit before each WFI or WRS and leaves when it is 0, so clearing it ends
+// the wait. If the interrupt was taken inside the loop, between that check and the wait
+// instruction, returning there would wait for an interrupt that this handler has just
+// cleared, so resume at the loop's exit instead. Leaving early is legal: a wait
+// instruction may complete at any time.
+        LA(     T6, rvtest_wait_loop)
+        LREG    T2, REGWIDTH(T6)                     // T2 = loop exit, 0 if no loop is armed
+        beqz    T2, nowait_\__MODE__\()int
+        SREG    zero, REGWIDTH(T6)                   // release the loop
+        LREG    T6, 0(T6)                            // T6 = first instruction of the loop
+        csrr    T3, CSR_XEPC
+        bltu    T3, T6, nowait_\__MODE__\()int     // interrupted outside the loop: return normally
+        bgeu    T3, T2, nowait_\__MODE__\()int
+        csrw    CSR_XEPC, T2                         // interrupted inside the loop: resume at its exit
+nowait_\__MODE__\()int:
         j       sv_\__MODE__\()tval_words           // words 3-5: xtval and, with H, second trap value and xtinst
 
 dispatch_\__MODE__\()int_handler:

@@ -69,9 +69,9 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // One that mideleg cannot delegate has its sip and sie bits read-only zero, so it never reaches S-mode;
     // InterruptsSm covers it in M-mode. The bins below that name a single S-level interrupt are gated the same way.
     `ifdef SSCOFPMF_SUPPORTED
-        `define INTS_NOH_MASK (16'h2222 & `UDB_MIDELEG_DELEGATABLE_MASK)
+        `define INTS_NOH_MASK (16'h2222 & 16'(`UDB_MIDELEG_DELEGATABLE_MASK))
     `else
-        `define INTS_NOH_MASK (16'h0222 & `UDB_MIDELEG_DELEGATABLE_MASK)
+        `define INTS_NOH_MASK (16'h0222 & 16'(`UDB_MIDELEG_DELEGATABLE_MASK))
     `endif
 
     // Interrupt bits this config supports below M: the S-level bits, plus VSEI, VSTI, and VSSI with H

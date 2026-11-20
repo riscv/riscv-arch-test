@@ -80,7 +80,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         `define SM_NOH_MASK 16'h0222
     `endif
     // The S-level interrupts mideleg can delegate: a bit that cannot be delegated is read-only zero
-    `define SM_NOH_DELEG_MASK (`SM_NOH_MASK & `UDB_MIDELEG_DELEGATABLE_MASK)
+    `define SM_NOH_DELEG_MASK (`SM_NOH_MASK & 16'(`UDB_MIDELEG_DELEGATABLE_MASK))
 
     // mideleg written all 0s or all 1s in every delegable field.
     // mideleg does not exist without S, so it becomes a trivial always-hit bin that leaves the
@@ -90,7 +90,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         // ones is the readback of all 1s: every interrupt mideleg can delegate. Bits that mideleg
         // cannot delegate are read-only zero.
         mideleg_both: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG)[15:0] & (`SM_NOH_MASK | 16'h0888)) {
-            bins ones  = {(`SM_NOH_MASK | 16'h0888) & `UDB_MIDELEG_DELEGATABLE_MASK};
+            bins ones  = {(`SM_NOH_MASK | 16'h0888) & 16'(`UDB_MIDELEG_DELEGATABLE_MASK)};
             bins zeros = {16'h0};
         }
     `else

@@ -94,16 +94,6 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     )
 
 
-def _mask_with_unwalked_bits(csr: tuple, unwalked_bits: list[tuple[int, str]]) -> tuple:
-    """Return csr with the unwalked_bits added to its mask (all ones if None)."""
-    csr_name, mask = csr
-    if mask is None:
-        mask = (1 << 64) - 1
-    for bits, _define in unwalked_bits:
-        mask |= bits
-    return (csr_name, mask)
-
-
 def csr_access_test(
     test_data: TestData,
     csr: tuple,
@@ -132,7 +122,7 @@ def csr_access_test(
     """
     if unwalked_bits:
         maskedwrites = True
-        csr = _mask_with_unwalked_bits(csr, unwalked_bits)
+        csr = _mask_with_conditional_bits(csr, unwalked_bits)
     csr_name, mask = csr
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
@@ -257,6 +247,16 @@ def upper_half(conditional_bits: list[tuple[int, str]]) -> list[tuple[int, str]]
     return [(bits >> 32, cond) for bits, cond in conditional_bits if bits >> 32] or None
 
 
+def _mask_with_conditional_bits(csr: tuple, conditional_bits: list[tuple[int, str]]) -> tuple:
+    """csr with the bits of the (bits, cond) pairs added to its mask (all ones if None), to be cleared where cond holds."""
+    csr_name, mask = csr
+    if mask is None:
+        mask = (1 << 64) - 1
+    for bits, _cond in conditional_bits:
+        mask |= bits
+    return (csr_name, mask)
+
+
 def clear_conditional_bits(
     reg: int, tmp_reg: int, conditional_bits: list[tuple[int, str]] | None, why: str
 ) -> list[str]:
@@ -321,7 +321,7 @@ def csr_walk_test(
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     if unwalked_bits:
         maskedwrites = True
-        csr = _mask_with_unwalked_bits(csr, unwalked_bits)
+        csr = _mask_with_conditional_bits(csr, unwalked_bits)
     csr_name, mask = csr
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"

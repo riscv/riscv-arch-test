@@ -25,10 +25,10 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
-    mstatus_FS_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
+    mstatus_FS_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs")[1:0] {
         bins disabled = {2'b00};
     }
-    mstatus_FS_status: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
+    mstatus_FS_status: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs")[1:0] {
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins fs_initial = {2'b01};
         `endif
@@ -37,7 +37,7 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
         `endif
         bins fs_dirty   = {2'b11};
     }
-    frm_legal: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")[2:0] {
+    frm_legal: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "frm")[2:0] {
         bins legal_frm = {3'b000, 3'b001, 3'b010, 3'b011, 3'b100};
     }
     instrs: coverpoint ins.current.insn {
@@ -106,7 +106,7 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
             wildcard bins fsq = {FSQ};
         `endif
     }
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[3:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[3:0]  {
         // auto fills 0000 through 1111
     }
 
@@ -120,13 +120,13 @@ covergroup Exceptions_F_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:        cross loadops, illegal_address_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_store_access_fault:       cross storeops, illegal_address_store;
@@ -233,7 +233,7 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
             bins straddle64 = {5'b11111};
         }
     `endif
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
     rs1_zero: coverpoint ins.current.insn[19:15] {
@@ -245,10 +245,10 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     csr_0x000: coverpoint ins.current.insn[31:20] {
         bins zero = {12'h000};
     }
-    mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+    mstatus_MIE: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0] {
         // auto fills 1 and 0
     }
-    mstatus_SIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
+    mstatus_SIE: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -261,10 +261,10 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
-    medeleg_illegalinstr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[2] {
+    medeleg_illegalinstr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[2] {
         bins enabled = {1};
     }
-    mtvec_stvec_ne: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtvec", "mtvec") != get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stvec", "stvec")} {
+    mtvec_stvec_ne: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVEC) != get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVEC)} {
         bins notequal = {1};
     }
 
@@ -293,30 +293,30 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     // access fault coverpoints
     // Both misaligned and illegal: +1 for lw/sw; +2 for jalr, which clears bit 0 of the target
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
-        illegal_address_misaligned_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_misaligned_fetch: coverpoint ins.current.eff_addr {
             bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH + 2};
         }
         cp_instr_access_fault:                   cross priv_mode_s, jalr, illegal_address_fetch;
         cp_misaligned_priority_fetch:            cross priv_mode_s, jalr, illegal_address_misaligned_fetch;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
-        illegal_address_misaligned_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_misaligned_load: coverpoint ins.current.eff_addr {
             bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 1};
         }
         cp_load_access_fault:                    cross priv_mode_s, loadops, illegal_address_load;
         cp_misaligned_priority_load:             cross priv_mode_s, lw, illegal_address_misaligned_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        illegal_address_misaligned_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_misaligned_store: coverpoint ins.current.eff_addr {
             bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE + 1};
         }
         cp_store_access_fault:                   cross priv_mode_s, storeops, illegal_address_store;
@@ -417,7 +417,7 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
             bins straddle64 = {5'b11111};
         }
     `endif
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
     rs1_zero: coverpoint ins.current.insn[19:15] {
@@ -426,7 +426,7 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
     seed: coverpoint ins.current.insn[31:20] {
         bins seed = {CSR_SEED};
     }
-    mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+    mstatus_MIE: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -440,7 +440,7 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
     `ifdef S_SUPPORTED
-        medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
+        medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
             bins zeros                    = {16'b0000_0000_0000_0000};
             `ifndef ZCA_SUPPORTED
                 bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
@@ -463,13 +463,13 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
             bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
             wildcard bins ones            = {16'b1011_00?1_1111_111?};
         }
-        mstatus_SIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
+        mstatus_SIE: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0] {
             // auto fills 1 and 0
         }
-        medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg")[8] {
+        medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[8] {
             // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
+        jalr_target_bit1: coverpoint ins.current.eff_addr[1] {}
     `endif
 
     // main coverpoints
@@ -503,19 +503,19 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
-        i_phys_adr_misaligned: coverpoint {ins.current.imm + ins.current.rs1_val}[1:0] {
+        i_phys_adr_misaligned: coverpoint ins.current.eff_addr[1:0] {
             bins aligned    = {2'b00};
             bins misaligned = {2'b10};
         }
         `ifdef UDB_MXLEN_64 // RV64 physical addresses have 56 bits; an RV32 address zero-extends into 34
-            i_phys_address_nonexistent: coverpoint ({8'b0, {ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+            i_phys_address_nonexistent: coverpoint ({8'b0, ins.current.eff_addr[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            i_phys_address_nonexistent: coverpoint ({32'b0, {ins.current.imm + ins.current.rs1_val}[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
+            i_phys_address_nonexistent: coverpoint ({32'b0, ins.current.eff_addr[31:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
@@ -526,10 +526,10 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
-        illegal_address_priority_load: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_load: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:                    cross priv_mode_m, loadops, illegal_address_load;
@@ -539,10 +539,10 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
         `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        illegal_address_priority_store: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_store: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_store_access_fault:                   cross priv_mode_m, storeops, illegal_address_store;
@@ -648,7 +648,7 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
             bins straddle64 = {5'b11111};
         }
     `endif
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
     rs1_zero: coverpoint ins.current.insn[19:15] {
@@ -657,7 +657,7 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
     seed: coverpoint ins.current.insn[31:20] {
         bins seed = {CSR_SEED};
     }
-    mstatus_MIE: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+    mstatus_MIE: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -692,26 +692,26 @@ covergroup Exceptions_U_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
         cp_instr_access_fault:                   cross priv_mode_u, jalr, illegal_address_fetch;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
-        illegal_address_priority_load: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_load: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:                    cross priv_mode_u, loadops, illegal_address_load;
         cp_misaligned_priority_load:             cross priv_mode_u, loadops, adr_LSBs, illegal_address_priority_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
-        illegal_address_priority_store: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
+        illegal_address_priority_store: coverpoint {ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_misaligned_priority_store:            cross priv_mode_u, storeops, adr_LSBs, illegal_address_priority_store;
@@ -877,7 +877,7 @@ covergroup Exceptions_Zalrsc_cg with function sample(ins_t ins);
         illegal_address_misaligned: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LRSC + 1};
         }
-        non_illegal_address: coverpoint (64'({{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000}) != `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
+        non_illegal_address: coverpoint (64'({ins.current.eff_addr[`UDB_MXLEN-1:3], 3'b000}) != `RVMODEL_ACCESS_FAULT_ADDRESS_LRSC) {
             bins non_illegal = {1};
         }
         cp_load_address_misaligned:                cross lr, adr_LSBs, non_illegal_address;
@@ -957,7 +957,7 @@ covergroup Exceptions_Zc_cg with function sample(ins_t ins);
 
     }
 
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0]  {
         // auto fills 000 through 111
     }
 
@@ -969,13 +969,13 @@ covergroup Exceptions_Zc_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_load_access_fault:                    cross loadops, illegal_address_load;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_store_access_fault:                   cross storeops, illegal_address_store;
@@ -1000,10 +1000,10 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
             wildcard bins cbo_clean = {CBO_CLEAN};
         }
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
-            menvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbie")[1:0] {
+            menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbie")[1:0] {
                 ignore_bins reserved = {2'b10};
             }
-            menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbcfe")[0] {
+            menvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbcfe")[0] {
             }
             // cbo.inval only executes with cbie enabled; 00 traps and 10 is reserved
             menvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
@@ -1012,10 +1012,10 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
             }
         `endif
         `ifdef S1P12P0_OR_LATER_SUPPORTED
-            senvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "cbie")[1:0] {
+            senvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SENVCFG, "cbie")[1:0] {
                 ignore_bins reserved = {2'b10};
             }
-            senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "cbcfe")[0] {
+            senvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SENVCFG, "cbcfe")[0] {
             }
             senvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_SENVCFG][5:4] {
                 bins flush = {2'b01};
@@ -1028,11 +1028,11 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
             wildcard bins cbo_zero = {CBO_ZERO};
         }
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
-            menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbze")[0] {
+            menvcfg_cbze: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbze")[0] {
             }
         `endif
         `ifdef S1P12P0_OR_LATER_SUPPORTED
-            senvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "cbze")[0] {
+            senvcfg_cbze: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SENVCFG, "cbze")[0] {
             }
         `endif
     `endif
@@ -1040,12 +1040,12 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
     }
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
-        menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
+        menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
             bins ones = {4'b1111};
         }
     `endif
     `ifdef S1P12P0_OR_LATER_SUPPORTED
-        senvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "senvcfg")[7:4] {
+        senvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SENVCFG)[7:4] {
             bins ones = {4'b1111};
         }
     `endif
@@ -1122,10 +1122,10 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
         // menvcfg does not exist before Sm1.12.0
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             `ifdef U_SUPPORTED
-                menvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbie")[1:0] {
+                menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbie")[1:0] {
                     ignore_bins reserved = {2'b10};
                 }
-                menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbcfe")[0] {
+                menvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbcfe")[0] {
                 }
             `endif
         `endif
@@ -1138,7 +1138,7 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
 
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             `ifdef U_SUPPORTED
-                menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbze")[0] {
+                menvcfg_cbze: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbze")[0] {
                 }
             `endif
         `endif
@@ -1149,7 +1149,7 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
 
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef U_SUPPORTED
-            menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
+            menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
                 bins ones = {4'b1111};
             }
         `endif
@@ -1228,10 +1228,10 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
         }
         // menvcfg does not exist before Sm1.12.0
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
-            menvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbie")[1:0] {
+            menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbie")[1:0] {
                 ignore_bins reserved = {2'b10};
             }
-            menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbcfe")[0] {
+            menvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbcfe")[0] {
             }
             // cbo.inval only executes with cbie enabled; 00 traps and 10 is reserved
             menvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
@@ -1251,7 +1251,7 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
             wildcard bins cbo_zero = {CBO_ZERO};
         }
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
-            menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbze")[0] {
+            menvcfg_cbze: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbze")[0] {
             }
         `endif
     `endif
@@ -1259,7 +1259,7 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
     }
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
-        menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
+        menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
             bins ones = {4'b1111};
         }
     `endif
@@ -1422,7 +1422,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     }
 
     // Addresses
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0] {
         // auto fills 000 through 111
     }
 
@@ -1431,17 +1431,17 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     // ============================================================================
 
     // medeleg as set up by BOOT_TO_SMODE: every exception but the ecalls from HS-mode and M-mode
-    medeleg_delegation: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg") {
+    medeleg_delegation: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg") {
         wildcard bins ones = {32'b????_????_1111_??00_1011_0101_1111_111?};
     }
-    medeleg_ecall_u_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg")[8] {
+    medeleg_ecall_u_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[8] {
         bins delegated = {1};
     }
-    medeleg_ecall_u_vs_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg")[10:8] {
+    medeleg_ecall_u_vs_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[10:8] {
         wildcard bins delegated = {3'b1?1};
     }
     // Bits 16 and 20-23 are read-only 0; bit 0 is writable only when IALIGN = 32
-    hedeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
+    hedeleg_walk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg") {
         bins zeros              = {32'h00000000};
         `ifndef ZCA_SUPPORTED
             bins instrmisaligned = {32'h00000001};
@@ -1456,36 +1456,36 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         bins ecallu             = {32'h00000100};
         wildcard bins ones      = {32'b????_????_0000_1100_1011_0001_1111_111?};
     }
-    hedeleg_writable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
+    hedeleg_writable: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg") {
         wildcard bins ones = {32'b????_????_0000_1100_1011_0001_1111_111?};
     }
-    hedeleg_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
+    hedeleg_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg") {
         bins disabled = {32'h00000000};
     }
-    hedeleg_ecall_u_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[8] {
+    hedeleg_ecall_u_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[8] {
         bins delegated = {1};
     }
-    hedeleg_ecall_u_vs_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[10:8] {
+    hedeleg_ecall_u_vs_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[10:8] {
         wildcard bins not_delegated = {3'b0?0};
     }
-    hstatus_spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp")[0] {}
-    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {}
-    hstatus_vtsr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr") {
+    hstatus_spvp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0] {}
+    hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu")[0] {}
+    hstatus_vtsr_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtsr") {
         bins one = {1};
     }
-    hstatus_vtvm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm") {
+    hstatus_vtvm_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtvm") {
         bins one = {1};
     }
-    vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sie")[0] {}
-    mstatus_tvm_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+    vsstatus_sie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sie")[0] {}
+    mstatus_tvm_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tvm") {
         bins tvm_disabled = {0};
     }
-    mstatus_tw_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw") {
+    mstatus_tw_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tw") {
         bins tw_disabled = {0};
     }
     // Written before entering VS-mode, so the trap record shows what the exception writes
-    htval_htinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htval", "htval") != 0 &&
-                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htinst", "htinst") != 0) {
+    htval_htinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HTVAL) != 0 &&
+                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HTINST) != 0) {
         bins nonzero = {1};
     }
 
@@ -1514,10 +1514,10 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
 
     // Traps delegated to VS-mode go through vstvec, which points to a different handler than stvec
     vstvec_trap: coverpoint ins.current.insn {
-        bins ecall  = {ECALL}  iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[8]);
-        bins ebreak = {EBREAK} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[3]);
+        bins ecall  = {ECALL}  iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[8]);
+        bins ebreak = {EBREAK} iff (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[3]);
     }
-    vstvec_not_stvec: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstvec", "vstvec") != get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "stvec", "stvec")) {
+    vstvec_not_stvec: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTVEC) != get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_STVEC)) {
         bins different = {1};
     }
     cp_vstvec: cross priv_mode_vs_vu, vstvec_trap, vstvec_not_stvec {
@@ -1578,7 +1578,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     `endif
     // Misaligned loads and stores trap only when the hart does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        addr_misaligned: coverpoint ({ins.current.rs1_val + ins.current.imm}[1:0] != 2'b00) {
+        addr_misaligned: coverpoint (ins.current.eff_addr[1:0] != 2'b00) {
             bins misaligned = {1};
         }
         cp_xtinst_load_misaligned:  cross priv_mode_vs, lw, addr_misaligned, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
@@ -1589,15 +1589,15 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         bins aligned    = {2'b00};
         bins misaligned = {2'b01};
     }
-    hstatus_gva_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "gva") {
+    hstatus_gva_set: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "gva") {
         bins set = {1};
     }
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
         jalr: coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        jalr_target_bit1: coverpoint ins.current.eff_addr[1] {}
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
         cp_hedeleg_instr_misaligned_jalr: cross priv_mode_vs_vu, jalr, jalr_target_bit1, medeleg_delegation, hedeleg_walk;
@@ -1607,7 +1607,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         cp_xtinst_instr_access: cross priv_mode_vs, jalr, illegal_address_fetch, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         cp_hedeleg_load_access_fault:     cross priv_mode_vs_vu, loadops, illegal_address_load, medeleg_delegation, hedeleg_walk;
@@ -1627,7 +1627,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         cp_hstatus_gva_hlv: cross priv_mode_s_u, hlv_w, hlv_illegal_address, hstatus_gva_set;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         cp_hedeleg_store_access_fault:    cross priv_mode_vs_vu, storeops, illegal_address_store, medeleg_delegation, hedeleg_walk;
@@ -1734,7 +1734,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     }
 
     // Addresses
-    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    adr_LSBs: coverpoint ins.current.eff_addr[2:0] {
         // auto fills 000 through 111
     }
     // HLV and HSV have no immediate
@@ -1746,25 +1746,25 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     // CSR fields
     // ============================================================================
 
-    medeleg_delegation: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg") {
+    medeleg_delegation: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg") {
         bins zeros = {32'h00000000};
     }
     // With medeleg = 0, hedeleg has no effect: none and all of its writable bits (bit 0 only when IALIGN = 32)
-    hedeleg_none_all: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
+    hedeleg_none_all: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg") {
         bins zeros         = {32'h00000000};
         wildcard bins ones = {32'b????_????_0000_1100_1011_0001_1111_111?};
     }
-    hedeleg_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
+    hedeleg_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg") {
         bins disabled = {32'h00000000};
     }
-    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {}
-    hstatus_vtsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr")[0] {}
-    mstatus_tsr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr") {
+    hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu")[0] {}
+    hstatus_vtsr: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtsr")[0] {}
+    mstatus_tsr_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tsr") {
         bins tsr_enabled = {1};
     }
     // Written before entering VS-mode, so the trap record shows what the exception writes
-    mtval2_mtinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtval2", "mtval2") != 0 &&
-                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtinst", "mtinst") != 0) {
+    mtval2_mtinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MTVAL2) != 0 &&
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MTINST) != 0) {
         bins nonzero = {1};
     }
 
@@ -1813,7 +1813,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     `endif
     // Misaligned loads and stores trap only when the hart does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        addr_misaligned: coverpoint ({ins.current.rs1_val + ins.current.imm}[1:0] != 2'b00) {
+        addr_misaligned: coverpoint (ins.current.eff_addr[1:0] != 2'b00) {
             bins misaligned = {1};
         }
         cp_xtinst_load_misaligned:  cross priv_mode_vs, lw, addr_misaligned, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
@@ -1828,8 +1828,8 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         jalr: coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {}
-        illegal_address_fetch: coverpoint ins.current.imm + ins.current.rs1_val {
+        jalr_target_bit1: coverpoint ins.current.eff_addr[1] {}
+        illegal_address_fetch: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_FETCH};
         }
         cp_hedeleg_instr_misaligned_jalr: cross priv_mode_vs_vu, jalr, jalr_target_bit1, medeleg_delegation, hedeleg_none_all;
@@ -1837,7 +1837,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         cp_xtinst_instr_access: cross priv_mode_vs, jalr, illegal_address_fetch, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        illegal_address_load: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_load: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
         hlv_illegal_address: coverpoint ins.current.rs1_val {
@@ -1855,7 +1855,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         cp_priority_hlv: cross priv_mode_m, hlv_w, hlv_address_legality, hlv_addr_alignment, hstatus_hu;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        illegal_address_store: coverpoint ins.current.imm + ins.current.rs1_val {
+        illegal_address_store: coverpoint ins.current.eff_addr {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
         }
         hsv_illegal_address: coverpoint ins.current.rs1_val {

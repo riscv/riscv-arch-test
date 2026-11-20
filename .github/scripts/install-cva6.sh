@@ -46,7 +46,11 @@ git init "$INSTALL_DIR/cva6"
 #    Spike's libfesvr/libriscv/libdisasm, and spike-dasm decodes the debug trace.
 bash "$INSTALL_DIR/cva6/verif/regress/install-verilator.sh"
 rm -rf "$VERILATOR_INSTALL_DIR"/build-*
-bash "$INSTALL_DIR/cva6/verif/regress/install-spike.sh"
+# CVA6's Spike bundles an old yaml-cpp. It declares a CMake minimum below 3.5, which CMake 4
+# rejects, and it uses <cstdint> types without the include, which GCC 15 rejects.
+# "-g -O2" keeps the autoconf default flags that CXXFLAGS replaces.
+CMAKE_POLICY_VERSION_MINIMUM=3.5 CXXFLAGS="-g -O2 -include cstdint" \
+  bash "$INSTALL_DIR/cva6/verif/regress/install-spike.sh"
 export PATH="$VERILATOR_INSTALL_DIR/bin:$PATH"
 
 # 3. Verilate one testharness per target, each in its own work-ver-<target> directory.

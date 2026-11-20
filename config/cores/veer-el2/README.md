@@ -10,7 +10,7 @@ Alliance. The configuration runs the RTL under Verilator.
 
 | Config                    | ISA                                         | Modes                 |
 | ------------------------- | ------------------------------------------- | --------------------- |
-| `veer-el2-rv32imcb-u-pmp` | RV32IMC_Zicsr_Zifencei_Zba_Zbb_Zbc_Zbs_Zbkc | M + U, 64 PMP entries |
+| `veer-el2-rv32imcb-u-pmp` | RV32IMC_Zicsr_Zifencei_Zba_Zbb_Zbc_Zbs_Zbkc | M + U, 16 PMP entries |
 
 - Privileged specification 1.11 (`Sm 1.11.0`).
 - `Zihpm` with `hpmcounter3..6`.
@@ -19,7 +19,8 @@ Alliance. The configuration runs the RTL under Verilator.
 
 `.github/scripts/install-veer-el2.sh` builds commit `925f3a34` with these options:
 
-- `user_mode=1`, `pmp_entries=64`: U-mode and the largest PMP.
+- `user_mode=1`: U-mode.
+- `pmp_entries=16`, the default.
 - `smepmp=0`, the default.
 - `bitmanip_zba=1`, `bitmanip_zbb=1`, `bitmanip_zbc=1`, `bitmanip_zbs=1`, the default. The draft
   Zbe, Zbf, Zbp and Zbr stay off.

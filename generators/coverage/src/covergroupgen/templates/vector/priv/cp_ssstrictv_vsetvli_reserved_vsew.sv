@@ -10,7 +10,7 @@
         bins sew_111 = {3'b111};
     }
 
-    vill_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vtype", "vill") {
+    vill_set: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VTYPE, "vill") {
         bins set = {1'b1};
     }
 

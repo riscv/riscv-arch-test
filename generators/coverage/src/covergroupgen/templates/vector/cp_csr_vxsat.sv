@@ -2,7 +2,7 @@
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")[0]  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VCSR, "vxsat")[0]  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
     }
 

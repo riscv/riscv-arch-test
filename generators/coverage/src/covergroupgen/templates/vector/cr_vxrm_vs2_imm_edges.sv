@@ -2,7 +2,7 @@
     // cr_vxrm_vs2_imm_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxrm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxrm")  iff (ins.trap == 0)  {
+    cp_csr_vxrm : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VCSR, "vxrm")  iff (ins.trap == 0)  {
         // Value of VCSR.vxrm (vector fixed-point rounding mode)
         bins rnu  = {2'b00};
         bins rne  = {2'b01};

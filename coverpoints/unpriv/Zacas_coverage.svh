@@ -51,7 +51,7 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amocas.w"  iff (ins.trap == 0 )  {
@@ -463,7 +463,7 @@ covergroup ZacasZabha_amocas_b_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amocas.b"  iff (ins.trap == 0 )  {
@@ -547,7 +547,7 @@ covergroup ZacasZabha_amocas_h_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "amocas.h"  iff (ins.trap == 0 )  {

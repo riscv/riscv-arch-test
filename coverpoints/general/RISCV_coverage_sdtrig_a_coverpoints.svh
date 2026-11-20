@@ -11,9 +11,9 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-a_tdata2_data: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
+a_tdata2_data: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) {
     type_option.weight = 0;
-    wildcard bins value = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") != '0);
+    wildcard bins value = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) != '0);
     bins zero           = {'0};
 }
 lrsc_op: coverpoint ins.current.insn {

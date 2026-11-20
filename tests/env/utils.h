@@ -251,16 +251,6 @@
   #endif
 #endif
 
-// Select the cycle counter for timing tests (Zkt). Without Zicntr, read mcycle in M-mode.
-#ifdef RVTEST_USES_CYCLE_CSR
-  #ifdef ZICNTR_SUPPORTED
-    #define RVTEST_CYCLE_CSR cycle
-  #else
-    #define RVTEST_CYCLE_CSR mcycle
-    #define BOOT_TO_MMODE
-  #endif
-#endif
-
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
 // This macro is used to load integer test values from the .data section.
@@ -309,10 +299,10 @@
 //                         instructions is always the same (2 on RV32, 8 on
 //                         RV64). This ensures constant code size between the
 //                         DUT and reference model.
-// LA(reg, label)          Load the address of a label. It is padded to a fixed
-//                         size to ensure constant code size between the DUT and
-//                         reference model. It uses a PC-relative auipc/addi pair,
-//                         so the label must be within +/-2 GiB of the LA. Do not
+// LA(reg, label)          Load the address of a label. It is always 2
+//                         instructions (a PC-relative auipc/addi pair), so code
+//                         size is constant between the DUT and reference model.
+//                         The label must be within +/-2 GiB of the LA. Do not
 //                         use LA for RVMODEL_* addresses: la of a constant
 //                         accepts only sign-extended 32-bit values.
 //-----------------------------------------------------------------------
@@ -462,22 +452,15 @@
     .option pop
 #endif
 
-// Alignment size for LA macro. Must be larger than the longest instruction
-// sequence that the la pseudo-instruction can expand into (to account for the jump hack).
-// On some rv64 targets, this may need to be increased to 6.
-#ifndef UNROLLSZ
-  #define UNROLLSZ 5
-#endif
-
-/**** LA: address of a label; fixed length; alignment and rvc/norvc unknown before execution ****/
+/**** LA: address of a label; fixed length ****/
+// With -mcmodel=medany, la of a label is always auipc/addi. norelax stops the linker
+// from shrinking the pair, and norvc stops the assembler from compressing the addi.
 #define LA(reg,val) ;\
   .ifnc(reg, X0)    ;\
     .option push    ;\
-    .option rvc     ;\
-    .p2align UNROLLSZ ;\
+    .option norelax ;\
     .option norvc   ;\
     la reg,val      ;\
-    .p2align UNROLLSZ ;\
     .option pop     ;\
   .endif
 

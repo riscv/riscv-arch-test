@@ -294,8 +294,7 @@ exclude_extensions:
   # mcause bit 4 is not writable, so exception code 20 reads back as 4. mcause is WLRL, but with H
   # the guest-page-fault codes 20-23 are supported values, so they must read back.
   - Sm_mcause
-  # cp_mtime_write reads time, which is not implemented, without checking for Zicntr (a test bug,
-  # fixed by riscv-arch-test PR #3114).
+  # cp_mtime_write reads time, which is not implemented, without checking for Zicntr (a test bug).
   - Sm_mcsr_cntr
   # ebreak from VS/VU writes the guest PC to mtval/stval but leaves mstatus.GVA/hstatus.GVA 0: CSR.scala
   # takes tval = epc for ebreak (RC rocket/CSR.scala:1035) but GVA from io.gva, which RocketCore sets

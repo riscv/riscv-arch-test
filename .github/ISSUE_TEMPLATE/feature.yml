@@ -6,6 +6,12 @@ description: Suggest an improvement to the project.
 title: "[Feature] "
 labels: [enhancement]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ACT gets architectural parameters from [UDB](https://github.com/riscv/riscv-unified-db) and expected results from the [Sail reference model](https://github.com/riscv/sail-riscv).
+        If you need a new UDB parameter or a new Sail model configuration option, or the Sail model behaves incorrectly, open an issue in that repository first.
+        Open an issue here only for changes that ACT must make.
   - type: dropdown
     id: affected-area
     attributes:

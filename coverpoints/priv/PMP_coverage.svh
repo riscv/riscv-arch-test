@@ -10,6 +10,11 @@
 
 `define COVER_PMP
 
+// pmpaddr bits that don't depend on test code size (PMP_PMPADDR_LOWMASK) and read the same with the entry OFF or
+// NAPOT. With G = UDB_PMP_GRANULARITY - 2 >= 1, OFF reads pmpaddr[G-1:0] as 0 and NAPOT reads pmpaddr[G-2:0] as 1s.
+// The tests write pmpaddr while the entry is OFF and set A later, which logs no new pmpaddr value.
+`define PMP_PMPADDR_GRAINMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
+
 `ifndef PMP_HAS_SV
   `ifdef SV32_SUPPORTED
     `define PMP_HAS_SV
@@ -146,7 +151,7 @@ function void pmp_F_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   PMP_F_cg.sample(ins, pmpcfg, pmp_hit);
@@ -222,8 +227,8 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
-    bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
+  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_GRAINMASK) {
+    bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK};
   }
 
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
@@ -470,7 +475,7 @@ function void pmp_S_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR15)
@@ -536,9 +541,6 @@ endfunction
 
 `endif
 `define PMP_NAPOT_PRIORITY_REGION_START ((`PMP_REGION_START & ~(64*`g_napot - 1)) + 64*`g_napot)
-// The priority tests write pmpaddr while the entry is OFF, which reads (and traces) pmpaddr[G-1:0]
-// as 0 at granularity G >= 1, so compare those registers on bits >= G only.
-`define PMP_PMPADDR_GRAINMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
 
 covergroup PMP_Sm_cg with function sample(
                     ins_t ins,
@@ -598,9 +600,9 @@ covergroup PMP_Sm_cg with function sample(
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
-    addr_offset_cp_cfg_A_tor0: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
-      bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
-      bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
+    addr_offset_cp_cfg_A_tor0: coverpoint ins.current.eff_addr {
+      bins zero         = {0};
+      bins below_top    = {`g_tor-4};
     }
   `endif
 
@@ -914,7 +916,7 @@ covergroup PMP_Sm_cg with function sample(
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     pmpcfg_for_tor0: coverpoint {pmpcfg[0]} {
-      wildcard bins pmp0cfg_xwr111  = {8'b10001111}; //L=1,A=TOR,XWR=111
+      wildcard bins pmp0cfg_xwr000  = {8'b10001000}; //L=1,A=TOR,XWR=000
     }
 
     pmpcfg_tor_bot_L0: coverpoint ({pmpcfg[1],pmpcfg[0]}) {
@@ -930,8 +932,8 @@ covergroup PMP_Sm_cg with function sample(
       bins range = {1};
     }
 
-    pmp_addr_for_tor0: coverpoint (pmpaddr[0] & `PMP_PMPADDR_LOWMASK) {
-      bins range = {`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
+    pmp_addr_for_tor0: coverpoint pmpaddr[0] {
+      bins range = {`g_tor >> 2};
     }
 
     addr_for_tor_bot: coverpoint (ins.current.eff_addr & `PMP_ADDR_LOWMASK) {
@@ -1658,14 +1660,14 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    // Match on code-size-invariant low bits (see PMP_PMPADDR_LOWMASK): the region-under-test's
+    // Match on code-size-invariant low bits (see PMP_PMPADDR_GRAINMASK): the region-under-test's
     // absolute address drifts with test code size, but its low bits are fixed.
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION     & `PMP_PMPADDR_LOWMASK))
-              || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION     & `PMP_PMPADDR_GRAINMASK))
+              || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   for (int k = 15; k < 63; k++) begin        // for next 48 regions
-    pmp_HIT[k-15] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_HIT[k-15] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR15)
@@ -2333,8 +2335,8 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
-    bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
+  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_GRAINMASK) {
+    bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK};
   }
 
   // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
@@ -2581,7 +2583,7 @@ function void pmp_U_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   pack_pmpaddr = {  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR15)
@@ -2726,7 +2728,7 @@ function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   PMP_Zaamo_cg.sample(ins, pmpcfg, pmp_hit);
@@ -2803,8 +2805,8 @@ function void pmp_Zalrsc_sample(int hart, int issue, ins_t ins);
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
     // Match on the code-size-invariant low bits; the absolute region address drifts with test size.
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) ||
-                 ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) ||
+                 ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   PMP_Zalrsc_cg.sample(ins, pmpcfg, pmp_hit);
@@ -2942,14 +2944,14 @@ covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0],
 
   // Region 0 is `STANDARD_REGION (PMP_NAPOT_REGION_START-based); regions 1/2 are consecutive g_napot
   // steps from that same base, not from PMP_REGION_START, to stay consistent with region 0.
-  pmpaddr_consecutive_napot: coverpoint ( ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((((`PMP_NAPOT_REGION_START+2**(`k+4)) >> 2) | (2**`k - 1))) & `PMP_PMPADDR_LOWMASK))   &&
-                                          ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((((`PMP_NAPOT_REGION_START+2**(`k+3)) >> 2) | (2**`k - 1))) & `PMP_PMPADDR_LOWMASK))   &&
-                                          ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK))) {
+  pmpaddr_consecutive_napot: coverpoint ( ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == (((((`PMP_NAPOT_REGION_START+2**(`k+4)) >> 2) | (2**`k - 1))) & `PMP_PMPADDR_GRAINMASK))   &&
+                                          ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((((`PMP_NAPOT_REGION_START+2**(`k+3)) >> 2) | (2**`k - 1))) & `PMP_PMPADDR_GRAINMASK))   &&
+                                          ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK))) {
     bins first_three_regions = {1};
   }
 
-  napot_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
-    bins address = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK}; // NAPOT region with LXWR 1111
+  napot_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_GRAINMASK) {
+    bins address = {`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK}; // NAPOT region with LXWR 1111
   }
 
   napot_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0]) {
@@ -3069,7 +3071,7 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   PMP_Zca_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);
@@ -3084,10 +3086,8 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    // Compare above the grain: the test writes pmpaddr0 while the entry is OFF, so the trace
-    // records it with bits G-1:0 read as zero, and does not record it again once the entry is NAPOT.
-    pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
-                                 (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)) {
+    pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) ==
+                                 (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) {
         bins region = {1};
     }
 
@@ -3198,8 +3198,7 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
-                  (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)); // above the grain, as pmpaddr_region
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   PMP_Zicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);

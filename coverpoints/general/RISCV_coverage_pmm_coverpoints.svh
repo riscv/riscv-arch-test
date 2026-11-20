@@ -236,7 +236,12 @@
             bins sv39 = {4'b1000};
         `endif
     }
-    a_upper_bits: coverpoint (ins.current.eff_addr >> 48) {
+    // A prefetch is an ori with rd = x0, which a run that does not collect Zicbop coverage decodes as ori, setting no
+    // eff_addr.  Take its address from the encoding: rs1 (bits 19:15) plus bits 31:25 shifted left by 5.
+    a_upper_bits: coverpoint ((((ins.current.insn ==? PREFETCH_I) || (ins.current.insn ==? PREFETCH_R) ||
+                                 (ins.current.insn ==? PREFETCH_W)) ?
+                                (ins.prev.x_wdata[ins.current.insn[19:15]] + `UDB_MXLEN'(signed'({ins.current.insn[31:25], 5'b0}))) :
+                                ins.current.eff_addr) >> 48) {
         type_option.weight = 0;
         bins upper_0000 = {16'h0000};   // Unaffected by pointer masking
         bins upper_0001 = {16'h0001};   // Bit 48 masked if PMLEN=16 but not 7
@@ -246,6 +251,23 @@
         bins upper_FFFF = {16'hFFFF};   // Bits 63:48 masked if PMLEN=16, only partially if PMLEN=7
         bins upper_FE00 = {16'hFE00};   // Bits 63:57 masked if PMLEN=16 or 7
         bins upper_FF00 = {16'hFF00};   // Bits 63:56 masked if PMLEN=16, only partially if PMLEN=7
+    }
+    // Without translation a JALR target is a physical address, so generate_jalr_tests also sets bit
+    // UDB_PHYS_ADDR_WIDTH when a tag's top bit is below it. Each bin is the tag that the test uses on this hart.
+    `ifndef PMM_JALR_TAG
+        `define PMM_JALR_TAG(t) ((((t) != 0) && (`UDB_PHYS_ADDR_WIDTH < 64) && ((64'(t) << 48) >> `UDB_PHYS_ADDR_WIDTH) == 0) ? \
+                                 16'((t) | (1 << (`UDB_PHYS_ADDR_WIDTH - 48))) : 16'(t))
+    `endif
+    a_upper_bits_jalr: coverpoint (ins.current.eff_addr >> 48) {
+        type_option.weight = 0;
+        bins upper_0000 = {`PMM_JALR_TAG(16'h0000)};
+        bins upper_0001 = {`PMM_JALR_TAG(16'h0001)};
+        bins upper_0100 = {`PMM_JALR_TAG(16'h0100)};
+        bins upper_0200 = {`PMM_JALR_TAG(16'h0200)};
+        bins upper_8000 = {`PMM_JALR_TAG(16'h8000)};
+        bins upper_FFFF = {`PMM_JALR_TAG(16'hFFFF)};
+        bins upper_FE00 = {`PMM_JALR_TAG(16'hFE00)};
+        bins upper_FF00 = {`PMM_JALR_TAG(16'hFF00)};
     }
     a_upper_bits_mprv: coverpoint (ins.current.eff_addr >> 48) {
         type_option.weight = 0;

@@ -468,6 +468,8 @@ _GUEST_SCENARIOS = [
     ),
     _table_scenario("vlvl1", "cp_pmp_pt", "VS-stage"),
     _table_scenario("vlvl0", "cp_pmp_pt", "VS-stage"),
+    _table_scenario("hlvl1", "cp_pmp_pt", "G-stage"),
+    _table_scenario("hlvl0", "cp_pmp_pt", "G-stage"),
     _Scenario(
         "vlvl0_gpa",
         "cp_pmp_pt_gpa",
@@ -497,8 +499,6 @@ _GUEST_SCENARIOS = [
         (_table("vlvl0", 9),),
         _INVALID,
     ),
-    _table_scenario("hlvl1", "cp_pmp_pt", "G-stage"),
-    _table_scenario("hlvl0", "cp_pmp_pt", "G-stage"),
     _Scenario(
         "leaf_invalid_hlvl0",
         "cp_pmp_pt_priority",

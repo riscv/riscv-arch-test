@@ -26,6 +26,8 @@ coverpoints:
     rules:
       - check FS becomes dirty where appropriate
       - instructions that set fflags must set FS to dirty even if they write no floating-point register
+      - instructions trapped at FS=Off must not change f registers, fflags or memory
+      - VS is cleared first, so SD follows FS
   - name: cp_mstatus_FS_transition_nondeterministic
     goal: |-
       Writing to the CSR field

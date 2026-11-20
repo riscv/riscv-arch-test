@@ -612,7 +612,7 @@ normative_rule_definitions:
   # summarizes whether either the csr::[fs], csr::[vs], or csr::[xs] fields signal the
   # presence of some dirty state that will require saving extended user context to memory.
   - name: mstatus_sd_summary_op
-    # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
+    # Every mstatus read records SD; the FS tests clear VS first, so SD follows FS
     coverpoint:
       [
         "Sm_mstatus_cg/cp_mstatus_sd_write",
@@ -634,7 +634,7 @@ normative_rule_definitions:
   # bits encode a Dirty state (i.e., csr::[sd]=(csr::[fs]==0b11 OR csr::[xs]==0b11 OR
   # csr::[vs]==0b11)).
   - name: mstatus_sd_formula
-    # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
+    # Every mstatus read records SD; the FS tests clear VS first, so SD follows FS
     coverpoint:
       [
         "Sm_mstatus_cg/cp_mstatus_sd_write",

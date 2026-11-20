@@ -12,7 +12,7 @@
 import itertools
 
 from testgen.asm.csr import gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, load_float_reg
+from testgen.asm.helpers import comment_banner, load_float_reg, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.extensions.PrivCommon import (
@@ -55,6 +55,12 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
 
     ones_reg, check_reg, scratch_reg, temp_reg, save_reg = test_data.int_regs.get_registers(5)
     lines.append(f"LI(x{ones_reg}, -1)\n")
+
+    # Boot sets VS=Dirty on vector harts. Clear VS so that SD depends only on FS.
+    hs_vs = 0 if priv in ("VS", "VU") else None
+    lines.extend(
+        ["# Clear VS so that SD depends only on FS", *set_status_fields(temp_reg, priv, vs=0, hs_vs=hs_vs), ""]
+    )
 
     for fs, hs in itertools.product(range(4), hs_status_values(priv)):
         for csr in fcsrs:
@@ -145,7 +151,7 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
         "fcvt.s.w f0, x0",
         "fmadd.s f0, f1, f2, f3",
         "fsqrt.s f0, f1",
-        "fsgnj.s f0, f1, f2",
+        "fsgnjn.s f0, f1, f2",
         f"fmv.w.x f0, x{temp_reg}",
         "fmin.s f0, f1, f2",
         f"add x{temp_reg}, x{temp_reg}, x{temp_reg}",
@@ -169,6 +175,19 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
 
     for fs, hs in itertools.product(range(4), hs_status_values(priv)):
         imprecise = fs in (1, 2) or hs in (1, 2)  # FS=Initial or Clean at either level
+        off = fs == 0 or hs == 0  # every FP instruction traps
+        if off:
+            lines.extend(
+                [
+                    "",
+                    f"# Set canaries in f0, fflags and scratch before the trapped instructions with {status}.FS={fs}{hs_note(hs)}",
+                    *set_status_fields(temp_reg, priv, fs=3),
+                    load_float_reg("canary", 0, 0x7F7FCAFE, test_data, "single"),
+                    "csrw fflags, zero",
+                    f"LI(x{temp_reg}, 0x5EEDCAFE)",
+                    f"sw x{temp_reg}, 0(x{scratch_reg})",
+                ]
+            )
         for insn in insns:
             if imprecise and insn in nondeterministic_initial_clean_insns:
                 continue  # skip nondeterministic instructions for FS=1 or FS=2
@@ -265,6 +284,21 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
                 ]
             )
         lines.append("\n#endif")
+        if off:
+            lines.extend(
+                [
+                    "",
+                    f"# Check that the trapped instructions with {status}.FS={fs}{hs_note(hs)} did not change f0, fflags or scratch",
+                    *set_status_fields(temp_reg, priv, fs=3),
+                    test_data.add_testcase(f"fs{fs}{hs_tag(hs)}_off_side_effects", coverpoint, covergroup),
+                    write_sigupd(0, test_data, "float"),
+                    f"lw x{temp_reg}, 0(x{scratch_reg})",
+                    write_sigupd(temp_reg, test_data),
+                ]
+            )
+
+    restore_hs_vs = 3 if hs_vs is not None else None
+    lines.extend(["", "# Restore VS=Dirty", *set_status_fields(temp_reg, priv, vs=3, hs_vs=restore_hs_vs)])
 
     test_data.int_regs.return_registers([ones_reg, check_reg, temp_reg, scratch_reg, save_reg])
 

@@ -9,9 +9,9 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-sargantana.sh <install-dir>}"
 CORE_TILE_REPO="https://github.com/bsc-loca/core_tile.git"
-# core_tile v3.1.0; rtl/core/sargantana is pinned by the superproject to
-# bsc-loca/sargantana 403975c8a3c64c8eb369021a1ac2a374e5df441b (v3.0-47-g403975c).
-CORE_TILE_COMMIT="2528e7df6507fa06d372f001e55cfd46efae4a4b"
+# core_tile v4.0.0; rtl/core/sargantana is pinned by the superproject to
+# bsc-loca/sargantana 8db4398bd91a42e581c1ba83858d420ddfa6e923 (v4.0).
+CORE_TILE_COMMIT="1b9529b556b2fb88d73f1b76e790743572500efb"
 # README: "| Verilator | 5.004 |" is the documented minimum.
 VERILATOR_VERSION="v5.052"
 
@@ -41,7 +41,7 @@ git init "$INSTALL_DIR/core_tile"
   # --recursive: the core and both caches have their own submodules (rtl/mmu, rtl/csr,
   # rtl/memory_library, the FPU) whose filelist.f files the simulator build reads.
   git submodule update --init --recursive --depth 1 \
-    rtl/common_cells rtl/icache rtl/dcache rtl/core/sargantana \
+    rtl/common_cells rtl/icache/icache rtl/icache/vidriol rtl/dcache rtl/core/sargantana \
     simulator/bsc-dm simulator/reference/riscv-isa-sim
 )
 

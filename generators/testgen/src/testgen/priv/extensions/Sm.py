@@ -532,7 +532,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
-        (1 << 0)  # Smepmp MML: read-only zero without Smepmp (MSECCFG_SMEPMP_UNCHECKED)
+        (1 << 0)  # Smepmp MML: read-only zero without Smepmp (unchecked with Smepmp, see mseccfg_unchecked)
         | (1 << 1)  # Smepmp MMWP
         | (1 << 2)  # Smepmp RLB
         | (1 << 8)  # USEED User mode seed access
@@ -601,8 +601,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     ]
     # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED.  Its writable bits are
     # the mcountinhibit.writable_bits Sail parameter.  The bit of a counter that is not implemented
-    # (COUNTINHIBIT_EN false) is WARL with no specified value: it may be read-only zero or read-only one
-    # (CV32E20), which Sail cannot model, so it is walked but not checked.  Bit 1 is always read-only zero.
+    # (COUNTINHIBIT_EN false) is WARL with no specified value, so it is walked but not checked.  Bit 1 is always
+    # read-only zero.
     csr_mcountinhibit = ("mcountinhibit", None)
     mcountinhibit_unchecked = [(1 << n, f"!defined(UDB_COUNTINHIBIT_EN_{n})") for n in range(32) if n != 1]
     csr_menvcfg = ("menvcfg", menvcfg_mask)

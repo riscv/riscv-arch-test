@@ -1586,7 +1586,7 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
         `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
-        bins ones                     = {16'b1011_0001_1111_1111 & `UDB_MEDELEG_DELEGATABLE_MASK};
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
             `ifdef UDB_MEDELEG_DELEGATABLE_1 bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
         `endif
@@ -1739,7 +1739,7 @@ covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
         `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
         `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
-        bins ones                     = {16'b1011_0001_1111_1111 & `UDB_MEDELEG_DELEGATABLE_MASK};
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints
@@ -1861,7 +1861,7 @@ covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
         `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
         `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
-        bins ones                     = {16'b1011_0001_1111_1111 & `UDB_MEDELEG_DELEGATABLE_MASK};
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints

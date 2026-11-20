@@ -17,8 +17,14 @@
 //  _R - Register containing value to store/compare
 //  _INST_PTR - label on instruction being tested (for PC reporting)
 //  _STR_PTR - label to string describing the test
+// _R must not be _TEMP_REG: the self-check loads the expected value into _TEMP_REG,
+// so it would compare the expected value with itself.
+#define RVTEST_SIGUPD_CHECK_REGS(_TEMP_REG, _R)                                        \
+    .ifc _R, _TEMP_REG ; .error "RVTEST_SIGUPD: the checked register is the temporary register" ; .endif
+
 #ifdef RVTEST_SELFCHECK
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)  \
+    RVTEST_SIGUPD_CHECK_REGS(_TEMP_REG, _R)                ;\
     .option push                                           ;\
     .option norvc                                          ;\
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -31,6 +37,7 @@
     .option pop
 #else
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)  \
+    RVTEST_SIGUPD_CHECK_REGS(_TEMP_REG, _R)                ;\
     .option push                                           ;\
     .option norvc                                          ;\
     SREG _R, 0(_SIG_PTR)                                   ;\

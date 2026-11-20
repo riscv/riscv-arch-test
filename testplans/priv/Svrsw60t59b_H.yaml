@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: Svrsw60t59b_H
 notes: |-
-  Svrsw60t59b_H uses the Sv_H test environment (see Sv_H).  Svrsw60t59b exists only on RV64.  Each test sets bit 59, bit 60 or both in the PTE under test: the leaf PTE at every level (the 4 KiB page and each superpage size), and each non-leaf PTE above a 4 KiB leaf.  G-stage leaves have U = 1, as G-stage accesses are user-level, and VS-stage leaves have U = 1 for VU-mode.  The trace reports a PTE only for an access that walks the page table, so each access follows HFENCE.VVMA and HFENCE.GVMA.  The trace reports the leaf PTE of a walk that completes, so the coverpoints sample the leaf cases; the signature checks the non-leaf cases.
+  Svrsw60t59b_H uses the Sv_H test environment (see Sv_H).  Svrsw60t59b exists only on RV64.  Each test sets bit 59, bit 60 or both in the PTE under test: the leaf PTE at every level (the 4 KiB page and each superpage size), and each non-leaf PTE above a 4 KiB leaf.  G-stage leaves have U = 1, as G-stage accesses are user-level, and VS-stage leaves have U = 1 for VU-mode.  Each page-table update is followed by HFENCE.VVMA and HFENCE.GVMA.  The trace reports the leaf PTE of a walk that completes, so the coverpoints sample the leaf cases; the signature checks the non-leaf cases.
 coverpoints:
   - name: cp_vsatp_load
     goal: Verify a guest load through a VS-stage PTE with bits 60:59 set completes (Svrsw60t59b)

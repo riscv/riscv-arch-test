@@ -60,9 +60,8 @@ cv32e40x-dv's core testbench, with `.github/scripts/cv32e40s_tb_wrapper.sv` in p
 wrapper, and `run-cv32e40s.sh --cfg <config> --elf <elf>` runs one test, where `<config>` is the
 configuration name without the `cv32e40s-` prefix.
 CI runs only the two configurations with PMP. With `PMP_NUM_REGIONS = 0`, CV32E40S implements 64
-read-only-zero PMP entries, so no rule can grant U-mode access, but ACT runs unprivileged tests in
-U-mode and requires at least 8 usable PMP entries, so `cv32e40s-rv32imc` and `cv32e40s-rv32imc-pma`
-cannot run.
+read-only-zero PMP entries. No entry can match, so every U-mode access fails. ACT runs unprivileged
+tests in U-mode, so `cv32e40s-rv32imc` and `cv32e40s-rv32imc-pma` cannot run.
 
 ### CV32E40X
 

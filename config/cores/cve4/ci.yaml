@@ -12,8 +12,8 @@ exclude_extensions:
   - Exceptions_Zalrsc
   - Exceptions_Zaamo
 exclude_configs:
-  # With PMP_NUM_REGIONS = 0, CV32E40S implements 64 read-only-zero PMP entries, so no rule can
-  # grant U-mode access; ACT runs unprivileged tests in U-mode and requires >= 8 usable PMP entries.
+  # With PMP_NUM_REGIONS = 0, CV32E40S implements 64 read-only-zero PMP entries. No entry can match,
+  # so every U-mode access fails. ACT runs unprivileged tests in U-mode.
   - cv32e40s-rv32imc
   - cv32e40s-rv32imc-pma
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"

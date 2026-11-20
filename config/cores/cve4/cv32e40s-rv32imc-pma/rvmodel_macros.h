@@ -11,11 +11,7 @@
 
 ##### STARTUP #####
 
-# Perform boot operations.
-# CV32E40S resets mcountinhibit=0x5 (cycle+instret inhibited). Clear it so
-# cycle/instret increment as Zicntr tests expect.
-# .option arch, +zicsr is needed because I tests compile with -march=rv32i
-# which does not include Zicsr (binutils >= 2.38).
+# Perform boot operations
 //#define RVMODEL_BOOT \
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.

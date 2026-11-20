@@ -35,18 +35,22 @@ fcov
         Vls16_coverage.svh
         Vls32_coverage.svh
         Vls64_coverage.svh
+        Vf8_coverage.svh
         Vf16_coverage.svh
         Vf32_coverage.svh
         Vf64_coverage.svh
       priv
         ExceptionsVx_coverage.svh
         ExceptionsVls_coverage.svh
-        ExceptionsVf_coverage.svh
+        ExceptionsVf16_coverage.svh
+        ExceptionsVf32_coverage.svh
+        ExceptionsVf64_coverage.svh
+        ExceptionsVfmin_coverage.svh
         MisalignV_coverage.svh
         SsstrictV_coverage.svh
-        SmV_coverage.svh
-        SmVF_coverage.svh
-        UV_coverage.svh
+        Sm_coverage.svh (Sm_V_cg, Sm_VF_cg)
+        S_coverage.svh (S_V_cg, S_VF_cg)
+        U_coverage.svh (U_V_cg, U_VF_cg)
 tests
     rv32
         Vx8
@@ -80,6 +84,10 @@ tests
         Vls64
             vle8.v.S
             ...
+        Vf8
+            vfwcvt.f.x.v.S
+            vfncvt.x.f.w.S
+            ...
         Vf16
             vfadd.vv.S
             vfadd.vf.S
@@ -101,6 +109,7 @@ tests
         Vls16
         Vls32
         Vls64
+        Vf8
         Vf16
         Vf32
         Vf64
@@ -111,9 +120,9 @@ tests
         ExceptionsVf32
         MisalignV
         SsstrictV
-        SmV
-        SmVF
-        UV
+        Sm (Sm_V_*.S, Sm_VF-*.S)
+        S (S_V_*.S, S_VF-*.S)
+        U (U_V_*.S, U_VF-*.S)
 ----
 
 When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, `vwadd.vv` is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.
@@ -232,7 +241,7 @@ Both upstream fixes have since landed (sail-riscv PR #1703 was merged in June 20
 
 ==== Zvfh Vector Half-Precision Floating-Point Extension
 
-Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions, not the base V extension.  Nevertheless, Zvfh tests are in the same directory structure as V, under Vf16. Zvfh uses Vf16 <<t-Vf-coverpoints>> to exercise all floating-point instructions with SEW=16.
+Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions, not the base V extension.  Nevertheless, Zvfh tests are in the same directory structure as V, under Vf16. Zvfh uses Vf16 <<t-Vf-coverpoints>> to exercise all floating-point instructions with SEW=16. Zvfh's conversions between 8-bit integers and binary16 (`vfwcvt.f.x[u].v`, `vfncvt.x[u].f.w` and `vfncvt.rtz.x[u].f.w` at SEW=8) are in Vf8. The Vf16 conversions between 16-bit integers and binary32 (`vfwcvt.f.x[u].v`, `vfncvt.x[u].f.w` and `vfncvt.rtz.x[u].f.w` at SEW=16) need only Zve32f, so they also run on harts without Zvfh.
 
 ==== Zvfhmin Half-Precision Conversions
 
@@ -241,14 +250,6 @@ Zvfhmin only exercises the widening and narrowing conversions: `vfwcvt.f.f.v` an
 include::{testplansdir}/Zvfhmin.adoc[]
 
 include::norm/Zvfhmin_norm_rules.adoc[]
-
-==== ZfaZvfh Half-Precision Load Immediate
-
-When Zfa and Zvfh are both implemented, RISC-V provides a `fli.h` instruction (<<t-ZfaZvfh-coverpoints>>) even if full Zfh is not supported.
-
-include::{testplansdir}/ZfaZvfh.adoc[]
-
-include::norm/ZfaZvfh_norm_rules.adoc[]
 
 ==== Zvfbfmin BF16 Conversions
 
@@ -278,7 +279,7 @@ include::norm/Zvbb_norm_rules.adoc[]
 
 Zvbc only applies to SEW=64.
 
-include::{testplansdir}/Zvbc64.adoc[]
+include::{testplansdir}/Zvbc.adoc[]
 
 include::norm/Zvbc_norm_rules.adoc[]
 

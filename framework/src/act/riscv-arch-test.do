@@ -46,9 +46,17 @@ vlog -permissive -lint -work ${WKDIR} {*}${INC_DIRS} {*}${DEFINE_ARGS} {*}${COMP
 
 # Start and run simulation
 vopt ${WKDIR}.testbench -work ${WKDIR} -o testbenchopt
-vsim -lib ${WKDIR} testbenchopt +traceFileList=${TRACEFILELIST} -fatal 7
+# -onfinish stop returns control here after $fatal, so the transcript can be checked
+transcript file ${UCDB}.transcript
+vsim -lib ${WKDIR} testbenchopt +traceFileList=${TRACEFILELIST} -fatal 7 -onfinish stop
 
 coverage save -onexit ${UCDB}
 
 run -all
+transcript file ""
+set fh [open ${UCDB}.transcript r]; set transcript [read $fh]; close $fh
+if {[regexp -line {^# \*\* (Error|Fatal)} $transcript]} {
+    puts stderr "\033\[1;31mERROR collecting coverage: the simulation reported errors. See ${UCDB}.transcript.\033\[0m"
+    quit -f -code 1
+}
 quit

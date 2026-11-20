@@ -259,7 +259,7 @@ Zca_c_jr_cg_cp_offset_lsbs_10:
   c.jr x15 # jump
   addi x14, x14, -4  # should not execute; branch not taken
   .p2align 2
-jalrlsb_2: c.nop
+jalrlsb_2: c.addi x14, 1 # reached only if rs1[1] was dropped
   addi x14, x14, 2 # should execute; branch taken
   # check jump taken
   # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -278,7 +278,7 @@ Zca_c_jr_cg_cp_offset_lsbs_11:
   c.jr x9 # jump
   addi x6, x6, -4  # should not execute; branch not taken
   .p2align 2
-jalrlsb_3: c.nop
+jalrlsb_3: c.addi x6, 1 # reached only if rs1[1] was dropped
   addi x6, x6, 2 # should execute; branch taken
   # check jump taken
   # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

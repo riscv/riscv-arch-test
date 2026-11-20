@@ -20,11 +20,11 @@
         bins e16 = {3'b001};
         bins e32 = {3'b010};
         bins e64 = {3'b011};
-        ignore_bins reserved[] = {[4:7]};
+        ignore_bins reserved = {[4:7]};
     }
 
     // vill must be set after execution (unsupported ratio)
-    vill_set_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vtype", "vill") {
+    vill_set_after: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VTYPE, "vill") {
         bins set = {1'b1};
     }
 

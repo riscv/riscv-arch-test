@@ -239,13 +239,15 @@ covergroup Zbkx_xperm8_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zbkx_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "xperm4"     : begin
             Zbkx_xperm4_cg.sample(ins);
         end
         "xperm8"     : begin
             Zbkx_xperm8_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

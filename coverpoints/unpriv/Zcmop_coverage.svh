@@ -141,8 +141,9 @@ covergroup Zcmop_c_mop_9_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zcmop_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "c.mop.1"     : begin
             Zcmop_c_mop_1_cg.sample(ins);
         end
@@ -167,5 +168,6 @@ function void zcmop_sample(int hart, int issue, ins_t ins);
         "c.mop.9"     : begin
             Zcmop_c_mop_9_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

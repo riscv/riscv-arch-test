@@ -781,8 +781,9 @@ covergroup Zbs_bseti_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zbs_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "bclr"     : begin
             Zbs_bclr_cg.sample(ins);
         end
@@ -807,5 +808,6 @@ function void zbs_sample(int hart, int issue, ins_t ins);
         "bseti"     : begin
             Zbs_bseti_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

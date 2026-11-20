@@ -85,7 +85,7 @@ covergroup Zvbb16_vandn_vv_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -157,7 +157,7 @@ covergroup Zvbb16_vandn_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -178,7 +178,7 @@ covergroup Zvbb16_vandn_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -200,16 +200,12 @@ covergroup Zvbb16_vandn_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -300,7 +296,7 @@ covergroup Zvbb16_vandn_vx_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -340,7 +336,7 @@ covergroup Zvbb16_vandn_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -361,7 +357,7 @@ covergroup Zvbb16_vandn_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -383,16 +379,12 @@ covergroup Zvbb16_vandn_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -443,7 +435,7 @@ covergroup Zvbb16_vbrev_v_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -483,7 +475,7 @@ covergroup Zvbb16_vbrev_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -504,7 +496,7 @@ covergroup Zvbb16_vbrev_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -516,16 +508,12 @@ covergroup Zvbb16_vbrev_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -576,7 +564,7 @@ covergroup Zvbb16_vbrev8_v_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -616,7 +604,7 @@ covergroup Zvbb16_vbrev8_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -637,7 +625,7 @@ covergroup Zvbb16_vbrev8_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -649,16 +637,12 @@ covergroup Zvbb16_vbrev8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -709,7 +693,7 @@ covergroup Zvbb16_vclz_v_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -749,7 +733,7 @@ covergroup Zvbb16_vclz_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -770,7 +754,7 @@ covergroup Zvbb16_vclz_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -782,16 +766,12 @@ covergroup Zvbb16_vclz_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -842,7 +822,7 @@ covergroup Zvbb16_vcpop_v_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -882,7 +862,7 @@ covergroup Zvbb16_vcpop_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -903,7 +883,7 @@ covergroup Zvbb16_vcpop_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -915,16 +895,12 @@ covergroup Zvbb16_vcpop_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -975,7 +951,7 @@ covergroup Zvbb16_vctz_v_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -1015,7 +991,7 @@ covergroup Zvbb16_vctz_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -1036,7 +1012,7 @@ covergroup Zvbb16_vctz_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -1048,16 +1024,12 @@ covergroup Zvbb16_vctz_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1108,7 +1080,7 @@ covergroup Zvbb16_vrev8_v_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -1148,7 +1120,7 @@ covergroup Zvbb16_vrev8_v_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -1169,7 +1141,7 @@ covergroup Zvbb16_vrev8_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -1181,16 +1153,12 @@ covergroup Zvbb16_vrev8_v_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1271,7 +1239,7 @@ covergroup Zvbb16_vrol_vv_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -1343,7 +1311,7 @@ covergroup Zvbb16_vrol_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -1364,7 +1332,7 @@ covergroup Zvbb16_vrol_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -1386,16 +1354,12 @@ covergroup Zvbb16_vrol_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1486,7 +1450,7 @@ covergroup Zvbb16_vrol_vx_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -1526,7 +1490,7 @@ covergroup Zvbb16_vrol_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -1547,7 +1511,7 @@ covergroup Zvbb16_vrol_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -1569,16 +1533,12 @@ covergroup Zvbb16_vrol_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1610,10 +1570,6 @@ covergroup Zvbb16_vror_vi_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
-    }
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -1621,6 +1577,26 @@ covergroup Zvbb16_vror_vi_cg with function sample(ins_t ins);
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
         bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
         bins random         = {mask_random          };
+    }
+
+    cp_uimm_6bit_v : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins b_0 = {0};
+        bins b_1 = {1};
+        bins b_2 = {2};
+        bins b_3 = {3};
+        bins b_4 = {4};
+        bins b_7 = {7};
+        bins b_8 = {8};
+        bins b_9 = {9};
+        bins b_15 = {15};
+        bins b_16 = {16};
+        bins b_17 = {17};
+        bins b_30 = {30};
+        bins b_31 = {31};
+        bins b_32 = {32};
+        bins b_33 = {33};
+        bins b_62 = {62};
+        bins b_63 = {63};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1633,7 +1609,7 @@ covergroup Zvbb16_vror_vi_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -1673,7 +1649,7 @@ covergroup Zvbb16_vror_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -1694,7 +1670,7 @@ covergroup Zvbb16_vror_vi_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -1703,39 +1679,45 @@ covergroup Zvbb16_vror_vi_cg with function sample(ins_t ins);
     //// end cr_vl_lmul_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_imm_edges_u
+    // cr_vs2_imm_edges_6bit_u
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_imm_edges_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+    cp_imm_edges_6bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
         bins b_2 = {2};
+        bins b_3 = {3};
+        bins b_4 = {4};
+        bins b_7 = {7};
+        bins b_8 = {8};
+        bins b_9 = {9};
         bins b_15 = {15};
         bins b_16 = {16};
+        bins b_17 = {17};
         bins b_30 = {30};
         bins b_31 = {31};
+        bins b_32 = {32};
+        bins b_33 = {33};
+        bins b_62 = {62};
+        bins b_63 = {63};
     }
 
-    cr_vs2_imm_edges : cross cp_vs2_edges,cp_imm_edges_5bit_u  iff (ins.trap == 0 )  {
+    cr_vs2_imm_edges : cross cp_vs2_edges,cp_imm_edges_6bit_u  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and 5 bit imm edge values (unsigned)
     }
 
-    //// end cr_vs2_imm_edges////////////////////////////////////////////////
+    //// end cr_vs2_imm_edges_6bit_u ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -1816,7 +1798,7 @@ covergroup Zvbb16_vror_vv_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -1888,7 +1870,7 @@ covergroup Zvbb16_vror_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -1909,7 +1891,7 @@ covergroup Zvbb16_vror_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -1931,16 +1913,12 @@ covergroup Zvbb16_vror_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2031,7 +2009,7 @@ covergroup Zvbb16_vror_vx_cg with function sample(ins_t ins);
 
     //// end cp_vd////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -2071,7 +2049,7 @@ covergroup Zvbb16_vror_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -2092,7 +2070,7 @@ covergroup Zvbb16_vror_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -2114,16 +2092,12 @@ covergroup Zvbb16_vror_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2140,9 +2114,9 @@ endgroup
 // ---------------------
 covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
                         ins.trap == 0
                     }
     {
@@ -2162,15 +2136,15 @@ covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one = {0};
     }
 
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {1};
     }
 
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_4: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {2};
     }
 
@@ -2263,7 +2237,7 @@ covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
 
     //// end cp_vd_emul2////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -2303,7 +2277,7 @@ covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -2323,7 +2297,7 @@ covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -2355,16 +2329,12 @@ covergroup Zvbb16_vwsll_vi_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2381,9 +2351,9 @@ endgroup
 // ---------------------
 covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
                         ins.trap == 0
                     }
     {
@@ -2413,15 +2383,15 @@ covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one = {0};
     }
 
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {1};
     }
 
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_4: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {2};
     }
 
@@ -2562,7 +2532,7 @@ covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
 
     //// end cp_vd_emul2////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -2634,7 +2604,7 @@ covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -2654,7 +2624,7 @@ covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -2676,16 +2646,12 @@ covergroup Zvbb16_vwsll_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2702,9 +2668,9 @@ endgroup
 // ---------------------
 covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
                         ins.trap == 0
                     }
     {
@@ -2724,15 +2690,15 @@ covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one = {0};
     }
 
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {1};
     }
 
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_4: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {2};
     }
 
@@ -2861,7 +2827,7 @@ covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
 
     //// end cp_vd_emul2////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -2901,7 +2867,7 @@ covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -2921,7 +2887,7 @@ covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -2943,16 +2909,12 @@ covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -2968,60 +2930,63 @@ covergroup Zvbb16_vwsll_vx_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zvbb16_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
+
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
-        case (traceDataQ[hart][issue][0].inst_name)
-        "vandn.vv"     : begin
-            Zvbb16_vandn_vv_cg.sample(ins);
-        end
-        "vandn.vx"     : begin
-            Zvbb16_vandn_vx_cg.sample(ins);
-        end
-        "vbrev.v"     : begin
-            Zvbb16_vbrev_v_cg.sample(ins);
-        end
-        "vbrev8.v"     : begin
-            Zvbb16_vbrev8_v_cg.sample(ins);
-        end
-        "vclz.v"     : begin
-            Zvbb16_vclz_v_cg.sample(ins);
-        end
-        "vcpop.v"     : begin
-            Zvbb16_vcpop_v_cg.sample(ins);
-        end
-        "vctz.v"     : begin
-            Zvbb16_vctz_v_cg.sample(ins);
-        end
-        "vrev8.v"     : begin
-            Zvbb16_vrev8_v_cg.sample(ins);
-        end
-        "vrol.vv"     : begin
-            Zvbb16_vrol_vv_cg.sample(ins);
-        end
-        "vrol.vx"     : begin
-            Zvbb16_vrol_vx_cg.sample(ins);
-        end
-        "vror.vi"     : begin
-            Zvbb16_vror_vi_cg.sample(ins);
-        end
-        "vror.vv"     : begin
-            Zvbb16_vror_vv_cg.sample(ins);
-        end
-        "vror.vx"     : begin
-            Zvbb16_vror_vx_cg.sample(ins);
-        end
-        "vwsll.vi"     : begin
-            Zvbb16_vwsll_vi_cg.sample(ins);
-        end
-        "vwsll.vv"     : begin
-            Zvbb16_vwsll_vv_cg.sample(ins);
-        end
-        "vwsll.vx"     : begin
-            Zvbb16_vwsll_vx_cg.sample(ins);
-        end
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
+        case (inst_name)
+            "vandn.vv"     : begin
+                Zvbb16_vandn_vv_cg.sample(ins);
+            end
+            "vandn.vx"     : begin
+                Zvbb16_vandn_vx_cg.sample(ins);
+            end
+            "vbrev.v"     : begin
+                Zvbb16_vbrev_v_cg.sample(ins);
+            end
+            "vbrev8.v"     : begin
+                Zvbb16_vbrev8_v_cg.sample(ins);
+            end
+            "vclz.v"     : begin
+                Zvbb16_vclz_v_cg.sample(ins);
+            end
+            "vcpop.v"     : begin
+                Zvbb16_vcpop_v_cg.sample(ins);
+            end
+            "vctz.v"     : begin
+                Zvbb16_vctz_v_cg.sample(ins);
+            end
+            "vrev8.v"     : begin
+                Zvbb16_vrev8_v_cg.sample(ins);
+            end
+            "vrol.vv"     : begin
+                Zvbb16_vrol_vv_cg.sample(ins);
+            end
+            "vrol.vx"     : begin
+                Zvbb16_vrol_vx_cg.sample(ins);
+            end
+            "vror.vi"     : begin
+                Zvbb16_vror_vi_cg.sample(ins);
+            end
+            "vror.vv"     : begin
+                Zvbb16_vror_vv_cg.sample(ins);
+            end
+            "vror.vx"     : begin
+                Zvbb16_vror_vx_cg.sample(ins);
+            end
+            "vwsll.vi"     : begin
+                Zvbb16_vwsll_vi_cg.sample(ins);
+            end
+            "vwsll.vv"     : begin
+                Zvbb16_vwsll_vv_cg.sample(ins);
+            end
+            "vwsll.vx"     : begin
+                Zvbb16_vwsll_vx_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zicfilp_U
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=84584846#gid=84584846
+description: |
+  In this sheet, all Zicfilp tests from the Zicfilp_Common sheet are
+  re-executed in User Mode (U-mode).
+
+  Environment:
+  - Zicfilp extension enabled, Zicsr enabled.
+  - Landing Pad Enabled (LPE) controlled by:
+      senvcfg.LPE when S-mode is implemented
+      menvcfg.LPE when S-mode is not implemented
+  - Tests execute in U-mode.
+
+  Execution Notes:
+  - All indirect branch instructions (JALR, C.JALR, C.JR) are exercised
+    as in the Common sheet.
+  - LPAD behavior, label matching, immediate encoding, and software-check
+    exceptions are tested as per normative rules defined in the spec.
+  - ELP state is observed via sstatus.SPELP when S-mode is implemented, because U-mode software-check exceptions are delegated to S-mode (medeleg[18]=1 in the ACT4 boot code). When S-mode is not implemented the trap is taken in M-mode and ELP is observed via mstatus.MPELP (RV64) or mstatush.MPELP (RV32).
+  - Trap entry and return coverpoints from the M-mode sheet are not
+    repeated here as they are M-mode specific by spec.
+  - All other assumptions, instruction types, and execution conditions
+    are identical to the Zicfilp_Common sheet.
+coverpoints:
+  - name: |-
+      cp_zicfilp_indirect_elp_state_update
+      cp_zicfilp_indirect_elp_state_update_c
+      cp_zicfilp_direct_ct_no_elp
+      cp_zicfilp_lpad_zero_label_bypass
+      cp_zicfilp_lpad_valid_execution
+      cp_zicfilp_lpad_missing_instruction_exception
+      cp_zicfilp_lpad_label_mismatch
+      cp_zicfilp_lpad_label_match_mismatch
+      cp_zicfilp_lpad_label_exception_delivery
+      cp_disabled_zicfilp
+      cp_lpad_no_sw_exception_elp_clear_zicfilp
+      cp_exception_priority_zicfilp
+      cp_lpad_nop_no_lp_expected_zicfilp
+      cp_lpad_alignment_exception_zicfilp
+    goal: Re-run the common Zicfilp coverpoints in U-mode
+    description: The coverpoints described in the Zicfilp Common Coverpoints table, executed in U-mode.

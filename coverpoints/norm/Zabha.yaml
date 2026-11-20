@@ -15,7 +15,7 @@ normative_rule_definitions:
       [
         "Zabha_amoswap_b_cg/cp_align_byte",
         "Zabha_amoswap_h_cg/cp_align_hword",
-        "ExceptionsZaamo_cg/cp_amo_address_misaligned",
+        "Exceptions_Zaamo_cg/cp_amo_address_misaligned",
       ]
 
   # For each level of support, naturally aligned AMOs of a given width are supported if the underlying

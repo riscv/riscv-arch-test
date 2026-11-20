@@ -23,7 +23,7 @@ def make_fflags(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     test_chunks = []
 
     # This must come first due to how fflags is handled in the sail trace (otherwise coverage sees another 1->1 transition)
-    if instr_name in ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf"]:
+    if instr_name in ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf", "vfmsac.vv", "vfnmacc.vv", "vfnmsac.vv"]:
         # Some vector tests do not hit the underflow flag naturally
         test_chunks.extend(generate_vector_special_cases(instr_name, instr_type, coverpoint, test_data))
 
@@ -73,16 +73,30 @@ def generate_vector_special_cases(
 
     kwargs = {}
 
-    # Only is verified to work for vf variants of vmacc-style instructions
-    vs2_label = make_and_register_edge_label("vs2", "min_subnorm", "f", test_data)
-    vd_label = make_and_register_edge_label("vd", "pos0", "f", test_data)
-    fs1_val = get_vector_edge("min_subnorm", "f", test_data.config.sew)
+    if instr_name.endswith("vf"):
+        # Only is verified to work for variants of vmacc-style instructions
+        vs2_label = make_and_register_edge_label("vs2", "min_subnorm", "f", test_data)
+        vd_label = make_and_register_edge_label("vd", "pos0", "f", test_data)
+        fs1_val = get_vector_edge("min_subnorm", "f", test_data.config.sew)
 
-    kwargs = {
-        "vs2_val_pointer": vs2_label,
-        "vd_val_pointer": vd_label,
-        "fs1val": fs1_val,
-    }
+        kwargs = {
+            "vs2_val_pointer": vs2_label,
+            "vd_val_pointer": vd_label,
+            "fs1val": fs1_val,
+        }
+    elif instr_name.endswith("vv"):
+        # Only is verified to work for variants of vmacc-style instructions
+        vs2_label = make_and_register_edge_label("vs2", "min_subnorm", "f", test_data)
+        vs1_label = make_and_register_edge_label("vs1", "min_subnorm", "f", test_data)
+        vd_label = make_and_register_edge_label("vd", "pos0", "f", test_data)
+
+        kwargs = {
+            "vs2_val_pointer": vs2_label,
+            "vs1_val_pointer": vs1_label,
+            "vd_val_pointer": vd_label,
+        }
+    else:
+        raise ValueError(f"Unsupported vector special case for cp_csr_fflags: {instr_name}")
 
     params = generate_random_vector_params(
         test_data,

@@ -86,6 +86,7 @@ class InstructionParams:
     ma: bool | None = None  # Mask Agnostic
     egs: int | None = None  # Element Group Size
     ignore_vector_safety: bool = False  # Set this to disable vector safety (e.g. allow arbitrary index values)
+    vd_different_eew_overlap: bool = False  # A source-dest overlap at different eews are tail and mask agnostic
 
     maskval: str | PresetMask | None = None
 

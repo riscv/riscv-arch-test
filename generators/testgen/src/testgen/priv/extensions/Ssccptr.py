@@ -20,7 +20,7 @@ from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
@@ -30,9 +30,11 @@ _SENTINEL = "0xC0FFEE42"
 
 def _make_ssccptr(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     coverpoint = "cp_ssccptr"
-    chunk = begin_sv_test(test_data, sv, "Smode", f"{sv.name}_hptw_read", coverpoint=coverpoint)
+    regs = SvRegs.allocate(test_data)
+    chunk = begin_sv_test(test_data, regs, sv, "Smode", f"{sv.name}_hptw_read", coverpoint=coverpoint, sig_init=None)
 
-    pa_reg, va_reg, sentinel_reg, load_reg = test_data.int_regs.get_registers(4)
+    # scratch is not live across the PTE_SETUP_* macros in create_page_mapping
+    pa_reg, va_reg, sentinel_reg, load_reg = regs.scratch, regs.addr, regs.result, regs.load
     chunk.code.extend(
         [
             "// Map va_data with a leaf at level 0, so the walk reads a PTE at every level.",
@@ -47,17 +49,16 @@ def _make_ssccptr(test_data: TestData, sv: SvMode) -> list[TestChunk]:
             f"sw x{sentinel_reg}, 0(x{pa_reg})",
             "",
             "// Load it through va_data, whose physical address is rvtest_data_1.",
-            *virtual_address(sv, "va_data", 0, destination=f"x{va_reg}", scratch=f"x{pa_reg}"),
+            *virtual_address(sv, "va_data", 0, destination=va_reg, scratch=pa_reg),
             f"LI(x{load_reg}, 0)",
             test_data.add_testcase("lw_under_vm", coverpoint, covergroup),
             f"lw x{load_reg}, 0(x{va_reg})",
             write_sigupd(load_reg, test_data),
         ]
     )
-    test_data.int_regs.return_registers([pa_reg, va_reg, sentinel_reg, load_reg])
 
-    chunk.raw_data.extend(sv_data(sv))
-    return [test_data.end_test_chunk()]
+    chunk.raw_data.extend(sv_data(sv, regs))
+    return [end_sv_test(test_data, regs)]
 
 
 # Any hart with paging has Sv32 or Sv39: Sv48 requires Sv39 and Sv57 requires Sv48.

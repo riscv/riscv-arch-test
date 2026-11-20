@@ -1,19 +1,22 @@
 ##################################
 # priv/extensions/sv/SvZicbo.py
 #
-# SvZicbo suite: cache-block operations under virtual memory.
+# Sv suite, Zicbo group: cache-block operations under virtual memory.
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 """Generate cache-block operation tests under virtual memory."""
 
-from testgen.asm.helpers import write_sigupd
+from dataclasses import replace
+from typing import NamedTuple
+
+from testgen.asm.helpers import gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV39,
@@ -28,48 +31,82 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
+# A page-table read is an implicit load, so a table in the access-fault region uses the LOAD region
+_TABLE_FAULT = "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD"
+_TABLE_GATE = f"defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined({_TABLE_FAULT})"
+
+
+class CboLeaf(NamedTuple):
+    """A leaf PTE case for a CBO: a short name, a description, the leaf's flags, whether the CBO faults, and whether
+    the leaf uses a reserved R/W/X encoding."""
+
+    name: str
+    description: str
+    flags: PteFlags
+    faults: bool
+    reserved: bool = False
+
+
+def cbo_leaves(family: str, valid: PteFlags) -> list[CboLeaf]:
+    """The leaf PTE cases for ``family``'s CBOs, each a change to the ``valid`` leaf.
+
+    A CBO checks a leaf like a store, except that a cache-block management instruction needs only read or write
+    permission and never checks D (cmo.adoc).  With menvcfg.ADUE = 0, a clear A or a needed D bit faults.  Whether a
+    cache-block management instruction may access an execute-only page is UNSPECIFIED (cmo.adoc, after cbm_access),
+    so only cbo.zero gets the execute-only leaf.
+    """
+    zicbom = family == "zicbom"
+    return [
+        CboLeaf("v0", "PTE.V unset", replace(valid, valid=False), faults=True),
+        CboLeaf("wx", "Reserved W+X without R", replace(valid, read=False), faults=True, reserved=True),
+        CboLeaf("w", "Reserved W without R", replace(valid, read=False, execute=False), faults=True, reserved=True),
+        CboLeaf("rx", "RX permissions", replace(valid, write=False), faults=not zicbom),
+        *([] if zicbom else [CboLeaf("x", "Execute-only page", replace(valid, read=False, write=False), faults=True)]),
+        CboLeaf("a0", "PTE.A unset", replace(valid, accessed=False), faults=True),
+        CboLeaf("d0", "PTE.D unset", replace(valid, dirty=False), faults=not zicbom),
+    ]
+
 
 def _add_operation(
-    test_data: TestData, sv: SvMode, family: str, mode: str, address: list[str], number: int
+    test_data: TestData, regs: SvRegs, family: str, mode: str, address: list[str], number: int, cross: str
 ) -> list[str]:
     lines = [*address, *([] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"])]
+    value, addr = f"x{regs.value}", f"x{regs.addr}"
     if family == "zicbop":
         for operation in ("prefetch.i", "prefetch.r", "prefetch.w"):
             lines.extend(
                 [
-                    test_data.add_testcase(f"test{number}_{operation.replace('.', '_')}", "cp_prefetch", "SvZicbo_cg"),
-                    f"{operation} 0(a5)",
+                    test_data.add_testcase(f"test{number}_{operation.replace('.', '_')}", cross, "Sv_Zicbo_cg"),
+                    f"{operation} 0({addr})",
                     "nop",
                 ]
             )
     elif family == "zicbom":
         labels = {
-            operation: test_data.add_testcase(f"test{number}_{operation}", "cp_zicbom", "SvZicbo_cg").removesuffix(":")
+            operation: test_data.add_testcase(f"test{number}_{operation}", cross, "Sv_Zicbo_cg").removesuffix(":")
             for operation in ("clean", "flush", "inval")
         }
-        lines.extend(["addi a2, a2, 16"])
-        for operation, register in (("clean", "a2"), ("flush", "a3"), ("inval", "a4")):
-            lines.extend([f"{labels[operation]}:", f"cbo.{operation} (a5)", f"addi {register}, a2, 4"])
+        results = (("clean", regs.value), ("flush", regs.load), ("inval", regs.result))
+        lines.extend([f"addi {value}, {value}, 16"])
+        for operation, register in results:
+            lines.extend([f"{labels[operation]}:", f"cbo.{operation} ({addr})", f"addi x{register}, {value}, 4"])
         lines.extend(
             [
                 *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
-                *(
-                    write_sigupd(reg, test_data, label=labels[op])
-                    for op, reg in (("clean", 12), ("flush", 13), ("inval", 14))
-                ),
+                *(write_sigupd(reg, test_data, label=labels[op]) for op, reg in results),
             ]
         )
         return lines
     else:
-        label = test_data.add_testcase(f"test{number}_zero", "cp_zicboz", "SvZicbo_cg").removesuffix(":")
+        label = test_data.add_testcase(f"test{number}_zero", cross, "Sv_Zicbo_cg").removesuffix(":")
         lines.extend(
             [
-                "addi a2, a2, 16",
+                f"addi {value}, {value}, 16",
                 f"{label}:",
-                "cbo.zero (a5)",
-                "addi a4, a2, 4",
+                f"cbo.zero ({addr})",
+                f"addi x{regs.result}, {value}, 4",
                 *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
-                write_sigupd(14, test_data, label=label),
+                write_sigupd(regs.result, test_data, label=label),
             ]
         )
         return lines
@@ -77,9 +114,21 @@ def _add_operation(
     return lines
 
 
-def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode: str, family: str) -> None:
+def _add_exception_cases(
+    test_data: TestData, chunk: TestChunk, sv: SvMode, regs: SvRegs, mode: str, family: str
+) -> None:
     """Add the cache-block exception cases for each page-table level."""
     number = 0
+    m = mode[0].lower()
+    crosses = {
+        "v0": f"cp_PTE_inv_cbo_{m}",
+        "wx": f"cp_PTE_res_rwx_cbo_{m}",
+        "w": f"cp_PTE_res_rwx_cbo_{m}",
+        "rx": f"cp_PTE_r_set_w_unset_zicbom_{m}" if family == "zicbom" else f"cp_PTE_w_unset_zicboz_{m}",
+        "x": f"cp_PTE_w_unset_zicboz_{m}",
+        "a0": f"cp_Abit_unset_cbo_{m}",
+        "d0": f"cp_Dbit_unset_{family}_{m}",
+    }
 
     def leaf(
         permissions: PteExpression,
@@ -100,12 +149,14 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
         level: int,
         description: str,
         expected: str,
+        cross: str,
         pte_lines: list[str],
         *,
         physical_address: str | None = None,
         before: tuple[str, ...] = (),
         after: tuple[str, ...] = (),
         ifdef: str | None = None,
+        gate: str | None = None,
     ) -> None:
         nonlocal number
         number += 1
@@ -114,11 +165,13 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 sv,
                 "va_data",
                 level,
+                destination=regs.addr,
+                scratch=regs.scratch,
                 physical_address=physical_address,
                 physical_address_is_label=False,
             )
             if physical_address is not None
-            else virtual_address(sv, "va_data", level)
+            else virtual_address(sv, "va_data", level, destination=regs.addr, scratch=regs.scratch)
         )
         lines = [
             f"  // Test case {number}: {description} | Test in {mode[0]}-Mode | expected = {expected}",
@@ -126,18 +179,19 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
             "  sfence.vma",
             *before,
             "",
-            *_add_operation(test_data, sv, family, mode, address, number),
+            *_add_operation(test_data, regs, family, mode, address, number, cross),
             *after,
         ]
         if ifdef:
             lines = [f"#ifdef {ifdef}", *lines, "#endif"]
-        chunk.code.extend([*lines, ""])
+        chunk.code.extend([*gated(lines, gate), ""])
 
     def add_standard(
         level: int,
         permissions: PteExpression,
         description: str,
         expected: str,
+        cross: str,
         *,
         before: tuple[str, ...] = (),
         after: tuple[str, ...] = (),
@@ -147,6 +201,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
             level,
             description,
             expected,
+            cross,
             [*create_page_walk(sv, leaf_level=level), leaf(permissions, level)],
             before=before,
             after=after,
@@ -159,43 +214,30 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
         leaf_permissions = PteFlags(user=umode)
         walk_fault_permissions = f"PTE_A | PTE_D | {'PTE_U | ' if umode else ''}PTE_X | PTE_W | PTE_R | PTE_V"
 
-        add_standard(level, PteFlags(user=umode, valid=False), "PTE.V unset", "Store page fault")
-        add_standard(
-            level,
-            PteFlags(user=umode, read=False),
-            "Reserved W+X without R",
-            "Store page fault",
-            ifdef="S1P12P0_OR_LATER_SUPPORTED",
-        )
-        add_standard(
-            level,
-            PteFlags(user=umode, read=False, execute=False),
-            "Reserved W without R",
-            "Store page fault",
-            ifdef="S1P12P0_OR_LATER_SUPPORTED",
-        )
-        add_standard(level, PteFlags(user=umode, write=False), "RX permissions", "Store page fault")
+        for case in cbo_leaves(family, leaf_permissions):
+            add_standard(
+                level,
+                case.flags,
+                case.description,
+                "Store page fault" if case.faults else "No fault",
+                crosses[case.name],
+                ifdef="S1P12P0_OR_LATER_SUPPORTED" if case.reserved else None,
+            )
         if umode:
-            add_standard(level, PteFlags(), "Supervisor page from U-Mode", "Store page fault")
+            add_standard(level, PteFlags(), "Supervisor page from U-Mode", "Store page fault", "cp_spage_rwx_cbo_u")
         else:
             add_standard(
                 level,
                 PteFlags(write=False),
                 "RX permissions with sstatus.SUM set",
-                "Store page fault",
-                before=("  LI(t0, MSTATUS_SUM)", "  csrs sstatus, t0"),
-                after=("  LI(t0, MSTATUS_SUM)", "  csrc sstatus, t0"),
+                "No fault" if family == "zicbom" else "Store page fault",
+                crosses["rx"],
+                before=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrs sstatus, x{regs.scratch}"),
+                after=(f"  LI(x{regs.scratch}, MSTATUS_SUM)", f"  csrc sstatus, x{regs.scratch}"),
             )
-            add_standard(level, PteFlags(user=True), "User page from S-Mode", "Store page fault")
-        if family == "zicbom":
             add_standard(
-                level,
-                PteFlags(user=umode, read=False, write=False),
-                "Execute-only page",
-                "Store page fault",
+                level, PteFlags(user=True), "User page from S-Mode", "Store page fault", "cp_upage_sumunset_cbo_s"
             )
-        add_standard(level, PteFlags(user=umode, accessed=False), "PTE.A unset", "Store page fault")
-        add_standard(level, PteFlags(user=umode, dirty=False), "PTE.D unset", "No fault")
 
         walk = create_page_walk(sv, leaf_level=level)
         if level > 0:
@@ -203,6 +245,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 level,
                 "Misaligned superpage",
                 "Store page fault",
+                f"cp_misaligned_page_cbo_{m}",
                 [*walk, leaf(leaf_permissions, level, superpage=False)],
                 physical_address="0x0",
             )
@@ -211,6 +254,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 level,
                 "Pointer encoding (V only) in the leaf",
                 "Store page fault",
+                f"cp_PTE_nonleaf_lvl0_cbo_{m}",
                 [*walk, leaf(PteFlags.nonleaf("PTE_U") if umode else PteFlags.nonleaf(), level)],
             )
 
@@ -219,39 +263,42 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 level,
                 "Access fault on the page-table walk",
                 "Store access fault",
+                "cp_nonleaf_PTE_to_nonexistent_pa_cbo",
                 [
                     *create_page_walk(
                         sv,
                         leaf_level=level,
-                        table_addresses={level + 1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        table_addresses={level + 1: _TABLE_FAULT},
                     ),
                     leaf(walk_fault_permissions, level),
                 ],
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                gate=_TABLE_GATE,
             )
         if level == 0:
             add(
                 level,
                 "Access fault on the page-table walk",
                 "Store access fault",
+                "cp_nonleaf_PTE_to_nonexistent_pa_cbo",
                 [
                     *create_page_walk(
                         sv,
                         leaf_level=level,
-                        table_addresses={1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        table_addresses={1: _TABLE_FAULT},
                     ),
                     leaf(leaf_permissions, level),
                 ],
-                physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                physical_address=_TABLE_FAULT,
+                gate=_TABLE_GATE,
             )
         add(
             level,
             "Leaf PTE points to the access-fault region",
             "Store access fault",
-            [*walk, leaf(leaf_permissions, level, physical_address="RVMODEL_ACCESS_FAULT_ADDRESS")],
-            physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
-            ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+            f"cp_leaf_PTE_to_nonexistent_pa_cbo_{m}",
+            [*walk, leaf(leaf_permissions, level, physical_address="RVMODEL_ACCESS_FAULT_ADDRESS_STORE")],
+            physical_address="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+            ifdef="RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
         )
 
         if not top:
@@ -262,6 +309,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                     level,
                     f"Non-leaf PTE with {bit.removeprefix('PTE_')} bit set",
                     "Store page fault",
+                    "cp_PTE_nonleaf_DAU_cbo",
                     [
                         *create_page_walk(sv, leaf_level=level, overrides={level + 1: PteFlags.nonleaf(bit)}),
                         leaf(leaf_permissions, leaf_level),
@@ -270,32 +318,39 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 )
 
 
-def _begin_test(test_data: TestData, sv: SvMode, mode: str, family: str) -> TestChunk:
+def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, family: str) -> TestChunk:
     envmask = "MENVCFG_CBCFE | MENVCFG_CBIE" if family == "zicbom" else "MENVCFG_CBZE"
-    setup = [f"LI(t0, {envmask})", tsbi_call("csrs menvcfg, t0")]
+    scratch = f"x{regs.scratch}"
+    # T-SBI calls preserve every register but a0-a2, so the mask survives for senvcfg.
+    setup = [f"LI({scratch}, {envmask})", tsbi_call(f"csrs menvcfg, {scratch}")]
     if mode == "Umode":
-        setup.append("csrs senvcfg, t0")
+        setup.append(f"csrs senvcfg, {scratch}")
     qualifier = "_exceptions" if family != "zicbop" else ""
     return begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
-        f"{sv.name}_{family}{qualifier}_{mode}",
-        coverpoint=f"cp_{family}",
-        sig_init="" if family == "zicbop" else "LI(a2, 0x800) // Test signature initialization",
+        f"Zicbo_{sv.name}_{family}{qualifier}_{mode}",
+        coverpoint=f"cp_zicbop_no_fault_{mode[0].lower()}"
+        if family == "zicbop"
+        else f"Sv_Zicbo {family} exception crosses",
+        sig_init=None if family == "zicbop" else "0x800",
         setup_asm=tuple(setup),
     )
 
 
 def _make_exceptions(test_data: TestData, sv: SvMode, mode: str, family: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, family)
-    _add_exception_cases(test_data, chunk, sv, mode, family)
-    chunk.raw_data.extend(sv_data(sv))
-    return test_data.end_test_chunk()
+    regs = SvRegs.allocate(test_data)
+    chunk = _begin_test(test_data, regs, sv, mode, family)
+    _add_exception_cases(test_data, chunk, sv, regs, mode, family)
+    chunk.raw_data.extend(sv_data(sv, regs))
+    return end_sv_test(test_data, regs)
 
 
 def _make_prefetch(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "zicbop")
+    regs = SvRegs.allocate(test_data)
+    chunk = _begin_test(test_data, regs, sv, mode, "zicbop")
     permissions = PteFlags(user=mode == "Umode")
     for number, level in enumerate(sv.levels_desc, start=1):
         chunk.code.extend(
@@ -307,13 +362,21 @@ def _make_prefetch(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 ),
                 "sfence.vma",
                 "",
-                *_add_operation(test_data, sv, "zicbop", mode, virtual_address(sv, "va_data", level), number),
+                *_add_operation(
+                    test_data,
+                    regs,
+                    "zicbop",
+                    mode,
+                    virtual_address(sv, "va_data", level, destination=regs.addr, scratch=regs.scratch),
+                    number,
+                    f"cp_zicbop_no_fault_{mode[0].lower()}",
+                ),
                 "",
             ]
         )
-    chunk.raw_data.extend(sv_data(sv))
+    chunk.raw_data.extend(sv_data(sv, regs))
     chunk.trap_sigupd_count = 3
-    return test_data.end_test_chunk()
+    return end_sv_test(test_data, regs)
 
 
 def _make_svzicbo(test_data: TestData, sv: SvMode, family: str) -> list[TestChunk]:
@@ -323,7 +386,7 @@ def _make_svzicbo(test_data: TestData, sv: SvMode, family: str) -> list[TestChun
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv32", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -333,7 +396,7 @@ def make_svzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv32", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -343,7 +406,7 @@ def make_svzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv32", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -353,7 +416,7 @@ def make_svzicbo_sv32_zicbop(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv39", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -363,7 +426,7 @@ def make_svzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv39", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -373,7 +436,7 @@ def make_svzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv39", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -383,7 +446,7 @@ def make_svzicbo_sv39_zicbop(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv48", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -393,7 +456,7 @@ def make_svzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv48", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -403,7 +466,7 @@ def make_svzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv48", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -413,7 +476,7 @@ def make_svzicbo_sv48_zicbop(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv57", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -423,7 +486,7 @@ def make_svzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv57", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -433,7 +496,7 @@ def make_svzicbo_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv57", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],

@@ -30,11 +30,9 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_sv32_pte_rsw_Umode
+// cp_rsw_pte
 /////////////////////////////////
 
-
-main:
 
 // Virtual addresses for code and test regions
 
@@ -52,13 +50,14 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x8, 0x800) // Test signature initialization
 
 
 // 4MB page at level 1
@@ -67,42 +66,42 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, ((1 << 8) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x15, (va_data >> 22) << 22)
+  LA(x9, rvtest_data_1)
+  slli x9, x9, 10
+  srli x9, x9, 10
+  add x15, x15, x9
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 
 // Store
-Sv_cp_sv32_pte_rsw_Umode_test1_store:
-  sw a2, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test1_store:
+  sw x8, 20(x15)
   nop
 
 // Load
-Sv_cp_sv32_pte_rsw_Umode_test1_load:
-  lw a3, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test1_load:
+  lw x13, 20(x15)
   nop
 
 // Execute
-Sv_cp_sv32_pte_rsw_Umode_test1_exec:
-  jalr ra, a5, 0
+Sv_res_global_pte_cg_cp_rsw_pte_test1_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_rsw_Umode_test1_store, Sv_cp_sv32_pte_rsw_Umode_test1_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_rsw_pte_test1_store, Sv_res_global_pte_cg_cp_rsw_pte_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_rsw_Umode_test1_load, Sv_cp_sv32_pte_rsw_Umode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test1_load, Sv_res_global_pte_cg_cp_rsw_pte_test1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test1_exec, Sv_cp_sv32_pte_rsw_Umode_test1_exec_str)
-  LA(a4, rvtest_Sroot_pg_tbl)
-Sv_cp_sv32_pte_rsw_Umode_test1_read_pte:
-  lw a4, 64(a4)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test1_exec, Sv_res_global_pte_cg_cp_rsw_pte_test1_exec_str)
+  LA(x14, rvtest_Sroot_pg_tbl)
+Sv_res_global_pte_cg_cp_rsw_pte_test1_read_pte:
+  lw x14, 64(x14)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test1_read_pte, Sv_cp_sv32_pte_rsw_Umode_test1_read_pte_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test1_read_pte, Sv_res_global_pte_cg_cp_rsw_pte_test1_read_pte_str)
 
 
 // 4MB page at level 1
@@ -111,42 +110,42 @@ Sv_cp_sv32_pte_rsw_Umode_test1_read_pte:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, ((1 << 9) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x15, (va_data >> 22) << 22)
+  LA(x9, rvtest_data_1)
+  slli x9, x9, 10
+  srli x9, x9, 10
+  add x15, x15, x9
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 
 // Store
-Sv_cp_sv32_pte_rsw_Umode_test2_store:
-  sw a2, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test2_store:
+  sw x8, 20(x15)
   nop
 
 // Load
-Sv_cp_sv32_pte_rsw_Umode_test2_load:
-  lw a3, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test2_load:
+  lw x13, 20(x15)
   nop
 
 // Execute
-Sv_cp_sv32_pte_rsw_Umode_test2_exec:
-  jalr ra, a5, 0
+Sv_res_global_pte_cg_cp_rsw_pte_test2_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_rsw_Umode_test2_store, Sv_cp_sv32_pte_rsw_Umode_test2_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_rsw_pte_test2_store, Sv_res_global_pte_cg_cp_rsw_pte_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_rsw_Umode_test2_load, Sv_cp_sv32_pte_rsw_Umode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test2_load, Sv_res_global_pte_cg_cp_rsw_pte_test2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test2_exec, Sv_cp_sv32_pte_rsw_Umode_test2_exec_str)
-  LA(a4, rvtest_Sroot_pg_tbl)
-Sv_cp_sv32_pte_rsw_Umode_test2_read_pte:
-  lw a4, 64(a4)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test2_exec, Sv_res_global_pte_cg_cp_rsw_pte_test2_exec_str)
+  LA(x14, rvtest_Sroot_pg_tbl)
+Sv_res_global_pte_cg_cp_rsw_pte_test2_read_pte:
+  lw x14, 64(x14)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test2_read_pte, Sv_cp_sv32_pte_rsw_Umode_test2_read_pte_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test2_read_pte, Sv_res_global_pte_cg_cp_rsw_pte_test2_read_pte_str)
 
 
 // 4MB page at level 1
@@ -155,42 +154,42 @@ Sv_cp_sv32_pte_rsw_Umode_test2_read_pte:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, ((1 << 9) | (1 << 8) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x15, (va_data >> 22) << 22)
+  LA(x9, rvtest_data_1)
+  slli x9, x9, 10
+  srli x9, x9, 10
+  add x15, x15, x9
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 
 // Store
-Sv_cp_sv32_pte_rsw_Umode_test3_store:
-  sw a2, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test3_store:
+  sw x8, 20(x15)
   nop
 
 // Load
-Sv_cp_sv32_pte_rsw_Umode_test3_load:
-  lw a3, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test3_load:
+  lw x13, 20(x15)
   nop
 
 // Execute
-Sv_cp_sv32_pte_rsw_Umode_test3_exec:
-  jalr ra, a5, 0
+Sv_res_global_pte_cg_cp_rsw_pte_test3_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_rsw_Umode_test3_store, Sv_cp_sv32_pte_rsw_Umode_test3_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_rsw_pte_test3_store, Sv_res_global_pte_cg_cp_rsw_pte_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_rsw_Umode_test3_load, Sv_cp_sv32_pte_rsw_Umode_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test3_load, Sv_res_global_pte_cg_cp_rsw_pte_test3_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test3_exec, Sv_cp_sv32_pte_rsw_Umode_test3_exec_str)
-  LA(a4, rvtest_Sroot_pg_tbl)
-Sv_cp_sv32_pte_rsw_Umode_test3_read_pte:
-  lw a4, 64(a4)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test3_exec, Sv_res_global_pte_cg_cp_rsw_pte_test3_exec_str)
+  LA(x14, rvtest_Sroot_pg_tbl)
+Sv_res_global_pte_cg_cp_rsw_pte_test3_read_pte:
+  lw x14, 64(x14)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test3_read_pte, Sv_cp_sv32_pte_rsw_Umode_test3_read_pte_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test3_read_pte, Sv_res_global_pte_cg_cp_rsw_pte_test3_read_pte_str)
 
 
 // 4KB page at level 0
@@ -200,38 +199,38 @@ Sv_cp_sv32_pte_rsw_Umode_test3_read_pte:
   PTE_SETUP_SV32(rvtest_data_1, ((1 << 8) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x15, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 
 // Store
-Sv_cp_sv32_pte_rsw_Umode_test4_store:
-  sw a2, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test4_store:
+  sw x8, 20(x15)
   nop
 
 // Load
-Sv_cp_sv32_pte_rsw_Umode_test4_load:
-  lw a3, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test4_load:
+  lw x13, 20(x15)
   nop
 
 // Execute
-Sv_cp_sv32_pte_rsw_Umode_test4_exec:
-  jalr ra, a5, 0
+Sv_res_global_pte_cg_cp_rsw_pte_test4_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_rsw_Umode_test4_store, Sv_cp_sv32_pte_rsw_Umode_test4_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_rsw_pte_test4_store, Sv_res_global_pte_cg_cp_rsw_pte_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_rsw_Umode_test4_load, Sv_cp_sv32_pte_rsw_Umode_test4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test4_load, Sv_res_global_pte_cg_cp_rsw_pte_test4_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test4_exec, Sv_cp_sv32_pte_rsw_Umode_test4_exec_str)
-  LA(a4, rvtest_slvl0_pg_tbl)
-Sv_cp_sv32_pte_rsw_Umode_test4_read_pte:
-  lw a4, 28(a4)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test4_exec, Sv_res_global_pte_cg_cp_rsw_pte_test4_exec_str)
+  LA(x14, rvtest_slvl0_pg_tbl)
+Sv_res_global_pte_cg_cp_rsw_pte_test4_read_pte:
+  lw x14, 28(x14)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test4_read_pte, Sv_cp_sv32_pte_rsw_Umode_test4_read_pte_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test4_read_pte, Sv_res_global_pte_cg_cp_rsw_pte_test4_read_pte_str)
 
 
 // 4KB page at level 0
@@ -241,38 +240,38 @@ Sv_cp_sv32_pte_rsw_Umode_test4_read_pte:
   PTE_SETUP_SV32(rvtest_data_1, ((1 << 9) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x15, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 
 // Store
-Sv_cp_sv32_pte_rsw_Umode_test5_store:
-  sw a2, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test5_store:
+  sw x8, 20(x15)
   nop
 
 // Load
-Sv_cp_sv32_pte_rsw_Umode_test5_load:
-  lw a3, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test5_load:
+  lw x13, 20(x15)
   nop
 
 // Execute
-Sv_cp_sv32_pte_rsw_Umode_test5_exec:
-  jalr ra, a5, 0
+Sv_res_global_pte_cg_cp_rsw_pte_test5_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_rsw_Umode_test5_store, Sv_cp_sv32_pte_rsw_Umode_test5_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_rsw_pte_test5_store, Sv_res_global_pte_cg_cp_rsw_pte_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_rsw_Umode_test5_load, Sv_cp_sv32_pte_rsw_Umode_test5_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test5_load, Sv_res_global_pte_cg_cp_rsw_pte_test5_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test5_exec, Sv_cp_sv32_pte_rsw_Umode_test5_exec_str)
-  LA(a4, rvtest_slvl0_pg_tbl)
-Sv_cp_sv32_pte_rsw_Umode_test5_read_pte:
-  lw a4, 28(a4)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test5_exec, Sv_res_global_pte_cg_cp_rsw_pte_test5_exec_str)
+  LA(x14, rvtest_slvl0_pg_tbl)
+Sv_res_global_pte_cg_cp_rsw_pte_test5_read_pte:
+  lw x14, 28(x14)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test5_read_pte, Sv_cp_sv32_pte_rsw_Umode_test5_read_pte_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test5_read_pte, Sv_res_global_pte_cg_cp_rsw_pte_test5_read_pte_str)
 
 
 // 4KB page at level 0
@@ -282,38 +281,38 @@ Sv_cp_sv32_pte_rsw_Umode_test5_read_pte:
   PTE_SETUP_SV32(rvtest_data_1, ((1 << 9) | (1 << 8) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x15, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 
 // Store
-Sv_cp_sv32_pte_rsw_Umode_test6_store:
-  sw a2, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test6_store:
+  sw x8, 20(x15)
   nop
 
 // Load
-Sv_cp_sv32_pte_rsw_Umode_test6_load:
-  lw a3, 20(a5)
+Sv_res_global_pte_cg_cp_rsw_pte_test6_load:
+  lw x13, 20(x15)
   nop
 
 // Execute
-Sv_cp_sv32_pte_rsw_Umode_test6_exec:
-  jalr ra, a5, 0
+Sv_res_global_pte_cg_cp_rsw_pte_test6_exec:
+  jalr ra, x15, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_rsw_Umode_test6_store, Sv_cp_sv32_pte_rsw_Umode_test6_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_res_global_pte_cg_cp_rsw_pte_test6_store, Sv_res_global_pte_cg_cp_rsw_pte_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_rsw_Umode_test6_load, Sv_cp_sv32_pte_rsw_Umode_test6_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test6_load, Sv_res_global_pte_cg_cp_rsw_pte_test6_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test6_exec, Sv_cp_sv32_pte_rsw_Umode_test6_exec_str)
-  LA(a4, rvtest_slvl0_pg_tbl)
-Sv_cp_sv32_pte_rsw_Umode_test6_read_pte:
-  lw a4, 28(a4)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test6_exec, Sv_res_global_pte_cg_cp_rsw_pte_test6_exec_str)
+  LA(x14, rvtest_slvl0_pg_tbl)
+Sv_res_global_pte_cg_cp_rsw_pte_test6_read_pte:
+  lw x14, 28(x14)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_rsw_Umode_test6_read_pte, Sv_cp_sv32_pte_rsw_Umode_test6_read_pte_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test6_read_pte, Sv_res_global_pte_cg_cp_rsw_pte_test6_read_pte_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -329,7 +328,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x14, x8, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -343,30 +342,30 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv32_pte_rsw_Umode_test1_store_str: .string "\"test: 139; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test1_store\""
-Sv_cp_sv32_pte_rsw_Umode_test1_load_str: .string "\"test: 140; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test1_load\""
-Sv_cp_sv32_pte_rsw_Umode_test1_exec_str: .string "\"test: 141; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test1_exec\""
-Sv_cp_sv32_pte_rsw_Umode_test1_read_pte_str: .string "\"test: 142; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test1_read_pte\""
-Sv_cp_sv32_pte_rsw_Umode_test2_store_str: .string "\"test: 143; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test2_store\""
-Sv_cp_sv32_pte_rsw_Umode_test2_load_str: .string "\"test: 144; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test2_load\""
-Sv_cp_sv32_pte_rsw_Umode_test2_exec_str: .string "\"test: 145; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test2_exec\""
-Sv_cp_sv32_pte_rsw_Umode_test2_read_pte_str: .string "\"test: 146; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test2_read_pte\""
-Sv_cp_sv32_pte_rsw_Umode_test3_store_str: .string "\"test: 147; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test3_store\""
-Sv_cp_sv32_pte_rsw_Umode_test3_load_str: .string "\"test: 148; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test3_load\""
-Sv_cp_sv32_pte_rsw_Umode_test3_exec_str: .string "\"test: 149; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test3_exec\""
-Sv_cp_sv32_pte_rsw_Umode_test3_read_pte_str: .string "\"test: 150; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test3_read_pte\""
-Sv_cp_sv32_pte_rsw_Umode_test4_store_str: .string "\"test: 151; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test4_store\""
-Sv_cp_sv32_pte_rsw_Umode_test4_load_str: .string "\"test: 152; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test4_load\""
-Sv_cp_sv32_pte_rsw_Umode_test4_exec_str: .string "\"test: 153; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test4_exec\""
-Sv_cp_sv32_pte_rsw_Umode_test4_read_pte_str: .string "\"test: 154; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test4_read_pte\""
-Sv_cp_sv32_pte_rsw_Umode_test5_store_str: .string "\"test: 155; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test5_store\""
-Sv_cp_sv32_pte_rsw_Umode_test5_load_str: .string "\"test: 156; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test5_load\""
-Sv_cp_sv32_pte_rsw_Umode_test5_exec_str: .string "\"test: 157; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test5_exec\""
-Sv_cp_sv32_pte_rsw_Umode_test5_read_pte_str: .string "\"test: 158; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test5_read_pte\""
-Sv_cp_sv32_pte_rsw_Umode_test6_store_str: .string "\"test: 159; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test6_store\""
-Sv_cp_sv32_pte_rsw_Umode_test6_load_str: .string "\"test: 160; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test6_load\""
-Sv_cp_sv32_pte_rsw_Umode_test6_exec_str: .string "\"test: 161; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test6_exec\""
-Sv_cp_sv32_pte_rsw_Umode_test6_read_pte_str: .string "\"test: 162; cg: Sv; cp: cp_sv32_pte_rsw_Umode; bin: test6_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_store_str: .string "\"test: 139; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_load_str: .string "\"test: 140; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_exec_str: .string "\"test: 141; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_read_pte_str: .string "\"test: 142; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_store_str: .string "\"test: 143; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_load_str: .string "\"test: 144; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_exec_str: .string "\"test: 145; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_read_pte_str: .string "\"test: 146; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_store_str: .string "\"test: 147; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_load_str: .string "\"test: 148; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_exec_str: .string "\"test: 149; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_read_pte_str: .string "\"test: 150; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_store_str: .string "\"test: 151; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_load_str: .string "\"test: 152; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_exec_str: .string "\"test: 153; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_read_pte_str: .string "\"test: 154; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_store_str: .string "\"test: 155; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_load_str: .string "\"test: 156; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_exec_str: .string "\"test: 157; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_read_pte_str: .string "\"test: 158; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_store_str: .string "\"test: 159; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_load_str: .string "\"test: 160; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_exec_str: .string "\"test: 161; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_read_pte_str: .string "\"test: 162; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_read_pte\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

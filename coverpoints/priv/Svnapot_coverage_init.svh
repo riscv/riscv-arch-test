@@ -9,3 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     Svnapot_cg = new(); Svnapot_cg.set_inst_name("obj_Svnapot");
+`ifdef H_SUPPORTED
+    Svnapot_H_cg = new(); Svnapot_H_cg.set_inst_name("obj_Svnapot_H");
+`endif

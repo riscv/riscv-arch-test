@@ -25,8 +25,8 @@
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
+// should not be defined.  If the DUT has no standard M-mode CSRs, do not
+// define STANDARD_SM_SUPPORTED.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
 //#define RVMODEL_BOOT_TO_MMODE
@@ -96,7 +96,6 @@
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 ##### Machine Interrupts #####
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 1
@@ -139,5 +138,28 @@
   li _R1, (1 << 1);               \
   li _R2, SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
+
+##### Guest External Interrupts #####
+
+// hgeip bits 1 to GEILEN (sail.json extensions.H.geilen) are set through the simple interrupt generator
+#define SIG_GUEST_ADDRESS  (0xC000000 + 0x8)
+#define RVMODEL_SET_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R1, (1 << 31);               \
+  or _R1, _R1, _GEI;               \
+  li _R2, SIG_GUEST_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Set hgeip bit _GEI */ \
+
+#define RVMODEL_CLR_GUEST_EXT_INT(_GEI, _R1, _R2)        \
+  li _R2, SIG_GUEST_ADDRESS;    \
+  sw _GEI, 0(_R2)            ; /* Clear hgeip bit _GEI */ \
+
+##### Sscofpmf #####
+
+#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
+// Selector 1 is mapped to EV_FENCE by base.event_selectors in sail.json. A fence raises
+// the event in every privilege mode and never traps.
+#define RVMODEL_MHPMEVENT_VAL 0x1
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
+    fence
 
 #endif // _RVMODEL_MACROS_H

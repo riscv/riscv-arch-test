@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svinval_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=292965592#gid=292965592
+coverpoints:
+  - name: cp_svinval
+    goal: Svinval instructions trap appropriately.
+    description: Execute each Svinval instruction {sfence.w.inval, sinval.vma x0, x0, sfence.inval.ir, hinval.vvma x0, x0, hinval.gvma x0, x0} in each privilege mode {HS/VS/U/VU} with TVM = 0 and VTVM = {0/1}.  Doesn't try to check that anything is actually invalidated.
+    expectation: |-
+      HS: all execute.
+      VS: sfence.w.inval and sfence.inval.ir execute; sinval.vma executes with VTVM = 0 and raises virtual instruction with VTVM = 1; hinval.vvma and hinval.gvma raise virtual instruction.
+      U: all raise illegal instruction.
+      VU: all raise virtual instruction.
+    bins: 5 instructions x 4 privilege modes x TVM = 0 x 2 VTVM
+    notes: |-
+      M-mode and TVM = 1 are in Svinval_SmH, because the HS-mode handler reads satp, which traps with TVM = 1
+  - name: |-
+      cp_hinval_vvma
+      cp_hinval_gvma
+      cp_sinval_vma_vs
+    goal: Svinval sequences remove stale VS-stage and G-stage translations
+    description: |-
+      Sv32/Sv32x4 and Sv39/Sv39x4.  Map a guest virtual address through the VS-stage to guest physical page A and through the G-stage to physical page A, and load from it in VS-mode.  HS-mode then points the VS-stage leaf at guest page B, or the G-stage leaf of page A at physical page B, and runs sfence.w.inval, hinval.vvma or hinval.gvma, and sfence.inval.ir in HS-mode, or sfence.w.inval, sinval.vma and sfence.inval.ir in VS-mode.  rs1 is x0 or the address (the guest virtual address, or the guest physical address >> 2 for hinval.gvma); rs2 is x0 or the current ASID (hinval.vvma, sinval.vma) or VMID (hinval.gvma), and the address is also used with all ASIDMAX or VMIDMAX bits set in rs2.  The cases run with every implemented vsatp.ASID and hgatp.VMID bit set.
+    expectation: The VS-mode load after the sequence reads page B.  Both loads are recorded.  A hart that caches no translation passes.
+    bins: |-
+      cp_hinval_vvma: HS x hinval.vvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
+      cp_hinval_gvma: HS x hinval.gvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
+      cp_sinval_vma_vs: VS x sinval.vma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}

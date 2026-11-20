@@ -18,13 +18,16 @@ from testgen.formatters.types.vvsr_type import format_vvsr_like_type
 fvvsr_config = InstructionTypeConfig(
     instruction_class=["vector_fp"],
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(scalar_regs={"vd", "vs1"}),
+    vector_data=VectorTypeConfig(scalar_regs={"vd", "vs1"}, require_zero_vstart=True),
 )
 fwvwsr_config = InstructionTypeConfig(
     instruction_class=["vector_fp"],
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
-        overlap_constraints={("vs2", "vs1")}, scalar_regs={"vd", "vs1"}, widened_regs={"vd", "vs1"}
+        overlap_constraints={("vs2", "vs1")},
+        scalar_regs={"vd", "vs1"},
+        widened_regs={"vd", "vs1"},
+        require_zero_vstart=True,
     ),
 )
 
@@ -117,7 +120,9 @@ def unordered_sum_rng(element_count: int, sew: int, register: str) -> list[int]:
 fvvsru_config = InstructionTypeConfig(
     instruction_class=["vector_fp"],
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(scalar_regs={"vd", "vs1"}, random_element_generator=unordered_sum_rng),
+    vector_data=VectorTypeConfig(
+        scalar_regs={"vd", "vs1"}, random_element_generator=unordered_sum_rng, require_zero_vstart=True
+    ),
 )
 fwvwsru_config = InstructionTypeConfig(
     instruction_class=["vector_fp"],
@@ -127,6 +132,7 @@ fwvwsru_config = InstructionTypeConfig(
         scalar_regs={"vd", "vs1"},
         widened_regs={"vd", "vs1"},
         random_element_generator=unordered_sum_rng,
+        require_zero_vstart=True,
     ),
 )
 

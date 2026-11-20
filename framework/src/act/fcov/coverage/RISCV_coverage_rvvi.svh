@@ -20,7 +20,7 @@
 //
 //
 
-`ifdef COVER_E
+`ifdef E_SUPPORTED
     `define NUM_REGS 16
 `else
     `define NUM_REGS 32

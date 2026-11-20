@@ -13,6 +13,7 @@ module testbench;
 
   // Load configuration
   `include "rvtest_config.svh"
+  `include "derived_config.svh"
 
   // Set up variable lengths
   localparam XLEN = `UDB_MXLEN;
@@ -25,7 +26,7 @@ module testbench;
     localparam FLEN = 32;
   `endif
 
-  localparam VLEN = `UDB_VLEN;
+  localparam VLEN = (`UDB_VLEN > 0) ? `UDB_VLEN : 64;   // no V: size the unused vector trace fields
 
   localparam PA_BITS = (XLEN==32 ? 32'd34 : 32'd56);
   localparam PPN_BITS = (XLEN==32 ? 32'd22 : 32'd44);
@@ -39,7 +40,7 @@ module testbench;
   string  words[$];
   string  traceFiles[$];
   int     fileNum;
-  int     order;
+  logic [63:0] order;
   int     regNum;
   logic [(XLEN-1):0] xRegVal;
   logic [(FLEN-1):0] fRegVal;
@@ -89,7 +90,7 @@ module testbench;
       $display("Error: Could not open trace file list");
       $finish;
     end
-    while($fgets(line, traceFileListHandler)) begin
+    while ($fgets(line, traceFileListHandler) != 0) begin
       if (line != "" && line != "\n" && line[0] != "#") begin
         // Strip newline character from the end of the line
         if (line[line.len()-1] == "\n") begin

@@ -8,10 +8,13 @@
 ##################################
 
 import re
+from collections import Counter
 from collections.abc import Sequence
 from pathlib import Path
 
-from act.certificate_tests import get_certificate_test_suites
+from rich import print as rprint
+
+from act.certificate_tests import get_certificate_extensions
 from act.config import Config, load_config
 from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
@@ -29,10 +32,13 @@ _COMPARISON_RE = re.compile(r"^(>=|<=|!=|==|>|<)\s*(0[xX][0-9a-fA-F]+|\d+)$")
 def _compare_param(test_value: object, config_value: object) -> bool:
     """Compare a test parameter requirement against a config parameter value.
 
+    A list config value (e.g. SUPPORTED_PMLEN_SMMPM: [0, 7, 16]) matches when it contains the test value.
     Supports comparison operator prefixes on strings with decimal or hex values.
     e.g. '>=128', '<= 64', '> 0', '<256', '!=0', '==64', '>=0x80', '<0xFF'.
     Falls back to exact equality if there is no comparison operator prefix.
     """
+    if isinstance(config_value, list):
+        return test_value in config_value
     if isinstance(test_value, str):
         match = _COMPARISON_RE.match(test_value)
         if match:
@@ -58,7 +64,7 @@ def _compare_param(test_value: object, config_value: object) -> bool:
 def check_test_extensions(
     required_extensions: frozenset[ExtensionRequirement],
     forbidden_extensions: frozenset[str],
-    implemented_extensions: set[str],
+    implemented_extensions: frozenset[str],
 ) -> bool:
     """Check required, alternative, and forbidden extension constraints."""
     if not forbidden_extensions.isdisjoint(implemented_extensions):
@@ -94,7 +100,7 @@ def check_test_params(test_params: dict[str, int | bool | str], config_params: d
 
 def select_tests(
     test_dict: dict[str, TestMetadata],
-    implemented_extensions: set[str],
+    implemented_extensions: frozenset[str],
     config_params: dict[str, ConfigParamValue],
     harts: int = 1,
     *,
@@ -128,13 +134,51 @@ def select_tests(
 
 
 def filter_tests_by_certificate(test_dict: dict[str, TestMetadata], certificate: str) -> dict[str, TestMetadata]:
-    """Select tests in suites that apply to a certificate."""
-    certificate_test_suites = get_certificate_test_suites(certificate)
+    """Select tests whose required extensions are all covered by a certificate."""
+    certificate_extensions = get_certificate_extensions(certificate)
     return {
         test_name: test_metadata
         for test_name, test_metadata in test_dict.items()
-        if Path(test_name).parent.name in certificate_test_suites
+        if check_test_extensions(test_metadata.required_extensions, frozenset(), certificate_extensions)
     }
+
+
+def _print_skipped_suites(
+    config_name: str,
+    certificate: str,
+    selected_tests: dict[str, TestMetadata],
+    certificate_tests: dict[str, TestMetadata],
+) -> None:
+    """Print the suites with tests that the DUT config selects but the certificate skips."""
+    skipped_counts = Counter(Path(name).parent.name for name in selected_tests.keys() - certificate_tests.keys())
+    total_counts = Counter(Path(name).parent.name for name in selected_tests)
+    total_skipped = sum(skipped_counts.values())
+    rprint(
+        f"[bold yellow]{config_name}:[/] skipping {total_skipped} tests in {len(skipped_counts)} suites "
+        f"not part of {certificate}:"
+    )
+    name_width = max(map(len, skipped_counts), default=0)
+    for suite, skipped in sorted(skipped_counts.items()):
+        total = total_counts[suite]
+        print(f"  {suite:<{name_width}}  {skipped:>4} of {total:>4} tests")
+
+
+def write_test_list(config_name: str, selected_tests: dict[str, TestMetadata], output_file: Path) -> None:
+    """Write the selected suites and their test counts as a Markdown table."""
+    suite_counts = Counter(Path(name).parent.name for name in selected_tests)
+    rows = [(suite, str(count)) for suite, count in sorted(suite_counts.items())]
+    suite_width = max([len("Suite")] + [len(suite) for suite, _ in rows])
+    count_width = max([len("Tests")] + [len(count) for _, count in rows])
+    lines = [
+        f"# Selected tests for {config_name}",
+        "",
+        f"| {'Suite':<{suite_width}} | {'Tests':>{count_width}} |",
+        f"| {'-' * suite_width} | {'-' * (count_width - 1)}: |",
+    ]
+    lines.extend(f"| {suite:<{suite_width}} | {count:>{count_width}} |" for suite, count in rows)
+
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text("\n".join(lines) + "\n")
 
 
 def prepare_configs_and_select_tests(
@@ -157,7 +201,7 @@ def prepare_configs_and_select_tests(
 
     Args:
         config_files: ACT test config files to load.
-        certificate: Certificate that limits selected tests to its test suites.
+        certificate: Certificate that limits selected tests to its extensions.
         full_test_dict: Candidate tests, usually from ``generate_test_dict``.
         workdir: Directory for generated UDB outputs (one subdir per config).
         jobs: Parallelism for DUT output generation.
@@ -171,7 +215,7 @@ def prepare_configs_and_select_tests(
 
     results: list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]] = []
     for config in configs:
-        implemented_extensions = get_implemented_extensions(workdir / config.name / "extensions.txt")
+        implemented_extensions = get_implemented_extensions(workdir / config.name / "env" / "extensions.txt")
         config_params = get_config_params(config.udb_config)
         selected_tests = select_tests(
             full_test_dict,
@@ -182,6 +226,8 @@ def prepare_configs_and_select_tests(
             enable_experimental_extensions=enable_experimental_extensions,
         )
         if certificate:
-            selected_tests = filter_tests_by_certificate(selected_tests, certificate)
+            certificate_tests = filter_tests_by_certificate(selected_tests, certificate)
+            _print_skipped_suites(config.name, certificate, selected_tests, certificate_tests)
+            selected_tests = certificate_tests
         results.append((config, config_params, selected_tests))
     return results

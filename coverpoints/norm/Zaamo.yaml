@@ -59,7 +59,7 @@ normative_rule_definitions:
   - name: misaligned_atomicity_granule_size
     coverpoint:
       [
-        "OUT-OF-SCOPE: aligned AMOs only; misaligned AMOs are exercised by Zama16b and ExceptionsZaamo",
+        "OUT-OF-SCOPE: aligned AMOs only; misaligned AMOs are exercised by Zama16b and Exceptions_Zaamo",
       ]
 
   - name: amo_alignment

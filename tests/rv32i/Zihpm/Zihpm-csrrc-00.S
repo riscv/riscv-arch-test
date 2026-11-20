@@ -33,7 +33,7 @@ RVTEST_BEGIN
 // cp_cntr_hpm
 /////////////////////////////////
 
-#ifdef UDB_HPM_COUNTER_EN_3
+#if defined(UDB_HPM_COUNTER_EN_3) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_3) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_3))))
 
 # Testcase: cp_cntr_hpm (hpmcounter3)
 # Read two consecutive times to check if counter increments
@@ -54,7 +54,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_4
+#if defined(UDB_HPM_COUNTER_EN_4) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_4) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_4))))
 
 # Testcase: cp_cntr_hpm (hpmcounter4)
 # Read two consecutive times to check if counter increments
@@ -75,7 +75,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_5
+#if defined(UDB_HPM_COUNTER_EN_5) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_5) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_5))))
 
 # Testcase: cp_cntr_hpm (hpmcounter5)
 # Read two consecutive times to check if counter increments
@@ -96,7 +96,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_6
+#if defined(UDB_HPM_COUNTER_EN_6) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_6) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_6))))
 
 # Testcase: cp_cntr_hpm (hpmcounter6)
 # Read two consecutive times to check if counter increments
@@ -117,7 +117,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_7
+#if defined(UDB_HPM_COUNTER_EN_7) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_7) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_7))))
 
 # Testcase: cp_cntr_hpm (hpmcounter7)
 # Read two consecutive times to check if counter increments
@@ -138,7 +138,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_8
+#if defined(UDB_HPM_COUNTER_EN_8) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_8) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_8))))
 
 # Testcase: cp_cntr_hpm (hpmcounter8)
 # Read two consecutive times to check if counter increments
@@ -159,7 +159,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_9
+#if defined(UDB_HPM_COUNTER_EN_9) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_9) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_9))))
 
 # Testcase: cp_cntr_hpm (hpmcounter9)
 # Read two consecutive times to check if counter increments
@@ -180,7 +180,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_10
+#if defined(UDB_HPM_COUNTER_EN_10) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_10) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_10))))
 
 # Testcase: cp_cntr_hpm (hpmcounter10)
 # Read two consecutive times to check if counter increments
@@ -201,7 +201,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_11
+#if defined(UDB_HPM_COUNTER_EN_11) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_11) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_11))))
 
 # Testcase: cp_cntr_hpm (hpmcounter11)
 # Read two consecutive times to check if counter increments
@@ -222,7 +222,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_12
+#if defined(UDB_HPM_COUNTER_EN_12) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_12) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_12))))
 
 # Testcase: cp_cntr_hpm (hpmcounter12)
 # Read two consecutive times to check if counter increments
@@ -243,7 +243,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_13
+#if defined(UDB_HPM_COUNTER_EN_13) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_13) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_13))))
 
 # Testcase: cp_cntr_hpm (hpmcounter13)
 # Read two consecutive times to check if counter increments
@@ -264,7 +264,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_14
+#if defined(UDB_HPM_COUNTER_EN_14) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_14) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_14))))
 
 # Testcase: cp_cntr_hpm (hpmcounter14)
 # Read two consecutive times to check if counter increments
@@ -285,7 +285,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_15
+#if defined(UDB_HPM_COUNTER_EN_15) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_15) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_15))))
 
 # Testcase: cp_cntr_hpm (hpmcounter15)
 # Read two consecutive times to check if counter increments
@@ -306,7 +306,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_16
+#if defined(UDB_HPM_COUNTER_EN_16) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_16) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_16))))
 
 # Testcase: cp_cntr_hpm (hpmcounter16)
 # Read two consecutive times to check if counter increments
@@ -327,7 +327,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_17
+#if defined(UDB_HPM_COUNTER_EN_17) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_17) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_17))))
 
 # Testcase: cp_cntr_hpm (hpmcounter17)
 # Read two consecutive times to check if counter increments
@@ -348,7 +348,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_18
+#if defined(UDB_HPM_COUNTER_EN_18) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_18) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_18))))
 
 # Testcase: cp_cntr_hpm (hpmcounter18)
 # Read two consecutive times to check if counter increments
@@ -369,7 +369,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_19
+#if defined(UDB_HPM_COUNTER_EN_19) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_19) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_19))))
 
 # Testcase: cp_cntr_hpm (hpmcounter19)
 # Read two consecutive times to check if counter increments
@@ -390,7 +390,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_20
+#if defined(UDB_HPM_COUNTER_EN_20) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_20) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_20))))
 
 # Testcase: cp_cntr_hpm (hpmcounter20)
 # Read two consecutive times to check if counter increments
@@ -411,7 +411,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_21
+#if defined(UDB_HPM_COUNTER_EN_21) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_21) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_21))))
 
 # Testcase: cp_cntr_hpm (hpmcounter21)
 # Read two consecutive times to check if counter increments
@@ -432,7 +432,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_22
+#if defined(UDB_HPM_COUNTER_EN_22) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_22) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_22))))
 
 # Testcase: cp_cntr_hpm (hpmcounter22)
 # Read two consecutive times to check if counter increments
@@ -453,7 +453,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_23
+#if defined(UDB_HPM_COUNTER_EN_23) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_23) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_23))))
 
 # Testcase: cp_cntr_hpm (hpmcounter23)
 # Read two consecutive times to check if counter increments
@@ -474,7 +474,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_24
+#if defined(UDB_HPM_COUNTER_EN_24) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_24) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_24))))
 
 # Testcase: cp_cntr_hpm (hpmcounter24)
 # Read two consecutive times to check if counter increments
@@ -495,7 +495,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_25
+#if defined(UDB_HPM_COUNTER_EN_25) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_25) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_25))))
 
 # Testcase: cp_cntr_hpm (hpmcounter25)
 # Read two consecutive times to check if counter increments
@@ -516,7 +516,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_26
+#if defined(UDB_HPM_COUNTER_EN_26) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_26) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_26))))
 
 # Testcase: cp_cntr_hpm (hpmcounter26)
 # Read two consecutive times to check if counter increments
@@ -537,7 +537,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_27
+#if defined(UDB_HPM_COUNTER_EN_27) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_27) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_27))))
 
 # Testcase: cp_cntr_hpm (hpmcounter27)
 # Read two consecutive times to check if counter increments
@@ -558,7 +558,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_28
+#if defined(UDB_HPM_COUNTER_EN_28) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_28) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_28))))
 
 # Testcase: cp_cntr_hpm (hpmcounter28)
 # Read two consecutive times to check if counter increments
@@ -579,7 +579,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_29
+#if defined(UDB_HPM_COUNTER_EN_29) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_29) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_29))))
 
 # Testcase: cp_cntr_hpm (hpmcounter29)
 # Read two consecutive times to check if counter increments
@@ -600,7 +600,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_30
+#if defined(UDB_HPM_COUNTER_EN_30) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_30) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_30))))
 
 # Testcase: cp_cntr_hpm (hpmcounter30)
 # Read two consecutive times to check if counter increments
@@ -621,7 +621,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_31
+#if defined(UDB_HPM_COUNTER_EN_31) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_31) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_31))))
 
 # Testcase: cp_cntr_hpm (hpmcounter31)
 # Read two consecutive times to check if counter increments
@@ -644,7 +644,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31:
 
 #if __riscv_xlen == 32
 
-#ifdef UDB_HPM_COUNTER_EN_3
+#if defined(UDB_HPM_COUNTER_EN_3) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_3) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_3))))
 
 # Testcase: cp_cntr_hpm (hpmcounter3h)
 # Read two consecutive times to check if counter increments
@@ -664,7 +664,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter3h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_4
+#if defined(UDB_HPM_COUNTER_EN_4) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_4) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_4))))
 
 # Testcase: cp_cntr_hpm (hpmcounter4h)
 # Read two consecutive times to check if counter increments
@@ -684,7 +684,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter4h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_5
+#if defined(UDB_HPM_COUNTER_EN_5) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_5) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_5))))
 
 # Testcase: cp_cntr_hpm (hpmcounter5h)
 # Read two consecutive times to check if counter increments
@@ -704,7 +704,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter5h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_6
+#if defined(UDB_HPM_COUNTER_EN_6) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_6) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_6))))
 
 # Testcase: cp_cntr_hpm (hpmcounter6h)
 # Read two consecutive times to check if counter increments
@@ -724,7 +724,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter6h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_7
+#if defined(UDB_HPM_COUNTER_EN_7) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_7) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_7))))
 
 # Testcase: cp_cntr_hpm (hpmcounter7h)
 # Read two consecutive times to check if counter increments
@@ -744,7 +744,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter7h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_8
+#if defined(UDB_HPM_COUNTER_EN_8) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_8) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_8))))
 
 # Testcase: cp_cntr_hpm (hpmcounter8h)
 # Read two consecutive times to check if counter increments
@@ -764,7 +764,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter8h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_9
+#if defined(UDB_HPM_COUNTER_EN_9) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_9) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_9))))
 
 # Testcase: cp_cntr_hpm (hpmcounter9h)
 # Read two consecutive times to check if counter increments
@@ -784,7 +784,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter9h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_10
+#if defined(UDB_HPM_COUNTER_EN_10) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_10) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_10))))
 
 # Testcase: cp_cntr_hpm (hpmcounter10h)
 # Read two consecutive times to check if counter increments
@@ -804,7 +804,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter10h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_11
+#if defined(UDB_HPM_COUNTER_EN_11) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_11) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_11))))
 
 # Testcase: cp_cntr_hpm (hpmcounter11h)
 # Read two consecutive times to check if counter increments
@@ -824,7 +824,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter11h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_12
+#if defined(UDB_HPM_COUNTER_EN_12) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_12) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_12))))
 
 # Testcase: cp_cntr_hpm (hpmcounter12h)
 # Read two consecutive times to check if counter increments
@@ -844,7 +844,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter12h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_13
+#if defined(UDB_HPM_COUNTER_EN_13) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_13) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_13))))
 
 # Testcase: cp_cntr_hpm (hpmcounter13h)
 # Read two consecutive times to check if counter increments
@@ -864,7 +864,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter13h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_14
+#if defined(UDB_HPM_COUNTER_EN_14) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_14) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_14))))
 
 # Testcase: cp_cntr_hpm (hpmcounter14h)
 # Read two consecutive times to check if counter increments
@@ -884,7 +884,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter14h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_15
+#if defined(UDB_HPM_COUNTER_EN_15) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_15) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_15))))
 
 # Testcase: cp_cntr_hpm (hpmcounter15h)
 # Read two consecutive times to check if counter increments
@@ -904,7 +904,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter15h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_16
+#if defined(UDB_HPM_COUNTER_EN_16) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_16) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_16))))
 
 # Testcase: cp_cntr_hpm (hpmcounter16h)
 # Read two consecutive times to check if counter increments
@@ -924,7 +924,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter16h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_17
+#if defined(UDB_HPM_COUNTER_EN_17) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_17) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_17))))
 
 # Testcase: cp_cntr_hpm (hpmcounter17h)
 # Read two consecutive times to check if counter increments
@@ -944,7 +944,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter17h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_18
+#if defined(UDB_HPM_COUNTER_EN_18) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_18) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_18))))
 
 # Testcase: cp_cntr_hpm (hpmcounter18h)
 # Read two consecutive times to check if counter increments
@@ -964,7 +964,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter18h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_19
+#if defined(UDB_HPM_COUNTER_EN_19) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_19) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_19))))
 
 # Testcase: cp_cntr_hpm (hpmcounter19h)
 # Read two consecutive times to check if counter increments
@@ -984,7 +984,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter19h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_20
+#if defined(UDB_HPM_COUNTER_EN_20) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_20) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_20))))
 
 # Testcase: cp_cntr_hpm (hpmcounter20h)
 # Read two consecutive times to check if counter increments
@@ -1004,7 +1004,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter20h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_21
+#if defined(UDB_HPM_COUNTER_EN_21) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_21) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_21))))
 
 # Testcase: cp_cntr_hpm (hpmcounter21h)
 # Read two consecutive times to check if counter increments
@@ -1024,7 +1024,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter21h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_22
+#if defined(UDB_HPM_COUNTER_EN_22) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_22) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_22))))
 
 # Testcase: cp_cntr_hpm (hpmcounter22h)
 # Read two consecutive times to check if counter increments
@@ -1044,7 +1044,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter22h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_23
+#if defined(UDB_HPM_COUNTER_EN_23) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_23) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_23))))
 
 # Testcase: cp_cntr_hpm (hpmcounter23h)
 # Read two consecutive times to check if counter increments
@@ -1064,7 +1064,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter23h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_24
+#if defined(UDB_HPM_COUNTER_EN_24) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_24) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_24))))
 
 # Testcase: cp_cntr_hpm (hpmcounter24h)
 # Read two consecutive times to check if counter increments
@@ -1084,7 +1084,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter24h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_25
+#if defined(UDB_HPM_COUNTER_EN_25) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_25) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_25))))
 
 # Testcase: cp_cntr_hpm (hpmcounter25h)
 # Read two consecutive times to check if counter increments
@@ -1104,7 +1104,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter25h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_26
+#if defined(UDB_HPM_COUNTER_EN_26) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_26) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_26))))
 
 # Testcase: cp_cntr_hpm (hpmcounter26h)
 # Read two consecutive times to check if counter increments
@@ -1124,7 +1124,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter26h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_27
+#if defined(UDB_HPM_COUNTER_EN_27) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_27) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_27))))
 
 # Testcase: cp_cntr_hpm (hpmcounter27h)
 # Read two consecutive times to check if counter increments
@@ -1144,7 +1144,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter27h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_28
+#if defined(UDB_HPM_COUNTER_EN_28) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_28) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_28))))
 
 # Testcase: cp_cntr_hpm (hpmcounter28h)
 # Read two consecutive times to check if counter increments
@@ -1164,7 +1164,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter28h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_29
+#if defined(UDB_HPM_COUNTER_EN_29) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_29) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_29))))
 
 # Testcase: cp_cntr_hpm (hpmcounter29h)
 # Read two consecutive times to check if counter increments
@@ -1184,7 +1184,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter29h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_30
+#if defined(UDB_HPM_COUNTER_EN_30) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_30) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_30))))
 
 # Testcase: cp_cntr_hpm (hpmcounter30h)
 # Read two consecutive times to check if counter increments
@@ -1204,7 +1204,7 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter30h:
 
 #endif
 
-#ifdef UDB_HPM_COUNTER_EN_31
+#if defined(UDB_HPM_COUNTER_EN_31) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_31) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_31))))
 
 # Testcase: cp_cntr_hpm (hpmcounter31h)
 # Read two consecutive times to check if counter increments

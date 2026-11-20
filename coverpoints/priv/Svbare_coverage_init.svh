@@ -8,4 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+`ifndef EXCLUDE_SM
+    Svbare_Sm_cg = new(); Svbare_Sm_cg.set_inst_name("obj_Svbare_Sm");
+`endif
     Svbare_cg = new(); Svbare_cg.set_inst_name("obj_Svbare");

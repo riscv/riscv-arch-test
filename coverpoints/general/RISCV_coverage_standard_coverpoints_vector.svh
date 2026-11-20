@@ -20,21 +20,21 @@
     // Standard vector coverpoints
     //////////////////////////////////////////////////////////////////////////////////
 
-    vtype_prev_vill_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_prev_vill_clear: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins vill_not_set = {0};
     }
 
-    vtype_prev_vill_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_prev_vill_set: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
         bins vill_set = {1};
     }
 
-    vstart_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") {
+    vstart_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) {
         bins target = {0};
     }
 
-    vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
         //Any value between max and 1
-        bins target = {[64'h10000:64'h1]};
+        bins target = {[64'h1:64'h10000]};
     }
 
     mask_enabled: coverpoint ins.current.insn[25] {
@@ -51,9 +51,9 @@
 
     // ensures vd updates
     //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+    std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
                         ins.trap == 0
                     }
     {
@@ -61,10 +61,10 @@
     }
 
     //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero;
-    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+    std_trap_vec : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
+                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "vs") != 0
                     }
     {
         bins true = {1'b1};
@@ -106,24 +106,24 @@
         bins target = {1'b1};
     }
 
-    vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
-                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+    vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL)
+                        == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b1};
     }
 
-    vl_not_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") ==
-                            get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+    vl_not_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) ==
+                            `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b0};
     }
 
-    vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmulge1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
         bins eight  = {3};
     }
 
-    vtype_all_lmul_supported_sew8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmul_supported_sew8 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         `ifdef LMULf8_SUPPORTED
         bins eighth  = {5};
         `endif
@@ -139,7 +139,7 @@
         bins eight  = {3};
     }
 
-    vtype_all_lmul_supported_sew16 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmul_supported_sew16 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         `ifdef LMULf4_SUPPORTED
         bins fourth = {6};
         `endif
@@ -152,7 +152,7 @@
         bins eight  = {3};
     }
 
-    vtype_all_lmul_supported_sew32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmul_supported_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         `ifdef LMULf2_SUPPORTED
         bins half   = {7};
         `endif
@@ -162,36 +162,36 @@
         bins eight  = {3};
     }
 
-    vtype_all_lmul_supported_sew64 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmul_supported_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
         bins eight  = {3};
     }
 
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins one = {0};
     }
 
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_2: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {1};
     }
 
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_4: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {2};
     }
 
-    vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_lmul_8: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two = {3};
     }
 
-    vtype_all_lmulgt1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+    vtype_all_lmulgt1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
         bins two    = {1};
         bins four   = {2};
         bins eight  = {3};
     }
 
-    vtype_all_sewgt8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    vtype_all_sewgt8: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         `ifdef SEW16_SUPPORTED
         bins sixteen    = {1};
         `endif
@@ -213,7 +213,7 @@
 
     }
 
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    vtype_sew_8: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         `ifdef SEW8_SUPPORTED
         bins eight = {0};
         `endif
@@ -224,7 +224,7 @@
         `endif
     }
 
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    vtype_sew_16: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         `ifdef SEW16_SUPPORTED
         bins sixteen = {1};
         `endif
@@ -235,7 +235,7 @@
         `endif
     }
 
-    vtype_sew_32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    vtype_sew_32: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         `ifdef SEW32_SUPPORTED
         bins thirtytwo = {2};
         `endif
@@ -246,7 +246,7 @@
         `endif
     }
 
-    vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    vtype_sew_64: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         `ifdef SEW64_SUPPORTED
         bins sixtyfour = {3};
         `endif
@@ -257,7 +257,7 @@
         `endif
     }
 
-    vtype_all_sew_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+    vtype_all_sew_supported: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
         `ifdef SEW8_SUPPORTED
         bins eight      = {0};
         `endif
@@ -283,7 +283,7 @@
         `endif
     }
 
-    vtype_sew_supported : coverpoint check_vtype_sew_supported(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")) {
+    vtype_sew_supported : coverpoint check_vtype_sew_supported(get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")) {
         bins supported = {1};
     }
 
@@ -295,7 +295,7 @@
     // Vector csr common coverpoints
     //////////////////////////////////////////////////////////////////////////////////
 
-    misa_v_active : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[21] {
+    misa_v_active : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MISA, "exts")[21] {
         bins vector = {1};
     }
 
@@ -425,11 +425,11 @@
     }
 
     vs2_reg_unaligned_lmul_4: coverpoint ins.current.insn[24:20] {
-        wildcard bins range = {[5'b???01: 5'b???11]};
+        wildcard bins range = {5'b???01, 5'b???10, 5'b???11};
     }
 
     vs2_reg_unaligned_lmul_8: coverpoint ins.current.insn[24:20] {
-        wildcard bins range = {[5'b??001: 5'b??111]};
+        wildcard bins range = {5'b??001, 5'b??010, 5'b??011, 5'b??100, 5'b??101, 5'b??110, 5'b??111};
     }
 
     vs1_reg_unaligned_lmul_2: coverpoint ins.current.insn[19:15] {
@@ -437,11 +437,11 @@
     }
 
     vs1_reg_unaligned_lmul_4: coverpoint ins.current.insn[19:15] {
-        wildcard bins range = {[5'b???01: 5'b???11]};
+        wildcard bins range = {5'b???01, 5'b???10, 5'b???11};
     }
 
     vs1_reg_unaligned_lmul_8: coverpoint ins.current.insn[19:15] {
-        wildcard bins range = {[5'b??001: 5'b??111]};
+        wildcard bins range = {5'b??001, 5'b??010, 5'b??011, 5'b??100, 5'b??101, 5'b??110, 5'b??111};
     }
 
     vd_reg_unaligned_lmul_2: coverpoint ins.current.insn[11:7] {
@@ -449,11 +449,11 @@
     }
 
     vd_reg_unaligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins range = {[5'b???01: 5'b???11]};
+        wildcard bins range = {5'b???01, 5'b???10, 5'b???11};
     }
 
     vd_reg_unaligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins range = {[5'b??001: 5'b??111]};
+        wildcard bins range = {5'b??001, 5'b??010, 5'b??011, 5'b??100, 5'b??101, 5'b??110, 5'b??111};
     }
 
     vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {

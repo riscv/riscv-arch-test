@@ -28,7 +28,7 @@ include::{testplansdir}/I.adoc[]
 |cp_custom_fence_reserved|9|`fence.tso`, fm = `1000` with another pred and succ, a reserved fm value, fences with nonzero rd or rs1, and HINTs with pred = 0 or succ = 0 and nonzero rd or rs1 execute without trapping.
 |===
 
-<<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that check they have been exercised.  Privileged coverpoints related to integer instructions are described in the relevant parts of Privileged Test Plan such as <<Sm Machine-Mode CSRs and Instructions, Sm>> and <<ExceptionsSm Machine-Mode Exceptions, ExceptionsSm>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
+<<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that check they have been exercised.  Privileged coverpoints related to integer instructions are described in the relevant parts of Privileged Test Plan such as <<Sm Machine-Mode CSRs and Instructions, Sm>> and <<Exceptions, Exceptions>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
 
 * Opcodes (cp_asm_count)
 * All Source and Destination Registers (cp_rs1, cp_rs2, cp_rd)

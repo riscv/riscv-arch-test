@@ -36,6 +36,11 @@
 --override cpu*/Zvfh=T
 --override cpu*/Zvfhmin=T
 --override cpu*/unalignedV=F # Disallow misaligned accesses on one imperas sim to test both cases
+# Workaround for an Imperas issue: the RV32GCV variant enables the obsolete V 0.8-0.10 draft extension
+# Zvqmac by default, so it executes reserved OP-V encodings such as 0xf2e68457 as vqmaccu.vv instead of
+# raising an illegal-instruction exception (SsstrictSm/S/U VectorInstr-00/-03).
+# https://solvnetplus.synopsys.com/s/case/500WQ00002CEtKrYAL/the-vqmacc-draft-zvqmac-encodings-execute-on-named-v-variants-with-vectorversion10ratified
+--override cpu*/Zvqmac=F
 
 # Miscellaneous extensions
 --override cpu*/Zicond=T
@@ -51,10 +56,11 @@
 --override cpu*/Smstateen=T
 --override cpu*/Ssstateen=T
 --override cpu*/Zawrs=T
+--override cpu*/Sscofpmf=T
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T
---override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
+--override cpu*/Zam=F # misaligned AMOs and SSAMOSWAP raise store/AMO access faults (no Zama16b granule)
 
 # Timeout
 --override cpu*/TW_time_limit=100
@@ -99,3 +105,7 @@
 --callcommand iss/cpu0/setPMA -lo 0x000C000000 -hi 0x000FFFFFFF -attributes " rw-aA- --4- " # PLIC
 --callcommand iss/cpu0/setPMA -lo 0x0010010000 -hi 0x0010010007 -attributes " rw-aA- 1248 " # UART0
 --callcommand iss/cpu0/setPMA -lo 0x0080000000 -hi 0x008FFFFFFF -attributes " rwx--- 1248 " # UNCORE_RAM
+# Sdtrig: AMOs are loads and stores for triggers (norm:Sdtrig_AMO_read_addr, Sdtrig_AMO_store_addr)
+--override cpu*/amo_trigger=T
+# Sdtrig: no tcontrol, so breakpoint reentrancy follows mstatus.MIE/SIE, which Sail models
+--override cpu*/tcontrol_undefined=T

@@ -22,8 +22,7 @@ def format_ci_type(
     assert params.immval is not None
     setup: list[str] = []
     if instr_name == "c.addi16sp":
-        # For c.addi16sp, the immediate is scaled by 16 (left shift by 4) and rs1 must be x2 (sp)
-        # params.immval <<= 4
+        # rs1 must be x2 (sp) for c.addi16sp
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = 2
         asm = test_data.int_regs.consume_registers([params.rs1])

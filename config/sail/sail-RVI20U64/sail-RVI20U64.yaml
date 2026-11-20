@@ -13,6 +13,7 @@ implemented_extensions:
   - { name: F, version: "= 2.2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: C, version: "= 2.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicntr, version: "= 2.0" }
   - { name: Zihpm, version: "= 2.0" }
   - { name: Zicsr, version: "= 2.0" }
@@ -54,10 +55,8 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
-  MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x1
-  MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0x0
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
   VENDOR_ID_BANK: 0x0
   VENDOR_ID_OFFSET: 0x0
   MISALIGNED_LDST: true
@@ -93,66 +92,36 @@ params:
       false,
       false,
       false,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
-  HPM_COUNTER3_WIDTH: 64
-  HPM_COUNTER4_WIDTH: 64
-  HPM_COUNTER5_WIDTH: 64
-  HPM_COUNTER6_WIDTH: 64
-  HPM_COUNTER7_WIDTH: 64
-  HPM_COUNTER8_WIDTH: 64
-  HPM_COUNTER9_WIDTH: 64
-  HPM_COUNTER10_WIDTH: 64
-  HPM_COUNTER11_WIDTH: 64
-  HPM_COUNTER12_WIDTH: 64
-  HPM_COUNTER13_WIDTH: 64
-  HPM_COUNTER14_WIDTH: 64
-  HPM_COUNTER15_WIDTH: 64
-  HPM_COUNTER16_WIDTH: 64
-  HPM_COUNTER17_WIDTH: 64
-  HPM_COUNTER18_WIDTH: 64
-  HPM_COUNTER19_WIDTH: 64
-  HPM_COUNTER20_WIDTH: 64
-  HPM_COUNTER21_WIDTH: 64
-  HPM_COUNTER22_WIDTH: 64
-  HPM_COUNTER23_WIDTH: 64
-  HPM_COUNTER24_WIDTH: 64
-  HPM_COUNTER25_WIDTH: 64
-  HPM_COUNTER26_WIDTH: 64
-  HPM_COUNTER27_WIDTH: 64
-  HPM_COUNTER28_WIDTH: 64
-  HPM_COUNTER29_WIDTH: 64
-  HPM_COUNTER30_WIDTH: 64
-  HPM_COUNTER31_WIDTH: 64
-  HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
@@ -191,36 +160,36 @@ params:
     ]
   MCOUNTENABLE_EN:
     [
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]

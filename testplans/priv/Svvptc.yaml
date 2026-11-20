@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svvptc
+coverpoints:
+  - heading: "General Test Environment (Svvptc):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. The page under test is mapped at va_data. S-mode accesses run from the identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE; the handler moves execution to the U-accessible code alias va_rvtest_code_begin (registered with SAVE_AREA_SETUP) and back. Page faults are delegated to S-mode.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n- Each testcase writes the page tables in S-mode with the PTE under test invalid (V=0) and runs SFENCE.VMA. The access then takes a page fault, which lets an implementation cache the invalid PTE. S-mode stores the same PTE with V=1 using a plain store, with no SFENCE.VMA or SINVAL.VMA after it. The test waits 4096 loop iterations, about 8K instructions, and retries the access, which must succeed. The wait stands in for the bounded time that Svvptc allows. A hart that keeps the invalid PTE takes a second page fault and fails the signature check instead of hanging.\n- PTE under test, for each access and privilege mode: the leaf PTE at every level (the 4 KiB page and each superpage size of the Sv mode), and the non-leaf PTE at every level above a 4 KiB leaf.\n- The coverpoints sample the page fault on the V=0 PTE that starts each testcase; the signature checks the retry. The reference-model trace does not report the PTEs a walk reads, so the coverpoints distinguish the access, the translation mode and the privilege mode, but not which PTE changed."
+  - name: cp_load
+    goal: Verify a load reaches a page after a plain store sets V in a PTE, without SFENCE.VMA (Svvptc)
+    description: "S-mode and U-mode (PTE.U=1 on the leaf for U-mode): set the leaf or non-leaf PTE under test to V=0 and run SFENCE.VMA. Load (lw) from va_data, which takes a load page fault. Store the PTE with V=1, wait, and load from va_data again."
+    expectation: "First load: load page fault (scause = 13). Retried load: no fault; returns the word in the page."
+    bins: |-
+      load_page_fault x satp_mode x priv_mode_s_u
+      = 6 bins on RV64, 2 on RV32
+  - name: cp_store
+    goal: Verify a store reaches a page after a plain store sets V in a PTE, without SFENCE.VMA (Svvptc)
+    description: "S-mode and U-mode (PTE.U=1 on the leaf for U-mode): set the leaf or non-leaf PTE under test to V=0 and run SFENCE.VMA. Store (sw) to va_data, which takes a store/AMO page fault. Store the PTE with V=1, wait, store to va_data again and load the word back."
+    expectation: "First store: store/AMO page fault (scause = 15). Retried store: no fault; the load returns the stored value."
+    bins: |-
+      store_page_fault x satp_mode x priv_mode_s_u
+      = 6 bins on RV64, 2 on RV32
+  - name: cp_fetch
+    goal: Verify an instruction fetch reaches a page after a plain store sets V in a PTE, without SFENCE.VMA (Svvptc)
+    description: "S-mode and U-mode (PTE.U=1 on the leaf for U-mode): set the leaf or non-leaf PTE under test to V=0 and run SFENCE.VMA. Jump (jalr) to va_data, which takes an instruction page fault; the handler returns to ra. Store the PTE with V=1, wait, and jump to va_data again. The code there writes a4 and returns."
+    expectation: "First jump: instruction page fault (scause = 12). Retried jump: no fault; the code in the page runs and writes the result register."
+    bins: |-
+      fetch_page_fault x satp_mode x priv_mode_s_u
+      = 6 bins on RV64, 2 on RV32

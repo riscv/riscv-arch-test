@@ -2,6 +2,7 @@
 === Vector Privileged Test Suites
 
 All of the vector privileged suites are collected in this section.
+The machine-, supervisor-, and user-mode vector CSR tests, Sm_V, Sm_VF, S_V, S_VF, U_V, and U_VF, are part of the <<Sm Machine-Mode CSRs and Instructions,Sm>>, <<S Supervisor-Mode CSRs and Instructions,S>>, and <<U User-Mode CSRs and Instructions,U>> suites and their test plans.
 
 [[MisalignV]]
 ==== MisalignV Vector Misalignment
@@ -45,32 +46,3 @@ These additional exception tests are run on configurations with vector (V extens
 include::{testplansdir}/priv/ExceptionsVls.adoc[]
 
 include::norm/ExceptionsVls_norm_rules.adoc[]
-
-
-==== SmV
-
-Machine-mode access to vector CSRs.
-
-include::{testplansdir}/priv/SmV.adoc[]
-
-include::norm/SmV_norm_rules.adoc[]
-
-TODO: Many of these tests should be replicated in UV.
-
-==== SmVF
-
-Machine-mode access to vector floating-point CSRs.
-
-include::{testplansdir}/priv/SmVF.adoc[]
-
-include::norm/SmVF_norm_rules.adoc[]
-
-TODO: Many of these tests should be replicated in UV.
-
-==== UV
-
-User-mode access to vector CSRs.
-
-include::{testplansdir}/priv/UV.adoc[]
-
-include::norm/UV_norm_rules.adoc[]

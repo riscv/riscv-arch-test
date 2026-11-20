@@ -25,7 +25,7 @@ normative_rule_definitions:
     coverpoint: ["Definition, checked through UDB"]
 
   - name: lr-w_op
-    coverpoint: ["Zalrsc_lr_w_cg/{cp_rs1_nx0, cp_rd}"]
+    coverpoint: ["Zalrsc_lr_w_cg/{cp_rs1_nx0, cp_rd, cp_custom_rd_edges}"]
 
   - name: sc-w_success
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
@@ -41,7 +41,10 @@ normative_rule_definitions:
 
   - name: lr_sc_rv64
     coverpoint:
-      ["Zalrsc_lr_d_cg/{cp_rs1_nx0, cp_rd}, Zalrsc_sc_d_cg/cp_sc_pass_fail"]
+      [
+        "Zalrsc_lr_d_cg/{cp_rs1_nx0, cp_rd}, Zalrsc_sc_d_cg/cp_sc_pass_fail",
+        "Zalrsc_lr_w_cg/cp_custom_rd_edges; its max bin on RV64 checks that LR.W sign-extends",
+      ]
 
   - name: sc_failure_code
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
@@ -50,7 +53,10 @@ normative_rule_definitions:
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
   - name: sc_pairs_latest_lr
-    coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_lr"]
+    coverpoint:
+      [
+        "Zalrsc_sc_w_cg/cp_custom_sc_lr; the LR, LR (other address), SC testcase is directed and hits no bin of its own",
+      ]
 
   - name: sc_success_conditions
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc; multihart not tested"]
@@ -59,7 +65,7 @@ normative_rule_definitions:
     coverpoint: ["OUT-OF-SCOPE: device writes not modeled"]
 
   - name: sc_addr_not_in_reservation_fail
-    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
   - name: sc_other_hart_store_fail
     coverpoint: ["OUT-OF-SCOPE for single hart"]
@@ -103,7 +109,7 @@ normative_rule_definitions:
     # The sc tests retry each constrained loop up to 100 times and require the sc to succeed
     coverpoint:
       [
-        "{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_lr",
+        "{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_lr; SC success cases (except rd = x0) run in a bounded constrained LR/SC loop",
         "other harts and devices OUT-OF-SCOPE for single hart",
       ]
 
@@ -112,7 +118,7 @@ normative_rule_definitions:
   - name: constrained_lrsc_forward_progress_sc
     coverpoint:
       [
-        "{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_lr",
+        "{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_lr; SC success cases (except rd = x0) run in a bounded constrained LR/SC loop",
         "other harts OUT-OF-SCOPE for single hart",
       ]
 

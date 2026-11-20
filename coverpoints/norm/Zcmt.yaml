@@ -57,7 +57,8 @@ normative_rule_definitions:
       ["TODO"]
       # If &lt;&lt;Zcmt&gt;&gt; is implemented then jvt must also be implemented, but can contain a read-only value. If jvt is writable, the set of values the register may hold can vary by implementation. The value in the BASE field must always be aligned on a 64-byte boundary. Note that the CSR contains only bits XLEN-1 through 6 of the address base. When computing jump-table accesses, the lower six bits of base are filled with zeroes to obtain an XLEN-bit jump-table base address jvt.base that is always aligned on a 64-byte boundary.
   - name: jvt_reg
-    coverpoint: []
+    coverpoint:
+      ["TODO"]
       # The jvt register is an XLEN-bit WARL read/write register that holds the jump table configuration, consisting of the jump table base address (BASE) and the jump table mode (MODE).
   - name: Zcmt_endian
     coverpoint:

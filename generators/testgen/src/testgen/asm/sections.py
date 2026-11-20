@@ -69,7 +69,12 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
             continue
         seen_labels.add(label)
 
-        directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword"}
+        # Repack into .dword chunks
+        if eew == 256:
+            data = [(val >> (64 * i)) & (2**64 - 1) for val in data for i in range(4)]
+            eew = 64
+
+        directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword", 128: ".octa"}
         directive = directives[eew]
 
         lines.append(f".balign {eew // 8}")

@@ -555,7 +555,9 @@ if __name__ == '__main__':
     import_all_modules(priv)
 
     testplans = readTestplans(priv=True)
-    extensions = list(testplans.keys())
+    main_testgen_extensions = ["ExceptionsVx"]
+    extensions = [testplan for testplan in testplans.keys() if testplan not in main_testgen_extensions]
+
     generated_files: dict[str, set[pathlib.Path]] = {extension: set() for extension in extensions}
 
     for xlen in xlens:

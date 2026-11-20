@@ -6,12 +6,18 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Sstvala S-mode test generator."""
+"""Sstvala test generator: traps into S-mode write stval with the faulting address or instruction.
+
+Each exception is raised in S-mode and in U-mode after stval is set to a random value, so a hart that does not write
+stval fails, and the S-mode trap handler records stval.  The page faults are raised in S-mode under Sv39 or Sv32.
+Shvstvala tests vstval the same way in VS-mode and VU-mode.
+"""
 
 from testgen.asm.helpers import comment_banner
+from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.ExceptionsCommon import (
+from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_illegal_instruction_tests,
     generate_instr_access_fault_tests,
     generate_instr_adr_misaligned_jalr_tests,
@@ -185,7 +191,7 @@ def _emit_pf_block(
 
 
 def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
-    """cp_stval_load_page_fault — W-only PTE → load page fault on lw/ld."""
+    """cp_load_page_fault — W-only PTE → load page fault on lw/ld."""
     addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
     def _load(mnemonic: str, va: int, suffix: str) -> tuple[str, list[str]]:
@@ -196,19 +202,20 @@ def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> lis
 
     lines = _emit_pf_block(
         test_data,
-        coverpoint="cp_stval_load_page_fault",
+        coverpoint="cp_load_page_fault",
         covergroup=covergroup,
         pte_flags="PTE_D | PTE_A | PTE_W | PTE_V",
         instrs_rv64=[_load("lw", _VA_PF_PAGE_RV64, "rv64"), _load("ld", _VA_PF_PAGE_RV64, "rv64")],
         instrs_rv32=[_load("lw", _VA_PF_PAGE_RV32, "rv32")],
         section_title="Load Page Fault (W-only PTE, no R)",
+        extra_setup=_stval_preset(),
     )
     test_data.int_regs.return_registers([addr_reg, data_reg])
     return lines
 
 
 def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
-    """cp_stval_store_page_fault — R|X PTE (no W) → store page fault on sw/sd."""
+    """cp_store_page_fault — R|X PTE (no W) → store page fault on sw/sd."""
     addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
     def _store(mnemonic: str, va: int, value: int, suffix: str) -> tuple[str, list[str]]:
@@ -223,7 +230,7 @@ def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> li
 
     lines = _emit_pf_block(
         test_data,
-        coverpoint="cp_stval_store_page_fault",
+        coverpoint="cp_store_page_fault",
         covergroup=covergroup,
         pte_flags="PTE_D | PTE_A | PTE_R | PTE_X | PTE_V",
         instrs_rv64=[
@@ -232,13 +239,14 @@ def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> li
         ],
         instrs_rv32=[_store("sw", _VA_PF_PAGE_RV32, 0xDEADBEEF, "rv32")],
         section_title="Store Page Fault (R|X PTE, no W)",
+        extra_setup=_stval_preset(),
     )
     test_data.int_regs.return_registers([addr_reg, data_reg])
     return lines
 
 
 def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
-    """cp_stval_instr_page_fault — R|W PTE (no X) → instruction page fault on jalr.
+    """cp_instr_page_fault — R|W PTE (no X) → instruction page fault on jalr.
 
     The jalr uses x1 (ra) as its link register, so ra holds the fall-through
     address; the trap handler resumes there after the instruction page fault
@@ -254,16 +262,44 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
 
     lines = _emit_pf_block(
         test_data,
-        coverpoint="cp_stval_instr_page_fault",
+        coverpoint="cp_instr_page_fault",
         covergroup=covergroup,
         pte_flags="PTE_D | PTE_A | PTE_R | PTE_W | PTE_V",
         instrs_rv64=[_jalr(_VA_PF_PAGE_RV64, "rv64")],
         instrs_rv32=[_jalr(_VA_PF_PAGE_RV32, "rv32")],
         section_title="Instruction Page Fault (R|W PTE, no X)",
-        extra_setup=[],
+        extra_setup=_stval_preset(),
     )
     test_data.int_regs.return_registers([addr_reg])
     return lines
+
+
+def _stval_preset() -> list[str]:
+    """Set stval to a random value through T-SBI, which works from S-mode and U-mode."""
+    return [f"RVTEST_TSBI_CSR_WRITE(CSR_STVAL, {random_int(32, signed=False):#x})"]
+
+
+def _exception_tests(test_data: TestData, mode: str) -> list[str]:
+    """Access faults, misaligned accesses and fetches, and illegal instructions in S-mode or U-mode.
+
+    Misaligned loads and stores fault only without UDB_MISALIGNED_LDST, and misaligned fetches only without Zca.
+    """
+    setup = _stval_preset()
+    return [
+        *(["RVTEST_TSBI_GOTO_UMODE"] if mode == "u" else []),
+        *generate_load_access_fault_tests(test_data, covergroup, setup=setup),
+        *generate_store_access_fault_tests(test_data, covergroup, setup=setup),
+        *generate_instr_access_fault_tests(test_data, covergroup, setup=setup),
+        "#ifndef UDB_MISALIGNED_LDST",
+        *generate_load_address_misaligned_tests(test_data, covergroup, setup=setup),
+        *generate_store_address_misaligned_tests(test_data, covergroup, setup=setup),
+        "#endif",
+        "#ifndef ZCA_SUPPORTED",
+        *generate_instr_adr_misaligned_jalr_tests(test_data, covergroup, setup=setup),
+        "#endif",
+        *generate_illegal_instruction_tests(test_data, covergroup, setup=setup),
+        *(["RVTEST_TSBI_GOTO_SMODE"] if mode == "u" else []),
+    ]
 
 
 @add_priv_test_generator(
@@ -272,32 +308,17 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
     march_extensions=["S"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
-def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
-    """Generate all Sstvala tests running in S-mode."""
+def make_sstvala(test_data: TestData) -> list[TestChunk]:
+    """Generate tests for Sstvala coverpoints.  Exceptions reach the S-mode handler through the boot delegation."""
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
-
+    # One file per mode, because the ExceptionsCommon testcase labels do not name the mode
+    for mode in ("s", "u"):
+        tc = test_data.new_test_chunk(test_chunks, mode)
+        tc.code.extend(_exception_tests(test_data, mode))
+    tc = test_data.new_test_chunk(test_chunks, "page_fault")
     tc.code.extend(_generate_page_table_data_section())
-
-    # Exceptions reach the S-mode handler through the delegation the boot code sets up;
-    # the suite never writes medeleg itself.
-
-    # Reuse the shared helpers from ExceptionsCommon. These emit their own
-    # coverpoint names (cp_load_access_fault, etc.) — Sstvala_coverage.svh
-    # references those names directly.
-    tc.code.extend(generate_load_access_fault_tests(test_data, covergroup))
-    tc.code.extend(generate_store_access_fault_tests(test_data, covergroup))
-    tc.code.extend(generate_instr_access_fault_tests(test_data, covergroup))
-    tc.code.extend(generate_load_address_misaligned_tests(test_data, covergroup))
-    tc.code.extend(generate_store_address_misaligned_tests(test_data, covergroup))
-    tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, covergroup))
-    tc.code.extend(generate_illegal_instruction_tests(test_data, covergroup))
-
-    tc.code.extend(["", "# --- Page-fault tests (VM required) ---"])
-
     tc.code.extend(_generate_load_page_fault_tests(test_data, covergroup))
     tc.code.extend(_generate_store_page_fault_tests(test_data, covergroup))
     tc.code.extend(_generate_instr_page_fault_tests(test_data, covergroup))
-
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

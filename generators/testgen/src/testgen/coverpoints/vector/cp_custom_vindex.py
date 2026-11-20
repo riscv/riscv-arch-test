@@ -22,13 +22,14 @@ def make_vindex_ge_vlmax(instr_name: str, instr_type: str, coverpoint: str, test
     """
     sew = test_data.config.sew
     assert sew is not None, "SEW must be set for vector tests"
+    index_eew = 16 if instr_name.startswith("vrgatherei") else sew
 
-    # -1 as an unsigned SEW-wide value is the maximum index, always >= VLMAX.
-    label = f"vs1_index_allones_sew{sew}"
+    # -1 as an unsigned index_eew-wide value is the maximum index, always >= VLMAX.
+    label = f"vs1_index_allones_sew{index_eew}"
     if label not in test_data.vector_labels:
-        element_count = VLEN_MAX // sew
-        elements = [(1 << sew) - 1 for _ in range(element_count)]
-        test_data.register_vector_data(label, sew, elements=elements)
+        element_count = VLEN_MAX // sew  # Should be at SEW because that is where vl comes from
+        elements = [(1 << index_eew) - 1 for _ in range(element_count)]
+        test_data.register_vector_data(label, index_eew, elements=elements)
 
     params = generate_random_vector_params(
         test_data,
@@ -37,6 +38,7 @@ def make_vindex_ge_vlmax(instr_name: str, instr_type: str, coverpoint: str, test
         lmul=1,
         suite="length",
         vs1_val_pointer=label,
+        ignore_vector_safety=True,
     )
 
     desc = "cp_custom_vindexedges_index_ge_vlmax (vs1 all-ones: index always >= VLMAX)"
@@ -56,14 +58,15 @@ def make_vindex_gt_vl_lt_vlmax(
     """
     sew = test_data.config.sew
     assert sew is not None, "SEW must be set for vector tests"
+    index_eew = 16 if instr_name.startswith("vrgatherei") else sew
 
     # Index value 2, with lmul=2: at small VL values (< 2) this index is
     # beyond active elements but still within VLMAX.
-    label = f"vs1_index_two_sew{sew}"
+    label = f"vs1_index_two_sew{index_eew}"
     if label not in test_data.vector_labels:
-        element_count = VLEN_MAX // sew
+        element_count = 1
         elements = [2 for _ in range(element_count)]
-        test_data.register_vector_data(label, sew, elements=elements)
+        test_data.register_vector_data(label, index_eew, elements=elements)
 
     params = generate_random_vector_params(
         test_data,
@@ -73,6 +76,7 @@ def make_vindex_gt_vl_lt_vlmax(
         suite="length",
         vs1_val_pointer=label,
         vl=1,
+        ignore_vector_safety=True,
     )
 
     desc = "cp_custom_vindexedges_index_gt_vl_lt_vlmax (vs1=2, lmul=2: index > VL < VLMAX)"

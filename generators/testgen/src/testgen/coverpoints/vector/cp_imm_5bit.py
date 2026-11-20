@@ -10,6 +10,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
+from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -21,9 +22,10 @@ def make_imm_5bit(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     imm_vals = range(32) if coverpoint.endswith("_u") else range(-16, 16)
 
-    # TODO: These should depend on egs
-    vl = 1
-    lmul = 1
+    instr_type_config = get_instruction_type_config(instr_type)
+    assert instr_type_config.vector_data is not None, "vector_data must be provided for Vector instruction types"
+    vl = instr_type_config.vector_data.egs
+    lmul = instr_type_config.vector_data.egs
 
     test_chunks = []
     for imm in imm_vals:

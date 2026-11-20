@@ -1,0 +1,9 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the lowRISC Ibex core
+
+ci_enabled: true
+
+apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache python3-venv"
+install_script: ".github/scripts/install-ibex.sh"
+setup_script: ".github/scripts/setup-ibex.sh"

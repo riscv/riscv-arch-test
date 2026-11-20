@@ -27,7 +27,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-main:
 Svinval_cg_cp_svinval_test1_sfence_w_inval:
   sfence.w.inval
 

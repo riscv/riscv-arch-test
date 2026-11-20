@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svinval_SmH
+notes: |-
+  Svinval_SmH boots to M-mode and delegates nothing, so the M-mode handler takes every trap.  The lower modes with mstatus.TVM = 0 are in Svinval_H.
+coverpoints:
+  - name: cp_svinval_m
+    goal: Svinval instructions execute in M-mode
+    description: Execute each Svinval instruction {sfence.w.inval, sinval.vma x0, x0, sfence.inval.ir, hinval.vvma x0, x0, hinval.gvma x0, x0} in M-mode with TVM = {0/1} and VTVM = {0/1}
+    expectation: All execute; TVM and VTVM do not affect M-mode
+    bins: 5 instructions x M x 2 TVM x 2 VTVM
+  - name: cp_svinval_tvm
+    goal: Svinval instructions trap appropriately with TVM = 1
+    description: Execute each Svinval instruction in each privilege mode {HS/VS/U/VU} with TVM = 1 and VTVM = {0/1}
+    expectation: |-
+      HS: sinval.vma and hinval.gvma raise illegal instruction; sfence.w.inval, sfence.inval.ir and hinval.vvma execute.
+      VS: as with TVM = 0, because TVM does not affect VS-mode: sfence.w.inval and sfence.inval.ir execute; sinval.vma executes with VTVM = 0 and raises virtual instruction with VTVM = 1; hinval.vvma and hinval.gvma raise virtual instruction.
+      U: all raise illegal instruction.
+      VU: all raise virtual instruction.
+    bins: 5 instructions x 4 privilege modes x TVM = 1 x 2 VTVM

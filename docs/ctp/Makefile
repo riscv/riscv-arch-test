@@ -68,11 +68,11 @@ ifneq ($(SKIP_DOCKER),true)
     DOCKER_CMD = \
         ${DOCKER_BIN} run --rm \
             ${DOCKER_INTERACTIVE} \
-            -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
-            -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/$(GENERATED_DIR):/build/generated:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v $(CURDIR)/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
+            -v $(CURDIR)/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v $(CURDIR)/$(GENERATED_DIR):/build/generated:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v $(CURDIR)/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v $(CURDIR)/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
             $(DOCKER_USER_ARG) \
             ${DOCKER_IMG} \
@@ -88,8 +88,7 @@ WORKDIR_SETUP = \
     mkdir -p $@.workdir/src && \
     ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc src/*.yml src/docinfo.html)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
-    ln -sfn ../../../common ../../../docs-resources $@.workdir/ && \
-    ln -sfn ../../common ../../docs-resources $(BUILD_DIR)/
+    ln -sfn ../../../common ../../../docs-resources $@.workdir/
 WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
 else
 WORKDIR_SETUP = \
@@ -97,8 +96,7 @@ WORKDIR_SETUP = \
     mkdir -p $@.workdir/src && \
     ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc src/*.yml src/docinfo.html)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
-    ln -sfn ../../../common ../../../docs-resources $@.workdir/ && \
-    ln -sfn ../../common ../../docs-resources $(BUILD_DIR)/
+    ln -sfn ../../../common ../../../docs-resources $@.workdir/
 
 WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
@@ -132,7 +130,7 @@ OPTIONS := --trace \
 REQUIRES := --require=asciidoctor-diagram \
             --require=asciidoctor-lists
 
-.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check
+.PHONY: all build clean build-pdf build-html docker-pull-latest testplans normrules FORCE
 
 all: build
 
@@ -161,28 +159,35 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans normrules
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-# Make CSV testplans into more readable asciidoc tables by
-# transposing them to one instruction per column, separating
-# into at most 12 instructions per table, and trimming unused
-# coverpoints
-TESTPLANS := $(wildcard $(REPO_ROOT)/testplans/* $(REPO_ROOT)/testplans/priv/*.yaml $(REPO_ROOT)/coverpoints/norm/*.yaml)
-testplans: $(TESTPLANS)
-	@echo "Generating test plan tables..."
-	@if [ -d $(REPO_ROOT)/testplans ]; then \
-		rm -rf $(GENERATED_DIR)/testplans; \
-		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 12; \
-		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans/priv $(GENERATED_DIR)/testplans/priv 12; \
-		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/generate_priv_testplans.py --plans $(REPO_ROOT)/testplans/priv --norm $(REPO_ROOT)/coverpoints/norm --coverage $(REPO_ROOT)/coverpoints/priv --out $(GENERATED_DIR)/testplans/priv; \
-	else \
-		echo "No test plans directory found in source."; \
-	fi
-	@echo "Test plan tables generated."
+CTP_SCRIPTS := $(REPO_ROOT)/generators/ctp
 
-normrules:
-	@echo "Generating normative rule tables...."
-	$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/generate_norm_table.py --yaml $(REPO_ROOT)/coverpoints/norm/ --out $(GENERATED_DIR)/norm --report mismatch_report.txt
-	@echo "Generating parameter rule tables...."
-	$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --norm-dir $(GENERATED_DIR)/norm --out $(GENERATED_DIR)/param/
+# The ISA manual's normative rules, fetched fresh on every build
+NORM_RULES_URL := https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json
+NORM_RULES_JSON := $(REPO_ROOT)/coverpoints/norm/norm-rules.json
+
+$(NORM_RULES_JSON): FORCE
+	curl -fsSL --retry 3 -o $@ $(NORM_RULES_URL)
+
+# Unprivileged CSV test plans become asciidoc tables with one instruction per
+# column and at most 12 instructions per table.  A privileged suite with a YAML
+# plan gets its table from the YAML; its CSV only drives covergroup generation.
+PRIV_PLANS := $(wildcard $(REPO_ROOT)/testplans/priv/*.yaml)
+PRIV_CSVS := $(filter-out $(PRIV_PLANS:.yaml=.csv),$(wildcard $(REPO_ROOT)/testplans/priv/*.csv))
+
+testplans: $(NORM_RULES_JSON)
+	rm -rf $(GENERATED_DIR)/testplans
+	$(PYTHON_RUNNER) $(CTP_SCRIPTS)/transpose_csv.py --out $(GENERATED_DIR)/testplans $(wildcard $(REPO_ROOT)/testplans/*.csv)
+	$(PYTHON_RUNNER) $(CTP_SCRIPTS)/transpose_csv.py --out $(GENERATED_DIR)/testplans/priv $(PRIV_CSVS)
+	$(PYTHON_RUNNER) $(CTP_SCRIPTS)/generate_priv_testplans.py --plans $(REPO_ROOT)/testplans/priv \
+		--norm $(REPO_ROOT)/coverpoints/norm --json $(NORM_RULES_JSON) --coverage $(REPO_ROOT)/coverpoints/priv \
+		--out $(GENERATED_DIR)/testplans/priv
+
+normrules: $(NORM_RULES_JSON)
+	rm -rf $(GENERATED_DIR)/norm $(GENERATED_DIR)/param
+	$(PYTHON_RUNNER) $(CTP_SCRIPTS)/generate_norm_table.py --json $(NORM_RULES_JSON) --yaml $(REPO_ROOT)/coverpoints/norm \
+		--param $(REPO_ROOT)/coverpoints/param --out $(GENERATED_DIR)/norm \
+		--report $(BUILD_DIR)/unmapped-norm-rules.txt
+	$(PYTHON_RUNNER) $(CTP_SCRIPTS)/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --out $(GENERATED_DIR)/param
 
 # Update docker image to latest
 docker-pull-latest:

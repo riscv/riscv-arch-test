@@ -15,7 +15,7 @@ from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_mul")
-def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+def make_cp_imm_mul(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for compressed immediate values that are multiples."""
     exclude_regs: list[int] = []
     if coverpoint == "cp_imm_mul":
@@ -32,7 +32,7 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     elif coverpoint.endswith("_addi16sp"):
         imm_mul = [i for i in range(-512, 512, 16) if i != 0]
     else:
-        raise ValueError(f"Unknown cp_uimm coverpoint variant: {coverpoint} for {instr_name}")
+        raise ValueError(f"Unknown cp_imm_mul coverpoint variant: {coverpoint} for {instr_name}")
     test_chunks: list[TestChunk] = []
     for imm in imm_mul:
         params = generate_random_params(test_data, instr_type, immval=imm, exclude_regs=exclude_regs)

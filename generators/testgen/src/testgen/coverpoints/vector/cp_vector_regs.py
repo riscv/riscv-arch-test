@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+from testgen.asm.vector_helpers import get_egs_lmul_for_register
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -19,12 +20,11 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     Generate tests for all valid registers for vs2.
     """
 
-    # TODO: EGS
-
     assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
+    egs = 1
     if coverpoint.startswith("cp_vs2_"):
         suffix = coverpoint[len("cp_vs2_") :]
 
@@ -32,10 +32,16 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             lower_limit = 1
         elif suffix.startswith("emul"):
             emul = int(suffix[len("emul") :])
+        elif suffix.startswith("egs"):
+            egs = int(suffix[len("egs") :])
+
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
+        if egs > 1:
+            lmul = get_egs_lmul_for_register(v, egs)
+
         test_data.vec_regs.allocate_operand("vs2", v, int(max(lmul, 1)))
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs2=v)
 
@@ -56,11 +62,11 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     Generate tests for all valid registers for vs1.
     """
 
-    # TODO: EGS
     assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
+    egs = 1
     if coverpoint.startswith("cp_vs1_"):
         suffix = coverpoint[len("cp_vs1_") :]
 
@@ -68,10 +74,16 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             lower_limit = 1
         elif suffix.startswith("emul"):
             emul = int(suffix[len("emul") :])
+        elif suffix.startswith("egs"):
+            egs = int(suffix[len("egs") :])
+
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
+        if egs > 1:
+            lmul = get_egs_lmul_for_register(v, egs)
+
         test_data.vec_regs.allocate_operand("vs1", v, int(max(lmul, 1)))
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs1=v)
 
@@ -105,6 +117,7 @@ def make_vs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             lower_limit = 1
         elif suffix.startswith("emul"):
             emul = int(suffix[len("emul") :])
+
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
     test_chunks = []
@@ -129,12 +142,11 @@ def make_vd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     Generate tests for all valid registers for vd.
     """
 
-    # TODO: EGS4 Handling
-
     assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
+    egs = 1
     if coverpoint.startswith("cp_vd_"):
         suffix = coverpoint[len("cp_vd_") :]
 
@@ -144,10 +156,16 @@ def make_vd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
             lower_limit = 1
         elif suffix.startswith("emul"):
             emul = int(suffix[len("emul") :])
+        elif suffix.startswith("egs"):
+            egs = int(suffix[len("egs") :])
+
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
+        if egs > 1:
+            lmul = get_egs_lmul_for_register(v, egs)
+
         test_data.vec_regs.allocate_operand("vd", v, int(max(lmul, 1)))
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vd=v)
 

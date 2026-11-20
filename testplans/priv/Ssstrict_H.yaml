@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssstrict_H
+description: |
+  The Ssstrict_S CSR and instruction sweeps are exercised in VS-mode and the Ssstrict_U sweeps in VU-mode.  The suite boots
+  to HS-mode, enters VS-mode or VU-mode at the start of each block of tests and returns to HS-mode at its end.  Boot
+  delegates illegal-instruction and virtual-instruction exceptions to HS-mode and leaves hedeleg = 0, so the HS-mode
+  fast trap handler records cause, epc and tval for every trap.  vsatp and hgatp stay Bare.
+coverpoints:
+  - name: cp_csrr
+    goal: CSR Accesses
+    description: Read the Ssstrict_S CSRs from VS-mode and the Ssstrict_U CSRs from VU-mode (CSRR with rd≠x0), with the same skips.
+    expectation: S CSR numbers reach the VS replicas from VS-mode.  Hypervisor and VS CSRs raise virtual-instruction from VS-mode.  CSRs that do not exist raise illegal-instruction.  From VU-mode, user CSRs behave as from U-mode.
+    bins: One bin per swept CSR in Ssstrict_H_vscsr_cg (VS-mode) and Ssstrict_H_vucsr_cg (VU-mode)
+    notes: satp is skipped because a write to vsatp could turn on VS-stage translation.
+  - name: cp_csrw_edges
+    goal: CSR Accesses
+    description: Write all-zeros and all-ones to the same CSRs as cp_csrr, from VS-mode and VU-mode, and restore each CSR.
+    expectation: Writable CSRs accept the writes; read-only, higher-privilege and nonexistent CSRs trap as in cp_csrr.
+    bins: "Two bins per CSR: write 0 and write all-ones"
+  - name: cp_csrcs
+    goal: CSR Accesses
+    description: CSRRS and CSRRC with rs1 = all-ones for the same CSRs as cp_csrr, from VS-mode and VU-mode.
+    expectation: Same as cp_csrw_edges.
+    bins: "Two bins per CSR: CSRRS and CSRRC all-ones"
+  - name: cp_illegal_instruction
+    goal: Illegal Uncompressed Instructions
+    description: Same encoding sweep as Ssstrict_S, including the upper-register and vector encodings, from VS-mode and from VU-mode.
+    expectation: Reserved encodings raise illegal-instruction.  HS-qualified instructions that V=1 prevents, such as hfence.vvma and hfence.gvma, raise virtual-instruction.
+    bins: Same as Ssstrict_S cp_illegal_instruction, crossed with VS-mode and VU-mode (Ssstrict_H_instr_cg)
+  - name: cp_illegal_compressed_instruction
+    goal: Illegal Compressed Instructions
+    description: Same compressed quadrant sweep (00/01/10) as Ssstrict_S, including the separately swept reserved code points, from VS-mode and from VU-mode.
+    expectation: Each reserved encoding raises illegal-instruction.
+    bins: Same as Ssstrict_S cp_illegal_compressed_instruction, crossed with VS-mode and VU-mode (Ssstrict_H_comp_instr_cg)

@@ -1,0 +1,103 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sscofpmf_Sm
+source: https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0
+coverpoints:
+  - name: cp_minh_inhibits_mmode
+    goal: MINH inhibits counting in M-mode
+    description: |-
+      In M-mode:
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0
+      MINH = 0, then 1: mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, read mhpmcounter
+      mhpmevent[62:58] (MINH, SINH, UINH, VSINH, VUINH) = each of the 32 combinations:
+          read mhpmevent, mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, read mhpmcounter
+    expectation: |-
+      mhpmcounter is nonzero iff MINH = 0
+      mhpmevent reads back the combination, with the bits of unimplemented modes reading 0
+    bins: 32 xINH combinations
+  - name: cp_of_set_on_overflow
+    goal: OF is set when mhpmcounter overflows
+    description: |-
+      In M-mode, for mhpmevent[62:58] = {00000, 11100, 10000, 01000, 00100}:
+      mip = 0, mie = 0
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0
+      mhpmcounter = all 1s (mhpmcounterh too on RV32)
+      Run RVMODEL_MHPMEVENT_CODE
+      Read mhpmevent (OF and xINH) and mhpmcounter
+      Wait for RVMODEL_INTERRUPT_LATENCY, read mip.LCOFIP
+    expectation: |-
+      If MINH = 0: mhpmcounter wraps, OF becomes 1 and mip.LCOFIP becomes 1
+      If MINH = 1: mhpmcounter does not move, and OF and mip.LCOFIP stay 0
+    bins: 3 patterns with MINH = 0
+  - name: cp_of_already_set
+    goal: An overflow with OF already 1 does not request a count overflow interrupt
+    description: |-
+      In M-mode:
+      mie = 0
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, xINH = 00000, OF = 1
+      mhpmcounter = all 1s (mhpmcounterh too on RV32)
+      Clear mip.LCOFIP
+      Run RVMODEL_MHPMEVENT_CODE, wait for RVMODEL_INTERRUPT_LATENCY
+      Read mhpmevent, mhpmcounter and mip.LCOFIP
+    expectation: mhpmcounter wraps, OF stays 1, and mip.LCOFIP stays 0
+    bins: "1"
+  - name: cp_overflow_hw_only
+    goal: Software writes to mhpmcounter never cause an overflow
+    description: |-
+      In M-mode:
+      mie = 0, mhpmevent = 0, clear mip.LCOFIP
+      mhpmcounter = all 1s, read OF
+      mhpmcounter = all 0s, read OF
+    expectation: OF stays 0
+    bins: 2 mhpmcounter values
+  - name: cp_lcofip_hw_only
+    goal: Setting OF by software does not raise LCOFIP
+    description: |-
+      In M-mode:
+      mie = 0, clear mip.LCOFIP
+      Set mhpmevent.OF with a CSR write, wait for RVMODEL_INTERRUPT_LATENCY, read mip.LCOFIP
+      Clear mhpmevent.OF with a CSR write, wait for RVMODEL_INTERRUPT_LATENCY, read mip.LCOFIP
+    expectation: mip.LCOFIP stays 0
+    bins: 2 OF values
+  - name: cp_scountovf_shadow
+    goal: scountovf shadows the OF bits of mhpmevent3..31
+    description: |-
+      In M-mode:
+      mcounteren = all 1s
+      Write mhpmevent3..31.OF = all 0s, walking 1s, all 1s; read scountovf after each
+    expectation: scountovf[31:3] matches the OF bits, and scountovf[2:0] = 0
+    bins: 31 OF patterns
+  - name: cp_scountovf_mcounteren
+    goal: In M-mode, scountovf is not masked by mcounteren
+    description: |-
+      In M-mode, for mhpmevent3..31.OF = all 1s, even checkerboard, odd checkerboard:
+      mcounteren = all 0s, all 1s, walking 1 through bits 31:3; read scountovf after each
+    expectation: scountovf[31:3] matches the OF bits whatever mcounteren holds, and scountovf[2:0] = 0
+    bins: 3 OF patterns * 31 mcounteren values
+  - name: cp_sscofpmf_access
+    goal: Access scountovf and, on RV32, mhpmevent3h..31h
+    description: |-
+      In M-mode, read, write 0s, write 1s, set 1s and clear 1s:
+          scountovf
+          on RV32, mhpmevent3h..31h
+    expectation: |-
+      Reading scountovf succeeds; writing it raises an illegal-instruction exception because scountovf is read-only
+      Every mhpmevent3h..31h access succeeds
+    bins: 5 accesses * (1 CSR, or 30 CSRs on RV32)
+  - name: cp_lcofi_m
+    goal: LCOFI is taken in M-mode iff it is pending, enabled and not delegated
+    description: |-
+      In M-mode:
+      mstatus.MIE = 1, mstatus.SIE = 1
+      For mip.LCOFIP = {0, 1} (written by software) x mie.LCOFIE = {0, 1} x mideleg.LCOFI = {0, 1}:
+          wait for RVMODEL_INTERRUPT_LATENCY
+    expectation: Trap to M-mode iff LCOFIP = 1, LCOFIE = 1 and mideleg.LCOFI = 0
+    bins: 2 pending * 2 enabled * 2 delegated
+  - name: cp_lcofip_priority_m
+    goal: LCOFI has the lowest priority of the M-mode interrupts
+    description: |-
+      In M-mode, xINH = 00000, mstatus.MIE = 1, mie = 0
+      For each competing interrupt in {MEIP, MTIP, MSIP, none} that the platform implements:
+          overflow mhpmcounter to raise LCOFIP, and raise the competing interrupt
+          wait with mie = all 0s, then with mie = all 1s
+    expectation: With mie = all 0s nothing is taken. With mie = all 1s the competing interrupt is taken first and LCOFI last.
+    bins: 2 mie values * 4 competing interrupts

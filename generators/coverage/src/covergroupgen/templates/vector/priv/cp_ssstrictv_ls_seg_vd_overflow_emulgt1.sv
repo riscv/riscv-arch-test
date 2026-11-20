@@ -7,7 +7,7 @@
     // Single bin matches every overflowing (lmul, nf, vd) tuple — each
     // segment cg only fires its own nf, so per-tuple bins would leave most
     // always dead.
-    vd_nf_lmul_overflow : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+    vd_nf_lmul_overflow : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                            ins.current.insn[31:29],
                            ins.current.insn[11:7]} {
         bins seg_lmul_overflow = {{3'b001, 3'b001, 5'd30},  // LMUL=2 nf=2 vd=30

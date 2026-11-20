@@ -8,13 +8,12 @@ coverpoints:
     expectation: Can't write 2 unless SXL is also 2 (64 b)
     bins: "2"
     rules:
-      - If S-mode is implemented, the set of legal values that the UXL field may assume excludes those that would cause UXLEN to be greater than SXLEN.
-  - name: |-
-      NOTE : Already covered in cp_scause_write_exception
-
-      cp_scause
+      - mstatus_uxl_legal_vals_smode
+  - name: cp_scause
     goal: scause accepts sofware-check and hardware error
     description: Write scause = 18, 19, read back
     expectation: Match ref model
     bins: "2"
+    notes: |-
+      NOTE : Already covered in cp_scause_write_exception
   - heading: "NOTE : Tests and coverage files are under the S.py and S_coverage.svh respectvely with the guard of  `ifdef SS1P13_SUPPORTED"

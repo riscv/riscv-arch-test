@@ -14,7 +14,7 @@ normative_rule_definitions:
   # If the hypervisor extension is additionally implemented, the henvcfg.ADUE field is
   # also writable.
   - name: Svadu_hypervisor_adue_writable
-    coverpoint: ["TODO: test in hypervisor tests"]
+    coverpoint: ["Svadu_H_cg/cp_henvcfg_menvcfg"]
 
   # When hardware updating of A/D bits is disabled, the Svade extension, which mandates
   # exceptions when A/D bits need be set, instead takes effect.
@@ -35,8 +35,13 @@ normative_rule_definitions:
   # address translation.
   # ADUE=1 here; Svade.yaml maps the ADUE=0 half.
   - name: menvcfg_adue_op
-    # Representative coverpoints; also the other Svadu_cg/{Abit,Dbit}_unset crosses
-    coverpoint: ["Svadu_cg/{Abit_unset_read_s, Dbit_unset_write_s}"]
+    # Representative coverpoints; also the other Svadu_cg/{Abit,Dbit}_unset crosses.
+    # fault_no_update checks that every leaf PTE check passes before the hardware update.
+    coverpoint:
+      [
+        "Svadu_cg/{Abit_unset_read_s, Dbit_unset_write_s}",
+        "Svadu_cg/fault_no_update_{exec,read,write}_s",
+      ]
 
   # After changing menvcfg.ADUE, executing an SFENCE.VMA instruction with rs1=x0 and
   # rs2=x0 suffices to synchronize address-translation caches with respect to the
@@ -52,4 +57,4 @@ normative_rule_definitions:
   # for implementations with the hypervisor extension, henvcfg.ADUE is read-only zero if
   # menvcfg.ADUE is zero.
   - name: menvcfg_adue_henvcfg_adue_rdonly0
-    coverpoint: ["TODO: test in hypervisor tests"]
+    coverpoint: ["Svadu_H_cg/cp_henvcfg_menvcfg"]

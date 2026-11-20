@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sm_Zicntr_H
+notes: |-
+  Sm_Zicntr_H boots to M-mode and delegates nothing.  The lower-mode counter accesses are in H_Zicntr.
+  The counters are cycle, time, instret and each hpmcounter that HPM_COUNTER_EN implements.  A counter has bins only when its MCOUNTENABLE_EN, HCOUNTENABLE_EN and SCOUNTENABLE_EN bits are set (writable).
+coverpoints:
+  - heading: in M mode
+  - name: cp_mhscounteren_access_m
+    goal: vscounters
+    description: Write walking 1s and 0s to all of mcounteren, hcounteren, scounteren (the same value in each).  Read from corresponding counter and counterh in M-mode and attempt to write it
+    expectation: Reads always succeed, because M-mode ignores the counter-enable registers; writes raise illegal instruction, because the counters are read-only
+    bins: "{csrr, csrw} x counters x counter-enable bit {0, 1}"
+  - name: cp_delta_m
+    goal: htimedelta does not affect time in M mode
+    description: "With htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, read time.   In RV32, this also involves htimedeltah and timeh; 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap. Note: do not check time directly against reference model, which might tick differently.  Only look at the range of values: compare against a baseline time read just before with htimedelta = 0."
+    expectation: 0 <= time - baseline < 2^30 in all circumstances
+    bins: 7 htimedelta values * time (and timeh on RV32)
+    notes: |-
+      On RV32 each read of time reads timeh, time and timeh again, and repeats if timeh changed, so a carry between the reads cannot fail the check

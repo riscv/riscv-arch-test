@@ -23,10 +23,12 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
 fvmvvf_config = InstructionTypeConfig(
-    instruction_class=["vector_fp"], required_params={"vd", "fs1"}, vector_data=VectorTypeConfig()
+    instruction_class=["vector_fp"], required_params={"vd", "fs1"}, vector_data=VectorTypeConfig(maskable=False)
 )
 fvmvsf_config = InstructionTypeConfig(
-    instruction_class=["vector_fp"], required_params={"vd", "fs1"}, vector_data=VectorTypeConfig(scalar_regs={"vd"})
+    instruction_class=["vector_fp"],
+    required_params={"vd", "fs1"},
+    vector_data=VectorTypeConfig(scalar_regs={"vd"}, maskable=False, require_zero_vstart=True),
 )
 
 

@@ -3,7 +3,7 @@
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
-        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
+        iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2)  {
         // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
         bins ones       = {vs_ones      };   //  = {(`EGS*SEW){1'b1}},

@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zawrs_common
+title: Zawrs Setup
+source: https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0
+coverpoints:
+  - heading: "spec:"
+  - heading: As implementations are free to implement WFI as a NOP, software must explicitly check for
+  - heading: any relevant pending but disabled interrupts in the code following an WFI, and should loop
+  - heading: back to the WFI if no suitable interrupt was detected. The mip or sip registers can be
+  - heading: interrogated to determine the presence of any interrupt in machine or supervisor mode
+  - heading: respectively.

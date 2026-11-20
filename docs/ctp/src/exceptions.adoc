@@ -1,112 +1,78 @@
 
 === Exceptions
 
-Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run <<t-ExceptionsSm-coverpoints,ExceptionsSm>>, <<t-ExceptionsS-coverpoints,ExceptionsS>>, <<t-ExceptionsU-coverpoints,ExceptionsU>>, and <<t-ExceptionsF-coverpoints,ExceptionsF>>.
+The Exceptions suite has one covergroup and test plan per privilege mode or extension supported, named Exceptions_<group>_cg.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run <<t-Exceptions_Sm-coverpoints,Exceptions_Sm>>, <<t-Exceptions_S-coverpoints,Exceptions_S>>, <<t-Exceptions_U-coverpoints,Exceptions_U>>, and <<t-Exceptions_F-coverpoints,Exceptions_F>>.
 Note that vector exceptions are in <<Vector Privileged Test Suites>>.
 
-==== ExceptionsSm Machine-Mode Exceptions
+==== Exceptions_Sm Machine-Mode Exceptions
 
 These tests are run on any configuration with machine mode that supports exceptions.
 
-include::{testplansdir}/priv/ExceptionsSm.adoc[]
+include::{testplansdir}/priv/Exceptions_Sm.adoc[]
 
-include::norm/ExceptionsSm_norm_rules.adoc[]
-
-==== ExceptionsS Supervisor-Mode Exceptions
+==== Exceptions_S Supervisor-Mode Exceptions
 
 These additional exception tests are run on configurations with supervisor mode.
 
-include::{testplansdir}/priv/ExceptionsS.adoc[]
+include::{testplansdir}/priv/Exceptions_S.adoc[]
 
-include::norm/ExceptionsS_norm_rules.adoc[]
-
-==== ExceptionsU User-Mode Exceptions
+==== Exceptions_U User-Mode Exceptions
 
 These additional exception tests are run on configurations with user mode.
 
-include::{testplansdir}/priv/ExceptionsU.adoc[]
+include::{testplansdir}/priv/Exceptions_U.adoc[]
 
-include::norm/ExceptionsU_norm_rules.adoc[]
-
-==== ExceptionsF Floating-Point Exceptions
+==== Exceptions_F Floating-Point Exceptions
 
 These additional exception tests are run on configurations with floating-point (at least the F extension).
 
-include::{testplansdir}/priv/ExceptionsF.adoc[]
+include::{testplansdir}/priv/Exceptions_F.adoc[]
 
-include::norm/ExceptionsF_norm_rules.adoc[]
+==== Exceptions_Zalrsc Atomic LR/SC Exceptions
 
-==== ExceptionsZalrsc Atomic LR/SC Exceptions
+include::{testplansdir}/priv/Exceptions_Zalrsc.adoc[]
 
-include::{testplansdir}/priv/ExceptionsZalrsc.adoc[]
+==== Exceptions_Zaamo Atomic Memory Operation Exceptions
 
-include::norm/ExceptionsZalrsc_norm_rules.adoc[]
+include::{testplansdir}/priv/Exceptions_Zaamo.adoc[]
 
-==== ExceptionsZaamo Atomic Memory Operation Exceptions
-
-include::{testplansdir}/priv/ExceptionsZaamo.adoc[]
-
-include::norm/ExceptionsZaamo_norm_rules.adoc[]
-
-==== ExceptionsZc Compressed Instruction Exceptions
+==== Exceptions_Zc Compressed Instruction Exceptions
 
 These additional exception tests are run on configurations with compressed instructions (C, Zca, Zcb, etc.).  They attempt to test all compressed loads and stores, but may throw an illegal instruction fault on compressed subword load/store if Zcb is not supported.
 
-include::{testplansdir}/priv/ExceptionsZc.adoc[]
+include::{testplansdir}/priv/Exceptions_Zc.adoc[]
 
-include::norm/ExceptionsZc_norm_rules.adoc[]
+==== Exceptions_ZicboS Supervisor-Mode CBO Exceptions
 
+include::{testplansdir}/priv/Exceptions_ZicboS.adoc[]
 
-==== ExceptionsZicboS Supervisor-Mode CBO Exceptions
+==== Exceptions_ZicboU User-Mode CBO Exceptions
 
-include::{testplansdir}/priv/ExceptionsZicboS.adoc[]
+include::{testplansdir}/priv/Exceptions_ZicboU.adoc[]
 
-include::norm/ExceptionsZicboS_norm_rules.adoc[]
+==== Exceptions_ZicboSm Machine-Mode CBO Exceptions
 
-==== ExceptionsZicboU User-Mode CBO Exceptions
+include::{testplansdir}/priv/Exceptions_ZicboSm.adoc[]
 
-include::{testplansdir}/priv/ExceptionsZicboU.adoc[]
+==== Exceptions_HSm and Exceptions_H Hypervisor Exceptions
 
-include::norm/ExceptionsZicboU_norm_rules.adoc[]
+Exceptions_HSm boots to M-mode with nothing delegated and checks that exceptions from VS and VU reach M-mode whatever
+hedeleg holds, ecall and ebreak from every mode, sret in VS-mode with mstatus.TSR = 1, HLV/HSV misaligned and access
+faults taken in M-mode, and mtval2/mtinst.  Exceptions_H boots to HS-mode, walks hedeleg for exceptions from VS and VU,
+checks that exceptions from HS and U ignore hedeleg, ecalls into HS-mode and VS-mode, vstvec, the virtual-instruction
+exceptions, HLV/HSV privilege and priority, and hstatus.GVA, htval and htinst.  The trap handlers check htinst and
+mtinst on every recorded trap.  The misaligned cp_xtinst cases run only on harts that trap misaligned accesses.
 
-==== ExceptionsZicboSm Machine-Mode CBO Exceptions
+include::{testplansdir}/priv/Exceptions_HSm.adoc[]
 
-include::{testplansdir}/priv/ExceptionsZicboSm.adoc[]
+include::{testplansdir}/priv/Exceptions_H.adoc[]
 
-include::norm/ExceptionsZicboSm_norm_rules.adoc[]
+==== Exceptions Normative Rules
 
-==== ExceptionsSv Virtual Memory Exceptions
+The rules apply to all Exceptions groups.
 
-include::{testplansdir}/priv/ExceptionsSv.adoc[]
+include::norm/Exceptions_norm_rules.adoc[]
 
-include::norm/ExceptionsSv_norm_rules.adoc[]
+==== Sv Virtual Memory Exceptions
 
-==== ExceptionsSvSm Virtual Memory Exceptions with M-mode State
-
-include::{testplansdir}/priv/ExceptionsSvSm.adoc[]
-
-include::norm/ExceptionsSvSm_norm_rules.adoc[]
-
-==== ExceptionsSvZalrsc Virtual Memory LR/SC Exceptions
-
-include::{testplansdir}/priv/ExceptionsSvZalrsc.adoc[]
-
-include::norm/ExceptionsSvZalrsc_norm_rules.adoc[]
-
-==== ExceptionsSvZalrscSm Virtual Memory LR/SC Exceptions with M-mode State
-
-include::{testplansdir}/priv/ExceptionsSvZalrscSm.adoc[]
-
-// include::norm/ExceptionsSvZalrscSm_norm_rules.adoc[]
-
-==== ExceptionsSvZaamo Virtual Memory AMO Exceptions
-
-include::{testplansdir}/priv/ExceptionsSvZaamo.adoc[]
-
-include::norm/ExceptionsSvZaamo_norm_rules.adoc[]
-
-==== ExceptionsSvZaamoSm Virtual Memory AMO Exceptions with M-mode State
-
-include::{testplansdir}/priv/ExceptionsSvZaamoSm.adoc[]
-
-// include::norm/ExceptionsSvZaamoSm_norm_rules.adoc[]
+The Sv suite contains the virtual-memory exception tests, in the `Sv_Exceptions*` groups. See <<Sv* Virtual Memory>>.

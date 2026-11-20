@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zicfiss_common
+title: Zicfiss Setup
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=568706494#gid=568706494
+coverpoints:
+  - heading: The tests run in M-mode (Zicfiss_Sm), S-mode (Zicfiss_S), U-mode (Zicfiss_U) and VS/VU-mode (Zicfiss_H). Each group has its own covergroup and table below.

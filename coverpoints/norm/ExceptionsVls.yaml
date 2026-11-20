@@ -27,7 +27,7 @@ normative_rule_definitions:
   # element that causes trimming of the vector length (but not past the original vector
   # length). The values of these spurious updates do not have to correspond to the values in
   # memory at the addressed memory locations.
-  - name: VECTOR_FF_PAST_TRAP
+  - name: vector_ff_past_trap
     coverpoint: ["ExceptionsVls_vle8ff_v_cg/cp_exceptionsv_ffLS_first_elm_trap"]
 
   # If a trap occurs during access to a segment, it is implementation-defined whether a
@@ -39,14 +39,14 @@ normative_rule_definitions:
   # accessing the zeroth segment, the trap is taken. If an exception is detected partway
   # through accessing a subsequent segment, vl is reduced to the index of that segment. In
   # both cases, it is implementation-defined whether a subset of the segment is loaded.
-  - name: VECTOR_FF_SEG_PARTIAL_ACCESS
+  - names: [vector_ls_seg_ff_unit_stride_op, vector_ff_seg_partial_access]
     coverpoint:
       ["ExceptionsVls_vlseg2e8ff_v_cg/cp_exceptionsv_ffLS_first_elm_trap"]
 
   # Fault-only-first segment loads may overwrite destination vector register group elements
   # past the point at which a trap is reported or past the point at which vector length is
   # trimmed.
-  - name: VECTOR_LS_SEG_FF_OVERLOAD
+  - name: vector_ls_seg_ff_overload
     coverpoint:
       ["ExceptionsVls_vlseg2e8ff_v_cg/cp_exceptionsv_ffLS_first_elm_trap"]
 

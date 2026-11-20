@@ -33,6 +33,8 @@ include::norm/Zksh_norm_rules.adoc[]
 
 ==== Zkt Constant-Time Instructions
 
-Not tested yet.
+Zkt requires the instructions it lists to have data-independent latency.
+Latency is not architecturally visible, and measuring it with a cycle counter is unreliable: instruction fetch, branch prediction, superscalar issue, and out-of-order execution make the count depend on where the instruction is and what surrounds it, not only on its operand data.
+Zkt is therefore out of scope for certification and is not tested (<<t-untested>>).
 
 include::norm/Zkt_norm_rules.adoc[]

@@ -62,9 +62,10 @@ exclude_extensions:
   - Interrupts_wfi_VS
   - Interrupts_wfi_timeout_VS
   - Interrupts_wfi_timeout_VU
-  # qemu-rv32-m: mstatus.SIE and mstatus.SPIE are writable without S-mode (not filed separately; the reproducer
-  # output in https://gitlab.com/qemu-project/qemu/-/work_items/4456 shows it).
+  # qemu-rv32-m, qemu-rv32-mu and qemu-rv64-mu: mstatus.SIE and mstatus.SPIE are writable without S-mode (not filed
+  # separately; the reproducer output in https://gitlab.com/qemu-project/qemu/-/work_items/4456 shows it).
   - Interrupts_Sm_trigger_M
+  - Interrupts_Sm_trigger_U
   # QEMU never enters VS-mode either in the hypervisor interrupt-CSR and guest external interrupt groups: it takes none
   # of the interrupts in VS-mode and reports every guest ecall as cause 9 (https://gitlab.com/qemu-project/qemu/-/issues/4620)
   - Interrupts_h_vs

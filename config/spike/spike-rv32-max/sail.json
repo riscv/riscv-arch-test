@@ -1112,6 +1112,6 @@
     },
     "Smdbltrp": { "supported": true },
     "Ssdbltrp": { "supported": true },
-    "Ssstrict": { "supported": true }
+    "Ssstrict": { "supported": false }
   }
 }

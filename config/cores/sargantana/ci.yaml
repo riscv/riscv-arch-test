@@ -215,6 +215,28 @@ exclude_extensions:
   # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L183-L189 (NEW-6)
   - Ssnpm_sv39_pmm10_edgecases
   - Ssnpm_sv39_pmm11_edgecases
+  # With vsatp = Bare, a VU-mode fetch and an HLV with hstatus.SPVP = 0 take a spurious page fault
+  # (https://github.com/bsc-loca/sargantana/issues/137)
+  - Ssnpm_H_pmm00_guest
+  - Ssnpm_H_pmm10_guest
+  - Ssnpm_H_pmm11_guest
+  - Ssnpm_H_pmm00_vu_masking
+  - Ssnpm_H_pmm10_vu_masking
+  - Ssnpm_H_pmm11_vu_masking
+  - Ssnpm_H_pmm00_hlv
+  # VU-mode accesses are masked by hstatus.HUPMM, where senvcfg.PMM must apply:
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L153-L157 (NEW-8)
+  - Ssnpm_H_sv39_sv39x4
+  # The masked address is sign-extended on every V = 1 access, even with vsatp = Bare, where it must be zero-extended:
+  # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L185-L186 (NEW-9)
+  - Ssnpm_H_bare_bare
+  # With vsatp = Bare and hgatp = Sv39x4, a VS-mode access or HLV whose tag masking clears takes a guest-page fault,
+  # with the unmasked address in stval (NEW-10)
+  - Ssnpm_H_bare_sv39x4
+  - Ssnpm_H_pmm10_hlv
+  - Ssnpm_H_pmm11_hlv
+  - Ssnpm_H_pmm10_vs_masking
+  - Ssnpm_H_pmm11_vs_masking
   # henvcfg.PBMTE is writable while menvcfg.PBMTE is 0, where it must be read-only zero: csr:csr_bsc.sv#L657 (NEW-7).
   # Only Smstateen-00 and Ssstateen-01 fail, but a numbered part cannot be excluded alone.
   - Smstateen-

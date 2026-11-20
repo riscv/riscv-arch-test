@@ -72,8 +72,8 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     }
 
     // Interrupt bits the mideleg pair coverpoints use: SEI, STI, SSI, and LCOFI with Sscofpmf.
-    // H hardwires mideleg bits 12, 10, 6, and 2 to 1, and Sail does not let M-level interrupts
-    // (MEI, MTI, MSI) be delegated, so both are left out.
+    // H hardwires mideleg bits 12, 10, 6, and 2 to 1, so they are left out. The M-level interrupts
+    // (MEI, MTI, MSI) are also left out: these coverpoints check delegation of S-level interrupts only.
     `ifdef SSCOFPMF_SUPPORTED
         `define SM_NOH_MASK 16'h2222
     `else
@@ -87,8 +87,8 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // crosses below intact.
     `ifdef S_SUPPORTED
         // The S-level and M-level bits; H hardwires the VS and SGEI bits to 1, so they are left out.
-        // ones is the readback of all 1s: every interrupt mideleg can delegate (Sail lets no M-level
-        // interrupt be delegated, so MEI, MTI, and MSI read 0).
+        // ones is the readback of all 1s: every interrupt mideleg can delegate. Bits that mideleg
+        // cannot delegate are read-only zero.
         mideleg_both: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG)[15:0] & (`SM_NOH_MASK | 16'h0888)) {
             bins ones  = {(`SM_NOH_MASK | 16'h0888) & `UDB_MIDELEG_DELEGATABLE_MASK};
             bins zeros = {16'h0};

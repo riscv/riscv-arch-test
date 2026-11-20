@@ -193,7 +193,8 @@
       // - "ExtContext_FourState" allows all values {Off, Initial, Clean, Dirty}.
       // - "ExtContext_TwoState" allows {Off, Dirty}, and writes of Initial and Clean get written as Dirty.
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
-      "fs_legal_states": "ExtContext_FourState",
+      // Optional F/D: set to "ExtContext_FourState" when enabling F/D
+      "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
     },
     // Set the version of the privileged ISA. `"Privileged_ISA_1_13"`
@@ -529,17 +530,18 @@
     "event_selectors": []
   },
   "extensions": {
+    // Optional in RVI20: set M, A, F, D to true to enable
     "M": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "A": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "F": {
       "mutable_misa": false,
-      "supported": true,
+      "supported": false,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
       //
@@ -553,7 +555,7 @@
     },
     "D": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "C": {
       "mutable_misa": false
@@ -718,14 +720,15 @@
     "Zicond": {
       "supported": false
     },
+    // Optional in RVI20: set Zicntr, Zicsr, Zifencei, Zihpm, Zmmul, Zaamo, Zalrsc to true to enable
     "Zicntr": {
-      "supported": true
+      "supported": false
     },
     "Zicsr": {
-      "supported": true
+      "supported": false
     },
     "Zifencei": {
-      "supported": true
+      "supported": false
     },
     "Zihintntl": {
       "supported": false
@@ -734,16 +737,16 @@
       "supported": false
     },
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
       "supported": false
     },
     "Zmmul": {
-      "supported": true
+      "supported": false
     },
     "Zaamo": {
-      "supported": true
+      "supported": false
     },
     "Zabha": {
       "supported": false
@@ -752,7 +755,7 @@
       "supported": false
     },
     "Zalrsc": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that each memory region has a MAG
     // PMA of at least 16 bytes.  If you enable this you also need to ensure
@@ -793,14 +796,15 @@
     "Zdinx": {
       "supported": false
     },
+    // Optional in RVI20: set Zca, Zcf, Zcd to true to enable
     "Zca": {
-      "supported": true
+      "supported": false
     },
     "Zcf": {
-      "supported": true
+      "supported": false
     },
     "Zcd": {
-      "supported": true
+      "supported": false
     },
     "Zcb": {
       "supported": false

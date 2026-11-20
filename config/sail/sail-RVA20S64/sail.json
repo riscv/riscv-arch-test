@@ -33,9 +33,10 @@
     // (i.e. are not read-only zero). A set bit specifies that the
     // corresponding counter is supported. The lowest 3 bits
     // (writable_hpm_counters[2 .. 0]) are ignored.
+    // Optional Zihpm: set to "0xFFFF_FFFF" when enabling Zihpm
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0"
     },
     // The bits in this value control whether the corresponding bits
     // of the `scounteren` CSR that control access to HPM counters,
@@ -44,9 +45,10 @@
     // `scounteren` is writable, otherwise the bit is read-only zero.
     // If Sscounterenw is supported the top 29 bits must be a superset of
     // the top 29 bits of `writable_hpm_counters`.
+    // Optional Zihpm: set to "0xFFFF_FFFF" when enabling Zihpm
     "scounteren_writable_bits": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_0007"
     },
     // The bits in this value control whether the corresponding bits
     // of the `mcounteren` CSR that control access to HPM counters,
@@ -54,9 +56,10 @@
     // modes, are read-only zero. A set bit specifies that the
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
+    // Optional Zihpm: set to "0xFFFF_FFFF" when enabling Zihpm
     "mcounteren_writable_bits": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_0007"
     },
     "hcounteren_writable_bits": {
       "len": 32,
@@ -728,8 +731,9 @@
     "Zihintpause": {
       "supported": false
     },
+    // Optional in RVA20S64: set to true to enable
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
       "supported": false
@@ -962,8 +966,9 @@
     "Sv39": {
       "supported": true
     },
+    // Optional in RVA20S64: set to true to enable
     "Sv48": {
-      "supported": true
+      "supported": false
     },
     "Sv57": {
       "supported": false

@@ -437,7 +437,7 @@
     // there is no vtype, so collapse SEW to one bin and keep the crosses.
 
 `ifdef ZVL32B_SUPPORTED
-    current_vsew : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "vtype", "vsew")[2:0] {
+    current_vsew : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_CURRENT, CSR_VTYPE, "vsew")[2:0] {
         bins e8  = {3'b000};
         bins e16 = {3'b001};
         bins e32 = {3'b010};

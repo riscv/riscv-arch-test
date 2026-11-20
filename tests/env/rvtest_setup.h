@@ -41,10 +41,7 @@
   .option norelax
 
   // Disable assembler/linker optimizations for RVTEST_BEGIN
-  // *** not sure this is still needed after recent simplifications.  dh 4/24/26
   .option push
-  .option rvc
-  .p2align UNROLLSZ
   .option norvc
 
   // Include model specific boot code
@@ -79,6 +76,17 @@
 /**** - Include headers that contain code (not macros) that would throw off the address ****/
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
 /*******************************************************************************************/
+// Turn off M-mode landing pads (mseccfg.MLPE) on the way out of a test. The end-of-test
+// and failure code, the epilogs and rvmodel_halt_fail are not written with landing pads,
+// so an indirect jump among them (such as jr T1 to rvmodel_halt_fail) would otherwise
+// raise a software-check exception when a test left MLPE set.
+.macro RVTEST_MLPE_OFF
+  #if defined(ZICFILP_SUPPORTED) && defined(STANDARD_SM_SUPPORTED) // runs in M-mode only with the T-SEE
+    LI(     T1, MSECCFG_MLPE)
+    csrc    mseccfg, T1
+  #endif
+.endm
+
 .macro RVTEST_CODE_END
   // Disable assembler/linker optimizations for RVTEST_CODE_END
   .option push
@@ -95,6 +103,10 @@
   j rvtest_code_end
   .p2align 12
   rvtest_code_end:
+  // The default unexpected-interrupt handlers reach rvtest_code_end and
+  // rvtest_code_end_mmode with jr T1, which sets ELP when Zicfilp is enabled in that
+  // mode, so both start with a 4-byte-aligned lpad 0 (a no-op otherwise).
+    auipc   x0, 0                     // lpad 0
 
   // The checks and epilogs read M-mode CSRs. The test body and the default
   // unexpected-interrupt handlers can reach this point in any mode. Callers in
@@ -102,12 +114,16 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_code_end_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
 
+  // An early exit from a trap handler (trap signature overflow, a handler abort or an
+  // unexpected interrupt) leaves a marker in T5. Report it first: the test did not run
+  // to completion, so the signature counts below would mismatch, and the signature
+  // pointer (DEFAULT_SIG_REG = sp) still holds the handler's save-area pointer.
   #ifdef STANDARD_SM_SUPPORTED
-    // A trap signature overflow (an unexpected trap in self-check mode) and abort_test leave
-    // the test from inside a trap handler, which has swapped the regular signature pointer, so
-    // they are reported before any signature check.
     check_trap_sig_overflow:
       LA(     T4, trap_sig_overflow)  // T5 holds trap_sig_overflow if the trap signature overflowed
       bne     T4, T5, check_abort_test
@@ -118,11 +134,27 @@
 
     check_abort_test:
       LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, check_trap_sig_offset
+      bne     T4, T5, check_unexpected_int
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR abort_test
       RVTEST_WORD_PTR abortstr
       .word   CSR_MEPC
+
+    // T5 holds unexpected_int_str if a default RVMODEL interrupt macro or the trap
+    // handler's default clear routine aborted the test (see RVTEST_DFLT_INT_HNDLR).
+    check_unexpected_int:
+      LA(     T4, unexpected_int_str)
+      bne     T4, T5, check_end_of_abnormal
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
+      call rvmodel_io_write_str
+      LA(a0, unexpected_int_str)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
+    check_end_of_abnormal:
 
     // Check trap signature offset to make sure the correct number of traps occurred.
     // This is a trap-framework diagnostic, not a normal signature check. Pass the
@@ -154,14 +186,14 @@
     // Check the regular signature offset to make sure the correct number of
     // signature updates occurred.
     check_regular_sig_offset:
-      LA(     T1, signature_base)
-      sub     T1, DEFAULT_SIG_REG, T1
+      LA(     T4, signature_base)       // T4, not T1: rvmodel_io_write_str clobbers T1-T3
+      sub     T4, DEFAULT_SIG_REG, T4
       LA(     T3, final_sig_offset)
     #ifdef RVTEST_SELFCHECK
       LREG    DEFAULT_TEMP_REG, 0(T3)
-      beq     DEFAULT_TEMP_REG, T1, check_regular_sig_offset_done
+      beq     DEFAULT_TEMP_REG, T4, check_regular_sig_offset_done
     #else
-      SREG    T1, 0(T3)
+      SREG    T4, 0(T3)
       beq     x0, x0, check_regular_sig_offset_done
     #endif
 
@@ -174,7 +206,7 @@
       call rvmodel_io_write_str
       LA(a0, regular_sig_offset_actual_str)
       call rvmodel_io_write_str
-      mv      a0, T1
+      mv      a0, T4
       li      a1, UDB_MXLEN
       jal     ra, failedtest_hex_to_str
       LA(a0, ascii_buffer)
@@ -193,7 +225,6 @@
     check_regular_sig_offset_done:
   #endif
 
-
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
   run_epilogs:
     LI(T5, 0)                         // normal termination
@@ -204,14 +235,21 @@
   // when mstatus.MDT=1 in M-mode. Callers in an M-mode trap handler use the _mmode entry.
   // An M-mode test body can also set MDT, so skip the switch if the last T-SBI mode
   // change was to M-mode.
+  // The failure paths in the trap handlers reach both entries with jr T1, which sets ELP
+  // when Zicfilp is enabled in that mode, so each starts with a 4-byte-aligned lpad 0.
+  .p2align 2
   rvtest_fail_epilogs:
+    auipc   x0, 0                     // lpad 0
     #ifdef STANDARD_SM_SUPPORTED
       LA(T1, rvtest_current_mode)
       LREG T1, 0(T1)
       beqz T1, rvtest_fail_epilogs_mmode
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_fail_epilogs_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
     LI(T5, 1)
 
   run_epilogs_body:
@@ -418,7 +456,7 @@
   // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
   // when the test next enables it. The _SU flavor reads mip through T-SBI.
   .macro RVTEST_WAIT_MIP_CLEAR_M mask
-    LA(a2, RVMODEL_INTERRUPT_LATENCY)
+    LI_FIXED_LEN(a2, RVMODEL_INTERRUPT_LATENCY)
     1:
     csrr a0, mip
     andi a0, a0, \mask
@@ -430,7 +468,7 @@
   .endm
 
   .macro RVTEST_WAIT_MIP_CLEAR_SU mask
-    LA(a2, RVMODEL_INTERRUPT_LATENCY)
+    LI_FIXED_LEN(a2, RVMODEL_INTERRUPT_LATENCY)
     1:
     RVTEST_TSBI_CSR_READ(CSR_MIP) // a0 = mip; a2 is preserved
     andi a0, a0, \mask
@@ -453,7 +491,7 @@
         csrr a0, time
       .endif
     #else
-      LA(a1, RVMODEL_MTIME_ADDRESS)
+      LI_FIXED_LEN(a1, RVMODEL_MTIME_ADDRESS)
       .ifc \mode, M
         #if UDB_MXLEN == 32
           .ifc \word, hi
@@ -491,7 +529,7 @@
         csrr a1, htimedelta
         add a0, a0, a1
         sltu a2, a0, a1 // a2 = carry
-        LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+        LI_FIXED_LEN(a1, RVMODEL_TIMER_INT_SOON_DELAY)
         add a0, a0, a1
         sltu a1, a0, a1
         add a2, a2, a1 // a2 = both carries
@@ -505,7 +543,7 @@
         RVTEST_READ_TIME \mode // a0 = time
         csrr a1, htimedelta
         add a0, a0, a1
-        LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+        LI_FIXED_LEN(a1, RVMODEL_TIMER_INT_SOON_DELAY)
         add a0, a0, a1
         csrw vstimecmp, a0
       #endif
@@ -518,30 +556,30 @@
 
     rvtest_set_mtime_int_soon_m:
       #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
-        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        LI_FIXED_LEN(a2, RVMODEL_TIMER_INT_SOON_DELAY)
         #if UDB_MXLEN == 32
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           li a0, -1
           sw a0, 4(a1) // mtimecmp high word = all 1s so the split update cannot fire early
-          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIME_ADDRESS)
           lw a0, 0(a1) // read mtime low word
           add a0, a0, a2 // add delay to mtime low word
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           sw a0, 0(a1) // write to mtimecmp low word
           mv a2, a0 // Save mtimecmp low word
-          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIME_ADDRESS)
           lw a0, 4(a1) // read mtime high word
-          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          LI_FIXED_LEN(a1, RVMODEL_TIMER_INT_SOON_DELAY)
           bgeu a2, a1, 1f // skip if didn't wrap
           addi a0, a0, 1 // increment mtime high word
           1:
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           sw a0, 4(a1) // write to mtimecmp high word
         #else
-          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIME_ADDRESS)
           ld a0, 0(a1) // read mtime
           add a0, a2, a0 // add delay to mtime
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           sd a0, 0(a1) // write to mtimecmp
         #endif
       #endif
@@ -549,7 +587,7 @@
 
     rvtest_set_mtime_int_m:
       #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
         sw zero, 4(a1)
         sw zero, 0(a1)
       #endif
@@ -557,7 +595,7 @@
 
     rvtest_clr_mtime_int_m:
       #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
         RVTEST_WAIT_MIP_CLEAR_M 0x80 // mip.MTIP
@@ -566,7 +604,7 @@
 
     rvtest_set_msw_int_m:
       #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MSIP_ADDRESS)
         li a2, 1
         sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
       #elif defined(RVMODEL_SET_MSW_INT_M)
@@ -576,7 +614,7 @@
 
     rvtest_clr_msw_int_m:
       #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MSIP_ADDRESS)
         sw zero, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
         RVTEST_WAIT_MIP_CLEAR_M 0x8 // mip.MSIP
       #elif defined(RVMODEL_CLR_MSW_INT_M)
@@ -598,7 +636,7 @@
 
     #ifdef SSTC_SUPPORTED
       rvtest_set_sstc_int_soon_m:
-        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        LI_FIXED_LEN(a2, RVMODEL_TIMER_INT_SOON_DELAY)
         #if UDB_MXLEN == 32
           li a0, -1
           csrw stimecmph, a0 // stimecmp high word = all 1s so the split update cannot fire early
@@ -606,7 +644,7 @@
           add a2, a0, a2 // stimecmp low word = time low word + delay
           csrw stimecmp, a2 // write low word of timer compare
           RVTEST_READ_TIME M, hi // a0 = time high word
-          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          LI_FIXED_LEN(a1, RVMODEL_TIMER_INT_SOON_DELAY)
           bgeu a2, a1, 1f // skip if didn't wrap
           addi a0, a0, 1 // increment time high word
           1:
@@ -753,35 +791,37 @@
 
   // Flavors to run from supervisor mode
 
-  #ifdef STANDARD_SM_SUPPORTED
+  // These reach machine interrupt sources only through T-SBI, so they need a T-SEE but not
+  // a standard M-mode; they are emitted whenever a lower privilege mode can call them.
+  #ifdef U_SUPPORTED
 
     rvtest_set_mtime_int_soon_su:
       #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
-        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        LI_FIXED_LEN(a2, RVMODEL_TIMER_INT_SOON_DELAY)
         #if UDB_MXLEN == 32
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           li a2, -1
           RVTEST_TSBI_SWP4 // sw a2, 4(a1) // mtimecmp high word = all 1s so the split update cannot fire early
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+          LI_FIXED_LEN(a1, RVMODEL_MTIME_ADDRESS)
+          LI_FIXED_LEN(a2, RVMODEL_TIMER_INT_SOON_DELAY)
           RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
           add a2, a0, a2 // add delay to mtime low word
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           RVTEST_TSBI_SW // sw a2, 0(a1) // write to mtimecmp low word
-          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIME_ADDRESS)
           RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
-          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          LI_FIXED_LEN(a1, RVMODEL_TIMER_INT_SOON_DELAY)
           bgeu a2, a1, 1f // skip if didn't wrap
           addi a0, a0, 1 // increment mtime high word
           1:
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           mv a2, a0 // Save mtimecmp high word
           RVTEST_TSBI_SWP4 // sw a2, 4(a1) // write to mtimecmp high word
         #else
-          LA(a1, RVMODEL_MTIME_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIME_ADDRESS)
           RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
           add a2, a2, a0 // add delay to mtime
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
           RVTEST_TSBI_SD // sd a2, 0(a1) // write to mtimecmp
         #endif
       #endif
@@ -790,7 +830,7 @@
 
     rvtest_set_mtime_int_su:
       #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, 0 // store zero
         #if UDB_MXLEN == 32
           RVTEST_TSBI_SW // sw a2, 0(a1)
@@ -803,7 +843,7 @@
 
     rvtest_clr_mtime_int_su:
       #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
         RVTEST_TSBI_SWP4 // sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
         RVTEST_WAIT_MIP_CLEAR_SU 0x80 // mip.MTIP
@@ -812,7 +852,7 @@
 
     rvtest_set_msw_int_su:
       #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MSIP_ADDRESS)
         li a2, 1
         RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
       #elif defined(RVMODEL_SET_MSW_INT)
@@ -822,7 +862,7 @@
 
     rvtest_clr_msw_int_su:
       #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
+        LI_FIXED_LEN(a1, RVMODEL_MSIP_ADDRESS)
         li a2, 0
         RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
         RVTEST_WAIT_MIP_CLEAR_SU 0x8 // mip.MSIP
@@ -842,12 +882,12 @@
         RVMODEL_CLR_MEXT_INT(a0, a1) // platform-specific interrupt controller
       #endif
       ret
-  #endif
+  #endif // U_SUPPORTED
 
   #ifdef S_SUPPORTED
     #ifdef SSTC_SUPPORTED
       rvtest_set_sstc_int_soon_s:
-        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        LI_FIXED_LEN(a2, RVMODEL_TIMER_INT_SOON_DELAY)
         #if UDB_MXLEN == 32
           li a0, -1
           csrw stimecmph, a0 // stimecmp high word = all 1s so the split update cannot fire early
@@ -855,7 +895,7 @@
           add a2, a0, a2 // stimecmp low word = time low word + delay
           csrw stimecmp, a2 // write low word of timer compare
           RVTEST_READ_TIME S, hi // a0 = time high word
-          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          LI_FIXED_LEN(a1, RVMODEL_TIMER_INT_SOON_DELAY)
           bgeu a2, a1, 1f // skip if didn't wrap
           addi a0, a0, 1 // increment time high word
           1:
@@ -934,7 +974,7 @@
 
     #ifdef SSTC_SUPPORTED
       rvtest_set_sstc_int_soon_u:
-        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        LI_FIXED_LEN(a2, RVMODEL_TIMER_INT_SOON_DELAY)
         #if UDB_MXLEN == 32
           li a1, -1
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // stimecmp high word = all 1s so the split update cannot fire early
@@ -943,7 +983,7 @@
           mv a1, a2
           RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write low word of timer compare
           RVTEST_READ_TIME U, hi // a0 = time high word
-          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          LI_FIXED_LEN(a1, RVMODEL_TIMER_INT_SOON_DELAY)
           bgeu a2, a1, 1f // skip if didn't wrap
           addi a0, a0, 1 // increment time high word
           1:
@@ -1045,6 +1085,14 @@
   .global rvtest_trap_count
   rvtest_trap_count:
     .dword 0
+
+  // Wait loop armed by wait_loop_arm() in the test generator: {first instruction of the loop,
+  // the loop's exit}, or an exit of 0 when no loop is armed. An interrupt clears the exit and,
+  // if it was taken inside the loop, resumes at the exit. See common_Xint_handler.
+  .p2align 3
+  .global rvtest_wait_loop
+  rvtest_wait_loop:
+    .dword 0, 0
 
   // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
   .p2align 3
@@ -1424,13 +1472,13 @@
 
       #ifdef RVMODEL_MTIMECMP_ADDRESS
         // Initialize mtimecmp to all 1s so that it does not generate a timer interrupt prematurely
-        LA(t0, RVMODEL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(t0, RVMODEL_MTIMECMP_ADDRESS)
         addi t1, zero, -1
         sw t1, 0(t0)
         sw t1, 4(t0)
       #elif !defined(RVTEST_SELFCHECK)
         // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
-        LA(t0, SAIL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(t0, SAIL_MTIMECMP_ADDRESS)
         addi t1, zero, -1
         sw t1, 0(t0)
         sw t1, 4(t0)
@@ -1438,7 +1486,7 @@
 
       #ifdef RVMODEL_MSIP_ADDRESS
         // Initialize msip to 0 to avoid generating a software interrupt prematurely
-        LA(t0, RVMODEL_MSIP_ADDRESS)
+        LI_FIXED_LEN(t0, RVMODEL_MSIP_ADDRESS)
         sw zero, 0(t0)
       #endif
 
@@ -1564,6 +1612,25 @@
             LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
             csrw hstateen0, t0
           #endif
+          // Setting mstateen1-3.SE above makes machine-level software responsible for initializing
+          // the writable bits of the matching hstateen and sstateen CSRs, whose reset values are
+          // unspecified (norm:hstateen_sstateen_zero_initialization).
+          // hstateen1-3.SE = 1: Enable access to sstateen1-3 from VS-mode, as hstateen0.SE0 does for
+          // sstateen0. Bit 63 (SE) is the only writable bit of hstateen1-3; the rest are reserved.
+          #if __riscv_xlen == 64
+            LI(t0, HSTATEEN_SSTATEEN)
+            csrw hstateen1, t0
+            csrw hstateen2, t0
+            csrw hstateen3, t0
+          #else    // RV32
+            LI(t0, HSTATEENH_SSTATEEN)
+            csrw hstateen1h, t0
+            csrw hstateen2h, t0
+            csrw hstateen3h, t0
+            csrw hstateen1, zero
+            csrw hstateen2, zero
+            csrw hstateen3, zero
+          #endif
         #endif
       #endif // H_SUPPORTED
     #endif // STANDARD_SM_SUPPORTED
@@ -1637,7 +1704,10 @@
   // Keep custom state and reserved bits disabled.
   #ifdef SSSTATEEN_SUPPORTED
     li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
-    csrs sstateen0, t0 // enable access from lower privilege mode
+    csrw sstateen0, t0 // enable access from lower privilege mode; clear the other writable bits
+    csrw sstateen1, zero // keep any writable bits of sstateen1-3 disabled
+    csrw sstateen2, zero
+    csrw sstateen3, zero
   #endif
 
   // Initialize S-mode CSRs

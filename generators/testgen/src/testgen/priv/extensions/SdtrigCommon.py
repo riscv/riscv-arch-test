@@ -44,11 +44,15 @@ MODE_PRIVBIT = {"Sm": 0b10000, "S": 0b01000, "U": 0b00100, "Vs": 0b00010, "Vu": 
 MODE_UDB_LETTER = {"Sm": "M", "S": "S", "U": "U", "Vs": "VS", "Vu": "VU"}
 # Test-framework behavior, not DUT parameters. The other Sdtrig defines come from the DUT's UDB configuration.
 SDTRIG_DEFINES = [
-    # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
-    "#define SDTRIG_IMPRECISE_XEPC",
     # itrigger/etrigger fire after the trap is taken, so xEPC is inside the S trap vector; the handler must not advance it
     "#define SDTRIG_XEPC_IN_VECTOR",
 ]
+# When this is defined, the trap handler does not record xEPC for breakpoints. Where an mcontrol6 trigger fires is
+# the implementation's choice (the spec only suggests a timing), so every section that can fire one defines this.
+# The icount, itrigger and etrigger sections do not: icount fires before the next instruction
+# (norm:Sdtrig_icount_pending) and itrigger/etrigger just before the first instruction of the trap handler
+# (norm:Sdtrig_itrigger_timing, norm:Sdtrig_etrigger_timing), so they check xEPC.
+SDTRIG_IMPRECISE_XEPC = "#define SDTRIG_IMPRECISE_XEPC"
 
 # ── mcontrol6 ───────────────────────────────────────────────────────────────
 # mcontrol6 mode bits; with all five set, bits 26:0 match priv_bits in SdtrigSm_trig_module_reg_cg
@@ -182,6 +186,12 @@ _ETRIGGER_MISMATCH_ONLY_CODES = (0, 3, 4, 6)
 _ETRIGGER_ECALL_CODE = {"Sm": 11, "S": 9, "U": 8}  # each mode raises only its own ecall
 _ETRIGGER_NOT_DELEGATABLE = (3, 11)  # medeleg[3] must stay 0 (trigger breakpoint goes to M); medeleg[11] is read-only 0
 _PAGE_FAULT_CODES = (12, 13, 15)
+# Access faults are raised only when the DUT defines an access-fault address for the access type
+_ACCESS_FAULT_MACROS = {
+    1: "RVMODEL_ACCESS_FAULT_ADDRESS_FETCH",
+    5: "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+    7: "RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
+}
 # Page faults need translation: Sv39 on RV64, Sv32 on RV32. A hart without it may have no satp (no S-mode), and
 # VA_TARGET is then a physical address that may be RAM (it is on rv32 harts), so no page fault can be raised.
 _PAGING_GUARD = "#if (__riscv_xlen == 64 && defined(SV39_SUPPORTED)) || (__riscv_xlen == 32 && defined(SV32_SUPPORTED))"
@@ -570,7 +580,7 @@ def _cause_exception(
             raise ValueError("addr_reg is required for instruction access fault")
 
         return [
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)",
             f"jalr ra, 0(x{addr_reg})",
             "nop # spacer; trap handler returns here",
         ]
@@ -582,13 +592,16 @@ def _cause_exception(
         if addr_reg is None:
             raise ValueError("addr_reg is required for load access fault")
 
-        return [f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)", f"lw x{data_reg}, 0(x{addr_reg}) # load access fault"]
+        return [
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
+            f"lw x{data_reg}, 0(x{addr_reg}) # load access fault",
+        ]
 
     if code == 7:
         if addr_reg is None or data_reg is None:
             raise ValueError("addr_reg and data_reg are required for store access fault")
         return [
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
             f"sw x0, 0(x{addr_reg}) # store access fault",
             "nop # spacer; trap handler returns here",
         ]
@@ -4048,6 +4061,9 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
                     label_cp = coverpoint if raised_code == code else f"{coverpoint}_other"
 
+                    fault_macro = _ACCESS_FAULT_MACROS.get(raised_code)
+                    if fault_macro:
+                        lines.append(f"#ifdef {fault_macro}")
                     if is_pf:
                         lines.append(_PAGING_GUARD)
                     lines.extend(
@@ -4074,6 +4090,8 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     lines.extend([*_sign_trap_count(data_reg, test_data), *_disable_trigger(mode)])
                     if is_pf:
                         lines.append("#endif // paging")
+                    if fault_macro:
+                        lines.append(f"#endif // {fault_macro}")
             lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code}")
         lines.extend(
             [f"#endif // {_mode_writable(mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
@@ -4158,6 +4176,9 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                         else:
                             label_cp = f"{coverpoint}_deleg" if medeleg_en else coverpoint
 
+                        fault_macro = _ACCESS_FAULT_MACROS.get(raised_code)
+                        if fault_macro:
+                            lines.append(f"#ifdef {fault_macro}")
                         if is_pf:
                             lines.append(_PAGING_GUARD)
                         lines.extend(
@@ -4178,6 +4199,8 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                         lines.extend([*_sign_trap_count(data_reg, test_data), *_disable_trigger("Sm")])
                         if is_pf:
                             lines.append("#endif // paging")
+                        if fault_macro:
+                            lines.append(f"#endif // {fault_macro}")
             lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code}")
         lines.extend(
             [f"#endif // {_mode_writable(target_mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
@@ -4199,7 +4222,12 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
             )
         )
         lines.extend(
-            ["#ifdef S_SUPPORTED", "#ifdef UDB_SDTRIG_S_WRITABLE", "#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5"]
+            [
+                "#ifdef S_SUPPORTED",
+                "#ifdef UDB_SDTRIG_S_WRITABLE",
+                "#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
+            ]
         )
         for ctx, gate, set_ctx, clear_ctx, cases in _trap_textra_blocks(cfg_reg, temp_reg):
             lines.extend([f"\n{gate}", *set_ctx])
@@ -4232,6 +4260,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
             lines.extend([*clear_ctx, f"#endif // {ctx} textra match"])
         lines.extend(
             [
+                "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
                 "#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
                 "#endif // UDB_SDTRIG_S_WRITABLE",
                 "#endif // S_SUPPORTED",
@@ -4517,9 +4546,11 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]], extra_defines: list[str]) -> None:
     """Register each Sdtrig section for ``mode`` ("Sm"/"S"/"U") as its own generator of suite ``Sdtrig{mode}``."""
     suite = f"Sdtrig{mode}"
+    # every section but icount, itrigger and etrigger skips xEPC on breakpoints
+    imprecise = [*extra_defines, SDTRIG_IMPRECISE_XEPC]
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_access(test_data: TestData) -> list[TestChunk]:
         """Access tests."""
@@ -4530,63 +4561,63 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
         # the crosses that sample them run in M-mode in both suites.
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
         )
         def make_sdtrig_csr(test_data: TestData) -> list[TestChunk]:
             """Trigger-module register tests."""
             return _with_trap_counts(_generate_csr_tests(test_data, mode))
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
         )
         def make_sdtrig_tcontrol(test_data: TestData) -> list[TestChunk]:
             """tcontrol tests."""
             return _with_trap_counts(_generate_tcontrol_tests(test_data, mode))
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
         )
         def make_sdtrig_address_matches(test_data: TestData) -> list[TestChunk]:
             """tdata2 address storage and translated execute-trigger tests."""
             return _with_trap_counts(_generate_address_matches_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_mcontrol6(test_data: TestData) -> list[TestChunk]:
         """mcontrol6 tests."""
         return _with_trap_counts(_generate_mcontrol6_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_match_size(test_data: TestData) -> list[TestChunk]:
         """mcontrol6 match x size tests (select = 1)."""
         return _with_trap_counts(_generate_match_size_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zvl32b"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zvl32b"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_vector(test_data: TestData) -> list[TestChunk]:
         """vector load/store tests."""
         return _with_trap_counts(_generate_vector_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zicbom"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zicbom"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zicbom(test_data: TestData) -> list[TestChunk]:
         """cbo.clean/flush/inval tests."""
         return _with_trap_counts(_generate_zicbom_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zicboz"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zicboz"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zicboz(test_data: TestData) -> list[TestChunk]:
         """cbo.zero tests."""
         return _with_trap_counts(_generate_zicboz_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zicbop"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zicbop"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zicbop(test_data: TestData) -> list[TestChunk]:
         """prefetch tests."""
@@ -4600,14 +4631,14 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
         return _with_trap_counts(_generate_icount_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zalrsc"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zalrsc"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zalrsc(test_data: TestData) -> list[TestChunk]:
         """lr/sc tests."""
         return _with_trap_counts(_generate_zalrsc_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=[*required_extensions, "Zaamo"], march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=[*required_extensions, "Zaamo"], march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_zaamo(test_data: TestData) -> list[TestChunk]:
         """AMO tests."""
@@ -4650,14 +4681,14 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
             suite,
             required_extensions=required_extensions if mode == "S" else [*required_extensions, "S"],
             march_extensions=[],
-            extra_defines=extra_defines,
+            extra_defines=imprecise,
         )
         def make_sdtrig_native_triggers(test_data: TestData) -> list[TestChunk]:
             """Breakpoint delegation tests."""
             return _with_trap_counts(_generate_native_triggers_tests(test_data, mode))
 
     @add_priv_test_generator(
-        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=imprecise
     )
     def make_sdtrig_textra(test_data: TestData) -> list[TestChunk]:
         """textra context-match tests."""

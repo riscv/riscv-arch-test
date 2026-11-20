@@ -6,7 +6,7 @@
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    rs1_top_bits_one_cross_sew8 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
+    rs1_top_bits_one_cross_sew8 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew")[1:0],  ins.current.rs1_val} {
         `ifdef UDB_MXLEN_32
         wildcard bins sew8      = {34'b00_????????_????????_????????_11111???};
         `endif

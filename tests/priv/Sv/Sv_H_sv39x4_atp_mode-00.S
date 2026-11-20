@@ -38,147 +38,147 @@ RVTEST_BEGIN
 //   unsupported MODE is ignored.  The other fields are zero, or the root table in VS-mode
 /////////////////////////////////
 
-  csrr x6, vsatp
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x0)
+  csrr x13, vsatp
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x0)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0:
-  csrw vsatp, x15
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x1000000000000000)
+  csrw vsatp, x14
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x1000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode1:
-  csrw vsatp, x15
+  csrw vsatp, x14
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x8, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode1, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode1_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x2000000000000000)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x2000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode2:
-  csrw vsatp, x15
-  csrr x9, vsatp
-  srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x14, x9
-  andi x9, x9, 1
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode2, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode2_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x3000000000000000)
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode2, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode2_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x3000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode3:
-  csrw vsatp, x15
-  csrr x14, vsatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
+  csrw vsatp, x14
+  csrr x15, vsatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode3, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode3_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x4000000000000000)
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode3, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode3_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x4000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode4:
-  csrw vsatp, x15
+  csrw vsatp, x14
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x8, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode4, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode4_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x5000000000000000)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x5000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode5:
-  csrw vsatp, x15
-  csrr x14, vsatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
+  LI(x9, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x9, x9, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x9, x9, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x9, x9, 0x400
 #endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode5, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode5_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x6000000000000000)
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode5, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode5_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x6000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode6:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x9, 1)    # Bare
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x9, x9, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x9, x9, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x9, x9, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode6, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode6_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x7000000000000000)
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode6, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode6_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x7000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
   LI(x9, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
   ori x9, x9, 0x100
@@ -189,270 +189,270 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7:
 #ifdef UDB_SV57_VSMODE_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x8000000000000000)
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x8000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8:
-  csrw vsatp, x15
+  csrw vsatp, x14
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8_str)
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8_str)
 #else
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x14, x9
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8_str)
 #endif
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0x9000000000000000)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0x9000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9:
-  csrw vsatp, x15
+  csrw vsatp, x14
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9_str)
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9_str)
 #else
-  csrr x14, vsatp
-  srli x14, x14, 60
-  LI(x9, 1)    # Bare
-#ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x9, x9, 0x100
-#endif
-#ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x9, x9, 0x200
-#endif
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x9, x9, 0x400
-#endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9_str)
-#endif
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0xa000000000000000)
-Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10:
-  csrw vsatp, x15
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10_str)
-#else
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x9, 1)    # Bare
-#ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x9, x9, 0x100
-#endif
-#ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x9, x9, 0x200
-#endif
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x9, x9, 0x400
-#endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10_str)
-#endif
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0xb000000000000000)
-Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode11:
-  csrw vsatp, x15
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x15, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9_str)
+#endif
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0xa000000000000000)
+Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10:
+  csrw vsatp, x14
+#ifdef UDB_SV57_VSMODE_TRANSLATION
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10_str)
+#else
+  csrr x8, vsatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39_VSMODE_TRANSLATION
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48_VSMODE_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57_VSMODE_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10_str)
+#endif
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0xb000000000000000)
+Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode11:
+  csrw vsatp, x14
+  csrr x9, vsatp
+  srli x9, x9, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39_VSMODE_TRANSLATION
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48_VSMODE_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57_VSMODE_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode11, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode11_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0xc000000000000000)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0xc000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode12:
-  csrw vsatp, x15
-  csrr x9, vsatp
-  srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  csrw vsatp, x14
+  csrr x15, vsatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x9, x14, x9
-  andi x9, x9, 1
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode12, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode12_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0xd000000000000000)
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode12, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode12_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0xd000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode13:
-  csrw vsatp, x15
+  csrw vsatp, x14
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x8, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode13, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode13_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0xe000000000000000)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0xe000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode14:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
+  LI(x9, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x9, x9, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x9, x9, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x9, x9, 0x400
 #endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode14, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode14_str)
-  LI(x15, 0x0)
-  csrw vsatp, x15
-  LI(x15, 0xf000000000000000)
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode14, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode14_str)
+  LI(x14, 0x0)
+  csrw vsatp, x14
+  LI(x14, 0xf000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
+  csrw vsatp, x14
+  csrr x15, vsatp
+  srli x15, x15, 60
+  LI(x9, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x9, x9, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x9, x9, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x9, x9, 0x400
 #endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x0)
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x0)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0:
-  csrw vsatp, x15
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x1000000000000000)
+  csrw vsatp, x14
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x1000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode1:
-  csrw vsatp, x15
+  csrw vsatp, x14
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x14, x9
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode1, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode1_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x2000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x2000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
+  csrw vsatp, x14
+  csrr x9, vsatp
+  srli x9, x9, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x3000000000000000)
+  srl x9, x8, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x3000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3:
-  csrw vsatp, x15
-  csrr x14, vsatp
-  srli x14, x14, 60
-  LI(x9, 1)    # Bare
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x9, x9, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x9, x9, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x9, x9, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x4000000000000000)
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x4000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
   LI(x9, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
   ori x9, x9, 0x100
@@ -463,84 +463,84 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4:
 #ifdef UDB_SV57_VSMODE_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x5000000000000000)
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x5000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5:
-  csrw vsatp, x15
+  csrw vsatp, x14
+  csrr x8, vsatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39_VSMODE_TRANSLATION
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48_VSMODE_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57_VSMODE_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x6000000000000000)
+Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6:
+  csrw vsatp, x14
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x8, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x6000000000000000)
-Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6:
-  csrw vsatp, x15
-  csrr x14, vsatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
-#endif
-#ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
-#endif
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
-#endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x7000000000000000)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x7000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
+  csrw vsatp, x14
+  csrr x9, vsatp
+  srli x9, x9, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x8000000000000000)
+  srl x9, x8, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x8000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8:
-  csrw vsatp, x15
+  csrw vsatp, x14
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8_str)
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8_str)
 #else
-  csrr x13, vsatp
-  srli x13, x13, 60
+  csrr x15, vsatp
+  srli x15, x15, 60
   LI(x9, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
   ori x9, x9, 0x100
@@ -551,521 +551,521 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8:
 #ifdef UDB_SV57_VSMODE_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8_str)
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8_str)
 #endif
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0x9000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0x9000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9:
-  csrw vsatp, x15
+  csrw vsatp, x14
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9_str)
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9_str)
 #else
-  csrr x9, vsatp
-  srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  csrr x15, vsatp
+  srli x15, x15, 60
+  LI(x9, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x9, x9, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x9, x9, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x9, x9, 0x400
 #endif
-  srl x9, x14, x9
-  andi x9, x9, 1
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9_str)
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9_str)
 #endif
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0xa000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0xa000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10:
-  csrw vsatp, x15
+  csrw vsatp, x14
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  # Read vsatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10_str)
+  # Read vsatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(vsatp, x6, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10_str)
 #else
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10_str)
 #endif
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0xb000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0xb000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode11:
-  csrw vsatp, x15
+  csrw vsatp, x14
   csrr x9, vsatp
   srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x14, x14, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x14, x14, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x14, x14, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x14, x9
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode11, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode11_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0xc000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0xc000000000000000)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x9, 1)    # Bare
-#ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x9, x9, 0x100
-#endif
-#ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x9, x9, 0x200
-#endif
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x9, x9, 0x400
-#endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0xd000000000000000)
-Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13:
-  csrw vsatp, x15
-  csrr x13, vsatp
-  srli x13, x13, 60
-  LI(x9, 1)    # Bare
-#ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x9, x9, 0x100
-#endif
-#ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x9, x9, 0x200
-#endif
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x9, x9, 0x400
-#endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0xe000000000000000)
-Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14:
-  csrw vsatp, x15
-  csrr x14, vsatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
-#endif
-#ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
-#endif
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
-#endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14_str)
-  LI(x15, 0x8000000000000000)
-  csrw vsatp, x15
-  LI(x15, 0xf000000000000000)
-Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode15:
-  csrw vsatp, x15
-  csrr x14, vsatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39_VSMODE_TRANSLATION
-  ori x13, x13, 0x100
-#endif
-#ifdef UDB_SV48_VSMODE_TRANSLATION
-  ori x13, x13, 0x200
-#endif
-#ifdef UDB_SV57_VSMODE_TRANSLATION
-  ori x13, x13, 0x400
-#endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode15_str)
-  csrw vsatp, x6
-  csrr x6, hgatp
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x0)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode0:
-  csrw hgatp, x15
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode0, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode0_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x1000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode1:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
-#endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode1, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode1_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x2000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode2:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
-#endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode2, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode2_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x3000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode3:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
-#endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode3, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode3_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x4000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode4:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x9, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x9, x9, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x9, x9, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x9, x9, 0x400
-#endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode4, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode4_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x5000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode5:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
-#endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode5, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode5_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x6000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode6:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
-#endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode6, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode6_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x7000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode7:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
-#endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode7, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode7_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x8000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8:
-  csrw hgatp, x15
-#ifdef UDB_SV39X4_TRANSLATION
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8_str)
-#else
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
-#endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8_str)
-#endif
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0x9000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9:
-  csrw hgatp, x15
-#ifdef UDB_SV48X4_TRANSLATION
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9_str)
-#else
-  csrr x9, hgatp
+  csrw vsatp, x14
+  csrr x9, vsatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39_VSMODE_TRANSLATION
+  ori x15, x15, 0x100
 #endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
+#ifdef UDB_SV48_VSMODE_TRANSLATION
+  ori x15, x15, 0x200
 #endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
+#ifdef UDB_SV57_VSMODE_TRANSLATION
+  ori x15, x15, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0xd000000000000000)
+Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13:
+  csrw vsatp, x14
+  csrr x15, vsatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
+#ifdef UDB_SV39_VSMODE_TRANSLATION
+  ori x8, x8, 0x100
 #endif
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0xa000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10:
-  csrw hgatp, x15
-#ifdef UDB_SV57X4_TRANSLATION
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10_str)
-#else
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
+#ifdef UDB_SV48_VSMODE_TRANSLATION
+  ori x8, x8, 0x200
 #endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
+#ifdef UDB_SV57_VSMODE_TRANSLATION
+  ori x8, x8, 0x400
 #endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0xe000000000000000)
+Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14:
+  csrw vsatp, x14
+  csrr x9, vsatp
+  srli x9, x9, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39_VSMODE_TRANSLATION
+  ori x15, x15, 0x100
 #endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10_str)
+#ifdef UDB_SV48_VSMODE_TRANSLATION
+  ori x15, x15, 0x200
 #endif
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0xb000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode11:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
+#ifdef UDB_SV57_VSMODE_TRANSLATION
+  ori x15, x15, 0x400
 #endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
-#endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode11, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode11_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0xc000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode12:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
+  srl x9, x15, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14_str)
+  LI(x14, 0x8000000000000000)
+  csrw vsatp, x14
+  LI(x14, 0xf000000000000000)
+Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode15:
+  csrw vsatp, x14
+  csrr x15, vsatp
+  srli x15, x15, 60
   LI(x9, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
+#ifdef UDB_SV39_VSMODE_TRANSLATION
   ori x9, x9, 0x100
 #endif
-#ifdef UDB_SV48X4_TRANSLATION
+#ifdef UDB_SV48_VSMODE_TRANSLATION
   ori x9, x9, 0x200
 #endif
-#ifdef UDB_SV57X4_TRANSLATION
+#ifdef UDB_SV57_VSMODE_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode12, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode12_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0xd000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode13:
-  csrw hgatp, x15
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode15_str)
+  csrw vsatp, x13
   csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x9, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x9, x9, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x9, x9, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x9, x9, 0x400
-#endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode13_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0xe000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode14:
-  csrw hgatp, x15
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x0)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode0:
+  csrw hgatp, x14
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode0, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode0_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x1000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode1:
+  csrw hgatp, x14
   csrr x9, hgatp
   srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x14, x9
+  srl x9, x15, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode1, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode1_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x2000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode2:
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x9, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x9, x9, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x9, x9, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x9, x9, 0x400
+#endif
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode2, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode2_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x3000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode3:
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x9, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x9, x9, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x9, x9, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x9, x9, 0x400
+#endif
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode3, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode3_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x4000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode4:
+  csrw hgatp, x14
+  csrr x9, hgatp
+  srli x9, x9, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x9, x15, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode4, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode4_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x5000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode5:
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x9, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x9, x9, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x9, x9, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x9, x9, 0x400
+#endif
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode5, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode5_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x6000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode6:
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x8, x8, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x8, x8, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x8, x8, 0x400
+#endif
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode6, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode6_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x7000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode7:
+  csrw hgatp, x14
+  csrr x9, hgatp
+  srli x9, x9, 60
+  LI(x8, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x8, x8, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x8, x8, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x8, x8, 0x400
+#endif
+  srl x9, x8, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode7, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode7_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x8000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8:
+  csrw hgatp, x14
+#ifdef UDB_SV39X4_TRANSLATION
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8_str)
+#else
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode8_str)
+#endif
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0x9000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9:
+  csrw hgatp, x14
+#ifdef UDB_SV48X4_TRANSLATION
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9_str)
+#else
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x8, x8, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x8, x8, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x8, x8, 0x400
+#endif
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode9_str)
+#endif
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0xa000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10:
+  csrw hgatp, x14
+#ifdef UDB_SV57X4_TRANSLATION
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10_str)
+#else
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x8, x8, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x8, x8, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x8, x8, 0x400
+#endif
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode10_str)
+#endif
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0xb000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode11:
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x9, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x9, x9, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x9, x9, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x9, x9, 0x400
+#endif
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode11, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode11_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0xc000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode12:
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x8, x8, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x8, x8, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x8, x8, 0x400
+#endif
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode12, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode12_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0xd000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode13:
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x9, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x9, x9, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x9, x9, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x9, x9, 0x400
+#endif
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode13, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode13_str)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0xe000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode14:
+  csrw hgatp, x14
+  csrr x9, hgatp
+  srli x9, x9, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode14, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode14_str)
-  LI(x15, 0x0)
-  csrw hgatp, x15
-  LI(x15, 0xf000000000000000)
+  LI(x14, 0x0)
+  csrw hgatp, x14
+  LI(x14, 0xf000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode15:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x9, 1)    # Bare
+  csrw hgatp, x14
+  csrr x9, hgatp
+  srli x9, x9, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x9, x9, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x9, x9, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x9, x9, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode15_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x0)
+  srl x9, x8, x9
+  andi x9, x9, 1
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode15, Sv_H_csr_cg_cp_hgatp_mode_field_start0_mode15_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x0)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode0:
-  csrw hgatp, x15
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode0, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode0_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x1000000000000000)
+  csrw hgatp, x14
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode0, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode0_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x1000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode1:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
   LI(x9, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
   ori x9, x9, 0x100
@@ -1076,38 +1076,38 @@ Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode1:
 #ifdef UDB_SV57X4_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode1, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode1_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x2000000000000000)
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode1, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode1_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x2000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode2:
-  csrw hgatp, x15
-  csrr x9, hgatp
-  srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x9, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
+  ori x9, x9, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
+  ori x9, x9, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
+  ori x9, x9, 0x400
 #endif
-  srl x9, x13, x9
-  andi x9, x9, 1
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode2, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode2_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x3000000000000000)
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode2, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode2_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x3000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode3:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
   LI(x9, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
   ori x9, x9, 0x100
@@ -1118,59 +1118,17 @@ Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode3:
 #ifdef UDB_SV57X4_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode3, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode3_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x4000000000000000)
+  srl x15, x9, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode3, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode3_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x4000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode4:
-  csrw hgatp, x15
-  csrr x9, hgatp
-  srli x9, x9, 60
-  LI(x13, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
-#endif
-  srl x9, x13, x9
-  andi x9, x9, 1
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode4, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode4_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x5000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode5:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
-#endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode5, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode5_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x6000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode6:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
   LI(x9, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
   ori x9, x9, 0x100
@@ -1181,200 +1139,221 @@ Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode6:
 #ifdef UDB_SV57X4_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x13, x9, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode6, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode6_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x7000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode7:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode4, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode4_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x5000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode5:
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode7, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode7_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x8000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8:
-  csrw hgatp, x15
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode5, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode5_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x6000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode6:
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8_str)
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode6, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode6_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x7000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode7:
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x15, x15, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x15, x15, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x15, x15, 0x400
+#endif
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode7, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode7_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x8000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8:
+  csrw hgatp, x14
+#ifdef UDB_SV39X4_TRANSLATION
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8_str)
 #else
   csrr x9, hgatp
   srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x13, x9
+  srl x9, x15, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode8_str)
 #endif
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0x9000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0x9000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9:
-  csrw hgatp, x15
+  csrw hgatp, x14
 #ifdef UDB_SV48X4_TRANSLATION
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9_str)
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9_str)
 #else
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x13, 1)    # Bare
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x14, x13, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9_str)
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode9_str)
 #endif
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0xa000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0xa000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10:
-  csrw hgatp, x15
+  csrw hgatp, x14
 #ifdef UDB_SV57X4_TRANSLATION
-  # Read hgatp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(hgatp, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10_str)
+  # Read hgatp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(hgatp, x6, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10_str)
 #else
-  csrr x9, hgatp
-  srli x9, x9, 60
-  LI(x13, 1)    # Bare
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x13, x13, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x13, x13, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x13, x13, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x9, x13, x9
-  andi x9, x9, 1
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10_str)
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode10_str)
 #endif
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0xb000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0xb000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode11:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
-  LI(x9, 1)    # Bare
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x9, x9, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x9, x9, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x9, x9, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode11, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode11_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0xc000000000000000)
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode11, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode11_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0xc000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode12:
-  csrw hgatp, x15
-  csrr x9, hgatp
-  srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
+  LI(x15, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
+  ori x15, x15, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
+  ori x15, x15, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
+  ori x15, x15, 0x400
 #endif
-  srl x9, x14, x9
-  andi x9, x9, 1
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode12, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode12_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0xd000000000000000)
+  srl x8, x15, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode12, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode12_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0xd000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode13:
-  csrw hgatp, x15
+  csrw hgatp, x14
   csrr x9, hgatp
   srli x9, x9, 60
-  LI(x14, 1)    # Bare
+  LI(x8, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
+  ori x8, x8, 0x100
 #endif
 #ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
+  ori x8, x8, 0x200
 #endif
 #ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
+  ori x8, x8, 0x400
 #endif
-  srl x9, x14, x9
+  srl x9, x8, x9
   andi x9, x9, 1
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode13, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode13_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0xe000000000000000)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0xe000000000000000)
 Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode14:
-  csrw hgatp, x15
-  csrr x13, hgatp
-  srli x13, x13, 60
-  LI(x14, 1)    # Bare
-#ifdef UDB_SV39X4_TRANSLATION
-  ori x14, x14, 0x100
-#endif
-#ifdef UDB_SV48X4_TRANSLATION
-  ori x14, x14, 0x200
-#endif
-#ifdef UDB_SV57X4_TRANSLATION
-  ori x14, x14, 0x400
-#endif
-  srl x13, x14, x13
-  andi x13, x13, 1
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode14_str)
-  LI(x15, 0x8000000000000000)
-  csrw hgatp, x15
-  LI(x15, 0xf000000000000000)
-Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode15:
-  csrw hgatp, x15
-  csrr x14, hgatp
-  srli x14, x14, 60
+  csrw hgatp, x14
+  csrr x8, hgatp
+  srli x8, x8, 60
   LI(x9, 1)    # Bare
 #ifdef UDB_SV39X4_TRANSLATION
   ori x9, x9, 0x100
@@ -1385,463 +1364,484 @@ Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode15:
 #ifdef UDB_SV57X4_TRANSLATION
   ori x9, x9, 0x400
 #endif
-  srl x14, x9, x14
-  andi x14, x14, 1
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode15_str)
-  csrw hgatp, x6
+  srl x8, x9, x8
+  andi x8, x8, 1
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode14, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode14_str)
+  LI(x14, 0x8000000000000000)
+  csrw hgatp, x14
+  LI(x14, 0xf000000000000000)
+Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode15:
+  csrw hgatp, x14
+  csrr x15, hgatp
+  srli x15, x15, 60
+  LI(x8, 1)    # Bare
+#ifdef UDB_SV39X4_TRANSLATION
+  ori x8, x8, 0x100
+#endif
+#ifdef UDB_SV48X4_TRANSLATION
+  ori x8, x8, 0x200
+#endif
+#ifdef UDB_SV57X4_TRANSLATION
+  ori x8, x8, 0x400
+#endif
+  srl x15, x8, x15
+  andi x15, x15, 1
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode15, Sv_H_csr_cg_cp_hgatp_mode_field_start8_mode15_str)
+  csrw hgatp, x13
 // Identity map the test image in the VS-stage
-  LA(x15, rvtest_code_begin)
-  srli x15, x15, 30
-  slli x15, x15, 55
-  srli x15, x15, 52
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x15, x15, x8
-  LA(x6, rvtest_code_begin)
-  srli x6, x6, 30
-  slli x6, x6, 28
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
-  LA(x15, rvtest_data_begin)
-  srli x15, x15, 30
-  slli x15, x15, 55
-  srli x15, x15, 52
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x15, x15, x8
-  LA(x6, rvtest_data_begin)
-  srli x6, x6, 30
-  slli x6, x6, 28
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
-  LA(x15, rvtest_sig_end)
-  srli x15, x15, 30
-  slli x15, x15, 55
-  srli x15, x15, 52
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x15, x15, x8
-  LA(x6, rvtest_sig_end)
-  srli x6, x6, 30
-  slli x6, x6, 28
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
-  LA(x15, rvtest_code_begin)
-  srli x15, x15, 39
-  slli x15, x15, 55
-  srli x15, x15, 52
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x15, x15, x8
-  LA(x6, rvtest_code_begin)
-  srli x6, x6, 39
-  slli x6, x6, 37
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
+  LA(x14, rvtest_code_begin)
+  srli x14, x14, 30
+  slli x14, x14, 55
+  srli x14, x14, 52
+  LA(x6, rvtest_Vroot_pg_tbl)
+  add x14, x14, x6
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x14)
+  LA(x14, rvtest_data_begin)
+  srli x14, x14, 30
+  slli x14, x14, 55
+  srli x14, x14, 52
+  LA(x6, rvtest_Vroot_pg_tbl)
+  add x14, x14, x6
+  LA(x13, rvtest_data_begin)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x14)
+  LA(x14, rvtest_sig_end)
+  srli x14, x14, 30
+  slli x14, x14, 55
+  srli x14, x14, 52
+  LA(x6, rvtest_Vroot_pg_tbl)
+  add x14, x14, x6
+  LA(x13, rvtest_sig_end)
+  srli x13, x13, 30
+  slli x13, x13, 28
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x14)
+  LA(x14, rvtest_code_begin)
+  srli x14, x14, 39
+  slli x14, x14, 55
+  srli x14, x14, 52
+  LA(x6, rvtest_Vroot_pg_tbl)
+  add x14, x14, x6
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 39
+  slli x13, x13, 37
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x14)
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.vvma
   hfence.gvma
   RVTEST_TSBI_GOTO_VSMODE
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x0)
+  LI(x6, 0x0)
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode0:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode0, Sv_H_csr_cg_cp_satp_mode_field_start0_mode0_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode0, Sv_H_csr_cg_cp_satp_mode_field_start0_mode0_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x1000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x1000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode1:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode1, Sv_H_csr_cg_cp_satp_mode_field_start0_mode1_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode1, Sv_H_csr_cg_cp_satp_mode_field_start0_mode1_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x2000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x2000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode2:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode2, Sv_H_csr_cg_cp_satp_mode_field_start0_mode2_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode2, Sv_H_csr_cg_cp_satp_mode_field_start0_mode2_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x3000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x3000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode3:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode3, Sv_H_csr_cg_cp_satp_mode_field_start0_mode3_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode3, Sv_H_csr_cg_cp_satp_mode_field_start0_mode3_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x4000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x4000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode4:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode4, Sv_H_csr_cg_cp_satp_mode_field_start0_mode4_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode4, Sv_H_csr_cg_cp_satp_mode_field_start0_mode4_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x5000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x5000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode5:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode5, Sv_H_csr_cg_cp_satp_mode_field_start0_mode5_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode5, Sv_H_csr_cg_cp_satp_mode_field_start0_mode5_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x6000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x6000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode6:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode6_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode6_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x7000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x7000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode7:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode7, Sv_H_csr_cg_cp_satp_mode_field_start0_mode7_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode7, Sv_H_csr_cg_cp_satp_mode_field_start0_mode7_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x8000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x8000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode8:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode8_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode8_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x9000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x9000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode9:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode9, Sv_H_csr_cg_cp_satp_mode_field_start0_mode9_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode9, Sv_H_csr_cg_cp_satp_mode_field_start0_mode9_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xa000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xa000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode10:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode10, Sv_H_csr_cg_cp_satp_mode_field_start0_mode10_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode10, Sv_H_csr_cg_cp_satp_mode_field_start0_mode10_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xb000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xb000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode11:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode11, Sv_H_csr_cg_cp_satp_mode_field_start0_mode11_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode11, Sv_H_csr_cg_cp_satp_mode_field_start0_mode11_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xc000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xc000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode12:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode12, Sv_H_csr_cg_cp_satp_mode_field_start0_mode12_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode12, Sv_H_csr_cg_cp_satp_mode_field_start0_mode12_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xd000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xd000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode13:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode13, Sv_H_csr_cg_cp_satp_mode_field_start0_mode13_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode13, Sv_H_csr_cg_cp_satp_mode_field_start0_mode13_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xe000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xe000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode14:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode14, Sv_H_csr_cg_cp_satp_mode_field_start0_mode14_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x0)
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode14, Sv_H_csr_cg_cp_satp_mode_field_start0_mode14_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x0)
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xf000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xf000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start0_mode15:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start0_mode15, Sv_H_csr_cg_cp_satp_mode_field_start0_mode15_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start0_mode15, Sv_H_csr_cg_cp_satp_mode_field_start0_mode15_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x0)
+  LI(x6, 0x0)
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode0:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode0, Sv_H_csr_cg_cp_satp_mode_field_start8_mode0_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode0, Sv_H_csr_cg_cp_satp_mode_field_start8_mode0_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x1000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x1000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode1:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode1, Sv_H_csr_cg_cp_satp_mode_field_start8_mode1_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode1, Sv_H_csr_cg_cp_satp_mode_field_start8_mode1_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x2000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x2000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode2:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode2, Sv_H_csr_cg_cp_satp_mode_field_start8_mode2_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode2, Sv_H_csr_cg_cp_satp_mode_field_start8_mode2_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x3000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x3000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode3:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode3, Sv_H_csr_cg_cp_satp_mode_field_start8_mode3_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode3, Sv_H_csr_cg_cp_satp_mode_field_start8_mode3_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x4000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x4000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode4:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode4, Sv_H_csr_cg_cp_satp_mode_field_start8_mode4_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode4, Sv_H_csr_cg_cp_satp_mode_field_start8_mode4_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x5000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x5000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode5:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode5, Sv_H_csr_cg_cp_satp_mode_field_start8_mode5_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode5, Sv_H_csr_cg_cp_satp_mode_field_start8_mode5_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x6000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x6000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode6:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode6_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode6_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x7000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x7000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode7:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode7, Sv_H_csr_cg_cp_satp_mode_field_start8_mode7_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode7, Sv_H_csr_cg_cp_satp_mode_field_start8_mode7_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x8000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x8000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode8:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode8_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode8_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0x9000000000000000)
-  or x8, x8, x6
+  LI(x6, 0x9000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode9:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode9, Sv_H_csr_cg_cp_satp_mode_field_start8_mode9_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode9, Sv_H_csr_cg_cp_satp_mode_field_start8_mode9_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xa000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xa000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode10:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode10, Sv_H_csr_cg_cp_satp_mode_field_start8_mode10_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode10, Sv_H_csr_cg_cp_satp_mode_field_start8_mode10_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xb000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xb000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode11:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode11, Sv_H_csr_cg_cp_satp_mode_field_start8_mode11_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode11, Sv_H_csr_cg_cp_satp_mode_field_start8_mode11_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xc000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xc000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode12:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode12, Sv_H_csr_cg_cp_satp_mode_field_start8_mode12_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode12, Sv_H_csr_cg_cp_satp_mode_field_start8_mode12_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xd000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xd000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode13:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode13, Sv_H_csr_cg_cp_satp_mode_field_start8_mode13_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode13, Sv_H_csr_cg_cp_satp_mode_field_start8_mode13_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xe000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xe000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode14:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode14, Sv_H_csr_cg_cp_satp_mode_field_start8_mode14_str)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  LI(x15, 0x8000000000000000)
-  or x15, x15, x6
-  csrw satp, x15
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode14, Sv_H_csr_cg_cp_satp_mode_field_start8_mode14_str)
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  LI(x14, 0x8000000000000000)
+  or x14, x14, x13
+  csrw satp, x14
   sfence.vma
-  LI(x8, 0xf000000000000000)
-  or x8, x8, x6
+  LI(x6, 0xf000000000000000)
+  or x6, x6, x13
 Sv_H_csr_cg_cp_satp_mode_field_start8_mode15:
-  csrw satp, x8
+  csrw satp, x6
   sfence.vma
-  # Read satp into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x8, Sv_H_csr_cg_cp_satp_mode_field_start8_mode15, Sv_H_csr_cg_cp_satp_mode_field_start8_mode15_str)
+  # Read satp into x6 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x6, Sv_H_csr_cg_cp_satp_mode_field_start8_mode15, Sv_H_csr_cg_cp_satp_mode_field_start8_mode15_str)
   csrw satp, zero
   sfence.vma
   RVTEST_TSBI_GOTO_SMODE

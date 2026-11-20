@@ -58,6 +58,7 @@ implemented_extensions:
   - { name: Zbkb, version: "= 1.0.0" }
   - { name: Zbkc, version: "= 1.0.0" }
   - { name: Zbkx, version: "= 1.0.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   # Zihpm is NOT implemented: it provides the unprivileged hpmcounter3..31 shadows for
   # S/U-mode access, and EH2 is machine-mode only. The M-mode mhpmcounter3..6 /

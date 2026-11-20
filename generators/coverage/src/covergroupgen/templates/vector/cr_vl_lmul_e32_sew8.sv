@@ -4,7 +4,7 @@
     // cr_vl_lmul_e32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_le_8_e32 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"){
+    cp_csr_vtype_lmul_all_le_8_e32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul"){
         // Value of VTYPE.vlmul (vector register grouping)
         `ifdef LMULf8_SUPPORTED
             bins eighth  = {5};
@@ -28,7 +28,7 @@
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_e32_sew8 : cross cp_csr_vtype_lmul_all_le_8_e32, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0)  {
+    cr_vl_lmul_e32_sew8 : cross cp_csr_vtype_lmul_all_le_8_e32, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 0)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
     }
 

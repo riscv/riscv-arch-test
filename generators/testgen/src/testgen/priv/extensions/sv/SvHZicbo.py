@@ -20,7 +20,7 @@ import itertools
 from collections.abc import Callable, Mapping
 from typing import NamedTuple
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.random import random_int
 from testgen.data.state import TestData
@@ -51,6 +51,10 @@ OPS = {
 }
 _FIELDS = {"zicbom": ("cbie", "cbcfe"), "zicboz": ("cbze",)}
 DATA = "svhzicbo_data"
+_FAULT = "RVMODEL_ACCESS_FAULT_ADDRESS_STORE"
+# A page-table read is an implicit load, so a table in the access-fault region uses the LOAD region
+_TABLE_FAULT = "RVMODEL_ACCESS_FAULT_ADDRESS_LOAD"
+_TABLE_GATE = f"defined({_FAULT}) && defined({_TABLE_FAULT})"
 _DATA_REGION = [".p2align 12", f"{DATA}:", f".fill 1024, 4, {CBO_ZERO_FILL:#x}"]
 
 
@@ -135,6 +139,7 @@ def case(
     va: str | None = None,
     guest: tuple[list[str], list[str]] = ([], []),
     ifdef: str | None = None,
+    gate: str | None = None,
 ) -> list[str]:
     """Write ``ptes``, form the guest virtual address of ``offset`` in the mapping of ``va`` (by default
     stage.data_va) at ``level``, and run the CBOs in ``mode`` between the ``guest`` setup and cleanup lines.  The home
@@ -171,7 +176,7 @@ def case(
     if check:
         lines.extend([f"lw x{val}, 0(x{addr})", write_sigupd(val, test_data)])
     test_data.int_regs.return_registers([addr, val])
-    return [f"#ifdef {ifdef}", *lines, "#endif"] if ifdef else lines
+    return gated([f"#ifdef {ifdef}", *lines, "#endif"] if ifdef else lines, gate)
 
 
 def _leaf_cases(
@@ -261,13 +266,15 @@ def _vs_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
         )
         if level < vs.levels - 1:
             # The non-leaf PTE above the leaf points at a table at guest physical address g_base, which is unmapped,
-            # or which a G-stage kilopage maps to the page of the access-fault region.  There, the access-fault case's
+            # or which a G-stage kilopage maps to the page of the load access-fault region.  There, the access-fault case's
             # index selects a PTE inside the region.
             table = [
                 *mapping(test_data, vs, level, user),
                 *_pte(test_data, vs, level + 1, PteFlags.nonleaf(), vs.data_va, g_base),
             ]
-            faulting_table = mapping(test_data, g, 0, PteFlags(user=True), vs.access_fault_pte_address(), va=g_base)
+            faulting_table = mapping(
+                test_data, g, 0, PteFlags(user=True), vs.access_fault_pte_address(_TABLE_FAULT), va=g_base
+            )
             lines.extend(
                 [
                     *case(
@@ -291,8 +298,8 @@ def _vs_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                         [*table, *faulting_table],
                         stage=vs,
                         level=level,
-                        va=vs.access_fault_walk_va(vs.data_va, level),
-                        ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                        va=vs.access_fault_walk_va(vs.data_va, level, _TABLE_FAULT),
+                        gate=_TABLE_GATE,
                     ),
                 ]
             )
@@ -330,11 +337,11 @@ def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                     "leaf_access_fault",
                     "cp_g_pa",
                     "store access fault on the final supervisor physical address",
-                    [*identity, *mapping(test_data, g, level, user, "RVMODEL_ACCESS_FAULT_ADDRESS")],
+                    [*identity, *mapping(test_data, g, level, user, _FAULT)],
                     stage=g,
                     level=level,
-                    offset="RVMODEL_ACCESS_FAULT_ADDRESS",
-                    ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                    offset=_FAULT,
+                    ifdef=_FAULT,
                 ),
             ]
         )
@@ -342,7 +349,7 @@ def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
         ptes = [
             *identity,
             *mapping(test_data, g, level, user),
-            *_pte(test_data, g, level + 1, PteFlags.nonleaf(), g.data_va, g.access_fault_pte_address()),
+            *_pte(test_data, g, level + 1, PteFlags.nonleaf(), g.data_va, g.access_fault_pte_address(_TABLE_FAULT)),
         ]
         lines.extend(
             case(
@@ -355,8 +362,8 @@ def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                 ptes,
                 stage=g,
                 level=level,
-                va=g.access_fault_walk_va(g.data_va, level),
-                ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
+                va=g.access_fault_walk_va(g.data_va, level, _TABLE_FAULT),
+                gate=_TABLE_GATE,
             )
         )
     return lines

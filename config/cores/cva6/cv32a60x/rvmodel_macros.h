@@ -1,5 +1,5 @@
 # rvmodel_macros.h
-# RVMODEL macro definitions for the OpenHW CVA6 cv32a65x and cv32a60x cores
+# RVMODEL macro definitions for the OpenHW CVA6 cv32a65x, cv32a60x, and cv32a6_imac_sv32 cores
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H
@@ -90,5 +90,11 @@
 
 #define RVMODEL_MTIME_ADDRESS     0x0200BFF8
 #define RVMODEL_MTIMECMP_ADDRESS  0x02004000
+
+##### Machine Software Interrupts #####
+
+#ifdef UDB_MSI_INTR_IMPL
+#define RVMODEL_MSIP_ADDRESS      0x02000000
+#endif
 
 #endif // _RVMODEL_MACROS_H

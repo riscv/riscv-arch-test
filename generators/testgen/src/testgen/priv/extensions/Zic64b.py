@@ -16,7 +16,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
-_OFFSETS: list[int] = list(range(0, 65, 4))
+_OFFSETS: list[int] = [0, 1, *range(4, 65, 4)]
 _SAMPLE_OFFSETS: list[int] = [0, 60, 64, 124]
 
 

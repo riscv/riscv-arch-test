@@ -649,24 +649,16 @@ An alternate idiom is to specify bitfields directly. For example, this is necess
 
 #### CSR Values
 
-The preferred idiom to check the value of a CSR bitfield is to use the `get_csr_val` function, specifying the CSR name and bitfield (`mstatus` and `tsr`). `` `SAMPLE_BEFORE `` means to get the value before the instruction retires, while `` `SAMPLE_AFTER `` means to get the value after the instruction retires. The CSR names and fields match the ISA manual, and are listed in `framework/src/act/fcov/coverage/RISCV_coverage_csr.svh`.
+The preferred idiom to check the value of a CSR bitfield is to use the `get_csr_field` function, specifying the CSR address and bitfield (`CSR_MSTATUS` and `tsr`). The `CSR_*` addresses come from the generated decode package. `` `SAMPLE_BEFORE `` means to get the value before the instruction retires, while `` `SAMPLE_AFTER `` means to get the value after the instruction retires. The field names match the ISA manual, and are listed in `framework/src/act/fcov/coverage/RISCV_coverage_csr.svh`.
 
 ```SystemVerilog
-    old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
+    old_mstatus_tsr: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "tsr")[0] {
     }
 ```
 
-`get_csr_val` returns an XLEN bit vector with the relevant value in the least significant bits. If you are planning to use implicit bins, make sure to extract the relevant bits so that it doesn't try to fill in bins for all XLEN bits.
+`get_csr_field` returns an XLEN bit vector with the relevant value in the least significant bits. If you are planning to use implicit bins, make sure to extract the relevant bits so that it doesn't try to fill in bins for all XLEN bits.
 
-CSRs with no bitfields can be accessed by passing the CSR name again as the field name.
-
-An alternate idiom is to refer to the RVVI structure, which holds the value of the CSR before (`ins.prev`) or after (`ins.current`) the instruction.
-
-```SystemVerilog
-    mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
-        bins notequal = {1};
-    }
-```
+Use `get_csr_val` with only the CSR address to read the whole CSR, such as `get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEPC)`.
 
 #### Cross-Products
 
@@ -677,13 +669,17 @@ The coverpoints given in the spreadsheet are usually cross-products of simpler c
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
-    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
-
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
-    cp_store_access_fault:                   cross storeops, illegal_address;
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_STORE};
+        }
+        cp_store_access_fault:               cross storeops, illegal_address;
+    `endif
 ```
+
+Access-fault tests and coverpoints use the `RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE>` macro for their type of access: `LOAD`, `STORE`, `FETCH`, `AMO` or `LRSC`. Do not use `RVMODEL_ACCESS_FAULT_ADDRESS` directly. Put each access type in its own `#ifdef` or `` `ifdef `` block, so a DUT that does not define one type still runs the others. A cross must not combine two access types; split it into one cross for each type. A DUT can give precise access faults for some access types and not for others. The privileged specification permits imprecise bus-error reporting instead of precise access faults (`norm:pma_imprecise_ok`). A DUT defines only the macros for types with precise access faults. See the `RVMODEL_ACCESS_FAULT_ADDRESS` notes in the CTP abstraction chapter.
 
 #### Extending RVVI
 

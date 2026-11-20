@@ -15,8 +15,14 @@ from pathlib import Path
 
 # Defines mirrored from rvmodel_macros.h into rvmodel_macros.svh. Each entry is
 # the macro name; only macros with an active (non-commented) #define are emitted.
+_ACCESS_FAULT_ADDRESS = "RVMODEL_ACCESS_FAULT_ADDRESS"
+_ACCESS_FAULT_VARIANTS: list[str] = [
+    f"{_ACCESS_FAULT_ADDRESS}_{kind}" for kind in ("LOAD", "STORE", "FETCH", "AMO", "LRSC")
+]
+
 _MIRRORED_DEFINES: list[str] = [
-    "RVMODEL_ACCESS_FAULT_ADDRESS",
+    _ACCESS_FAULT_ADDRESS,
+    *_ACCESS_FAULT_VARIANTS,
 ]
 
 # Defines mirrored as plain decimal numbers, so SystemVerilog can paste them into a name.
@@ -54,6 +60,10 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
         raise FileNotFoundError(f"rvmodel_macros.h not found at {input_h}")
 
     defines = _scan_h_defines(input_h, _MIRRORED_DEFINES + _MIRRORED_INDEX_DEFINES)
+    # Same defaults as tests/env/check_defines.h: each undefined variant takes the general value.
+    if _ACCESS_FAULT_ADDRESS in defines:
+        for name in _ACCESS_FAULT_VARIANTS:
+            defines.setdefault(name, defines[_ACCESS_FAULT_ADDRESS])
 
     guard = f"_RVMODEL_MACROS_SVH_{dut_include_dir.name.upper().replace('-', '_')}_"
     lines = [

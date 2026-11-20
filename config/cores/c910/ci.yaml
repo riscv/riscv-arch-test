@@ -24,15 +24,6 @@ exclude_extensions:
   - F-fnmsub.s
   # FMA misses UF in cp_underflow_after_rounding_fma_s.
   - ZicsrF
-  # A load bus error is an imprecise access fault (user manual 5.2.3).
-  - Exceptions_F
-  - Exceptions_S
-  - Exceptions_Sm
-  - Exceptions_U
-  - Exceptions_Zc
-  # The same imprecise load fault, and a store bus error raises no fault.
-  - Sv_Exceptions
-  - Sv_ExceptionsSm_sv39_exceptions
   # LR takes store/AMO causes 6, 7 and 15 (lsu/rtl/ct_lsu_ld_dc.v#L1239-L1247).
   - Exceptions_Zalrsc
   - Sv_ExceptionsZalrsc
@@ -52,6 +43,7 @@ exclude_extensions:
   - InterruptsSm_trigger_U
   # pmpaddr reads bits 8:0 as 0 in NAPOT mode and keeps bit 9 in OFF mode, against G = 10
   # (pmp/rtl/ct_pmp_regs.v#L520-L522).
+  - PMP_Sm_cfg_L_modify
   - PMP_Sm_grain
   # MPP holds the reserved value 2 (cp0/rtl/ct_cp0_regs.v#L1624-L1625); csrw minstret also counts itself; mret
   # keeps MPRV, which Sail cannot model.

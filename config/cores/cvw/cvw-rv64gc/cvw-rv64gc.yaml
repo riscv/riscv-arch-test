@@ -75,7 +75,9 @@ params:
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
-  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access" # XLEN size reservation
+  # cvw reserves the naturally aligned 8-byte granule whatever the access size (lrsc.sv), so lr.w A; sc.w A+4
+  # succeeds.  UDB has no option for that, and requires this value or the 64-byte one for Za64rs/Za128rs.
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
   LRSC_FAIL_ON_NON_EXACT_LRSC: false
@@ -91,7 +93,7 @@ params:
   # C params
   MUTABLE_MISA_C: false
   # B params
-  MUTABLE_MISA_B: true
+  MUTABLE_MISA_B: false
   # CBO params
   CACHE_BLOCK_SIZE: 64
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
@@ -100,7 +102,7 @@ params:
   # U params
   WFI_U_MODE: false
   MUTABLE_MISA_U: false
-  U_MODE_ENDIANNESS: dynamic
+  U_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
   # S params
@@ -109,7 +111,7 @@ params:
   STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 16
-  S_MODE_ENDIANNESS: dynamic
+  S_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   SXLEN: [64]
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
@@ -162,7 +164,7 @@ params:
       true,
     ]
   STVEC_MODES: [0, 1]
-  STVEC_BASE_ALIGNMENT_VECTORED: 4
+  STVEC_BASE_ALIGNMENT_VECTORED: 64
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0]
@@ -181,9 +183,11 @@ params:
   IMP_ID_VALUE: 0x100
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
-  MISALIGNED_LDST: true
+  MISALIGNED_LDST: true # in main memory; misaligned accesses through Svpbmt NC or IO pages still trap (mmu.sv)
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # check
+  # No misaligned atomicity granule: misaligned AMOs trap (MISALIGNED_AMO), and a misaligned store that crosses a
+  # cache line can write its first part before the second part faults (align.sv). Matches sail.json.
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
   MISALIGNED_SPLIT_STRATEGY: custom # We fetch the lower and upper parts with two XLEN-sized fetches and merge them
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
@@ -201,13 +205,13 @@ params:
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3 # Not explicit in config
   PHYS_ADDR_WIDTH: 56
-  M_MODE_ENDIANNESS: dynamic
+  M_MODE_ENDIANNESS: little # dynamic (bi-endian) in the RTL; restore when Sail and ACT test big-endian
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 64
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # reserved MODE 2/3: MODE is taken from bit 0 (csrm.sv)
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 6
   NUM_USABLE_PMP_ENTRIES: 16

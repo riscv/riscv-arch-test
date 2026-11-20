@@ -1332,11 +1332,13 @@
         bne a0, a1, 1f
         lhu a0, 2*REGWIDTH(DEFAULT_LINK_REG)
         LI(a1, CSR_MEPC)
-        beq a0, a1, 2f
+        beq a0, a1, failedtest_report_mmode
     1:
         # An M-mode test body may have set mstatus.MDT, which makes the ecall a double trap.
+        # A test that left M-mode with an xret also gets here; the M-mode trap handler then runs
+        # the mstatus write below in M-mode.
         LREG a0, rvtest_current_mode
-        beqz a0, 2f                         # the last T-SBI mode change was to M-mode
+        beqz a0, failedtest_report_mmode    # the last T-SBI mode change was to M-mode
         # M-mode resumes after the ecall at the same address, which it can fetch only if this
         # code runs at its link address. A test running it through another mapping of the
         # image reports in place, as before.
@@ -1344,8 +1346,9 @@
         LREG a1, failedtest_report_link
         bne a0, a1, print_failstr
         RVTEST_TSBI_GOTO_MMODE
-    2:
+    failedtest_report_mmode:
         LI(a0, MSTATUS_MPRV | MSTATUS_MIE)  # untranslated accesses; no interrupts while reporting
+    failedtest_report_mstatus:              # the M-mode trap handler resumes a trap here in M-mode
         csrc CSR_MSTATUS, a0
         LA(a0, failure_in_progress)
         LI(a1, 2)

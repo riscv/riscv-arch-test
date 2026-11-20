@@ -421,7 +421,7 @@
         LA(x6, failure_in_progress)
         lw x7, 0(x6)
         bnez x7, failedtest_reentered
-        li x7, 1
+        LI(x7, 1)
         sw x7, 0(x6)
 
     #ifdef RVTEST_VECTOR
@@ -1328,10 +1328,10 @@
         # after the jal; mepc means the report is already in M-mode, where a T-SBI ecall from
         # the M-mode trap handler would be a double trap with Smdbltrp.
         lw a0, failure_type
-        li a1, 3
+        LI(a1, 3)
         bne a0, a1, 1f
         lhu a0, 2*REGWIDTH(DEFAULT_LINK_REG)
-        li a1, CSR_MEPC
+        LI(a1, CSR_MEPC)
         beq a0, a1, 2f
     1:
         # An M-mode test body may have set mstatus.MDT, which makes the ecall a double trap.
@@ -1348,7 +1348,7 @@
         LI(a0, MSTATUS_MPRV | MSTATUS_MIE)  # untranslated accesses; no interrupts while reporting
         csrc CSR_MSTATUS, a0
         LA(a0, failure_in_progress)
-        li a1, 2
+        LI(a1, 2)
         sw a1, 0(a0)                        # reporting from M-mode
     #endif
       print_failstr:
@@ -1716,9 +1716,9 @@
         call rvmodel_io_write_str
 
         // ---- Trap signature overflow: show the trap that overflowed it ----
-        la a0, trap_diag_fail_str_ptr
+        LA(a0, trap_diag_fail_str_ptr)
         LREG x9, 0(a0)
-        la a0, trap_sig_overflowstr
+        LA(a0, trap_sig_overflowstr)
         beq x9, a0, trap_report_trap_context
 
         // ---- Subtype 0: Unknown / generic ----
@@ -2045,7 +2045,7 @@
         # Remove the trap handlers before halting. A report printed in place, outside M-mode,
         # switches to M-mode first.
         lw a0, failure_in_progress
-        li a1, 2
+        LI(a1, 2)
         bne a0, a1, failedtest_terminate_lower_mode
         LA(T2, rvtest_fail_epilogs_mmode)
         jr T2                          # x7 does not set ELP (Zicfilp)

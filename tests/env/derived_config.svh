@@ -122,6 +122,14 @@
   `define MSECCFG_SUPPORTED
 `endif
 
+// ---- CBO_SUPPORTED ----
+// Some cbo.* instruction exists: cbo.clean, cbo.flush and cbo.inval with Zicbom, cbo.zero with Zicboz.
+`ifdef ZICBOM_SUPPORTED
+  `define CBO_SUPPORTED
+`elsif ZICBOZ_SUPPORTED
+  `define CBO_SUPPORTED
+`endif
+
 // Cumulative privileged ISA version defines
 `ifdef S1P13P0_SUPPORTED
   `define S1P12P0_OR_LATER_SUPPORTED

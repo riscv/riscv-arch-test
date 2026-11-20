@@ -536,9 +536,20 @@ def gen_compressed_execute(test_data: TestData, case: str, coverpoint: Cross, re
     ]
 
 
-def gen_cbo(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    instructions = ("cbo.zero", "cbo.clean", "cbo.flush", "cbo.inval")
+def gen_cbo(
+    test_data: TestData,
+    case: str,
+    coverpoint: Cross,
+    region: str = "TEST_FOR_EXECUTION",
+    *,
+    instructions: tuple[str, ...] = ("cbo.zero", "cbo.clean", "cbo.flush", "cbo.inval"),
+    readback: bool = False,
+) -> list[str]:
+    """The cache-block instructions at ``region``. With ``readback``, store a nonzero word there first and
+    load it back right after cbo.zero."""
     lines = ["", f"LA(a4, {region})"]
+    if readback:
+        lines.extend(["LI(a5, -1)", "sw a5, 0(a4)"])
     for number, instruction in enumerate(instructions, start=1):
         lines.extend(
             [
@@ -547,6 +558,8 @@ def gen_cbo(test_data: TestData, case: str, coverpoint: Cross, region: str = "TE
                 write_sigupd(14, test_data),
             ]
         )
+        if readback and instruction == "cbo.zero":
+            lines.extend(["lw a5, 0(a4)", write_sigupd(15, test_data)])
     return lines
 
 

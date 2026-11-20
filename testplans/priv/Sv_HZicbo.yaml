@@ -116,7 +116,7 @@ coverpoints:
     description: |-
       The CBO faults of cp_vs_pte, cp_vs_gpa, cp_g_pte, cp_g_pa and cp_offset (VS-mode and VU-mode, hedeleg clear, so every trap is taken in HS-mode).
       The trap handler records htinst and accepts the reference model's value or zero.
-    expectation: htinst holds the CBO with rs1 cleared (cmo.adoc h_trans_cache), or zero.
+    expectation: htinst holds the CBO with rs1 cleared (H_trans_cache), or zero.
     bins: "{VS, VU} × CBO × {store page fault, store guest-page fault, store access fault} × transformed CBO in htinst"
   - heading: Not tested
   - goal: cbo.inval with every CBIE field 11 performs an invalidate

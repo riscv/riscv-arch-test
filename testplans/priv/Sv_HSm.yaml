@@ -67,7 +67,7 @@ coverpoints:
       No illegal-instruction exception: the menvcfg fields enable CBOs only in modes less privileged than M, and MPRV does not change the mode that executes the CBO.
       cp_mprv_cbo_vsatp: a store page fault where the page's U does not match MPP; otherwise no fault.
       cp_mprv_cbo_hgatp: a store guest-page fault only with MPRV = 1, MPV = 1 and MPP = S or U, because every G-stage access is a user access; otherwise no fault.
-      cp_mprv_cbo_mtinst: mtinst holds the CBO with rs1 cleared (cmo.adoc h_trans_cache), or zero.
+      cp_mprv_cbo_mtinst: mtinst holds the CBO with rs1 cleared (H_trans_cache), or zero.
     bins: |-
       cp_mprv_cbo_vsatp: M x CBO x MPRV = 1 x {VS, VU} x vsatp paged x hgatp Bare x menvcfg CBO fields clear x {no fault, store page fault}
       cp_mprv_cbo_hgatp: M x CBO x MPRV {0, 1} x {M, M with MPV = 1, HS, VS, U, VU} x vsatp Bare x hgatp paged x menvcfg CBO fields clear

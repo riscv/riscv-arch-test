@@ -2563,7 +2563,7 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         cbo_guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]} {
             bins store_guest_page_fault = {6'b110111};
         }
-        // mtinst holds the standard transformation of the CBO (cmo.adoc h_trans_cache), which the reference model
+        // mtinst holds the standard transformation of the CBO (H_trans_cache), which the reference model
         // writes; a hart may write zero instead, which the trap handler accepts
         mtinst_cbo : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTINST) iff (ins.current.csr_wb[CSR_MTINST]) {
             bins transformed = {[0:$]} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTINST) == {ins.current.insn[31:20], 5'b0, ins.current.insn[14:12], 5'b0, ins.current.insn[6:0]});
@@ -2747,8 +2747,8 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   }
   cp_offset: cross priv_mode_vs_vu, cbo, block_offset, offset_outcome, vsatp_paged, hgatp_paged;
 
-  // A CBO fault taken in HS-mode writes htinst with the standard transformation of the CBO (cmo.adoc
-  // h_trans_cache), which the reference model writes; a hart may write zero instead, which the trap handler accepts
+  // A CBO fault taken in HS-mode writes htinst with the standard transformation of the CBO (H_trans_cache),
+  // which the reference model writes; a hart may write zero instead, which the trap handler accepts
   cbo_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
     bins store_page_fault        = {6'b101111};
     bins store_guest_page_fault  = {6'b110111};

@@ -1118,6 +1118,6 @@
     // first trap taken will result in an unexpected double trap.
     "Smdbltrp": { "supported": false },
     "Ssdbltrp": { "supported": false },
-    "Ssstrict": { "supported": true }
+    "Ssstrict": { "supported": false }
   }
 }

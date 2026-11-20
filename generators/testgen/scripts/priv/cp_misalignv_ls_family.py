@@ -119,9 +119,8 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
              override_vd: int | None = None,
              addr_offset: int = 0) -> None:
     """Run one LS test with the given vsetivli + optional address offset."""
-    # Skip indexed LS whose index EEW exceeds XLEN (EEW=64 on RV32). Sail RV32 takes illegal-instruction on
-    # EEW=64 indexed LS while other sims take a load access fault, producing a mismatched mcause in the
-    # signature (see sail-riscv issue 1719).
+    # Skip indexed LS whose index EEW exceeds XLEN. V does not support EEW=64 index values on RV32, and an
+    # unsupported index EEW makes the instruction reserved.
     index_eew = common.getInstructionEEW(instruction) if instruction in common.indexed_ls_ins else None
     if index_eew is not None and index_eew > common.xlen:
         return

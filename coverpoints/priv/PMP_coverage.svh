@@ -1950,6 +1950,7 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   logic [95:0] pmpcfg_WR, pmpcfg_A;      // for next 48 Regions
   logic [14:0] pmpcfg_x, pmpcfg_l, pmp_hit;   // for first 15 Regions
   logic [47:0] pmpcfg_X, pmpcfg_L, pmp_HIT;   // for next 48 Regions
+  logic [63:0] napot_ones;                    // pmpaddr[G-2:0], which read as one in NAPOT mode
 
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
@@ -1975,13 +1976,14 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
     end
   `endif
 
+  napot_ones = (`UDB_PMP_GRANULARITY > 3) ? (64'd1 << (`UDB_PMP_GRANULARITY - 3)) - 1 : '0;
   for (int j = 0; j < 63; j++) begin
     pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
     // A PMPCFG.A transition changes PMPADDR readback without an explicit
     // PMPADDR write event in RVVI. Restore only the bits architecturally
     // fixed to one in NAPOT mode at this grain; writable address bits stay intact.
-    if ((`UDB_PMP_GRANULARITY > 3) && (pmpcfg[j][4:3] == 2'b11))
-      pmpaddr[j] |= (64'd1 << (`UDB_PMP_GRANULARITY - 3)) - 1;
+    if (pmpcfg[j][4:3] == 2'b11)
+      pmpaddr[j] |= napot_ones[`UDB_MXLEN-1:0];
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

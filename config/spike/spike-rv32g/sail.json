@@ -278,7 +278,7 @@
         "amo": {
           "Some": "AccessFault"
         },
-        "lrsc": { "Some": "AccessFault" }
+        "lrsc": { "None": null }
       },
       // If multiple memory operations are needed, this controls whether they
       // are done in increasing or decreasing address order. This is architecturally
@@ -1112,6 +1112,6 @@
     // first trap taken will result in an unexpected double trap.
     "Smdbltrp": { "supported": false },
     "Ssdbltrp": { "supported": false },
-    "Ssstrict": { "supported": true }
+    "Ssstrict": { "supported": false }
   }
 }

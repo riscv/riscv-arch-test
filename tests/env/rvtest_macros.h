@@ -142,56 +142,74 @@
     add _TR1, _TR1, _TR0                                        ;\
     SREG _PAR, 0(_TR1)                                          ;
 
-#define PTE_SETUP_SV32(PA_LBL, PERMS, VA, level)                ;\
-    LA(a0, PA_LBL)                                              ;\
+// The PTE_SETUP_SV* and SUPERPAGE_PTE_SETUP_SV* macros load PA_LBL with LA. Their _FIXED variants load PA with
+// LI_FIXED_LEN, for an RVMODEL_* address that LA cannot reach and whose code size must not depend on the DUT.
+#define _PTE_SETUP_SV32(LOAD, PA, PERMS, VA, level)             ;\
+    LOAD(a0, PA)                                                ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                   ;
+#define PTE_SETUP_SV32(PA_LBL, PERMS, VA, level)       _PTE_SETUP_SV32(LA, PA_LBL, PERMS, VA, level)
+#define PTE_SETUP_SV32_FIXED(PA, PERMS, VA, level)     _PTE_SETUP_SV32(LI_FIXED_LEN, PA, PERMS, VA, level)
 
-#define SUPERPAGE_PTE_SETUP_SV32(PA_LBL, PERMS, VA, level)      ;\
-    LA(a0, (PA_LBL))                                            ;\
+#define _SUPERPAGE_PTE_SETUP_SV32(LOAD, PA, PERMS, VA, level)   ;\
+    LOAD(a0, (PA))                                              ;\
     srli a0, a0, 22                                             ;\
     slli a0, a0, 22                                             ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                   ;
+#define SUPERPAGE_PTE_SETUP_SV32(PA_LBL, PERMS, VA, level)   _SUPERPAGE_PTE_SETUP_SV32(LA, PA_LBL, PERMS, VA, level)
+#define SUPERPAGE_PTE_SETUP_SV32_FIXED(PA, PERMS, VA, level) _SUPERPAGE_PTE_SETUP_SV32(LI_FIXED_LEN, PA, PERMS, VA, level)
 
-#define PTE_SETUP_SV39(PA_LBL, PERMS, VA, level)                ;\
-    LA(a0, PA_LBL)                                              ;\
+#define _PTE_SETUP_SV39(LOAD, PA, PERMS, VA, level)             ;\
+    LOAD(a0, PA)                                                ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv39)             ;
+#define PTE_SETUP_SV39(PA_LBL, PERMS, VA, level)       _PTE_SETUP_SV39(LA, PA_LBL, PERMS, VA, level)
+#define PTE_SETUP_SV39_FIXED(PA, PERMS, VA, level)     _PTE_SETUP_SV39(LI_FIXED_LEN, PA, PERMS, VA, level)
 
-#define SUPERPAGE_PTE_SETUP_SV39(PA_LBL, PERMS, VA, level)      ;\
+#define _SUPERPAGE_PTE_SETUP_SV39(LOAD, PA, PERMS, VA, level)   ;\
     .set PA_SHIFT, (level*9)+12                                 ;\
-    LA(a0, (PA_LBL))                                            ;\
+    LOAD(a0, (PA))                                              ;\
     srli a0, a0, PA_SHIFT                                       ;\
     slli a0, a0, PA_SHIFT                                       ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv39)             ;
+#define SUPERPAGE_PTE_SETUP_SV39(PA_LBL, PERMS, VA, level)   _SUPERPAGE_PTE_SETUP_SV39(LA, PA_LBL, PERMS, VA, level)
+#define SUPERPAGE_PTE_SETUP_SV39_FIXED(PA, PERMS, VA, level) _SUPERPAGE_PTE_SETUP_SV39(LI_FIXED_LEN, PA, PERMS, VA, level)
 
-#define PTE_SETUP_SV48(PA_LBL, PERMS, VA, level)                ;\
-    LA(a0, PA_LBL)                                              ;\
+#define _PTE_SETUP_SV48(LOAD, PA, PERMS, VA, level)             ;\
+    LOAD(a0, PA)                                                ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv48)             ;
+#define PTE_SETUP_SV48(PA_LBL, PERMS, VA, level)       _PTE_SETUP_SV48(LA, PA_LBL, PERMS, VA, level)
+#define PTE_SETUP_SV48_FIXED(PA, PERMS, VA, level)     _PTE_SETUP_SV48(LI_FIXED_LEN, PA, PERMS, VA, level)
 
-#define SUPERPAGE_PTE_SETUP_SV48(PA_LBL, PERMS, VA, level)      ;\
+#define _SUPERPAGE_PTE_SETUP_SV48(LOAD, PA, PERMS, VA, level)   ;\
     .set PA_SHIFT, (level*9)+12                                 ;\
-    LA(a0, (PA_LBL))                                            ;\
+    LOAD(a0, (PA))                                              ;\
     srli a0, a0, PA_SHIFT                                       ;\
     slli a0, a0, PA_SHIFT                                       ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv48)             ;
+#define SUPERPAGE_PTE_SETUP_SV48(PA_LBL, PERMS, VA, level)   _SUPERPAGE_PTE_SETUP_SV48(LA, PA_LBL, PERMS, VA, level)
+#define SUPERPAGE_PTE_SETUP_SV48_FIXED(PA, PERMS, VA, level) _SUPERPAGE_PTE_SETUP_SV48(LI_FIXED_LEN, PA, PERMS, VA, level)
 
-#define PTE_SETUP_SV57(PA_LBL, PERMS, VA, level)                ;\
-    LA(a0, PA_LBL)                                              ;\
+#define _PTE_SETUP_SV57(LOAD, PA, PERMS, VA, level)             ;\
+    LOAD(a0, PA)                                                ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv57)             ;
+#define PTE_SETUP_SV57(PA_LBL, PERMS, VA, level)       _PTE_SETUP_SV57(LA, PA_LBL, PERMS, VA, level)
+#define PTE_SETUP_SV57_FIXED(PA, PERMS, VA, level)     _PTE_SETUP_SV57(LI_FIXED_LEN, PA, PERMS, VA, level)
 
-#define SUPERPAGE_PTE_SETUP_SV57(PA_LBL, PERMS, VA, level)      ;\
+#define _SUPERPAGE_PTE_SETUP_SV57(LOAD, PA, PERMS, VA, level)   ;\
     .set PA_SHIFT, (level*9)+12                                 ;\
-    LA(a0, (PA_LBL))                                            ;\
+    LOAD(a0, (PA))                                              ;\
     srli a0, a0, PA_SHIFT                                       ;\
     slli a0, a0, PA_SHIFT                                       ;\
     LI(a1, PERMS)                                               ;\
     PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv57)             ;
+#define SUPERPAGE_PTE_SETUP_SV57(PA_LBL, PERMS, VA, level)   _SUPERPAGE_PTE_SETUP_SV57(LA, PA_LBL, PERMS, VA, level)
+#define SUPERPAGE_PTE_SETUP_SV57_FIXED(PA, PERMS, VA, level) _SUPERPAGE_PTE_SETUP_SV57(LI_FIXED_LEN, PA, PERMS, VA, level)
 
 #define PTE_PERMUPD_RV32(_PR, _TR0, _TR1, VA, level)            ;\
     .if (level==1)                                              ;\

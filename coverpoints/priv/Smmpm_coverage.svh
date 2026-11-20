@@ -73,7 +73,7 @@
 
     // cp_pmm_addr_mode_jalr — not guarded by S_SUPPORTED; implicit fetch is
     // never pointer-masked regardless of PMM or MXR availability.
-    cp_pmm_jalr: cross priv_mode_m, pmm, a_upper_bits, jalr_insn;
+    cp_pmm_jalr: cross priv_mode_m, pmm, a_upper_bits_jalr, jalr_insn;
 
     `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
         cp_pmm_mxr: cross priv_mode_m, pmm, mxr_bit, a_upper_bits, sw_lw_insn;

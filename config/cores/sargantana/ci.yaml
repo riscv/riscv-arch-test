@@ -242,6 +242,10 @@ exclude_extensions:
   - Smstateen-
   - Ssstateen-
   - Svpbmt_H_sv39_vs_pbmt
+  # A cbo.flush or cbo.zero to a PBMT = IO page never completes, so the core stops committing. The same CBOs to a
+  # PBMT = NC page complete.
+  - Svpbmt_Zicbom_sv39
+  - Svpbmt_Zicboz_sv39
   # With hgatp = Bare, a 64 KiB VS-stage NAPOT page translates every address to its first 4 KiB page, as for
   # superpages (https://github.com/bsc-loca/sargantana/issues/136)
   - Svnapot_H_sv39x4_napot

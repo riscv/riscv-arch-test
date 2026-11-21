@@ -1245,30 +1245,16 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         }
     `endif
 
-    `ifdef UDB_MEDELEG_DELEGATABLE_15
-        store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE) iff (ins.trap == 1) {
-            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
-        }
-    `else
-        // medeleg[15] is read-only 0, so store/AMO page faults are taken in M-mode
-        store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) iff (ins.trap == 1) {
-            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
-        }
-    `endif
+    store_page_fault: coverpoint s_trap(ins) {
+        bins store_amo_page_fault = {6'b101111};
+    }
     // Only reachable when the DUT has an address that faults: its sole bin is the
     // store/AMO access fault cause, and its only consumers are the guarded
     // cp_*_to_nonexistent_pa_cbo_* crosses below.
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        `ifdef UDB_MEDELEG_DELEGATABLE_7
-            store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE) iff (ins.trap == 1) {
-                bins store_amo_access_fault = {STORE_AMO_ACCESS_FAULT};
-            }
-        `else
-            // medeleg[7] is read-only 0, so store/AMO access faults are taken in M-mode
-            store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) iff (ins.trap == 1) {
-                bins store_amo_access_fault = {STORE_AMO_ACCESS_FAULT};
-            }
-        `endif
+        store_acc_fault: coverpoint s_trap(ins) {
+            bins store_amo_access_fault = {6'b100111};
+        }
     `endif
     sum_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SSTATUS, "sum")[0]{
         bins notset = {0};

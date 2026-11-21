@@ -9,6 +9,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SVNAPOT
+
+`include "general/RISCV_coverage_hypervisor.svh"
 covergroup Svnapot_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -103,37 +105,15 @@ covergroup Svnapot_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    `ifdef UDB_MEDELEG_DELEGATABLE_12
-        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
-        }
-    `else
-        // medeleg[12] is read-only 0, so instruction page faults are taken in M-mode.  A fetch fault is logged on the
-        // record before it without TRAP, so the mcause write marks it.
-        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
-            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.csr_wb[CSR_MCAUSE]);
-        }
-    `endif
-    `ifdef UDB_MEDELEG_DELEGATABLE_13
-        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
-        }
-    `else
-        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
-        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
-            bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
-        }
-    `endif
-    `ifdef UDB_MEDELEG_DELEGATABLE_15
-        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
-        }
-    `else
-        // medeleg[15] is read-only 0, so store/AMO page faults are taken in M-mode
-        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
-            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
-        }
-    `endif
+    ins_page_fault: coverpoint s_trap(ins) {
+        bins ins_page_fault = {6'b101100};
+    }
+    load_page_fault: coverpoint s_trap(ins) {
+        bins load_page_fault = {6'b101101};
+    }
+    store_page_fault: coverpoint s_trap(ins) {
+        bins store_amo_page_fault = {6'b101111};
+    }
 
     Svnapot_legal_enc_exec_s:  cross PTE_RWX_s_i, PTE_Svnapot_i, PTE_N_i, kilopage_i, mode, exec_acc, priv_mode_s;
     Svnapot_legal_enc_exec_u:  cross PTE_RWX_u_i, PTE_Svnapot_i, PTE_N_i, kilopage_i, mode, exec_acc, priv_mode_u;

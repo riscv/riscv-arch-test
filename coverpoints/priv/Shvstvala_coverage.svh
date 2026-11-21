@@ -123,26 +123,8 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
 
     // Misaligned loads and stores trap only when the implementation does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        `ifdef UDB_MEDELEG_DELEGATABLE_4
-            load_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-                bins vscause = {4};
-            }
-        `endif
-        `ifdef UDB_MEDELEG_DELEGATABLE_6
-            store_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-                bins vscause = {6};
-            }
-        `endif
-        `ifdef UDB_MEDELEG_DELEGATABLE_4
-            cp_load_address_misaligned:  cross priv_mode_vs_vu, wide_loadops,  load_misaligned,  vstval_address;
-        `endif
-        `ifdef UDB_MEDELEG_DELEGATABLE_6
-            cp_store_address_misaligned: cross priv_mode_vs_vu, wide_storeops, store_misaligned, vstval_address;
-        `endif
         // Each misalignment of words, and of doublewords on RV64: the address offset within the access's natural
-        // alignment.  A halfword can only be misaligned by 1, which the crosses above cover.
+        // alignment.  A halfword can only be misaligned by 1, which cp_load/store_address_misaligned cover.
         word_loadops : coverpoint ins.current.insn {
             type_option.weight = 0;
             wildcard bins lw  = {LW};
@@ -158,12 +140,6 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
             type_option.weight = 0;
             bins offset[] = {[1:3]};
         }
-        `ifdef UDB_MEDELEG_DELEGATABLE_4
-            cp_load_misaligned_word:  cross priv_mode_vs_vu, word_loadops,  load_misaligned,  word_misalignment, vstval_address;
-        `endif
-        `ifdef UDB_MEDELEG_DELEGATABLE_6
-            cp_store_misaligned_word: cross priv_mode_vs_vu, word_storeops, store_misaligned, word_misalignment, vstval_address;
-        `endif
         `ifdef UDB_MXLEN_64
             ld : coverpoint ins.current.insn {
                 type_option.weight = 0;
@@ -177,10 +153,26 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 bins offset[] = {[1:7]};
             }
-            `ifdef UDB_MEDELEG_DELEGATABLE_4
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4
+            load_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {4};
+            }
+            cp_load_address_misaligned:  cross priv_mode_vs_vu, wide_loadops,  load_misaligned,  vstval_address;
+            cp_load_misaligned_word:  cross priv_mode_vs_vu, word_loadops,  load_misaligned,  word_misalignment, vstval_address;
+            `ifdef UDB_MXLEN_64
                 cp_load_misaligned_doubleword:  cross priv_mode_vs_vu, ld, load_misaligned,  doubleword_misalignment, vstval_address;
             `endif
-            `ifdef UDB_MEDELEG_DELEGATABLE_6
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6
+            store_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {6};
+            }
+            cp_store_address_misaligned: cross priv_mode_vs_vu, wide_storeops, store_misaligned, vstval_address;
+            cp_store_misaligned_word: cross priv_mode_vs_vu, word_storeops, store_misaligned, word_misalignment, vstval_address;
+            `ifdef UDB_MXLEN_64
                 cp_store_misaligned_doubleword: cross priv_mode_vs_vu, sd, store_misaligned, doubleword_misalignment, vstval_address;
             `endif
         `endif

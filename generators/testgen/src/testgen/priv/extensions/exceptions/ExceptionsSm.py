@@ -23,6 +23,7 @@ from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_instr_adr_misaligned_jalr_tests,
     generate_load_access_fault_tests,
     generate_load_address_misaligned_tests,
+    generate_load_x0_fault_tests,
     generate_misaligned_priority_fetch_tests,
     generate_misaligned_priority_load_tests,
     generate_misaligned_priority_store_tests,
@@ -305,6 +306,7 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
     tc.code.extend(generate_breakpoint_tests(test_data, _CG))
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
+    tc.code.extend(generate_load_x0_fault_tests(test_data, _CG))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))
     tc.code.append("#ifdef S_SUPPORTED")

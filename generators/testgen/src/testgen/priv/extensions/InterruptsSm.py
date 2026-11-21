@@ -167,7 +167,7 @@ def _generate_cp_write_stip_sstc(
     tc.section_header = comment_banner(
         coverpoint, "With menvcfg.STCE = 1, write stimecmp = 0s/1s x mip.STIP = 0/1 and read STIP back"
     )
-    tmp_reg = test_data.int_regs.get_register()
+    tmp_reg, wait_reg = test_data.int_regs.get_registers(2)
 
     tc.code += [
         "#ifdef SSTC_SUPPORTED",
@@ -179,6 +179,12 @@ def _generate_cp_write_stip_sstc(
         for stip, stip_macro in [(0, "CLR"), (1, "SET")]:
             tc.code += [
                 f"RVTEST_{stimecmp_macro}_SSTC_INT_{priv} # stimecmp = {stimecmp}",
+                # STIP follows the comparison only eventually; the CLR macro already waits for it to fall
+                *(
+                    [f"RVTEST_WAIT_MIP_PENDING_M(x{wait_reg}, x{tmp_reg}, 5) # until mip.STIP is pending"]
+                    if stimecmp_macro == "SET"
+                    else []
+                ),
                 # RVTEST_SET_STIME_INT writes mip.STIP with csrs, RVTEST_CLR_STIME_INT with csrc
                 test_data.add_testcase(
                     f"priv_{priv}_stimecmp_{stimecmp}_STIP_{stip}",
@@ -193,7 +199,7 @@ def _generate_cp_write_stip_sstc(
             ]
     tc.code += ["#endif // SSTC_SUPPORTED", ""]
 
-    test_data.int_regs.return_register(tmp_reg)
+    test_data.int_regs.return_registers([tmp_reg, wait_reg])
 
 
 _COMMON_GENERATORS = [

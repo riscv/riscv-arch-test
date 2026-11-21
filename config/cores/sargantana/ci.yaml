@@ -75,10 +75,11 @@ exclude_extensions:
   # csr:csr_bsc.sv#L2564-L2567 (https://github.com/bsc-loca/csr/issues/15)
   - H_inst-
   - H_vucsr-
-  # The same bug on CSR accesses from VS-mode and VU-mode that must raise illegal instruction
-  - H_vsforms-
-  - H_vuforms-
-  # The same virtual-instruction bug on csrrsi to CSR 0xE00 from VS-mode (https://github.com/bsc-loca/csr/issues/15)
+  # The same bug on the VU-mode accesses of the HS, VS and S CSRs by name, whose writes to the read-only hgeip must
+  # raise illegal instruction
+  - H_vucsr_ro-
+  # The same virtual-instruction bug on csrrsi to CSR 0xE00 from VS-mode (https://github.com/bsc-loca/csr/issues/15),
+  # and on the VS-mode accesses of the HS and VS CSRs by name
   - H_vscsr_ro-
   # htval on a guest-page fault in the VS-stage walk (https://github.com/bsc-loca/sargantana/issues/123)
   - H_trap
@@ -240,8 +241,6 @@ exclude_extensions:
   - Ssnpm_H_pmm11_hlv
   - Ssnpm_H_pmm10_vs_masking
   - Ssnpm_H_pmm11_vs_masking
-  # henvcfg.PMM keeps the reserved 0b01, where the WARL field must read back 00 or a supported PMLEN
-  - Ssnpm_H_pmm_rsv
   # henvcfg.PBMTE is writable while menvcfg.PBMTE is 0, where it must be read-only zero: csr:csr_bsc.sv#L657 (NEW-7).
   # Only Smstateen-00 and Ssstateen-01 fail, but a numbered part cannot be excluded alone.
   - Smstateen-

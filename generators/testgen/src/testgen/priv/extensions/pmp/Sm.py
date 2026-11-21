@@ -8,6 +8,7 @@
 """PMP Sm group: pmpcfg/pmpaddr WARL behaviour and M-mode PMP enforcement."""
 
 from collections.abc import Callable
+from functools import partial
 
 from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -186,6 +187,25 @@ def _make_partial_chunk(test_data: TestData, amode: str, part: int) -> TestChunk
 #: The 15 PMP entries below the background entry of a 16-entry PMP, lowest priority first.
 _ENTRIES = tuple(range(14, -1, -1))
 
+#: The pmpcfg CSRs, in groups with the #if condition the config needs for each: the odd CSRs exist only on RV32,
+#: and pmpcfg4-15 only with 64 PMP entries
+_PMPCFG_CSR_GROUPS = (
+    ((0, 2), None),
+    ((1, 3), "__riscv_xlen == 32"),
+    ((4, 6, 8, 10, 12, 14), "UDB_NUM_PMP_ENTRIES == 64"),
+    ((5, 7, 9, 11, 13, 15), "UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"),
+)
+
+
+def _for_each_pmpcfg_group(code: list[str], emit: Callable[[tuple[int, ...]], None]) -> None:
+    """emit(csrs) for each group of pmpcfg CSRs the config has, inside the group's #if."""
+    for csrs, cond in _PMPCFG_CSR_GROUPS:
+        if cond:
+            code.append(f"#if {cond}")
+        emit(csrs)
+        if cond:
+            code.append("#endif")
+
 
 # ---------------------------------------------------------------------------
 # cfg_A_all: pmpcfg.A is writable in every region
@@ -231,14 +251,7 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
                     "#endif",
                 ]
             )
-        add_csr_checks(name, const, (0, 2))
-        chunk.code.append("#if __riscv_xlen == 32")
-        add_csr_checks(name, const, (1, 3))
-        chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64"])
-        add_csr_checks(name, const, (4, 6, 8, 10, 12, 14))
-        chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
-        add_csr_checks(name, const, (5, 7, 9, 11, 13, 15))
-        chunk.code.append("#endif")
+        _for_each_pmpcfg_group(chunk.code, partial(add_csr_checks, name, const))
         if name == "NAPOT":
             chunk.code.append("#endif // UDB_PMP_NAPOT_SUPPORTED")
     return test_data.end_test_chunk()
@@ -249,20 +262,10 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
 # ---------------------------------------------------------------------------
 
 
-def _bytes(value: int, xlen: int) -> str:
-    """``value`` in every byte of an XLEN-bit register."""
-    return hex(int.from_bytes(bytes([value]) * (xlen // 8), "little"))
-
-
 def _li_xlen(reg: int, value: int) -> list[str]:
-    """Load ``value`` repeated in every byte of ``reg``."""
-    return [
-        "#if __riscv_xlen == 64",
-        f"LI(x{reg}, {_bytes(value, 64)})",
-        "#else",
-        f"LI(x{reg}, {_bytes(value, 32)})",
-        "#endif",
-    ]
+    """Load the byte ``value`` repeated in every byte of ``reg``."""
+    rv64, rv32 = (hex(int.from_bytes(bytes([value]) * n, "little")) for n in (8, 4))
+    return ["#if __riscv_xlen == 64", f"LI(x{reg}, {rv64})", "#else", f"LI(x{reg}, {rv32})", "#endif"]
 
 
 def _make_a_unsupported_chunk(test_data: TestData, name: str, amode: int) -> TestChunk:
@@ -307,14 +310,7 @@ def _make_a_unsupported_chunk(test_data: TestData, name: str, amode: int) -> Tes
                 ]
             )
 
-    csr_checks((0, 2))
-    chunk.code.append("#if __riscv_xlen == 32")
-    csr_checks((1, 3))
-    chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64"])
-    csr_checks((4, 6, 8, 10, 12, 14))
-    chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
-    csr_checks((5, 7, 9, 11, 13, 15))
-    chunk.code.append("#endif")
+    _for_each_pmpcfg_group(chunk.code, csr_checks)
     return test_data.end_test_chunk()
 
 

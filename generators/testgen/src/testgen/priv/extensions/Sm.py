@@ -910,6 +910,19 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     test_data.int_regs.return_registers([temp_reg, tvm_reg])
 
     ######################################
+    coverpoint = "cp_satp_mode_unsupported"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        coverpoint,
+        "From M-mode, write satp with each reserved MODE and each standard MODE the hart does not\n"
+        "support, with an ASID and PPN that differ from satp's.  The whole write has no effect, so satp\n"
+        "reads back unchanged: Sv39 with ASID = 1 and PPN = 1 when Sv39 is supported, else Bare (0).\n"
+        "MODE 14 and 15 are designated for custom use and are not written.",
+    )
+    tc.code.extend(_satp_mode_unsupported_tests(test_data, coverpoint, covergroup))
+
+    ######################################
     coverpoint = "cp_satp_from_s"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, "satp_from_s")
@@ -936,19 +949,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
     test_data.int_regs.return_registers([temp_reg, tvm_reg])
-
-    ######################################
-    coverpoint = "cp_satp_mode_unsupported"
-    ######################################
-    tc = test_data.new_test_chunk(test_chunks, "satp_mode_unsupported")
-    tc.section_header = comment_banner(
-        coverpoint,
-        "From M-mode, write satp with each reserved MODE and each standard MODE the hart does not\n"
-        "support, with an ASID and PPN that differ from satp's.  The whole write has no effect, so satp\n"
-        "reads back unchanged: Sv39 with ASID = 1 and PPN = 1 when Sv39 is supported, else Bare (0).\n"
-        "MODE 14 and 15 are designated for custom use and are not written.",
-    )
-    tc.code.extend(_satp_mode_unsupported_tests(test_data, coverpoint, covergroup))
 
     ######################################
     coverpoint = "cp_shadow"

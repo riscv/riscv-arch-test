@@ -13,7 +13,7 @@ exclude_extensions:
   - SdtrigS_csr_access_global
   # SSAMOSWAP with rd = rs2 stores the loaded value instead of the original rs2
   # (https://github.com/tenstorrent/whisper/issues/233).
-  - Zicfiss_U_ssamoswap_rd_eq_rs2
+  - Zicfiss_U-
   # With mstatus.TVM = 1, a VS-mode hgatp write (or a VU-mode satp write) raises illegal instead of virtual
   # instruction (https://github.com/tenstorrent/whisper/issues/227). This also skips the TVM cases Whisper
   # passes; remove once the pinned Whisper includes the fix (https://github.com/tenstorrent/whisper/pull/230).

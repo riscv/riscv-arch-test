@@ -77,27 +77,6 @@ normative_rule_definitions:
   # in hip. Bits of hie that are not writable shall be read-only zero.
   - name: hie_acc
     coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hie"]
-  # hip.VSEIP is the OR of hvip.VSEIP and the bit of hgeip that hstatus.VGEIN selects; VGEIN = 0 selects none
-  - names: [hstatus_vgein_op, hip_vseip_vseie_op]
-    coverpoint:
-      [
-        "InterruptsH_cg/{cp_vgein_switch_csrrw, cp_vgein_switch_csrrs, cp_vgein_switch_csrrc}",
-        "InterruptsH_cg/{cp_vs_int_alias_vs, cp_vs_int_alias_hs, cp_vs_int_alias_m} (hvip.VSEIP)",
-      ]
-  # hip.VSSIP is a writable alias of hvip.VSSIP, hip.VSTIP is read-only and follows hvip.VSTIP, and with hideleg set
-  # vsip and vsie alias the VS-level bits of hip and hie
-  - names:
-      [
-        hip_vssip_vssie_op,
-        hip_vstip_vstie_acc_op,
-        vsip_vsie_sei,
-        vsip_vsie_sti,
-        vsip_vsie_ssi,
-      ]
-    coverpoint:
-      [
-        "InterruptsH_cg/{cp_vs_int_alias_vs, cp_vs_int_alias_hs, cp_vs_int_alias_m}",
-      ]
   # The hgeip register is an HSXLEN-bit read-only register, formatted as shown in
   # &lt;&lt;hgeipreg&gt;&gt;, that indicates pending guest external interrupts for this
   # hart.

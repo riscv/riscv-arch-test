@@ -82,10 +82,6 @@
         `cover_info("//      I - Enabled");
         `include "I_coverage_init.svh"
     `endif
-    `ifdef COVER_INTERRUPTSH
-        `cover_info("//      InterruptsH - Enabled");
-        `include "InterruptsH_coverage_init.svh"
-    `endif
     `ifdef COVER_INTERRUPTSS
         `cover_info("//      InterruptsS - Enabled");
         `include "InterruptsS_coverage_init.svh"

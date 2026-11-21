@@ -454,7 +454,7 @@ def lpad_near_miss_tests(test_data: TestData, priv: Mode, covergroup: str) -> Te
     """Encodings next to LPAD (auipc with rd = x0) at the target of an ELP-setting jump are not landing pads."""
     coverpoint = "cp_lpad_near_miss"
     jump_reg, save_reg, temp_reg, rd_reg = test_data.int_regs.get_registers(4)
-    tc = test_data.begin_test_chunk(f"{_split(covergroup)}_lpad_near_miss")
+    tc = test_data.begin_test_chunk(_split(covergroup))
     lines = [
         comment_banner(
             coverpoint,
@@ -554,7 +554,7 @@ def pelp_lpe_off_trap_tests(test_data: TestData, priv: Priv, covergroup: str) ->
     coverpoint = "cp_pelp_trap_entry_lpe_off"
     save_tvec, save_status, save_statush, temp_reg, mode_reg = test_data.int_regs.get_registers(5)
     tvec, status = ("mtvec", "mstatus") if priv == "M" else ("stvec", "sstatus")
-    tc = test_data.begin_test_chunk(f"{_split(covergroup)}_pelp_lpe_off")
+    tc = test_data.begin_test_chunk(_split(covergroup))
     testcase = test_data.add_testcase(_bin(priv, "ebreak_xpelp_stale"), coverpoint, covergroup)
     handler = f"{test_data.current_testcase_label}_handler"
     if priv == "M":

@@ -151,7 +151,7 @@ def format_vv_like_type(
         VectorLoad(reg="vs2", vl=vs2_vl, lmul=vs2_lmul, sew=vs2_sew, egs=egs),
     ]
 
-    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data, base_tail_fill=type_name == "VMVR")
     setup.extend(load_code)
     setup.append(load_test_vtype(params, random_vl_reg))
 

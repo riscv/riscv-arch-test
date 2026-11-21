@@ -30,7 +30,15 @@ _MIRRORED_INDEX_DEFINES: list[str] = [
     "RVMODEL_HPM_COUNTER",
 ]
 
+# Defines emitted without a value, so coverpoints can test them with `ifdef. Each is emitted when
+# rvmodel_macros.h defines any of its listed macros, with any value or parameters.
+_MIRRORED_FLAG_DEFINES: dict[str, list[str]] = {
+    # The DUT raises SEI through a supervisor external interrupt controller, not only through mip.SEIP
+    "RVMODEL_SEXT_INT_EXTERNAL": ["RVMODEL_SET_SEXT_INT", "RVMODEL_SET_SEXT_INT_M"],
+}
+
 _DEFINE_RE = re.compile(r"^\s*#define\s+(\w+)\s+(0[xX][0-9a-fA-F]+|\d+)\b")
+_DEFINE_NAME_RE = re.compile(r"^\s*#define\s+(\w+)\b")
 
 
 def _scan_h_defines(h_path: Path, names: list[str]) -> dict[str, str]:
@@ -50,6 +58,11 @@ def _scan_h_defines(h_path: Path, names: list[str]) -> dict[str, str]:
         if name in wanted:
             found[name] = value
     return found
+
+
+def _scan_h_define_names(h_path: Path) -> set[str]:
+    """Return the name of every macro that h_path defines, with the same line rules as _scan_h_defines."""
+    return {match.group(1) for line in h_path.read_text().splitlines() if (match := _DEFINE_NAME_RE.match(line))}
 
 
 def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
@@ -82,6 +95,10 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     for name in _MIRRORED_INDEX_DEFINES:
         if name in defines:
             lines.append(f"`define {name} {int(defines[name], 0)}")
+    defined_names = _scan_h_define_names(input_h)
+    for name, sources in _MIRRORED_FLAG_DEFINES.items():
+        if defined_names.intersection(sources):
+            lines.append(f"`define {name}")
     lines += ["", f"`endif // {guard}", ""]
 
     output_svh.write_text("\n".join(lines))

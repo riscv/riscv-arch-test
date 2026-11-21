@@ -73,12 +73,14 @@ version = "0.2.0"
 source = { editable = "generators/coverage" }
 dependencies = [
     { name = "rich" },
+    { name = "testgen" },
     { name = "typer" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "rich", specifier = ">=14.3.4" },
+    { name = "testgen", editable = "generators/testgen" },
     { name = "typer", specifier = ">=0.23.1" },
 ]
 

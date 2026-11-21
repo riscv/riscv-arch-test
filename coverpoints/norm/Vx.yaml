@@ -1304,7 +1304,7 @@ normative_rule_definitions:
   # The data vector register group has EEW=SEW, EMUL=LMUL, while the index vector register
   # group has EEW encoded in the instruction with EMUL=(EEW/SEW)*LMUL.
   - name: vector_ls_seg_indexed_eew_emul_op
-    coverpoint: ["Vls16_vloxseg2ei8_v_cg/cr_vl_lmul_e8_emul4max_sew16"]
+    coverpoint: ["Vls16_vloxseg2ei8_v_cg/cr_vl_lmul_lmul4max_sew16"]
 
   # The EMUL * NFIELDS ≤ 8 constraint applies to the data vector register group.
   - name: vector_ls_seg_indexed_emul_nfields_val

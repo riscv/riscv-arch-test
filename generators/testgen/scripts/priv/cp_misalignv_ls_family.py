@@ -129,10 +129,8 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
-    # For indexed LS, gate emission on XLEN so EEW=64 indexed-LS priv tests
-    # are skipped on RV32. Sail RV32 takes illegal-instruction on EEW=64
-    # indexed LS while other sims take a load access fault, producing a
-    # mismatched mcause in the signature (see sail-riscv issue 1719).
+    # Emit EEW=64 indexed LS cases only on RV64. The MisalignV coverage gates
+    # the matching covergroups on UDB_MXLEN_64.
     indexed = instruction in common.indexed_ls_ins
     index_eew = common.getInstructionEEW(instruction) if indexed else None
     if indexed and index_eew is not None:

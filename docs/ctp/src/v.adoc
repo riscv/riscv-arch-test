@@ -196,6 +196,7 @@ As with other unprivileged testplans, an x in the spreadsheet indicates to use t
 * wi/wiu: vs2 is double-width and uses emul2 for its edge values.  immediate is 5 bit signed or unsigned.
 * lmul4max/emul4max: maximum LMUL/EMUL is 4 instead of 8.  vwadd.vv uses lmul4max because it cannot accept LMUL=8 widened to 16.  vlseg2e8.v uses emul4max because the number of segments * EMUL cannot exceed 8.
 * lmul2max/lmul1max/emul2max/emul1max: see lmul4max
+* ei8/16/32/64_lmul4max/2max/1max: indexed segment load/store with index EEW 8, ..., 64.  The data has EMUL = LMUL, so the number of segments * LMUL cannot exceed 8, and the index has EMUL = EEW/SEW * LMUL, which cannot exceed 8.  vluxseg2ei64.v at SEW = 8 therefore has a maximum LMUL of 1.
 * lte30/.../lte24: Register number is less than or equal to 30, ..., 24.  Used for segmented load/store so segments won't overflow the register file.
 * ls_e{8/16/32/64}: load/store edges with EEW=8,...,64.  Used to convert strided loads from elements to bytes.
 * ls: load/store edges instead of integer edges: vs2={0, random < 2*VLMAX}.  rs2= {1, 2, -1, -2, 0}

@@ -136,6 +136,7 @@ implemented_extensions:
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }
 params:
   # Trap delegation: the writable medeleg and mideleg bits (sail.json base.medeleg and
   # base.mideleg delegatable_bits; with H, VSSI, VSTI, VSEI and SGEI are always delegated)

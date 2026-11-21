@@ -65,13 +65,7 @@ def make_u(test_data: TestData) -> list[TestChunk]:
 )
 def make_u_f(test_data: TestData) -> list[TestChunk]:
     """Generate tests for U_F user-mode floating-point testsuite."""
-    test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk("F")
-
-    tc.code.extend(gen_fcsr_tests(test_data, "U", "U_F_cg"))
-
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
+    return gen_fcsr_tests(test_data, "U", "U_F_cg", "F")
 
 
 @add_priv_test_generator(

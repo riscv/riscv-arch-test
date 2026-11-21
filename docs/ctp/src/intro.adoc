@@ -1,24 +1,32 @@
 
 == Introduction
 
-This Certification Test Plan describes the coverpoints and tests to certify RISC-V profiles.  It summarizes the profiles intended to be supported and the test suites that need to run on each profile.  It also summarizes the contents of each test suite.
-This CTP will also include coverpoints and tests for features that are not part of a certified profile.
+This Certification Test Plan (CTP) describes the coverpoints and tests to certify RISC-V profiles.  It summarizes the profiles intended to be supported and the test suites that need to run on each profile.  It also summarizes the contents of each test suite.
+This CTP also includes features that are not part of a certified profile.
 
 === Certificates and Certification
 
-A RISC-V _Certificate_ is a named set of requirements for a RISC-V implementation, typically defined by a ratified profile and a set of additional requirements. For example, the RVA23 Certificate requires meeting the RVA23S64 profile and having a conforming machine mode implementation.
+A RISC-V _Certificate_ is a named set of requirements for a RISC-V implementation, typically defined by a ratified profile and a set of additional requirements. For example, the RVA23 Certificate requires meeting the RVA23S64 profile.
 
 _Certification_ is the process of testing that a RISC-V implementation meets the requirements of a RISC-V certificate.  The goal of certification is to deliver software interoperability across implementations.
 
-There is a fuzzy line between certification and verification.  Certification involves testing that an implementation meets all of the normative rules in ratified specifications relevant to the certificate, but does not involve testing that requires detailed knowledge of the microarchitecture. Specifically, certification does not check timing (such as the arrival of interrupts relative to the start, middle, or end of multicycle instructions), pipeline hazards, power management features, etc.
+There is a fuzzy line between certification and verification.  Certification involves testing that an implementation meets all of the normative rules in ratified specifications relevant to the certificate, but does not involve testing that requires detailed knowledge of the microarchitecture. For example, certification does not comprehensively affect
+timing  (such as the arrival of interrupts relative to the start, middle, or end of multicycle instructions), complex pipeline hazards, power management features, etc.
 
-Certification assumes the ratified specification is read and interpreted with knowledge of computer architecture and reasonable judgement, because not every detail is spelled out in normative rules.  For example, certification that "ADD performs the addition of _rs1_ and _rs2_" involves testing ADD with a reasonable set of values.  The test plan author exercises judgement selecting these values because they are not spelled out.  For example, the values might involve every combination of {0, 1, -1, maximum positive integer, maximum negative integer, intermediate value} for the two source register values. The intermediate value involves an arbitrary choice.  A reasonable author might pick some other sensible edge values, such as some values one more or less than those in the set above.  However, certification does not attempt to prove every bit of a carry chain works for every possible input, or that all stuck-at faults would be detected. Similarly, the test plan author may exercise all 32 registers as sources or destinations for each instruction, which is implicitly required but not spelled out in a normative rule.
+Certification assumes the ratified specification is read and interpreted with knowledge of computer architecture and reasonable judgement, because not every detail is spelled out in normative rules.  For example, certification that "ADD performs the addition of _rs1_ and _rs2_" involves testing ADD with a reasonable set of values.  The test plan author exercises judgement selecting these values because they are not spelled out.  For example, the values might involve every combination of {0, 1, -1, maximum positive integer, maximum negative integer, intermediate value} for the two source register values. The intermediate value involves an arbitrary choice.  A reasonable author might pick some other sensible edge values, such as some values one more or less than those in the set above.  However, certification does not attempt to prove every bit of a carry chain works for every possible input, or that all stuck-at faults would be detected. Similarly, the test plan exercises all 32 registers as sources or destinations for each instruction, which is implicitly required but not spelled out in a normative rule.
 
 When in doubt, it is better to test slightly more than strictly necessary for normative rules, rather than slightly less. Over-testing is acceptable, as long as it does not cause false failures or excessive test time. It is often easier to test cross-products of all relevant inputs, even if not all combinations are explicitly named by normative rules. It also reduces the risk of human error missing a required combination.
 
-An implementation that passes certification tests is said to be certified for the relevant certificate. The process of certification is described in TODO CSC page.
+Certification involves more than passing all of the certification tests.  See TODO for requirements.
 
-=== Normative Rules, Coverpoints, and Tests
+=== Test Plans, Normative Rules, Coverpoints, and Tests
+
+The body of the CTP gives an overall view of testing, and the appendices contain the test plans, normative rules, and summaries of coverpoints and tests.
+
+***
+
+The CTP defines test plans for the RISC-V base instruction sets and ratified extensions.  Test plans are generally organized by extension name.  There are additional test plans for Exceptions, Interrupts, and PMP that impact many privilege modes and extensions. The test plans are human-readable spreadsheets that descri***
+
 
 Normative rules are the key to certification.  They are the features of the RISC-V architecture that need to be tested in order to certify a profile.  However, normative rules are human-readable portions of a specification and cannot be checked in an automated manner.
 

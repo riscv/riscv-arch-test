@@ -228,3 +228,8 @@ coverpoints:
     description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = 0, then {read sip, csrs sip.SSIP, csrc sip.SSIP} and read sip.  Back in HS-mode, read hvip and sip.SSIP.  With vsstatus.SIE = 1, VS-mode takes VSSI on entry and its handler clears vsip.SSIP before the read; cp_trigger_tsbi covers that case.
     expectation: sip.SSIP reads and writes hvip.VSSIP; the pending HS-level SSIP is neither visible nor changed.
     bins: 2 VSSIP * 3 accesses
+  - name: cp_vs_alias_write
+    goal: In VS-mode, sip and sie write the VS-level bits of hvip and hie as vsip and vsie do
+    description: With hideleg = 0x444, in VS-mode {csrw, csrs, csrc} {VSSIP, VSTIP, VSEIP, all three} (one bit lower) in sip, starting with the bits {clear, set} in hvip, and read back hvip, hip, vsip and (through T-SBI) mip in HS-mode.  Likewise write sie, starting from hie, and read back hie, vsie and mie.
+    expectation: Through sip only VSSIP changes (hvip.VSSIP); VSTIP and VSEIP are unchanged.  Writes through sie change hie, vsie and mie.
+    bins: 2 CSRs * 3 instructions * 4 bit sets * 2 start values = 48

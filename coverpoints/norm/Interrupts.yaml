@@ -448,7 +448,7 @@ normative_rule_definitions:
   # to HS-level continue to be indicated in the HS-level sip register, not in vsip, when
   # V=1.
   - name: vsip_vsie_sz_acc_op
-    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sip_vs}"]
+    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sip_vs, vs_alias_write}"]
 
     # Representative coverpoints; vsie and vsip through hideleg, and undelegated interrupts on entry
     # to VS-mode
@@ -457,7 +457,7 @@ normative_rule_definitions:
   - name: vsip_vsie_sei
     coverpoint:
       [
-        "Interrupts_cg/{cp_vsip_vsie, cp_hip_write, cp_hie}",
+        "Interrupts_cg/{cp_vsip_vsie, cp_hip_write, cp_hie, cp_vs_alias_write}",
         "Interrupts_Sm_cg/cp_mie_mip",
       ]
 
@@ -466,7 +466,7 @@ normative_rule_definitions:
   - name: vsip_vsie_sti
     coverpoint:
       [
-        "Interrupts_cg/{cp_vsip_vsie, cp_hip_write, cp_hie}",
+        "Interrupts_cg/{cp_vsip_vsie, cp_hip_write, cp_hie, cp_vs_alias_write}",
         "Interrupts_Sm_cg/cp_mie_mip",
       ]
 
@@ -475,7 +475,7 @@ normative_rule_definitions:
   - name: vsip_vsie_ssi
     coverpoint:
       [
-        "Interrupts_cg/cp_{vsip_vsie, sip_vs, hip_write, hie}",
+        "Interrupts_cg/cp_{vsip_vsie, sip_vs, hip_write, hie, vs_alias_write}",
         "Interrupts_Sm_cg/cp_mie_mip",
       ]
 

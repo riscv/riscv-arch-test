@@ -722,11 +722,13 @@ def alias_write_tests(
     readers: tuple[str, ...],
     mode: str,
     hideleg_values: tuple[tuple[str, int], ...],
+    write_in_vs: bool = False,
 ) -> list[str]:
     """
     Write each VS-level interrupt bit, and all three, through each writer CSR with csrw, csrs and csrc, starting
     with the bits clear and set in source (hvip for the pending bits, hie for the enable bits), and read back
-    every reader.  Clobbers hideleg, hvip and hie.
+    every reader.  With write_in_vs the write runs in VS-mode, where sip and sie are vsip and vsie.  Clobbers
+    hideleg, hvip and hie.
     """
     # a0 and a1 carry T-SBI calls
     val_reg, check_reg, mask_reg = test_data.int_regs.get_registers(3, exclude_regs=[10, 11])
@@ -741,8 +743,10 @@ def alias_write_tests(
                     "csrw hie, zero",
                     *([f"LI(x{val_reg}, {bits:#x})", f"csrw {source}, x{val_reg}"] if start else []),
                     f"LI(x{val_reg}, {bits >> shift:#x})",
+                    *(["RVTEST_TSBI_GOTO_VSMODE"] if write_in_vs else []),
                     test_data.add_testcase(name, coverpoint, covergroup),
                     f"{op} {csr}, x{val_reg}",
+                    *(["RVTEST_TSBI_GOTO_SMODE"] if write_in_vs else []),
                     *alias_readback(test_data, readers, check_reg, mask_reg, mode),
                 ]
             )

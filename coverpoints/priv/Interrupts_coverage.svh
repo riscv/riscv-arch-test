@@ -648,8 +648,15 @@ covergroup Interrupts_cg with function sample(ins_t ins);
             bins hie  = {CSR_HIE};
             bins vsie = {CSR_VSIE};
         }
-        // The VS-level bits a write selects, in mip positions: vsip and vsie hold them one bit lower
-        alias_bits: coverpoint ((ins.current.insn[31:20] == CSR_VSIP || ins.current.insn[31:20] == CSR_VSIE) ?
+        // In VS-mode, sip and sie are vsip and vsie
+        alias_csr_vs: coverpoint ins.current.insn[31:20] {
+            bins sip = {CSR_SIP};
+            bins sie = {CSR_SIE};
+        }
+        // The VS-level bits a write selects, in mip positions: vsip and vsie, and sip and sie written in VS-mode,
+        // hold them one bit lower
+        alias_bits: coverpoint ((ins.current.insn[31:20] == CSR_VSIP || ins.current.insn[31:20] == CSR_VSIE ||
+                                 ins.current.insn[31:20] == CSR_SIP || ins.current.insn[31:20] == CSR_SIE) ?
                                 ins.current.rs1_val << 1 : ins.current.rs1_val) {
             bins vssi = {'h4};
             bins vsti = {'h40};
@@ -659,7 +666,7 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         // The VS-level bits before the write, in hvip for the pending CSRs and in hie for the enable CSRs: clear,
         // or set (the tests set exactly the bits they write)
         alias_start: coverpoint (((ins.current.insn[31:20] == CSR_MIE || ins.current.insn[31:20] == CSR_HIE ||
-                                   ins.current.insn[31:20] == CSR_VSIE) ?
+                                   ins.current.insn[31:20] == CSR_VSIE || ins.current.insn[31:20] == CSR_SIE) ?
                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIE) :
                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HVIP)) & 'h444) != 0 {
             bins clear = {0};
@@ -714,6 +721,8 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         cp_hie:         cross priv_mode_hs, alias_op, alias_csr_ie, alias_bits, alias_start, hideleg_vs_none_all;
         // vsie and vsip: reads and writes for each combination of hideleg.VS*I
         cp_vsip_vsie:   cross priv_mode_hs, csr_rw, csr_vsie_vsip, hideleg_vs;
+        // The same writes through sip and sie in VS-mode, with hideleg delegating all three
+        cp_vs_alias_write: cross priv_mode_vs, alias_op, alias_csr_vs, alias_bits, alias_start, hideleg_vs_all;
         // In VS-mode, sip is vsip: it reads and writes hvip.VSSIP when delegated and never the HS-level sip.SSIP
         `ifdef UDB_SSI_INTR_IMPL
             cp_sip_vs:      cross priv_mode_vs, vs_sip_op, csr_sip, vsstatus_sie_zero, hvip_vssip, mip_ssip_one, hideleg_vs_all;

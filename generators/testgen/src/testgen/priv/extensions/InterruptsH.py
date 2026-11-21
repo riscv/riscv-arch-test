@@ -171,6 +171,40 @@ def _sip_vs_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _alias_vs_tests(test_data: TestData) -> list[str]:
+    """VS-mode writes of sip and sie, which are vsip and vsie, read back from HS-mode."""
+    return [
+        comment_banner(
+            "cp_vs_alias_write",
+            "With hideleg = 0x444, in VS-mode csrw, csrs and csrc each VS-level interrupt bit, and all three, in sip\n"
+            "and sie (one bit lower), starting with the bits clear and set in hvip or hie.  Back in HS-mode, read\n"
+            "hvip, hip, vsip and (through T-SBI) mip, or hie, vsie and mie: only VSSIP is writable through sip",
+        ),
+        *alias_write_tests(
+            test_data,
+            _CG,
+            "cp_vs_alias_write",
+            (("sip", 1),),
+            "hvip",
+            ("hvip", "hip", "vsip", "mip"),
+            "S",
+            _HIDELEG[1:],
+            write_in_vs=True,
+        ),
+        *alias_write_tests(
+            test_data,
+            _CG,
+            "cp_vs_alias_write",
+            (("sie", 1),),
+            "hie",
+            ("hie", "vsie", "mie"),
+            "S",
+            _HIDELEG[1:],
+            write_in_vs=True,
+        ),
+    ]
+
+
 @add_priv_test_generator(
     "Interrupts",
     required_extensions=["H"],
@@ -184,7 +218,7 @@ def make_interrupts_h(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_hcsr_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "h_vs")
-    tc.code.extend(_sip_vs_tests(test_data))
+    tc.code.extend([*_sip_vs_tests(test_data), *_alias_vs_tests(test_data)])
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

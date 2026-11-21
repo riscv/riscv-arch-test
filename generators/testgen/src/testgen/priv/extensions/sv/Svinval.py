@@ -25,7 +25,13 @@ from testgen.priv.extensions.sv.page_tables import (
     lower_table_data,
     write_pte,
 )
-from testgen.priv.extensions.sv.SvHFenceCommon import HINVAL_GVMA, HINVAL_VVMA, SINVAL_VMA_VS, fence_chunk
+from testgen.priv.extensions.sv.SvHFenceCommon import (
+    HINVAL_GVMA,
+    HINVAL_VVMA,
+    SINVAL_VMA_VS,
+    fence_chunk,
+    x4_fence_chunk,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 _OPERATIONS = (
@@ -290,7 +296,10 @@ INVAL_FENCES = (HINVAL_VVMA, HINVAL_GVMA, SINVAL_VMA_VS)
     params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svinvalh_sv39x4(test_data: TestData) -> list[TestChunk]:
-    return [fence_chunk(test_data, SV39X4, VS_SV39, "H_sv39x4_inval", INVAL_FENCES, "Svinval_H_cg")]
+    return [
+        fence_chunk(test_data, SV39X4, VS_SV39, "H_sv39x4_inval", INVAL_FENCES, "Svinval_H_cg"),
+        x4_fence_chunk(test_data, SV39X4, VS_SV39, "H_sv39x4_inval_x4", (HINVAL_GVMA,), "Svinval_H_cg"),
+    ]
 
 
 @add_priv_test_generator(
@@ -300,7 +309,10 @@ def make_svinvalh_sv39x4(test_data: TestData) -> list[TestChunk]:
     params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svinvalh_sv32x4(test_data: TestData) -> list[TestChunk]:
-    return [fence_chunk(test_data, SV32X4, VS_SV32, "H_sv32x4_inval", INVAL_FENCES, "Svinval_H_cg")]
+    return [
+        fence_chunk(test_data, SV32X4, VS_SV32, "H_sv32x4_inval", INVAL_FENCES, "Svinval_H_cg"),
+        x4_fence_chunk(test_data, SV32X4, VS_SV32, "H_sv32x4_inval_x4", (HINVAL_GVMA,), "Svinval_H_cg"),
+    ]
 
 
 @add_priv_test_generator(

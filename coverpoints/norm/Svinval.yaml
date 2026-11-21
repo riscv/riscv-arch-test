@@ -62,7 +62,7 @@ normative_rule_definitions:
   - name: Svinval_hinval_vvma_gvma
     coverpoint:
       [
-        "Svinval_H_cg/{cp_svinval, cp_hinval_vvma, cp_hinval_gvma}",
+        "Svinval_H_cg/{cp_svinval, cp_hinval_vvma, cp_hinval_gvma, cp_hinval_gvma_x4}",
         "Svinval_SmH_cg/cp_svinval_{m, tvm}",
       ]
 

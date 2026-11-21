@@ -366,7 +366,7 @@ normative_rule_definitions:
       [
         "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write, cp_hie}",
         "Interrupts_Sm_cg/cp_mie_mip",
-        "Interrupts_Sgei_cg/cp_trigger_vsei_hgeip",
+        "Interrupts_Sgei_cg/{cp_trigger_vsei_hgeip, cp_vgein_switch_csrrw, cp_vgein_switch_csrrs, cp_vgein_switch_csrrc}",
       ]
 
   # Bits csr:hip[vstip] and csr:hie[vstie] are the interrupt-pending and interrupt-enable
@@ -602,11 +602,15 @@ normative_rule_definitions:
 
   # hstatus.VGEIN selects the hgeip bit that drives hip.VSEIP
   - name: hstatus_vgein_op
-    coverpoint: ["Interrupts_Sgei_cg/cp_trigger_vsei_hgeip"]
+    coverpoint:
+      [
+        "Interrupts_Sgei_cg/{cp_trigger_vsei_hgeip, cp_vgein_switch_csrrw, cp_vgein_switch_csrrs, cp_vgein_switch_csrrc}",
+      ]
 
   # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
   - name: hstatus_vgein_zero
-    coverpoint: ["Interrupts_Sgei_cg/cp_trigger_vsei_hgeip"]
+    coverpoint:
+      ["Interrupts_Sgei_cg/{cp_trigger_vsei_hgeip, cp_vgein_switch_csrrw, cp_vgein_switch_csrrc}"]
 
   # When a trap is taken into M-mode, mepc is written with the virtual address of
   # the instruction that was interrupted or that encountered the exception.

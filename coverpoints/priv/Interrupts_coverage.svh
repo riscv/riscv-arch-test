@@ -20,6 +20,20 @@
 //   Interrupts_Shlcofideleg_cg    LCOFI delegated to VS-mode, boots to S-mode
 //   Interrupts_SmShlcofideleg_cg  LCOFI with mideleg[13] = 0, boots to M-mode
 
+// MPV is mstatus bit 39, which lands in mstatush when MXLEN is 32. It reads 0 without H.
+`ifdef UDB_MXLEN_64
+    `define INT_MPV get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0]
+`else
+    `define INT_MPV get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0]
+`endif
+// A pending VS-level interrupt that hideleg delegates to VS-mode
+`ifdef H_SUPPORTED
+    `define INT_TO_VS ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & \
+                       get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HIDELEG)[15:0] & 16'h0444) != 16'h0)
+`else
+    `define INT_TO_VS 1'b0
+`endif
+
 `ifdef S_SUPPORTED
 
 // Interrupts_cg boots to S-mode with mideleg delegating every S-level interrupt (set once at boot
@@ -245,13 +259,7 @@ covergroup Interrupts_cg with function sample(ins_t ins);
     // global enable and trap vector of the cross are then vsstatus.SIE and vstvec.MODE instead of
     // sstatus.SIE and stvec.MODE. HS-mode and U-mode never take it; VS-mode takes it when
     // vsstatus.SIE = 1 and VU-mode always does.
-    `ifdef H_SUPPORTED
-        `define S_TO_VS ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & \
-                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HIDELEG)[15:0] & 16'h0444) != 16'h0)
-    `else
-        `define S_TO_VS 1'b0
-    `endif
-    sip_walking_deleg: coverpoint {`S_TO_VS, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & `INTR_BELOW_M} {
+    sip_walking_deleg: coverpoint {`INT_TO_VS, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & `INTR_BELOW_M} {
         `ifdef UDB_SEI_INTR_IMPL
             bins seip = {17'h00200};
         `endif
@@ -273,11 +281,11 @@ covergroup Interrupts_cg with function sample(ins_t ins);
             bins vssip_vs = {17'h10004};
         `endif
     }
-    trigger_sie: coverpoint (`S_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] :
+    trigger_sie: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] :
                                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0]) {
         // autofill 0/1
     }
-    trigger_tvec: coverpoint (`S_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVEC)[1:0] :
+    trigger_tvec: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVEC)[1:0] :
                                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVEC, "mode")[1:0]) {
         `ifdef UDB_STVEC_MODES_0
             bins direct = {2'b00};
@@ -331,7 +339,7 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         bins one = {1};
     }
     // As sstatus_sie_on_return, or vsstatus.SIE for an interrupt delegated to VS-mode, which the xret leaves alone
-    trigger_sie_on_return: coverpoint (`S_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] :
+    trigger_sie_on_return: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] :
                                        (ins.current.insn == SRET) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spie")[0] :
                                                                     get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0]) {
         // autofill 0/1
@@ -720,7 +728,6 @@ endgroup
 `undef S_PAIR
 `undef S_PAIR_OK
 `undef S_PAIR_NOW
-`undef S_TO_VS
 
 `endif // S_SUPPORTED
 
@@ -979,13 +986,7 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
     // mip_walking for the trigger crosses, with each VS-level interrupt also in a _vs bin when hideleg
     // delegates it to VS-mode. The global enable of the cross is then vsstatus.SIE instead of
     // mstatus.SIE (sm_trigger_sie). Only VS-mode (with vsstatus.SIE = 1) and VU-mode take it.
-    `ifdef H_SUPPORTED
-        `define SM_TO_VS ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & \
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HIDELEG)[15:0] & 16'h0444) != 16'h0)
-    `else
-        `define SM_TO_VS 1'b0
-    `endif
-    mip_walking_deleg: coverpoint {`SM_TO_VS, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0]} {
+    mip_walking_deleg: coverpoint {`INT_TO_VS, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0]} {
         `ifdef UDB_MEI_INTR_IMPL
             wildcard bins meip = {17'b0_??0?100?000?000?};
         `endif
@@ -1019,7 +1020,7 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
         `endif
     }
     // mtvec.MODE, or vstvec.MODE for an interrupt delegated to VS-mode
-    sm_trigger_tvec: coverpoint (`SM_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVEC)[1:0] :
+    sm_trigger_tvec: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVEC)[1:0] :
                                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVEC, "mode")[1:0]) {
         `ifdef UDB_MTVEC_MODES_0
             bins direct = {2'b00};
@@ -1028,7 +1029,7 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
             bins vector = {2'b01};
         `endif
     }
-    sm_trigger_sie: coverpoint (`SM_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] :
+    sm_trigger_sie: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] :
                                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0]) {
         bins zero = {0};
         `ifdef S_SUPPORTED
@@ -1183,13 +1184,7 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
         bins mret = {MRET};
     }
     `ifdef U_SUPPORTED
-        // MPV is mstatus bit 39, which lands in mstatush when MXLEN is 32.  It reads 0 without H.
-        `ifdef UDB_MXLEN_64
-            `define SM_MPV get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0]
-        `else
-            `define SM_MPV get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0]
-        `endif
-        mstatus_mpv_mpp: coverpoint {`SM_MPV, get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+        mstatus_mpv_mpp: coverpoint {`INT_MPV, get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
             `ifdef S_SUPPORTED
                 bins S_mode = {3'b001};
             `endif
@@ -1522,22 +1517,12 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
 
 endgroup
 
-`undef SM_TO_VS
-`ifdef SM_MPV
-    `undef SM_MPV
-`endif
 `ifdef SM_WFI_PRIV
     `undef SM_WFI_PRIV
 `endif
 
 `endif // EXCLUDE_SM
 
-// MPV is mstatus bit 39, which lands in mstatush when MXLEN is 32
-`ifdef UDB_MXLEN_64
-    `define INT_MPV get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0]
-`else
-    `define INT_MPV get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0]
-`endif
 // The mode an instruction runs in, or for an mret the mode it returns to: {mret, V, mode}
 `define INT_ENTRY ((ins.current.insn == MRET) ? {1'b1, `INT_MPV, get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} : \
                                                 {1'b0, ins.prev.mode_virt, ins.prev.mode})
@@ -1765,6 +1750,7 @@ endgroup
 `endif // SHLCOFIDELEG_SUPPORTED
 
 `undef INT_MPV
+`undef INT_TO_VS
 `undef INT_ENTRY
 
 function void interrupts_sample(int hart, int issue, ins_t ins);

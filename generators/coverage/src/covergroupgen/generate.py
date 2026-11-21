@@ -527,6 +527,38 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
     return None
 
 
+# On a hart with U-mode and Zicntr but no F, Zve32x or S, the Zicsr tests run in U-mode and test the read-only
+# instret (RVTEST_READ_ONLY_TEST_CSR in tests/env/utils.h, defined the same way in RISCV_coverage_common.svh).
+# Writing it traps, so the tests make no CSR writes: they never run csrrw or csrrwi, and they run the set and clear
+# instructions only with rs1 = x0 or uimm = 0.  None (rather than a set of coverpoints) gates the whole covergroup.
+_READ_ONLY_TEST_CSR_UNTESTED: dict[str, set[str] | None] = {
+    "csrrw": None,
+    "csrrwi": None,
+    "csrrs": {"cp_rs1", "cp_rs1_edges", "cmp_rd_rs1"},
+    "csrrc": {"cp_rs1", "cp_rs1_edges", "cmp_rd_rs1"},
+    "csrrsi": {"cp_uimm_5"},
+    "csrrci": {"cp_uimm_5"},
+}
+_READ_ONLY_TEST_CSR_GATE = "`ifndef RVTEST_READ_ONLY_TEST_CSR\n"
+
+
+def _covergroup_gate(arch: str, instr: str) -> str | None:
+    """Return the `ifdef/`ifndef line that guards a covergroup and its sample call, or None."""
+    if arch == "Zicsr" and instr in _READ_ONLY_TEST_CSR_UNTESTED and _READ_ONLY_TEST_CSR_UNTESTED[instr] is None:
+        return _READ_ONLY_TEST_CSR_GATE
+    gate = _should_gate_maxindexeew(arch, instr)
+    if gate:
+        idx_eew, macro_prefix = gate
+        return f"`ifdef {macro_prefix}{idx_eew}\n"
+    return None
+
+
+def _coverpoint_gated(arch: str, instr: str, cp: str) -> bool:
+    """Whether a coverpoint the read-only test CSR leaves untested is guarded on its own."""
+    untested = _READ_ONLY_TEST_CSR_UNTESTED.get(instr) if arch == "Zicsr" else None
+    return untested is not None and cp in untested
+
+
 def _ffLS_feasible(instr: str, sew: int) -> bool:
     """Check if cp_custom_ffLS (which requires LMUL=2) is feasible for this instruction at the given SEW.
 
@@ -634,11 +666,10 @@ def _gen_instrs(
         # takes illegal-instruction on EEW=64 indexed LS while other sims
         # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
         # never gates.
-        gate = _should_gate_maxindexeew(arch, instr)
+        gate = _covergroup_gate(arch, instr)
         if gate:
-            idx_eew, macro_prefix = gate
-            covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
-            init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+            covergroup_lines.append(gate)
+            init_lines.append(gate)
 
         # Instruction header
         if vectorwiden:
@@ -675,7 +706,10 @@ def _gen_instrs(
             if resolved is None:
                 continue
             rendered = customize_template(templates, resolved, arch, instr) + "\n"
-            covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))
+            rendered = _filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul)
+            if _coverpoint_gated(arch, instr, cp):
+                rendered = f"{_READ_ONLY_TEST_CSR_GATE}{rendered}`endif\n"
+            covergroup_lines.append(rendered)
 
         # Instruction footer
         if vectorwiden:
@@ -744,10 +778,9 @@ def _gen_covergroup_samples(
                 lines.append(_gen_sample_arm(templates, instr, base_calls + guarded_calls))
             continue
 
-        gate = _should_gate_maxindexeew(arch, instr)
+        gate = _covergroup_gate(arch, instr)
         if gate:
-            idx_eew, macro_prefix = gate
-            lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+            lines.append(gate)
 
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):

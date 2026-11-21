@@ -1498,7 +1498,7 @@
         addi t1, zero, -1
         sw t1, 0(t0)
         sw t1, 4(t0)
-      #elif !defined(RVTEST_SELFCHECK)
+      #elif defined(RVTEST_SAIL_MACROS)
         // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
         LI_FIXED_LEN(t0, SAIL_MTIMECMP_ADDRESS)
         addi t1, zero, -1

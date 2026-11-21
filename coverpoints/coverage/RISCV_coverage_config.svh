@@ -218,6 +218,9 @@
 `ifdef VX8_COVERAGE
   `include "Vx8_coverage.svh"
 `endif
+`ifdef WORLDS_COVERAGE
+  `include "Worlds_coverage.svh"
+`endif
 `ifdef ZA64RS_COVERAGE
   `include "Za64rs_coverage.svh"
 `endif

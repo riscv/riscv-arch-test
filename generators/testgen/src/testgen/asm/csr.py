@@ -247,9 +247,10 @@ def _mask_with_conditional_bits(csr: tuple, conditional_bits: list[tuple[int, st
 def clear_conditional_bits(
     reg: int, tmp_reg: int, conditional_bits: list[tuple[int, str]] | None, why: str
 ) -> list[str]:
-    """Clear from x{reg} the bits of each (bits, cond) pair where the #if expression cond holds.
+    """Clear from x{reg} the bits of each (bits, cond) pair where cond holds.
 
-    x{tmp_reg} is scratch; why starts the comment on each clear.
+    cond is an #if expression, or a macro name, which is tested with defined(). x{tmp_reg} is scratch; why
+    starts the comment on each clear.
     """
     lines: list[str] = []
     for bits, cond in conditional_bits or []:
@@ -257,7 +258,7 @@ def clear_conditional_bits(
             f"LI(x{tmp_reg}, {~bits & ((1 << 64) - 1)})    # {why} bits {bits:#x}",
             f"and x{reg}, x{reg}, x{tmp_reg}",
         ]
-        lines += gated(clear, cond)
+        lines += gated(clear, f"defined({cond})" if cond.isidentifier() else cond)
     return lines
 
 
@@ -299,7 +300,7 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unchecked_bits: Optional (bits, cond) pairs, cond an #if expression. The bits are added to the csr mask
+        unchecked_bits: Optional (bits, cond) pairs, cond as for clear_conditional_bits. The bits are added to the mask
             (all ones if None) and, where cond holds, cleared from it: they are not checked, and with maskedwrites
             not written either. Elsewhere they are walked and checked.
     """

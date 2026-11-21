@@ -245,7 +245,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     mcsrname_masked : coverpoint ins.current.insn[31:20] {
         bins mstatus = {CSR_MSTATUS};
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
-            bins menvcfg = {CSR_MENVCFG};
+            `ifdef U_SUPPORTED
+                bins menvcfg = {CSR_MENVCFG};
+            `endif
         `endif
         `ifdef MSECCFG_SUPPORTED
             bins mseccfg = {CSR_MSECCFG};
@@ -253,7 +255,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `ifdef UDB_MXLEN_32
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
                 bins mstatush = {CSR_MSTATUSH};
-                bins menvcfgh = {CSR_MENVCFGH};
+                `ifdef U_SUPPORTED
+                    bins menvcfgh = {CSR_MENVCFGH};
+                `endif
             `endif
             `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
@@ -272,11 +276,15 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs and the masked-write CSRs (mcsrname_masked)
-        bins medeleg    = {CSR_MEDELEG};
-        bins mideleg    = {CSR_MIDELEG};
+        `ifdef S_SUPPORTED
+            bins medeleg    = {CSR_MEDELEG};
+            bins mideleg    = {CSR_MIDELEG};
+        `endif
         bins mie        = {CSR_MIE};
         // bins mtvec      = {CSR_MTVEC}; // warl field has complex write restrictions and is not easy to test
-        bins mcounteren = {CSR_MCOUNTEREN};
+        `ifdef U_SUPPORTED
+            bins mcounteren = {CSR_MCOUNTEREN};
+        `endif
         bins mscratch   = {CSR_MSCRATCH};
         bins mepc       = {CSR_MEPC};
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
@@ -316,7 +324,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmevent31= {CSR_MHPMEVENT31};
         `ifdef UDB_MXLEN_32
             `ifdef SM1P13P0_OR_LATER_SUPPORTED
-                bins medelegh = {CSR_MEDELEGH};
+                `ifdef S_SUPPORTED
+                    bins medelegh = {CSR_MEDELEGH};
+                `endif
             `endif
         `endif
     }
@@ -466,7 +476,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     misa_dependencies : coverpoint ins.current.rs1_val[25:0] {
         wildcard bins i1e1   = { 26'b?????????????????1???1???? };
-        wildcard bins i0e0   = { 26'b?????????????????1???1???? };
+        `ifdef UDB_MISA_CSR_IMPLEMENTED
+            wildcard bins i0e0   = { 26'b?????????????????0???0???? };
+        `endif
         wildcard bins f0d1   = { 26'b????????????????????0?1??? };
         wildcard bins f1d0q1 = { 26'b?????????1??????????1?0??? };
         wildcard bins s1u0   = { 26'b?????0?1?????????????????? };
@@ -563,8 +575,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         ignore_bins mstatus_not_walked = binsof(mcsrname_masked.mstatus) &&
             binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
-            ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
-                binsof(walking_ones) intersect {1, [8:31], [34:58]};
+            `ifdef U_SUPPORTED
+                ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
+                    binsof(walking_ones) intersect {1, [8:31], [34:58]};
+            `endif
         `endif
         `ifdef MSECCFG_SUPPORTED
             ignore_bins mseccfg_not_walked = binsof(mcsrname_masked.mseccfg) &&
@@ -574,8 +588,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
                 ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
                     binsof(walking_ones) intersect {[0:5], 8, [11:31]};
-                ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
-                    binsof(walking_ones) intersect {[2:26]};
+                `ifdef U_SUPPORTED
+                    ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
+                        binsof(walking_ones) intersect {[2:26]};
+                `endif
             `endif
             `ifdef MSECCFG_SUPPORTED
                 ignore_bins mseccfgh_not_walked = binsof(mcsrname_masked.mseccfgh) &&
@@ -618,7 +634,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     // misa
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
-    cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
+    cp_misa_clear_c :           cross priv_mode_m, csrc, misa, misa_c_0, pc_1;
 
     // mepc[1] is masked on reads, including mret's, while misa.C = 0 makes IALIGN = 32
     // Only on harts with Zca whose misa.C is writable, so that IALIGN can change

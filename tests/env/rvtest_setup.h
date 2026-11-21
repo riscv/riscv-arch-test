@@ -311,7 +311,8 @@
   trap_sig_overflow:
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
-  trap_sig_overflow_mmode:
+  trap_sig_overflow_mmode:            // from the M-mode trap handler, which leaves without mret
+    RVTEST_CLEAR_MDT T4
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end_mmode
 
@@ -319,7 +320,8 @@
   abort_test:
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
-  abort_test_mmode:
+  abort_test_mmode:                   // from the M-mode trap handler, which leaves without mret
+    RVTEST_CLEAR_MDT T4
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end_mmode
 
@@ -1482,7 +1484,7 @@
         addi t1, zero, -1
         sw t1, 0(t0)
         sw t1, 4(t0)
-      #elif !defined(RVTEST_SELFCHECK)
+      #elif defined(RVTEST_SAIL_MACROS)
         // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
         LI_FIXED_LEN(t0, SAIL_MTIMECMP_ADDRESS)
         addi t1, zero, -1

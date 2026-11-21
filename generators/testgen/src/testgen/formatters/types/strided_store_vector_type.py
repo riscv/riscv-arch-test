@@ -7,16 +7,14 @@
 ##################################
 
 import random
-from dataclasses import replace
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    base_store_complement_fill,
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
-    vlmax_store_footprint,
+    store_target_checks,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -117,46 +115,29 @@ def format_vssseg_like_type(
 
     setup.append(f"LI (x{params.rs2}, {params.rs2val})")
     operands = f"(x{params.rs1}), x{params.rs2}"
-    # The length suite checks the store's whole VLMAX footprint, so writes to inactive or tail elements fail
-    footprint = params.vector_suite == "length" and not params.ignore_vector_safety
-    fill, footprint_read_back = vlmax_store_footprint(params, instr_str, operands) if footprint else ([], [])
-    setup.extend(fill)
-    # The base suite checks only element 0, so fill it with the complement of the stored data
-    complement: list[str] = []
-    complement_fill: list[str] = []
-    if params.vector_suite == "base":
-        complement, complement_fill = base_store_complement_fill(
-            params, instr_str, operands, eew, segments, int(max(emul, 1))
-        )
-    setup.extend(complement)
+    before_vtype, after_vtype, read_back, check_params = store_target_checks(
+        params, instr_str, operands, eew, segments, int(max(emul, 1))
+    )
+    setup.extend(before_vtype)
     setup.append(load_test_vtype(params, random_vl_reg))
-    setup.extend(complement_fill)
+    setup.extend(after_vtype)
 
     # We don't need random_vl_reg anymore
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}, v0.t"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}, v0.t"
     else:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}"
 
     if params.vector_suite == "length":
         check = [
-            *(footprint_read_back or [read_back]),
-            *write_sigupd_v_len(
-                test_data,
-                replace(params, maskval=None) if footprint else params,
-                emul,
-                segments=segments,
-                sew_override=info.load_store_eew,
-            ),
+            *read_back,
+            *write_sigupd_v_len(test_data, check_params, emul, segments=segments, sew_override=info.load_store_eew),
         ]
     else:
-        check = [read_back, *write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
+        check = [*read_back, *write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
 
     # This can only be released after sigupd
     if params.maskval:

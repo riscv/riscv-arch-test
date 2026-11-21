@@ -88,6 +88,7 @@ class InstructionParams:
     egs: int | None = None  # Element Group Size
     ignore_vector_safety: bool = False  # Set this to disable vector safety (e.g. allow arbitrary index values)
     vd_different_eew_overlap: bool = False  # A source-dest overlap at different eews are tail and mask agnostic
+    unit_stride_target: bool = False  # Indexed store: fill and read back rs1val_pointer with unit-stride accesses
 
     maskval: str | PresetMask | None = None
 

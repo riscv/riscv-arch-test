@@ -460,6 +460,8 @@ def make_cp_custom_ls_indexed_msb(
         additional_no_overlap={("vd", "vs2"), ("vs3", "vs2")} if is_store else {("vd", "vs2")},
         vs2_val_pointer=label,
         rs1val_pointer_offset=-index,
+        # A store read back by the same indexed load passes even if both sign-extend the index
+        unit_stride_target=is_store,
         ignore_vector_safety=True,
         vl=1,
     )
@@ -467,31 +469,6 @@ def make_cp_custom_ls_indexed_msb(
     bin_name = f"msb_ei{eew}"
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-
-    if is_store:
-        # A store read back by the same indexed load passes even if both sign-extend the index, so fill
-        # vector_ls_random_base, where the store should land, with vd's 0xd elements first, and read the store
-        # back from there with a unit-stride load
-        indexed_load = "vl" + instr_name[2:]
-        unit_stride_load = re.sub(r"^vl[uo]x(seg\d)?ei\d+", rf"vl\1e{test_data.config.sew}", indexed_load)
-        rs1_setup = f"LA (x{params.rs1}, vector_ls_random_base{-index:+d})"
-        setups = [i for i, code in enumerate(tc.code) if rs1_setup in code]
-        assert len(setups) == 1, f"Expected one {rs1_setup} in {coverpoint} for {instr_name}"
-        tc.code[setups[0]] += "\n".join(
-            [
-                "",
-                f"  LA (x{params.rs1}, vector_ls_random_base)",
-                f"  vs{unit_stride_load[2:]} v{params.vd}, (x{params.rs1})  # fill the target with vd's 0xd elements",
-                f"  {rs1_setup}",
-            ]
-        )
-        pattern = re.compile(rf"{re.escape(indexed_load)} v(\d+), \(x(\d+)\), v\d+")
-        reloads = [i for i, code in enumerate(tc.code) if pattern.search(code)]
-        assert len(reloads) == 1, f"Expected one {indexed_load} read back in {coverpoint} for {instr_name}"
-        tc.code[reloads[0]] = pattern.sub(
-            rf"LA (x\2, vector_ls_random_base)\n  {unit_stride_load} v\1, (x\2)", tc.code[reloads[0]]
-        )
-
     return_testcase_registers(test_data, params)
 
     return [tc]

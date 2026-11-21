@@ -11,13 +11,12 @@ from dataclasses import replace
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    base_store_complement_fill,
     handle_parameter_exclusions,
     index_register_safety,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
-    vlmax_store_footprint,
+    store_target_checks,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -172,34 +171,33 @@ def format_vsxseg_like_type(
         setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, safety_params))
 
     offset = f"{params.rs1val_pointer_offset:+d}" if params.rs1val_pointer_offset else ""
-    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer}{offset})")
+    base_address = f"LA (x{params.rs1}, {params.rs1val_pointer}{offset})"
+    setup.append(base_address)
     operands = f"(x{params.rs1}), v{params.vs2}"
-    # The length suite checks the store's whole VLMAX footprint, so writes to inactive or tail elements fail
-    footprint = params.vector_suite == "length" and not params.ignore_vector_safety
-    fill, footprint_read_back = vlmax_store_footprint(params, instr_str, operands) if footprint else ([], [])
-    setup.extend(fill)
-    # The base suite checks only element 0, so fill it with the complement of the stored data
-    complement: list[str] = []
-    complement_fill: list[str] = []
-    if params.vector_suite == "base":
-        complement, complement_fill = base_store_complement_fill(
-            params, instr_str, operands, params.sew, segments, int(max(params.lmul, 1))
-        )
-    setup.extend(complement)
+    before_vtype, after_vtype, read_back, check_params = store_target_checks(
+        params, instr_str, operands, params.sew, segments, int(max(params.lmul, 1))
+    )
+    setup.extend(before_vtype)
     setup.append(load_test_vtype(params, random_vl_reg))
-    setup.extend(complement_fill)
+    setup.extend(after_vtype)
+    if params.unit_stride_target:
+        # The index and the rs1 offset cancel, so the store lands on rs1val_pointer. Fill it and read it back with
+        # unit-stride accesses, which don't use the index, so an indexed reload can't repeat a wrong index extension
+        unit_stride = f"{f'seg{segments}' if segments > 1 else ''}e{params.sew}.v"
+        target = f"LA (x{params.rs1}, {params.rs1val_pointer})"
+        setup.extend(
+            [target, f"vs{unit_stride} v{params.vd}, (x{params.rs1})  # fill the target with vd", base_address]
+        )
+        read_back = [target, f"vl{unit_stride} v{params.vd}, (x{params.rs1})"]
 
     # We don't need random_vl_reg anymore
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t"
     else:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}"
 
     # We no longer need vs2. This allows us to have enough registers for length SIGUPD where the maximum number of
     # registers (25) are required by the test section
@@ -207,13 +205,11 @@ def format_vsxseg_like_type(
 
     if params.vector_suite == "length":
         check = [
-            *(footprint_read_back or [read_back]),
-            *write_sigupd_v_len(
-                test_data, replace(params, maskval=None) if footprint else params, params.lmul, segments=segments
-            ),
+            *read_back,
+            *write_sigupd_v_len(test_data, check_params, params.lmul, segments=segments),
         ]
     else:
-        check = [read_back, *write_sigupd_v(test_data, params)]
+        check = [*read_back, *write_sigupd_v(test_data, params)]
 
     # This can only be released after sigupd
     if params.maskval:

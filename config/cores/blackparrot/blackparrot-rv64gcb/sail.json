@@ -589,6 +589,8 @@
       "supported": false,
       "num_triggers": 16,
       "breakpoint_reentrancy": "Use_interrupt_enables",
+      // Whether the tcontrol CSR is implemented; `Use_tcontrol` requires it
+      "tcontrol": { "supported": false },
       "mcontext": {
         "supported": false
       },

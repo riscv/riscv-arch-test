@@ -751,7 +751,14 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
         hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu")[0] {}
     `endif
     // Delegation of the software-check exception (cause 18).
-    medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {}
+    `ifdef UDB_MEDELEG_DELEGATABLE_18
+        medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {}
+    `else
+        // medeleg[18] is read-only 0
+        medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {
+            bins not_delegated = {0};
+        }
+    `endif
     `ifdef H_SUPPORTED
         hedeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[18] {}
     `endif

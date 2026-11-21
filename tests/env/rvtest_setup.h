@@ -41,10 +41,7 @@
   .option norelax
 
   // Disable assembler/linker optimizations for RVTEST_BEGIN
-  // *** not sure this is still needed after recent simplifications.  dh 4/24/26
   .option push
-  .option rvc
-  .p2align UNROLLSZ
   .option norvc
 
   // Include model specific boot code
@@ -79,6 +76,17 @@
 /**** - Include headers that contain code (not macros) that would throw off the address ****/
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
 /*******************************************************************************************/
+// Turn off M-mode landing pads (mseccfg.MLPE) on the way out of a test. The end-of-test
+// and failure code, the epilogs and rvmodel_halt_fail are not written with landing pads,
+// so an indirect jump among them (such as jr T1 to rvmodel_halt_fail) would otherwise
+// raise a software-check exception when a test left MLPE set.
+.macro RVTEST_MLPE_OFF
+  #if defined(ZICFILP_SUPPORTED) && defined(STANDARD_SM_SUPPORTED) // runs in M-mode only with the T-SEE
+    LI(     T1, MSECCFG_MLPE)
+    csrc    mseccfg, T1
+  #endif
+.endm
+
 .macro RVTEST_CODE_END
   // Disable assembler/linker optimizations for RVTEST_CODE_END
   .option push
@@ -95,6 +103,10 @@
   j rvtest_code_end
   .p2align 12
   rvtest_code_end:
+  // The default unexpected-interrupt handlers reach rvtest_code_end and
+  // rvtest_code_end_mmode with jr T1, which sets ELP when Zicfilp is enabled in that
+  // mode, so both start with a 4-byte-aligned lpad 0 (a no-op otherwise).
+    auipc   x0, 0                     // lpad 0
 
   // The checks and epilogs read M-mode CSRs. The test body and the default
   // unexpected-interrupt handlers can reach this point in any mode. Callers in
@@ -102,7 +114,53 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_code_end_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
+
+  // An early exit from a trap handler (trap signature overflow, a handler abort or an
+  // unexpected interrupt) leaves a marker in T5. Report it first: the test did not run
+  // to completion, so the signature counts below would mismatch, and the signature
+  // pointer (DEFAULT_SIG_REG = sp) still holds the handler's save-area pointer.
+  #ifdef STANDARD_SM_SUPPORTED
+    check_trap_sig_overflow:
+      LA(     T4, trap_sig_overflow)
+      bne     T4, T5, check_abort_test
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
+      call rvmodel_io_write_str
+      LA(a0, trap_sig_overflowstr)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
+
+    check_abort_test:
+      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+      bne     T4, T5, check_unexpected_int
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR abort_test
+      RVTEST_WORD_PTR abortstr
+      .word   CSR_MEPC
+
+    // T5 holds unexpected_int_str if a default RVMODEL interrupt macro or the trap
+    // handler's default clear routine aborted the test (see RVTEST_DFLT_INT_HNDLR).
+    check_unexpected_int:
+      LA(     T4, unexpected_int_str)
+      bne     T4, T5, check_end_of_abnormal
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
+      call rvmodel_io_write_str
+      LA(a0, unexpected_int_str)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
+    check_end_of_abnormal:
+  #endif
 
   #ifndef RVTEST_NOSIG
     // Check the regular signature offset to make sure the correct number of
@@ -148,19 +206,6 @@
   #endif
 
   #ifdef STANDARD_SM_SUPPORTED
-    check_trap_sig_overflow:
-      LA(     T4, trap_sig_overflow)
-      bne     T4, T5, check_trap_sig_offset
-      LA(a0, failstr)
-      call rvmodel_io_write_str
-      LA(a0, begin_debugstr)
-      call rvmodel_io_write_str
-      LA(a0, trap_sig_overflowstr)
-      call rvmodel_io_write_str
-      LA(a0, endstr)
-      call rvmodel_io_write_str
-      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
-
     // Check trap signature offset to make sure the correct number of traps occurred.
     // This is a trap-framework diagnostic, not a normal signature check. Pass the
     // already-available actual and expected offsets to the trap failure entry before
@@ -174,23 +219,16 @@
       LA(     T3, final_trap_sig_offset)
     #ifdef RVTEST_SELFCHECK
       LREG    DEFAULT_TEMP_REG, 0(T3) // Reference trap signature byte count
-      beq     DEFAULT_TEMP_REG, T1, check_abort_test
+      beq     DEFAULT_TEMP_REG, T1, run_epilogs
     #else
       SREG    T1, 0(T3)               // Save reference trap signature byte count
-      beq     x0, x0, check_abort_test
+      beq     x0, x0, run_epilogs
     #endif
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR check_trap_sig_offset
       RVTEST_WORD_PTR trap_sig_offset_mismatch
     #endif
 
-    check_abort_test:
-      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, run_epilogs
-      jal     T2, failedtest_trap_x7_x9
-      RVTEST_WORD_PTR abort_test
-      RVTEST_WORD_PTR abortstr
-      .word   CSR_MEPC
   #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
@@ -203,14 +241,21 @@
   // when mstatus.MDT=1 in M-mode. Callers in an M-mode trap handler use the _mmode entry.
   // An M-mode test body can also set MDT, so skip the switch if the last T-SBI mode
   // change was to M-mode.
+  // The failure paths in the trap handlers reach both entries with jr T1, which sets ELP
+  // when Zicfilp is enabled in that mode, so each starts with a 4-byte-aligned lpad 0.
+  .p2align 2
   rvtest_fail_epilogs:
+    auipc   x0, 0                     // lpad 0
     #ifdef STANDARD_SM_SUPPORTED
       LA(T1, rvtest_current_mode)
       LREG T1, 0(T1)
       beqz T1, rvtest_fail_epilogs_mmode
       RVTEST_TSBI_GOTO_MMODE
     #endif
+  .p2align 2
   rvtest_fail_epilogs_mmode:
+    auipc   x0, 0                     // lpad 0
+    RVTEST_MLPE_OFF
     LI(T5, 1)
 
   run_epilogs_body:
@@ -266,7 +311,8 @@
   trap_sig_overflow:
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
-  trap_sig_overflow_mmode:
+  trap_sig_overflow_mmode:            // from the M-mode trap handler, which leaves without mret
+    RVTEST_CLEAR_MDT T4
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end_mmode
 
@@ -274,7 +320,8 @@
   abort_test:
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
-  abort_test_mmode:
+  abort_test_mmode:                   // from the M-mode trap handler, which leaves without mret
+    RVTEST_CLEAR_MDT T4
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end_mmode
 
@@ -1046,6 +1093,14 @@
   .global rvtest_trap_count
   rvtest_trap_count:
     .dword 0
+
+  // Wait loop armed by wait_loop_arm() in the test generator: {first instruction of the loop,
+  // the loop's exit}, or an exit of 0 when no loop is armed. An interrupt clears the exit and,
+  // if it was taken inside the loop, resumes at the exit. See common_Xint_handler.
+  .p2align 3
+  .global rvtest_wait_loop
+  rvtest_wait_loop:
+    .dword 0, 0
 
   // Target of the last T-SBI mode change: 0 for M-mode, nonzero for lower modes.
   .p2align 3

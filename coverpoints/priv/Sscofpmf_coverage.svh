@@ -60,13 +60,21 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
         }
     `endif
 
-    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == '1) {
-            bins yes = {1};
+    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == (`UDB_MCOUNTENABLE_EN_MASK >> 3)) {
+        bins yes = {1};
     }
 
     mcounteren_stimulus_pattern_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0]) {
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_MCOUNTENABLE_EN_MASK >> 3)) != 0);
+
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_MCOUNTENABLE_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -75,8 +83,15 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
     }
 
     of_stimulus_pattern: coverpoint (`OF_VEC) {
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_HPM_COUNTER_EN_MASK >> 3)) != 0);
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -85,9 +100,9 @@ covergroup Sscofpmf_Sm_cg with function sample(ins_t ins);
     }
 
     of_write_pattern: coverpoint (`OF_VEC) {
-            bins all_ones     = {29'h1FFFFFFF};
-            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101}; // even-indexed OF bits set
-            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010}; // odd-indexed OF bits set
+            bins all_ones     = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
+            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // even-indexed OF bits set
+            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // odd-indexed OF bits set
     }
 
     lcofi_ip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP, "lcofip")[0] {
@@ -221,13 +236,21 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
         }
     `endif
 
-    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == '1) {
-            bins yes = {1};
+    mcounteren_all_ones_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0] == (`UDB_MCOUNTENABLE_EN_MASK >> 3)) {
+        bins yes = {1};
     }
 
     mcounteren_stimulus_pattern_state: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN, "enable")[28:0]) {
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_MCOUNTENABLE_EN_MASK >> 3)) != 0);
+
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_MCOUNTENABLE_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -236,8 +259,15 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     }
 
     of_stimulus_pattern: coverpoint (`OF_VEC) {
+        // A walking one cannot target a read-only-zero bit.
+        ignore_bins unimplemented = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
+                           29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
+                           29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
+                           29'h80000, 29'h100000, 29'h200000, 29'h400000, 29'h800000,
+                           29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000, 29'h10000000} with (
+            (item & ~(`UDB_HPM_COUNTER_EN_MASK >> 3)) != 0);
         bins all_zeros = {29'h0};
-        bins all_ones  = {29'h1FFFFFFF};
+        bins all_ones  = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
         bins walking[] = {29'h1, 29'h2, 29'h4, 29'h8, 29'h10, 29'h20, 29'h40, 29'h80,
                            29'h100, 29'h200, 29'h400, 29'h800, 29'h1000, 29'h2000,
                            29'h4000, 29'h8000, 29'h10000, 29'h20000, 29'h40000,
@@ -246,9 +276,9 @@ covergroup Sscofpmf_S_cg with function sample(ins_t ins);
     }
 
     of_write_pattern: coverpoint (`OF_VEC) {
-            bins all_ones     = {29'h1FFFFFFF};
-            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101}; // even-indexed OF bits set
-            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010}; // odd-indexed OF bits set
+            bins all_ones     = {29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3)};
+            bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // even-indexed OF bits set
+            bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010 & (`UDB_HPM_COUNTER_EN_MASK >> 3)}; // odd-indexed OF bits set
     }
 
     hpm_csr_target: coverpoint ins.current.insn[31:20] {

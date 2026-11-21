@@ -901,7 +901,9 @@ def _h_enable_tests(test_data: TestData, mode: _VMode) -> TestChunk:
                 "RVTEST_TSBI_GOTO_SMODE",
             ]
         )
-    lines.extend([*set_lpe(test_data, "S", mode, temp_reg, False), *set_lpe(test_data, "S", other_mode, temp_reg, False)])
+    lines.extend(
+        [*set_lpe(test_data, "S", mode, temp_reg, False), *set_lpe(test_data, "S", other_mode, temp_reg, False)]
+    )
     tc.code.extend(lines)
     test_data.int_regs.return_registers([jump_reg, save_reg, temp_reg])
     return test_data.end_test_chunk()

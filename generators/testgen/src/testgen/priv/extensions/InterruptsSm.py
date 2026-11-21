@@ -306,9 +306,7 @@ def make_interrupts_sm_m_sstc(test_data: TestData) -> list[TestChunk]:
     return emit_interrupts(test_data, SUITE, "M", [_generate_cp_write_stip_sstc])
 
 
-@add_priv_test_generator(
-    "Interrupts", required_extensions=["Sm", "H", "Sstc"], extra_defines=["#define BOOT_TO_MMODE"]
-)
+@add_priv_test_generator("Interrupts", required_extensions=["Sm", "H", "Sstc"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interrupts_sm_m_vsti_sstc(test_data: TestData) -> list[TestChunk]:
     """Interrupts_Sm vstimecmp test that runs in M-mode."""
     return emit_interrupts(test_data, SUITE, "M", [generate_cp_trigger_vsti_sstc])

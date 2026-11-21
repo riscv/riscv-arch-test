@@ -58,5 +58,5 @@ exclude_extensions:
   - D-fmax.d
   - D-fmin.d
 
-apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-regex-dev libboost-system-dev libsdl2-dev"
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libsdl2-dev"
 install_script: ".github/scripts/install-naxriscv.sh"

@@ -82,17 +82,21 @@ git clone https://github.com/serge1/ELFIO.git "$TOOLS/elfio"
 git -C "$TOOLS/elfio" checkout "$ELFIO_COMMIT"
 cp -R "$TOOLS/elfio/elfio" "$SPIKE/include/"
 
-# 5. Build the simulator (with the patch applied in step 2). Two changes to
+# 5. Build the simulator (with the patch applied in step 2). Three changes to
 #    src/test/cpp/naxriscv/makefile:
 #    - Link Spike's static libraries only. The makefile also links package.so, a shared library
 #      made from the same objects, and the second copy of Spike's device registry makes the
 #      simulator abort at start with 'Plugin "clint" already registered'.
+#    - No Boost libraries: Spike is built without Boost, and Boost 1.89 dropped libboost_system,
+#      so ubuntu-26.04 has none to link.
 #    - TRACE=no: no FST waveform support, which also drops the libz dependency.
 cd "$NAXRISCV_DIR/src/test/cpp/naxriscv"
 # shellcheck disable=SC2016 # ${SPIKE_BUILD} is makefile text, not a shell expansion
 sed -i 's|^SRCS+=${SPIKE_BUILD}/package.so|#&|' makefile
 # shellcheck disable=SC2016
 grep -q '^#SRCS+=${SPIKE_BUILD}/package.so' makefile
+sed -i 's|^LIBS +=.*|LIBS +="-lpthread -ldl"|' makefile
+grep -q '^LIBS +="-lpthread -ldl"$' makefile
 make compile TRACE=no THREAD_COUNT="$JOBS"
 
 install -m 0755 obj_dir/VNaxRiscv "$INSTALL_DIR/bin/VNaxRiscv"

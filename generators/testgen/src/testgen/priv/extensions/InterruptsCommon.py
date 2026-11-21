@@ -406,7 +406,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
                 tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
-                *(_write_vtw(tmp_reg, False, boot) if priv == "VS" else []),
+                *(write_vtw(tmp_reg, False, boot) if priv == "VS" else []),
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
@@ -522,7 +522,7 @@ def generate_cp_trigger_vsti_sstc(
     test_data.int_regs.return_register(tmp_reg)
 
 
-def _write_vtw(reg: int, vtw: bool, boot: str) -> list[str]:
+def write_vtw(reg: int, vtw: bool, boot: str) -> list[str]:
     """Set or clear hstatus.VTW from the boot mode."""
     return [
         f"LI(x{reg}, HSTATUS_VTW)",
@@ -577,7 +577,7 @@ def generate_cp_wfi_timeout(
                     *(["#ifdef S_SUPPORTED"] if guard else []),
                     f"LI(x{tmp_reg}, 0x200000)",
                     tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
-                    *([] if vtw is None else _write_vtw(tmp_reg, vtw, suite.boot)),
+                    *([] if vtw is None else write_vtw(tmp_reg, vtw, suite.boot)),
                     f"LI(x{tmp_reg}, {status['mask']:#x})",
                     f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                     f"LI(x{tmp_reg}, {ie * ie_mask:#x})",
@@ -590,7 +590,7 @@ def generate_cp_wfi_timeout(
                     *mode_enter(suite, priv),
                     "wfi # nothing is pending, so this times out and traps",
                     *mode_exit(suite, priv),
-                    *([] if vtw is None else _write_vtw(tmp_reg, False, suite.boot)),
+                    *([] if vtw is None else write_vtw(tmp_reg, False, suite.boot)),
                     *(["#endif // S_SUPPORTED"] if guard else []),
                     "",
                 ]

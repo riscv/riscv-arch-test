@@ -8,38 +8,16 @@
 
 """CSR test utilities for privileged test generation."""
 
-import re
-
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 
 
-def _pp_if(cond: str) -> str:
-    """``#ifdef cond`` for a macro name, ``#if cond`` for a preprocessor expression."""
-    return f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}"
-
-
 def _pp_name(cond: str) -> str:
     """The first macro named in a preprocessor condition, lower case, for use in a bin name."""
-    return next(name for name in re.findall(r"[A-Za-z_]\w*", cond) if name != "defined").lower()
-
-
-def _unchecked_mask_lines(
-    unchecked_bits: list[tuple[int, str]] | None, mask_reg: int | None, tmp_reg: int
-) -> list[str]:
-    """Clear each (bits, condition) entry's bits from the mask in mask_reg when its condition holds."""
-    lines = []
-    assert mask_reg is not None or not unchecked_bits, "unchecked_bits needs a mask register"
-    for bits, cond in unchecked_bits or []:
-        lines += [
-            _pp_if(cond),
-            f"LI(x{tmp_reg}, {~bits & ((1 << 64) - 1)})    # Do not check bits {bits:#x}",
-            f"and x{mask_reg}, x{mask_reg}, x{tmp_reg}",
-            f"#endif // {cond}",
-        ]
-    return lines
+    words = "".join(c if c.isalnum() or c == "_" else " " for c in cond).split()
+    return next(word for word in words if word != "defined").lower()
 
 
 def gen_csr_read_sigupd(check_reg: int, csr: tuple, test_data: TestData, mask_reg: int | None = None) -> str:
@@ -142,16 +120,14 @@ def csr_access_test(
         coverpoint: Coverpoint name for testcase strings
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for the testcase bin names, to keep them unique when a CSR is tested more than once.
-        unchecked_bits: Optional (bits, condition) pairs, as for csr_walk_test.  With maskedwrites, the bits are
-            also left unwritten when the condition holds.
+        unchecked_bits: Optional (bits, cond) pairs, as for csr_walk_test.
 
     Returns:
         List of assembly lines for the access test
     """
+    if unchecked_bits:
+        csr = _mask_with_conditional_bits(csr, unchecked_bits)
     csr_name, mask = csr
-    if unchecked_bits and mask is None:
-        mask = (1 << 64) - 1
-        csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -179,7 +155,8 @@ def csr_access_test(
             )
         else:
             lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        lines.extend(_unchecked_mask_lines(unchecked_bits, mask_reg, check_reg))
+    if mask_reg is not None:
+        lines += clear_conditional_bits(mask_reg, check_reg, unchecked_bits, "Do not check")
     if maskedwrites:
         valstr = "mask"
         lines.append(f"mv x{temp_reg}, x{mask_reg}    # Apply {valstr} to value being written")
@@ -266,7 +243,7 @@ def _warl_reserved_check(
                 set_bit = (
                     f"ori x{warl_mask_reg}, x{warl_mask_reg}, {1 << value:#x}    # {value:#0{width + 2}b} is legal"
                 )
-                lines.extend([_pp_if(cond), set_bit, f"#endif // {cond}"] if cond else [set_bit])
+                lines.extend(gated([set_bit], cond))
             lines.extend(
                 [
                     test_data.add_testcase(f"{bin_name}_{field_name}_legal", coverpoint, covergroup),
@@ -293,6 +270,38 @@ def _warl_reserved_check(
     return lines
 
 
+def upper_half(conditional_bits: list[tuple[int, str]]) -> list[tuple[int, str]] | None:
+    """The (bits, cond) pairs from bit 32 up, shifted down, for the RV32 upper-half CSR."""
+    return [(bits >> 32, cond) for bits, cond in conditional_bits if bits >> 32] or None
+
+
+def _mask_with_conditional_bits(csr: tuple, conditional_bits: list[tuple[int, str]]) -> tuple:
+    """csr with the bits of the (bits, cond) pairs added to its mask (all ones if None), to be cleared where cond holds."""
+    csr_name, mask = csr
+    if mask is None:
+        mask = (1 << 64) - 1
+    for bits, _cond in conditional_bits:
+        mask |= bits
+    return (csr_name, mask)
+
+
+def clear_conditional_bits(
+    reg: int, tmp_reg: int, conditional_bits: list[tuple[int, str]] | None, why: str
+) -> list[str]:
+    """Clear from x{reg} the bits of each (bits, cond) pair where the #if expression cond holds.
+
+    x{tmp_reg} is scratch; why starts the comment on each clear.
+    """
+    lines: list[str] = []
+    for bits, cond in conditional_bits or []:
+        clear = [
+            f"LI(x{tmp_reg}, {~bits & ((1 << 64) - 1)})    # {why} bits {bits:#x}",
+            f"and x{reg}, x{reg}, x{tmp_reg}",
+        ]
+        lines += gated(clear, cond)
+    return lines
+
+
 def csr_walk_test(
     test_data: TestData,
     csr: tuple,
@@ -302,10 +311,10 @@ def csr_walk_test(
     start_bit: int = 0,
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
+    legal_values: dict[str, list[tuple[int, str | None]]] | None = None,
     maskedwrites: bool = False,
     bin_prefix: str = "",
     unchecked_bits: list[tuple[int, str]] | None = None,
-    legal_values: dict[str, list[tuple[int, str | None]]] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -320,31 +329,29 @@ def csr_walk_test(
             constant is representable on RV32 (bits 32..63 are guarded by #if __riscv_xlen == 64)
         walk_zeros: If True, follow the walking-1s pass with a walking-0s pass
         warl_fields: Optional list of WARL field entries. (field_name, lsb, width, reserved_value)
-            marks a value that is always reserved. (field_name, lsb, width, value, gate_define)
-            marks a value that is legal only when gate_define holds for the config and
-            reserved otherwise; the readback is emitted under #ifdef gate_define (#if for an
-            expression) / #else so one generated test serves both kinds of config. Example:
-            ("mpp", 11, 2, 0b01, "S_SUPPORTED") (MPP=S is legal only with S-mode). A field may
-            appear in several entries whose legalization of the reserved value is
-            implementation-defined. Iterations that write the reserved value to such a field skip
-            the exact-match check for the field's bits and instead check that the field holds a
-            legal value; all other iterations check the field exactly as usual (see
-            _warl_reserved_check).
-        legal_values: Optional {field_name: [(value, condition or None), ...]} listing every legal value of a
-            WARL field, each present when its condition holds. The legality check of such a field then checks
-            that it reads back one of these values instead of only that it differs from the reserved value.
+            marks a value that is always reserved. (field_name, lsb, width, value, gate)
+            marks a value that is legal only when the #if expression gate holds for the config and
+            reserved otherwise; the readback is emitted under #if gate / #else so one generated test
+            serves both kinds of config. Example: ("mpp", 11, 2, 0b01, "defined(S_SUPPORTED)")
+            (MPP=S is legal only with S-mode). A field may appear in several entries
+            whose legalization of the reserved value is implementation-defined. Iterations that
+            write the reserved value to such a field skip the exact-match check for the field's
+            bits and instead check that the field holds a legal value; all
+            other iterations check the field exactly as usual (see _warl_reserved_check).
+        legal_values: Optional {field_name: [(value, cond or None), ...]} listing every legal value of a
+            WARL field, each present where the #if expression cond holds. The legality check of such a field
+            then checks that it reads back one of these values instead of only that it differs from the
+            reserved value.
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unchecked_bits: Optional (bits, condition) pairs. The bits are walked but removed from the readback
-            mask only when `condition` holds for the config: a macro name is tested with #ifdef, anything else
-            with #if. Starts from the csr mask, or all ones if None. With maskedwrites the bits are not written
-            either, so this also keeps the walk away from bits whose writes would be unsafe on such configs.
+        unchecked_bits: Optional (bits, cond) pairs, cond an #if expression. The bits are added to the csr mask
+            (all ones if None) and, where cond holds, cleared from it: they are not checked, and with maskedwrites
+            not written either. Elsewhere they are walked and checked.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
+    if unchecked_bits:
+        csr = _mask_with_conditional_bits(csr, unchecked_bits)
     csr_name, mask = csr
-    if unchecked_bits and mask is None:
-        mask = (1 << 64) - 1
-        csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -413,7 +420,7 @@ def csr_walk_test(
             gated = [f for f in matched if len(f) == 5 and f[4] == gate]
             gated_names = ", ".join(f[0].upper() for f in gated)
             return [
-                _pp_if(gate),
+                f"#if {gate}",
                 *branch(name, reserved, rest),
                 f"#else // not {gate}: the value written to {gated_names} is reserved",
                 *branch(f"{name}_no{_pp_name(gate)}", reserved + gated, rest),
@@ -428,9 +435,9 @@ def csr_walk_test(
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         f"LI(x{walk_reg}, {1 << start_bit})              # 1 in bit {start_bit}",
     ]
-    if mask is not None:
+    if mask_reg is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        lines.extend(_unchecked_mask_lines(unchecked_bits, mask_reg, check_reg))
+        lines += clear_conditional_bits(mask_reg, check_reg, unchecked_bits, "Do not check")
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

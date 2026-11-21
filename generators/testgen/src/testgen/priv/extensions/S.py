@@ -28,6 +28,7 @@ from testgen.priv.extensions.PrivCommon import (
     pmm_warl_fields,
     priv_inst_trap_tests,
     xcause_write_tests,
+    xl_field_tests,
     xstatus_sd_tests,
     xtval_value_tests,
 )
@@ -57,52 +58,17 @@ S_VADDR_CSRS = {
 def _sstatus_uxl_tests(test_data: TestData) -> list[str]:
     """RV64: write sstatus.UXL = 0 through 3 from S-mode and check that UXL reads back a legal value
     (cp_sxlen_ge_uxlen)."""
-    ######################################
-    covergroup = "S_sstatus_cg"
-    coverpoint = "cp_sxlen_ge_uxlen"
-    ######################################
-    save_reg, val_reg, tmp_reg = test_data.int_regs.get_registers(3)
-    lines = [
+    return [
         "",
         "#if __riscv_xlen == 64",
         comment_banner(
-            coverpoint,
+            "cp_sxlen_ge_uxlen",
             "From S-mode write sstatus.UXL = 0, 1, 2 and 3 and read it back.  UXL is WARL and encodes UXLEN, which\n"
             "cannot exceed SXLEN = 64: it reads 2 where UXLEN is fixed at 64, and 1 or 2 where UXLEN may be 32.",
         ),
-        f"csrr x{save_reg}, sstatus",
+        *xl_field_tests(test_data, "sstatus", "uxl", 32, "U_SUPPORTED", "UXLEN", "S_sstatus_cg", "cp_sxlen_ge_uxlen"),
+        "#endif // __riscv_xlen == 64",
     ]
-    for value in range(4):
-        lines.extend(
-            [
-                "",
-                f"LI(x{tmp_reg}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})  # clear UXL (bits 33:32)",
-                f"and x{val_reg}, x{save_reg}, x{tmp_reg}",
-                f"LI(x{tmp_reg}, {value << 32})",
-                f"or x{val_reg}, x{val_reg}, x{tmp_reg}    # UXL = {value}",
-                test_data.add_testcase(f"uxl_attempt_{value}", coverpoint, covergroup),
-                f"csrw sstatus, x{val_reg}",
-                f"csrr x{val_reg}, sstatus",
-                f"srli x{val_reg}, x{val_reg}, 32",
-                f"andi x{val_reg}, x{val_reg}, 3    # UXL",
-                "#if defined(UDB_UXLEN_64) && !defined(UDB_UXLEN_32)",
-                "# UXLEN is fixed at 64, so UXL reads 2",
-                "#else",
-                f"addi x{val_reg}, x{val_reg}, -1",
-                f"sltiu x{val_reg}, x{val_reg}, 2    # 1 if UXL is 1 or 2",
-                "#endif",
-                write_sigupd(val_reg, test_data),
-            ]
-        )
-    lines.extend(
-        [
-            "",
-            f"csrw sstatus, x{save_reg}        # restore sstatus",
-            "#endif // __riscv_xlen == 64",
-        ]
-    )
-    test_data.int_regs.return_registers([save_reg, val_reg, tmp_reg])
-    return lines
 
 
 def _generate_srets_tests(test_data: TestData) -> list[str]:

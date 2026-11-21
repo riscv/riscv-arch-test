@@ -44,6 +44,7 @@ from testgen.priv.extensions.PrivCommon import (
     pmm_legal_values,
     pmm_warl_fields,
     xcause_write_tests,
+    xl_field_tests,
     xstatus_sd_tests,
     xtval_value_tests,
 )
@@ -609,7 +610,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # Smepmp's MML and MMWP are sticky and the reference model has no Smepmp, so with Smepmp mseccfg bits 2:0
     # are neither written nor checked.  Without Smepmp they are read-only zero.
-    mseccfg_unchecked = [(0b111, "SMEPMP_SUPPORTED"), *pmm_access_unchecked("SMMPM")]
+    mseccfg_unchecked = [(0b111, "defined(SMEPMP_SUPPORTED)"), *pmm_access_unchecked("SMMPM")]
     menvcfg_unchecked = pmm_access_unchecked("SMNPM")
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
@@ -722,8 +723,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc = test_data.new_test_chunk(test_chunks)
     # MPP: 0b10 is always reserved; 0b01 (S-mode) is only legal when the config has S-mode.  A reserved write
     # must leave MPP holding an implemented mode: M, S with S-mode, U with U-mode.
-    warl_fields = [("mpp", 11, 2, 0b10), ("mpp", 11, 2, 0b01, "S_SUPPORTED")]
-    mpp_legal = {"mpp": [(0b11, None), (0b01, "S_SUPPORTED"), (0b00, "U_SUPPORTED")]}
+    warl_fields = [("mpp", 11, 2, 0b10), ("mpp", 11, 2, 0b01, "defined(S_SUPPORTED)")]
+    mpp_legal = {"mpp": [(0b11, None), (0b01, "defined(S_SUPPORTED)"), (0b00, "defined(U_SUPPORTED)")]}
     tc.code.extend(
         csr_walk_test(
             test_data,
@@ -809,7 +810,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             coverpoint_masked,
             warl_fields=pmm_warl_fields("SMMPM"),
             maskedwrites=True,
-            unchecked_bits=[(0b111, "SMEPMP_SUPPORTED")],
+            unchecked_bits=[(0b111, "defined(SMEPMP_SUPPORTED)")],
             legal_values=pmm_legal_values("SMMPM"),
         )
     )
@@ -1830,8 +1831,6 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 def _mstatus_xl_tests(test_data: TestData) -> list[str]:
     """RV64: from M-mode write mstatus.SXL and mstatus.UXL = 0 through 3 and check that each reads back a legal value
     (cp_mstatus_sxl, cp_mstatus_uxl)."""
-    covergroup = "Sm_mstatus_cg"
-    save_reg, val_reg, tmp_reg = test_data.int_regs.get_registers(3)
     lines = [
         "",
         "#if __riscv_xlen == 64",
@@ -1841,37 +1840,12 @@ def _mstatus_xl_tests(test_data: TestData) -> list[str]:
             "zero without its mode, and otherwise a WARL field encoding SXLEN or UXLEN: 2 where that XLEN is fixed\n"
             "at 64, and 1 or 2 where it may be 32.",
         ),
-        f"csrr x{save_reg}, mstatus",
     ]
     for field, shift, mode_define, xlen in (("sxl", 34, "S_SUPPORTED", "SXLEN"), ("uxl", 32, "U_SUPPORTED", "UXLEN")):
-        coverpoint = f"cp_mstatus_{field}"
-        for value in range(4):
-            lines.extend(
-                [
-                    "",
-                    f"LI(x{tmp_reg}, {~(3 << shift) & 0xFFFFFFFFFFFFFFFF})  # clear {field.upper()}",
-                    f"and x{val_reg}, x{save_reg}, x{tmp_reg}",
-                    f"LI(x{tmp_reg}, {value << shift})",
-                    f"or x{val_reg}, x{val_reg}, x{tmp_reg}    # {field.upper()} = {value}",
-                    test_data.add_testcase(f"{field}_write_{value}", coverpoint, covergroup),
-                    f"csrw mstatus, x{val_reg}",
-                    f"csrr x{val_reg}, mstatus",
-                    f"csrw mstatus, x{save_reg}    # restore mstatus",
-                    f"srli x{val_reg}, x{val_reg}, {shift}",
-                    f"andi x{val_reg}, x{val_reg}, 3    # {field.upper()}",
-                    f"#if !defined({mode_define})",
-                    f"# Without the mode, {field.upper()} is read-only zero",
-                    f"#elif defined(UDB_{xlen}_64) && !defined(UDB_{xlen}_32)",
-                    f"# {xlen} is fixed at 64, so {field.upper()} reads 2",
-                    "#else",
-                    f"addi x{val_reg}, x{val_reg}, -1",
-                    f"sltiu x{val_reg}, x{val_reg}, 2    # 1 if {field.upper()} is 1 or 2",
-                    "#endif",
-                    write_sigupd(val_reg, test_data),
-                ]
-            )
+        lines += xl_field_tests(
+            test_data, "mstatus", field, shift, mode_define, xlen, "Sm_mstatus_cg", f"cp_mstatus_{field}"
+        )
     lines.append("#endif // __riscv_xlen == 64")
-    test_data.int_regs.return_registers([save_reg, val_reg, tmp_reg])
     return lines
 
 

@@ -202,13 +202,59 @@ def pmm_warl_fields(ext: str, name: str = "pmm", lsb: int = 32) -> list[tuple]:
 
 def pmm_legal_values(ext: str, name: str = "pmm") -> dict[str, list[tuple[int, str | None]]]:
     """csr_walk_test legal_values for a PMM field: 00, and 10 and 11 where the config supports PMLEN 7 and 16."""
-    return {name: [(0b00, None), (0b10, f"UDB_SUPPORTED_PMLEN_{ext}_7"), (0b11, f"UDB_SUPPORTED_PMLEN_{ext}_16")]}
+    return {
+        name: [
+            (0b00, None),
+            (0b10, f"defined(UDB_SUPPORTED_PMLEN_{ext}_7)"),
+            (0b11, f"defined(UDB_SUPPORTED_PMLEN_{ext}_16)"),
+        ]
+    }
 
 
 def pmm_access_unchecked(ext: str, lsb: int = 32) -> list[tuple[int, str]]:
     """csr_access_test unchecked_bits for a PMM field: its all-ones write (PMM = 11) is legalized in an
     implementation-defined way where the config has the extension without PMLEN 16 (pmm_warl_fields checks it)."""
     return [(3 << lsb, f"defined({ext}_SUPPORTED) && !defined(UDB_SUPPORTED_PMLEN_{ext}_16)")]
+
+
+def xl_field_tests(
+    test_data: TestData, csr: str, field: str, shift: int, mode_define: str, xlen: str, covergroup: str, coverpoint: str
+) -> list[str]:
+    """RV64: write the 2-bit XLEN field `field` of csr (bits shift+1:shift) = 0 to 3 and check that each reads back legal.
+
+    The field is read-only zero without its mode (mode_define), reads 2 where xlen is fixed at 64, and reads 1 or 2
+    where xlen may be 32. csr is restored after each write.
+    """
+    save_reg, val_reg, tmp_reg = test_data.int_regs.get_registers(3)
+    name = field.upper()
+    lines = [f"csrr x{save_reg}, {csr}"]
+    for value in range(4):
+        lines.extend(
+            [
+                "",
+                f"LI(x{tmp_reg}, {~(3 << shift) & 0xFFFFFFFFFFFFFFFF})  # clear {name} (bits {shift + 1}:{shift})",
+                f"and x{val_reg}, x{save_reg}, x{tmp_reg}",
+                f"LI(x{tmp_reg}, {value << shift})",
+                f"or x{val_reg}, x{val_reg}, x{tmp_reg}    # {name} = {value}",
+                test_data.add_testcase(f"{field}_write_{value}", coverpoint, covergroup),
+                f"csrw {csr}, x{val_reg}",
+                f"csrr x{val_reg}, {csr}",
+                f"csrw {csr}, x{save_reg}    # restore {csr}",
+                f"srli x{val_reg}, x{val_reg}, {shift}",
+                f"andi x{val_reg}, x{val_reg}, 3    # {name}",
+                f"#if !defined({mode_define})",
+                f"# Without the mode, {name} is read-only zero",
+                f"#elif defined(UDB_{xlen}_64) && !defined(UDB_{xlen}_32)",
+                f"# {xlen} is fixed at 64, so {name} reads 2",
+                "#else",
+                f"addi x{val_reg}, x{val_reg}, -1",
+                f"sltiu x{val_reg}, x{val_reg}, 2    # 1 if {name} is 1 or 2",
+                "#endif",
+                write_sigupd(val_reg, test_data),
+            ]
+        )
+    test_data.int_regs.return_registers([save_reg, val_reg, tmp_reg])
+    return lines
 
 
 def _vaddr_walk_step(

@@ -25,7 +25,7 @@ from testgen.priv.registry import add_priv_test_generator
 CG = "Ssstateen_cg"
 SSTATEEN_REGS = [f"sstateen{n}" for n in range(4)]
 # TODO: Check sstateen0.JVT again once Sail supports Zcmt.
-SSTATEEN0_UNCHECKED_BITS = [(1 << 2, "ZCMT_SUPPORTED")]  # JVT
+SSTATEEN0_UNCHECKED_BITS = [(1 << 2, "defined(ZCMT_SUPPORTED)")]  # JVT
 HSTATEEN_REGS = [f"hstateen{n}" for n in range(4)]
 # Access from every mode to also check that a bit does not affect the modes it does not control
 MODES = ["S", "U", "VS", "VU"]

@@ -42,7 +42,7 @@ def make(instruction: str) -> None:
     # Establish a known small VLMAX (vl=1, eSEW, m1) and initialize operands.
     common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, {lmul_flag(lmul)}, tu, mu",
                      "# vill=0, vstart=0, vl=1, m1")
-    init_operand_regs(instruction, instruction_data[0], sew, scratch)
+    init_operand_regs(instruction, instruction_data[0], scratch)
     # Re-emit vsetivli RIGHT BEFORE writing vstart so SAMPLE_BEFORE on the
     # test instruction picks up the (vtype, vl, vstart) we just configured.
     common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, {lmul_flag(lmul)}, tu, mu",

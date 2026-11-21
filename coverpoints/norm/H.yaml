@@ -603,6 +603,17 @@ normative_rule_definitions:
     coverpoint:
       ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
 
+  # When V=1, both vsstatus.FS and the HS-level sstatus.FS are in effect. Attempts to execute a
+  # floating-point instruction when either field is 0 (Off) raise an illegal-instruction exception.
+  # Modifying the floating-point state when V=1 causes both fields to be set to 3 (Dirty).
+  - name: vsstatus_fs_op
+    coverpoint:
+      [
+        "H_F_cg/cp_fcsr_access",
+        "H_F_cg/cp_vsstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition_nondeterministic",
+      ]
+
   # hstatus.VSBE sets the endianness of VS-mode explicit accesses and of VS-level page-table accesses; it may be
   # read-only, and vsstatus.UBE may be a read-only copy of it
   - names:

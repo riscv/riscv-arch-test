@@ -150,6 +150,29 @@ coverpoints:
     bins: 1 PMM × 2 address variants (upper 7 bits = 0/1) × 1 misaligned write (sw) × 1 misaligned read (lw) × 1 mode (U) ×
     rules:
       - pm_misaligned_equivalence
+  - name: |-
+      cp_pmlen_misaligned_seam_sv57
+      cp_pmlen_misaligned_seam_sv48
+    goal: Verify that pointer masking applies to each byte of a misaligned access whose bytes straddle bit XLEN-PMLEN-1, the sign bit of the masked address.
+    description: |-
+      A misaligned access is equivalent to separate byte accesses, each pointer masked.  An access that starts in the last page below 2^(XLEN-PMLEN-1) therefore continues in the first page of the upper half, not at the non-canonical address that adding to the masked start address gives.
+      Both pages are virtual pages only when the satp mode translates exactly the bits that masking keeps: Sv57 with PMLEN=7 (bit 56, pages 0x00FF_FFFF_FFFF_F000 and 0xFF00_0000_0000_0000) and Sv48 with PMLEN=16 (bit 47, pages 0x0000_7FFF_FFFF_F000 and 0xFFFF_8000_0000_0000).  A narrower mode finds the lower page non-canonical, and in Sv57 with PMLEN=16 the lower page lies in the test image's identity-mapped root entry.
+
+      Test Environment:
+       Only if misaligned loads and stores are performed in hardware (MISALIGNED_LDST).
+       In S-mode map the lower page to a scratch page and the upper page to a second scratch page that does not follow it in physical memory.
+       In S-mode set senvcfg.PMM=10 with satp.MODE=Sv57, or senvcfg.PMM=11 with satp.MODE=Sv48.
+       Switch to U-mode.
+      For each A_upper_bits in {0x0000, every masked bit set (0xFE00 for PMLEN=7, 0xFFFF for PMLEN=16)}:
+      For each instruction in {lh, lw, ld, sh, sw, sd, flw, fsw (if F), fld, fsd (if D)} and each number of bytes 1 .. size-1 in the lower page:
+      Seed the last dword of the lower scratch page and the first dword of the upper one with distinct bytes.
+      For a read: read from A, sigupd(value).  For a write: write a value with distinct bytes to A, read back both seeded dwords, sigupd(values).
+      Then clear the upper page's leaf PTE and repeat every access, recording the trap.
+    expectation: "Both pages mapped: no trap; a read returns the bytes on either side of the seam and a write updates them.  Upper page unmapped: load or store/AMO page fault with stval = the upper page's address (0xFF00_0000_0000_0000 or 0xFFFF_8000_0000_0000), the masked address of the part of the access in that page.  A write that faults may have written its first part, so memory is not checked."
+    bins: 1 mode (U) × {Sv57 with PMLEN=7, Sv48 with PMLEN=16} × instructions {lh, lw, ld, sh, sw, sd, flw, fsw, fld, fsd} × {completes, page fault}
+    rules:
+      - pm_misaligned_equivalence
+      - pm_csr_hw_apply
   - name: cp_hardware_csr_writes_fault_load
     goal: |-
       Verify pointer masking is applied to hardware-written CSR address values.

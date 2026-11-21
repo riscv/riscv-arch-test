@@ -290,6 +290,29 @@
         bins misaligned = {[2'b01:2'b11]};
     }
 
+    // Loads and stores whose misaligned forms can straddle a page, for the cp_pmlen_misaligned_seam_* crosses
+    seam_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lh = {LH};
+        wildcard bins lw = {LW};
+        wildcard bins ld = {LD};
+        wildcard bins sh = {SH};
+        wildcard bins sw = {SW};
+        wildcard bins sd = {SD};
+        `ifdef F_SUPPORTED
+            wildcard bins flw = {FLW};
+            wildcard bins fsw = {FSW};
+        `endif
+        `ifdef D_SUPPORTED
+            wildcard bins fld = {FLD};
+            wildcard bins fsd = {FSD};
+        `endif
+    }
+    // Whether the access completes or takes a page fault on the upper seam page
+    seam_trap: coverpoint ins.trap {
+        type_option.weight = 0;
+    }
+
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         lw_insn: coverpoint ins.current.insn {
             type_option.weight = 0;

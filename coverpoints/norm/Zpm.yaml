@@ -143,6 +143,7 @@ normative_rule_definitions:
         "Smmpm_cg/cp_pm_mprv_mpp_m",
         "Ssnpm_Sm_cg/cp_pm_mprv_mpp_u",
         "Smnpm_SSm_cg/cp_pm_mprv_mpp_s",
+        "{Smnpm_SSm_cg, Ssnpm_Sm_cg}/{cp_pmlen_misaligned_seam_sv57, cp_pmlen_misaligned_seam_sv48}",
         "Smnpm_USm_cg/cp_pm_mprv_mpp_u",
         "Ssnpm_H_cg/{cp_hlv_hs_spvp0_pmm, cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp0_pmm, cp_hlv_u_spvp1_pmm, cp_hlv_hs_spvp0_mxr_pmm, cp_hlv_hs_spvp1_mxr_pmm}",
         "Ssnpm_H_cg/{cp_hupmm_change_hfence, cp_hupmm_change_hfence_sv48x4, cp_hlv_u_spvp0_sv48x4_pmm}",
@@ -174,6 +175,8 @@ normative_rule_definitions:
       [
         "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_pmlen_misaligned_word",
         "Ssnpm_H_cg/{cp_vs_pmlen_misaligned_word, cp_vu_pmlen_misaligned_word}",
+        "{Smnpm_S_cg, Smnpm_SSm_cg, Ssnpm_cg, Ssnpm_Sm_cg}/{cp_pmlen_misaligned_seam_sv57, cp_pmlen_misaligned_seam_sv48}",
+        "Ssnpm_H_cg/{cp_vs_pmlen_misaligned_seam_sv57, cp_vs_pmlen_misaligned_seam_sv48, cp_vu_pmlen_misaligned_seam_sv57, cp_vu_pmlen_misaligned_seam_sv48}",
       ]
 
   # No pointer masking operations are applied when software reads/writes to CSRs,
@@ -194,6 +197,8 @@ normative_rule_definitions:
         "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_hardware_csr_writes_fault_load",
         "{Smmpm_cg, Smnpm_S_cg, Smnpm_U_cg, Ssnpm_cg}/cp_hardware_csr_writes_fault_store",
         "Ssnpm_H_cg/{cp_vs_hardware_csr_writes_fault_load, cp_vs_hardware_csr_writes_fault_store, cp_vu_hardware_csr_writes_fault_load, cp_vu_hardware_csr_writes_fault_store}",
+        "{Smnpm_S_cg, Smnpm_SSm_cg, Ssnpm_cg, Ssnpm_Sm_cg}/{cp_pmlen_misaligned_seam_sv57, cp_pmlen_misaligned_seam_sv48}",
+        "Ssnpm_H_cg/{cp_vs_pmlen_misaligned_seam_sv57, cp_vs_pmlen_misaligned_seam_sv48, cp_vu_pmlen_misaligned_seam_sv57, cp_vu_pmlen_misaligned_seam_sv48}",
       ]
 
   # Pointer masking is also applied, when applicable, to the memory access address

@@ -54,6 +54,31 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     cp_pmlen_misaligned_word: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_mxr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits_jalr, mxr_bit, satp_mode, jalr_insn;
+    // cp_pmlen_misaligned_seam_sv57 and _sv48: a misaligned access whose bytes straddle bit 63 - PMLEN, the sign bit
+    // of the masked address, with the satp mode as wide as the masked address.  senvcfg.PMM masks each byte, so
+    // the bytes past the seam reach the upper half.  The size of the access is 1 << insn[13:12].
+    `ifdef UDB_MISALIGNED_LDST
+        `ifdef SV57_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                seam_sv57: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1010 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") == 2'b10 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 56) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv57: cross priv_mode_u, seam_insn, seam_sv57, seam_trap;
+            `endif
+        `endif
+        `ifdef SV48_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                seam_sv48: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1001 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") == 2'b11 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 47) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv48: cross priv_mode_u, seam_insn, seam_sv48, seam_trap;
+            `endif
+        `endif
+    `endif // UDB_MISALIGNED_LDST
     `ifdef UDB_UXLEN_32
         cp_pmm_uxl_clear: cross priv_mode_s, pmm, uxl_rv32;
     `endif // UDB_UXLEN_32
@@ -113,6 +138,31 @@ covergroup Ssnpm_Sm_cg with function sample(ins_t ins);
     `else
         cp_pm_mprv_mpp_u: cross priv_mode_m, pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_u;
     `endif // SMMPM_SUPPORTED
+    // cp_pmlen_misaligned_seam_sv57 and _sv48: a misaligned access whose bytes straddle bit 63 - PMLEN, the sign bit
+    // of the masked address, with the satp mode as wide as the masked address.  senvcfg.PMM masks each byte, so
+    // the bytes past the seam reach the upper half.  The size of the access is 1 << insn[13:12].
+    `ifdef UDB_MISALIGNED_LDST
+        `ifdef SV57_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                seam_sv57: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1010 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") == 2'b10 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 56) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv57: cross priv_mode_m, mprv_bit, mpp_field_u, seam_insn, seam_sv57, seam_trap;
+            `endif
+        `endif
+        `ifdef SV48_SUPPORTED
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                seam_sv48: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") == 4'b1001 &&
+                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") == 2'b11 &&
+                    (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 47) & 1)) {
+                    bins seam = {1};
+                }
+                cp_pmlen_misaligned_seam_sv48: cross priv_mode_m, mprv_bit, mpp_field_u, seam_insn, seam_sv48, seam_trap;
+            `endif
+        `endif
+    `endif // UDB_MISALIGNED_LDST
 
 endgroup
 `endif // EXCLUDE_SM
@@ -763,6 +813,46 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     // ---- Misaligned accesses, with fully masked tags ----
     cp_vs_pmlen_misaligned_word: cross priv_mode_vs, sw_lw_insn, misaligned_addr, pmm_tag_h, pair_chosen;
     cp_vu_pmlen_misaligned_word: cross priv_mode_vu, sw_lw_insn, misaligned_addr, pmm_tag_s, pair_chosen;
+    // cp_vs_ and cp_vu_pmlen_misaligned_seam_sv57 and _sv48: as cp_pmlen_misaligned_seam_* in Ssnpm_cg, in VS-mode
+    // with henvcfg.PMM and in VU-mode with senvcfg.PMM, with vsatp as wide as the masked address
+    `ifdef UDB_MISALIGNED_LDST
+        `ifdef UDB_SV57_VSMODE_TRANSLATION
+            `ifdef UDB_SV57X4_TRANSLATION
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                    seam_vs_sv57: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") == 4'b1010 &&
+                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm") == 2'b10 &&
+                        (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 56) & 1)) {
+                        bins seam = {1};
+                    }
+                    cp_vs_pmlen_misaligned_seam_sv57: cross priv_mode_vs, seam_insn, seam_vs_sv57, seam_trap;
+                    seam_vu_sv57: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") == 4'b1010 &&
+                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") == 2'b10 &&
+                        (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 56) & 1)) {
+                        bins seam = {1};
+                    }
+                    cp_vu_pmlen_misaligned_seam_sv57: cross priv_mode_vu, seam_insn, seam_vu_sv57, seam_trap;
+                `endif
+            `endif
+        `endif
+        `ifdef UDB_SV48_VSMODE_TRANSLATION
+            `ifdef UDB_SV48X4_TRANSLATION
+                `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                    seam_vs_sv48: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") == 4'b1001 &&
+                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm") == 2'b11 &&
+                        (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 47) & 1)) {
+                        bins seam = {1};
+                    }
+                    cp_vs_pmlen_misaligned_seam_sv48: cross priv_mode_vs, seam_insn, seam_vs_sv48, seam_trap;
+                    seam_vu_sv48: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") == 4'b1001 &&
+                        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm") == 2'b11 &&
+                        (((ins.current.eff_addr ^ (ins.current.eff_addr + (`UDB_MXLEN'(1) << ins.current.insn[13:12]) - 1)) >> 47) & 1)) {
+                        bins seam = {1};
+                    }
+                    cp_vu_pmlen_misaligned_seam_sv48: cross priv_mode_vu, seam_insn, seam_vu_sv48, seam_trap;
+                `endif
+            `endif
+        `endif
+    `endif // UDB_MISALIGNED_LDST
 
     // ---- stval and htval on a faulting access ----
     // The cause on the faulting instruction's record tells the two bases of the plan apart: an access fault (5 for a

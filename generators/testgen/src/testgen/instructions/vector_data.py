@@ -7,14 +7,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-import math
 import random
 import re
-import struct
 
 from testgen.data.edges import VECTOR_EDGES
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
+from testgen.data.shaped import fp_to_int_source, mask
 from testgen.data.state import TestData
 
 # Fraction of compare elements whose vs2 equals the other operand
@@ -23,25 +22,14 @@ EQUAL_FRACTION = 0.4
 # Fraction of narrowing-clip elements whose shifted value is outside the destination range
 CLIP_SATURATE_FRACTION = 0.25
 
-# FP-to-int converts: fraction of sources drawn uniformly over the range (the rest have log-uniform magnitude)
-CONVERT_UNIFORM_FRACTION = 0.25
-CONVERT_RANGE_SCALE = 1.5  # Sources reach 1.5x the destination integer range, so about 1/3 of uniform ones saturate
-CONVERT_MIN_EXPONENT = -2  # Smallest log-uniform magnitude is 2^-2, so rounding to zero is exercised
-CONVERT_UNSIGNED_NEGATIVE_FRACTION = 0.125
-
 EQUALITY_COMPARES = re.compile(r"vm(f?eq|f?ne|seq|sne)\.v[vxif]$")
 NARROWING_CLIPS = re.compile(r"vnclipu?\.w[vxi]$")
 FP_TO_INT_CONVERTS = re.compile(r"v(f|fw|fn)cvt\.(rtz\.)?(xu?)\.f\.[vw]$")
+# Compares and clips whose vs2 elements are fitted to vs1's
+VS1_FITTED = re.compile(r"vm(f?eq|f?ne|seq|sne)\.vv$|vnclipu?\.wv$")
 
-FP_FORMATS = {
-    16: ("<e", "<H", 65504.0),
-    32: ("<f", "<I", 3.4028234663852886e38),
-    64: ("<d", "<Q", 1.7976931348623157e308),
-}
-
-
-def _mask(bits: int) -> int:
-    return (1 << bits) - 1
+# FP format of each SEW
+FP_FORMAT_OF_SEW = {16: "h", 32: "s", 64: "d"}
 
 
 def _vs1_elements(params: InstructionParams, test_data: TestData) -> list[int]:
@@ -57,12 +45,12 @@ def _equal_operand(instruction: str, params: InstructionParams, test_data: TestD
         return _vs1_elements(params, test_data)
     if instruction.endswith(".vx"):
         assert params.rs1val is not None
-        return params.rs1val & _mask(sew)
+        return params.rs1val & mask(sew)
     if instruction.endswith(".vi"):
         assert params.immval is not None
-        return params.immval & _mask(sew)
+        return params.immval & mask(sew)
     assert params.fs1val is not None
-    return params.fs1val & _mask(sew)
+    return params.fs1val & mask(sew)
 
 
 def compare_elements(
@@ -74,7 +62,7 @@ def compare_elements(
     for i in range(count):
         value = other if isinstance(other, int) else (other[i] if i < len(other) else None)
         if value is not None and random.random() < EQUAL_FRACTION:
-            elements.append(value & _mask(eew))
+            elements.append(value & mask(eew))
         else:
             elements.append(random_int(eew, signed=False))
     return elements
@@ -96,7 +84,7 @@ def clip_source(sew: int, shift: int, *, signed: bool) -> int:
         q = random_int(sew, signed=signed)
     if shift:
         q = (q << shift) | random_int(shift, signed=False)
-    return q & _mask(2 * sew)
+    return q & mask(2 * sew)
 
 
 def _clip_shifts(instruction: str, count: int, sew: int, params: InstructionParams, test_data: TestData) -> list[int]:
@@ -118,28 +106,13 @@ def clip_elements(instruction: str, count: int, sew: int, params: InstructionPar
     ]
 
 
-def fp_to_int_source(instruction: str, eew: int) -> int:
-    """
-    Bits of an FP source of width eew for an FP-to-int convert, with magnitude up to CONVERT_RANGE_SCALE times the
-    destination integer range: some uniform over the range (saturation boundary), most log-uniform (fractional bits
-    that make rounding modes matter).
-    """
+def fp_to_int_sources(instruction: str, count: int, eew: int) -> list[int]:
+    """vs2 elements for an FP-to-int convert, with magnitudes up to a little past the destination integer range."""
     match = FP_TO_INT_CONVERTS.match(instruction)
     assert match is not None
     int_width = {"f": eew, "fw": 2 * eew, "fn": eew // 2}[match.group(1)]
     signed = match.group(3) == "x"
-    pack_fmt, unpack_fmt, fp_max = FP_FORMATS[eew]
-    int_range = 1 << (int_width - 1 if signed else int_width)
-    limit = min(CONVERT_RANGE_SCALE * int_range, fp_max)
-
-    if random.random() < CONVERT_UNIFORM_FRACTION:
-        magnitude = random.uniform(0, limit)
-    else:
-        magnitude = 2.0 ** random.uniform(CONVERT_MIN_EXPONENT, math.log2(limit))
-    negative_fraction = 0.5 if signed else CONVERT_UNSIGNED_NEGATIVE_FRACTION
-    value = -magnitude if random.random() < negative_fraction else magnitude
-    value = max(-fp_max, min(fp_max, value))
-    return struct.unpack(unpack_fmt, struct.pack(pack_fmt, value))[0]
+    return [fp_to_int_source(FP_FORMAT_OF_SEW[eew], int_width, signed=signed) for _ in range(count)]
 
 
 def instruction_random_elements(
@@ -149,6 +122,9 @@ def instruction_random_elements(
     Random elements for a source register whose uniformly random bits would make the result uninformative,
     or None to use uniformly random data.
     """
+    if register == "vs1" and VS1_FITTED.match(instruction):
+        # Give vs1 an element list, never a label into shared data, so vs2 can be fitted to its elements
+        return [random_int(eew) for _ in range(count)]
     if register != "vs2":
         return None
     if EQUALITY_COMPARES.match(instruction):
@@ -156,7 +132,7 @@ def instruction_random_elements(
     if NARROWING_CLIPS.match(instruction):
         return clip_elements(instruction, count, sew, params, test_data)
     if FP_TO_INT_CONVERTS.match(instruction):
-        return [fp_to_int_source(instruction, eew) for _ in range(count)]
+        return fp_to_int_sources(instruction, count, eew)
     return None
 
 

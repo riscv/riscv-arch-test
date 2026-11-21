@@ -13,12 +13,21 @@ from testgen.asm.vector_helpers import (
     load_vec_regs,
     load_vxrm,
     prep_mask_v,
+    scalar_index_safety,
     write_sigupd_v,
     write_sigupd_v_len,
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import (
+    InstructionTypeConfig,
+    VectorTypeConfig,
+    add_instruction_formatter,
+    get_instruction_type_config,
+)
+
+# Instructions whose rs1 is an element index or slide offset, rather than data
+RS1_OFFSET_INSTRUCTIONS = {"vrgather.vx", "vslideup.vx", "vslidedown.vx"}
 
 vvx_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
 wvx_config = InstructionTypeConfig(
@@ -43,9 +52,12 @@ wvx_acc_config = InstructionTypeConfig(
 )
 vvx_sat_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
 vvxp_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")})
+    required_params={"vd", "rs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, vlmax_regs={"vs2"}),
 )
-vvxp_down_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
+vvxp_down_config = InstructionTypeConfig(
+    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(vlmax_regs={"vs2"})
+)
 
 
 @add_instruction_formatter("VVX", vvx_config)
@@ -127,14 +139,14 @@ def format_vvx_sat(
 def format_vvxp(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_vvx_like_type(instr_str, test_data, params, "VVXP", enable_vs2_preload=True)
+    return format_vvx_like_type(instr_str, test_data, params, "VVXP")
 
 
 @add_instruction_formatter("VVXP_DOWN", vvxp_down_config)
 def format_vvxp_down(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_vvx_like_type(instr_str, test_data, params, "VVXP_DOWN", enable_vs2_preload=True)
+    return format_vvx_like_type(instr_str, test_data, params, "VVXP_DOWN")
 
 
 def format_vvx_like_type(
@@ -144,7 +156,6 @@ def format_vvx_like_type(
     type_name: str,
     *,
     widen: set[str] | None = None,
-    enable_vs2_preload: bool = False,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.rs1 is not None and params.rs1val is not None, (
         f"rs1 and rs1val must be provided for {type_name}-type instructions"
@@ -181,7 +192,10 @@ def format_vvx_like_type(
         setup.extend(load_vxrm(params.vxrm))
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
-    vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"
+    vector_data = get_instruction_type_config(type_name).vector_data
+    assert vector_data is not None, f"{type_name}-type instructions must have vector data"
+    vs2_at_vlmax = "vs2" in vector_data.vlmax_regs
+    vs2_vl = "vlmax" if vs2_at_vlmax else params.vl
 
     to_load = [
         VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True),
@@ -191,6 +205,8 @@ def format_vvx_like_type(
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
     setup.append(f"LI (x{params.rs1}, {params.rs1val})")
+    if instr_str in RS1_OFFSET_INSTRUCTIONS and not params.ignore_vector_safety:
+        setup.extend(scalar_index_safety(params.rs1, params))
 
     setup.append(load_test_vtype(params, random_vl_reg))
 

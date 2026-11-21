@@ -22,6 +22,7 @@ from testgen.data.state import TestData
 from testgen.formatters import get_instruction_type_config
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig
 from testgen.instructions.vector import VectorInstructionInfo, parse_vector_instruction_info
+from testgen.instructions.vector_data import instruction_random_elements
 
 
 def get_register_emul(
@@ -501,37 +502,7 @@ def generate_random_vector_params(
             params, info, source_dest_different_eew, lmul, sew, instr_type_config.vector_data
         )
 
-    ####################################################################################
-    # Randomize the instruction data & take vector registers from the register file
-    ####################################################################################
-    registers = {"vs1", "vs2", "vs3", "vd", "rs1", "rs2", "rd", "fs1", "fd"}
-    if instr_type_config.required_params is not None:
-        registers &= instr_type_config.required_params
-
-    for register in sorted(registers):
-        if params_dict[register] != preset_params_dict[register] and register.startswith("v"):
-            segments = info.segments
-            if "indexed" in instr_type_config.instruction_class and register == "vs2":
-                segments = 1
-
-            width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config.vector_data, info)) * segments
-            test_data.vec_regs.allocate_operand(register, params_dict[register], width, suppress_overlap=True)
-
-        if register.startswith("v") and params_dict[f"{register}_val_pointer"] is None:
-            # Set the label
-            label = f"{register}_random_{suite}_{test_count:03d}"
-            setattr(params, f"{register}_val_pointer", label)  # params.register_val_pointer = label
-
-            # Register the label
-            eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
-            element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
-            if instr_type_config.vector_data.random_element_generator:
-                elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
-                test_data.register_vector_data(label, eew, elements=elements)
-            else:
-                test_data.register_vector_data(label, eew, random_elements=element_count)
-
-    # immediate handling
+    # Immediate handling, before the data, which can depend on the immediate
     if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:
         if instr_type_config.imm_range is not None:
             min_val, max_val = instr_type_config.imm_range
@@ -548,6 +519,69 @@ def generate_random_vector_params(
             raise ValueError(
                 f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
             )
+
+    ####################################################################################
+    # Randomize the instruction data & take vector registers from the register file
+    ####################################################################################
+    registers = {"vs1", "vs2", "vs3", "vd", "rs1", "rs2", "rd", "fs1", "fd"}
+    if instr_type_config.required_params is not None:
+        registers &= instr_type_config.required_params
+
+    for register in sorted(registers):
+        if params_dict[register] != preset_params_dict[register] and register.startswith("v"):
+            segments = info.segments
+            if "indexed" in instr_type_config.instruction_class and register == "vs2":
+                segments = 1
+
+            width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config.vector_data, info)) * segments
+            test_data.vec_regs.allocate_operand(register, params_dict[register], width, suppress_overlap=True)
+
+        if not register.startswith("v"):
+            continue
+
+        # Base-suite labels hold the elements the check depends on: one element group, or a whole register group
+        # for a source loaded at VLMAX (and vs1 when it shares that source's register).
+        vlmax_regs = instr_type_config.vector_data.vlmax_regs
+        loaded_at_vlmax = register in vlmax_regs or (
+            register == "vs1" and "vs2" in vlmax_regs and params.vs1 == params.vs2
+        )
+        vlmax_count = math.ceil(VLEN_MAX * lmul / sew)
+        preset_label = params_dict[f"{register}_val_pointer"]
+
+        if preset_label is None:
+            eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
+            if suite == "base" and loaded_at_vlmax and not instr_type_config.vector_data.random_element_generator:
+                # Base-suite sources loaded at VLMAX share one random register group, so each test does not repeat it
+                label = f"vlmax_random_e{eew}_n{vlmax_count}"
+                setattr(params, f"{register}_val_pointer", label)
+                if label not in test_data.vector_labels:
+                    test_data.register_vector_data(label, eew, random_elements=vlmax_count)
+                continue
+
+            # Set the label
+            label = f"{register}_random_{suite}_{test_count:03d}"
+            setattr(params, f"{register}_val_pointer", label)  # params.register_val_pointer = label
+
+            # Register the label
+            element_count = (
+                instr_type_config.vector_data.egs if suite == "base" and not loaded_at_vlmax else vlmax_count
+            )
+            elements = instruction_random_elements(instruction, register, element_count, eew, sew, params, test_data)
+            if elements is None and instr_type_config.vector_data.random_element_generator:
+                elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
+            if elements is not None:
+                test_data.register_vector_data(label, eew, elements=elements)
+            else:
+                test_data.register_vector_data(label, eew, random_elements=element_count)
+        elif loaded_at_vlmax and len(test_data.vector_labels[preset_label][0]) < vlmax_count:
+            # Pad a short preset label, such as an edge value, with random elements up to VLMAX, so every element the
+            # instruction can read holds distinct data
+            elements, eew = test_data.vector_labels[preset_label]
+            label = f"{preset_label}_vlmax_n{vlmax_count}"
+            if label not in test_data.vector_labels:
+                padding = [random_int(eew) for _ in range(vlmax_count - len(elements))]
+                test_data.register_vector_data(label, eew, elements=[*elements, *padding])
+            setattr(params, f"{register}_val_pointer", label)
 
     # All vector floating point instructions use the dyn rounding mode
     if "vector_fp" in instr_type_config.instruction_class and params.csr_frm_val is None:

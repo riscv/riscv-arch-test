@@ -866,6 +866,22 @@ def prep_vstart(
     return lines
 
 
+def scalar_index_safety(index_reg: int, params: InstructionParams) -> list[str]:
+    """Reduce a scalar index or offset in x{index_reg} to [0, 2*VLMAX), so about half the values are in range."""
+    assert params.lmul is not None, "LMUL must be set for vector instructions"
+    assert params.sew is not None, "SEW must be set for vector instructions"
+    assert params.temp_reg is not None, "temp_reg must be set for vector instructions"
+
+    # VLMAX is a power of 2, so masking with 2*VLMAX-1 is the remainder mod 2*VLMAX
+    return [
+        f"# x{index_reg} = x{index_reg} mod 2*VLMAX",
+        f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+        f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
+        f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
+        f"and x{index_reg}, x{index_reg}, x{params.temp_reg}",
+    ]
+
+
 def index_register_safety(
     index_reg: int,
     index_eew: int,

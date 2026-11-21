@@ -119,6 +119,49 @@
     auipc   x0, 0                     // lpad 0
     RVTEST_MLPE_OFF
 
+  // An early exit from a trap handler (trap signature overflow, a handler abort or an
+  // unexpected interrupt) leaves a marker in T5. Report it first: the test did not run
+  // to completion, so the signature counts below would mismatch, and the signature
+  // pointer (DEFAULT_SIG_REG = sp) still holds the handler's save-area pointer.
+  #ifdef STANDARD_SM_SUPPORTED
+    check_trap_sig_overflow:
+      LA(     T4, trap_sig_overflow)
+      bne     T4, T5, check_abort_test
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
+      call rvmodel_io_write_str
+      LA(a0, trap_sig_overflowstr)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
+
+    check_abort_test:
+      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+      bne     T4, T5, check_unexpected_int
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR abort_test
+      RVTEST_WORD_PTR abortstr
+      .word   CSR_MEPC
+
+    // T5 holds unexpected_int_str if a default RVMODEL interrupt macro or the trap
+    // handler's default clear routine aborted the test (see RVTEST_DFLT_INT_HNDLR).
+    check_unexpected_int:
+      LA(     T4, unexpected_int_str)
+      bne     T4, T5, check_end_of_abnormal
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
+      call rvmodel_io_write_str
+      LA(a0, unexpected_int_str)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
+    check_end_of_abnormal:
+  #endif
+
   #ifndef RVTEST_NOSIG
     // Check the regular signature offset to make sure the correct number of
     // signature updates occurred.
@@ -163,19 +206,6 @@
   #endif
 
   #ifdef STANDARD_SM_SUPPORTED
-    check_trap_sig_overflow:
-      LA(     T4, trap_sig_overflow)
-      bne     T4, T5, check_trap_sig_offset
-      LA(a0, failstr)
-      call rvmodel_io_write_str
-      LA(a0, begin_debugstr)
-      call rvmodel_io_write_str
-      LA(a0, trap_sig_overflowstr)
-      call rvmodel_io_write_str
-      LA(a0, endstr)
-      call rvmodel_io_write_str
-      j       rvtest_fail_epilogs_mmode // already in M-mode after the switch above
-
     // Check trap signature offset to make sure the correct number of traps occurred.
     // This is a trap-framework diagnostic, not a normal signature check. Pass the
     // already-available actual and expected offsets to the trap failure entry before
@@ -189,23 +219,16 @@
       LA(     T3, final_trap_sig_offset)
     #ifdef RVTEST_SELFCHECK
       LREG    DEFAULT_TEMP_REG, 0(T3) // Reference trap signature byte count
-      beq     DEFAULT_TEMP_REG, T1, check_abort_test
+      beq     DEFAULT_TEMP_REG, T1, run_epilogs
     #else
       SREG    T1, 0(T3)               // Save reference trap signature byte count
-      beq     x0, x0, check_abort_test
+      beq     x0, x0, run_epilogs
     #endif
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR check_trap_sig_offset
       RVTEST_WORD_PTR trap_sig_offset_mismatch
     #endif
 
-    check_abort_test:
-      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, run_epilogs
-      jal     T2, failedtest_trap_x7_x9
-      RVTEST_WORD_PTR abort_test
-      RVTEST_WORD_PTR abortstr
-      .word   CSR_MEPC
   #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
@@ -288,7 +311,8 @@
   trap_sig_overflow:
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
-  trap_sig_overflow_mmode:
+  trap_sig_overflow_mmode:            // from the M-mode trap handler, which leaves without mret
+    RVTEST_CLEAR_MDT T4
     LA(T5, trap_sig_overflow)
     j       rvtest_code_end_mmode
 
@@ -296,7 +320,8 @@
   abort_test:
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end // switch to M-mode and clean up and terminate
-  abort_test_mmode:
+  abort_test_mmode:                   // from the M-mode trap handler, which leaves without mret
+    RVTEST_CLEAR_MDT T4
     LI(     T5, 0xBAD0DEAD)
     j       rvtest_code_end_mmode
 
@@ -1459,7 +1484,7 @@
         addi t1, zero, -1
         sw t1, 0(t0)
         sw t1, 4(t0)
-      #elif !defined(RVTEST_SELFCHECK)
+      #elif defined(RVTEST_SAIL_MACROS)
         // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
         LI_FIXED_LEN(t0, SAIL_MTIMECMP_ADDRESS)
         addi t1, zero, -1

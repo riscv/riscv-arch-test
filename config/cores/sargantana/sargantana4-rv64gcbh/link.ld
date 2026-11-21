@@ -1,14 +1,14 @@
 /* Copyright (c) 2026, Harvey Mudd College
  * SPDX-License-Identifier: Apache-2.0
  *
- * Linker script for the BSC Sargantana core tile (bsc-loca/core_tile @ 2528e7df).
+ * Linker script for the BSC Sargantana core tile (bsc-loca/core_tile @ 1b9529b5, v4.0.0).
  *
  * The tests link at 0x8000_0000 because that is where the tile's boot ROM jumps:
  *   "#define DRAM_BASE 0x80000000 ... _start: li s0, DRAM_BASE ... jr s0"
- *   https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/bootrom/bootrom.S#L1-L7
- * 0x8000_0000 also sits inside the first mapped memory section of the default core
- * configuration, InitMappedBase[0] = 0x0040000000 .. InitMappedEnd[0] = 0x3fffffffff:
- *   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/drac_pkg.sv#L1297-L1299
+ *   https://github.com/bsc-loca/core_tile/blob/1b9529b556b2fb88d73f1b76e790743572500efb/simulator/bootrom/bootrom.S#L1-L7
+ * 0x8000_0000 also sits inside the main-memory mapped section of the default core
+ * configuration, InitMappedBase[2] = 0x0040000000 .. InitMappedEnd[2] = 0x3fffffffff:
+ *   https://github.com/bsc-loca/sargantana/blob/8db4398bd91a42e581c1ba83858d420ddfa6e923/includes/drac_pkg.sv#L1320-L1326
  */
 RAM_ORIGIN = 0x80000000;
 RAM_LENGTH = 0x10000000;
@@ -61,7 +61,7 @@ SECTIONS
    * address of the `tohost` symbol:
    *   "assign is_tohost = dc_write_req_valid_i & dc_write_req_data_valid_i &&
    *    dc_write_req_addr_i == tohost_addr;"
-   *   https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/models/hdl/l2_behav.sv#L441
+   *   https://github.com/bsc-loca/core_tile/blob/1b9529b556b2fb88d73f1b76e790743572500efb/simulator/models/hdl/l2_behav.sv#L647
    * Stores leave the write-through data cache through the HPDcache write buffer, whose
    * requests carry the address of the enclosing 64-byte memory word ("#define
    * BUS_ADDR_BITS 6 // Bits needed to address a byte within the bus",

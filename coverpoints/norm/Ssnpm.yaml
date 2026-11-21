@@ -11,6 +11,7 @@ normative_rule_definitions:
         "Ssnpm_cg/cp_pmlen_masking",
         "S_scsr_cg/cp_scsrwalk/senvcfg",
         "Ssnpm_H_cg/{cp_vu_pmm, cp_vu_pmlen_masking, cp_hlv_hs_spvp0_pmm}",
+        "Ssnpm_H_cg/{cp_vu_pmm_upper, cp_hlv_hs_spvp0_pmm_upper}",
       ]
 
   # Changing senvcfg.PMM takes effect immediately, without the need to execute an
@@ -37,6 +38,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssnpm_H_cg/{cp_vs_pmm, cp_vs_pmlen_masking, cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
+        "Ssnpm_H_cg/{cp_vs_pmm_upper, cp_hlv_hs_spvp1_pmm_upper, cp_hlv_u_spvp1_pmm_upper}",
         "Ssnpm_H_cg/{cp_vs_pmlen_zicfiss_amo, cp_vs_pmlen_zicfiss_ssp}",
         "Ssnpm_H_cg/{cp_henvcfg_pmm_change_hfence, cp_henvcfg_pmm_change_hfence_sv48x4}",
         "Ssnpm_H_cg/cp_henvcfg_pmm_change_no_hfence",

@@ -126,21 +126,13 @@ normative_rule_definitions:
   # to read the cycle, time, instret, or hpmcountern register while executing in
   # S-mode or U-mode will cause an illegal-instruction exception.
   - name: mcounteren_clr_ill_inst_exc
-    coverpoint:
-      [
-        "S_Zicntr_cg/cp_mcounteren_access_s",
-        "U_Zicntr_cg/cp_mcounteren_access_u",
-      ]
+    coverpoint: ["U_Zicntr_cg/cp_mcounteren_access_u"]
 
   # When one of these bits is set, access to the corresponding register is permitted
   # in the next implemented privilege mode (S-mode if implemented, otherwise
   # U-mode).
   - name: mcounteren_set_nxt_priv
-    coverpoint:
-      [
-        "S_Zicntr_cg/cp_mcounteren_access_s",
-        "U_Zicntr_cg/cp_mcounteren_access_u",
-      ]
+    coverpoint: ["U_Zicntr_cg/cp_mcounteren_access_u"]
 
   # As ECALL and EBREAK cause synchronous exceptions, they are not considered to
   # retire, and should not increment the minstret CSR.

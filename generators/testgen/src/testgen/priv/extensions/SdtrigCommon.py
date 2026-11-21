@@ -4060,6 +4060,17 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     is_pf = raised_code in _PAGE_FAULT_CODES
 
                     label_cp = coverpoint if raised_code == code else f"{coverpoint}_other"
+                    # A matching illegal instruction from S or U: with RVTEST_ILLEGAL_THROUGH_M the DUT build
+                    # takes it in M and forwards it to S in software, where the hardware takes it in S. The
+                    # trigger then fires only if both routes agree, which they do with Use_interrupt_enables
+                    # (entering M clears MIE, entering S clears SIE). With Use_tcontrol, entering M clears
+                    # tcontrol.MTE and the trigger cannot fire, while the reference fires it in S.
+                    route_gate = code == 2 and raised_code == 2 and priv_en and mode in ("S", "U")
+                    if route_gate:
+                        lines.append(
+                            "#if !defined(RVTEST_ILLEGAL_THROUGH_M) || "
+                            "defined(UDB_SDTRIG_BREAKPOINT_REENTRANCY_USE_INTERRUPT_ENABLES)"
+                        )
 
                     fault_macro = _ACCESS_FAULT_MACROS.get(raised_code)
                     if fault_macro:
@@ -4092,6 +4103,8 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         lines.append("#endif // paging")
                     if fault_macro:
                         lines.append(f"#endif // {fault_macro}")
+                    if route_gate:
+                        lines.append("#endif // illegal-instruction route")
             lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code}")
         lines.extend(
             [f"#endif // {_mode_writable(mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]

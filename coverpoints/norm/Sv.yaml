@@ -586,6 +586,24 @@ normative_rule_definitions:
         "Sv_vm_permissions_cg/{cp_spage_noread_s_d, cp_spage_nowrite_s_d, cp_spage_noexec_s_i}",
       ]
 
+  # If stval is written with a nonzero value when an instruction access-fault,
+  # page-fault, or hardware-error exception occurs on a hart with variable-length
+  # instructions, then stval will contain the virtual address of the portion of the
+  # instruction that caused the fault, while sepc will point to the beginning of the
+  # instruction.
+  # A 32-bit instruction at the end of a page whose first or next page faults.
+  - name: stval_faulting_address_variable_instr
+    coverpoint: ["Sv_Exceptions_cg/cp_misaligned_instr_page_fault_{s,u}"]
+
+  # If stval is written with a nonzero value when a misaligned load or store causes
+  # an access-fault, page-fault, or hardware-error exception, then stval will
+  # contain the virtual address of the portion of the access that caused the fault.
+  # A load or store of each width across the end of a page whose first or next page faults: a hart that performs
+  # misaligned accesses faults on the part in that page.  With more than one byte in that page, stval depends on the
+  # order in which the hart splits the access, so those cases need MISALIGNED_SPLIT_STRATEGY = sequential_bytes.
+  - name: stval_op_load_store_fault
+    coverpoint: ["Sv_Exceptions_cg/cp_misaligned_{load,store}_page_fault_{s,u}"]
+
   # The csr::[mxr] and csr::[sum] mechanisms only affect the interpretation of
   # permissions encoded in page-table entries. In particular, they have no impact on
   # whether access-fault exceptions are raised due to PMAs or PMP.

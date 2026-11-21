@@ -104,6 +104,10 @@ exclude_extensions:
   # 0x80010008) also matches 0x80010000-0x80010007. Open c-class MR !225 changes the sample to
   # G = 0.
   - PMP_Sm_grain-
+  # pmpaddr(i-1) stays writable when entry i is locked with A = TOR: each pmpaddr's WARL write
+  # depends only on its own entry's L bit
+  # (https://gitlab.com/shaktiproject/cores/c-class/-/blob/f52775317b0e6c16272f5c42d3dd7d52282f0e65/sample_config/c64/rv64i_isa.yaml#L587-L589).
+  - PMP_Sm_cfg_L_modify_tor
   # FENCE and FENCE.I write 0 to a nonzero rd (src/decoder.bsv#L300-L307;
   # https://gitlab.com/shaktiproject/cores/c-class/-/issues/322; the FENCE.I case was
   # https://gitlab.com/shaktiproject/cores/c-class/-/issues/48, closed).

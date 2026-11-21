@@ -11,8 +11,12 @@
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"
+// Signature builds and coverage builds run on Sail, so they replace DUT-specific macros with Sail macros.
+#if !defined(RVTEST_SELFCHECK) && !defined(RVTEST_SAIL_MACROS)
+  #define RVTEST_SAIL_MACROS
+#endif
 #include "rvmodel_macros.h"
-#ifndef RVTEST_SELFCHECK
+#ifdef RVTEST_SAIL_MACROS
   #include "sail_macros.h"
 #endif
 #include "check_defines.h"

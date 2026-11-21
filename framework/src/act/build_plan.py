@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pyjson5
 
-from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
+from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction
 from act.config import Config, CoverageSimulator, RefModelType
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
@@ -122,12 +122,14 @@ def gen_compile_tasks(
     ref_model_inputs: tuple[Path, ...] = (),
     debug: bool = False,
     enable_experimental_extensions: bool = False,
+    coverage: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for the compilation pipeline of a single test.
 
     Signature tests build through the reference-model signature pipeline:
         add.S -> add.sig.elf -> add.sig (ref model) -> add.results (sig_modify) -> add.elf
     Tests with NEEDS_SIGNATURE: false compile directly to the final ELF.
+    With coverage, the self-checking test is built with Sail macros as coverage/add.elf instead of add.elf.
 
     Args:
         test_name: Name of the test.
@@ -141,18 +143,22 @@ def gen_compile_tasks(
         c_runtime_sources: Runtime sources compiled into C tests.
         ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
         debug: Whether to generate debug output (objdumps, trace files, and trap reports).
+        enable_experimental_extensions: Whether to enable experimental extensions.
+        coverage: Whether to build the coverage ELF that Sail runs for coverage traces instead of the final ELF.
     """
     tasks: list[BuildTask] = []
 
     # Paths
     build_dir = base_dir / "build"
     elf_dir = base_dir / "elfs"
+    coverage_dir = base_dir / "coverage"
     sig_elf = build_dir / test_name.with_suffix(".sig.elf")
     sig_file = build_dir / test_name.with_suffix(".sig")
     result_file = build_dir / test_name.with_suffix(".results")
     sig_trace_file = build_dir / test_name.with_suffix(".sig.trace")
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     final_elf = elf_dir / test_name.with_suffix(".elf")
+    coverage_elf = coverage_dir / test_name.with_suffix(".elf")
 
     compile_prefix = [
         *toolchain.compile_prefix(xlen),
@@ -274,13 +280,9 @@ def gen_compile_tasks(
         )
 
     # Non-signature tests start here
-    # 4. final.elf – compile with -DRVTEST_SELFCHECK
-    final_elf_cmd = [
-        *compile_prefix,
-        *c_compile_flags,
-        *stack_flags,
-        "-o",
-        str(final_elf),
+    # 4. Self-checking ELF – compile with -DRVTEST_SELFCHECK.
+    # Coverage builds use Sail macros and write coverage/<test>.elf so that Sail can run them for any DUT.
+    selfcheck_flags = [
         *march_flags,
         f"-mabi={mabi}",
         "-DRVTEST_SELFCHECK",
@@ -288,26 +290,39 @@ def gen_compile_tasks(
         f"-DXLEN={xlen}",
         f"-DTEST_FLEN={test_flen}",
         f'-DTEST_FILE="{test_name.name}"',
+    ]
+    if coverage:
+        elf = coverage_elf
+        selfcheck_flags.extend(["-DRVTEST_SAIL_MACROS", *signature_compile_flags])
+    else:
+        elf = final_elf
+    elf_cmd = [
+        *compile_prefix,
+        *c_compile_flags,
+        *stack_flags,
+        "-o",
+        str(elf),
+        *selfcheck_flags,
         *test_sources,
     ]
     tasks.append(
         BuildTask(
-            outputs=(final_elf,),
+            outputs=(elf,),
             extra_inputs=test_inputs,
             deps=(result_file,) if test_metadata.needs_signature else (),
-            action=SubprocessAction(cmd=final_elf_cmd),
+            action=SubprocessAction(cmd=elf_cmd),
         )
     )
 
-    # 4a. final.elf.objdump (optional, debug only)
+    # 4a. objdump (optional, debug only)
     if debug and config.objdump_exe is not None:
-        objdump_file = Path(f"{final_elf}.objdump")
+        objdump_file = Path(f"{elf}.objdump")
         tasks.append(
             BuildTask(
                 outputs=(objdump_file,),
-                deps=(final_elf,),
+                deps=(elf,),
                 action=SubprocessAction(
-                    cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS, str(final_elf)],
+                    cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS, str(elf)],
                     stdout_file=objdump_file,
                 ),
             )
@@ -321,7 +336,6 @@ def gen_rvvi_tasks(
     base_dir: Path,
     config: Config,
     ref_model_inputs: tuple[Path, ...] = (),
-    debug: bool = False,
     enable_experimental_extensions: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for RVVI trace generation (coverage pipeline).
@@ -338,23 +352,10 @@ def gen_rvvi_tasks(
 
     # Paths
     coverage_dir = base_dir / "coverage"
-    elf_dir = base_dir / "elfs"
-    elf = elf_dir / test_name.with_suffix(".elf")
-    objdump_link = coverage_dir / test_name.with_suffix(".elf.objdump")
+    elf = coverage_dir / test_name.with_suffix(".elf")
     sail_trace = coverage_dir / test_name.with_suffix(".trace")
     sail_log = coverage_dir / test_name.with_suffix(".log")
     rvvi_trace = coverage_dir / test_name.with_suffix(".rvvi")
-
-    # Symlink objdump into coverage dir
-    if debug and config.objdump_exe is not None:
-        objdump_orig_file = Path(f"{elf}.objdump")
-        tasks.append(
-            BuildTask(
-                outputs=(objdump_link,),
-                deps=(objdump_orig_file,),
-                action=SymlinkAction(src=objdump_orig_file, dst=objdump_link),
-            )
-        )
 
     # Run Sail with trace
     sail_cmd = [str(config.ref_model_exe)]
@@ -644,6 +645,7 @@ def generate_build_plan(
                 ref_model_inputs,
                 debug,
                 enable_experimental_extensions,
+                coverage_enabled,
             )
         )
 
@@ -676,7 +678,6 @@ def generate_build_plan(
                     config_wkdir,
                     config,
                     ref_model_inputs,
-                    debug,
                     enable_experimental_extensions,
                 )
             )

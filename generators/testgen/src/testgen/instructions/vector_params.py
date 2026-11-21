@@ -517,19 +517,50 @@ def generate_random_vector_params(
             width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config.vector_data, info)) * segments
             test_data.vec_regs.allocate_operand(register, params_dict[register], width, suppress_overlap=True)
 
-        if register.startswith("v") and params_dict[f"{register}_val_pointer"] is None:
+        if not register.startswith("v"):
+            continue
+
+        # Base-suite labels hold the elements the check depends on: one element group, or a whole register group
+        # for a source loaded at VLMAX (and vs1 when it shares that source's register).
+        vlmax_regs = instr_type_config.vector_data.vlmax_regs
+        loaded_at_vlmax = register in vlmax_regs or (
+            register == "vs1" and "vs2" in vlmax_regs and params.vs1 == params.vs2
+        )
+        vlmax_count = math.ceil(VLEN_MAX * lmul / sew)
+        preset_label = params_dict[f"{register}_val_pointer"]
+
+        if preset_label is None:
+            eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
+            if suite == "base" and loaded_at_vlmax and not instr_type_config.vector_data.random_element_generator:
+                # Base-suite sources loaded at VLMAX share one random register group, so each test does not repeat it
+                label = f"vlmax_random_e{eew}_n{vlmax_count}"
+                setattr(params, f"{register}_val_pointer", label)
+                if label not in test_data.vector_labels:
+                    test_data.register_vector_data(label, eew, random_elements=vlmax_count)
+                continue
+
             # Set the label
             label = f"{register}_random_{suite}_{test_count:03d}"
             setattr(params, f"{register}_val_pointer", label)  # params.register_val_pointer = label
 
             # Register the label
-            eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
-            element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
+            element_count = (
+                instr_type_config.vector_data.egs if suite == "base" and not loaded_at_vlmax else vlmax_count
+            )
             if instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)
             else:
                 test_data.register_vector_data(label, eew, random_elements=element_count)
+        elif loaded_at_vlmax and len(test_data.vector_labels[preset_label][0]) < vlmax_count:
+            # Pad a short preset label, such as an edge value, with random elements up to VLMAX, so every element the
+            # instruction can read holds distinct data
+            elements, eew = test_data.vector_labels[preset_label]
+            label = f"{preset_label}_vlmax_n{vlmax_count}"
+            if label not in test_data.vector_labels:
+                padding = [random_int(eew) for _ in range(vlmax_count - len(elements))]
+                test_data.register_vector_data(label, eew, elements=[*elements, *padding])
+            setattr(params, f"{register}_val_pointer", label)
 
     # immediate handling
     if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:

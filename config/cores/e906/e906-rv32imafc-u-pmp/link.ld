@@ -8,7 +8,7 @@
  * the instruction bus (pad_bmu_iahbl_base = 0x000, pad_bmu_iahbl_mask = 0xE00).
  *   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/smart_run/logical/system/cpu_sub_system_ahb.v#L329-L335
  *   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/E906_RTL_FACTORY/gen_rtl/bmu/rtl/pa_bmu_dbus_if.v#L306
- * The instruction-bus SRAM is 256 KB in the release; setup-e906.sh enlarges it to 1 MB.
+ * The instruction-bus SRAM is 256 KB in the release; install-e906.sh enlarges it to 1 MB.
  *   https://github.com/T-head-Semi/opene906/blob/c5b878958e73e0b8f324a8132943f184a7831c07/smart_run/logical/mem/iahb_mem_ctrl.v#L96
  * The top 4 KB, 0xF_F000-0xF_FFFF, is left out of RAM_LENGTH.  mtvec reads back
  * MODE = 3, so the trap prolog never sees its write take and copies the trap trampoline

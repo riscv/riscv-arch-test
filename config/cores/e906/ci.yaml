@@ -64,4 +64,3 @@ exclude_extensions:
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache patch"
 install_script: ".github/scripts/install-e906.sh"
-setup_script: ".github/scripts/setup-e906.sh"

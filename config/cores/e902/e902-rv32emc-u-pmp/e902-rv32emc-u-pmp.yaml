@@ -1,0 +1,270 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+#
+# UDB architecture configuration for the XuanTie OpenE902, as released open source and
+# instantiated by the smart_run SoC testbench that ships with it.
+#
+# Every non-obvious value below carries the RTL or user-manual text it came from, with a
+# permalink pinned to T-head-Semi/opene902 commit 991836411b405ac6a0a8d7668f2f5de6fa2a5b8c.
+# The user manual is doc/玄铁E902用户手册(opene902).pdf; it is quoted in the Chinese
+# original followed by a translation.
+#
+# The ISA is FIXED.  The release is generated RTL: no RTL file tests any of the `ifdef
+# options in cpu_cfig.h, so there is exactly one configuration: RV32EMC with M and U
+# modes, 8 PMP entries, and a CLIC.  The RTL reads only the values of a few cpu_cfig.h
+# macros: CLIC_INTNUM and CLIC_INTCTLBITS size the CLIC (64 external interrupts, 3
+# priority bits), and REVISION, SUB_VERSION, PATCH and PRODUCT_ID fill mcpuid.
+#   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cpu/rtl/cpu_cfig.h#L15-L28
+#   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cpu/rtl/cpu_cfig.h#L284-L292
+#   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/clic/rtl/cr_clic_top.v#L132-L133
+#   Quote (user manual 1.3): "支持 RISC-V RV32E[M]C 指令集；16 个 32 位通用寄存器；……支持
+#   RISC-V 机器模式和用户模式"
+#   ("Supports the RISC-V RV32E[M]C instruction set; 16 32-bit general-purpose registers;
+#   ... supports RISC-V machine mode and user mode")
+#
+# The E base needs a UDB with E support (riscv/riscv-unified-db#2643).  UDB 0.1.18
+# reports "E is not a known extension".
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: e902-rv32emc-u-pmp
+description: XuanTie OpenE902 (open-source release) in its bundled smart_run SoC testbench
+implemented_extensions:
+  # misa = 0x40101014, read only: MXL=1, U(20), M(12), E(4), C(2).
+  #   Quote: "{2'b1, 9'b0, misa_user_mode, 7'b0, misa_m, 7'b0, 1'b1, 1'b0, 1'b1, 2'b0};"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_oreg.v#L480-L485
+  # Every instruction that names x16-x31 raises illegal instruction.
+  #   Quote: "assign decd_ill_reg_32 = rs1_update_32 && decd_rs1[4] || ..."
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/iu/rtl/cr_iu_decd.v#L758-L760
+  - { name: E, version: "= 2.0.0" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  # fence.i is decoded with fence in the MISC-MEM opcode and flushes the fetch buffer.
+  #   Quote: "assign decd_inst_fencei = decd_op[6:0] == 7'b0001111 &&  decd_func3[0];"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/iu/rtl/cr_iu_decd.v#L1126
+  - { name: Zifencei, version: "= 2.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  # Sm is declared at 1.11.0, the lowest version UDB offers.  The user manual (1.6) names
+  # privileged specification 1.10, and the CSR decoder has no mstatush, menvcfg,
+  # mconfigptr, mseccfg or mcountinhibit: the default case raises illegal instruction.
+  #   Quote (user manual 1.6): "The RISC-V Instruction Set Manual, Volume II: RISC-V
+  #   Privileged Architecture, Version1.10"
+  #   Quote: "default   : imm_inv = 1'b1;"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_iui.v#L539-L590
+  - { name: Sm, version: "= 1.11.0" }
+  # Deliberately NOT declared:
+  #   Zicntr / Zihpm - cycle, time, instret and hpmcounter3-31 (0xC00-0xC9F) are not in the
+  #     CSR decoder, so they raise illegal instruction in every mode.
+  #   Zba / Zbb / Zbs / A - not implemented; their encodings decode as illegal
+  #     (cr_iu_decd.v#L620-L672, #L683-L740).
+  #   Zcb - not implemented.  The UDB feature extractor reports it because the encodings Zcb
+  #     takes from the reserved RV32 space (bit 12 set in the C.SUB/C.XOR/C.OR/C.AND group)
+  #     do not trap: the decoder ignores bit 12 and runs them as C.SUB/C.XOR/C.OR/C.AND.  A
+  #     directed probe ran c.zext.b a2 as c.and a2,s0 and c.mul a2,a3 as c.or a2,a3.
+  #     Quote: "8'b?1110001:  // C.AND C.OR C.XOR C.SUB" with "decd_ill_expt16 = 1'b0;"
+  #     https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/iu/rtl/cr_iu_decd.v#L663-L667
+  #   Smcsrind - not implemented.  The extractor reports it because CSR 0x350, miselect in
+  #     Smcsrind, is the CLIC 0.8 mclicbase register here (reads 0xE080_0000, ignores
+  #     writes); mireg (0x351) raises illegal instruction.
+  #     https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_iui.v#L353
+  #   Smclic - the CLIC (CLIC 0.8 per user manual 1.6) is the only interrupt mode, but UDB
+  #     does not model it.  See MTVEC_MODES below.
+params:
+  MXLEN: 32
+  # UDB allows at most 32 physical address bits on RV32 without Sv32.  pmpaddr0-7 in fact
+  # keep all 32 written bits, address bits 33:2, of which the top two can never match.
+  #   Quote: "pmpaddr0_value[31:0] <= cp0_pmp_updt_data[31:0];"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/pmp/rtl/cr_pmp_regs.v#L602-L610
+  PHYS_ADDR_WIDTH: 32
+
+  MISA_CSR_IMPLEMENTED: true
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_U: false
+  # misa.X (bit 23) is 0, and mxstatus.THEADISAEE, which enables the XuanTie cache
+  # instructions, is hardwired 0.
+  #   Quote: "assign mxstatus_cskyisaee = 1'b0;"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_status.v#L567
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+
+  M_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  UXLEN: [32]
+
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  # Not every reserved encoding traps: the RV32 C.SUB-group encodings with bit 12 set run as
+  # C.SUB/C.XOR/C.OR/C.AND (see Zcb above), and ECALL, EBREAK, MRET and WFI ignore rd and
+  # rs1 (cr_iu_decd.v#L723-L734).
+  TRAP_ON_RESERVED_INSTRUCTION: false
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # mtval follows user manual Table 4.3: the access address for causes 1, 4, 5, 6 and 7, the
+  # instruction encoding for cause 2, and 0 for causes 3, 8 and 11.
+  #   Quote (user manual 4.1.1, Table 4.3): "3 调试断点异常 0" ("3 breakpoint: 0")
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+
+  # Misaligned loads and stores always raise a misaligned exception: the LSU's unaligned
+  # splitter is tied off.
+  #   Quote: "assign unalign_xx_split_on = 1'b0;"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/lsu/rtl/cr_lsu_unalign.v#L151
+  MISALIGNED_LDST: false
+  # Misaligned exceptions outrank access faults.
+  #   Quote (user manual 4.1.1, Table 4.2): "6 存储指令非对齐访问异常 / 4 加载指令非对齐访问异常 /
+  #   7 存储指令访问错误异常 / 5 加载指令访问错误异常", highest to lowest
+  #   ("6 store misaligned / 4 load misaligned / 7 store access fault / 5 load access fault")
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+
+  # mvendorid = 0x5B7 (bank 11, offset 0x37); marchid and mimpid read 0.
+  #   Quote: "assign mvendorid_value[31:0] = 32'h5B7;" / "assign mimpid_value[31:0] = 32'b0;"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_oreg.v#L744-L751
+  VENDOR_ID_BANK: 11
+  VENDOR_ID_OFFSET: 0x37
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+
+  # mtvec.MODE is hardwired to 3 (CLIC mode), a reserved value in the privileged
+  # specification.  In that mode every exception goes to BASE with bits 5:2 cleared, the
+  # same as direct mode with a 64-byte aligned BASE, so the configuration declares that.
+  # A read of mtvec still returns MODE = 3 and BASE bits 5:2 as last written while MODE[1]
+  # was 0, which never happens.
+  #   Quote: "assign nt_mode = 2'b11;" /
+  #          "assign nt_base_pre[29:0] = mode[1] ? {iui_oreg_rs1[31:6],nt_base[3:0]} : ..."
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_oreg.v#L501-L506
+  #   Quote: "3'b011:cp0_iu_vbr[29:0] = {base[29:4],4'b0};"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_oreg.v#L983
+  #   Quote (user manual 4.1.1): "因为 E902 只实现 MTVEC.mode=3 这一模式，因此要求异常服务程序
+  #   的入口地址为 64 字节对齐。"
+  #   ("Because E902 implements only MTVEC.mode=3, the exception handler entry address must
+  #   be 64-byte aligned.")
+  MTVEC_MODES: [0]
+  MTVEC_ACCESS: rw
+  # Not "retain": a write with MODE != 3 or an unaligned BASE still writes BASE[31:6].  A
+  # directed probe wrote 0x324 over 0x303 and read back 0x303 (BASE[5:2] kept, MODE 3).
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  MTVEC_BASE_ALIGNMENT_DIRECT: 64
+
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  # WFI stalls until an interrupt is pending; in U-mode it always raises illegal
+  # instruction (there is no mstatus.TW).
+  #   Quote: "decd_ill_expt32 = decd_inst[24:20] != 5'b00101 || !(cp0_yy_priv_mode[1:0] == 2'b11);"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/iu/rtl/cr_iu_decd.v#L731-L734
+  WFI_FINITE: false
+  WFI_U_MODE: false
+  # In CLIC mode mie and mip read 0 and ignore writes; every interrupt, including the
+  # CLINT's timer and software interrupts, is enabled and reported through the CLIC.
+  #   Quote: "assign mie_value[31:0]    = mode[1] ? 32'b0 : ..."
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/cp0/rtl/cr_cp0_oreg.v#L635-L646
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  PMA_GRANULARITY: 2
+
+  # Sixteen PMP entries are decoded (pmpcfg0-3, pmpaddr0-15), of which eight are usable.
+  # pmpcfg2, pmpcfg3 and pmpaddr8-15 read 0 and ignore writes.
+  #   Quote: "assign pmpaddr8_value[31:0] = 32'b0;"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/pmp/rtl/cr_pmp_regs.v#L699
+  # The grain is 4 bytes (G = 0): NA4 compares address bits 31:2, and every pmpaddr bit is
+  # writable.  The UDB feature extractor measures PMP_GRANULARITY 2 too.  The datasheet
+  # (doc/opene902_datasheet.pdf, "Physical Memory Protection") says "Minimum 4KB address
+  # range", which disagrees with the RTL and with the user manual.
+  #   Quote: "assign lsu_na4_addr_match   = (lsu_acc_addr[31:2] == pmpaddr[29:0]);"
+  #   https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/pmp/rtl/cr_pmp_comp_hit.v#L116-L121
+  #   Quote (user manual 6.1): "地址划分最小粒度为 4 字节" ("the smallest address granule is 4 bytes")
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 8
+  PMP_GRANULARITY: 2
+  PMP_TOR_SUPPORTED: true
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+
+  # No mhpmcounter3-31, mhpmevent3-31, mcounteren or mcountinhibit: none of them is in the
+  # CSR decoder, so each raises illegal instruction.  (User manual Table 3.2 lists
+  # MCOUNTEREN at 0x306, but the RTL does not decode it.)
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTINHIBIT_IMPLEMENTED: false
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

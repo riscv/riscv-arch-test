@@ -38,12 +38,12 @@ declared at 1.11.0.
 
 ## Testbench patch and build
 
-- `setup-e906.sh` patches only the SoC testbench under `smart_run/logical`. It loads one image,
+- `install-e906.sh` patches only the SoC testbench under `smart_run/logical`. It loads one image,
   `mem.pat`, into the instruction-bus SRAM; enlarges that SRAM from 256 KB to 1 MB, still with no
   wait states; prints the cycle count at the end; takes `MAX_RUN_TIME` and `LAST_CYCLE` from the
   Verilator command line; declares the `uart0_sout` net; skips the no-retire watchdog on cycle 0;
   and, with `+define+ACT_TRACE`, prints every retired PC. The core RTL is not changed.
-- `install-e906.sh` verilates the testbench with `--timing`, because the vendor
+- It verilates the testbench with `--timing`, because the vendor
   `smart_run/Makefile` supports only iverilog, VCS and irun, and the testbench uses delays, `wait`
   and `force`. It caps a test at 20 M cycles. The model runs at about 45,000 cycles per second, so
   the whole suite takes under a minute on 8 cores.
@@ -53,7 +53,6 @@ declared at 1.11.0.
 ```bash
 .github/scripts/install-e906.sh ~/e906-install
 export PATH=~/e906-install/bin:$PATH
-export E906_SNAPSHOT=~/e906-install/opene906/smart_run/work
 make e906-rv32imafc-u-pmp
 ```
 
@@ -74,20 +73,3 @@ make e906-rv32imafc-u-pmp
 - `RVMODEL_BOOT` points mtvec at the trampoline, writes mhcr = `0x103F` (caches, write-back,
   write-allocate and branch prediction on, as the vendor startup code `crt0.s` does), and sets
   mhint.AEE so that load bus errors are precise.
-
-## Deviations from the specifications
-
-- mtvec.MODE is hardwired to 3 (CLIC mode). Exceptions go to BASE, which a write sets from bits
-  31:6, so the configuration declares direct mode with 64-byte alignment, and the trap prolog copies
-  its trampoline to the mtvec target.
-- In CLIC mode mcause bits 29:27 alias mstatus.MPP and MPIE, so an M-mode trap reads
-  `0x3000_000x`. Writing mcause also writes MPP and MPIE.
-- HPM counters 3, 4, 8, 9 and 13-17 are implemented with 64-bit storage. Each mhpmevent
-  accepts only 0 or that counter's fixed event code, and counter writes are accepted only while
-  that event is selected. UDB and Sail declare these nine counters as implemented. Sail's
-  configuration can express their width and selector width, but cannot express the per-counter
-  event restrictions or the event-gated writes.
-- `ci.yaml` lists the suites that fail and why: fmin/fmax with a signaling NaN, FMA underflow,
-  the mcause alias, LR exception causes, mstatus.MPP and TW, event-gated HPM counter writes,
-  minstret counting its own write and ECALL, and mret keeping MPRV (privileged 1.11 behavior that
-  Sail 0.16 does not model; fixed in sail-riscv#2096).

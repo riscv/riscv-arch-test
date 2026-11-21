@@ -317,7 +317,7 @@ normative_rule_definitions:
 
   # If the Zicfilp extension is implemented, the mseccfg.MLPE field is reset to 0.
   - name: mseccfg_mlpe_rst
-    coverpoint: ["Reset values are not tested"]
+    coverpoint: ["Sm_reset_cg/cp_mseccfg_reset"]
 
   # Access to the SPELP field, added by Zicfilp, accesses the homonymous fields of mstatus
   # when V=0, and the homonymous fields of vsstatus when V=1.

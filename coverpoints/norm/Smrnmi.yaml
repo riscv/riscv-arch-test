@@ -54,4 +54,5 @@ normative_rule_definitions:
 
   # If the Smrnmi extension is implemented, the mnstatus.NMIE field is reset to 0.
   - name: mnstatus_nmie_rst
-    coverpoint: ["TODO: record mnstatus.NMIE before the boot code sets it"]
+    # ["Sm_reset_cg/cp_mnstatus_reset"] once the Sail reference model supports Smrnmi
+    coverpoint: [""]

@@ -2,13 +2,7 @@
 suite: Smstateen
 source: https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655
 coverpoints:
-  - name: cp_mstateen_reset_val
-    goal: On reset all mstateen CSRs' bits are initialized to zeros.
-    description: As first test after reset, read mstateen0-3.  For RV32, also read msstateen0-3h
-    expectation: "0"
-    bins: 4-8 CSRs
-    rules:
-      - mstateen_zero_initialization
+  - heading: The reset value of mstateen (mstateen_zero_initialization) is tested by Sm_reset_cg/cp_mstateen_reset.
   - name: cp_walking_ones
     goal: Bits are accessible
     description: |-

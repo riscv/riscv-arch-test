@@ -300,6 +300,80 @@ def _sgei_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+# (form, old VGEIN, new VGEIN, VGEIN bits of rs1 for csrrs and csrrc, GEILEN needed): guest external interrupt 3 is
+# pending, and files 1 and 7 are idle
+_VGEIN_SWITCHES = (
+    ("csrrw", 3, 0, None, 3),
+    ("csrrw", 3, 1, None, 3),
+    ("csrrw", 0, 3, None, 3),
+    ("csrrw", 1, 3, None, 3),
+    ("csrrs", 0, 3, 3, 3),
+    ("csrrs", 1, 3, 2, 3),
+    ("csrrs", 3, 7, 4, 7),
+    ("csrrc", 3, 0, 3, 3),
+    ("csrrc", 3, 1, 2, 3),
+    ("csrrc", 7, 3, 4, 7),
+)
+
+
+def _vgein_switch_tests(test_data: TestData) -> list[str]:
+    """hip.VSEIP follows hgeip[VGEIN] after each csrrw, csrrs and csrrc that moves hstatus.VGEIN."""
+    tmp_reg, val_reg = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner(
+            "cp_vgein_switch_csrrw, cp_vgein_switch_csrrs, cp_vgein_switch_csrrc",
+            "With guest external interrupt 3 pending, hvip = hie = hgeie = 0 and the other guest files idle, move\n"
+            "hstatus.VGEIN between 0, an idle file and file 3 with csrrw, csrrs and csrrc, and read hip after each\n"
+            "write: hip.VSEIP = hgeip[VGEIN], and 0 when VGEIN = 0",
+        ),
+        "#if defined(RVTEST_SGEI_INTR_IMPL) && UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 3",
+        "csrw hvip, zero",
+        "csrw hie, zero",
+        "csrw hgeie, zero",
+        *_gei("SET", 3, tmp_reg),
+    ]
+    for form, old, new, bits, geilen in _VGEIN_SWITCHES:
+        body = [
+            f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
+            f"csrc hstatus, x{tmp_reg}",
+            *([f"LI(x{tmp_reg}, {old << 12:#x})", f"csrs hstatus, x{tmp_reg}"] if old else []),
+        ]
+        if bits is None:
+            # hstatus with VGEIN = new and the other bits unchanged
+            body.extend(
+                [
+                    f"csrr x{val_reg}, hstatus",
+                    f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
+                    f"not x{tmp_reg}, x{tmp_reg}",
+                    f"and x{val_reg}, x{val_reg}, x{tmp_reg}",
+                    *([f"LI(x{tmp_reg}, {new << 12:#x})", f"or x{val_reg}, x{val_reg}, x{tmp_reg}"] if new else []),
+                ]
+            )
+        else:
+            body.append(f"LI(x{val_reg}, {bits << 12:#x})")
+        body.extend(
+            [
+                test_data.add_testcase(f"{form}_{old}_to_{new}", f"cp_vgein_switch_{form}", _CG),
+                f"{form} x0, hstatus, x{val_reg}",
+                f"csrr x{val_reg}, hip",
+                f"LI(x{tmp_reg}, MIP_VSEIP | MIP_SGEIP)",
+                f"and x{val_reg}, x{val_reg}, x{tmp_reg}",
+                write_sigupd(val_reg, test_data),
+            ]
+        )
+        lines.extend(body if geilen == 3 else [f"#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= {geilen}", *body, "#endif"])
+    lines.extend(
+        [
+            f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
+            f"csrc hstatus, x{tmp_reg}",
+            *_gei("CLR", 3, tmp_reg),
+            "#endif",
+        ]
+    )
+    test_data.int_regs.return_registers([tmp_reg, val_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Interrupts",
     required_extensions=["H"],
@@ -313,7 +387,7 @@ def make_interrupts_sgei(test_data: TestData) -> list[TestChunk]:
     tc.code.extend([*IMSIC_STATEEN_ON, *_trigger_tests(test_data)])
 
     tc = test_data.new_test_chunk(test_chunks, "Sgei_hs")
-    tc.code.extend([*IMSIC_STATEEN_ON, *_sgei_tests(test_data)])
+    tc.code.extend([*IMSIC_STATEEN_ON, *_sgei_tests(test_data), *_vgein_switch_tests(test_data)])
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -24,7 +24,7 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      "writable_bits": { "len": 32, "value": "0x0000_000D" }
     },
     // cv32e40x has no menvcfg register (M-mode only, no S/U-mode).
     // SCHEMA-REQUIRED: no RTL counterpart; value has no effect on DUT comparison.

@@ -1457,6 +1457,60 @@ def _vsepc_ialign32_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _poll_time_near_seed(
+    r_seed: int,
+    r_time: int,
+    r_iter: int,
+    r_ok: int,
+    r_lim: int,
+    *,
+    csr: str,
+    slack: int,
+    iters: int = 20000,
+) -> list[str]:
+    """Poll csrr time/timeh until it is in [seed, seed+slack).
+
+    Do not load mtime here. An MMIO load of the timer device can complete the
+    same path the test is trying to observe as delayed (Priv §3.2.1: eventually,
+    not necessarily immediately). Compare only the CSR against the stored seed.
+    slack must exceed mtime ticks during the allowed copy delay (use
+    RVMODEL_TIME_MTIME_SLACK / RVMODEL_TIME_MTIME_SYNC_ITERS to override).
+    """
+    slack_imm = slack < 2048
+    lines = [
+        "#ifdef RVMODEL_TIME_MTIME_SYNC_ITERS",
+        f"LI(x{r_iter}, RVMODEL_TIME_MTIME_SYNC_ITERS) # platform mtime->time poll bound",
+        "#else",
+        f"LI(x{r_iter}, {iters})                 # bounded poll; Priv 3.2.1 only requires eventual visibility",
+        "#endif",
+    ]
+    if slack_imm:
+        lines.append(f"LI(x{r_lim}, {slack})        # (time - seed) < {slack}")
+    else:
+        lines.extend(
+            [
+                "#ifdef RVMODEL_TIME_MTIME_SLACK",
+                f"LI(x{r_lim}, RVMODEL_TIME_MTIME_SLACK) # ticks allowed after the mtime store",
+                "#else",
+                f"LI(x{r_lim}, {slack})        # ticks allowed after the mtime store; not an sltiu immediate",
+                "#endif",
+            ]
+        )
+    lines.extend(
+        [
+            "1:",
+            f"csrr x{r_time}, {csr}        # read {csr} only; no mtime load",
+            f"sub x{r_ok}, x{r_time}, x{r_seed}          # {csr} - seed",
+            f"sltu x{r_ok}, x{r_ok}, x{r_lim}          # pass if {csr} is in [seed, seed+lim)",
+            f"bnez x{r_ok}, 2f",
+            f"addi x{r_iter}, x{r_iter}, -1",
+            f"bnez x{r_iter}, 1b",
+            "2:",
+        ]
+    )
+    return lines
+
+
 def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     """Generate CSR counter tests."""
     covergroup = "Sm_mcsr_cg"
@@ -1606,43 +1660,47 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
+    test_data.int_regs.return_registers([r1, r2])
+    r_addr, r_seed, r_time, r_iter, r_ok = test_data.int_regs.get_registers(5)
+
     ######################################
     coverpoint = "cp_mtime_write"
     ######################################
     lines.append(
         comment_banner(
             coverpoint,
-            "Write mtime and read back time if supported",
+            "Write mtime, then poll time until it enters [seed, seed+slack)",
         ),
     )
+    # Seed 1000000 and slack 100000: a stuck-at-zero time fails, and several
+    # thousand mtime ticks during a delayed hart copy still pass. After the
+    # store, do not load mtime; that MMIO access can hide the copy latency.
+    # r_addr is reused as the slack limit once the store is issued.
     lines.extend(
         [
             "#ifdef RVMODEL_MTIME_ADDRESS",
-            f"LI(x{r1}, 42)        # value to write to mtime",
-            f"LI_FIXED_LEN(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
-            f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
-            "fence o, i        # order the mtime write before the time read",
+            f"LI(x{r_seed}, 1000000)        # seed >> slack so a zero time CSR cannot pass",
+            f"LI_FIXED_LEN(x{r_addr}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
+            f"SREG x{r_seed}, 0(x{r_addr})        # write mtime = 1000000 using memory-mapped I/O",
+            "fence o, i        # order the store; does not wait for the hart time copy",
             test_data.add_testcase("", coverpoint, covergroup),
-            f"csrr x{r2}, time        # read time",
-            f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
-            f"sltiu x{r2}, x{r2}, 100          # signature is 1 only if time is within 100 above the written value",
-            write_sigupd(r2, test_data),
+            *_poll_time_near_seed(r_seed, r_time, r_iter, r_ok, r_addr, csr="time", slack=100000),
+            write_sigupd(r_ok, test_data),
             "",
             "#if __riscv_xlen == 32",
-            f"LI(x{r1}, 67)        # value to write to mtimeh",
-            f"LI_FIXED_LEN(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
-            f"SREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",
-            "fence o, i        # order the mtimeh write before the timeh read",
+            f"LI(x{r_seed}, 67)        # seed for mtimeh; upper word must match exactly",
+            f"LI_FIXED_LEN(x{r_addr}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
+            f"SREG x{r_seed}, 4(x{r_addr})        # write mtimeh = 67 using memory-mapped I/O",
+            "fence o, i        # order the store; does not wait for the hart timeh copy",
             test_data.add_testcase("h", coverpoint, covergroup),
-            f"csrr x{r2}, timeh        # read timeh",
-            f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
-            write_sigupd(r2, test_data),
+            *_poll_time_near_seed(r_seed, r_time, r_iter, r_ok, r_addr, csr="timeh", slack=1),
+            write_sigupd(r_ok, test_data),
             "#endif",
             "#endif",
         ]
     )
 
-    test_data.int_regs.return_registers([r1, r2])
+    test_data.int_regs.return_registers([r_addr, r_seed, r_time, r_iter, r_ok])
 
     # Counter Wraparound Verification
     r_val, r_val2, r_temp, r_counter = test_data.int_regs.get_registers(4)

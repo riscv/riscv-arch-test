@@ -256,6 +256,8 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_MTIME_ADDRESS` (required if machine timer interrupts are implemented, or if Sstc is implemented without Zicntr; otherwise can be omitted)
 - `RVMODEL_MTIMECMP_ADDRESS` (required if machine timer interrupts are implemented; otherwise can be omitted)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
+- `RVMODEL_TIME_MTIME_SYNC_ITERS` (optional; default 20000). Poll bound for `Sm_mcsr_cntr` `cp_mtime_write` while waiting for `time`/`timeh` to enter `[seed, seed+slack)`. Privileged spec §3.2.1 only requires eventual visibility.
+- `RVMODEL_TIME_MTIME_SLACK` (optional; default 100000). Max `time - seed` accepted after the `mtime` store. Must exceed mtime ticks during the hart copy delay. The test does not load `mtime` in that wait.
 
 **MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
 

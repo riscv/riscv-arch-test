@@ -10,7 +10,7 @@
 
 from random import seed
 
-from testgen.asm.helpers import comment_banner, reproducible_hash, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, reproducible_hash, unless_required, write_sigupd
 from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
 from testgen.data.random import random_int
 from testgen.data.state import TestData
@@ -1838,7 +1838,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
         "#endif",
     ]
     blocks: list[tuple[str, list[str], list[str], list[tuple[str, list[str]]]]] = [
-        ("bare", [], ["#ifdef S_SUPPORTED", "csrw satp, x0 # Bare", "#endif"], [("max_pa", max_pa)])
+        ("bare", [], gated(["csrw satp, x0 # Bare"], unless_required(test_data, "S_SUPPORTED")), [("max_pa", max_pa)])
     ]
     for name, xlen, va_bits, satp_setup, _, _, _, _ in _XLATE_MODES:
         half = 1 << (va_bits - 1)
@@ -1884,24 +1884,21 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
             "tdata2 is the VA and not when tdata2 is the PA",
         )
     )
-    lines.extend(
-        [
-            "#ifdef S_SUPPORTED",
-            "#ifdef UDB_SDTRIG_S_WRITABLE",
-            "#ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE",
-            ".pushsection .data",
-            ".p2align 2",
-            "sdtrig_xlate_target:",
-            "nop # the execute trigger watches this instruction",
-            "jr ra",
-            ".popsection",
-            # the breakpoint is taken into M in SdtrigSm; into S in SdtrigS, where SIE=1 lets the trigger fire
-            *(_set_medeleg(temp_reg, 3, False) if mode == "Sm" else _global_ie(mode, True)),
-        ]
-    )
+    body = [
+        "#ifdef UDB_SDTRIG_S_WRITABLE",
+        "#ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE",
+        ".pushsection .data",
+        ".p2align 2",
+        "sdtrig_xlate_target:",
+        "nop # the execute trigger watches this instruction",
+        "jr ra",
+        ".popsection",
+        # the breakpoint is taken into M in SdtrigSm; into S in SdtrigS, where SIE=1 lets the trigger fire
+        *(_set_medeleg(temp_reg, 3, False) if mode == "Sm" else _global_ie(mode, True)),
+    ]
     for name, xlen, _, satp_setup, pte_macro, level, alias, shift in _XLATE_MODES:
         slot = ((alias >> shift) & (0x1FF if xlen == 64 else 0x3FF)) << (3 if xlen == 64 else 2)
-        lines.extend(
+        body.extend(
             [
                 f"\n# {name}: sdtrig_xlate_target's superpage aliased at 0x{alias:x}",
                 *_xlate_guard(name, xlen),
@@ -1916,10 +1913,10 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
             ]
         )
         for trig_num in TRIGGERS:
-            lines.append(f"#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
-            lines.extend(_select_trigger(cfg_reg, trig_num, mode))
+            body.append(f"#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
+            body.extend(_select_trigger(cfg_reg, trig_num, mode))
             for case, reg in (("va", va_reg), ("pa", pa_reg)):
-                lines.extend(
+                body.extend(
                     [
                         _add_tc(test_data, f"trig_num_{trig_num}_satp_{name}_tdata2_{case}", coverpoint, covergroup),
                         *_config_mcontrol6(
@@ -1932,8 +1929,8 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
                         *_sign_trap_count(temp_reg, test_data),
                     ]
                 )
-            lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
-        lines.extend(
+            body.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
+        body.extend(
             [
                 "csrw satp, x0 # back to Bare",
                 "sfence.vma",
@@ -1947,10 +1944,9 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
             ]
         )
     if mode == "S":
-        lines.extend(_global_ie(mode, False))
-    lines.extend(
-        ["#endif // UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE", "#endif // UDB_SDTRIG_S_WRITABLE", "#endif // S_SUPPORTED"]
-    )
+        body.extend(_global_ie(mode, False))
+    body.extend(["#endif // UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE", "#endif // UDB_SDTRIG_S_WRITABLE"])
+    lines.extend(gated(body, unless_required(test_data, "S_SUPPORTED")))
 
     test_data.int_regs.return_registers([cfg_reg, va_reg, pa_reg, temp_reg])
     chunks.append(test_data.end_test_chunk())

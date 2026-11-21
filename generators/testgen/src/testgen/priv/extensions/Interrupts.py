@@ -9,7 +9,7 @@
 
 """Interrupts test generator for interrupts not relying on M-mode (covergroup Interrupts_cg)."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, gated, unless_required
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
@@ -84,7 +84,6 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
             # medeleg = 0, so the same request reaches M mode where stimecmp is accessible.
             continue
         macro = int_macro[int_type]
-        guard = guard_symbol(int_type)
         cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type)
         for hideleg, mode, enable in [
             (hideleg, mode, enable)
@@ -96,12 +95,11 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
             modecmd = "csrs" if mode == 1 else "csrc"
             enablecmd = "csrs" if enable == 1 else "csrc"
             vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, enable, tmp_reg)
-            tc.code += [
-                f"#ifdef {guard}",
+            case = [
                 f"#ifdef UDB_STVEC_MODES_{mode}",
                 *vs_open,
                 f"LI(x{tmp_reg}, -1)",
-                *write_ie(suite, tmp_reg, "1s"),
+                *write_ie(test_data, suite, tmp_reg, "1s"),
                 f"LI(x{tmp_reg}, 1)",
                 f"{modecmd} stvec, x{tmp_reg} # stvec.mode = {mode}",
                 f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
@@ -111,11 +109,14 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 f"csrw stval, x{tmp_reg} # stval = nonzero",
                 # Likewise htval and htinst, which an interrupt taken into HS-mode must also zero.
                 # htinst gets a transformed load, lw x1, 0(x0).
-                "#ifdef H_SUPPORTED",
-                f"csrw htval, x{tmp_reg} # htval = nonzero",
-                f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
-                f"csrw htinst, x{tmp_reg} # htinst = nonzero",
-                "#endif // H_SUPPORTED",
+                *gated(
+                    [
+                        f"csrw htval, x{tmp_reg} # htval = nonzero",
+                        f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
+                        f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                    ],
+                    unless_required(test_data, "H_SUPPORTED"),
+                ),
                 test_data.add_testcase(
                     f"priv_{priv}_{int_type}_mode_{mode}_enable_{enable}{'_hideleg' if hideleg else ''}",
                     cp,
@@ -128,9 +129,8 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 *mode_exit(suite, priv),
                 *vs_close,
                 f"#endif // UDB_STVEC_MODES_{mode}",
-                f"#endif // {guard}",
-                "",
             ]
+            tc.code += [*gated(case, unless_required(test_data, guard_symbol(int_type))), ""]
 
     test_data.int_regs.return_register(tmp_reg)
 

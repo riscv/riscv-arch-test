@@ -113,8 +113,10 @@ class InterruptSuite:
     ip: str  # pending CSR
     ie: str  # enable CSR
     status: dict  # global enable written in the boot mode: csr, mask, field
-    wfi: dict  # cp_wfi timer: guard, timer macro, ie (name, mask), ip (csr, name, mask), stce
-    deleg: list[str]  # default delegation setup before each case
+    # cp_wfi timer: timer macro, ie (name, mask), ip (csr, name, mask), stce.  The generators that run cp_wfi
+    # require the timer, as those that run cp_trigger_vsti_sstc require H and Sstc
+    wfi: dict
+    deleg: list[str]  # default delegation setup before each case, which needs S-mode
     hie: bool = False  # also write the enables to hie, which holds the VS-level enables that sie cannot reach
 
     @property
@@ -126,11 +128,31 @@ class InterruptSuite:
 Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
 
 
-def write_ie(suite: InterruptSuite, reg: int, comment: str) -> list[str]:
+def required_symbols(suite: InterruptSuite, priv: str) -> set[str]:
+    """Extension symbols defined on every target that runs the ``priv`` files.
+
+    The VS and VU files require H, which requires S. The S files, and every file of a suite that boots to S,
+    require S.
+    """
+    if priv in ("VS", "VU"):
+        return {"S_SUPPORTED", "H_SUPPORTED"}
+    if priv == "S" or suite.boot == "S":
+        return {"S_SUPPORTED"}
+    return set()
+
+
+def ifdef(suite: InterruptSuite, priv: str, symbol: str, lines: list[str]) -> list[str]:
+    """Wrap ``lines`` in ``#ifdef symbol``, unless the ``priv`` files already require it."""
+    if not lines or symbol in required_symbols(suite, priv):
+        return lines
+    return [f"#ifdef {symbol}", *lines, f"#endif // {symbol}"]
+
+
+def write_ie(suite: InterruptSuite, priv: str, reg: int, comment: str) -> list[str]:
     """Write x``reg`` to the suite's enable CSR and, with H, to hie, whose VS-level bits share their positions."""
     lines = [f"csrw {suite.ie}, x{reg} # {suite.ie} = {comment}"]
     if suite.hie:
-        lines += ["#ifdef H_SUPPORTED", f"csrw hie, x{reg} # hie = {comment}", "#endif // H_SUPPORTED"]
+        lines += ifdef(suite, priv, "H_SUPPORTED", [f"csrw hie, x{reg} # hie = {comment}"])
     return lines
 
 
@@ -173,13 +195,12 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
         bit = int_bit[int_type]
         # enable only this interrupt (fires), then every interrupt except this one (does not fire)
         for enable, ie_val in [("only", 1 << bit), ("others", ~(1 << bit))]:
-            tc.code += [
-                f"#ifdef {guard}",
-                *suite.deleg,
+            case = [
+                *ifdef(suite, priv, "S_SUPPORTED", suite.deleg),
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, {ie_val})",
-                *write_ie(suite, tmp_reg, f"{int_type} {enable}"),
+                *write_ie(suite, priv, tmp_reg, f"{int_type} {enable}"),
                 test_data.add_testcase(
                     f"priv_{priv}_{int_type}_{ie}_{enable}",
                     label_coverpoint(suite, "cp_enable_one", priv, int_type) if enable == "only" else "cp_enable_zero",
@@ -190,14 +211,13 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                 f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the interrupt handler hasn't done so",
                 *mode_exit(suite, priv),
-                f"#endif // {guard}",
-                "",
             ]
+            tc.code += [*ifdef(suite, priv, guard, case), ""]
 
     test_data.int_regs.return_register(tmp_reg)
 
 
-def _raise(raised: list[str], pair: list[str], op: str, priv: str) -> list[str]:
+def _raise(suite: InterruptSuite, raised: list[str], pair: list[str], op: str, priv: str) -> list[str]:
     """RVTEST_<op>_<int>_INT_<priv> lines (op = SET or CLR) for every interrupt in ``raised``.
 
     The case that calls this is already wrapped in the guard symbols of both members of ``pair``,
@@ -211,7 +231,7 @@ def _raise(raised: list[str], pair: list[str], op: str, priv: str) -> list[str]:
         if int_type in pair:
             lines.append(line)
         else:
-            lines += [f"#ifdef {guard_symbol(int_type)}", line, f"#endif // {guard_symbol(int_type)}"]
+            lines += ifdef(suite, priv, guard_symbol(int_type), [line])
     return lines
 
 
@@ -232,11 +252,9 @@ def _enable_pair(suite: InterruptSuite, reg: int, value: int, pair: list[str], p
             f"LI(x{reg}, {mask:#x})",
             tsbi_call(f"csrs mie, x{reg} # mie |= {mask:#x}: sie and hie at once"),
         ]
-    hie_lines = [
-        "#ifdef H_SUPPORTED",
-        tsbi_call_or_direct(f"csrw hie, x{reg} # hie = {value:#x}", flavor(priv)),
-        "#endif // H_SUPPORTED",
-    ]
+    hie_lines = ifdef(
+        suite, priv, "H_SUPPORTED", [tsbi_call_or_direct(f"csrw hie, x{reg} # hie = {value:#x}", flavor(priv))]
+    )
     return [ie_line, *hie_lines] if pair[0] in vs_ints else [*hie_lines, ie_line]
 
 
@@ -308,32 +326,31 @@ def generate_cp_priority(
             bin_name = f"priv_{priv}_{first}_{second}"
             if deleg is not None:
                 deleg_lines = [
-                    "#ifdef S_SUPPORTED",
                     f"LI(x{tmp_reg}, {1 << int_bit[deleg]:#x})",
                     f"csrw mideleg, x{tmp_reg} # mideleg = {deleg}",
-                    "#endif // S_SUPPORTED",
                 ]
                 bin_name += f"_deleg_{deleg}"
-            tc.code += [
-                f"#ifdef {guard_symbol(first)}",
-                f"#ifdef {guard_symbol(second)}",
-                *deleg_lines,
+            case = [
+                *ifdef(suite, priv, "S_SUPPORTED", deleg_lines),
                 f"LI(x{tmp_reg}, {status_mask:#x})",
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, 0)",
-                *write_ie(suite, tmp_reg, "0"),
+                *write_ie(suite, priv, tmp_reg, "0"),
                 *mode_enter(suite, priv),
-                *_raise(raised, pair, "SET", priv),
+                *_raise(suite, raised, pair, "SET", priv),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
                 test_data.add_testcase(bin_name, _priority_label(suite, coverpoint, priv, pair), suite.covergroup),
                 tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", flavor(priv)),
                 *(
-                    [
-                        "#ifdef H_SUPPORTED",
-                        tsbi_call_or_direct(f"csrr x{tmp_reg}, hip", flavor(priv)),
-                        f"or x{check_reg}, x{check_reg}, x{tmp_reg} # the VS-level pending bits are in hip",
-                        "#endif // H_SUPPORTED",
-                    ]
+                    ifdef(
+                        suite,
+                        priv,
+                        "H_SUPPORTED",
+                        [
+                            tsbi_call_or_direct(f"csrr x{tmp_reg}, hip", flavor(priv)),
+                            f"or x{check_reg}, x{check_reg}, x{tmp_reg} # the VS-level pending bits are in hip",
+                        ],
+                    )
                     if suite.hie
                     else []
                 ),
@@ -343,12 +360,10 @@ def generate_cp_priority(
                 # Enable last, so the pending interrupts are arbitrated together and taken in priority order
                 f"LI(x{tmp_reg}, {ie_after})",
                 *_enable_pair(suite, tmp_reg, ie_after, pair, priv),
-                *_raise(raised, pair, "CLR", priv),
+                *_raise(suite, raised, pair, "CLR", priv),
                 *mode_exit(suite, priv),
-                f"#endif // {guard_symbol(second)}",
-                f"#endif // {guard_symbol(first)}",
-                "",
             ]
+            tc.code += [*ifdef(suite, priv, guard_symbol(first), ifdef(suite, priv, guard_symbol(second), case)), ""]
 
     test_data.int_regs.return_registers([tmp_reg, check_reg])
 
@@ -388,8 +403,6 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
         coverpoint,
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
     )
-    if priv == "U":
-        tc.code.append("#ifndef S_SUPPORTED // U-mode WFI only waits when S-mode is not implemented")
     addr_reg, tmp_reg = test_data.int_regs.get_registers(2)
 
     # mstatus.TW only affects modes below M, so sweep it in M-mode where it must not matter
@@ -401,8 +414,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
             # S-mode suite with SIE = 0); lower modes take it regardless of the global enable.
             taken = enable == 1 or priv != boot
             tc.code += [
-                f"#ifdef {wfi['guard']}",
-                *suite.deleg,
+                *ifdef(suite, priv, "S_SUPPORTED", suite.deleg),
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
                 tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
@@ -426,13 +438,10 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 *wait_loop(test_data, tmp_reg, ["wfi"], None if taken else (ip_csr, ip_mask)),
                 f"RVTEST_CLR_{wfi['timer']}_INT_{flavor(priv)} # Clear the timer interrupt",
                 *mode_exit(suite, priv),
-                f"#endif // {wfi['guard']}",
                 "",
             ]
 
     test_data.int_regs.return_registers([addr_reg, tmp_reg])
-    if priv == "U":
-        tc.code.append("#endif // S_SUPPORTED")
 
 
 def generate_cp_trigger_vsti_sstc(
@@ -461,8 +470,6 @@ def generate_cp_trigger_vsti_sstc(
     )
     tmp_reg = test_data.int_regs.get_register()
     tc.code += [
-        "#ifdef H_SUPPORTED",
-        "#ifdef SSTC_SUPPORTED",
         *write_stce(test_data, True, boot),
         *write_stce(test_data, True, boot, henvcfg=True),
         f"LI(x{tmp_reg}, SSTATUS_SIE)",
@@ -515,8 +522,6 @@ def generate_cp_trigger_vsti_sstc(
         f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = 0",
         *write_stce(test_data, False, boot, henvcfg=True),
         *write_stce(test_data, False, boot),
-        "#endif // SSTC_SUPPORTED",
-        "#endif // H_SUPPORTED",
         "",
     ]
     test_data.int_regs.return_register(tmp_reg)
@@ -568,13 +573,12 @@ def generate_cp_wfi_timeout(
     for tw, vtw, case_coverpoint in _WFI_TIMEOUT_CASES[priv]:
         twcmd = "csrs" if tw == 1 else "csrc"
         # U-mode WFI only times out with TW = 0 when S-mode exists
-        guard = priv == "U" and tw == 0
+        s_only = priv == "U" and tw == 0
         vtw_name = "" if vtw is None else f"_vtw_{int(vtw)}"
         for enable in [0, 1]:
             for ie in [0, 1]:
                 enablecmd = "csrs" if enable == 1 else "csrc"
-                tc.code += [
-                    *(["#ifdef S_SUPPORTED"] if guard else []),
+                case = [
                     f"LI(x{tmp_reg}, 0x200000)",
                     tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
                     *([] if vtw is None else _write_vtw(tmp_reg, vtw, suite.boot)),
@@ -591,9 +595,8 @@ def generate_cp_wfi_timeout(
                     "wfi # nothing is pending, so this times out and traps",
                     *mode_exit(suite, priv),
                     *([] if vtw is None else _write_vtw(tmp_reg, False, suite.boot)),
-                    *(["#endif // S_SUPPORTED"] if guard else []),
-                    "",
                 ]
+                tc.code += [*(ifdef(suite, priv, "S_SUPPORTED", case) if s_only else case), ""]
 
     test_data.int_regs.return_register(tmp_reg)
 

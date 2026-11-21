@@ -642,8 +642,6 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31:
 
 #endif
 
-#if __riscv_xlen == 32
-
 #if defined(UDB_HPM_COUNTER_EN_3) && (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_3) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_3))))
 
 # Testcase: cp_cntr_hpm (hpmcounter3h)
@@ -1221,8 +1219,6 @@ Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31h:
   sub x18, x12, x18 # compute difference
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31h, Zihpm_csrrc_cg_cp_cntr_hpm_hpmcounter31h_str)
-
-#endif
 
 #endif
 

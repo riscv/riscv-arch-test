@@ -264,6 +264,11 @@ _SCONTEXT_MATCH_GATE = "#if defined(UDB_SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH) &&
 ### HELPERS
 
 
+def _if_s(mode: str, lines: list[str]) -> list[str]:
+    """``lines`` guarded by S_SUPPORTED, unless the suite is SdtrigS, whose files require S."""
+    return lines if mode == "S" else ["#ifdef S_SUPPORTED", *lines, "#endif"]
+
+
 def _priv_fields(privbits: int) -> tuple[int, int, int, int, int]:
     """Split a MODE_PRIVBIT-style mask into its (m, s, u, vs, vu) bits."""
     return (privbits >> 4) & 1, (privbits >> 3) & 1, (privbits >> 2) & 1, (privbits >> 1) & 1, privbits & 1
@@ -1838,7 +1843,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
         "#endif",
     ]
     blocks: list[tuple[str, list[str], list[str], list[tuple[str, list[str]]]]] = [
-        ("bare", [], ["#ifdef S_SUPPORTED", "csrw satp, x0 # Bare", "#endif"], [("max_pa", max_pa)])
+        ("bare", [], _if_s(mode, ["csrw satp, x0 # Bare"]), [("max_pa", max_pa)])
     ]
     for name, xlen, va_bits, satp_setup, _, _, _, _ in _XLATE_MODES:
         half = 1 << (va_bits - 1)
@@ -1886,7 +1891,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
     )
     lines.extend(
         [
-            "#ifdef S_SUPPORTED",
+            *([] if mode == "S" else ["#ifdef S_SUPPORTED"]),
             "#ifdef UDB_SDTRIG_S_WRITABLE",
             "#ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE",
             ".pushsection .data",
@@ -1948,9 +1953,9 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
         )
     if mode == "S":
         lines.extend(_global_ie(mode, False))
-    lines.extend(
-        ["#endif // UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE", "#endif // UDB_SDTRIG_S_WRITABLE", "#endif // S_SUPPORTED"]
-    )
+    lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE", "#endif // UDB_SDTRIG_S_WRITABLE"])
+    if mode != "S":
+        lines.append("#endif // S_SUPPORTED")
 
     test_data.int_regs.return_registers([cfg_reg, va_reg, pa_reg, temp_reg])
     chunks.append(test_data.end_test_chunk())
@@ -4110,7 +4115,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
     covergroup = "SdtrigSm_etrigger_cg"
     chunks: list[TestChunk] = []
     lines = test_data.new_test_chunk(chunks, f"etrigger_cross_priv_{target_mode.lower()}").code
-    lines.append("#ifdef S_SUPPORTED")
 
     cfg_reg, data_reg, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[2], reg_range=list(range(8, 16)))
 
@@ -4205,7 +4209,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
         lines.extend(
             [f"#endif // {_mode_writable(target_mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
         )
-    lines.append("#endif // S_SUPPORTED")
 
     ######################################
     coverpoint = "cp_textra_etrigger"
@@ -4223,7 +4226,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
         )
         lines.extend(
             [
-                "#ifdef S_SUPPORTED",
                 "#ifdef UDB_SDTRIG_S_WRITABLE",
                 "#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
@@ -4263,7 +4265,6 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                 "#endif // RVMODEL_ACCESS_FAULT_ADDRESS_LOAD",
                 "#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5",
                 "#endif // UDB_SDTRIG_S_WRITABLE",
-                "#endif // S_SUPPORTED",
             ]
         )
 
@@ -4659,16 +4660,17 @@ def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]],
         return _with_trap_counts(_generate_etrigger_tests(test_data, mode))
 
     if mode == "Sm":
+        # medeleg exists only with S-mode
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=[*required_extensions, "S"], march_extensions=[], extra_defines=extra_defines
         )
         def make_sdtrig_etrigger_cross_priv_s(test_data: TestData) -> list[TestChunk]:
             """etrigger configured in M, exceptions raised in S."""
             return _with_trap_counts(etrigger_cross_priv_delegate_test(test_data, "S"))
 
         @add_priv_test_generator(
-            suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+            suite, required_extensions=[*required_extensions, "S"], march_extensions=[], extra_defines=extra_defines
         )
         def make_sdtrig_etrigger_cross_priv_u(test_data: TestData) -> list[TestChunk]:
             """etrigger configured in M, exceptions raised in U."""

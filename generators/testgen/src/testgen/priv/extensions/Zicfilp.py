@@ -73,11 +73,13 @@ def set_lpe(priv: Mode, mode: Mode, reg: int, enable: bool) -> list[str]:
             f"LI(x{reg}, HENVCFG_LPE)",
             tsbi_call_or_direct(f"{op} henvcfg, x{reg}", priv),
         ]
+    senvcfg = [f"LI(x{reg}, SENVCFG_LPE)", tsbi_call_or_direct(f"{op} senvcfg, x{reg}", priv)]
+    if priv == "S" or mode == "VU":  # S-mode is implemented
+        return [f"# {action} landing pads in {mode}-mode (senvcfg.LPE)", *senvcfg]
     return [
         f"# {action} landing pads in {mode}-mode (senvcfg.LPE with S-mode, menvcfg.LPE without)",
         "#ifdef S_SUPPORTED",
-        f"LI(x{reg}, SENVCFG_LPE)",
-        tsbi_call_or_direct(f"{op} senvcfg, x{reg}", priv),
+        *senvcfg,
         "#else",
         f"LI(x{reg}, MENVCFG_LPE)",
         tsbi_call_or_direct(f"{op} menvcfg, x{reg}", priv),

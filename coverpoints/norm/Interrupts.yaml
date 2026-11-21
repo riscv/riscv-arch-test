@@ -610,7 +610,9 @@ normative_rule_definitions:
   # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
   - name: hstatus_vgein_zero
     coverpoint:
-      ["Interrupts_Sgei_cg/{cp_trigger_vsei_hgeip, cp_vgein_switch_csrrw, cp_vgein_switch_csrrc}"]
+      [
+        "Interrupts_Sgei_cg/{cp_trigger_vsei_hgeip, cp_vgein_switch_csrrw, cp_vgein_switch_csrrc}",
+      ]
 
   # When a trap is taken into M-mode, mepc is written with the virtual address of
   # the instruction that was interrupted or that encountered the exception.

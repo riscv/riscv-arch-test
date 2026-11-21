@@ -9,7 +9,7 @@
 # the final argument. Output goes through the testbench virtual printer (0x1000_0000).
 #
 # Usage:
-#   run-cv32e40s.sh --cfg <rv32imc|rv32imc-pma|rv32imc-pma-pmp|rv32imcb-pma-pmp> --elf <elf-file>
+#   run-cv32e40s.sh --cfg <rv32imc-pma-pmp|rv32imcb-pma-pmp> --elf <elf-file>
 #
 # Environment:
 #   CVE40S_TB_ROOT  — directory holding <cfg>/Vtb_top (default: ../cv32e40s-tb from this script)

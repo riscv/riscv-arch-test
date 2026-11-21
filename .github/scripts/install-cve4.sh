@@ -5,7 +5,6 @@
 # in cv32e40x-dv's core testbench.
 # Usage: install-cve4.sh <install-dir>
 # Cache key derives from sha256(this file)[:12]; bump versions/commits below to invalidate.
-# The cache key does not cover cv32e40s_tb_wrapper.sv: bump the revision below when it changes.
 
 set -euo pipefail
 
@@ -17,7 +16,6 @@ CVE40X_DV_COMMIT="93ce70f1ae2ab2e66716e0c5648d27e67e161c2f"
 CVE40X_CORE_HASH="d952cd63bc1b4eb58cd893c28ef8283c781e345e" # pin cv32e40x RTL
 CVE40S_REPO="https://github.com/openhwfoundation/cv32e40s.git"
 CVE40S_COMMIT="9d9cae78b01a11458953133d1173c61933a2ba86"
-# cv32e40s_tb_wrapper.sv revision: 1
 VERILATOR_VERSION="v5.052"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -102,8 +100,8 @@ git init "$INSTALL_DIR/cv32e40s"
   git checkout FETCH_HEAD
 )
 
-# 9. Verilate each cv32e40s config in cv32e40x-dv's core testbench, with
-# cv32e40s_tb_wrapper.sv in place of cv32e40x_tb_wrapper.sv. The compile flags follow
+# 9. Verilate each cv32e40s config with PMP (see config/cores/cve4/README.md) in cv32e40x-dv's
+# core testbench, with cv32e40s_tb_wrapper.sv in place of cv32e40x_tb_wrapper.sv. The compile flags follow
 # cv32e40x-dv's sim/core Makefile; the defines select the core parameters (see the wrapper).
 TB="$INSTALL_DIR/cv32e40x-dv/tb/core"
 TB_OUT="$INSTALL_DIR/cv32e40s-tb"
@@ -111,8 +109,6 @@ mkdir -p "$TB_OUT"
 sed 's/cv32e40x_tb_wrapper/cv32e40s_tb_wrapper/g' "$TB/tb_top.sv" >"$TB_OUT/tb_top.sv"
 export DESIGN_RTL_DIR="$INSTALL_DIR/cv32e40s/rtl" # used by cv32e40s_manifest.flist
 declare -A CVE40S_DEFINES=(
-  ["rv32imc"]=""
-  ["rv32imc-pma"]="+define+CV32E40S_PMA"
   ["rv32imc-pma-pmp"]="+define+CV32E40S_PMA +define+CV32E40S_PMP"
   ["rv32imcb-pma-pmp"]="+define+CV32E40S_RVB +define+CV32E40S_PMA +define+CV32E40S_PMP"
 )

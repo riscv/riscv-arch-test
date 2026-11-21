@@ -402,7 +402,8 @@ normative_rule_definitions:
 
   # H and S CSRs are inaccessible from U-mode
   - names: [H_vscsrs_acc_u]
-    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+    coverpoint:
+      ["U_ucsr_cg/cp_csr_insufficient_priv", "H_inst_cg/cp_csr_write_denied"]
 
   # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
   # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
@@ -412,6 +413,7 @@ normative_rule_definitions:
       [
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
         "H_vucsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/cp_csr_write_denied",
       ]
   # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
   # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;

@@ -12,9 +12,6 @@ ci_enabled: false
 # measured on 2026-10-01 (3564 of 3631 tests pass). On 2026-10-20 the suites affected by later config changes
 # (M, F, U, S, Sm, Zicntr, Zifencei, PMP_Sm, Sscofpmf*, Smstateen, Ssstateen, Sdtrig*, Ssstrict*) were rerun:
 # 473 of 557 pass, and every remaining failure is in one of these suites.
-# On 2026-11-02 the exclusions were narrowed to the failing groups. Every test this frees was rerun, with the
-# Sm_H_hcsr, Zicntr and Sm_mcsr_cntr groups: all pass except the groups excluded below. The other excluded
-# groups are those that failed on 2026-10-20.
 exclude_extensions:
   # menvcfg.FIOM and senvcfg.FIOM are read-only zero although satp.MODE is not
   # always Bare (norm:menvcfg_fiom_rdonly0_ok); NewCSR/CSRBundles.scala L79. mstatus.SDT
@@ -53,29 +50,16 @@ exclude_extensions:
   - Ssstrict_U_VectorInstr
   # The CSR walks differ on the AIA, Sscsrind and Smrnmi CSRs (mtopi, stopi, vstopi,
   # miselect/mireg, siselect/sireg, vsiselect/vsireg, mn*), which XiangShan implements and
-  # Sail 0.16 does not. riscv/riscv-arch-test#3030 leaves those CSRs unwalked where the
-  # extensions are declared; with it, Ssstrict_Sm_CSR passes on XiangShan, so that entry can
-  # go when #3030 merges. Ssstrict_S_CSR-05 still fails with it: with menvcfg.STCE = 0,
-  # vstimecmp is accessible from HS-mode (NewCSR/CSRPermitModule.scala L225-L227). This is
-  # https://github.com/OpenXiangShan/XiangShan/issues/6464, closed as not planned because
-  # XiangShan follows a fixed version of the manual rather than its later updates. But the
-  # requirement is not new: Sstc as added to the manual in 2024 and every ISA manual release say an access
-  # to "stimecmp or vstimecmp in a mode other than M-mode raises an illegal-instruction
-  # exception" (norm:menvcfg_stce_op2); only the unreleased main branch dropped "or
-  # vstimecmp" from December 2025 until riscv/riscv-isa-manual#3344 restored it.
+  # Sail 0.16 does not. Ssstrict_S_CSR also fails because, with menvcfg.STCE = 0, vstimecmp is
+  # accessible from HS-mode (norm:menvcfg_stce_op2; NewCSR/CSRPermitModule.scala L225-L227;
+  # https://github.com/OpenXiangShan/XiangShan/issues/6464).
   - Ssstrict_S_CSR
   - Ssstrict_Sm_CSR
   # mstateen0.CSRIND, AIA and IMSIC are writable (XiangShan implements Sscsrind and
   # Smaia), but Sail 0.16 has no Sscsrind or Smaia and no sail.json setting for these bits,
-  # so it reads them as zero; #3030 stops walking them where the extensions are declared.
-  # With #3030, two files still fail. Smstateen-00: senvcfg.FIOM is read-only zero, as in
-  # Sm_mcsr_access above (https://github.com/OpenXiangShan/XiangShan/issues/6794).
-  # Smstateen-01 is a test problem: cp_mstateen_se_controls_hstateen sets mstateen3.SE0 and
-  # reads hstateen3 without first writing it to zero. XiangShan does not reset hstateen3
-  # (NewCSR/StateEnBundle.scala L45) and reads bit 63 as 1, which the spec allows: machine-level
-  # software "is responsible for initializing the corresponding writable bits of the hstateen
-  # and sstateen CSRs to zeros" (norm:hstateen_sstateen_zero_initialization). Fixed in the
-  # boot code by riscv/riscv-arch-test#3126.
+  # so it reads them as zero. Smstateen-00 also fails on the read-only-zero senvcfg.FIOM (see
+  # Sm_mcsr_access above), and Smstateen-01 reads hstateen3, which XiangShan does not reset
+  # (NewCSR/StateEnBundle.scala L45), before the test writes it.
   - Smstateen
   # PMP_Sm_cfg_A_tor_zero stores to and loads from physical address 0. The SimTop PMA
   # table makes 0x0-0x0FFF_FFFF readable and writable I/O with no device behind it, and
@@ -85,12 +69,8 @@ exclude_extensions:
   # XiangShan implements no tdata3, so an access raises illegal-instruction. tdata3 "is
   # optional if no implemented triggers use it", and mcontrol6 uses it (textra32/64 is
   # tdata3 for types 2-6), so riscv-unified-db requires TDATA3_IMPLEMENTED with mcontrol6
-  # and the config claims it (the spec's inconsistency on this is
-  # https://github.com/riscv/riscv-isa-manual/issues/3491). In SdtrigS and SdtrigU the
-  # trapping T-SBI access never returns, so those tests time out. Separately, a load or
-  # store trigger on a vector element after the first reports the first active byte of the
-  # 16-byte flow in xtval instead of the element's address
-  # (https://github.com/OpenXiangShan/XiangShan/issues/6851).
+  # and the config claims it. In SdtrigS and SdtrigU the trapping T-SBI access never
+  # returns, so those tests time out.
   - SdtrigSm
   - SdtrigS
   - SdtrigU

@@ -811,6 +811,28 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_scause_from_m :          cross priv_mode_m, csrrw, scause_csr, scause_wlrl_values;
         cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
         cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
+        // satp written from M-mode with a MODE the hart cannot hold: reserved, or a standard mode it does not support
+        `ifdef UDB_MXLEN_64
+            satp_mode_unsupported : coverpoint ins.current.rs1_val[63:60] {
+                bins reserved[] = {[1:7], [11:13]};
+                `ifndef SV39_SUPPORTED
+                    bins sv39 = {8};
+                `endif
+                `ifndef SV48_SUPPORTED
+                    bins sv48 = {9};
+                `endif
+                `ifndef SV57_SUPPORTED
+                    bins sv57 = {10};
+                `endif
+            }
+            cp_satp_mode_unsupported :  cross priv_mode_m, csrrw, satp, satp_mode_unsupported;
+        `elsif SV32_SUPPORTED
+        `else
+            satp_mode_unsupported : coverpoint ins.current.rs1_val[31] {
+                bins sv32 = {1'b1};
+            }
+            cp_satp_mode_unsupported :  cross priv_mode_m, csrrw, satp, satp_mode_unsupported;
+        `endif
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
         // sip/sie alias mip/mie only for delegated interrupts
         cp_shadow_deleg :           cross priv_mode_m, shadow_int, csrw_prev, csrr, mideleg_s;
@@ -2151,6 +2173,16 @@ covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
             cp_vsepc_ialign32_sret :    cross priv_mode_vs, sret_insn, misa_c_off, sepc_bit1;
         `endif
     `endif
+
+    // hideleg written with all ones while mideleg[XLEN-1:16] = 0: Smaia makes those hideleg bits read-only zero
+    hideleg_set_all : coverpoint ins.current.insn {
+        wildcard bins csrrw1 = {CSRRW} iff (ins.current.insn[31:20] == CSR_HIDELEG && ins.current.rs1_val == '1);
+        wildcard bins csrrs1 = {CSRRS} iff (ins.current.insn[31:20] == CSR_HIDELEG && ins.current.rs1_val == '1);
+    }
+    mideleg_high_clear : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIDELEG) >> 16) {
+        bins zero = {0};
+    }
+    cp_hideleg_high_roz :   cross priv_mode_m, hideleg_set_all, mideleg_high_clear;
 endgroup
 
 covergroup Sm_H_tvm_cg with function sample(ins_t ins);
@@ -2182,6 +2214,20 @@ covergroup Sm_H_tvm_cg with function sample(ins_t ins);
 
     cp_tvm_hs:  cross priv_mode_hs, atp_hs, csr_rw, mstatus_tvm, hstatus_vtvm;
     cp_tvm_vs:  cross priv_mode_vs, satp, csr_rw, mstatus_tvm, hstatus_vtvm;
+    // mstatus.TVM never changes how VS-mode and VU-mode accesses to satp, vsatp and hgatp trap
+    atp_virt : coverpoint ins.current.insn[31:20] {
+        bins satp  = {CSR_SATP};
+        bins vsatp = {CSR_VSATP};
+        bins hgatp = {CSR_HGATP};
+    }
+    atp_forms : coverpoint ins.current.insn {
+        wildcard bins csrr   = {CSRR};
+        wildcard bins csrrw  = {CSRRW};
+        wildcard bins csrrs  = {CSRRS} iff (ins.current.insn[19:15] != 0);
+        wildcard bins csrrwi = {CSRRWI};
+    }
+    cp_tvm_vs_atp: cross priv_mode_vs, atp_virt, atp_forms, mstatus_tvm, hstatus_vtvm;
+    cp_tvm_vu_atp: cross priv_mode_vu, atp_virt, atp_forms, mstatus_tvm;
     cp_hfence:  cross priv_mode_m_hs_vs_u_vu, hfence, mstatus_tvm, hstatus_vtvm;
     cp_sfence:  cross priv_mode_m_hs_vs_u_vu, sfence, mstatus_tvm, hstatus_vtvm;
 endgroup

@@ -9,7 +9,12 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.pmp._lower_mode import U_MODE, make_lower_mode_amode, make_lower_mode_base
+from testgen.priv.extensions.pmp._lower_mode import (
+    U_MODE,
+    make_lower_mode_amode,
+    make_lower_mode_base,
+    make_lower_mode_partial,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -51,3 +56,24 @@ def make_pmpu_napot(test_data: TestData) -> list[TestChunk]:
 )
 def make_pmpu_tor(test_data: TestData) -> list[TestChunk]:
     return make_lower_mode_amode(test_data, U_MODE, "tor")
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["U", "Sm"],
+    params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
+)
+def make_pmpu_na4_boundary(test_data: TestData) -> list[TestChunk]:
+    return make_lower_mode_partial(test_data, U_MODE, "na4")
+
+
+# A 4-byte TOR region needs a 4-byte grain.
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["U", "Sm"],
+    params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true", "PMP_GRANULARITY: 2"],
+)
+def make_pmpu_tor_boundary(test_data: TestData) -> list[TestChunk]:
+    return make_lower_mode_partial(test_data, U_MODE, "tor")

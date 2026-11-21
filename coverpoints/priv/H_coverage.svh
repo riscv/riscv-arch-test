@@ -407,6 +407,20 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
         `endif
     }
     cp_hcsr_virtualinstructionfault: cross priv_mode_vs, hsvscsrname, csraccesses;
+
+    // The eight CSR instruction forms: rs1 = x0 and uimm = 0 read only; every other form writes, even with a zero value
+    csr_forms8 : coverpoint ins.current.insn {
+        wildcard bins csrrw       = {CSRRW};
+        wildcard bins csrrs_x0    = {CSRRS}  iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrs_zero  = {CSRRS}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_x0    = {CSRRC}  iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrc_zero  = {CSRRC}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrwi      = {CSRRWI};
+        wildcard bins csrrsi_zero = {CSRRSI} iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrci_nz   = {CSRRCI} iff (ins.current.insn[19:15] != 0);
+    }
+    // Reads and writes trap separately: writes to the read-only hgeip raise illegal instruction
+    cp_hcsr_forms_vs:                cross priv_mode_vs, hsvscsrname, csr_forms8;
     // The high halves of H CSRs do not exist on RV64, so they raise illegal instruction
     `ifdef UDB_MXLEN_64
         uppercsrname : coverpoint ins.current.insn[31:20] {
@@ -487,6 +501,21 @@ covergroup H_vsstatus_cg with function sample(ins_t ins);
         bins sstatus = {CSR_SSTATUS};
     }
     cp_vsstatus_sd_write: cross priv_mode_vs, csrrw, sstatus, cp_vsstatus_sd, cp_vsstatus_fs, cp_vsstatus_vs, cp_vsstatus_xs;
+
+    // HS-mode reads vsstatus after a VS-mode instruction made FS or VS Dirty: SD reads 1
+    csrr_vsstatus : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR} iff (ins.current.insn[31:20] == CSR_VSSTATUS);
+    }
+    vsstatus_dirty : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "fs") == 3,
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "vs") == 3} {
+        `ifdef F_SUPPORTED
+            bins fs = {2'b10};
+        `endif
+        `ifdef ZVE32X_SUPPORTED
+            bins vs = {2'b01};
+        `endif
+    }
+    cp_vsstatus_sd_hs_view: cross priv_mode_hs, csrr_vsstatus, vsstatus_dirty;
 endgroup
 
 // Accesses from VU-mode, as U_ucsr_cg from U-mode: every CSR number that is not a user CSR raises illegal or virtual
@@ -527,6 +556,75 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
 
     cp_csr_insufficient_priv: cross priv_mode_vu, csrr, csr_nonuser, nonzerord;
     cp_csr_ro:                cross priv_mode_vu, csrw, csr_uro;
+
+    // The eight CSR instruction forms: rs1 = x0 and uimm = 0 read only; every other form writes, even with a zero value
+    csr_forms8 : coverpoint ins.current.insn {
+        wildcard bins csrrw       = {CSRRW};
+        wildcard bins csrrs_x0    = {CSRRS}  iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrs_zero  = {CSRRS}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_x0    = {CSRRC}  iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrc_zero  = {CSRRC}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrwi      = {CSRRWI};
+        wildcard bins csrrsi_zero = {CSRRSI} iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrci_nz   = {CSRRCI} iff (ins.current.insn[19:15] != 0);
+    }
+    // S CSRs and HS and VS H CSRs, which VU-mode cannot access.  Keep in sync with S_CSRS and HS_VS_CSRS in H.py.
+    vu_scsrname : coverpoint ins.current.insn[31:20] {
+        bins sstatus    = {CSR_SSTATUS};
+        bins sie        = {CSR_SIE};
+        bins stvec      = {CSR_STVEC};
+        bins scounteren = {CSR_SCOUNTEREN};
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins senvcfg = {CSR_SENVCFG};
+        `endif
+        bins sscratch   = {CSR_SSCRATCH};
+        bins sepc       = {CSR_SEPC};
+        bins scause     = {CSR_SCAUSE};
+        bins stval      = {CSR_STVAL};
+        bins sip        = {CSR_SIP};
+        bins satp       = {CSR_SATP};
+        bins hstatus    = {CSR_HSTATUS};
+        bins hedeleg    = {CSR_HEDELEG};
+        bins hideleg    = {CSR_HIDELEG};
+        bins hie        = {CSR_HIE};
+        bins hcounteren = {CSR_HCOUNTEREN};
+        bins hgeie      = {CSR_HGEIE};
+        bins henvcfg    = {CSR_HENVCFG};
+        bins htval      = {CSR_HTVAL};
+        bins hip        = {CSR_HIP};
+        bins hvip       = {CSR_HVIP};
+        bins htinst     = {CSR_HTINST};
+        bins hgatp      = {CSR_HGATP};
+        bins hgeip      = {CSR_HGEIP};
+        bins vsstatus   = {CSR_VSSTATUS};
+        bins vsie       = {CSR_VSIE};
+        bins vstval     = {CSR_VSTVAL};
+        bins vsip       = {CSR_VSIP};
+        bins vstvec     = {CSR_VSTVEC};
+        bins vsscratch  = {CSR_VSSCRATCH};
+        bins vsepc      = {CSR_VSEPC};
+        bins vscause    = {CSR_VSCAUSE};
+        bins vsatp      = {CSR_VSATP};
+        `ifdef ZICNTR_SUPPORTED
+            bins htimedelta = {CSR_HTIMEDELTA};
+        `endif
+        `ifdef SSTC_SUPPORTED
+            bins vstimecmp = {CSR_VSTIMECMP};
+        `endif
+        `ifdef UDB_MXLEN_32
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
+                bins hedelegh = {CSR_HEDELEGH};
+            `endif
+            `ifdef ZICNTR_SUPPORTED
+                bins htimedeltah = {CSR_HTIMEDELTAH};
+            `endif
+            bins henvcfgh = {CSR_HENVCFGH};
+            `ifdef SSTC_SUPPORTED
+                bins vstimecmph = {CSR_VSTIMECMPH};
+            `endif
+        `endif
+    }
+    cp_scsr_forms_vu:         cross priv_mode_vu, vu_scsrname, csr_forms8;
 endgroup
 
 covergroup H_inst_cg with function sample(ins_t ins);

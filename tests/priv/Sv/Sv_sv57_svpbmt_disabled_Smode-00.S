@@ -59,12 +59,12 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(x15, MENVCFG_PBMTE)
-  # T-SBI call to execute instruction: csrc menvcfg, x15
-  mv a1, x15
+  LI(x6, MENVCFG_PBMTE)
+  # T-SBI call to execute instruction: csrc menvcfg, x6
+  mv a1, x6
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
 
-  LI(x13, 0x800) // Test signature initialization
+  LI(x15, 0x800) // Test signature initialization
 
 
 // 256TB page at level 4
@@ -74,20 +74,20 @@ RVTEST_BEGIN
   sfence.vma
 
   LI(x14, (va_data >> 48) << 48)
-  LA(x15, rvtest_data_1)
-  slli x15, x15, 16
-  srli x15, x15, 16
-  add x14, x14, x15
-  addi x13, x13, 16
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x14, x14, x6
+  addi x15, x15, 16
 
 // Store
 Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store:
-  sw x13, 20(x14)
+  sw x15, 20(x14)
   nop
 
 // Load
 Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load:
-  lw x8, 20(x14)
+  lw x9, 20(x14)
   nop
 
 // Execute
@@ -95,12 +95,12 @@ Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec:
   jalr ra, x14, 0
   nop
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store, Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store_str)
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load, Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store, Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec, Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load, Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec, Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec_str)
 
 
 // 256TB page at level 4
@@ -110,20 +110,20 @@ Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec:
   sfence.vma
 
   LI(x14, (va_data >> 48) << 48)
-  LA(x15, rvtest_data_1)
-  slli x15, x15, 16
-  srli x15, x15, 16
-  add x14, x14, x15
-  addi x13, x13, 16
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x14, x14, x6
+  addi x15, x15, 16
 
 // Store
 Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store:
-  sw x13, 20(x14)
+  sw x15, 20(x14)
   nop
 
 // Load
 Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load:
-  lw x8, 20(x14)
+  lw x9, 20(x14)
   nop
 
 // Execute
@@ -131,12 +131,12 @@ Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec:
   jalr ra, x14, 0
   nop
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store, Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store_str)
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load, Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store, Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec, Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load, Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec, Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec_str)
 
 
 // 256TB page at level 4
@@ -146,20 +146,20 @@ Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec:
   sfence.vma
 
   LI(x14, (va_data >> 48) << 48)
-  LA(x15, rvtest_data_1)
-  slli x15, x15, 16
-  srli x15, x15, 16
-  add x14, x14, x15
-  addi x13, x13, 16
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x14, x14, x6
+  addi x15, x15, 16
 
 // Store
 Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store:
-  sw x13, 20(x14)
+  sw x15, 20(x14)
   nop
 
 // Load
 Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load:
-  lw x8, 20(x14)
+  lw x9, 20(x14)
   nop
 
 // Execute
@@ -167,12 +167,12 @@ Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec:
   jalr ra, x14, 0
   nop
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store, Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store_str)
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load, Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store, Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec, Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load, Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec, Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec_str)
 
 #endif
 
@@ -189,7 +189,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi x9, x13, 4
+  addi x8, x15, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -212,15 +212,15 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store_str: .string "\"test: 484; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test1_store\""
-Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load_str: .string "\"test: 485; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test1_load\""
-Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec_str: .string "\"test: 486; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test1_exec\""
-Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store_str: .string "\"test: 487; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test2_store\""
-Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load_str: .string "\"test: 488; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test2_load\""
-Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec_str: .string "\"test: 489; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test2_exec\""
-Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store_str: .string "\"test: 490; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test3_store\""
-Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load_str: .string "\"test: 491; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test3_load\""
-Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec_str: .string "\"test: 492; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test3_exec\""
+Sv_add_feature_cg_cp_svpbmt_write_fault_test1_store_str: .string "\"test: 485; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test1_store\""
+Sv_add_feature_cg_cp_svpbmt_read_fault_test1_load_str: .string "\"test: 486; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test1_load\""
+Sv_add_feature_cg_cp_svpbmt_exec_fault_test1_exec_str: .string "\"test: 487; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test1_exec\""
+Sv_add_feature_cg_cp_svpbmt_write_fault_test2_store_str: .string "\"test: 488; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test2_store\""
+Sv_add_feature_cg_cp_svpbmt_read_fault_test2_load_str: .string "\"test: 489; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test2_load\""
+Sv_add_feature_cg_cp_svpbmt_exec_fault_test2_exec_str: .string "\"test: 490; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test2_exec\""
+Sv_add_feature_cg_cp_svpbmt_write_fault_test3_store_str: .string "\"test: 491; cg: Sv_add_feature_cg; cp: cp_svpbmt_write_fault; bin: test3_store\""
+Sv_add_feature_cg_cp_svpbmt_read_fault_test3_load_str: .string "\"test: 492; cg: Sv_add_feature_cg; cp: cp_svpbmt_read_fault; bin: test3_load\""
+Sv_add_feature_cg_cp_svpbmt_exec_fault_test3_exec_str: .string "\"test: 493; cg: Sv_add_feature_cg; cp: cp_svpbmt_exec_fault; bin: test3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

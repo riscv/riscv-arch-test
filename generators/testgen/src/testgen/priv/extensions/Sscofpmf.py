@@ -313,6 +313,94 @@ def _generate_xinh_inhibits_tests(
     return lines
 
 
+# xINH bit (in the 5-bit MINH/SINH/UINH/VSINH/VUINH field) that stops counting in each mode
+FREEZE_BIT = {"M": 0b10000, "S": 0b01000, "U": 0b00100}
+# Only the mode under test counts. Setting its xINH bit then inhibits every mode.
+ONLY_MODE_PATTERN = {mode: 0b11111 & ~bit for mode, bit in FREEZE_BIT.items()}
+
+
+def _freeze_case(
+    test_data: TestData,
+    priv_mode: str,
+    coverpoint: str,
+    freeze: list[str],
+    regs: list[int],
+) -> list[str]:
+    """Count in ``priv_mode``, stop the counter with the ``freeze`` instructions, and check the count survives.
+
+    Records c2 != 0 (the counter read just after it stopped holds the events counted before) and
+    c3 == c2 (running the workload again while it is stopped does not change it). Counts depend on
+    the implementation, so neither value is recorded."""
+    r_val, r_hval, r_temp, r_c2 = regs
+    return [
+        # Clear the counter while every mode is inhibited, then let only the mode under test count.
+        *write_event_pattern(r_val, r_hval, INHIBIT_ALL_PATTERN, priv_mode),
+        tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", priv_mode),
+        "#if __riscv_xlen == 32",
+        tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTERH, zero", priv_mode),
+        "#endif",
+        *write_event_pattern(r_val, r_hval, ONLY_MODE_PATTERN[priv_mode], priv_mode),
+        f"LA(x{r_temp}, scratch)",
+        f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
+        test_data.add_testcase(f"{coverpoint.removeprefix('cp_')}_{priv_mode.lower()}", coverpoint, _cg(priv_mode)),
+        *freeze,
+        tsbi_call_or_direct(f"csrr x{r_c2}, RVTEST_CSR_MHPMCOUNTER   # c2", priv_mode),
+        f"snez x{r_temp}, x{r_c2}   # the events counted before the counter stopped are kept",
+        write_sigupd(r_temp, test_data),
+        f"LA(x{r_temp}, scratch)",
+        f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
+        tsbi_call_or_direct(f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER   # c3", priv_mode),
+        f"xor x{r_temp}, x{r_temp}, x{r_c2}",
+        f"seqz x{r_temp}, x{r_temp}   # c3 == c2: the stopped counter does not count",
+        write_sigupd(r_temp, test_data),
+    ]
+
+
+def _generate_xinh_freeze_tests(test_data: TestData, priv_mode: str) -> list[str]:
+    """Stopping a counter with its xINH bit, or with mcountinhibit, keeps the count it holds."""
+    regs = test_data.int_regs.get_registers(4)
+    r_val = regs[0]
+    bit = FREEZE_BIT[priv_mode]
+    set_xinh = [
+        "#if __riscv_xlen == 32",
+        f"LI(x{r_val}, {bit} << 26)",
+        tsbi_call_or_direct(f"csrs RVTEST_CSR_MHPMEVENTH, x{r_val}   # {priv_mode}INH = 1", priv_mode),
+        "#else",
+        f"LI(x{r_val}, {bit} << 58)",
+        tsbi_call_or_direct(f"csrs RVTEST_CSR_MHPMEVENT, x{r_val}   # {priv_mode}INH = 1", priv_mode),
+        "#endif",
+    ]
+    set_mcountinhibit = [
+        f"LI(x{r_val}, 1 << RVMODEL_HPM_COUNTER)",
+        tsbi_call_or_direct(f"csrs mcountinhibit, x{r_val}   # stop the counter", priv_mode),
+    ]
+    lines = [
+        comment_banner(
+            "cp_xinh_freeze_holds_count and cp_mcountinhibit_freeze_holds_count",
+            f"Count in {priv_mode}-mode only, then stop the counter by setting {priv_mode}INH or its mcountinhibit bit.\n"
+            "The counter must keep the events it counted (c2 != 0), and must not count while stopped\n"
+            "(c3 == c2 after the workload runs again).",
+        ),
+        "",
+        tsbi_call_or_direct("csrw mie, zero   # no counter overflow interrupt", priv_mode),
+        *_freeze_case(test_data, priv_mode, "cp_xinh_freeze_holds_count", set_xinh, regs),
+        "",
+        "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
+        *_freeze_case(test_data, priv_mode, "cp_mcountinhibit_freeze_holds_count", set_mcountinhibit, regs),
+        f"LI(x{r_val}, 1 << RVMODEL_HPM_COUNTER)",
+        tsbi_call_or_direct(f"csrc mcountinhibit, x{r_val}", priv_mode),
+        "#endif",
+        tsbi_call_or_direct("csrw RVTEST_CSR_MHPMEVENT, zero", priv_mode),
+        "#if __riscv_xlen == 32",
+        tsbi_call_or_direct("csrw RVTEST_CSR_MHPMEVENTH, zero", priv_mode),
+        "#endif",
+        tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", priv_mode),
+        "",
+    ]
+    test_data.int_regs.return_registers(regs)
+    return lines
+
+
 # Below M every pattern inhibits the modes above the one under test, so the T-SBI trap handler
 # never counts.
 _INHIBIT_PATTERNS = {
@@ -780,6 +868,10 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     tc.code.extend(_generate_xinh_inhibits_tests(test_data, mode, combos=range(16, 32), toggles=False))
     test_chunks.append(test_data.end_test_chunk())
 
+    tc = test_data.begin_test_chunk(f"{_GROUP[mode]}_freeze")
+    tc.code.extend(_generate_xinh_freeze_tests(test_data, mode))
+    test_chunks.append(test_data.end_test_chunk())
+
     tc = test_data.begin_test_chunk(f"{_GROUP[mode]}_overflow")
     tc.code.extend(_generate_of_set_on_overflow_tests(test_data, mode))
     tc.code.extend(_generate_overflow_hw_only_tests(test_data, mode))
@@ -1170,3 +1262,64 @@ def make_sscofpmfu(test_data: TestData) -> list[TestChunk]:
     test_chunks.append(test_data.end_test_chunk())
     test_chunks.extend(generate_sscofpmf_suite(test_data, "U"))
     return test_chunks
+
+
+# {MINH, SINH, UINH, VSINH, VUINH} patterns that leave one mode below HS-mode uninhibited
+_VIRT_INHIBIT_PATTERNS = {"only_vs": 0b11101, "only_vu": 0b11110, "only_u": 0b11011}
+
+
+def _generate_virt_xinh_filter_tests(test_data: TestData) -> list[str]:
+    """The event code runs in VS-mode and in VU-mode under each pattern; the counter moves iff that mode's own
+    inhibit bit is clear.  HS-mode reads the counter through T-SBI and records whether it moved."""
+    r_val, r_hval, r_temp, r_addr = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            "cp_virt_xinh_filter",
+            "With only VSINH, only VUINH or only UINH clear, run the event code in VS-mode and in VU-mode.  The\n"
+            "counter moves only in the mode whose inhibit bit is clear: UINH does not filter VU-mode",
+        ),
+        tsbi_call_or_direct("csrw mie, zero", "S"),
+    ]
+    for name, pattern in _VIRT_INHIBIT_PATTERNS.items():
+        lines.extend(write_event_pattern(r_val, r_hval, pattern, "S"))
+        for mode in ("VS", "VU"):
+            lines.extend(
+                [
+                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
+                    "#if __riscv_xlen == 32",
+                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTERH, zero", "S"),
+                    "#endif",
+                    f"RVTEST_TSBI_GOTO_{mode}MODE",
+                    test_data.add_testcase(f"{name}_{mode.lower()}", "cp_virt_xinh_filter", "Sscofpmf_H_cg"),
+                    f"LA(x{r_addr}, scratch)",
+                    f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_temp})",
+                    "RVTEST_TSBI_GOTO_SMODE",
+                    tsbi_call_or_direct(f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER", "S"),
+                    f"snez x{r_temp}, x{r_temp}    # counted iff the mode is uninhibited",
+                    write_sigupd(r_temp, test_data),
+                ]
+            )
+    lines.extend(
+        [
+            tsbi_call_or_direct("csrw RVTEST_CSR_MHPMEVENT, zero", "S"),
+            "#if __riscv_xlen == 32",
+            tsbi_call_or_direct("csrw RVTEST_CSR_MHPMEVENTH, zero", "S"),
+            "#endif",
+            tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
+        ]
+    )
+    test_data.int_regs.return_registers([r_val, r_hval, r_temp, r_addr])
+    return lines
+
+
+@add_priv_test_generator(
+    "Sscofpmf",
+    required_extensions=["Sscofpmf", "H"],
+    march_extensions=[],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_sscofpmfh(test_data: TestData) -> list[TestChunk]:
+    """Generate the Sscofpmf_H tests: VSINH and VUINH filtering of events in VS-mode and VU-mode."""
+    tc = test_data.begin_test_chunk("H_inhibit")
+    tc.code.extend(_generate_virt_xinh_filter_tests(test_data))
+    return [test_data.end_test_chunk()]

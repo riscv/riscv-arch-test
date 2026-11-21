@@ -36,6 +36,7 @@ from testgen.priv.extensions.sv.SvH import (
     henvcfg_gate,
     map_test_page,
     menvcfg_bits,
+    set_csr_bits,
 )
 from testgen.priv.extensions.sv.Svpbmt import PBMT_ENCODINGS
 from testgen.priv.registry import add_priv_test_generator
@@ -81,9 +82,10 @@ def _vs_chunk(test_data: TestData, vs: SvMode, henvcfg: bool) -> TestChunk:
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_pbmt",
-        "cp_henvcfg_menvcfg, cp_vsatp_pbmt" if henvcfg else "cp_vsatp_pbmt",
+        "cp_henvcfg_menvcfg, cp_vsatp_pbmt, cp_hlv_pbmt" if henvcfg else "cp_vsatp_pbmt, cp_hlv_pbmt",
         "In VS-mode with hgatp = Bare and menvcfg.PBMTE = 1, store, load and fetch through VS-stage leaves with\n"
-        "PBMT = 1-3, with henvcfg.PBMTE = 0 (page fault) and 1"
+        "PBMT = 1-3, with henvcfg.PBMTE = 0 (page fault) and 1.  Then hlv.w and hsv.w in HS-mode through the\n"
+        "same leaves"
         + (
             "\nIn HS-mode, set henvcfg.PBMTE with menvcfg.PBMTE = 0, where it is read-only zero, and 1"
             if henvcfg
@@ -106,9 +108,33 @@ def _vs_chunk(test_data: TestData, vs: SvMode, henvcfg: bool) -> TestChunk:
             name = f"pbmte{pbmte}_pbmt{pbmt}"
             pbmt_cases.extend(guest_access(test_data, CG, "cp_vsatp_pbmt", name, "VS", va, setup=setup))
     code.extend(pbmt_block(pbmt_cases, reg))
+    code.extend(_hlv_pbmt_accesses(test_data, vs, reg))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, 64)])
     return test_data.end_test_chunk()
+
+
+def _hlv_pbmt_accesses(test_data: TestData, vs: SvMode, reg: int) -> list[str]:
+    """hlv.w and hsv.w in HS-mode with hstatus.SPVP = 1, hgatp = Bare and menvcfg.PBMTE = 1, through VS-stage leaves
+    with PBMT = 1-3, with henvcfg.PBMTE = 0 (page fault) and 1 (PBMT = 3 still faults)."""
+    va = f"{vs.data_va} + 8"
+    cases: list[str] = []
+    # Each access maps the page again, whose hfence.vvma makes the access walk the VS-stage leaf
+    for pbmte in (0, 1):
+        for pbmt, (pbmt_bits, _, _) in enumerate(PBMT_ENCODINGS, start=1):
+            for op in ("hlv", "hsv"):
+                setup = [
+                    *svpbmt_flush(reg),
+                    *henvcfg_bits(64, reg, adue=0, pbmte=pbmte),
+                    *map_test_page(test_data, None, vs, vs_flags=PteFlags(extra=(pbmt_bits,))),
+                ]
+                name = f"hlv_pbmte{pbmte}_pbmt{pbmt}"
+                cases.extend(guest_access(test_data, CG, "cp_hlv_pbmt", name, None, va, setup=setup, ops=(op,)))
+    return [
+        *set_csr_bits("hstatus", "HSTATUS_SPVP", "HSTATUS_SPVP", reg),
+        *pbmt_block(cases, reg),
+        *set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg),
+    ]
 
 
 def _g_chunk(test_data: TestData, g: SvMode) -> TestChunk:

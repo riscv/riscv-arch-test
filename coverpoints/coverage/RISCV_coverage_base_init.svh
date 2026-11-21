@@ -82,6 +82,10 @@
         `cover_info("//      I - Enabled");
         `include "I_coverage_init.svh"
     `endif
+    `ifdef COVER_INTERRUPTSH
+        `cover_info("//      InterruptsH - Enabled");
+        `include "InterruptsH_coverage_init.svh"
+    `endif
     `ifdef COVER_INTERRUPTSS
         `cover_info("//      InterruptsS - Enabled");
         `include "InterruptsS_coverage_init.svh"
@@ -169,6 +173,10 @@
     `ifdef COVER_SSCOUNTERENW
         `cover_info("//      Sscounterenw - Enabled");
         `include "Sscounterenw_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSDBLTRP
+        `cover_info("//      Ssdbltrp - Enabled");
+        `include "Ssdbltrp_coverage_init.svh"
     `endif
     `ifdef COVER_SSNPM
         `cover_info("//      Ssnpm - Enabled");

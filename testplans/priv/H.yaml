@@ -148,6 +148,15 @@ coverpoints:
     rules:
       - H_csrs_hs_not_vs
       - H_vscsrs_acc_vs
+  - name: cp_hcsr_forms_vs
+    goal: Every CSR instruction form decides read or write correctly for the HS and VS H CSRs in VS-mode
+    description: "In VS-mode (test group H_vsforms), access each {HS/VS} H-Extension CSR, including hgeip, with each of eight forms: csrrw, csrrs and csrrc with rs1 = x0 and with a zero-valued rs1 != x0, csrrwi, csrrsi with uimm = 0 and csrrci with uimm != 0.  Record rd."
+    expectation: "Virtual instruction fault for every access HS-mode could perform.  csrrs/csrrc with rs1 = x0 and csrrsi with uimm = 0 are reads; every other form is a write, even with a zero value, so it raises illegal instruction for the read-only hgeip.  rd is unchanged"
+    bins: 8 forms * (14-17 + 9-11)
+    rules:
+      - H_csrs_hs_not_vs
+      - H_vscsrs_acc_vs
+      - H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
   - name: cp_illegalupper
     goal: In RV64, h half of CSRs are illegal.
     description: "RV64 ONLY: csrrw, csrrs, csrrc, csrr  each h H-extension CSR"
@@ -182,6 +191,13 @@ coverpoints:
     description: In VS-mode, write sstatus (which accesses vsstatus) with the cross-product of SD, FS, XS and VS.
     expectation: vsstatus.SD = 1 if FS, XS or VS is nonzero
     bins: 2 * 4 * 4 * 4
+  - name: cp_vsstatus_sd_hs_view
+    goal: vsstatus.SD read from HS-mode reflects a field that a VS-mode instruction made Dirty
+    description: "In HS-mode, set vsstatus.FS = vsstatus.VS = Initial (and the HS-level sstatus.FS or VS on).  In VS-mode, execute fmv.w.x (H_F_sd, with F) or vsetivli (H_V_sd, with Zve32x), which makes vsstatus.FS or VS Dirty.  In HS-mode, read vsstatus."
+    expectation: vsstatus.FS or VS = Dirty and vsstatus.SD = 1; the other field is still Initial
+    bins: 2 (FS, VS)
+    rules:
+      - vsstatus_sd_xs_op
   - heading: Tests executed in VU-mode (H_vucsr_cg)
   - name: cp_csr_insufficient_priv
     goal: CSRs other than user CSRs are inaccessible from VU-mode
@@ -196,6 +212,14 @@ coverpoints:
     description: In VU-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xCFF, as U_ucsr_cg/cp_csr_ro in U-mode
     expectation: Illegal instruction fault, and rd is unchanged
     bins: 256 CSRs
+  - name: cp_scsr_forms_vu
+    goal: Every CSR instruction form decides read or write correctly for the S, HS and VS CSRs in VU-mode
+    description: "In VU-mode (test group H_vuforms), access each S CSR (sstatus, sie, stvec, scounteren, senvcfg, sscratch, sepc, scause, stval, sip, satp) and each {HS/VS} H-Extension CSR with the eight forms of cp_hcsr_forms_vs.  Record rd.  The group is not named H_vucsr, whose exclusions concern the AIA and Sscsrind CSRs, which it does not access."
+    expectation: Virtual instruction fault for every access HS-mode could perform; illegal instruction for the writing forms of hgeip.  rd is unchanged
+    bins: 8 forms * (11 + 14-17 + 9-11)
+    rules:
+      - H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
+      - H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
   - heading: Instructions (H_inst_cg)
   - name: cp_hlv
     goal: Basic load
@@ -590,6 +614,5 @@ coverpoints:
       - henvcfg_sse_op
       - henvcfg_dte_op
       - vsstatus_sdt_op
-      - sret_dt
     notes: |-
-      These belong to ZicfissH and SsdbltrpH, which have no tests yet.
+      These belong to ZicfissH and the Ssdbltrp_H group, which have no such tests yet.  vsstatus.SDT after SRET (sret_dt) is in Ssdbltrp_H.

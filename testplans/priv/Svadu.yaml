@@ -101,3 +101,15 @@ coverpoints:
     bins: |-
       PTE_fault_reason x Svadu_enabled x access x page fault x mode {S-mode}
       = 18 bins on RV64, 9 on RV32
+  - name: |-
+      Abit_unset_cbm_s
+      Dbit_unset_cbm_s
+      Abit_unset_cbz_s
+      Dbit_unset_cbz_s
+    goal: Verify that CBOs set A with menvcfg.ADUE = 1, that cbo.zero also sets D, and that a cache-block management instruction leaves D clear
+    description: |-
+      Zicbom (cbm) and Zicboz (cbz).  With menvcfg.ADUE = 1, in supervisor mode, at each page-table level map va_data with a leaf with A = 0 and D = 0, then with A = 1 and D = 0, execute one CBO through it, and read the leaf back.  Each CBO gets a fresh leaf.
+    expectation: "No fault.  A = 1 in the leaf.  cbo.zero sets D (cmo.adoc cbz_unperm_translate); cbo.clean, cbo.flush and cbo.inval leave D = 0 (cbm_unperm_translate)."
+    bins: |-
+      PTE A = 0 (or D = 0) x Svadu_enabled x CBO x mode {S-mode}
+    notes: The tests run at every page-table level, but the crosses leave out the page type, which Sail's trace reports as a kilopage for every access.

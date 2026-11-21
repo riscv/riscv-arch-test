@@ -18,4 +18,3 @@ exclude_extensions:
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache patch"
 install_script: ".github/scripts/install-e902.sh"
-setup_script: ".github/scripts/setup-e902.sh"

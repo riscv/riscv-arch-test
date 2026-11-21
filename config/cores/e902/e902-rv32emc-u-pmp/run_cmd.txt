@@ -1,1 +1,1 @@
-run-e902.sh --elf
+run-e90x.sh --elf

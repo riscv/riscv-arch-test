@@ -33,11 +33,11 @@ range" instead.
 
 ## Testbench patch and build
 
-- `setup-e902.sh` patches `smart_run/logical/tb/tb.v` to load one 512 KB image, `mem.pat`, into
+- `install-e902.sh` patches `smart_run/logical/tb/tb.v` to load one 512 KB image, `mem.pat`, into
   the instruction-bus SRAM, to print the cycle count at the end, to take `MAX_RUN_TIME` and
   `LAST_CYCLE` from the Verilator command line, to declare the `uart0_sout` net, and to skip the
   no-retire watchdog on cycle 0. The RTL is not changed.
-- `install-e902.sh` verilates the testbench with `--timing`, because the vendor `smart_run/Makefile`
+- It verilates the testbench with `--timing`, because the vendor `smart_run/Makefile`
   supports only iverilog, VCS and irun, and the testbench uses delays, `wait` and `force`. It caps a
   test at 20 M cycles. The model runs at about 150,000 cycles per second.
 
@@ -46,7 +46,6 @@ range" instead.
 ```bash
 .github/scripts/install-e902.sh ~/e902-install
 export PATH=~/e902-install/bin:$PATH
-export E902_SNAPSHOT=~/e902-install/opene902/smart_run/work
 make e902-rv32emc-u-pmp
 ```
 
@@ -64,14 +63,9 @@ make e902-rv32emc-u-pmp
 
 ## Deviations from the privileged specification
 
-- `mtvec.MODE` is hardwired to 3 (CLIC mode). Exceptions go to `BASE` with bits 5:2 cleared, so the
-  configuration declares direct mode with 64-byte alignment. Because `mtvec` reads back MODE 3, the
-  trap prolog copies its trampoline to the `mtvec` target, and `RVMODEL_BOOT` points `mtvec` at
-  `0x7_F000` first.
+`rvmodel_macros.h` explains how the configuration works around `mtvec.MODE` hardwired to 3 and the
+missing `mcounteren` and HPM CSRs. In addition:
+
 - In CLIC mode `mcause` bits 29:27 alias `mstatus.MPP` and `MPIE`, so an M-mode trap reads
   `0x3000_0000` above the cause.
-- `mcounteren`, which a hart with U-mode must implement, raises illegal instruction, as do the
-  recommended `mhpmcounter3-31`, `mhpmcounter3h-31h` and `mhpmevent3-31`.
-  `rvtest_setup.h` writes them on every boot, so `RVMODEL_INVISIBLE_TRAP_HANDLER` emulates M-mode
-  accesses to them as read-only zero.
 - `minstret` reads 0, and `cycle`, `time` and `instret` do not exist, so Zicntr is not declared.

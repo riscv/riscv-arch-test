@@ -46,6 +46,5 @@ exclude_extensions:
   - F-fsqrt.s
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler"
-install_script: ".github/scripts/install-boom.sh"
-setup_script: ".github/scripts/setup-boom.sh"
+install_script: ".github/scripts/install-chipyard.sh"
 shards: 4

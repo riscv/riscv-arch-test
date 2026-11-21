@@ -28,7 +28,7 @@ queues, a TAGE-L branch predictor, and 16 KiB 4-way L1 instruction and data cach
 
 ## Chipyard configuration
 
-`.github/scripts/install-boom.sh` adds `ACTMediumBoomV3Config` to Chipyard:
+`.github/scripts/install-chipyard.sh` adds `ACTMediumBoomV3Config` to Chipyard:
 
 ```scala
 new chipyard.config.WithBroadcastManager ++
@@ -49,7 +49,7 @@ back to its QMC minimizer, which can run out of memory on large decoders.
 
 ## Local patch
 
-`install-boom.sh` applies `patches/boom-sc-fail-assert.patch`, whose SHA-256 sum it pins. It
+`install-chipyard.sh` applies `patches/boom-sc-fail-assert.patch`, whose SHA-256 sum it pins. It
 removes a simulation-only assertion in `lsu/dcache.scala` that stops the simulation when 100 SCs in
 a row fail at one address. A failing SC is legal, and the Zalrsc tests retry each SC outside the
 reservation set, which must fail, 100 times; without the patch `Zalrsc-sc.w` and `Zalrsc-sc.d`
@@ -77,10 +77,10 @@ on this simulator. These differences are kept:
 ## Building and running
 
 ```bash
-.github/scripts/install-boom.sh ~/boom-act
+.github/scripts/install-chipyard.sh ~/boom-act boom
 export PATH=$HOME/boom-act/bin:$PATH
 make CONFIG_FILES=config/cores/boom/boom-v3-medium-rv64gc/test_config.yaml
-./run_tests.py "run-boom.sh --elf" work/boom-v3-medium-rv64gc/elfs
+./run_tests.py "run-chipyard.sh --elf" work/boom-v3-medium-rv64gc/elfs
 ```
 
 ## Platform

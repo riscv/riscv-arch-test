@@ -60,7 +60,7 @@ RVTEST_BEGIN
 
   RVTEST_PMP_SET_BACKGROUND x4
 
-  LI(t0, 0xF0)
+  LI(t0, MENVCFG_CBZE | MENVCFG_CBCFE | MENVCFG_CBIE_ENABLE)
   csrrs zero, menvcfg, t0
 
 // PMP configuration 2: L = 1, R permissions, entry 0

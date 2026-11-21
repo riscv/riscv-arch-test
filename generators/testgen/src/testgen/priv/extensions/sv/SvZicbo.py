@@ -319,7 +319,7 @@ def _add_exception_cases(
 
 
 def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, family: str) -> TestChunk:
-    envmask = "MENVCFG_CBCFE | MENVCFG_CBIE" if family == "zicbom" else "MENVCFG_CBZE"
+    envmask = "MENVCFG_CBCFE | MENVCFG_CBIE_ENABLE" if family == "zicbom" else "MENVCFG_CBZE"
     scratch = f"x{regs.scratch}"
     # T-SBI calls preserve every register but a0-a2, so the mask survives for senvcfg.
     setup = [f"LI({scratch}, {envmask})", tsbi_call(f"csrs menvcfg, {scratch}")]

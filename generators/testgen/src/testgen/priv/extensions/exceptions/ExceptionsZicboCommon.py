@@ -22,6 +22,8 @@ CBO_INSTRS = ["inval", "clean", "flush", "zero"]
 PREFETCH_INSTRS = ["i", "r", "w"]
 
 _ENVCFG_ALL_ENABLE = 0b11110000  # [7:4] = cbze,cbcfe,cbie: enable all cbo ops
+# menvcfg.CBIE = 11 is illegal with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH, so menvcfg uses MENVCFG_CBIE_ENABLE
+_MENVCFG_ALL_ENABLE = "MENVCFG_CBZE | MENVCFG_CBCFE | MENVCFG_CBIE_ENABLE"
 
 _CBCFE_BIT = 1 << 6
 _CBIE_ENABLED_BINS = ["01", "11"]  # 00 makes cbo.inval illegal and 10 is reserved
@@ -164,6 +166,10 @@ def cbo_config_helper(
     )
 
     for m_val in bins:
+        # menvcfg.CBIE = 11 is not a legal value with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+        unsupported = field == "cbie" and m_val == "11"
+        if unsupported:
+            lines.append("#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH")
         lines.extend(
             [
                 "",
@@ -197,6 +203,8 @@ def cbo_config_helper(
             lines.append("#else")
             lines.extend(tests(f"{mode_tag}_menvcfg.{field}{m_val}", m_val, None))
             lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
+        if unsupported:
+            lines.append("#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH")
 
     lines.append("#endif")
     if mode == "Sm":
@@ -233,7 +241,7 @@ def cbo_access_fault_helper(
         lines.append("#ifdef U_SUPPORTED")
     lines.extend(
         [
-            f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+            f"LI(x{cfg_reg}, {_MENVCFG_ALL_ENABLE})  # enable cbie/cbcfe/cbze",
             _csr_op("csrs", "menvcfg", cfg_reg, mode),
         ]
     )
@@ -308,7 +316,7 @@ def cbo_misaligned_helper(
         lines.append("#ifdef U_SUPPORTED")
     lines.extend(
         [
-            f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+            f"LI(x{cfg_reg}, {_MENVCFG_ALL_ENABLE})  # enable cbie/cbcfe/cbze",
             _csr_op("csrs", "menvcfg", cfg_reg, mode),
         ]
     )

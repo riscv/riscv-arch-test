@@ -520,6 +520,10 @@ def _henvcfg_cases(test_data: TestData, field: str, mode: str) -> list[str]:
         f"LI(x{mask_reg}, {field_mask:#x})  # {field} field mask",
     ]
     for values in itertools.product(cfg.bins, repeat=len(csrs)):
+        # menvcfg.CBIE = 11 is not a legal value with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+        unsupported = field == "cbie" and values[0] == "11"
+        if unsupported:
+            lines.append("#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH")
         for csr, value in zip(csrs, values, strict=True):
             clear, set_ = f"csrc {csr}, x{mask_reg}", f"csrs {csr}, x{cfg_reg}"
             lines.append(tsbi_call(clear) if csr == "menvcfg" else clear)
@@ -546,6 +550,8 @@ def _henvcfg_cases(test_data: TestData, field: str, mode: str) -> list[str]:
             else:
                 lines.extend(cbo_test(instr, name, coverpoint, "Sv_HZicbo_cg", addr_reg, val_reg, test_data))
         lines.append("RVTEST_TSBI_GOTO_SMODE")
+        if unsupported:
+            lines.append("#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH")
     lines.append(f"#endif // {cfg.guard}")
     test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])
     return lines

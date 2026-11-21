@@ -338,109 +338,72 @@ def cp_custom_fp_recsqrt_est_flag_edges(
     return test_chunks
 
 
-# Per-SEW edge values matching the template bins exactly. Flag-setting inputs are ±0 (DZ) and
-# ±tiny subnormal (OF|NX); everything else sets no flags. See cp_custom_FpRecSqrtEst_flag_edges
-# for why a spacer follows every flag-setting input.
-_RECIP_FLAG_EDGES = {
-    16: [
-        (0xFC00, "neg_inf", False),
-        (0x8001, "neg_sub_tiny", True),
-        (0x83FF, "neg_sub_big", False),
-        (0xBC00, "neg_norm_small", False),
-        (0xFBFF, "neg_norm_big", False),
-        (0x8000, "neg_zero", True),
-        (0x7C00, "pos_inf", False),
-        (0x0001, "pos_sub_tiny", True),
-        (0x03FF, "pos_sub_big", False),
-        (0x3C00, "pos_norm_small", False),
-        (0x7BFF, "pos_norm_big", False),
-        (0x0000, "pos_zero", True),
-        (0x7E00, "qNaN", False),
-        (0x7D00, "sNaN", True),
-    ],
-    32: [
-        (0xFF800000, "neg_inf", False),
-        (0x80000001, "neg_sub_tiny", True),
-        (0x807FFFFF, "neg_sub_big", False),
-        (0xBF800000, "neg_norm_small", False),
-        (0xFF7FFFFF, "neg_norm_big", False),
-        (0x80000000, "neg_zero", True),
-        (0x7F800000, "pos_inf", False),
-        (0x00000001, "pos_sub_tiny", True),
-        (0x007FFFFF, "pos_sub_big", False),
-        (0x3F800000, "pos_norm_small", False),
-        (0x7F7FFFFF, "pos_norm_big", False),
-        (0x00000000, "pos_zero", True),
-        (0x7FC00000, "qNaN", False),
-        (0x7FA00000, "sNaN", True),
-    ],
-    64: [
-        (0xFFF0000000000000, "neg_inf", False),
-        (0x8000000000000001, "neg_sub_tiny", True),
-        (0x800FFFFFFFFFFFFF, "neg_sub_big", False),
-        (0xBFF0000000000000, "neg_norm_small", False),
-        (0xFFEFFFFFFFFFFFFF, "neg_norm_big", False),
-        (0x8000000000000000, "neg_zero", True),
-        (0x7FF0000000000000, "pos_inf", False),
-        (0x0000000000000001, "pos_sub_tiny", True),
-        (0x000FFFFFFFFFFFFF, "pos_sub_big", False),
-        (0x3FF0000000000000, "pos_norm_small", False),
-        (0x7FEFFFFFFFFFFFFF, "pos_norm_big", False),
-        (0x0000000000000000, "pos_zero", True),
-        (0x7FF8000000000000, "qNaN", False),
-        (0x7FF0000000000001, "sNaN", True),
-    ],
+# vfrec7 inputs are built from these sets, matching the cp_custom_FpRecipEst_flag_edges cross. B is the
+# exponent bias. Exponent fields: 0, 1, B, 2B-2, 2B-1, 2B and all ones.
+_RECIP_EXP_FIELDS = {
+    16: {"zero": 0, "one": 1, "bias": 15, "two_bias_m2": 28, "two_bias_m1": 29, "two_bias": 30, "ones": 31},
+    32: {"zero": 0, "one": 1, "bias": 127, "two_bias_m2": 252, "two_bias_m1": 253, "two_bias": 254, "ones": 255},
+    64: {
+        "zero": 0,
+        "one": 1,
+        "bias": 1023,
+        "two_bias_m2": 2044,
+        "two_bias_m1": 2045,
+        "two_bias": 2046,
+        "ones": 2047,
+    },
 }
-_RECIP_FLAG_SPACER = {16: 0xFC00, 32: 0xFF800000, 64: 0xFFF0000000000000}  # -inf
+_FRAC_BITS = {16: 10, 32: 23, 64: 52}
+_FRM_NAMES = ["rne", "rtz", "rdn", "rup", "rmm"]  # frm encodings 0-4
 
 
 @add_coverpoint_generator("cp_custom_FpRecipEst_flag_edges")
 def cp_custom_fp_recip_est_flag_edges(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
-    """Confirm all FP flags are correctly set for vfrec7.v across its FP edge-case inputs."""
+    """Cover every row of the vfrec7.v table and both sides of each row boundary, under every frm."""
     assert test_data.config.sew is not None, "SEW must be provided for vector tests"
     sew = test_data.config.sew
     if sew > test_data.config.flen:
         return []
 
     lmul = get_base_lmul(instr_name, instr_type, sew)
-    spacer_label = "cp_custom_FpRecSqrtEst_flag_edges_spacer"
-    test_data.register_vector_data(spacer_label, sew, elements=[_RECIP_FLAG_SPACER[sew]])
+    frac_bits = _FRAC_BITS[sew]
+    # Fractions on each side of the sig=00 / sig=01 / sig=1x boundaries, plus zero and all ones
+    fracs = {
+        "zero": 0,
+        "lsb": 1,
+        "sig00_max": (1 << (frac_bits - 2)) - 1,
+        "sig01_min": 1 << (frac_bits - 2),
+        "sig01_max": (1 << (frac_bits - 1)) - 1,
+        "sig1x_min": 1 << (frac_bits - 1),
+        "ones": (1 << frac_bits) - 1,
+    }
 
     test_chunks = []
-    for val, bin_name, sets_flags in _RECIP_FLAG_EDGES.get(sew, []):
-        label = f"cp_custom_FpRecipEst_flag_edges_{bin_name}"
-        test_data.register_vector_data(label, sew, elements=[val])
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs2_val_pointer=label)
-        tc = format_single_testcase(
-            instr_name,
-            instr_type,
-            test_data,
-            params,
-            f"cp_custom_FpRecipEst_flag_edges ({bin_name})",
-            bin_name,
-            coverpoint,
-        )
-        return_testcase_registers(test_data, params)
-        test_chunks.append(tc)
-
-        # Work around for limitations in the sail trace
-        if sets_flags:
-            params = generate_random_vector_params(
-                test_data, instr_name, instr_type, lmul, vs2_val_pointer=spacer_label
-            )
-            tc = format_single_testcase(
-                instr_name,
-                instr_type,
-                test_data,
-                params,
-                f"cp_custom_FpRecipEst_flag_edges (spacer after {bin_name})",
-                f"{bin_name}_spacer",
-                coverpoint,
-            )
-            return_testcase_registers(test_data, params)
-            test_chunks.append(tc)
+    for sign, sign_name in enumerate(["pos", "neg"]):
+        for exp_name, exp in _RECIP_EXP_FIELDS[sew].items():
+            for frac_name, frac in fracs.items():
+                val = (sign << (sew - 1)) | (exp << frac_bits) | frac
+                value_name = f"{sign_name}_exp_{exp_name}_frac_{frac_name}"
+                label = f"cp_custom_FpRecipEst_flag_edges_{value_name}"
+                test_data.register_vector_data(label, sew, elements=[val])
+                for frm, frm_name in enumerate(_FRM_NAMES):
+                    bin_name = f"{value_name}_{frm_name}"
+                    params = generate_random_vector_params(
+                        test_data, instr_name, instr_type, lmul, vs2_val_pointer=label, csr_frm_val=frm
+                    )
+                    tc = format_single_testcase(
+                        instr_name,
+                        instr_type,
+                        test_data,
+                        params,
+                        f"cp_custom_FpRecipEst_flag_edges ({bin_name})",
+                        bin_name,
+                        coverpoint,
+                    )
+                    return_testcase_registers(test_data, params)
+                    test_chunks.append(tc)
 
     return test_chunks
 

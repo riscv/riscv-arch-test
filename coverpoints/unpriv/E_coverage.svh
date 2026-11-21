@@ -1241,7 +1241,7 @@ covergroup E_jalr_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_offset : coverpoint {ins.current.rs1_val + ins.current.imm - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
+    cp_offset : coverpoint {ins.current.eff_addr - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
         // jalr destination in rs1+imm is forward/backward
     }
     cp_offset_lsbs : coverpoint {ins.current.rs1_val[0], ins.current.imm[0]}  iff (ins.trap == 0 )  {
@@ -1266,7 +1266,7 @@ covergroup E_lb_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lb"  iff (ins.trap == 0 )  {
@@ -1323,7 +1323,7 @@ covergroup E_lbu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lbu"  iff (ins.trap == 0 )  {
@@ -1380,7 +1380,7 @@ covergroup E_lh_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lh"  iff (ins.trap == 0 )  {
@@ -1437,7 +1437,7 @@ covergroup E_lhu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lhu"  iff (ins.trap == 0 )  {
@@ -1538,7 +1538,7 @@ covergroup E_lw_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lw"  iff (ins.trap == 0 )  {
@@ -1796,7 +1796,7 @@ endgroup
 // ---------------------
 covergroup E_sb_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_align_byte : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sb"  iff (ins.trap == 0 )  {
@@ -1876,7 +1876,7 @@ endgroup
 // ---------------------
 covergroup E_sh_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    cp_align_hword : coverpoint ins.current.eff_addr[2:1] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sh"  iff (ins.trap == 0 )  {
@@ -3057,7 +3057,7 @@ endgroup
 // ---------------------
 covergroup E_sw_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "sw"  iff (ins.trap == 0 )  {
@@ -3591,7 +3591,7 @@ covergroup E_lwu_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
+    cp_align_word : coverpoint ins.current.eff_addr[2] iff (ins.trap == 0) {
     }
 
     cp_asm_count : coverpoint ins.ins_str == "lwu"  iff (ins.trap == 0 )  {

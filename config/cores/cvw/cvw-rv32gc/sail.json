@@ -129,7 +129,7 @@
       // does not exist.
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_2222"
+        "value": "0x0000_0222"
       }
     },
     // These settings control whether the specified exceptions
@@ -403,7 +403,7 @@
         },
         "size": {
           "len": 64,
-          "value": "0x80000000"
+          "value": "0x08000000"
         },
         "attributes": {
           "mem_type": "MainMemory",
@@ -452,7 +452,7 @@
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": true,
+      "require_exact_reservation_addr": false,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within

@@ -35,3 +35,5 @@ sspush,RS2,x,x
 ssrdp,RD,x,x
 c.sspopchk,RS1,x,x
 c.sspush,RS2,x,x
+vsetvl,R,x,x
+vsetvli,I1,x,x

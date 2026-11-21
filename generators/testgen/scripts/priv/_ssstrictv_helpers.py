@@ -85,16 +85,22 @@ def emit_init_vec(scratch: int, vreg: int, sew: int, *, label: str = "random_mas
     common.writeLine(f"vle{sew}.v v{vreg}, (x{scratch})", f"# init v{vreg}")
 
 
-def init_operand_regs(instruction: str, vec_data: dict, sew: int, scratch: int,
+def init_operand_regs(instruction: str, vec_data: dict, scratch: int,
                        *, regs: Iterable[str] = ("vd", "vs2", "vs3"),
                        label: str = "random_mask_0") -> None:
-    """Initialize operand vector registers that exist in the instruction's signature."""
+    """Initialize operand vector registers that exist in the instruction's signature.
+
+    Each register is loaded whole, independent of vl and SEW, so a widened source element
+    or tail byte never holds a value left from an earlier test. An earlier narrowing or
+    widening test with vd overlapping a source is tail-agnostic, so its leftover tail
+    differs between implementations.
+    """
     args = common.getInstructionArguments(instruction)
     common.writeLine(f"la x{scratch}, {label}", f"# scratch <- &{label}")
     for r in regs:
         if r in args and r in vec_data:
             reg = vec_data[r]["reg"]
-            common.writeLine(f"vle{sew}.v v{reg}, (x{scratch})", f"# init {r} (v{reg})")
+            common.writeLine(f"vl1re8.v v{reg}, (x{scratch})", f"# init {r} (v{reg})")
 
 
 # Operand-name -> instruction-word field. Every V-extension operand lives in one
@@ -331,7 +337,7 @@ def issue_simple_test(instruction: str, cp: str, *,
     common.writeLine(f"\n# Testcase {cp}")
     scratch = common.pickPrivScratch(instruction_data[1])
     emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
-    init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=init_regs)
+    init_operand_regs(instruction, instruction_data[0], scratch, regs=init_regs)
     if instruction in common.indexed_ls_ins:
         make_valid_indices(instruction, instruction_data, sew, bounded_lmul, scratch)
     # Re-emit vsetivli RIGHT BEFORE the test so the previous-instruction CSR

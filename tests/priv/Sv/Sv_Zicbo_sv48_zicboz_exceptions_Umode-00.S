@@ -233,11 +233,11 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_zero:
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
   // Test case 10: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
-  SUPERPAGE_PTE_SETUP_SV48(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
+  SUPERPAGE_PTE_SETUP_SV48_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
   LI(x15, (va_data >> 39) << 39)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 25
   srli x6, x6, 25
   add x15, x15, x6
@@ -428,7 +428,7 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_zero:
 
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   // Test case 20: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
-  PTE_SETUP_SV48(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL3)
+  PTE_SETUP_SV48_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_A | PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
@@ -450,11 +450,11 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test20_zero:
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
   // Test case 21: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  SUPERPAGE_PTE_SETUP_SV48(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV48_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x15, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 34
   srli x6, x6, 34
   add x15, x15, x6
@@ -718,7 +718,7 @@ Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test33_zero:
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   // Test case 34: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV48(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV48_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_A | PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
@@ -741,11 +741,11 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test34_zero:
   // Test case 35: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV48(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV48_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x15, (va_data >> 21) << 21)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 43
   srli x6, x6, 43
   add x15, x15, x6
@@ -1022,12 +1022,12 @@ Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test47_zero:
   // Test case 48: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV48(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV48_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(x15, (va_data >> 12) << 12)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x6, x6, 52
   srli x6, x6, 52
   add x15, x15, x6
@@ -1046,11 +1046,11 @@ Sv_Zicbo_cg_cp_nonleaf_PTE_to_nonexistent_pa_cbo_test48_zero:
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV48(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV48_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   LI(x15, (va_data >> 12) << 12)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 52
   srli x6, x6, 52
   add x15, x15, x6

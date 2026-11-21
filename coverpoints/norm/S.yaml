@@ -573,9 +573,6 @@ normative_rule_definitions:
   - name: sret_presence
     coverpoint: ["S_sprivinst_cg/cp_sret_s"]
 
-  - name: sret_ill_inst_exc_rst
-    coverpoint: ["Sm_mprivinst_cg/cp_sret_s"]
-
   - name: xret_op
     coverpoint: ["S_sprivinst_cg/cp_sret_s"]
 

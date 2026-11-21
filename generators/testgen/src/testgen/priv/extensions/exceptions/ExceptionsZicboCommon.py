@@ -255,7 +255,7 @@ def cbo_access_fault_helper(
         lines.append("#ifdef ZICBOZ_SUPPORTED" if cbo == "zero" else "#ifdef ZICBOM_SUPPORTED")
         lines.extend(
             [
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
                 test_data.add_testcase(f"cbo.{cbo}{mode_tag}_access_fault_0", coverpoint, covergroup),
                 f"cbo.{cbo}    0(x{addr_reg})",
                 f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",
@@ -268,7 +268,7 @@ def cbo_access_fault_helper(
     for prefetch in PREFETCH_INSTRS:
         lines.extend(
             [
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
                 test_data.add_testcase(f"prefetch.{prefetch}{mode_tag}_access_fault_0", coverpoint, covergroup),
                 f"prefetch.{prefetch}    0(x{addr_reg})",
                 f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",

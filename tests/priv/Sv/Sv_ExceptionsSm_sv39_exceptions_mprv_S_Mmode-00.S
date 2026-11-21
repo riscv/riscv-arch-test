@@ -178,11 +178,11 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test2_exec:
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test2_exec, Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test2_exec_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -214,11 +214,11 @@ Sv_ExceptionsSm_cg_cp_store_page_fault_m_test3_store:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -250,11 +250,11 @@ Sv_ExceptionsSm_cg_cp_load_page_fault_m_test3_load:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -281,11 +281,11 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test3_exec:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -318,11 +318,11 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test4_store:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -355,11 +355,11 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test4_load:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -496,11 +496,11 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test6_exec:
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test6_exec, Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test6_exec_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -532,11 +532,11 @@ Sv_ExceptionsSm_cg_cp_store_page_fault_m_test7_store:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -568,11 +568,11 @@ Sv_ExceptionsSm_cg_cp_load_page_fault_m_test7_load:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -599,11 +599,11 @@ Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test7_exec:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_STORE, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -636,11 +636,11 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test8_store:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6
@@ -673,11 +673,11 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test8_load:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-  SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
   LI(x13, (va_data >> 30) << 30)
-  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  LI_FIXED_LEN(x6, RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
   slli x6, x6, 34
   srli x6, x6, 34
   add x13, x13, x6

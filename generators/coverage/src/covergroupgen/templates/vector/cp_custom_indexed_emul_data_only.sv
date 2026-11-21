@@ -10,9 +10,9 @@
     //   NF=8 (nf=111) at LMUL=1 (vlmul=0)
 
     nf_lmul_at_boundary: coverpoint {
-        (ins.current.insn[31:29] == 3'b001 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2) |
-        (ins.current.insn[31:29] == 3'b011 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 1) |
-        (ins.current.insn[31:29] == 3'b111 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 0)
+        (ins.current.insn[31:29] == 3'b001 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 2) |
+        (ins.current.insn[31:29] == 3'b011 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 1) |
+        (ins.current.insn[31:29] == 3'b111 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") == 0)
     }
     {
         bins boundary_hit = {1'b1};

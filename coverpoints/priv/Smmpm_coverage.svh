@@ -27,7 +27,7 @@
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+    pmm: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSECCFG, "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
         `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
             bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
@@ -40,14 +40,14 @@
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
-        mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr")[0] {}
+        mxr_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
     `endif
 
     `ifdef U_SUPPORTED  // MPRV is read-only zero if U mode is not supported
-        mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+        mprv_bit: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
             bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
         }
-        mpp_field_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+        mpp_field_m: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp") {
             bins mpp_m = {2'b11};   // effective privilege = M-mode
         }
     `endif
@@ -73,7 +73,7 @@
 
     // cp_pmm_addr_mode_jalr — not guarded by S_SUPPORTED; implicit fetch is
     // never pointer-masked regardless of PMM or MXR availability.
-    cp_pmm_jalr: cross priv_mode_m, pmm, a_upper_bits, jalr_insn;
+    cp_pmm_jalr: cross priv_mode_m, pmm, a_upper_bits_jalr, jalr_insn;
 
     `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
         cp_pmm_mxr: cross priv_mode_m, pmm, mxr_bit, a_upper_bits, sw_lw_insn;

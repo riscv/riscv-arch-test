@@ -264,5 +264,6 @@ normative_rule_definitions:
       [
         "Sm_mcsr_cg/cp_mcsrwalk_masked/{menvcfg, mseccfg, menvcfgh, mseccfgh}",
         "S_scsr_cg/cp_scsrwalk/senvcfg",
+        "H_hscsr_cg/cp_hcsrwalk_masked/{henvcfg, hstatus}",
         "Ssnpm_H_cg/{cp_pmm_vsxl_clear, cp_pmm_vsuxl_clear}",
       ]

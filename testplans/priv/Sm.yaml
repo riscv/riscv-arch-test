@@ -11,7 +11,7 @@ coverpoints:
       - mcause (WLRL), mstatus/h (WPRI), menvcfg/h (WPRI), mseccfg/h (WPRI) could be weird/hard to model
   - name: cp_mcsrwalk
     goal: Walking 1s and 0s in each writeable M-mode CSR
-    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value check the other bits exactly and only check that the field reads back a legal value."
+    description: "Set and clear each bit of each writable M-mode CSR to exercise bitfields: mstatus, medeleg, mideleg, mie, mtvec, mcounteren, mscratch, mepc, mcause, mtval, mip, menvcfg, mseccfg.  For RV32 also mstatush, medelegh, menvcfgh, mseccfgh, mcountinhibit, mhpmevent31:3..  misa is fussy to model and is tested in cp_misa* instead.  Iterations that write a reserved mstatus.MPP, menvcfg.CBIE, or menvcfg/mseccfg.PMM value (PMM = 10 or 11 is reserved where that PMLEN is unsupported) check the other bits exactly and only check that the field reads back a legal value; MPP must hold an implemented mode."
     expectation: Writable bits match reference model.
     bins: 14 regs * (64 set + 64 clear)
   - name: cp_misa_mxl
@@ -30,8 +30,9 @@ coverpoints:
       Attempt to write S = 1, U = 0.  S should read 0 if U = 0
       Attempt to write H = 1, S = 0.  H should read 0 if S = 0
       Attempt to write H = 1, S = 1, U = 0.  H should read 0 if U = 0
+      Attempt to write H = 1, E = 1, S = 1, U = 1.  H requires the I base, so H and E should not both read 1
     expectation: See tests
-    bins: "7"
+    bins: "8"
   - name: cp_misa_clear_c
     description: Attempt to clear C when subsequent instruction is not a multiple of 2.  C should not change.
     expectation: C should not change
@@ -88,6 +89,24 @@ coverpoints:
     description: Write 1 and 0 to SD with FS/VS/XS all 0.  Write cross-product of all bits of SD/ FS/ VS/XS.  128 bins of writes.
     expectation: FS =1 iff any of FS/VS/XS are dirty.
     bins: 2 SD * 4 FS * 4 VS * 4 XS = 128
+  - name: cp_mstatus_sxl
+    goal: mstatus.SXL is read-only zero without S-mode, and otherwise a WARL field encoding SXLEN
+    description: On RV64, from M-mode, write mstatus.SXL = (0, 1, 2, 3) and read SXL back
+    expectation: SXL reads 0 without S-mode, 2 when SXLEN is fixed at 64, and 1 or 2 otherwise
+    bins: "4"
+    rules:
+      - mstatus_sxl_uxl_warl_op
+      - mstatus_sxl_acc_mxlen64
+      - mstatus_sxl_rdonly_mxlen64
+  - name: cp_mstatus_uxl
+    goal: mstatus.UXL is read-only zero without U-mode, and otherwise a WARL field encoding UXLEN
+    description: On RV64, from M-mode, write mstatus.UXL = (0, 1, 2, 3) and read UXL back
+    expectation: UXL reads 0 without U-mode, 2 when UXLEN is fixed at 64, and 1 or 2 otherwise
+    bins: "4"
+    rules:
+      - mstatus_sxl_uxl_warl_op
+      - mstatus_uxl_acc_mxlen64
+      - mstatus_uxl_rdonly_mxlen64
   - name: cp_mprivinst
     goal: ecall and ebreak cause traps
     description: Execute ecall and ebreak in machine mode

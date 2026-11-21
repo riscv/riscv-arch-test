@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 44
+#define SIGUPD_COUNT 46
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -294,7 +294,7 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd:
 
 #endif
 
-  LI(x6, 0x1)
+  LI(x6, 0x0)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -350,7 +350,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test10_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test10_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test10_amoadd_str)
 
-  LI(x6, 0x2)
+  LI(x6, 0x1)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -406,7 +406,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test12_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test12_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test12_amoadd_str)
 
-  LI(x6, 0x4)
+  LI(x6, 0x2)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -462,7 +462,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test14_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test14_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test14_amoadd_str)
 
-  LI(x6, 0x8)
+  LI(x6, 0x4)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -518,7 +518,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test16_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test16_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test16_amoadd_str)
 
-  LI(x6, 0x10)
+  LI(x6, 0x8)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -574,7 +574,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test18_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test18_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test18_amoadd_str)
 
-  LI(x6, 0x20)
+  LI(x6, 0x10)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -630,7 +630,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test20_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test20_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test20_amoadd_str)
 
-  LI(x6, 0x40)
+  LI(x6, 0x20)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -686,7 +686,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test22_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test22_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test22_amoadd_str)
 
-  LI(x6, 0x80)
+  LI(x6, 0x40)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -742,7 +742,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test24_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test24_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test24_amoadd_str)
 
-  LI(x6, 0x100)
+  LI(x6, 0x80)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -798,7 +798,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test26_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test26_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test26_amoadd_str)
 
-  LI(x6, 0x1000)
+  LI(x6, 0x100)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -854,7 +854,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test28_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test28_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test28_amoadd_str)
 
-  LI(x6, 0x2000)
+  LI(x6, 0x1000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -910,7 +910,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test30_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test30_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test30_amoadd_str)
 
-  LI(x6, 0x8000)
+  LI(x6, 0x2000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -966,7 +966,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test32_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test32_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test32_amoadd_str)
 
-  LI(x6, 0xb1ff)
+  LI(x6, 0x8000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -1022,6 +1022,62 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test34_amoadd:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test34_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test34_amoadd_str)
 
+  LI(x6, 0xb1ff)
+  csrw medeleg, x6
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x15, x15, 1
+
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test35_amoadd:
+  amoadd.w x9, x15, (x8)
+  nop
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+
+
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test35_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test35_amoadd_str)
+
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL2)
+  sfence.vma
+
+  LI(x8, (va_data_invalid >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x15, x15, 1
+
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test36_amoadd:
+  amoadd.w x9, x15, (x8)
+  nop
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+
+
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test36_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test36_amoadd_str)
+
   csrw medeleg, x13
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1054,40 +1110,42 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd_str: .string "\"test: 53; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test1_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd_str: .string "\"test: 54; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test2_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd_str: .string "\"test: 55; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test3_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd_str: .string "\"test: 56; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test4_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd_str: .string "\"test: 57; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test5_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd_str: .string "\"test: 58; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test6_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd_str: .string "\"test: 59; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test7_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd_str: .string "\"test: 60; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test8_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test9_amoadd_str: .string "\"test: 61; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test9_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test10_amoadd_str: .string "\"test: 62; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test10_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test11_amoadd_str: .string "\"test: 63; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test11_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test12_amoadd_str: .string "\"test: 64; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test12_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test13_amoadd_str: .string "\"test: 65; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test13_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test14_amoadd_str: .string "\"test: 66; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test14_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test15_amoadd_str: .string "\"test: 67; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test15_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test16_amoadd_str: .string "\"test: 68; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test16_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test17_amoadd_str: .string "\"test: 69; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test17_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test18_amoadd_str: .string "\"test: 70; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test18_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test19_amoadd_str: .string "\"test: 71; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test19_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test20_amoadd_str: .string "\"test: 72; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test20_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test21_amoadd_str: .string "\"test: 73; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test21_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test22_amoadd_str: .string "\"test: 74; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test22_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test23_amoadd_str: .string "\"test: 75; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test23_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test24_amoadd_str: .string "\"test: 76; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test24_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test25_amoadd_str: .string "\"test: 77; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test25_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test26_amoadd_str: .string "\"test: 78; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test26_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test27_amoadd_str: .string "\"test: 79; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test27_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test28_amoadd_str: .string "\"test: 80; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test28_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test29_amoadd_str: .string "\"test: 81; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test29_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test30_amoadd_str: .string "\"test: 82; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test30_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test31_amoadd_str: .string "\"test: 83; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test31_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test32_amoadd_str: .string "\"test: 84; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test32_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test33_amoadd_str: .string "\"test: 85; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test33_amoadd\""
-Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test34_amoadd_str: .string "\"test: 86; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test34_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd_str: .string "\"test: 57; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test1_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd_str: .string "\"test: 58; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test2_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd_str: .string "\"test: 59; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test3_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd_str: .string "\"test: 60; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test4_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd_str: .string "\"test: 61; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test5_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd_str: .string "\"test: 62; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test6_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd_str: .string "\"test: 63; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test7_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd_str: .string "\"test: 64; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_misaligned_priority_m; bin: test8_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test9_amoadd_str: .string "\"test: 65; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test9_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test10_amoadd_str: .string "\"test: 66; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test10_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test11_amoadd_str: .string "\"test: 67; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test11_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test12_amoadd_str: .string "\"test: 68; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test12_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test13_amoadd_str: .string "\"test: 69; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test13_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test14_amoadd_str: .string "\"test: 70; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test14_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test15_amoadd_str: .string "\"test: 71; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test15_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test16_amoadd_str: .string "\"test: 72; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test16_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test17_amoadd_str: .string "\"test: 73; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test17_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test18_amoadd_str: .string "\"test: 74; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test18_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test19_amoadd_str: .string "\"test: 75; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test19_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test20_amoadd_str: .string "\"test: 76; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test20_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test21_amoadd_str: .string "\"test: 77; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test21_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test22_amoadd_str: .string "\"test: 78; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test22_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test23_amoadd_str: .string "\"test: 79; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test23_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test24_amoadd_str: .string "\"test: 80; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test24_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test25_amoadd_str: .string "\"test: 81; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test25_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test26_amoadd_str: .string "\"test: 82; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test26_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test27_amoadd_str: .string "\"test: 83; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test27_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test28_amoadd_str: .string "\"test: 84; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test28_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test29_amoadd_str: .string "\"test: 85; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test29_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test30_amoadd_str: .string "\"test: 86; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test30_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test31_amoadd_str: .string "\"test: 87; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test31_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test32_amoadd_str: .string "\"test: 88; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test32_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test33_amoadd_str: .string "\"test: 89; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test33_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test34_amoadd_str: .string "\"test: 90; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test34_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test35_amoadd_str: .string "\"test: 91; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test35_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_m_test36_amoadd_str: .string "\"test: 92; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_m; bin: test36_amoadd\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -22,9 +22,9 @@ covergroup Svvptc_cg with function sample(ins_t ins);
     store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
         bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
     }
-    // A fetch page fault is reported on the jump to the page.
+    // A fetch page fault is not a trap of the jump to the page, so look for the scause write
     fetch_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? JALR);
+        bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.csr_wb[CSR_SCAUSE]);
     }
 
     `ifdef UDB_MXLEN_64

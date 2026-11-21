@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 36
+#define SIGUPD_COUNT 38
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -62,7 +62,7 @@ RVTEST_BEGIN
 
   LI(x9, 0x800) // Test signature initialization
 
-  LI(x6, 0x1)
+  LI(x6, 0x0)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -104,7 +104,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test2_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test2_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test2_amoadd_str)
 
-  LI(x6, 0x2)
+  LI(x6, 0x1)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -146,7 +146,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test4_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test4_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test4_amoadd_str)
 
-  LI(x6, 0x4)
+  LI(x6, 0x2)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -188,7 +188,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test6_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test6_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test6_amoadd_str)
 
-  LI(x6, 0x8)
+  LI(x6, 0x4)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -230,7 +230,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test8_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test8_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test8_amoadd_str)
 
-  LI(x6, 0x10)
+  LI(x6, 0x8)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -272,7 +272,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test10_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test10_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test10_amoadd_str)
 
-  LI(x6, 0x20)
+  LI(x6, 0x10)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -314,7 +314,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test12_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test12_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test12_amoadd_str)
 
-  LI(x6, 0x40)
+  LI(x6, 0x20)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -356,7 +356,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test14_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test14_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test14_amoadd_str)
 
-  LI(x6, 0x80)
+  LI(x6, 0x40)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -398,7 +398,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test16_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test16_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test16_amoadd_str)
 
-  LI(x6, 0x100)
+  LI(x6, 0x80)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -440,7 +440,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test18_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test18_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test18_amoadd_str)
 
-  LI(x6, 0x1000)
+  LI(x6, 0x100)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -482,7 +482,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test20_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test20_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test20_amoadd_str)
 
-  LI(x6, 0x2000)
+  LI(x6, 0x1000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -524,7 +524,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test22_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test22_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test22_amoadd_str)
 
-  LI(x6, 0x8000)
+  LI(x6, 0x2000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -566,7 +566,7 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test24_amoadd:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test24_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test24_amoadd_str)
 
-  LI(x6, 0xb1ff)
+  LI(x6, 0x8000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -607,6 +607,48 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test26_amoadd:
 
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test26_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test26_amoadd_str)
+
+  LI(x6, 0xb1ff)
+  csrw medeleg, x6
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
+  RVTEST_TSBI_GOTO_SMODE
+  addi x9, x9, 1
+
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test27_amoadd:
+  amoadd.w x8, x9, (x14)
+  nop
+
+  RVTEST_TSBI_GOTO_MMODE
+
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test27_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test27_amoadd_str)
+
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
+  sfence.vma
+
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
+  RVTEST_TSBI_GOTO_SMODE
+  addi x9, x9, 1
+
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test28_amoadd:
+  amoadd.w x8, x9, (x14)
+  nop
+
+  RVTEST_TSBI_GOTO_MMODE
+
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test28_amoadd, Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test28_amoadd_str)
 
   csrw medeleg, x13
 
@@ -663,6 +705,8 @@ Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test23_amoadd_str: .string "\"test: 23; cg:
 Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test24_amoadd_str: .string "\"test: 24; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_s; bin: test24_amoadd\""
 Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test25_amoadd_str: .string "\"test: 25; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_s; bin: test25_amoadd\""
 Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test26_amoadd_str: .string "\"test: 26; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_s; bin: test26_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test27_amoadd_str: .string "\"test: 27; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_s; bin: test27_amoadd\""
+Sv_ExceptionsZaamoSm_cg_cp_medeleg_s_test28_amoadd_str: .string "\"test: 28; cg: Sv_ExceptionsZaamoSm_cg; cp: cp_medeleg_s; bin: test28_amoadd\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

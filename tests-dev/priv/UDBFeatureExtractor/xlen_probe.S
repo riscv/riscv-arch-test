@@ -8,7 +8,7 @@
 // make_config.py runs this before the extractor, which must be compiled for the hart's XLEN.  The
 // code uses only instructions that RV32I and RV64I share with the same encoding, so the RV32 build
 // runs on either kind of hart: 1 << 31 is negative on RV32 and positive on RV64.  It uses no CSR,
-// since some harts (Wally rv32i, PicoRV32) have none.
+// since a hart may not implement Zicsr.
 
 #include "rvmodel_macros.h"
 

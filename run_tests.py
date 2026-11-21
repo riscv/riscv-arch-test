@@ -32,7 +32,7 @@ _ERROR_LINE_RE = re.compile(r"Error:|Failed stop:|critical[-_ ]error|fatal", re.
 USE_COLOR = sys.stdout.isatty()
 
 
-def _expand_debug_placeholders(command: str, *, debug: bool) -> str:
+def expand_debug_placeholders(command: str, *, debug: bool) -> str:
     """Expand {debug:...} placeholders in a command string.
 
     When debug is True, {debug:--flag1 --flag2} expands to '--flag1 --flag2'.
@@ -273,7 +273,7 @@ def main() -> int:
         args.jobs = 1
 
     # Expand {debug:...} placeholders based on --debug flag
-    command = _expand_debug_placeholders(args.command, debug=args.debug)
+    command = expand_debug_placeholders(args.command, debug=args.debug)
 
     # Set up directories
     elf_dir = args.elf_dir.resolve()

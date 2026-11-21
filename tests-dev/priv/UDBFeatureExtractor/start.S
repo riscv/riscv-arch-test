@@ -28,9 +28,8 @@
 .section .text.init, "ax", @progbits
 .globl rvtest_entry_point
 rvtest_entry_point:
-    // A hart without Zicsr that ignores CSR instructions instead of trapping (Wally rv32i and
-    // rv64i) does not read back what was written to mscratch; s1 = 0 sends it to the reduced
-    // report instead of main
+    // A hart without Zicsr that ignores CSR instructions instead of trapping does not read back
+    // what was written to mscratch; s1 = 0 sends it to the reduced report instead of main
     li      t0, 0x5A5
     csrw    mscratch, t0
     li      a0, 0
@@ -75,14 +74,14 @@ park:
 // to know the length of the instruction that trapped.  Any other trap is a fatal error: it is
 // reported with its cause and the run fails.  t0-t2 may be clobbered here because every probe
 // declares them clobbered.
-// Aligned to 256 bytes: a hart whose mtvec is fixed in vectored mode (Ibex) needs that
+// Aligned to 256 bytes: a hart whose mtvec is fixed in vectored mode needs that
 // alignment, and synchronous exceptions still enter at the base.  The handlers live in .text
 // rather than .text.init so the alignment does not move the entry point off the reset address.
 .section .text, "ax", @progbits
 .balign 256
-// It starts with a table of jumps, so that a hart whose mtvec is in vectored mode (Ibex's is fixed
-// that way) reaches the handler for an interrupt, which enters at base + 4 * cause, as well as for
-// an exception, which enters at the base.
+// It starts with a table of jumps, so that a hart whose mtvec is in vectored mode reaches the
+// handler for an interrupt, which enters at base + 4 * cause, as well as for an exception, which
+// enters at the base.
 trap_handler:
     .option push
     .option norvc

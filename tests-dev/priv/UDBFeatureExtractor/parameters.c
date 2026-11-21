@@ -350,8 +350,8 @@ static void tvec_params(const char *prefix_modes, const char *align_direct, cons
     unsigned long base = (unsigned long)probe_scratch;
     unsigned long modes[2], nmodes = 0, alignment[2] = { 4, 4 };
     if (access) {
-        // BASE is writable when two different bases both read back; MODE may be hardwired
-        // (Ibex keeps it at vectored), so only BASE is compared
+        // BASE is writable when two different bases both read back; MODE may be hardwired,
+        // so only BASE is compared
         unsigned long other = base + PROBE_SCRATCH_SIZE / 2;
         bool rw = (set(base) & ~3ul) == base && (set(other) & ~3ul) == other;
         param_str(access, rw ? "rw" : "ro");
@@ -377,7 +377,7 @@ static void tvec_params(const char *prefix_modes, const char *align_direct, cons
     if (illegal) {
         // "retain" means the CSR keeps its old value when MODE or BASE is illegal.  MODE = 2 is
         // reserved.  A BASE below the mode's alignment is illegal too; the write starts from a
-        // different aligned base, so a hart that clears the low bits (Ibex) is not mistaken for one
+        // different aligned base, so a hart that clears the low bits is not mistaken for one
         // that keeps the old value
         unsigned long mode = modes[nmodes ? nmodes - 1 : 0];
         unsigned long before = set(base | mode);
@@ -1641,7 +1641,7 @@ void print_parameters(unsigned long vlen, unsigned long reset_vtype, unsigned lo
             }
 #endif
             // Only a writable field that reads back all ones from bit 0 is a selector width; a
-            // hart with a read-only event value (Ibex reads back one bit) says nothing about it
+            // hart with a read-only event value says nothing about it
             unsigned long zero = mhpmevent3_wr(0);
             if (width && (sel & (sel + 1)) == 0 && PROBE_OK() && (zero & sel) == 0)
                 sail_int("base.hpmevent_width_bits", width);

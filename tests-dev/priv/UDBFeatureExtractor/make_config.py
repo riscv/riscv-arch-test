@@ -106,7 +106,7 @@ def run_on_dut(config_dir: Path, elf: Path, out: Path, timeout: int) -> str:
 
 def run_on_dut_ex(config_dir: Path, elf: Path, out: Path, timeout: int) -> tuple[str, bool]:
     """run_on_dut, also saying whether the run was stopped for taking longer than timeout seconds."""
-    run_cmd = run_tests._expand_debug_placeholders((config_dir / "run_cmd.txt").read_text(), debug=False)
+    run_cmd = run_tests.expand_debug_placeholders((config_dir / "run_cmd.txt").read_text(), debug=False)
     env_overrides, command = run_tests.split_env_assignments(shlex.split(run_cmd))
     env = {**os.environ, **env_overrides}
     if not command or shutil.which(command[0]) is None:

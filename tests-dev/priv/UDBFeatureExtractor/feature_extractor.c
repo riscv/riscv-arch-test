@@ -447,10 +447,8 @@ int main(void)
     // Privileged 1.12 added mconfigptr, which every 1.12 hart has (menvcfg exists only with
     // U-mode), and on RV32 mstatush.  A hart with 1.12 CSRs but no mstatush matches neither
     // version: a configuration declaring 1.12 makes the test environment read mstatush
-    // unconditionally, and on a hart without it every trap then takes a nested trap.  VeeR EL2 is
-    // such a hart - it implements menvcfg, mcounteren and mseccfg but not mstatush - and declaring
-    // 1.12 for it made every privileged test die.  Report the lower version, which is the one
-    // such a hart actually works under, and say so.
+    // unconditionally, and on a hart without it every trap then takes a nested trap.  Report the
+    // lower version, which is the one such a hart actually works under, and say so.
     bool has_menvcfg = PROBE_VALUE("zicsr", CSR_EXISTS(menvcfg)) != PROBE_TRAPPED;
     bool has_mconfigptr = PROBE_VALUE("zicsr", CSR_EXISTS(0xF15)) != PROBE_TRAPPED;
     bool has_mstatush = __riscv_xlen != 32 ||

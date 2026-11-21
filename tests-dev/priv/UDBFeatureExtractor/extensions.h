@@ -198,9 +198,8 @@
     P(Smcntrpmf,  "1.0.0", "zicsr", CSR_EXISTS(0x321))              /* mcyclecfg          */ \
     P(Smctr,      "1.0.0", "zicsr", CSR_EXISTS(0x34E))              /* mctrctl            */ \
     /* mseccfg.RLB being writable shows the CSR interface, not that the MML/MMWP rules are
-       enforced; a hart may implement the register and not the behaviour.  VeeR EL2 does exactly
-       that - mseccfg is implemented unconditionally while RV_SMEPMP gates only the PMP
-       enforcement - so this row over-reports on such a hart.  Probing the behaviour is not an
+       enforced; a hart may implement the register and not the behaviour, so this row
+       over-reports on such a hart.  Probing the behaviour is not an
        option here: MML and MMWP are sticky until reset, so setting either would change the
        machine under the remaining probes. */                                                 \
     P(Smepmp,     "1.0.0", "zicsr", CSR_BIT(0x747, 2))              /* mseccfg.RLB        */ \

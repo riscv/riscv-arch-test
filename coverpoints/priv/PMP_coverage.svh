@@ -10,12 +10,16 @@
 
 `define COVER_PMP
 
+// pmpaddr bits that don't depend on test code size (PMP_PMPADDR_LOWMASK) and read the same with the entry OFF or
+// NAPOT. With G = UDB_PMP_GRANULARITY - 2 >= 1, OFF reads pmpaddr[G-1:0] as 0 and NAPOT reads pmpaddr[G-2:0] as 1s.
+// The tests write pmpaddr while the entry is OFF and set A later, which logs no new pmpaddr value.
+`define PMP_PMPADDR_GRAINMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
+
 // TOR twins. Each test that checks a feature with a NAPOT region has a twin, run when TOR is supported,
 // that bounds the same bytes with a TOR entry i: pmpaddr[i-1] holds the region's base and pmpaddr[i]
 // its top. pmp_tor_entry returns the lowest-numbered such entry, the one that decides an access to the
-// region, or 0 when there is none. pmpaddr values are compared on the code-size-invariant low bits
-// above the grain (TOR and OFF entries read bits G-1:0 of pmpaddr as zero).
-`define PMP_TOR_ADDRMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
+// region, or 0 when there is none. pmpaddr values are compared on the PMP_PMPADDR_GRAINMASK bits (TOR
+// entries, like OFF ones, read bits G-1:0 of pmpaddr as zero).
 `define PMP_TOR_TWIN_BASE (`PMP_NAPOT_REGION_START >> 2)
 `define PMP_TOR_TWIN_TOP ((`PMP_NAPOT_REGION_START + `g_napot) >> 2)
 // Zaamo and Zalrsc place their region at PMP_SPECIAL_REGION_START
@@ -30,8 +34,8 @@ function automatic int pmp_tor_entry(logic [7:0] pmpcfg [63:0], logic [`UDB_MXLE
                                      logic [`UDB_MXLEN-1:0] base, logic [`UDB_MXLEN-1:0] top);
   for (int i = 1; i < 63; i++) begin
     if (pmpcfg[i][4:3] == 2'b01 &&
-        (pmpaddr[i-1] & `PMP_TOR_ADDRMASK) == (base & `PMP_TOR_ADDRMASK) &&
-        (pmpaddr[i] & `PMP_TOR_ADDRMASK) == (top & `PMP_TOR_ADDRMASK))
+        (pmpaddr[i-1] & `PMP_PMPADDR_GRAINMASK) == (base & `PMP_PMPADDR_GRAINMASK) &&
+        (pmpaddr[i] & `PMP_PMPADDR_GRAINMASK) == (top & `PMP_PMPADDR_GRAINMASK))
       return i;
   end
   return 0;
@@ -43,11 +47,6 @@ function automatic logic [7:0] pmp_tor_cfg(logic [7:0] pmpcfg [63:0], logic [`UD
   int entry = pmp_tor_entry(pmpcfg, pmpaddr, base, top);
   return (entry == 0) ? 8'h00 : pmpcfg[entry];
 endfunction
-
-// pmpaddr bits that don't depend on test code size (PMP_PMPADDR_LOWMASK) and read the same with the entry OFF or
-// NAPOT. With G = UDB_PMP_GRANULARITY - 2 >= 1, OFF reads pmpaddr[G-1:0] as 0 and NAPOT reads pmpaddr[G-2:0] as 1s.
-// The tests write pmpaddr while the entry is OFF and set A later, which logs no new pmpaddr value.
-`define PMP_PMPADDR_GRAINMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
 
 `ifndef PMP_HAS_SV
   `ifdef SV32_SUPPORTED
@@ -1683,12 +1682,12 @@ covergroup PMP_Sm_cg with function sample(
     // XWR = 000, 101, 011; entries 0, 2 and 4 hold the base
     priority_tor_setup: coverpoint (
                    ({pmpcfg[5], pmpcfg[4], pmpcfg[3], pmpcfg[2], pmpcfg[1], pmpcfg[0]} == 48'h8B008D008800) &&
-                   ((pmpaddr[0] & `PMP_TOR_ADDRMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_TOR_ADDRMASK)) &&
-                   ((pmpaddr[2] & `PMP_TOR_ADDRMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_TOR_ADDRMASK)) &&
-                   ((pmpaddr[4] & `PMP_TOR_ADDRMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_TOR_ADDRMASK)) &&
-                   ((pmpaddr[1] & `PMP_TOR_ADDRMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 1*`g_napot) >> 2) & `PMP_TOR_ADDRMASK)) &&
-                   ((pmpaddr[3] & `PMP_TOR_ADDRMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 2*`g_napot) >> 2) & `PMP_TOR_ADDRMASK)) &&
-                   ((pmpaddr[5] & `PMP_TOR_ADDRMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 4*`g_napot) >> 2) & `PMP_TOR_ADDRMASK))
+                   ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[4] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_PRIORITY_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 1*`g_napot) >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 2*`g_napot) >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[5] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START + 4*`g_napot) >> 2) & `PMP_PMPADDR_GRAINMASK))
                    ) {
       bins tor_regions = {1};
     }
@@ -1703,10 +1702,10 @@ covergroup PMP_Sm_cg with function sample(
       bins cfg_regions = {32'h8F808D80};
     }
     first_four_pmp_entries_tor: coverpoint (
-                    ((pmpaddr[0] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_BASE & `PMP_TOR_ADDRMASK)) &&
-                    ((pmpaddr[1] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_TOP & `PMP_TOR_ADDRMASK)) &&
-                    ((pmpaddr[2] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_BASE & `PMP_TOR_ADDRMASK)) &&
-                    ((pmpaddr[3] & `PMP_TOR_ADDRMASK) == (`PMP_TOR_TWIN_TOP & `PMP_TOR_ADDRMASK))
+                    ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == (`PMP_TOR_TWIN_BASE & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (`PMP_TOR_TWIN_TOP & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == (`PMP_TOR_TWIN_BASE & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (`PMP_TOR_TWIN_TOP & `PMP_PMPADDR_GRAINMASK))
                     ) {
       bins pmp_entries = {1};
     }

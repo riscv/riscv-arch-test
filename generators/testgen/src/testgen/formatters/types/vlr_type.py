@@ -59,7 +59,7 @@ def format_vlr_type(
     # Preload vd at vlmax
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
     to_load = [VectorLoad(reg="vd", vl=vd_vl, no_fractional_load=True, segments=segments, lmul=emul, sew=eew)]
-    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data, base_tail_fill=True)
     setup.extend(load_code)
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
     setup.append(load_test_vtype(params, random_vl_reg))

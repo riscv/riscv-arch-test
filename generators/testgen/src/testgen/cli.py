@@ -28,7 +28,9 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
+from testgen.asm.sections import generate_vector_random_data
 from testgen.constants import E_EXTENSION_TESTS
+from testgen.data.vector_data import VECTOR_RANDOM_DATA_FILE
 from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions
 from testgen.priv import get_priv_test_suites
@@ -140,6 +142,12 @@ def generate_all_tests(
             for future in as_completed(futures):
                 future.result()  # Re-raise any exceptions
                 progress.advance(task_id)
+
+    if any(isinstance(task, UnprivTask) and task.is_vector for task in tasks):
+        shared_data_file = output_test_dir / "env" / VECTOR_RANDOM_DATA_FILE
+        shared_data = generate_vector_random_data()
+        if not shared_data_file.exists() or shared_data_file.read_text() != shared_data:
+            shared_data_file.write_text(shared_data)
 
     rprint(f"[bold green]✓ Generated {len(tasks)} test suite(s)[/]")
 

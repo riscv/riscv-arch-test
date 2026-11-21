@@ -9,7 +9,7 @@
 """Zawrs test generators. Each group runs in one privilege mode."""
 
 from testgen.asm.csr import write_stce
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, unless_required, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.asm.wait import wait_loop, wait_loop_arm
 from testgen.data.state import TestData
@@ -254,12 +254,15 @@ def wrs_no_mie_helper(
             lines.extend(
                 [
                     "# Set the S mode interrupts if supported",
-                    "#ifdef S_SUPPORTED",
-                    f"RVTEST_SET_STIME_INT_{priv}",
-                    "# set SSI and SEI through mip",
-                    f"LI(x{r_temp}, 0x202)",
-                    tsbi_call_or_direct(f"csrs mip, x{r_temp}", priv),
-                    "#endif",
+                    *gated(
+                        [
+                            f"RVTEST_SET_STIME_INT_{priv}",
+                            "# set SSI and SEI through mip",
+                            f"LI(x{r_temp}, 0x202)",
+                            tsbi_call_or_direct(f"csrs mip, x{r_temp}", priv),
+                        ],
+                        unless_required(test_data, "S_SUPPORTED"),
+                    ),
                     "",
                     "# Set TW bit",
                     f"LI(x{r_temp}, 0x200000)",
@@ -305,11 +308,14 @@ def wrs_no_mie_helper(
             lines.extend(
                 [
                     "# Clear S mode interrupts",
-                    "#ifdef S_SUPPORTED",
-                    "# clear SSI, STI and SEI through mip, the way they were set",
-                    f"LI(x{r_temp}, 0x222)",
-                    tsbi_call_or_direct(f"csrc mip, x{r_temp}", priv),
-                    "#endif",
+                    *gated(
+                        [
+                            "# clear SSI, STI and SEI through mip, the way they were set",
+                            f"LI(x{r_temp}, 0x222)",
+                            tsbi_call_or_direct(f"csrc mip, x{r_temp}", priv),
+                        ],
+                        unless_required(test_data, "S_SUPPORTED"),
+                    ),
                 ]
             )
         lines.extend(

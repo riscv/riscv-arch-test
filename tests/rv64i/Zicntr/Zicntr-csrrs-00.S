@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 16
+#define SIGUPD_COUNT 13
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -93,70 +93,6 @@ Zicntr_csrrs_cg_cp_cntr_instret:
 
 #endif
 
-#if __riscv_xlen == 32
-
-#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_0) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_0))))
-
-# Testcase: cp_cntr (cycleh)
-# Read two consecutive times to check if counter increments
-  csrrs x15, cycleh, x0
-  addi x27, x15, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  csrrs x27, cycleh, x0
-Zicntr_csrrs_cg_cp_cntr_cycleh:
-  csrrs x27, cycleh, x0 # read again to increase delay a bit more
-  sub x15, x27, x15 # compute difference
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_cycleh, Zicntr_csrrs_cg_cp_cntr_cycleh_str)
-
-#endif
-
-#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_1) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_1))))
-
-# Testcase: cp_cntr (timeh)
-# Read two consecutive times to check if counter increments
-  csrrs x15, timeh, x0
-  addi x27, x15, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  csrrs x27, timeh, x0
-Zicntr_csrrs_cg_cp_cntr_timeh:
-  csrrs x27, timeh, x0 # read again to increase delay a bit more
-  sub x15, x27, x15 # compute difference
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_timeh, Zicntr_csrrs_cg_cp_cntr_timeh_str)
-
-#endif
-
-#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_2) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_2))))
-
-# Testcase: cp_cntr (instreth)
-# Read two consecutive times to check if counter increments
-  csrrs x15, instreth, x0
-  addi x27, x15, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  addi x27, x27, 1 # delay a bit
-  csrrs x27, instreth, x0
-Zicntr_csrrs_cg_cp_cntr_instreth:
-  csrrs x27, instreth, x0 # read again to increase delay a bit more
-  sub x15, x27, x15 # compute difference
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_instreth, Zicntr_csrrs_cg_cp_cntr_instreth_str)
-
-#endif
-
-#endif
-
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -171,9 +107,6 @@ RVTEST_DATA_BEGIN
 Zicntr_csrrs_cg_cp_cntr_cycle_str: .string "\"test: 1; cg: Zicntr_csrrs_cg; cp: cp_cntr; bin: cycle\""
 Zicntr_csrrs_cg_cp_cntr_time_str: .string "\"test: 2; cg: Zicntr_csrrs_cg; cp: cp_cntr; bin: time\""
 Zicntr_csrrs_cg_cp_cntr_instret_str: .string "\"test: 3; cg: Zicntr_csrrs_cg; cp: cp_cntr; bin: instret\""
-Zicntr_csrrs_cg_cp_cntr_cycleh_str: .string "\"test: 4; cg: Zicntr_csrrs_cg; cp: cp_cntr; bin: cycleh\""
-Zicntr_csrrs_cg_cp_cntr_timeh_str: .string "\"test: 5; cg: Zicntr_csrrs_cg; cp: cp_cntr; bin: timeh\""
-Zicntr_csrrs_cg_cp_cntr_instreth_str: .string "\"test: 6; cg: Zicntr_csrrs_cg; cp: cp_cntr; bin: instreth\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

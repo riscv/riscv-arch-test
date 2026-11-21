@@ -150,9 +150,8 @@ HIGH_VA = {
     "sv57": 0xFFFF_8000_0000_0000,
 }
 
-# Translation modes and their compile-time support guards.
+# Translation modes
 MODES = ["bare", "sv39", "sv48", "sv57"]
-MODE_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
 
 # PMM field bit position (common across mseccfg/menvcfg/henvcfg/senvcfg)
 _PMM_SHIFT = 32

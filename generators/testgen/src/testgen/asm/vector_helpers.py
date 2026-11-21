@@ -60,14 +60,16 @@ def write_sigupd_v(
     temp_reg = test_data.int_regs.temp_reg
     label = test_data.current_testcase_label
     vdsew = params.sew * (2 if widen_vd else 1) if sew_override is None else sew_override
+    # Check every element below vl, and at least one element group
+    check_count = max(egs, params.vl) if isinstance(params.vl, int) else egs
 
     # Count the number of bytes the sigupd macro will consume. This is going to be the size of the element
     # group that we are checking in the first index, plus 4 bytes for padding, and then rounded to the nearest
     # multiple of 8 (+7 & ~8) achieves this. This computation is mirrored in RVTEST_SIGUPD_V_ADVANCE
-    max_bytes = vdsew * egs // 8
+    max_bytes = vdsew * check_count // 8
     test_data.test_chunk.sigupd_count += vector_sigupd_bytes(max_bytes, test_data, vdsew)
 
-    if egs == 1:
+    if check_count == 1:
         lines = [
             f"# set SEW={vdsew}, LMUL=1, VL=1 before signature check",
             f"vsetivli x0, 1, e{vdsew}, m1, tu, mu",
@@ -76,8 +78,8 @@ def write_sigupd_v(
     else:
         sig_lmul = int(max(params.lmul or 1, 1))
         lines = [
-            f"# set SEW={vdsew}, LMUL={sig_lmul}, VL={egs} before signature check",
-            f"vsetivli x0, {egs}, e{vdsew}, m{sig_lmul}, tu, mu",
+            f"# set SEW={vdsew}, LMUL={sig_lmul}, VL={check_count} before signature check",
+            f"vsetivli x0, {check_count}, e{vdsew}, m{sig_lmul}, tu, mu",
         ]
         vtmp = test_data.vec_regs.get_register(lmul=sig_lmul, exclude_regs=[0])
         mtmp = test_data.vec_regs.get_register(lmul=1, exclude_regs=[0])

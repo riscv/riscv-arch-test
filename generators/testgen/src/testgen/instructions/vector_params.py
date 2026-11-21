@@ -524,7 +524,11 @@ def generate_random_vector_params(
 
             # Register the label
             eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
-            element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
+            # A base-suite label holds the elements below vl
+            if suite == "base":
+                element_count = max(params.vl, 1) if isinstance(params.vl, int) else 1
+            else:
+                element_count = math.ceil(VLEN_MAX * lmul / sew)
             if instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)

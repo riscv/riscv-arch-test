@@ -426,3 +426,49 @@ def make_cp_custom_maskLS(instr_name: str, instr_type: str, coverpoint: str, tes
         return_testcase_registers(test_data, params)
 
     return test_chunks
+
+
+@add_coverpoint_generator("cp_custom_ls_indexed_msb")
+def make_cp_custom_ls_indexed_msb(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """
+    Runs an indexed load or store whose index has its top bit set. Indices are unsigned, so it must be
+    zero-extended to XLEN, not sign-extended.
+
+    The index is the largest SEW-aligned value that fits in the index EEW, and rs1 is vector_ls_random_base
+    minus the index, so the access lands on vector_ls_random_base. A hart that sign-extends the index
+    accesses 2**EEW bytes lower instead. The buffer doesn't grow, even for 16-bit indices.
+    """
+
+    info = parse_vector_instruction_info(instr_name, instr_type)
+    eew = info.index_eew
+    assert eew is not None, f"Unable to extract index-eew for instruction {instr_name}"
+    assert coverpoint.endswith(f"_ei{eew}"), f"{coverpoint} does not match the index EEW of {instr_name}"
+    assert test_data.config.sew is not None, "SEW must be provided for vector instructions"
+
+    index = 2**eew - test_data.config.sew // 8
+    label = f"custom_idx_msb_ei{eew}_e{test_data.config.sew}"
+    test_data.register_vector_data(label, eew, elements=[index])
+
+    is_store = "store" in get_instruction_type_config(instr_type).instruction_class
+    params = generate_random_vector_params(
+        test_data,
+        instr_name,
+        instr_type,
+        1,
+        additional_no_overlap={("vd", "vs2"), ("vs3", "vs2")} if is_store else {("vd", "vs2")},
+        vs2_val_pointer=label,
+        rs1val_pointer_offset=-index,
+        # A store read back by the same indexed load passes even if both sign-extend the index
+        unit_stride_target=is_store,
+        ignore_vector_safety=True,
+        vl=1,
+    )
+    desc = f"Index {index:#x} is zero-extended"
+    bin_name = f"msb_ei{eew}"
+
+    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+    return_testcase_registers(test_data, params)
+
+    return [tc]

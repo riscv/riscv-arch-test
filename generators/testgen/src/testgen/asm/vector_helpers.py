@@ -8,7 +8,7 @@
 
 import math
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal
 
 from testgen.asm.helpers import write_sigupd
@@ -231,8 +231,8 @@ def write_sigupd_v_mask_prod(
 def ls_base_address(params: InstructionParams) -> str:
     """Address expression for a load/store base: the rs1 data label plus its byte offset, if any."""
     assert params.rs1val_pointer is not None, "rs1val_pointer must be set for a load/store base address"
-    if params.rs1val_offset:
-        return f"{params.rs1val_pointer}+{params.rs1val_offset}"
+    if params.rs1val_pointer_offset:
+        return f"{params.rs1val_pointer}{params.rs1val_pointer_offset:+d}"
     return params.rs1val_pointer
 
 
@@ -599,6 +599,39 @@ def load_test_vtype(params: InstructionParams, random_vl_reg: str, *, force_vlma
         return f"vsetvli x{params.temp_reg}, {random_vl_reg}, e{params.sew}, {flags}"
     else:
         return f"vsetivli x{params.temp_reg}, {params.vl}, e{params.sew}, {flags}"
+
+
+def store_target_checks(
+    params: InstructionParams, instr_str: str, operands: str, eew: int, segments: int, field_regs: int
+) -> tuple[list[str], list[str], list[str], InstructionParams]:
+    """Prepare a store's target so the check sees a store that writes the wrong memory or doesn't happen.
+
+    The length suite fills the store's whole VLMAX footprint with vd's 0xd elements, using the test's addressing,
+    and reads it back unmasked at VLMAX, so the signature also holds the memory of mask-inactive and tail elements:
+    a store that writes them, or writes anything at vl = 0, changes the signature.
+
+    The base suite checks only element 0, and the target otherwise holds whatever an earlier test stored there, which
+    can match (index data in vs3/vs2 overlaps, or the one mask bit vsm.v checks at vl = 1). Element 0 of each field
+    of vd becomes the complement of vs3's, and the same store, unmasked, writes vd to the target, so a store that
+    doesn't happen changes every checked bit.
+
+    Returns the lines to run before and after the test's vtype is set, the read back, and the params for the check.
+    """
+    assert params.vd is not None and params.vs3 is not None, "vd and vs3 must be allocated before the store target"
+    load = "vl" + instr_str[2:]
+    if params.vector_suite == "length" and not params.ignore_vector_safety:
+        vlmax = load_test_vtype(params, "", force_vlmax=True)
+        fill = [vlmax, f"{instr_str} v{params.vd}, {operands} # fill the VLMAX footprint with vd's 0xd elements"]
+        read_back = [vlmax, f"{load} v{params.vd}, {operands} # read back the whole VLMAX footprint, unmasked"]
+        return fill, [], read_back, replace(params, maskval=None)
+
+    read_back = [f"{load} v{params.vd}, {operands}{', v0.t' if params.maskval else ''}"]
+    if params.vector_suite == "base":
+        complement = [f"vsetivli x0, 1, e{eew}, m1, tu, mu  # complement element 0 of the stored data into vd"]
+        complement += [f"vnot.v v{params.vd + i * field_regs}, v{params.vs3 + i * field_regs}" for i in range(segments)]
+        fill = [f"{instr_str} v{params.vd}, {operands}  # fill the target with the complement"]
+        return complement, fill, read_back, params
+    return [], [], read_back, params
 
 
 def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: TestData) -> tuple[list[str], str]:

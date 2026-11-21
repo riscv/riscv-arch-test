@@ -7,6 +7,7 @@
 ##################################
 
 import random
+from dataclasses import replace
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
@@ -14,7 +15,9 @@ from testgen.asm.vector_helpers import (
     index_register_safety,
     load_test_vtype,
     load_vec_regs,
+    ls_base_address,
     prep_mask_v,
+    store_target_checks,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -25,7 +28,11 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 
-def unordered_index_element_generator(element_count: int, sew: int, _register: str) -> list[int]:
+def unordered_index_element_generator(element_count: int, sew: int, register: str) -> list[int]:
+    # Only the indices need this; the stored data (vs3) is random, so a dropped or misplaced store changes memory
+    if register != "vs2":
+        return [random_int(sew, signed=False) for _ in range(element_count)]
+
     # vlmax can take on values of any power of two, from 1 to the power of two exceeding element_count
     # All items in the generated list from [0, vlmax) must be unique mod 2*vlmax for all possible vlmaxes
     # LIMITATIONS: For SEW=8, unique indices are not guaranteed
@@ -160,31 +167,49 @@ def format_vsxseg_like_type(
     setup.extend(load_code)
 
     if not params.ignore_vector_safety:
-        setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, params))
+        # The length suite uses every index up to VLMAX (see below), so all of them must be safe
+        safety_params = replace(params, vl="vlmax") if params.vector_suite == "length" else params
+        setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, safety_params))
 
-    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    base_address = f"LA (x{params.rs1}, {ls_base_address(params)})"
+    setup.append(base_address)
+    operands = f"(x{params.rs1}), v{params.vs2}"
+    before_vtype, after_vtype, read_back, check_params = store_target_checks(
+        params, instr_str, operands, params.sew, segments, int(max(params.lmul, 1))
+    )
+    setup.extend(before_vtype)
     setup.append(load_test_vtype(params, random_vl_reg))
+    setup.extend(after_vtype)
+    if params.unit_stride_target:
+        # The index and the rs1 offset cancel, so the store lands on rs1val_pointer. Fill it and read it back with
+        # unit-stride accesses, which don't use the index, so an indexed reload can't repeat a wrong index extension
+        unit_stride = f"{f'seg{segments}' if segments > 1 else ''}e{params.sew}.v"
+        target = f"LA (x{params.rs1}, {params.rs1val_pointer})"
+        setup.extend(
+            [target, f"vs{unit_stride} v{params.vd}, (x{params.rs1})  # fill the target with vd", base_address]
+        )
+        read_back = [target, f"vl{unit_stride} v{params.vd}, (x{params.rs1})"]
 
     # We don't need random_vl_reg anymore
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t"
     else:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}"
 
     # We no longer need vs2. This allows us to have enough registers for length SIGUPD where the maximum number of
     # registers (25) are required by the test section
     test_data.vec_regs.deallocate_operand("vs2")
 
     if params.vector_suite == "length":
-        check = [read_back, *write_sigupd_v_len(test_data, params, params.lmul, segments=segments)]
+        check = [
+            *read_back,
+            *write_sigupd_v_len(test_data, check_params, params.lmul, segments=segments),
+        ]
     else:
-        check = [read_back, *write_sigupd_v(test_data, params)]
+        check = [*read_back, *write_sigupd_v(test_data, params)]
 
     # This can only be released after sigupd
     if params.maskval:

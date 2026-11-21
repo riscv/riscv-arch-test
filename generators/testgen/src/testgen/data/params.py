@@ -44,7 +44,7 @@ class InstructionParams:
     # Integer register values
     rs1val: int | None = None
     rs1val_pointer: str | None = None  # Needed for vector load tests
-    rs1val_offset: int = 0  # Byte offset added to rs1val_pointer
+    rs1val_pointer_offset: int = 0  # Added to the address of rs1val_pointer
     rs2val: int | None = None
     rs3val: int | None = None
     rdval: int | None = None
@@ -88,6 +88,7 @@ class InstructionParams:
     egs: int | None = None  # Element Group Size
     ignore_vector_safety: bool = False  # Set this to disable vector safety (e.g. allow arbitrary index values)
     vd_different_eew_overlap: bool = False  # A source-dest overlap at different eews are tail and mask agnostic
+    unit_stride_target: bool = False  # Indexed store: fill and read back rs1val_pointer with unit-stride accesses
 
     maskval: str | PresetMask | None = None
 

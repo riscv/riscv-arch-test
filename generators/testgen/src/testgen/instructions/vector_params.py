@@ -614,11 +614,11 @@ def generate_random_vector_params(
     if (
         suite == "base"
         and params.rs1val_pointer == "vector_ls_random_base"
-        and not params.rs1val_offset
+        and not params.rs1val_pointer_offset
         and "indexed" not in instr_type_config.instruction_class
         and info.load_store_eew is not None
     ):
-        params.rs1val_offset = random_range(0, LS_BASE_OFFSET_ELEMENTS - 1) * (info.load_store_eew // 8)
+        params.rs1val_pointer_offset = random_range(0, LS_BASE_OFFSET_ELEMENTS - 1) * (info.load_store_eew // 8)
     if params.vl is None:
         params.vl = instr_type_config.vector_data.egs
 

@@ -76,6 +76,7 @@
 --override cpu*/Zcb=T
 --override cpu*/Zcd=T
 --override cpu*/Smstateen=T
+--override cpu*/Smaia=T # Smaia CSRs; no IMSIC, so mtopei is absent
 
 # Misaligned access (Zicclsm) is supported
 --override cpu*/unaligned=T

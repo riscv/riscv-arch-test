@@ -32,6 +32,15 @@ coverpoints:
     description: In HS-mode and U-mode with hedeleg = all writable bits, raise the same exceptions as cp_hedeleg.
     expectation: Only traps from V = 1 consult hedeleg.  Each exception goes to HS-mode, except an ecall from HS-mode, which goes to M-mode (medeleg[9] = 0).
     bins: 9 exceptions * 2 modes
+  - name: cp_hedeleg_software_check
+    goal: Delegation of the software-check exception to HS or VS
+    description: |-
+      If Zicfilp: with medeleg[18] = 1 as set by the boot, hedeleg[18] = {0/1} and xLPE = 1 in the mode (menvcfg.LPE for HS, henvcfg.LPE for VS, senvcfg.LPE for U and VU), jalr from {HS, U, VS, VU} through a register other than x1, x5 and x7 to an instruction that is not an lpad.
+      xRET restores ELP = LP_EXPECTED, so the next instruction raises a second software-check exception before the lpad after it.
+    expectation: A software-check exception (18) with xtval = the landing pad fault code (2), or 0 by the REPORT_CAUSE_IN_xTVAL_ON_LANDING_PAD_SOFTWARE_CHECK parameters.  From VS and VU it goes to VS-mode when hedeleg[18] = 1 and to HS-mode otherwise; from HS and U it goes to HS-mode whatever hedeleg holds.
+    bins: 4 modes * 2 hedeleg[18]
+    notes: |-
+      The Zicfiss shadow-stack fault is the other source of the exception; Zicfiss_H covers it, with its own hedeleg[18] cases, from VS and VU.  These cases are compiled only with Zicfilp.
   - name: cp_ecall_to_vs
     goal: ecall to VS sets status bits
     description: With medeleg[8] = hedeleg[8] = 1 and vsstatus.SIE = {0/1}, ecall from VU-mode.
@@ -172,3 +181,38 @@ coverpoints:
     description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, ecall.
     expectation: Environment call from VS-mode (cause 10) into HS-mode with htval = 0 and htinst = 0.
     bins: "1"
+  - name: |-
+      cp_xtinst_amo_access
+      cp_xtinst_amo_misaligned
+      cp_xtinst_lrsc_access
+      cp_xtinst_zabha_access
+      cp_xtinst_zacas_access
+    goal: Atomic memory operation exceptions write xtinst
+    description: |-
+      From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, attempt each of:
+      amoswap.w at the AMO access-fault address (Zaamo)
+      amoswap.w at scratch + 14, which crosses a 16-byte misaligned atomicity granule (Zaamo)
+      lr.w and sc.w at the LR/SC access-fault address (Zalrsc)
+      amoadd.b at the AMO access-fault address (Zabha)
+      amocas.w at the AMO access-fault address (Zacas)
+    expectation: The access fault or address-misaligned exception the reference model raises, into HS-mode with htval = 0 and htinst = 0 or the transformed instruction (rs1 = the address offset, rs2, rd, aq, rl and funct fields kept).  rd keeps its value.
+    bins: 6
+    notes: |-
+      Each access-fault case needs RVMODEL_ACCESS_FAULT_ADDRESS_AMO or _LRSC.  The misaligned amoswap.w completes on a hart whose misaligned atomicity granule is larger than 16 bytes.
+  - name: |-
+      cp_xtinst_c_load_access
+      cp_xtinst_c_store_access
+      cp_xtinst_zcb_access
+    goal: Compressed load and store exceptions write xtinst
+    description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, c.lw and c.sw (Zca) and c.lbu (Zcb) at the access-fault address.
+    expectation: Access fault into HS-mode with htval = 0 and htinst = 0 or the transformed 32-bit equivalent with bit 1 = 0.  rd keeps its value.
+    bins: "3"
+  - name: |-
+      cp_xtinst_cbom_access
+      cp_xtinst_cboz_access
+    goal: Cache-block operation exceptions write xtinst
+    description: From VS mode with hedeleg = 0 and menvcfg and henvcfg enabling every CBO (CBIE = 11, CBCFE = 1, CBZE = 1, as set by the boot), after HS-mode writes a nonzero value to htval and htinst, cbo.clean, cbo.flush, cbo.inval (Zicbom) and cbo.zero (Zicboz) at the store access-fault address.
+    expectation: Store/AMO access fault into HS-mode with htval = 0 and htinst = 0 or the transformed instruction (operation field kept, rs1 = 0).
+    bins: "4"
+    notes: |-
+      cm.push (Zcmp) also accesses memory, but no H configuration supports Zcmp.

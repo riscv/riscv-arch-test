@@ -297,9 +297,29 @@ UDB_DATA_HOME: Path | None = None
 def bundle_env() -> dict[str, str]:
     env = {**os.environ, "BUNDLE_GEMFILE": str(GEMFILE)}
     if UDB_DATA_HOME is not None:
+        # RubyGems puts user-installed gems under $XDG_DATA_HOME/gem, so keep the original gem path
+        env["GEM_PATH"] = gem_path()
         env["XDG_DATA_HOME"] = str(UDB_DATA_HOME)
         env.setdefault("MISE_DATA_DIR", str(Path.home() / ".local/share/mise"))
     return env
+
+
+@cache
+def gem_path() -> str:
+    """RubyGems' search path in the caller's environment."""
+    return subprocess.run(
+        ruby("-e", "puts Gem.path.join(File::PATH_SEPARATOR)"),
+        env={**os.environ, "BUNDLE_GEMFILE": str(GEMFILE)},
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+
+
+def ruby(*args: str) -> list[str]:
+    """A ruby command line, through `mise exec` when mise is installed (see bundle)."""
+    return ["mise", "exec", "--", "ruby", *args] if shutil.which("mise") else ["ruby", *args]
 
 
 def bundle(*args: str) -> list[str]:

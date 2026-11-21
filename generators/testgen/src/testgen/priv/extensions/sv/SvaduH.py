@@ -97,7 +97,7 @@ def _cbo_chunk(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> TestC
     """CBOs with ADUE = 1 through a VS-stage leaf (hgatp Bare) and a G-stage leaf (vsatp Bare) with A = D = 0.
 
     A CBO sets A in each stage.  cbo.zero also sets D, because it writes; a cache-block management instruction never
-    checks or sets D (cmo.adoc).  Each leaf is read back.
+    checks or sets D (cmo.adoc).  Each leaf is read back.  The CBOs run with the henvcfg CBO enables that boot sets.
     """
     ops = CBO_OPS[family]
     chunk = begin_chunk(
@@ -109,21 +109,16 @@ def _cbo_chunk(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> TestC
         f"leaf back: A is set{', and D too' if family == 'zicboz' else ', and D stays clear'}",
         stages=(g, vs),
     )
-    reg = test_data.int_regs.get_register()
-    code = [
-        f"LI(x{reg}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)",
-        f"csrs henvcfg, x{reg}",
-        *guest_chunk_setup(test_data, None, vs, "VS"),
-        *vs_ad_accesses(test_data, vs, ((1, 1, VS_NO_AD, ops),), CG, "cp_vsatp_adue_cbo"),
-        *guest_chunk_teardown(test_data, vs.xlen),
-        *guest_chunk_setup(test_data, g, None, "VS"),
-        *g_ad_accesses(test_data, g, ((1, G_NO_AD, ops),), CG, "cp_hgatp_adue_cbo"),
-        *guest_chunk_teardown(test_data, g.xlen),
-        f"LI(x{reg}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)",
-        f"csrc henvcfg, x{reg}",
-    ]
-    test_data.int_regs.return_register(reg)
-    chunk.code.extend(code)
+    chunk.code.extend(
+        [
+            *guest_chunk_setup(test_data, None, vs, "VS"),
+            *vs_ad_accesses(test_data, vs, ((1, 1, VS_NO_AD, ops),), CG, "cp_vsatp_adue_cbo"),
+            *guest_chunk_teardown(test_data, vs.xlen),
+            *guest_chunk_setup(test_data, g, None, "VS"),
+            *g_ad_accesses(test_data, g, ((1, G_NO_AD, ops),), CG, "cp_hgatp_adue_cbo"),
+            *guest_chunk_teardown(test_data, g.xlen),
+        ]
+    )
     return test_data.end_test_chunk()
 
 

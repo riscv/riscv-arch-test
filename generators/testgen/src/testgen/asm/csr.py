@@ -149,6 +149,7 @@ def csr_access_test(
             )
         else:
             lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+    if mask_reg is not None:
         lines += clear_conditional_bits(mask_reg, check_reg, unchecked_bits, "Do not check")
     if maskedwrites:
         valstr = "mask"
@@ -399,7 +400,7 @@ def csr_walk_test(
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         f"LI(x{walk_reg}, {1 << start_bit})              # 1 in bit {start_bit}",
     ]
-    if mask is not None:
+    if mask_reg is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
         lines += clear_conditional_bits(mask_reg, check_reg, unchecked_bits, "Do not check")
     if walk_zeros:

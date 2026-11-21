@@ -36,15 +36,12 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
         }
     `endif
 
-    `ifdef UDB_MXLEN_64
-        asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[15:0] { //sat.5
-            bins values = {16'h0001, 16'h0002, 16'h0004, 16'h0008, 16'h0010, 16'h0020, 16'h0040, 16'h0080, 16'h0100, 16'h0200, 16'h0400, 16'h0800, 16'h1000, 16'h2000, 16'h0400, 16'h8000};
-        }
-    `else
-        asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[8:0] {
-            bins values = {9'h001, 9'h002, 9'h004, 9'h008, 9'h010, 9'h020, 9'h040, 9'h080, 9'h100};
-        }
-    `endif
+    // One bin per implemented ASID bit: the UDB_ASID_WIDTH least-significant bits, none when ASIDLEN = 0
+    asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[15:0] { //sat.5
+        bins values[] = {16'h0001, 16'h0002, 16'h0004, 16'h0008, 16'h0010, 16'h0020, 16'h0040, 16'h0080,
+                         16'h0100, 16'h0200, 16'h0400, 16'h0800, 16'h1000, 16'h2000, 16'h4000, 16'h8000}
+                        with (item < (1 << `UDB_ASID_WIDTH));
+    }
 
     tvm_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tvm")[0]{
         bins zero = {0};
@@ -839,8 +836,11 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins reserved_bit_56 = {7'b0000100};
             bins reserved_bit_57 = {7'b0001000};
             bins reserved_bit_58 = {7'b0010000};
-            bins reserved_bit_59 = {7'b0100000};
-            bins reserved_bit_60 = {7'b1000000};
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifndef SVRSW60T59B_SUPPORTED
+                bins reserved_bit_59 = {7'b0100000};
+                bins reserved_bit_60 = {7'b1000000};
+            `endif
         }
         reserved_PTE_d: coverpoint ins.current.pte_d[60:54] {
             bins reserved_bit_54 = {7'b0000001};
@@ -848,8 +848,11 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins reserved_bit_56 = {7'b0000100};
             bins reserved_bit_57 = {7'b0001000};
             bins reserved_bit_58 = {7'b0010000};
-            bins reserved_bit_59 = {7'b0100000};
-            bins reserved_bit_60 = {7'b1000000};
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifndef SVRSW60T59B_SUPPORTED
+                bins reserved_bit_59 = {7'b0100000};
+                bins reserved_bit_60 = {7'b1000000};
+            `endif
         }
 
         PBMTE_unset: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "pbmte")[0] {
@@ -1567,33 +1570,34 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
         wildcard bins lw = {LW};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_?1?1_11??}; // access faults might not be possible to delegate if they don't exist
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-            bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+            `ifdef UDB_MEDELEG_DELEGATABLE_1 bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-            bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_5 bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-            bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_7 bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
         `endif
     }
     jalr: coverpoint ins.prev.insn {
@@ -1716,28 +1720,29 @@ covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
     amoops: coverpoint ins.current.insn {
         wildcard bins amoadd_w = {AMOADD_W};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_1  bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_5  bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_7  bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_1111_111?};
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints
@@ -1837,28 +1842,29 @@ covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
         wildcard bins sc_w = {SC_W};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_1  bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_5  bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_7  bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_1111_111?};
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints

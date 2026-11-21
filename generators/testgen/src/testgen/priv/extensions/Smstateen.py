@@ -58,8 +58,13 @@ def _se_tests(test_data: TestData, n: int, csr: str) -> list[str]:
         feat = replace(FEATURES["se"], csrs=(f"sstateen{n}",), lower_csrs=(f"hstateen{n}",))
         cp, modes = "cp_mstateen_se_controls_sstateen", ["S", "VS"]
     else:
+        # hstateen<n>.SE<n> reads as zero while mstateen<n>.SE<n> = 0, and whether it keeps its value is unspecified,
+        # so set it again after mstateen<n>.SE<n> is set again.
         feat = replace(
-            FEATURES["se"], csrs=(f"hstateen{n}", f"hstateen{n}h"), guard="defined(H_SUPPORTED)", lower_csrs=()
+            FEATURES["se"],
+            csrs=(f"hstateen{n}", f"hstateen{n}h"),
+            guard="defined(H_SUPPORTED)",
+            lower_csrs=(f"hstateen{n}",),
         )
         cp, modes = "cp_mstateen_se_controls_hstateen", ["S"]
     return feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat, f"mstateen{n}"), modes=modes, base="M")

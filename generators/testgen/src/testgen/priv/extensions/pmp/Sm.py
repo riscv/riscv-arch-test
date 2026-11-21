@@ -14,6 +14,7 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
+    CSR_CHECK_REG,
     LOCKED_LXWR_CASES,
     REGION_BLOBS,
     RETURN_TRAMPOLINE,
@@ -133,13 +134,15 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
     chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
 
     def add_csr_checks(name: str, const: str | None, csrs: tuple[int, ...]) -> None:
+        # x13 holds the value for every CSR; the readback overwrites CSR_CHECK_REG.
         for csr in csrs:
             chunk.code.extend(
                 [
+                    f"mv x{CSR_CHECK_REG}, x{13 if const else 0}",
                     test_data.add_testcase(
                         f"{name}_pmpcfg{csr}", f"cp_cfg_A_all_{'odd' if csr % 2 else 'even'}", "PMP_Sm_cg"
                     ),
-                    gen_csr_write_sigupd(4 if const else 0, f"pmpcfg{csr}", test_data),
+                    gen_csr_write_sigupd(CSR_CHECK_REG, f"pmpcfg{csr}", test_data),
                 ]
             )
 
@@ -152,9 +155,9 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
             chunk.code.extend(
                 [
                     "#if __riscv_xlen == 64",
-                    f"LI(x4, {rv64_bytes})",
+                    f"LI(x13, {rv64_bytes})",
                     "#else",
-                    f"LI(x4, {rv32_bytes})",
+                    f"LI(x13, {rv32_bytes})",
                     "#endif",
                 ]
             )
@@ -256,15 +259,22 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
     body = [
         *zero_pmp_regs(),
         "",
-        f"#define PMPREGION_TOR {cfg_byte('1111', 'tor', 'PMP0_CFG_SHIFT')}",
+        f"#define PMPREGION_TOR {cfg_byte('1000', 'tor', 'PMP0_CFG_SHIFT')}",
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",
-        "LA(x5, TEST_FOR_EXECUTION)",
-        "srl x5, x5, PMP_SHIFT",
+        "// Entry 0 denies [0, PMP_TOR_REGION_BYTES), so skip the probes if the image or the trap vector is there.",
+        "LI(x4, PMP_TOR_REGION_BYTES)",
+        "LA(x5, rvtest_entry_point)",
+        "bltu x5, x4, pmp_tor_zero_skip",
+        "csrr x5, mtvec",
+        "andi x5, x5, -4",
+        "bltu x5, x4, pmp_tor_zero_skip",
+        "",
+        "LI(x5, PMP_TOR_REGION_BYTES >> 2)",
         "csrw pmpaddr0, x5",
         "",
-        "// PMP configuration 1: pmpcfg0 = L, TOR, XWR: region 0 spans [0, TEST_FOR_EXECUTION)",
+        "// pmpcfg0 = L, TOR, no permissions: region 0 spans [0, PMP_TOR_REGION_BYTES)",
         *set_pmpcfg(0, "PMPREGION_TOR"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         *gen_rwx_tor_zero(
@@ -272,13 +282,14 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
             "region0",
             cross_by_access(execute="cp_cfg_A_tor0_x", load="cp_cfg_A_tor0_r", store="cp_cfg_A_tor0_w"),
         ),
+        "pmp_tor_zero_skip:",
     ]
     chunk.section_header = comment_banner(
         "cp_cfg_A_tor0_x, cp_cfg_A_tor0_r and cp_cfg_A_tor0_w",
-        "{sw, lw, jalr} at pmpaddr0, pmpaddr0-4 and 0 with entry 0 = L, TOR, XWR.",
+        "{sw, lw, jalr} at 0 and pmpaddr0-4 with entry 0 = L, TOR, no permissions: each faults on entry 0, "
+        "whatever the platform maps at 0, while the background entry would allow it.",
     )
     chunk.code.extend(body)
-    chunk.raw_data.extend(tuple(REGION_BLOBS["off"]))
     return test_data.end_test_chunk()
 
 
@@ -322,16 +333,20 @@ def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
 # cfg_L_modify_{off,tor,napot}: locked entries reject writes
 # ---------------------------------------------------------------------------
 
-#: (name, setup lines with {cfg} = the entry-1 configuration, CSR, source register)
+#: (name, setup lines with {cfg} = the entry-1 configuration and {r} = CSR_CHECK_REG, CSR, source register)
 _L_MODIFY_STEPS = (
-    ("write_pmpaddr1", "addi x4, x0, 0x100", "pmpaddr1", 4),
-    ("write_pmpcfg0", "LI(x4, {cfg})", "pmpcfg0", 4),
-    ("modify_pmpcfg0", "addi x5, x4, 7", "pmpcfg0", 5),
-    ("modify_pmpaddr0", "addi x4, x0, -1", "pmpaddr0", 4),
-    ("clear_pmpaddr1", "", "pmpaddr1", 0),
-    ("clear_pmpcfg0", "", "pmpcfg0", 0),
+    ("write_pmpaddr1", "addi x{r}, x0, 0x100", "pmpaddr1", CSR_CHECK_REG),
+    ("write_pmpcfg0", "LI(x{r}, {cfg})", "pmpcfg0", CSR_CHECK_REG),
+    ("modify_pmpcfg0", "addi x5, x{r}, 7", "pmpcfg0", 5),
+    # All ones in the implemented address bits only: bits above the physical address width are WARL.
+    ("modify_pmpaddr0", "LI(x{r}, ((1 << (UDB_PHYS_ADDR_WIDTH - 2)) - 1))", "pmpaddr0", CSR_CHECK_REG),
+    ("clear_pmpaddr1", "mv x{r}, x0", "pmpaddr1", CSR_CHECK_REG),
+    ("clear_pmpcfg0", "mv x{r}, x0", "pmpcfg0", CSR_CHECK_REG),
 )
-_L_MODIFY_RESET = (("reset_pmpaddr0", "", "pmpaddr0", 0), ("reset_pmpcfg0", "", "pmpcfg0", 0))
+_L_MODIFY_RESET = (
+    ("reset_pmpaddr0", "mv x{r}, x0", "pmpaddr0", CSR_CHECK_REG),
+    ("reset_pmpcfg0", "mv x{r}, x0", "pmpcfg0", CSR_CHECK_REG),
+)
 
 
 def _make_l_modify_chunk(test_data: TestData, amode: str) -> TestChunk:
@@ -351,7 +366,9 @@ def _make_l_modify_chunk(test_data: TestData, amode: str) -> TestChunk:
         )
         steps = [*_L_MODIFY_STEPS, *(_L_MODIFY_RESET if lock == 0 else [])]
         for step, setup, csr, src in steps:
-            chunk.code.extend(setup.format(cfg=cfg_byte(f"{lock}111", amode, "PMP1_CFG_SHIFT")).splitlines())
+            chunk.code.extend(
+                setup.format(cfg=cfg_byte(f"{lock}111", amode, "PMP1_CFG_SHIFT"), r=CSR_CHECK_REG).splitlines()
+            )
             chunk.code.extend(
                 [
                     f"{test_data.add_testcase(f'L{lock}_{step}', 'cp_cfg_L_modify', 'PMP_Sm_cg')}",

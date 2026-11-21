@@ -1490,13 +1490,13 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         straddle_fetch_outcome: coverpoint ((ins.current.insn == 32'h00000013) && !ins.current.trap ? 3'd0 :
                                             !(ins.current.insn ==? JALR) ||
                                             `ifdef UDB_MEDELEG_DELEGATABLE_12
-                                                get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") != INSTRUCTION_PAGE_FAULT ||
+                                                int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")) != INSTRUCTION_PAGE_FAULT ||
                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) != ins.current.rs1_val + ins.current.imm ? 3'd7 :
                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == ins.current.rs1_val + ins.current.imm ? 3'd1 :
                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
                                             `else
                                                 // medeleg[12] is read-only 0, so instruction page faults are taken in M-mode
-                                                get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") != INSTRUCTION_PAGE_FAULT ||
+                                                int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")) != INSTRUCTION_PAGE_FAULT ||
                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) != ins.current.rs1_val + ins.current.imm ? 3'd7 :
                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == ins.current.rs1_val + ins.current.imm ? 3'd1 :
                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
@@ -1531,12 +1531,12 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         `endif
         straddle_load: coverpoint {(!ins.current.trap ? 3'd0 :
                                     `ifdef UDB_MEDELEG_DELEGATABLE_13
-                                        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") != LOAD_PAGE_FAULT ? 3'd7 :
+                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")) != LOAD_PAGE_FAULT ? 3'd7 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
                                     `else
                                         // medeleg[13] is read-only 0, so load page faults are taken in M-mode
-                                        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") != LOAD_PAGE_FAULT ? 3'd7 :
+                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")) != LOAD_PAGE_FAULT ? 3'd7 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
                                     `endif
@@ -1676,12 +1676,12 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         `endif
         straddle_store: coverpoint {(!ins.current.trap ? 3'd0 :
                                     `ifdef UDB_MEDELEG_DELEGATABLE_15
-                                        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") != STORE_AMO_PAGE_FAULT ? 3'd7 :
+                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")) != STORE_AMO_PAGE_FAULT ? 3'd7 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
                                     `else
                                         // medeleg[15] is read-only 0, so store page faults are taken in M-mode
-                                        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") != STORE_AMO_PAGE_FAULT ? 3'd7 :
+                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")) != STORE_AMO_PAGE_FAULT ? 3'd7 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
                                     `endif

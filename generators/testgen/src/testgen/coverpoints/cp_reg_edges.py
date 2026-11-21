@@ -19,9 +19,9 @@ from testgen.data.edges import (
 )
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_single_testcase
+from testgen.formatters import format_single_testcase, get_instruction_type_config
 from testgen.instructions.params import generate_random_params
-from testgen.instructions.vector import get_base_lmul
+from testgen.instructions.vector import get_base_lmul, parse_vector_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -83,7 +83,8 @@ def make_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
     test_chunks: list[TestChunk] = []
     for edge_val in edges:
         if is_vector:
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, rs2val=edge_val)
+            vl = _stride_edge_vl(instr_name, instr_type, edge_val) if "ls_e" in coverpoint else 1
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, rs2val=edge_val, vl=vl)
         else:
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=edge_val)
         desc = f"{coverpoint} (Test source rs2 value = {test_data.xlen_format_str.format(edge_val)})"
@@ -92,3 +93,20 @@ def make_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         return_testcase_registers(test_data, params)
 
     return test_chunks
+
+
+STRIDE_EDGE_VL = 4
+
+
+def _stride_edge_vl(instr_name: str, instr_type: str, stride: int) -> int:
+    """
+    Return the vl for a strided load/store stride edge test. Several elements are accessed so the stride
+    determines addresses. Strided stores write elements in no particular order, so a store whose element
+    writes would overlap (a zero stride, or a stride smaller than a segment) runs with one element.
+    """
+    if "store" not in get_instruction_type_config(instr_type).instruction_class:
+        return STRIDE_EDGE_VL
+    info = parse_vector_instruction_info(instr_name, instr_type)
+    assert info.load_store_eew is not None, f"Could not extract an EEW from {instr_name}"
+    segment_bytes = info.load_store_eew // 8 * info.segments
+    return STRIDE_EDGE_VL if stride != 0 and stride % segment_bytes == 0 else 1

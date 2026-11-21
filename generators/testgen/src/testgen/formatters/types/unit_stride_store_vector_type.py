@@ -14,6 +14,7 @@ from testgen.asm.vector_helpers import (
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
+    ls_base_address,
     prep_mask_v,
     write_sigupd_v,
     write_sigupd_v_len,
@@ -119,7 +120,7 @@ def format_vsseg_like_type(
     ]
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
-    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    setup.append(f"LA (x{params.rs1}, {ls_base_address(params)})")
     setup.append(load_test_vtype(params, random_vl_reg))
 
     # We don't need random_vl_reg anymore

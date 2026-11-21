@@ -44,6 +44,7 @@ class InstructionParams:
     # Integer register values
     rs1val: int | None = None
     rs1val_pointer: str | None = None  # Needed for vector load tests
+    rs1val_offset: int = 0  # Byte offset added to rs1val_pointer
     rs2val: int | None = None
     rs3val: int | None = None
     rdval: int | None = None

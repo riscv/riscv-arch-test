@@ -23,6 +23,9 @@ from testgen.formatters import get_instruction_type_config
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig
 from testgen.instructions.vector import VectorInstructionInfo, parse_vector_instruction_info
 
+# Base-suite loads and stores start up to this many elements past vector_ls_random_base
+LS_BASE_OFFSET_ELEMENTS = 512
+
 
 def get_register_emul(
     register_name: str, lmul: float, sew: int, vector_type_config: VectorTypeConfig, info: VectorInstructionInfo
@@ -524,7 +527,11 @@ def generate_random_vector_params(
 
             # Register the label
             eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
-            element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
+            # A base-suite label holds the elements below vl
+            if suite == "base":
+                element_count = max(params.vl, 1) if isinstance(params.vl, int) else 1
+            else:
+                element_count = math.ceil(VLEN_MAX * lmul / sew)
             if instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)
@@ -570,6 +577,19 @@ def generate_random_vector_params(
     params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     params.sew = sew
     params.vector_suite = suite
+
+    # Base-suite loads and stores start at a random element of the shared random data region, so each test reads
+    # different data. With this offset (at most 4 KiB), a base test stays inside the region (asm/sections.py, at least
+    # 8 KiB forward and 2 KiB back): it reaches at most 1 KiB forward (8 whole registers at VLEN_MAX) and 384 bytes
+    # back (3 strides of -128 bytes at vl=4).
+    if (
+        suite == "base"
+        and params.rs1val_pointer == "vector_ls_random_base"
+        and not params.rs1val_offset
+        and "indexed" not in instr_type_config.instruction_class
+        and info.load_store_eew is not None
+    ):
+        params.rs1val_offset = random_range(0, LS_BASE_OFFSET_ELEMENTS - 1) * (info.load_store_eew // 8)
     if params.vl is None:
         params.vl = instr_type_config.vector_data.egs
 

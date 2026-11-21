@@ -539,8 +539,8 @@ def generate_random_vector_params(
         if not register.startswith("v"):
             continue
 
-        # Base-suite labels hold the elements the check depends on: one element group, or a whole register group
-        # for a source loaded at VLMAX (and vs1 when it shares that source's register).
+        # Base-suite labels hold the elements the instruction reads: those below vl (at least one element group), or a
+        # whole register group for a source loaded at VLMAX (and vs1 when it shares that source's register).
         vlmax_regs = instr_type_config.vector_data.vlmax_regs
         loaded_at_vlmax = register in vlmax_regs or (
             register == "vs1" and "vs2" in vlmax_regs and params.vs1 == params.vs2
@@ -563,9 +563,11 @@ def generate_random_vector_params(
             setattr(params, f"{register}_val_pointer", label)  # params.register_val_pointer = label
 
             # Register the label
-            element_count = (
-                instr_type_config.vector_data.egs if suite == "base" and not loaded_at_vlmax else vlmax_count
-            )
+            egs = instr_type_config.vector_data.egs
+            if suite != "base" or loaded_at_vlmax:
+                element_count = vlmax_count
+            else:
+                element_count = max(params.vl, egs) if isinstance(params.vl, int) else egs
             elements = instruction_random_elements(instruction, register, element_count, eew, sew, params, test_data)
             if elements is None and instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)

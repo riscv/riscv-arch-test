@@ -51,7 +51,10 @@ def make_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
     test_chunks: list[TestChunk] = []
     for edge_val in edges:
         if is_vector:
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, rs1val=edge_val)
+            # Keep the edge value exact even where rs1 is an index or offset
+            params = generate_random_vector_params(
+                test_data, instr_name, instr_type, lmul, rs1val=edge_val, ignore_vector_safety=True
+            )
         else:
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val)
         desc = f"{coverpoint} (Test source rs1 value = {test_data.xlen_format_str.format(edge_val)})"

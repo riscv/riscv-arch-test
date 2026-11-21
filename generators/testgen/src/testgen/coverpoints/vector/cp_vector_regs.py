@@ -5,12 +5,14 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+from typing import Literal
+
 from testgen.asm.vector_helpers import get_egs_lmul_for_register
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.instructions.vector import get_base_lmul
+from testgen.instructions.vector import get_base_lmul, runs_at_vlmax
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -36,6 +38,8 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             egs = int(suffix[len("egs") :])
 
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    suite: Literal["base", "length"] = "length" if runs_at_vlmax(instr_name, coverpoint) else "base"
+    vl: Literal["vlmax"] | None = "vlmax" if suite == "length" else None
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
@@ -43,7 +47,7 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             lmul = get_egs_lmul_for_register(v, egs)
 
         test_data.vec_regs.allocate_operand("vs2", v, int(max(lmul, 1)))
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs2=v)
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs2=v, suite=suite, vl=vl)
 
         desc = f"cp_vs2 (Test source vs2 = v{v})"
         bin_name = f"cp_vs2_b{v}"

@@ -12,7 +12,7 @@ coverpoints:
       = 3 bins on RV64, 1 on RV32
   - name: pmp0_pte_noread_s
     goal: Verify PMP applies to the implicit page-table read of a load from S-mode
-    description: "S-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Load (lw) from the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. S-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Load (lw) from the page through va_data."
     expectation: Load access fault (mcause = 5); mtval = faulting virtual address.
     bins: |-
       PageType_d x PMP0_PTE x load_acc_fault x lw x mode {S-mode}
@@ -22,9 +22,19 @@ coverpoints:
       - pmp_check_pagetable_access
       - pmp_with_paging
       - pmp_sfence_required
+  - name: pmp_tor_pte_noread_s
+    goal: "Verify PMP applies to the implicit page-table read of a load from S-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_pte_noread_s: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Load access fault (mcause = 5); mtval = faulting virtual address."
+    bins: "PageType_d x PMP0_PTE x load_acc_fault x lw x mode {S-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - pmp_check_pagetable_access
+      - pmp_with_paging
+      - pmp_sfence_required
+      - pmp_a_field_tor
   - name: pmp0_pte_noread_u
     goal: Verify PMP applies to the implicit page-table read of a load from U-mode
-    description: "U-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Load (lw) from the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. U-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Load (lw) from the page through va_data."
     expectation: Load access fault (mcause = 5); mtval = faulting virtual address.
     bins: |-
       PageType_d x PMP0_PTE x load_acc_fault x lw x mode {U-mode}
@@ -34,9 +44,19 @@ coverpoints:
       - pmp_check_pagetable_access
       - pmp_with_paging
       - pmp_sfence_required
+  - name: pmp_tor_pte_noread_u
+    goal: "Verify PMP applies to the implicit page-table read of a load from U-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_pte_noread_u: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Load access fault (mcause = 5); mtval = faulting virtual address."
+    bins: "PageType_d x PMP0_PTE x load_acc_fault x lw x mode {U-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - pmp_check_pagetable_access
+      - pmp_with_paging
+      - pmp_sfence_required
+      - pmp_a_field_tor
   - name: pmp0_pte_nowrite_s
     goal: Verify PMP applies to the implicit page-table read of a store from S-mode
-    description: "S-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Store (sw) to the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. S-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Store (sw) to the page through va_data."
     expectation: Store/AMO access fault (mcause = 7); mtval = faulting virtual address.
     bins: |-
       PageType_d x PMP0_PTE x store_acc_fault x sw x mode {S-mode}
@@ -46,9 +66,19 @@ coverpoints:
       - pmp_check_pagetable_access
       - pmp_with_paging
       - pmp_sfence_required
+  - name: pmp_tor_pte_nowrite_s
+    goal: "Verify PMP applies to the implicit page-table read of a store from S-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_pte_nowrite_s: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Store/AMO access fault (mcause = 7); mtval = faulting virtual address."
+    bins: "PageType_d x PMP0_PTE x store_acc_fault x sw x mode {S-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - pmp_check_pagetable_access
+      - pmp_with_paging
+      - pmp_sfence_required
+      - pmp_a_field_tor
   - name: pmp0_pte_nowrite_u
     goal: Verify PMP applies to the implicit page-table read of a store from U-mode
-    description: "U-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Store (sw) to the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. U-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Store (sw) to the page through va_data."
     expectation: Store/AMO access fault (mcause = 7); mtval = faulting virtual address.
     bins: |-
       PageType_d x PMP0_PTE x store_acc_fault x sw x mode {U-mode}
@@ -58,9 +88,19 @@ coverpoints:
       - pmp_check_pagetable_access
       - pmp_with_paging
       - pmp_sfence_required
+  - name: pmp_tor_pte_nowrite_u
+    goal: "Verify PMP applies to the implicit page-table read of a store from U-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_pte_nowrite_u: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Store/AMO access fault (mcause = 7); mtval = faulting virtual address."
+    bins: "PageType_d x PMP0_PTE x store_acc_fault x sw x mode {U-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - pmp_check_pagetable_access
+      - pmp_with_paging
+      - pmp_sfence_required
+      - pmp_a_field_tor
   - name: pmp0_pte_noexec_s
     goal: Verify PMP applies to the implicit page-table read of an instruction fetch from S-mode
-    description: "S-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Jump (jalr) into the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. S-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Jump (jalr) into the page through va_data."
     expectation: Instruction access fault (mcause = 1); mtval = faulting virtual address.
     bins: |-
       PageType_i x PMP0_PTE x ins_acc_fault x jalr x mode {S-mode}
@@ -70,9 +110,19 @@ coverpoints:
       - pmp_check_pagetable_access
       - pmp_with_paging
       - pmp_sfence_required
+  - name: pmp_tor_pte_noexec_s
+    goal: "Verify PMP applies to the implicit page-table read of an instruction fetch from S-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_pte_noexec_s: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Instruction access fault (mcause = 1); mtval = faulting virtual address."
+    bins: "PageType_i x PMP0_PTE x ins_acc_fault x jalr x mode {S-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - pmp_check_pagetable_access
+      - pmp_with_paging
+      - pmp_sfence_required
+      - pmp_a_field_tor
   - name: pmp0_pte_noexec_u
     goal: Verify PMP applies to the implicit page-table read of an instruction fetch from U-mode
-    description: "U-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Jump (jalr) into the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. U-mode: PMP entry 0 (NAPOT) covers the page table used by the walk, at each level, with R=0; the background PMP region allows everything else. Jump (jalr) into the page through va_data."
     expectation: Instruction access fault (mcause = 1); mtval = faulting virtual address.
     bins: |-
       PageType_i x PMP0_PTE x ins_acc_fault x jalr x mode {U-mode}
@@ -82,9 +132,19 @@ coverpoints:
       - pmp_check_pagetable_access
       - pmp_with_paging
       - pmp_sfence_required
+  - name: pmp_tor_pte_noexec_u
+    goal: "Verify PMP applies to the implicit page-table read of an instruction fetch from U-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_pte_noexec_u: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Instruction access fault (mcause = 1); mtval = faulting virtual address."
+    bins: "PageType_i x PMP0_PTE x ins_acc_fault x jalr x mode {U-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - pmp_check_pagetable_access
+      - pmp_with_paging
+      - pmp_sfence_required
+      - pmp_a_field_tor
   - name: pmp0_PA_noread_s
     goal: Verify PMP applies to the translated physical address of a load from S-mode
-    description: "S-mode: valid leaf PTE with PTE.U=0 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes R from the translated physical page. Load (lw) from the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. S-mode: valid leaf PTE with PTE.U=0 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes R from the translated physical page. Load (lw) from the page through va_data."
     expectation: Load access fault (mcause = 5); mtval = faulting virtual address.
     bins: |-
       PTE_d x PageType_d x PMP0_PA x load_acc_fault x read_acc x mode {S-mode}
@@ -92,9 +152,17 @@ coverpoints:
     id: mtval_vaddr_not_paddr
     rules:
       - mtval_vaddr_not_paddr
+  - name: pmp_tor_PA_noread_s
+    goal: "Verify PMP applies to the translated physical address of a load from S-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_PA_noread_s: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Load access fault (mcause = 5); mtval = faulting virtual address."
+    bins: "PTE_d x PageType_d x PMP0_PA x load_acc_fault x read_acc x mode {S-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - mtval_vaddr_not_paddr
+      - pmp_a_field_tor
   - name: pmp0_PA_noread_u
     goal: Verify PMP applies to the translated physical address of a load from U-mode
-    description: "U-mode: valid leaf PTE with PTE.U=1 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes R from the translated physical page. Load (lw) from the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. U-mode: valid leaf PTE with PTE.U=1 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes R from the translated physical page. Load (lw) from the page through va_data."
     expectation: Load access fault (mcause = 5); mtval = faulting virtual address.
     bins: |-
       PTE_d x PageType_d x PMP0_PA x load_acc_fault x read_acc x mode {U-mode}
@@ -102,9 +170,17 @@ coverpoints:
     id: mtval_vaddr_not_paddr
     rules:
       - mtval_vaddr_not_paddr
+  - name: pmp_tor_PA_noread_u
+    goal: "Verify PMP applies to the translated physical address of a load from U-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_PA_noread_u: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Load access fault (mcause = 5); mtval = faulting virtual address."
+    bins: "PTE_d x PageType_d x PMP0_PA x load_acc_fault x read_acc x mode {U-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - mtval_vaddr_not_paddr
+      - pmp_a_field_tor
   - name: pmp0_PA_nowrite_s
     goal: Verify PMP applies to the translated physical address of a store from S-mode
-    description: "S-mode: valid leaf PTE with PTE.U=0 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes W from the translated physical page. Store (sw) to the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. S-mode: valid leaf PTE with PTE.U=0 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes W from the translated physical page. Store (sw) to the page through va_data."
     expectation: Store/AMO access fault (mcause = 7); mtval = faulting virtual address.
     bins: |-
       PTE_d x PageType_d x PMP0_PA x store_acc_fault x write_acc x mode {S-mode}
@@ -112,9 +188,17 @@ coverpoints:
     id: mtval_vaddr_not_paddr
     rules:
       - mtval_vaddr_not_paddr
+  - name: pmp_tor_PA_nowrite_s
+    goal: "Verify PMP applies to the translated physical address of a store from S-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_PA_nowrite_s: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Store/AMO access fault (mcause = 7); mtval = faulting virtual address."
+    bins: "PTE_d x PageType_d x PMP0_PA x store_acc_fault x write_acc x mode {S-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - mtval_vaddr_not_paddr
+      - pmp_a_field_tor
   - name: pmp0_PA_nowrite_u
     goal: Verify PMP applies to the translated physical address of a store from U-mode
-    description: "U-mode: valid leaf PTE with PTE.U=1 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes W from the translated physical page. Store (sw) to the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. U-mode: valid leaf PTE with PTE.U=1 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes W from the translated physical page. Store (sw) to the page through va_data."
     expectation: Store/AMO access fault (mcause = 7); mtval = faulting virtual address.
     bins: |-
       PTE_d x PageType_d x PMP0_PA x store_acc_fault x write_acc x mode {U-mode}
@@ -122,9 +206,17 @@ coverpoints:
     id: mtval_vaddr_not_paddr
     rules:
       - mtval_vaddr_not_paddr
+  - name: pmp_tor_PA_nowrite_u
+    goal: "Verify PMP applies to the translated physical address of a store from U-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_PA_nowrite_u: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Store/AMO access fault (mcause = 7); mtval = faulting virtual address."
+    bins: "PTE_d x PageType_d x PMP0_PA x store_acc_fault x write_acc x mode {U-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - mtval_vaddr_not_paddr
+      - pmp_a_field_tor
   - name: pmp0_PA_noexec_s
     goal: Verify PMP applies to the translated physical address of an instruction fetch from S-mode
-    description: "S-mode: valid leaf PTE with PTE.U=0 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes X from the translated physical page. Jump (jalr) into the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. S-mode: valid leaf PTE with PTE.U=0 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes X from the translated physical page. Jump (jalr) into the page through va_data."
     expectation: Instruction access fault (mcause = 1); mtval = faulting virtual address.
     bins: |-
       PTE_i x PageType_i x PMP0_PA x ins_acc_fault x exec_acc x mode {S-mode}
@@ -132,9 +224,17 @@ coverpoints:
     id: mtval_vaddr_not_paddr
     rules:
       - mtval_vaddr_not_paddr
+  - name: pmp_tor_PA_noexec_s
+    goal: "Verify PMP applies to the translated physical address of an instruction fetch from S-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_PA_noexec_s: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Instruction access fault (mcause = 1); mtval = faulting virtual address."
+    bins: "PTE_i x PageType_i x PMP0_PA x ins_acc_fault x exec_acc x mode {S-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - mtval_vaddr_not_paddr
+      - pmp_a_field_tor
   - name: pmp0_PA_noexec_u
     goal: Verify PMP applies to the translated physical address of an instruction fetch from U-mode
-    description: "U-mode: valid leaf PTE with PTE.U=1 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes X from the translated physical page. Jump (jalr) into the page through va_data."
+    description: "PMP_NAPOT_SUPPORTED only. U-mode: valid leaf PTE with PTE.U=1 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes X from the translated physical page. Jump (jalr) into the page through va_data."
     expectation: Instruction access fault (mcause = 1); mtval = faulting virtual address.
     bins: |-
       PTE_i x PageType_i x PMP0_PA x ins_acc_fault x exec_acc x mode {U-mode}
@@ -142,3 +242,11 @@ coverpoints:
     id: mtval_vaddr_not_paddr
     rules:
       - mtval_vaddr_not_paddr
+  - name: pmp_tor_PA_noexec_u
+    goal: "Verify PMP applies to the translated physical address of an instruction fetch from U-mode (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of pmp0_PA_noexec_u: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region (L=0); entry 0 is OFF and holds its base."
+    expectation: "Instruction access fault (mcause = 1); mtval = faulting virtual address."
+    bins: "PTE_i x PageType_i x PMP0_PA x ins_acc_fault x exec_acc x mode {U-mode}\n= 7 bins on RV64, 2 on RV32"
+    rules:
+      - mtval_vaddr_not_paddr
+      - pmp_a_field_tor

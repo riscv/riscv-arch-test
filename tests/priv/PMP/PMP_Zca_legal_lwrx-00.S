@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zca', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei_zca
 ##### END_TEST_CONFIG #####
 

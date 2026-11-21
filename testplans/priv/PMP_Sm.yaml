@@ -4,7 +4,8 @@ source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iN
 notes: |
   General Test Environment (PMP_Sm):
   - Runs when Sm is implemented and NUM_PMP_ENTRIES > 0. Boots to M-mode; every access on this sheet is made from M-mode.
-  - Test files are split by UDB parameter: base, RV64 only (MXLEN = 64), PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED and PMP_TOR_SUPPORTED. The NA4 and TOR coverpoints are compiled out when the mode is not supported; the NAPOT ones are not.
+  - Test files are split by UDB parameter: base, RV64 only (MXLEN = 64), PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED and PMP_TOR_SUPPORTED. The NA4, NAPOT and TOR coverpoints are compiled out when the mode is not supported.
+  - TOR twins (coverpoints ending in _tor): every check made only with a NAPOT region has a twin that bounds the same bytes with a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top), so a hart with only one of NAPOT and TOR still runs it. A twin uses entries up to NUM_USABLE_PMP_ENTRIES - 3, leaving pmpaddr below the background entry free as the bottom of a TOR background.
   - Background entry: the highest usable entry (15 of 16, 63 of 64) is L=1, XWR=111, NAPOT over all of memory (TOR up to all ones when NAPOT is not supported), so accesses that match no lower entry succeed. cp_none_* runs before it is set.
   - Grain g = 2^(G+2) bytes from PMP_GRANULARITY. A standard region is a NAPOT region of max(g, 8) bytes in .data, g-aligned past the code. A TOR region is one grain.
   - Fetch probe = jalr into the region, which holds a return instruction. Loads = lb, lbu, lh, lhu, lw (+ lwu, ld on RV64). Stores = sb, sh, sw (+ sd on RV64).
@@ -28,7 +29,7 @@ coverpoints:
       - pmp_access_fault_exception
   - name: cp_cfg_R
     goal: Verify that R controls every load width when the entry is locked.
-    description: Same walk as cp_cfg_X. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Same walk as cp_cfg_X. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) at the start of the region.
     expectation: Load access fault (mcause = 5) when R=0.
     bins: 6 XWR × 5 loads = 30 (42 on RV64)
     rules:
@@ -40,7 +41,7 @@ coverpoints:
       - pmp_access_fault_exception
   - name: cp_cfg_W
     goal: Verify that W controls every store width when the entry is locked.
-    description: Same walk as cp_cfg_X. Every store (sb, sh, sw (+ sd on RV64)) at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Same walk as cp_cfg_X. Every store (sb, sh, sw (+ sd on RV64)) at the start of the region.
     expectation: Store/AMO access fault (mcause = 7) when W=0.
     bins: 6 XWR × 3 stores = 18 (24 on RV64)
     rules:
@@ -55,7 +56,7 @@ coverpoints:
       cp_cfg_X0_all
       cp_cfg_X1_all
     goal: Verify that X is enforced by each of entries 0-14.
-    description: Entries 0-14 all cover the same standard NAPOT region. Program L=1 and a rolling legal XWR into entries 14 down to 0, one entry at a time (four test files), and jalr to the region after each write. The newest entry is the lowest-numbered match.
+    description: PMP_NAPOT_SUPPORTED only. Entries 0-14 all cover the same standard NAPOT region. Program L=1 and a rolling legal XWR into entries 14 down to 0, one entry at a time (four test files), and jalr to the region after each write. The newest entry is the lowest-numbered match.
     expectation: "X=0: instruction access fault. X=1: the fetch completes."
     bins: 15 entries each
     rules:
@@ -66,11 +67,26 @@ coverpoints:
       - pmp_entry_priority
       - pmp_access_fault_exception
   - name: |-
+      cp_cfg_X0_all_tor
+      cp_cfg_X1_all_tor
+    goal: "Verify that X is enforced by each of entries 0-14. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_X0_all, cp_cfg_X1_all: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entries 13, 11, ..., 1 (bounded below by pmpaddr12, 10, ..., 0), the six legal XWR rolled over the entries across six files. Entries above NUM_USABLE_PMP_ENTRIES - 3 are left out, because pmpaddr of the entry below the background entry is the bottom of a TOR background entry."
+    expectation: "X=0: instruction access fault. X=1: the fetch completes."
+    bins: "7 odd entries each (fewer when NUM_USABLE_PMP_ENTRIES < 16)"
+    rules:
+      - pmp_exec_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_entry_priority
+      - pmp_access_fault_exception
+      - pmp_a_field_tor
+  - name: |-
       cp_cfg_Rw00_all
       cp_cfg_Rw10_all
       cp_cfg_Rw11_all
     goal: Verify that R is enforced by each of entries 0-14.
-    description: "Same walk as cp_cfg_X0_all. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) after each write. The suffix gives R then W: Rw00 = R0 W0, Rw10 = R1 W0, Rw11 = R1 W1."
+    description: "PMP_NAPOT_SUPPORTED only. Same walk as cp_cfg_X0_all. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) after each write. The suffix gives R then W: Rw00 = R0 W0, Rw10 = R1 W0, Rw11 = R1 W1."
     expectation: Load access fault when R=0.
     bins: 3 RW values × 15 entries × 5 loads (7 on RV64)
     rules:
@@ -80,11 +96,26 @@ coverpoints:
       - pmp_l_bit_m_mode_enforcement
       - pmp_entry_priority
   - name: |-
+      cp_cfg_Rw00_all_tor
+      cp_cfg_Rw10_all_tor
+      cp_cfg_Rw11_all_tor
+    goal: "Verify that R is enforced by each of entries 0-14. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_Rw00_all, cp_cfg_Rw10_all, cp_cfg_Rw11_all: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Same walk as cp_cfg_X0_all_tor."
+    expectation: "Load access fault when R=0."
+    bins: "7 odd entries each (fewer when NUM_USABLE_PMP_ENTRIES < 16)"
+    rules:
+      - pmp_load_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_entry_priority
+      - pmp_a_field_tor
+  - name: |-
       cp_cfg_rW00_all
       cp_cfg_rW10_all
       cp_cfg_rW11_all
     goal: Verify that W is enforced by each of entries 0-14.
-    description: Same walk as cp_cfg_X0_all. Every store (sb, sh, sw (+ sd on RV64)) after each write. The suffix gives R then W, as for cp_cfg_Rw*_all.
+    description: PMP_NAPOT_SUPPORTED only. Same walk as cp_cfg_X0_all. Every store (sb, sh, sw (+ sd on RV64)) after each write. The suffix gives R then W, as for cp_cfg_Rw*_all.
     expectation: Store/AMO access fault when W=0.
     bins: 3 RW values × 15 entries × 3 stores (4 on RV64)
     rules:
@@ -93,18 +124,45 @@ coverpoints:
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
       - pmp_entry_priority
+  - name: |-
+      cp_cfg_rW00_all_tor
+      cp_cfg_rW10_all_tor
+      cp_cfg_rW11_all_tor
+    goal: "Verify that W is enforced by each of entries 0-14. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Same walk as cp_cfg_X0_all_tor."
+    expectation: "Store/AMO access fault when W=0."
+    bins: "7 odd entries each (fewer when NUM_USABLE_PMP_ENTRIES < 16)"
+    rules:
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_entry_priority
+      - pmp_a_field_tor
   - heading: L bit
   - name: |-
       cp_cfg_L_access_exec
       cp_cfg_L_access_read
       cp_cfg_L_access_write
     goal: Verify that an unlocked entry (L=0) never restricts an M-mode access.
-    description: "For each of entries 0-14: L=0, A=NAPOT, XWR=000 over a standard region. jalr, lw and sw in the region."
+    description: "PMP_NAPOT_SUPPORTED only. For each of entries 0-14: L=0, A=NAPOT, XWR=000 over a standard region. jalr, lw and sw in the region."
     expectation: All accesses succeed.
     bins: 15 entries each
     rules:
       - pmp_l_bit_m_mode_enforcement
       - pmp_rwx_check
+  - name: |-
+      cp_cfg_L_access_exec_tor
+      cp_cfg_L_access_read_tor
+      cp_cfg_L_access_write_tor
+    goal: "Verify that an unlocked entry (L=0) never restricts an M-mode access. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_L_access_exec, cp_cfg_L_access_read, cp_cfg_L_access_write: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entries 13 down to 1, each bounded below by the preceding pmpaddr; the same usable-entry limit as cp_cfg_X0_all_tor."
+    expectation: "All accesses succeed."
+    bins: "13 entries each (fewer when NUM_USABLE_PMP_ENTRIES < 16)"
+    rules:
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_rwx_check
+      - pmp_a_field_tor
   - name: cp_cfg_L_modify
     goal: Verify that a locked entry ignores writes to its pmpcfg and pmpaddr, and that a locked TOR entry also protects the preceding pmpaddr.
     description: "Entry 1: L={0,1}, A={OFF, TOR, NAPOT}, XWR=111, pmpaddr1 = 0x100. Clear pmpaddr1, clear pmpcfg0 (zeroing pmp1cfg), set pmp0cfg.XWR=111 through pmpcfg0, and write all ones to pmpaddr0; read each back. NA4 is not used because it is not selectable when G ≥ 1."
@@ -116,6 +174,17 @@ coverpoints:
       - pmp_locked_until_reset
       - pmp_mmode_locking
   - heading: Address-matching mode (A field)
+  - name: cp_cfg_A_accept
+    goal: Verify that the hart accepts exactly the address-matching modes it supports.
+    description: "Every hart with PMP. Clear pmpcfg0, write pmp0cfg = L=0, A = {OFF, TOR, NA4, NAPOT}, XWR=000, and read pmpcfg0 back; restore pmpcfg0 to zero. The expected readback comes from the reference model, configured with the hart's TOR, NA4 and NAPOT support."
+    expectation: A reads back as written for a supported mode, and as OFF (the cleared value) for an unsupported one.
+    bins: 4 A values
+    rules:
+      - pmp_a_field_encoding
+      - pmp_csrs_warl_access
+      - pmp_a_field_tor
+      - pmp_a_field_napot_na4
+      - pmp_na4_select_restriction
   - name: |-
       cp_cfg_A_all_even
       cp_cfg_A_all_odd
@@ -289,6 +358,19 @@ coverpoints:
       - pmp_rwx_check
       - pmp_access_fault_exception
   - name: |-
+      cp_priority_tor_lw
+      cp_priority_tor_sw
+      cp_priority_tor_jalr
+    goal: "Verify that the lowest-numbered matching entry decides the access. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_priority_lw, cp_priority_sw, cp_priority_jalr: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Three nested TOR regions with a common base on entries 1, 3 and 5 (g·1, g·2 and g·4 bytes, XWR = 000, 101, 011, L=1); entries 0, 2 and 4 hold the base. lw, sw and jalr at the last word of each region."
+    expectation: "Each access follows entry i's XWR: access fault when its permission is clear."
+    bins: "3 regions each"
+    rules:
+      - pmp_entry_priority
+      - pmp_a_field_tor
+      - pmp_rwx_check
+      - pmp_access_fault_exception
+  - name: |-
       cp_priority_off_lw
       cp_priority_off_sw
       cp_priority_off_jalr
@@ -300,6 +382,19 @@ coverpoints:
       - pmp_a_field_off
       - pmp_entry_priority
       - pmp_store_fault
+  - name: |-
+      cp_priority_off_tor_lw
+      cp_priority_off_tor_sw
+      cp_priority_off_tor_jalr
+    goal: "Verify that OFF entries are skipped and the first matching entry decides. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_priority_off_lw, cp_priority_off_sw, cp_priority_off_jalr: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entries 0-3, all L=1: OFF, TOR XWR=101, OFF, TOR XWR=111. Each OFF entry holds the base of the TOR entry above it."
+    expectation: "jalr and lw succeed; sw raises a store/AMO access fault (entry 1 decides)."
+    bins: "1 each"
+    rules:
+      - pmp_a_field_off
+      - pmp_entry_priority
+      - pmp_store_fault
+      - pmp_a_field_tor
   - name: |-
       cp_none_lw
       cp_none_sw
@@ -380,6 +475,22 @@ coverpoints:
       - pmp_cfg_rv64_layout
       - pmp_store_fault
       - pmp_cfg_permissions
+  - name: |-
+      cp_all_entries_tor_lw
+      cp_all_entries_tor_sw
+      cp_all_entries_tor_jalr
+    goal: "Verify that entries 15-62 of a 64-entry PMP enforce permissions. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_pmp64_write, cp_pmp64_read: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. For every odd entry below the background entry (61 down to 1 with 64 entries, 13 down to 1 with 16, up to NUM_USABLE_PMP_ENTRIES - 3): L=1, A=TOR, XWR=101. lw, sw and jalr in the region."
+    expectation: "lw succeeds; sw raises a store/AMO access fault."
+    bins: "One per odd entry up to NUM_USABLE_PMP_ENTRIES - 3 (31 with 64 entries, 7 with 16)"
+    rules:
+      - pmp_entry_count
+      - pmp_addr_registers
+      - pmp_cfg_rv32_layout
+      - pmp_cfg_rv64_layout
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_a_field_tor
   - name: cp_pmpcfg_odd_rv64
     goal: Verify that the odd pmpcfg CSRs are illegal on RV64.
     description: RV64 only. csrr and csrw each of pmpcfg1, pmpcfg3, …, pmpcfg15 from M-mode.

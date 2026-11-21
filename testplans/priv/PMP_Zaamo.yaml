@@ -10,7 +10,7 @@ coverpoints:
       - Standard region and L=1 XWR walk as in PMP_Sm cp_cfg_X/R/W.
   - name: cp_cfg_RW
     goal: Verify that an AMO needs both R and W, and otherwise raises a store/AMO access fault without side effects.
-    description: Six legal XWR with L=1, one entry each. Every AMO with rs1 at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Six legal XWR with L=1, one entry each. Every AMO with rs1 at the start of the region.
     expectation: "XWR = 011 or 111: the AMO completes. Otherwise: store/AMO access fault (mcause = 7); rd and memory are unchanged."
     bins: 6 XWR × 9 AMOs = 54 (108 on RV64)
     rules:
@@ -20,3 +20,16 @@ coverpoints:
       - pmp_cfg_permissions
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_RW_tor
+    goal: "Verify that an AMO needs both R and W, and otherwise raises a store/AMO access fault without side effects. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_RW: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file."
+    expectation: "XWR = 011 or 111: the AMO completes. Otherwise: store/AMO access fault (mcause = 7); rd and memory are unchanged."
+    bins: "6 XWR × 9 AMOs = 54 (108 on RV64)"
+    rules:
+      - pmp_store_fault
+      - mcause_exccode_st_sc_amo
+      - pmp_violation_precise_trap
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_a_field_tor

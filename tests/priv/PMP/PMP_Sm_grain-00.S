@@ -61,6 +61,7 @@ RVTEST_BEGIN
 
   LI(t3, PMP_GRAIN_MASK)
 
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_OFF_zeros_write_NAPOT_read_OFF:
 // Write zeros to pmpaddr0 with A = NAPOT, read back with A = OFF
@@ -74,6 +75,8 @@ PMP_Sm_cg_cp_grain_NAPOT_to_OFF_zeros_write_NAPOT_read_OFF:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_NAPOT_to_OFF_zeros_write_NAPOT_read_OFF, PMP_Sm_cg_cp_grain_NAPOT_to_OFF_zeros_write_NAPOT_read_OFF_str)
+#endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_zeros_write_NAPOT_read_NAPOT:
 // Write zeros to pmpaddr0 with A = NAPOT, read back with A = NAPOT
@@ -87,7 +90,8 @@ PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_zeros_write_NAPOT_read_NAPOT:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_zeros_write_NAPOT_read_NAPOT, PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_zeros_write_NAPOT_read_NAPOT_str)
-#ifdef UDB_PMP_TOR_SUPPORTED
+#endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED) && defined(UDB_PMP_TOR_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_TOR_zeros_write_NAPOT_read_TOR:
 // Write zeros to pmpaddr0 with A = NAPOT, read back with A = TOR
@@ -115,6 +119,7 @@ PMP_Sm_cg_cp_grain_OFF_to_OFF_zeros_write_OFF_read_OFF:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_OFF_zeros_write_OFF_read_OFF, PMP_Sm_cg_cp_grain_OFF_to_OFF_zeros_write_OFF_read_OFF_str)
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_OFF_to_NAPOT_zeros_write_OFF_read_NAPOT:
 // Write zeros to pmpaddr0 with A = OFF, read back with A = NAPOT
@@ -128,7 +133,8 @@ PMP_Sm_cg_cp_grain_OFF_to_NAPOT_zeros_write_OFF_read_NAPOT:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_NAPOT_zeros_write_OFF_read_NAPOT, PMP_Sm_cg_cp_grain_OFF_to_NAPOT_zeros_write_OFF_read_NAPOT_str)
-#ifdef UDB_PMP_TOR_SUPPORTED
+#endif
+#if defined(UDB_PMP_TOR_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_OFF_to_TOR_zeros_write_OFF_read_TOR:
 // Write zeros to pmpaddr0 with A = OFF, read back with A = TOR
@@ -143,6 +149,7 @@ PMP_Sm_cg_cp_grain_OFF_to_TOR_zeros_write_OFF_read_TOR:
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_TOR_zeros_write_OFF_read_TOR, PMP_Sm_cg_cp_grain_OFF_to_TOR_zeros_write_OFF_read_TOR_str)
 #endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_OFF_ones_write_NAPOT_read_OFF:
 // Write ones to pmpaddr0 with A = NAPOT, read back with A = OFF
@@ -156,6 +163,8 @@ PMP_Sm_cg_cp_grain_NAPOT_to_OFF_ones_write_NAPOT_read_OFF:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_NAPOT_to_OFF_ones_write_NAPOT_read_OFF, PMP_Sm_cg_cp_grain_NAPOT_to_OFF_ones_write_NAPOT_read_OFF_str)
+#endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_ones_write_NAPOT_read_NAPOT:
 // Write ones to pmpaddr0 with A = NAPOT, read back with A = NAPOT
@@ -169,7 +178,8 @@ PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_ones_write_NAPOT_read_NAPOT:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_ones_write_NAPOT_read_NAPOT, PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_ones_write_NAPOT_read_NAPOT_str)
-#ifdef UDB_PMP_TOR_SUPPORTED
+#endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED) && defined(UDB_PMP_TOR_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_TOR_ones_write_NAPOT_read_TOR:
 // Write ones to pmpaddr0 with A = NAPOT, read back with A = TOR
@@ -197,6 +207,7 @@ PMP_Sm_cg_cp_grain_OFF_to_OFF_ones_write_OFF_read_OFF:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_OFF_ones_write_OFF_read_OFF, PMP_Sm_cg_cp_grain_OFF_to_OFF_ones_write_OFF_read_OFF_str)
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_OFF_to_NAPOT_ones_write_OFF_read_NAPOT:
 // Write ones to pmpaddr0 with A = OFF, read back with A = NAPOT
@@ -210,7 +221,8 @@ PMP_Sm_cg_cp_grain_OFF_to_NAPOT_ones_write_OFF_read_NAPOT:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_NAPOT_ones_write_OFF_read_NAPOT, PMP_Sm_cg_cp_grain_OFF_to_NAPOT_ones_write_OFF_read_NAPOT_str)
-#ifdef UDB_PMP_TOR_SUPPORTED
+#endif
+#if defined(UDB_PMP_TOR_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_OFF_to_TOR_ones_write_OFF_read_TOR:
 // Write ones to pmpaddr0 with A = OFF, read back with A = TOR
@@ -225,6 +237,7 @@ PMP_Sm_cg_cp_grain_OFF_to_TOR_ones_write_OFF_read_TOR:
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_TOR_ones_write_OFF_read_TOR, PMP_Sm_cg_cp_grain_OFF_to_TOR_ones_write_OFF_read_TOR_str)
 #endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_OFF_checkerboard_write_NAPOT_read_OFF:
 // Write checkerboard to pmpaddr0 with A = NAPOT, read back with A = OFF
@@ -238,6 +251,8 @@ PMP_Sm_cg_cp_grain_NAPOT_to_OFF_checkerboard_write_NAPOT_read_OFF:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_NAPOT_to_OFF_checkerboard_write_NAPOT_read_OFF, PMP_Sm_cg_cp_grain_NAPOT_to_OFF_checkerboard_write_NAPOT_read_OFF_str)
+#endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_checkerboard_write_NAPOT_read_NAPOT:
 // Write checkerboard to pmpaddr0 with A = NAPOT, read back with A = NAPOT
@@ -251,7 +266,8 @@ PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_checkerboard_write_NAPOT_read_NAPOT:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_checkerboard_write_NAPOT_read_NAPOT, PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_checkerboard_write_NAPOT_read_NAPOT_str)
-#ifdef UDB_PMP_TOR_SUPPORTED
+#endif
+#if defined(UDB_PMP_NAPOT_SUPPORTED) && defined(UDB_PMP_TOR_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_NAPOT_to_TOR_checkerboard_write_NAPOT_read_TOR:
 // Write checkerboard to pmpaddr0 with A = NAPOT, read back with A = TOR
@@ -279,6 +295,7 @@ PMP_Sm_cg_cp_grain_OFF_to_OFF_checkerboard_write_OFF_read_OFF:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_OFF_checkerboard_write_OFF_read_OFF, PMP_Sm_cg_cp_grain_OFF_to_OFF_checkerboard_write_OFF_read_OFF_str)
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_OFF_to_NAPOT_checkerboard_write_OFF_read_NAPOT:
 // Write checkerboard to pmpaddr0 with A = OFF, read back with A = NAPOT
@@ -292,7 +309,8 @@ PMP_Sm_cg_cp_grain_OFF_to_NAPOT_checkerboard_write_OFF_read_NAPOT:
   and x7, x7, t3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMP_Sm_cg_cp_grain_OFF_to_NAPOT_checkerboard_write_OFF_read_NAPOT, PMP_Sm_cg_cp_grain_OFF_to_NAPOT_checkerboard_write_OFF_read_NAPOT_str)
-#ifdef UDB_PMP_TOR_SUPPORTED
+#endif
+#if defined(UDB_PMP_TOR_SUPPORTED)
 
 PMP_Sm_cg_cp_grain_OFF_to_TOR_checkerboard_write_OFF_read_TOR:
 // Write checkerboard to pmpaddr0 with A = OFF, read back with A = TOR
@@ -318,24 +336,24 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMP_Sm_cg_cp_grain_NAPOT_to_OFF_zeros_write_NAPOT_read_OFF_str: .string "\"test: 881; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_OFF; bin: zeros_write_NAPOT_read_OFF\""
-PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_zeros_write_NAPOT_read_NAPOT_str: .string "\"test: 882; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_NAPOT; bin: zeros_write_NAPOT_read_NAPOT\""
-PMP_Sm_cg_cp_grain_NAPOT_to_TOR_zeros_write_NAPOT_read_TOR_str: .string "\"test: 883; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_TOR; bin: zeros_write_NAPOT_read_TOR\""
-PMP_Sm_cg_cp_grain_OFF_to_OFF_zeros_write_OFF_read_OFF_str: .string "\"test: 884; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_OFF; bin: zeros_write_OFF_read_OFF\""
-PMP_Sm_cg_cp_grain_OFF_to_NAPOT_zeros_write_OFF_read_NAPOT_str: .string "\"test: 885; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_NAPOT; bin: zeros_write_OFF_read_NAPOT\""
-PMP_Sm_cg_cp_grain_OFF_to_TOR_zeros_write_OFF_read_TOR_str: .string "\"test: 886; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_TOR; bin: zeros_write_OFF_read_TOR\""
-PMP_Sm_cg_cp_grain_NAPOT_to_OFF_ones_write_NAPOT_read_OFF_str: .string "\"test: 887; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_OFF; bin: ones_write_NAPOT_read_OFF\""
-PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_ones_write_NAPOT_read_NAPOT_str: .string "\"test: 888; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_NAPOT; bin: ones_write_NAPOT_read_NAPOT\""
-PMP_Sm_cg_cp_grain_NAPOT_to_TOR_ones_write_NAPOT_read_TOR_str: .string "\"test: 889; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_TOR; bin: ones_write_NAPOT_read_TOR\""
-PMP_Sm_cg_cp_grain_OFF_to_OFF_ones_write_OFF_read_OFF_str: .string "\"test: 890; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_OFF; bin: ones_write_OFF_read_OFF\""
-PMP_Sm_cg_cp_grain_OFF_to_NAPOT_ones_write_OFF_read_NAPOT_str: .string "\"test: 891; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_NAPOT; bin: ones_write_OFF_read_NAPOT\""
-PMP_Sm_cg_cp_grain_OFF_to_TOR_ones_write_OFF_read_TOR_str: .string "\"test: 892; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_TOR; bin: ones_write_OFF_read_TOR\""
-PMP_Sm_cg_cp_grain_NAPOT_to_OFF_checkerboard_write_NAPOT_read_OFF_str: .string "\"test: 893; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_OFF; bin: checkerboard_write_NAPOT_read_OFF\""
-PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_checkerboard_write_NAPOT_read_NAPOT_str: .string "\"test: 894; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_NAPOT; bin: checkerboard_write_NAPOT_read_NAPOT\""
-PMP_Sm_cg_cp_grain_NAPOT_to_TOR_checkerboard_write_NAPOT_read_TOR_str: .string "\"test: 895; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_TOR; bin: checkerboard_write_NAPOT_read_TOR\""
-PMP_Sm_cg_cp_grain_OFF_to_OFF_checkerboard_write_OFF_read_OFF_str: .string "\"test: 896; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_OFF; bin: checkerboard_write_OFF_read_OFF\""
-PMP_Sm_cg_cp_grain_OFF_to_NAPOT_checkerboard_write_OFF_read_NAPOT_str: .string "\"test: 897; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_NAPOT; bin: checkerboard_write_OFF_read_NAPOT\""
-PMP_Sm_cg_cp_grain_OFF_to_TOR_checkerboard_write_OFF_read_TOR_str: .string "\"test: 898; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_TOR; bin: checkerboard_write_OFF_read_TOR\""
+PMP_Sm_cg_cp_grain_NAPOT_to_OFF_zeros_write_NAPOT_read_OFF_str: .string "\"test: 117; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_OFF; bin: zeros_write_NAPOT_read_OFF\""
+PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_zeros_write_NAPOT_read_NAPOT_str: .string "\"test: 118; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_NAPOT; bin: zeros_write_NAPOT_read_NAPOT\""
+PMP_Sm_cg_cp_grain_NAPOT_to_TOR_zeros_write_NAPOT_read_TOR_str: .string "\"test: 119; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_TOR; bin: zeros_write_NAPOT_read_TOR\""
+PMP_Sm_cg_cp_grain_OFF_to_OFF_zeros_write_OFF_read_OFF_str: .string "\"test: 120; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_OFF; bin: zeros_write_OFF_read_OFF\""
+PMP_Sm_cg_cp_grain_OFF_to_NAPOT_zeros_write_OFF_read_NAPOT_str: .string "\"test: 121; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_NAPOT; bin: zeros_write_OFF_read_NAPOT\""
+PMP_Sm_cg_cp_grain_OFF_to_TOR_zeros_write_OFF_read_TOR_str: .string "\"test: 122; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_TOR; bin: zeros_write_OFF_read_TOR\""
+PMP_Sm_cg_cp_grain_NAPOT_to_OFF_ones_write_NAPOT_read_OFF_str: .string "\"test: 123; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_OFF; bin: ones_write_NAPOT_read_OFF\""
+PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_ones_write_NAPOT_read_NAPOT_str: .string "\"test: 124; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_NAPOT; bin: ones_write_NAPOT_read_NAPOT\""
+PMP_Sm_cg_cp_grain_NAPOT_to_TOR_ones_write_NAPOT_read_TOR_str: .string "\"test: 125; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_TOR; bin: ones_write_NAPOT_read_TOR\""
+PMP_Sm_cg_cp_grain_OFF_to_OFF_ones_write_OFF_read_OFF_str: .string "\"test: 126; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_OFF; bin: ones_write_OFF_read_OFF\""
+PMP_Sm_cg_cp_grain_OFF_to_NAPOT_ones_write_OFF_read_NAPOT_str: .string "\"test: 127; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_NAPOT; bin: ones_write_OFF_read_NAPOT\""
+PMP_Sm_cg_cp_grain_OFF_to_TOR_ones_write_OFF_read_TOR_str: .string "\"test: 128; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_TOR; bin: ones_write_OFF_read_TOR\""
+PMP_Sm_cg_cp_grain_NAPOT_to_OFF_checkerboard_write_NAPOT_read_OFF_str: .string "\"test: 129; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_OFF; bin: checkerboard_write_NAPOT_read_OFF\""
+PMP_Sm_cg_cp_grain_NAPOT_to_NAPOT_checkerboard_write_NAPOT_read_NAPOT_str: .string "\"test: 130; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_NAPOT; bin: checkerboard_write_NAPOT_read_NAPOT\""
+PMP_Sm_cg_cp_grain_NAPOT_to_TOR_checkerboard_write_NAPOT_read_TOR_str: .string "\"test: 131; cg: PMP_Sm_cg; cp: cp_grain_NAPOT_to_TOR; bin: checkerboard_write_NAPOT_read_TOR\""
+PMP_Sm_cg_cp_grain_OFF_to_OFF_checkerboard_write_OFF_read_OFF_str: .string "\"test: 132; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_OFF; bin: checkerboard_write_OFF_read_OFF\""
+PMP_Sm_cg_cp_grain_OFF_to_NAPOT_checkerboard_write_OFF_read_NAPOT_str: .string "\"test: 133; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_NAPOT; bin: checkerboard_write_OFF_read_NAPOT\""
+PMP_Sm_cg_cp_grain_OFF_to_TOR_checkerboard_write_OFF_read_TOR_str: .string "\"test: 134; cg: PMP_Sm_cg; cp: cp_grain_OFF_to_TOR; bin: checkerboard_write_OFF_read_TOR\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

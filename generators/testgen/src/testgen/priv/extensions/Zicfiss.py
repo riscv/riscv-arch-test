@@ -839,24 +839,27 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
 def _generate_pmp_permissions(test_data: TestData) -> list[str]:
     """Shadow stack instructions require PMP read-write, including the read-only SSPOPCHK.
 
-    Only M-mode can program PMP. Entry 0 covers the shadow stack page as one 4 KiB NAPOT
-    region, so this needs NAPOT and a PMP granularity of at most 4 KiB; entry 1 grants
-    everything else, and the lowest matching entry wins. The link register is set so that a
-    pop would also mismatch, so the denied cases double as the fault-priority check.
+    Only M-mode can program PMP. With NAPOT, entry 0 covers the shadow stack page as one 4 KiB
+    NAPOT region and entry 1 grants everything else. Without NAPOT, TOR entries 0, 1 and 2 cover
+    memory below the page, the page and memory above it, with the R/W bits under test on entry 1.
+    Either way this needs a PMP granularity of at most 4 KiB, and the lowest matching entry wins.
+    The link register is set so that a pop would also mismatch, so the denied cases double as the
+    fault-priority check.
     """
     coverpoint = "cp_ss_pmp_permissions"
     lines: list[str] = [
         comment_banner(coverpoint, "PMP read-write requirement and fault priority"),
         "#ifdef ZICFISS_VM_SUPPORTED",
-        "#if defined(UDB_PMP_NAPOT_SUPPORTED) && UDB_PMP_GRANULARITY <= 12 && UDB_NUM_USABLE_PMP_ENTRIES >= 2",
+        "#if UDB_PMP_GRANULARITY <= 12 && UDB_NUM_USABLE_PMP_ENTRIES >= 3 && (defined(UDB_PMP_NAPOT_SUPPORTED) || defined(UDB_PMP_TOR_SUPPORTED))",
     ]
 
-    # pmp0cfg: A=NAPOT (0x18) plus the R/W bits under test. pmp1cfg = 0x1F allows the rest.
-    # R=0 with W=1 is reserved, so it is not a configuration that can be tested.
+    # The R/W bits under test go on the entry over the page: pmp0cfg = NAPOT | rw and pmp1cfg = NAPOT RWX,
+    # or pmp1cfg = TOR | rw between pmp0cfg = pmp2cfg = TOR RWX. R=0 with W=1 is reserved, so it is not a
+    # configuration that can be tested.
     for tag, rw in (("none", 0x0), ("r", 0x1), ("rw", 0x3)):
         lines.extend(
             [
-                f"# --- pmp0cfg R/W = {tag} ---",
+                f"# --- shadow stack page PMP R/W = {tag} ---",
                 *enable_translation(test_data, mode="M"),
                 *map_zicfiss_pages(test_data, user=False),
                 *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
@@ -865,6 +868,7 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
         addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
         lines.extend(
             [
+                "#ifdef UDB_PMP_NAPOT_SUPPORTED",
                 f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
                 f"srli x{addr_reg}, x{addr_reg}, 2",
                 f"LI(x{cfg_reg}, 0x1FF)",
@@ -873,6 +877,17 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
                 f"LI(x{addr_reg}, -1)",
                 f"csrw pmpaddr1, x{addr_reg}",
                 f"LI(x{cfg_reg}, {hex(0x1F00 | 0x18 | rw)})   # pmp0 NAPOT {tag}; pmp1 NAPOT RWX",
+                "#else",
+                f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
+                f"srli x{addr_reg}, x{addr_reg}, 2",
+                f"csrw pmpaddr0, x{addr_reg}   # entry 0: TOR [0, page)",
+                f"LI(x{cfg_reg}, 0x400)",
+                f"add x{addr_reg}, x{addr_reg}, x{cfg_reg}",
+                f"csrw pmpaddr1, x{addr_reg}   # entry 1: TOR [page, page + 4 KiB)",
+                f"LI(x{addr_reg}, -1)",
+                f"csrw pmpaddr2, x{addr_reg}   # entry 2: TOR [page + 4 KiB, top)",
+                f"LI(x{cfg_reg}, {hex(0x0F0000 | (0x08 | rw) << 8 | 0x0F)})   # pmp1 TOR {tag}; pmp0 and pmp2 TOR RWX",
+                "#endif",
                 f"csrw pmpcfg0, x{cfg_reg}",
                 "sfence.vma",
                 "RVTEST_TSBI_GOTO_SMODE",
@@ -900,13 +915,17 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
             [
                 f"LI(x{addr_reg}, -1)",
                 f"csrw pmpaddr0, x{addr_reg}",
-                f"LI(x{cfg_reg}, 0x1F)",
-                f"csrw pmpcfg0, x{cfg_reg}   # restore the boot-time allow-all region",
+                "#ifdef UDB_PMP_TOR_SUPPORTED",
+                f"LI(x{cfg_reg}, 0x0F)   # restore the boot-time allow-all region (TOR RWX)",
+                "#else",
+                f"LI(x{cfg_reg}, 0x1F)   # restore the boot-time allow-all region (NAPOT RWX)",
+                "#endif",
+                f"csrw pmpcfg0, x{cfg_reg}",
                 "sfence.vma",
             ]
         )
         test_data.int_regs.return_registers([addr_reg, cfg_reg])
-    lines.append("#endif  // PMP NAPOT, granularity <= 4 KiB, at least 2 usable entries")
+    lines.append("#endif  // PMP granularity <= 4 KiB with NAPOT or TOR")
     lines.append("#endif  // ZICFISS_VM_SUPPORTED")
     return lines
 

@@ -73,8 +73,8 @@ coverpoints:
   - name: cp_ss_pmp_permissions
     goal: Verify PMP permission requirements for shadow stack instructions, and that a PMP fault outranks the software-check exception
     description: |-
-      Reprogram PMP entry 0 to cover the shadow stack page and entry 1 to grant RWX over all memory (the lowest matching entry wins), then drop to S-mode and execute each SS instruction against the page.
-      Leg A -- permission matrix: sweep pmp0cfg R/W over {--, R-, -W, RW} and run SSPUSH, C.SSPUSH, SSPOPCHK, C.SSPOPCHK, SSAMOSWAP.W/D against each.
+      Reprogram PMP entry 0 to cover the shadow stack page as a NAPOT region and entry 1 to grant RWX over all memory (the lowest matching entry wins), or, without NAPOT, TOR entries 0, 1 and 2 over memory below the page, the page and memory above it, with the R/W bits under test on entry 1. Then drop to S-mode and execute each SS instruction against the page.
+      Leg A -- permission matrix: sweep the page entry's R/W over {--, R-, -W, RW} and run SSPUSH, C.SSPUSH, SSPOPCHK, C.SSPOPCHK, SSAMOSWAP.W/D against each.
       Leg B -- priority: with PMP denying the page, set the link register so the value would ALSO mismatch, then execute SSPOPCHK. Both faults are live and only one may be reported.
       Restore the boot-time allow-all PMP configuration afterwards.
     expectation: |-

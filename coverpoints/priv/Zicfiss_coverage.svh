@@ -15,11 +15,17 @@
 `define COVER_ZICFISS
 
 // The PMP test covers the 4 KiB shadow stack page with PMP entry 0 as one NAPOT region and the
-// rest of memory with entry 1. It needs NAPOT, a granularity of at most 4 KiB (G <= 12) and two
-// usable entries.
+// rest of memory with entry 1, or, without NAPOT, with TOR entry 1 between TOR entries 0 and 2.
+// It needs NAPOT or TOR, a granularity of at most 4 KiB (G <= 12) and three usable entries.
 `ifdef UDB_PMP_NAPOT_SUPPORTED
+  `define ZICFISS_PMP_AMODE
+`elsif UDB_PMP_TOR_SUPPORTED
+  `define ZICFISS_PMP_AMODE
+`endif
+`ifdef ZICFISS_PMP_AMODE
 `ifndef UDB_NUM_USABLE_PMP_ENTRIES_0
 `ifndef UDB_NUM_USABLE_PMP_ENTRIES_1
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_2
     `ifdef UDB_PMP_GRANULARITY_2
         `define ZICFISS_PMP_TEST
     `elsif UDB_PMP_GRANULARITY_3
@@ -46,6 +52,7 @@
 `endif
 `endif
 `endif
+`endif
 
 `ifndef EXCLUDE_SM
 covergroup Zicfiss_Sm_cg with function sample(ins_t ins);
@@ -66,11 +73,20 @@ covergroup Zicfiss_Sm_cg with function sample(ins_t ins);
     // pmp0cfg R is bit 0, W is bit 1. Shadow stack instructions require read-write.
     // R=0 with W=1 is a reserved combination, so it cannot be configured.
     `ifdef ZICFISS_PMP_TEST
-        pmp0_rw: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_xwr")[1:0] {
-            bins no_perm    = {2'b00};
-            bins read_only  = {2'b01};
-            bins read_write = {2'b11};
-        }
+        // The entry over the shadow stack page: entry 0 with NAPOT, else TOR entry 1
+        `ifdef UDB_PMP_NAPOT_SUPPORTED
+            pmp0_rw: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp0cfg_xwr")[1:0] {
+                bins no_perm    = {2'b00};
+                bins read_only  = {2'b01};
+                bins read_write = {2'b11};
+            }
+        `else
+            pmp0_rw: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0, "pmp1cfg_xwr")[1:0] {
+                bins no_perm    = {2'b00};
+                bins read_only  = {2'b01};
+                bins read_write = {2'b11};
+            }
+        `endif
     `endif
     senvcfg_csr: coverpoint ins.current.insn[31:20] {
         bins senvcfg = {CSR_SENVCFG};

@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sv32', 'Zicboz', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicboz_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 

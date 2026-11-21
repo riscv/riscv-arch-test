@@ -72,8 +72,8 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMP_S_cg_cp_pmpaddr_access_s_write_all_str: .string "\"test: 148; cg: PMP_S_cg; cp: cp_pmpaddr_access_s; bin: write_all\""
-PMP_S_cg_cp_pmpcfg_access_s_write_all_str: .string "\"test: 149; cg: PMP_S_cg; cp: cp_pmpcfg_access_s; bin: write_all\""
+PMP_S_cg_cp_pmpaddr_access_s_write_all_str: .string "\"test: 4; cg: PMP_S_cg; cp: cp_pmpaddr_access_s; bin: write_all\""
+PMP_S_cg_cp_pmpcfg_access_s_write_all_str: .string "\"test: 5; cg: PMP_S_cg; cp: cp_pmpcfg_access_s; bin: write_all\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -90,11 +90,13 @@ def napot_mask_defines(min_granularity: int | None = None) -> list[str]:
     return lines
 
 
-def set_pmpaddr(amode: str, entry: int, region: str = "REGIONSTART") -> list[str]:
+def set_pmpaddr(
+    amode: str, entry: int, region: str = "REGIONSTART", *, tor_bytes: str = "PMP_TOR_REGION_BYTES"
+) -> list[str]:
     """Program the pmpaddr CSR(s) that make ``entry`` cover the smallest region at ``region``.
 
     NAPOT encodes the region size into the low address bits; TOR bounds
-    ``[region, region + PMP_TOR_REGION_BYTES)`` with ``pmpaddr<entry-1>``/``pmpaddr<entry>``.
+    ``[region, region + tor_bytes)`` with ``pmpaddr<entry-1>``/``pmpaddr<entry>``.
     """
     lines = [f"LA(x5, {region})", "srl x5, x5, PMP_SHIFT"]
     if amode == "napot":
@@ -102,7 +104,7 @@ def set_pmpaddr(amode: str, entry: int, region: str = "REGIONSTART") -> list[str
     if amode == "tor":
         lines += [
             f"csrw pmpaddr{entry - 1}, x5",
-            "LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)",
+            f"LI(x6, {tor_bytes} >> PMP_SHIFT)",
             "add x5, x5, x6",
         ]
     lines.append(f"csrw pmpaddr{entry}, x5")
@@ -162,6 +164,23 @@ UNLOCKED_LXWR_CASES: list[tuple[str, int]] = [(f"0{lxwr[1:]}", entry) for lxwr, 
 #: TOR regions need two pmpaddr CSRs, so the six cases use every other entry.
 TOR_ENTRIES = ((11, 9, 7), (5, 3, 1))
 
+#: The TOR twins of the NAPOT tests place each region on entries 5, 3 and 1 (bottoms in
+#: pmpaddr4, 2 and 0), so they need only seven usable entries. Six stacked cases therefore
+#: take two test files.
+TOR_TWIN_ENTRIES = (5, 3, 1)
+
+#: A TOR twin bounds the same region as the NAPOT test it mirrors: the NAPOT region under test
+#: (PMP_NAPOT_REGION_START, g_napot bytes), so the probes and address coverpoints are shared.
+TOR_TWIN_BYTES = "PMP_NAPOT_REGION_BYTES"
+
+
+def tor_twin_parts(cases: list[tuple[str, int]]) -> list[list[tuple[str, int]]]:
+    """Split stacked NAPOT LXWR cases into files of three, each on TOR entries 5, 3 and 1."""
+    return [
+        list(zip([lxwr for lxwr, _ in cases[start : start + 3]], TOR_TWIN_ENTRIES, strict=False))
+        for start in range(0, len(cases), 3)
+    ]
+
 
 def lxwr_walk_body(
     test_data: TestData,
@@ -174,21 +193,24 @@ def lxwr_walk_body(
     lower_mode: str | None = None,
     extra_setup: list[str] | None = None,
     napot_mask: list[str] | None = None,
+    tor_bytes: str = "PMP_TOR_REGION_BYTES",
 ) -> list[str]:
     """Walk LXWR encodings against one region: clear the PMPs, define one
     ``PMPREGION_LXWR_*`` per case, set the background, then configure and probe each
     case. ``probe_generator`` emits and registers the access probes."""
     defines = [f"#define PMPREGION_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(entry))}" for lxwr, entry in cases]
     lines = [*zero_pmp_regs(), "", *defines, "", "#define REGIONSTART TEST_FOR_EXECUTION"]
-    if amode == "napot":
-        lines.extend(napot_mask_defines() if napot_mask is None else napot_mask)
+    if napot_mask is not None:
+        lines.extend(napot_mask)
+    elif amode == "napot":
+        lines.extend(napot_mask_defines())
     lines.extend(["", "RVTEST_PMP_SET_BACKGROUND x4"])
     if extra_setup:
         lines.extend(["", *extra_setup])
     for n, (lxwr, entry) in enumerate(cases, start=first):
         permission = _LXWR_PERM_NAMES[lxwr[1:]]
         lines.extend(["", f"// PMP configuration {n}: L = {lxwr[0]}, {permission} permissions, entry {entry}"])
-        lines.extend(set_pmpaddr(amode, entry))
+        lines.extend(set_pmpaddr(amode, entry, tor_bytes=tor_bytes))
         lines.extend(set_pmpcfg(entry, f"PMPREGION_LXWR_{lxwr}"))
         lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         if lower_mode:
@@ -211,14 +233,24 @@ def entry_walk(
     region: str = "TEST_FOR_EXECUTION",
     first: int = 1,
     case_prefix: str = "entry",
+    tor_bytes: str = "PMP_TOR_REGION_BYTES",
 ) -> list[str]:
-    """Program ``entries`` one at a time with ``cfg(entry)`` at REGIONSTART and probe each."""
+    """Program ``entries`` one at a time with ``cfg(entry)`` at REGIONSTART and probe each.
+
+    A TOR entry also uses pmpaddr<entry-1>, so a TOR walk skips an entry that would reach
+    pmpaddr<background-1>, the bottom of a TOR background entry.
+    """
     lines = []
     for n, entry in enumerate(entries, start=first):
-        lines.extend(["", f"// PMP configuration {n}: entry {entry}", *set_pmpaddr(amode, entry)])
+        if amode == "tor":
+            lines.append(f"#if UDB_NUM_USABLE_PMP_ENTRIES >= {entry + 3}")
+        lines.extend(["", f"// PMP configuration {n}: entry {entry}"])
+        lines.extend(set_pmpaddr(amode, entry, tor_bytes=tor_bytes))
         lines.extend(set_pmpcfg(entry, cfg(entry)))
         lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         lines.extend(probe_generator(test_data, f"{case_prefix}{entry}", coverpoint, region))
+        if amode == "tor":
+            lines.append("#endif")
     return lines
 
 

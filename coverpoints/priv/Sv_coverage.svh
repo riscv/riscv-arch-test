@@ -2397,12 +2397,13 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
     vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins paged = {[1:15]};
     }
-    // No trap, or the load or store/AMO guest-page fault of HLV, HLVX or HSV
-    hlv_outcome : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    // No trap, or the load or store/AMO guest-page fault of HLV, HLVX or HSV, in HS-mode or, when medeleg cannot
+    // delegate it, in M-mode
+    hlv_outcome : coverpoint s_trap(ins) {
         wildcard bins none     = {6'b0?????};
         bins guest_page_fault  = {6'b110101, 6'b110111};
     }
-    hlv_guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    hlv_guest_page_fault : coverpoint s_trap(ins) {
         bins guest_page_fault  = {6'b110101, 6'b110111};
     }
     `ifdef UDB_MXLEN_64

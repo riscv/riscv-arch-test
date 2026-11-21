@@ -159,7 +159,7 @@ covergroup SdtrigU_mcontrol6_cg with function sample(ins_t ins);
     cp_mcontrol6_load_store_size: cross exec_mode_u, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_u_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_adr, tdata1_xsl_load_store, tdata1_size_ls, tdata2_adr, load_store_instr;               // NTRIG * 5 sizes * 2 tdata2 * instrs
     cp_mcontrol6_match:           cross exec_mode_u, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_u_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_cmp, store_data_cmp, store_xlen;                   // NTRIG * 4 match * 5 values
     `ifdef SDTRIG_MATCH_NAPOT
-        cp_mcontrol6_match_napot: cross exec_mode_u, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_u_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_napot, tdata2_napot, store_data_napot, store_xlen; // NTRIG * 2 match * min(maskmax6, XLEN-1) tdata2 * 3 values
+        cp_mcontrol6_match_napot: cross exec_mode_u, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_u_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_napot, tdata2_napot, store_data_napot, store_xlen; // NTRIG * 2 match * min(maskmax6, XLEN-1) tdata2 * 4 values
     `endif
     `ifdef SDTRIG_MATCH_MASK
         cp_mcontrol6_match_mask:  cross exec_mode_u, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_u_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_mask, store_data_mask, store_xlen;                 // NTRIG * 4 match * 11 values

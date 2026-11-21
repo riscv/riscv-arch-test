@@ -955,7 +955,11 @@ normative_rule_definitions:
   # All NAPOT ranges between stem:[2^1] and stem:[2^maskmax6] are supported where
   # stem:[maskmax6 >= 1].
   - name: Sdtrig_mcontrol6_napot_range
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot_adr",
+      ]
 
   # If textra32 or textra64 are implemented for this trigger, it only matches when
   # the conditions set there are satisfied.
@@ -1206,6 +1210,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot_adr",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
@@ -1219,7 +1224,11 @@ normative_rule_definitions:
   # Legal values for tdata2 require M maskmax6 >= XLEN and M > 0. See above for how
   # to determine maskmax6.
   - name: Sdtrig_mcontrol6_match_napot_legal
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot_adr",
+      ]
 
   # Matches when any compare value is greater than (unsigned) or equal to tdata2.
   - name: Sdtrig_mcontrol6_match_ge
@@ -1280,6 +1289,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot_adr",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",

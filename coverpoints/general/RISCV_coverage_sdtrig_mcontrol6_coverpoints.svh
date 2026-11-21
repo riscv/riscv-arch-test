@@ -116,11 +116,22 @@ store_data_cmp: coverpoint (ins.current.rs2_val == '0       ? 3'd0 :
         type_option.weight = 0;
         bins zero_bit[] = {[0:((`UDB_SDTRIG_MCONTROL6_MASKMAX6 < XLEN-1) ? `UDB_SDTRIG_MCONTROL6_MASKMAX6 : XLEN-1) - 1]};
     }
-    store_data_napot: coverpoint ins.current.rs2_val {
+    store_data_napot: coverpoint sdtrig_napot_data_case(ins) {
         type_option.weight = 0;
-        bins zero           = {'0};
-        wildcard bins other = {'x} iff (ins.current.rs2_val != '0 && ins.current.rs2_val != '1);
-        bins ones           = {'1};
+        bins zero      = {3'd0};
+        bins range_low = {3'd1};
+        bins outside   = {3'd2};
+        bins ones      = {3'd3};
+    }
+    // cp_mcontrol6_match_napot_adr: an lb inside tdata2's range or in the adjacent one
+    tdata1_xsl_load: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "execute")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "store")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "load")[0]} {
+        type_option.weight = 0;
+        bins load = {3'b001};
+    }
+    load_napot_adr: coverpoint sdtrig_napot_adr_case(ins) iff (ins.current.insn[6:0] == 7'b0000011 && ins.current.insn[14:12] == 3'b000) {
+        type_option.weight = 0;
+        bins in_range  = {2'd1};
+        bins adjacent  = {2'd2};
     }
     // cp_mcontrol6_napot_allones: a csrw of all ones to tdata2
     tdata2_write_ones: coverpoint ins.current.rs1_val {

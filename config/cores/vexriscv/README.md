@@ -68,12 +68,9 @@ readable and writable.
 ```bash
 .github/scripts/install-vexriscv.sh ~/repos/vexriscv-builds
 export PATH=$HOME/repos/vexriscv-builds/bin:$PATH
-export VEXRISCV_SIM=$HOME/repos/vexriscv-builds/bin/vexriscv-tb
 make CONFIG_FILES=config/cores/vexriscv/vexriscv-imac/test_config.yaml
 ./run_tests.py "run-vexriscv.sh --elf" work/vexriscv-imac/elfs
 ```
-
-The two exports do what `.github/scripts/setup-vexriscv.sh` does in CI.
 
 ## Configuration notes
 
@@ -102,19 +99,3 @@ while an `lr` and the `sc` after it fall in the same 4 KiB block. The Zalrsc tes
 passes because `scratch` is 256-byte aligned and is not at page offset `0xF00`; at that offset the
 second `lr` would reserve the next block, Sail would make the `sc` fail, and VexRiscv would
 let it succeed.
-
-## Excluded tests (`ci.yaml`)
-
-Each is a deviation from the specification in this netlist:
-
-- `ebreak` and `c.ebreak` raise an illegal-instruction exception: `CsrPluginConfig.all` leaves
-  `ebreakGen` false, and the generator warns about it.
-- `mepc[0]` is writable.
-- A write to a read-only CSR (`cycle`, `mvendorid`, ...) does not trap.
-- `ecall` writes its encoding to `mtval`, and an interrupt leaves `mtval` unchanged; both must
-  write 0.
-- `mret` sets `mstatus.MPP` to 0 although U-mode is not implemented.
-- A `csrw minstret` is followed by the write's own increment, so `minstret` reads one higher than
-  written.
-
-Also not tested but non-conforming: `misa` reads `0x4000_0042` (B and G set, I, M, A and C clear).

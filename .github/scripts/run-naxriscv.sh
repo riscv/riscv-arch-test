@@ -8,11 +8,11 @@
 # this runner turns that file into the exit status. Lock-step comparison with NaxRiscv's Spike
 # is turned off: the tests check themselves against Sail.
 # Usage: run-naxriscv.sh --elf <path>
-# Env:   NAXRISCV_SIM     simulator executable (default: $HOME/repos/naxriscv-builds/bin/VNaxRiscv)
+# Env:   NAXRISCV_SIM     simulator executable (default: VNaxRiscv next to this script)
 #        NAXRISCV_CYCLES  cycle limit (default: 50000000)
 set -euo pipefail
 
-SIM="${NAXRISCV_SIM:-$HOME/repos/naxriscv-builds/bin/VNaxRiscv}"
+SIM="${NAXRISCV_SIM:-$(dirname "${BASH_SOURCE[0]}")/VNaxRiscv}"
 CYCLES="${NAXRISCV_CYCLES:-50000000}"
 [ "${1:-}" != --elf ] || shift
 ELF="${1:?Usage: run-naxriscv.sh --elf <path-to-elf>}"

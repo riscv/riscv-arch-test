@@ -6,11 +6,11 @@
 # register, or 3 at the cycle limit. run_tests.py applies the wall-clock timeout and checks the
 # exit status and the RVCP-SUMMARY line.
 # Usage: run-vexriscv.sh --elf <path>
-# Env:   VEXRISCV_SIM     testbench executable (default: $HOME/repos/vexriscv-builds/bin/vexriscv-tb)
+# Env:   VEXRISCV_SIM     testbench executable (default: vexriscv-tb next to this script)
 #        VEXRISCV_CYCLES  cycle limit (default: 50000000)
 set -euo pipefail
 
-SIM="${VEXRISCV_SIM:-$HOME/repos/vexriscv-builds/bin/vexriscv-tb}"
+SIM="${VEXRISCV_SIM:-$(dirname "${BASH_SOURCE[0]}")/vexriscv-tb}"
 CYCLES="${VEXRISCV_CYCLES:-50000000}"
 [ "${1:-}" != --elf ] || shift
 ELF="${1:?Usage: run-vexriscv.sh --elf <path-to-elf>}"

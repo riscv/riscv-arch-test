@@ -81,12 +81,9 @@ simulator's CLINT model in `src/test/cpp/naxriscv/src/main.cpp`:
 ```bash
 .github/scripts/install-naxriscv.sh ~/repos/naxriscv-builds
 export PATH=$HOME/repos/naxriscv-builds/bin:$PATH
-export NAXRISCV_SIM=$HOME/repos/naxriscv-builds/bin/VNaxRiscv
 make CONFIG_FILES=config/cores/naxriscv/naxriscv-rv64imafdc/test_config.yaml
 ./run_tests.py "run-naxriscv.sh --elf" work/naxriscv-rv64imafdc/elfs
 ```
-
-The two exports do what `.github/scripts/setup-naxriscv.sh` does in CI.
 
 ## Configuration notes
 
@@ -107,21 +104,3 @@ Other parameters set from the source:
   which Sail's `Xtvec_Ignore` models.
 - `LRSC_FAIL_ON_NON_EXACT_LRSC` is false: an `sc` must match the `lr`'s physical address exactly
   (`require_exact_reservation_addr` in `sail.json`), but a different size does not make it fail.
-
-## Excluded tests (`ci.yaml`)
-
-Each is a deviation from the specification:
-
-- A fetch from the I/O region, which is not executable, raises an instruction page fault instead
-  of an access fault.
-- An AMO to an unmapped I/O address raises no exception and no bus-error interrupt, and returns
-  all ones: AMOs go through the data cache whatever the address, and the simulator's memory bus
-  does not report an error for the I/O region.
-- `mcounteren` and `scounteren` read 0 but do not stop S- and U-mode reads of `cycle`, `instret`
-  and `hpmcounter*`.
-- Interrupt priority: STI is taken before SSI, and an undelegated supervisor interrupt before a
-  pending machine interrupt.
-- With `mstatus.MPRV` = 1 and MPP = S, `SUM` and the U-page check are not applied.
-- Sv39 translates non-canonical virtual addresses instead of raising a page fault.
-- `feq`, `flt`, `fle`, `fmin` and `fmax` treat the subnormal with only the top mantissa bit set
-  (`0x0040_0000` single, `0x0008_0000_0000_0000` double) as equal to zero.

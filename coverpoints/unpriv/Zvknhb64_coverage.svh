@@ -272,9 +272,11 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
-        // LMUL values for EGS=4, SEW=64 instructions: LMUL * VLEN must be at least EGW = 256
+        // LMUL = 1 to 8 at which VLEN * LMUL can reach EGW = EGS * SEW = 256
         bins eight = {3};
-        bins four = {2};
+        `ifdef ZVL64B_SUPPORTED
+            bins four = {2};
+        `endif
         `ifdef ZVL128B_SUPPORTED
             bins two = {1};
         `endif
@@ -285,9 +287,8 @@ covergroup Zvknhb64_vsha2ch_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_egs4_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                          3'(vl_check(ins.hart, ins.issue, 4))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=4 instructions at SEW=64.
-        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
-        // element groups for a distinct VLMAX and four for a value in between.
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 4, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 4, 8 and 12 to reach them.
         `ifdef ZVL256B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -631,9 +632,11 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
-        // LMUL values for EGS=4, SEW=64 instructions: LMUL * VLEN must be at least EGW = 256
+        // LMUL = 1 to 8 at which VLEN * LMUL can reach EGW = EGS * SEW = 256
         bins eight = {3};
-        bins four = {2};
+        `ifdef ZVL64B_SUPPORTED
+            bins four = {2};
+        `endif
         `ifdef ZVL128B_SUPPORTED
             bins two = {1};
         `endif
@@ -644,9 +647,8 @@ covergroup Zvknhb64_vsha2cl_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_egs4_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                          3'(vl_check(ins.hart, ins.issue, 4))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=4 instructions at SEW=64.
-        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
-        // element groups for a distinct VLMAX and four for a value in between.
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 4, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 4, 8 and 12 to reach them.
         `ifdef ZVL256B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -990,9 +992,11 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs4_sew64 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3) {
-        // LMUL values for EGS=4, SEW=64 instructions: LMUL * VLEN must be at least EGW = 256
+        // LMUL = 1 to 8 at which VLEN * LMUL can reach EGW = EGS * SEW = 256
         bins eight = {3};
-        bins four = {2};
+        `ifdef ZVL64B_SUPPORTED
+            bins four = {2};
+        `endif
         `ifdef ZVL128B_SUPPORTED
             bins two = {1};
         `endif
@@ -1003,9 +1007,8 @@ covergroup Zvknhb64_vsha2ms_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_egs4_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                          3'(vl_check(ins.hart, ins.issue, 4))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=4 instructions at SEW=64.
-        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
-        // element groups for a distinct VLMAX and four for a value in between.
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 4, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 4, 8 and 12 to reach them.
         `ifdef ZVL256B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif

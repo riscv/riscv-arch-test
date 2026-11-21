@@ -29,7 +29,7 @@ from rich.progress import (
 )
 from testgen.coverpoints.vector.cr_vl_lmul import vl_lmul_max
 from testgen.formatters import get_instruction_type_config
-from testgen.instructions.vector import get_max_lmul
+from testgen.instructions.vector import get_legal_lmuls, get_max_lmul
 from testgen.io.templates import get_vector_base_extension
 
 
@@ -264,6 +264,75 @@ def _guard_mask_edges(rendered: str, instr: str, instr_type: str, sew: int) -> s
                 flags=re.MULTILINE,
             )
     return rendered
+
+
+_LMUL_NAMES = {-3: "eighth", -2: "fourth", -1: "half", 0: "one", 1: "two", 2: "four", 3: "eight"}
+_VL_LMUL_RE = re.compile(r"cr_vl_lmul_(?:(.+)_)?sew(\d+)")
+
+
+def _zvl_gate(vlen: float) -> str | None:
+    """Return the ZVL<N>B_SUPPORTED macro that guarantees VLEN >= vlen.
+
+    Returns "" when every vector extension does (VLEN >= 32) and None when no macro does (VLEN > 1024).
+    """
+    n = 2 ** math.ceil(math.log2(vlen))
+    if n <= 32:
+        return ""
+    return f"ZVL{n}B_SUPPORTED" if n <= 1024 else None
+
+
+def _ifdef(gate: str, lines: list[str]) -> list[str]:
+    """Wrap 8-space-indented bin lines in `ifdef gate, unless gate is empty."""
+    if not gate:
+        return lines
+    return [f"        `ifdef {gate}\n", *(f"    {line}" for line in lines), "        `endif\n"]
+
+
+def _lmul_text(exponent: int) -> str:
+    return f"1/{2**-exponent}" if exponent < 0 else str(2**exponent)
+
+
+def _render_vl_lmul(suffix: str, sew: int) -> str:
+    """Render cr_vl_lmul[_<suffix>]_sew<sew>: each legal LMUL crossed with vl = EGS, VLMAX and a value in between.
+
+    The LMULs run from the smallest legal at this SEW up to vl_lmul_max(suffix, sew). vl_check codes these vls
+    1, 2 and 3; VLMAX = VLEN * LMUL / SEW must be at least EGS, 2 * EGS and 3 * EGS for them to be distinct, so
+    each bin is guarded on the smallest such ZVL<N>B. Fractional LMUL needs ELEN = 64 when SEW > 32 * LMUL.
+    Element-group suffixes (egs<N>) also get a coverpoint of the LMULs at which VLEN * LMUL >= EGW.
+    """
+    name = f"cr_vl_lmul_{suffix}_sew{sew}" if suffix else f"cr_vl_lmul_sew{sew}"
+    egs = int(m.group(1)) if (m := re.search(r"egs(\d)", suffix)) else 1
+    exps = range(min(get_legal_lmuls(sew)), int(math.log2(vl_lmul_max(suffix, sew))) + 1)
+    lmuls = f"{_lmul_text(exps[0])} to {_lmul_text(exps[-1])}"
+    vlmul = 'get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")'
+    vsew = f'get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == {int(math.log2(sew)) - 3}'
+    iff = f"iff (ins.trap == 0 & {vsew})"
+    banner = "    " + "/" * 82 + "\n"
+    out = [banner, f"    // {name}\n", banner, "\n"]
+    if egs > 1:
+        out.append(f"    cp_csr_vtype_lmul_{suffix}_sew{sew} : coverpoint {vlmul}  {iff} {{\n")
+        out.append(f"        // LMUL = {lmuls} at which VLEN * LMUL can reach EGW = EGS * SEW = {egs * sew}\n")
+        for e in reversed(exps):
+            gate = _zvl_gate(egs * sew / 2**e)
+            if gate is not None:
+                lines = [f"        bins {_LMUL_NAMES[e]} = {{{e % 8}}};\n"]
+                out += _ifdef(gate, _ifdef("UDB_ELEN_64", lines) if e < 0 and sew > 32 * 2**e else lines)
+        out.append("    }\n\n")
+    vl_check = f"vl_check(ins.hart, ins.issue, {egs})" if egs > 1 else "vl_check(ins.hart, ins.issue)"
+    out.append(f"    {name} : coverpoint {{{vlmul}[2:0],\n")
+    out.append(" " * (41 if egs > 1 else 36) + f"3'({vl_check})}}  {iff}  {{\n")
+    out.append(f"        // LMUL = {lmuls} at SEW = {sew} crossed with vl = {egs}, VLMAX and a value in between.\n")
+    out.append(f"        // VLMAX = VLEN * LMUL / SEW must be at least {egs}, {2 * egs} and {3 * egs} to reach them.\n")
+    for e in exps:
+        lines: list[str] = []
+        for code, kind in enumerate(("one", "vlmax", "legal"), 1):
+            gate = _zvl_gate(code * egs * sew / 2**e)
+            if gate is not None:
+                lines += _ifdef(gate, [f"        bins {_LMUL_NAMES[e]}_{kind} = {{6'b{e % 8:03b}_{code:03b}}};\n"])
+        out += _ifdef("UDB_ELEN_64", lines) if e < 0 and sew > 32 * 2**e else lines
+    out.append("    }\n\n" + banner + "\n")
+    out.append(f"    //// end {name}" + "/" * 48 + "\n")
+    return "".join(out)
 
 
 _LMUL_CROSS_RE = re.compile(r"cp_ssstrictv_lmul(\d+)_(vd|vs1|vs2)_off_group")
@@ -743,7 +812,10 @@ def _gen_instrs(
             resolved = _resolve_coverpoint(cp, arch, instr)
             if resolved is None:
                 continue
-            rendered = customize_template(templates, resolved, arch, instr) + "\n"
+            if m := _VL_LMUL_RE.fullmatch(resolved):
+                rendered = _render_vl_lmul(m.group(1) or "", int(m.group(2))) + "\n"
+            else:
+                rendered = customize_template(templates, resolved, arch, instr) + "\n"
             if resolved == "cp_masking_edges" and _is_vector(arch):
                 rendered = _guard_mask_edges(rendered, instr, _instr_type, int(_get_effew(arch)))
             covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))

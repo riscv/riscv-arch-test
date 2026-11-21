@@ -165,7 +165,7 @@ covergroup Zvksh_vsm3c_vi_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs8_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
-        // LMUL values for EGS=8, SEW=32 instructions: LMUL * VLEN must be at least EGW = 256
+        // LMUL = 1/2 to 8 at which VLEN * LMUL can reach EGW = EGS * SEW = 256
         bins eight = {3};
         `ifdef ZVL64B_SUPPORTED
             bins four = {2};
@@ -185,9 +185,8 @@ covergroup Zvksh_vsm3c_vi_cg with function sample(ins_t ins);
 
     cr_vl_lmul_egs8_sew32 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                          3'(vl_check(ins.hart, ins.issue, 8))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
-        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=8 instructions at SEW=32.
-        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
-        // element groups for a distinct VLMAX and four for a value in between.
+        // LMUL = 1/2 to 8 at SEW = 32 crossed with vl = 8, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 8, 16 and 24 to reach them.
         `ifdef UDB_ELEN_64
             `ifdef ZVL512B_SUPPORTED
                 bins half_one = {6'b111_001};
@@ -234,7 +233,7 @@ covergroup Zvksh_vsm3c_vi_cg with function sample(ins_t ins);
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    //// end cr_vl_lmul_egs8_sew32 ////////////////////////////////////////////////
+    //// end cr_vl_lmul_egs8_sew32////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vs2_vd_edges_egs8
@@ -547,7 +546,7 @@ covergroup Zvksh_vsm3me_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_lmul_egs8_sew32 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2) {
-        // LMUL values for EGS=8, SEW=32 instructions: LMUL * VLEN must be at least EGW = 256
+        // LMUL = 1/2 to 8 at which VLEN * LMUL can reach EGW = EGS * SEW = 256
         bins eight = {3};
         `ifdef ZVL64B_SUPPORTED
             bins four = {2};
@@ -567,9 +566,8 @@ covergroup Zvksh_vsm3me_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_egs8_sew32 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                          3'(vl_check(ins.hart, ins.issue, 8))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 2)  {
-        // LMUL crossed with vl = EGS, VLMAX and a value in between for EGS=8 instructions at SEW=32.
-        // LMUL * VLEN must be at least EGW = 256, and VLMAX = VLEN * LMUL / SEW must hold at least two
-        // element groups for a distinct VLMAX and four for a value in between.
+        // LMUL = 1/2 to 8 at SEW = 32 crossed with vl = 8, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 8, 16 and 24 to reach them.
         `ifdef UDB_ELEN_64
             `ifdef ZVL512B_SUPPORTED
                 bins half_one = {6'b111_001};
@@ -616,7 +614,7 @@ covergroup Zvksh_vsm3me_vv_cg with function sample(ins_t ins);
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    //// end cr_vl_lmul_egs8_sew32 ////////////////////////////////////////////////
+    //// end cr_vl_lmul_egs8_sew32////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vs2_vs1_edges_egs8

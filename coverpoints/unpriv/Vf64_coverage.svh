@@ -274,10 +274,8 @@ covergroup Vf64_vfadd_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -633,10 +631,8 @@ covergroup Vf64_vfadd_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -852,10 +848,8 @@ covergroup Vf64_vfclass_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -1052,10 +1046,8 @@ covergroup Vf64_vfcvt_f_x_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -1252,10 +1244,8 @@ covergroup Vf64_vfcvt_f_xu_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -1516,10 +1506,8 @@ covergroup Vf64_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -1780,10 +1768,8 @@ covergroup Vf64_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -2053,10 +2039,8 @@ covergroup Vf64_vfcvt_x_f_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -2326,10 +2310,8 @@ covergroup Vf64_vfcvt_xu_f_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -2649,10 +2631,8 @@ covergroup Vf64_vfdiv_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -3018,10 +2998,8 @@ covergroup Vf64_vfdiv_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -3339,10 +3317,8 @@ covergroup Vf64_vfmacc_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -3696,10 +3672,8 @@ covergroup Vf64_vfmacc_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -4017,10 +3991,8 @@ covergroup Vf64_vfmadd_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -4374,10 +4346,8 @@ covergroup Vf64_vfmadd_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -4677,10 +4647,8 @@ covergroup Vf64_vfmax_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -5016,10 +4984,8 @@ covergroup Vf64_vfmax_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -5248,10 +5214,8 @@ covergroup Vf64_vfmerge_vfm_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -5551,10 +5515,8 @@ covergroup Vf64_vfmin_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -5890,10 +5852,8 @@ covergroup Vf64_vfmin_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -6211,10 +6171,8 @@ covergroup Vf64_vfmsac_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -6568,10 +6526,8 @@ covergroup Vf64_vfmsac_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -6889,10 +6845,8 @@ covergroup Vf64_vfmsub_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -7246,10 +7200,8 @@ covergroup Vf64_vfmsub_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -7575,10 +7527,8 @@ covergroup Vf64_vfmul_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -7940,10 +7890,8 @@ covergroup Vf64_vfmul_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -8183,10 +8131,8 @@ covergroup Vf64_vfmv_f_s_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -8360,10 +8306,8 @@ covergroup Vf64_vfmv_s_f_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -8489,10 +8433,8 @@ covergroup Vf64_vfmv_v_f_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -8801,10 +8743,8 @@ covergroup Vf64_vfnmacc_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -9158,10 +9098,8 @@ covergroup Vf64_vfnmacc_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -9479,10 +9417,8 @@ covergroup Vf64_vfnmadd_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -9836,10 +9772,8 @@ covergroup Vf64_vfnmadd_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -10157,10 +10091,8 @@ covergroup Vf64_vfnmsac_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -10514,10 +10446,8 @@ covergroup Vf64_vfnmsac_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -10835,10 +10765,8 @@ covergroup Vf64_vfnmsub_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -11192,10 +11120,8 @@ covergroup Vf64_vfnmsub_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -11525,10 +11451,8 @@ covergroup Vf64_vfrdiv_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -11953,10 +11877,8 @@ covergroup Vf64_vfrec7_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -12282,10 +12204,8 @@ covergroup Vf64_vfredmax_vs_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -12621,10 +12541,8 @@ covergroup Vf64_vfredmin_vs_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -13104,10 +13022,8 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -13459,10 +13375,8 @@ covergroup Vf64_vfredusum_vs_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -13923,10 +13837,8 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -14232,10 +14144,8 @@ covergroup Vf64_vfrsub_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -14461,10 +14371,8 @@ covergroup Vf64_vfsgnj_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -14726,10 +14634,8 @@ covergroup Vf64_vfsgnj_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -14955,10 +14861,8 @@ covergroup Vf64_vfsgnjn_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -15220,10 +15124,8 @@ covergroup Vf64_vfsgnjn_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -15449,10 +15351,8 @@ covergroup Vf64_vfsgnjx_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -15714,10 +15614,8 @@ covergroup Vf64_vfsgnjx_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -15943,10 +15841,8 @@ covergroup Vf64_vfslide1down_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -16162,10 +16058,8 @@ covergroup Vf64_vfslide1up_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -16445,10 +16339,8 @@ covergroup Vf64_vfsqrt_v_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -16754,10 +16646,8 @@ covergroup Vf64_vfsub_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -17109,10 +16999,8 @@ covergroup Vf64_vfsub_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -17402,10 +17290,8 @@ covergroup Vf64_vmfeq_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -17711,10 +17597,8 @@ covergroup Vf64_vmfeq_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -18004,10 +17888,8 @@ covergroup Vf64_vmfge_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -18297,10 +18179,8 @@ covergroup Vf64_vmfgt_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -18590,10 +18470,8 @@ covergroup Vf64_vmfle_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -18899,10 +18777,8 @@ covergroup Vf64_vmfle_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -19192,10 +19068,8 @@ covergroup Vf64_vmflt_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -19501,10 +19375,8 @@ covergroup Vf64_vmflt_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -19794,10 +19666,8 @@ covergroup Vf64_vmfne_vf_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif
@@ -20103,10 +19973,8 @@ covergroup Vf64_vmfne_vv_cg with function sample(ins_t ins);
 
     cr_vl_lmul_sew64 : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")[2:0],
                                     3'(vl_check(ins.hart, ins.issue))}  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 3)  {
-        // Cross coverage all legal LMULs for SEW = 64 and vl edges (1, random, vlmax)
-        // vl = 1, VLMAX and a value in between for each LMUL. VLMAX = VLEN * LMUL / SEW must be
-        // at least 2 for a distinct VLMAX and at least 3 for a value in between.
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 64
+        // LMUL = 1 to 8 at SEW = 64 crossed with vl = 1, VLMAX and a value in between.
+        // VLMAX = VLEN * LMUL / SEW must be at least 1, 2 and 3 to reach them.
         `ifdef ZVL64B_SUPPORTED
             bins one_one = {6'b000_001};
         `endif

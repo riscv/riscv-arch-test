@@ -495,21 +495,12 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    csr_nonuser: coverpoint ins.current.insn[31:20]  {
-        bins nonuser_0[]  = {[12'h100:12'h3FF]};
-        // ignore the custom supervisor and hypervisor CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF,
-        // 0xDC0-0xDFF, 0xEC0-0xEFF), which raise virtual instruction if implemented
-        bins nonuser_1a[] = {[12'h500:12'h5BF]};
-        bins nonuser_1b[] = {[12'h600:12'h6BF]};
-        // ignore mscontext at 0x7aa, which may be accessible from S mode
-        bins nonuser_1c[] = {[12'h700:12'h7A9]};
-        bins nonuser_1d[] = {[12'h7AB:12'h7FF]};
-        bins nonuser_2a[] = {[12'h900:12'h9BF]};
-        bins nonuser_2b[] = {[12'hA00:12'hABF]};
-        bins nonuser_2c[] = {[12'hB00:12'hBFF]};
-        bins nonuser_3a[] = {[12'hD00:12'hDBF]};
-        bins nonuser_3b[] = {[12'hE00:12'hEBF]};
-        bins nonuser_3c[] = {[12'hF00:12'hFFF]};
+    csraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
     csrr: coverpoint ins.current.insn  {
         wildcard bins csrr = {CSRR};
@@ -517,16 +508,101 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
     csrw: coverpoint ins.current.insn  {
         wildcard bins csrw = {CSRRW};
     }
-    csr_uro: coverpoint ins.current.insn[31:20]  {
-        bins sro[] = {[12'hC00:12'hCFF]};
-    }
     nonzerord: coverpoint ins.current.insn[11:7] {
         type_option.weight = 0;
         bins nonzero = { [1:$] }; // rd != 0
     }
 
-    cp_csr_insufficient_priv: cross priv_mode_vu, csrr, csr_nonuser, nonzerord;
+    // Every M-mode CSR number raises illegal instruction in VU-mode, whether or not the CSR is implemented
+    csr_machine : coverpoint ins.current.insn[31:20] {
+        bins machine_0[]  = {[12'h300:12'h3FF]};
+        bins machine_1a[] = {[12'h700:12'h7A9]};
+        // ignore mscontext at 0x7aa, which may be accessible from S mode
+        bins machine_1b[] = {[12'h7AB:12'h7FF]};
+        bins machine_2[]  = {[12'hB00:12'hBFF]};
+        bins machine_3[]  = {[12'hF00:12'hFFF]};
+    }
+    cp_csr_insufficient_priv: cross priv_mode_vu, csrr, csr_machine, nonzerord;
+
+    // Every write to a user read-only CSR number raises illegal instruction in VU-mode, as in U_ucsr_cg
+    csr_uro: coverpoint ins.current.insn[31:20]  {
+        bins sro[] = {[12'hC00:12'hCFF]};
+    }
     cp_csr_ro:                cross priv_mode_vu, csrw, csr_uro;
+
+    // HS and VS H CSRs raise virtual instruction in VU-mode when the access is legal in HS-mode
+    hsvscsrname : coverpoint ins.current.insn[31:20] {
+        bins hstatus    = {CSR_HSTATUS};
+        bins hedeleg    = {CSR_HEDELEG};
+        bins hideleg    = {CSR_HIDELEG};
+        bins hie        = {CSR_HIE};
+        bins hcounteren = {CSR_HCOUNTEREN};
+        bins hgeie      = {CSR_HGEIE};
+        bins henvcfg    = {CSR_HENVCFG};
+        bins htval      = {CSR_HTVAL};
+        bins hip        = {CSR_HIP};
+        bins hvip       = {CSR_HVIP};
+        bins htinst     = {CSR_HTINST};
+        bins hgatp      = {CSR_HGATP};
+        bins hgeip      = {CSR_HGEIP};
+        bins vsstatus   = {CSR_VSSTATUS};
+        bins vsie       = {CSR_VSIE};
+        bins vstval     = {CSR_VSTVAL};
+        bins vsip       = {CSR_VSIP};
+        bins vstvec     = {CSR_VSTVEC};
+        bins vsscratch  = {CSR_VSSCRATCH};
+        bins vsepc      = {CSR_VSEPC};
+        bins vscause    = {CSR_VSCAUSE};
+        bins vsatp      = {CSR_VSATP};
+        `ifdef ZICNTR_SUPPORTED
+            bins htimedelta = {CSR_HTIMEDELTA};
+        `endif
+        `ifdef SSTC_SUPPORTED
+            bins vstimecmp = {CSR_VSTIMECMP};
+        `endif
+        `ifdef UDB_MXLEN_32
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
+                bins hedelegh = {CSR_HEDELEGH};
+            `endif
+            `ifdef ZICNTR_SUPPORTED
+                bins htimedeltah = {CSR_HTIMEDELTAH};
+            `endif
+            bins henvcfgh = {CSR_HENVCFGH};
+            `ifdef SSTC_SUPPORTED
+                bins vstimecmph = {CSR_VSTIMECMPH};
+            `endif
+        `endif
+    }
+    cp_hcsr_virtualinstructionfault: cross priv_mode_vu, hsvscsrname, csraccesses;
+
+    // S CSRs raise virtual instruction in VU-mode when the access is legal in HS-mode
+    scsrname : coverpoint ins.current.insn[31:20] {
+        bins sstatus    = {CSR_SSTATUS};
+        bins sie        = {CSR_SIE};
+        bins stvec      = {CSR_STVEC};
+        bins sscratch   = {CSR_SSCRATCH};
+        bins sepc       = {CSR_SEPC};
+        bins scause     = {CSR_SCAUSE};
+        bins stval      = {CSR_STVAL};
+        bins sip        = {CSR_SIP};
+        bins satp       = {CSR_SATP};
+        bins scounteren = {CSR_SCOUNTEREN};
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins senvcfg = {CSR_SENVCFG};
+        `endif
+    }
+    cp_scsr_virtualinstructionfault: cross priv_mode_vu, scsrname, csraccesses;
+
+    // The high halves of H CSRs do not exist on RV64, so they raise illegal instruction
+    `ifdef UDB_MXLEN_64
+        uppercsrname : coverpoint ins.current.insn[31:20] {
+            bins hedelegh    = {CSR_HEDELEGH};
+            bins htimedeltah = {CSR_HTIMEDELTAH};
+            bins henvcfgh    = {CSR_HENVCFGH};
+            bins vstimecmph  = {CSR_VSTIMECMPH};
+        }
+        cp_illegalupper:             cross priv_mode_vu, uppercsrname, csraccesses;
+    `endif
 endgroup
 
 covergroup H_inst_cg with function sample(ins_t ins);

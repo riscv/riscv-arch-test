@@ -8,28 +8,17 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-import math
 import random
 import re
-import struct
 from collections.abc import Callable
 
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
+from testgen.data.shaped import FP_FORMATS, exponent_range, fp_to_int_source, mask
 from testgen.data.state import TestData
-
-# FP formats: (exponent bits, stored significand bits)
-FP_FORMATS = {"h": (5, 10), "bf16": (8, 7), "s": (8, 23), "d": (11, 52), "q": (15, 112)}
 
 # Fraction of random FP tests that start with random nonzero fflags, so a DUT that clears or overwrites fflags fails
 PRESET_FFLAGS_FRACTION = 0.5
-
-# FP-to-int converts (as in the vector tests): a quarter of sources are uniform over 1.5x the integer range, to
-# cover the saturation boundary; the rest have a log-uniform magnitude from 2^-2 up, with fractional bits
-CONVERT_UNIFORM_FRACTION = 0.25
-CONVERT_RANGE_SCALE = 1.5
-CONVERT_MIN_EXPONENT = -2
-CONVERT_UNSIGNED_NEGATIVE_FRACTION = 0.125
 
 # Fraction of narrowing converts and fround sources left uniformly random
 UNBIASED_FRACTION = 0.25
@@ -51,10 +40,6 @@ DIVIDES = re.compile(r"(div|rem)(u?)(w?)$")
 XPERM = re.compile(r"xperm(4|8)$")
 CZERO = re.compile(r"czero\.(eqz|nez)$")
 COUNT_ZEROS = re.compile(r"(clz|ctz)(w?)$")
-
-
-def _mask(bits: int) -> int:
-    return (1 << bits) - 1
 
 
 def _value_of_width(width: int) -> int:
@@ -79,7 +64,7 @@ def fp_bits(fmt: str, sign: int, exponent: int, significand: int) -> int:
     ebits, mbits = FP_FORMATS[fmt]
     bias = (1 << (ebits - 1)) - 1
     biased = exponent + bias
-    significand &= _mask(mbits)
+    significand &= mask(mbits)
     if biased >= (1 << ebits) - 1:
         biased, significand = (1 << ebits) - 1, 0
     elif biased <= 0:
@@ -93,32 +78,6 @@ def random_fp(fmt: str, exponent: int, sign: int | None = None) -> int:
     """A random FP value with the given unbiased exponent (random sign unless given)."""
     mbits = FP_FORMATS[fmt][1]
     return fp_bits(fmt, random.randint(0, 1) if sign is None else sign, exponent, random_int(mbits, signed=False))
-
-
-def exponent_range(fmt: str) -> tuple[int, int]:
-    """Smallest and largest unbiased exponents of normal numbers."""
-    ebits = FP_FORMATS[fmt][0]
-    bias = (1 << (ebits - 1)) - 1
-    return 1 - bias, bias
-
-
-def float_to_fp(value: float, fmt: str) -> int:
-    """Encode a Python float in the given FP format (round to nearest for h/s; truncated for bf16)."""
-    if fmt == "h":
-        return struct.unpack("<H", struct.pack("<e", value))[0]
-    single = struct.unpack("<I", struct.pack("<f", value))[0]
-    if fmt == "s":
-        return single
-    if fmt == "bf16":
-        return single >> 16
-    double = struct.unpack("<Q", struct.pack("<d", value))[0]
-    if fmt == "d":
-        return double
-    # Quad: widen the double's exponent and significand
-    sign, biased, frac = double >> 63, (double >> 52) & 0x7FF, double & _mask(52)
-    if biased == 0:
-        return sign << 127  # Only zero reaches here (magnitudes are >= 2^-2)
-    return (sign << 127) | ((biased - 1023 + 16383) << 112) | (frac << 60)
 
 
 ##################################
@@ -149,20 +108,6 @@ def fp_fma_sources(fmt: str) -> tuple[int, int, int]:
     if not emin <= e3 <= emax:
         e3 = 2 * product - e3
     return random_fp(fmt, e1), random_fp(fmt, product - e1), random_fp(fmt, max(emin, min(emax, e3)))
-
-
-def fp_to_int_source(fmt: str, int_width: int, *, signed: bool) -> int:
-    """An FP source whose magnitude reaches CONVERT_RANGE_SCALE times the destination integer range."""
-    fp_max = 2.0 ** min(exponent_range(fmt)[1] + 1, 1023)
-    int_range = 2.0 ** (int_width - 1 if signed else int_width)
-    limit = min(CONVERT_RANGE_SCALE * int_range, fp_max * 0.99)
-    if random.random() < CONVERT_UNIFORM_FRACTION:
-        magnitude = random.uniform(0, limit)
-    else:
-        magnitude = 2.0 ** random.uniform(CONVERT_MIN_EXPONENT, math.log2(limit))
-    negative_fraction = 0.5 if signed else CONVERT_UNSIGNED_NEGATIVE_FRACTION
-    value = -magnitude if random.random() < negative_fraction else magnitude
-    return float_to_fp(value, fmt)
 
 
 def fp_narrowing_source(source: str, dest: str) -> int:
@@ -199,8 +144,8 @@ def fp_sqrt_source(fmt: str) -> int:
 def _random_upper(value: int, width: int, xlen: int) -> int:
     """Fill the bits above width with random bits (ignored by word instructions)."""
     if width >= xlen:
-        return value & _mask(xlen)
-    return (random_int(xlen - width, signed=False) << width) | (value & _mask(width))
+        return value & mask(xlen)
+    return (random_int(xlen - width, signed=False) << width) | (value & mask(width))
 
 
 def int_to_fp_source(dest: str, width: int, *, signed: bool) -> int:
@@ -212,7 +157,7 @@ def int_to_fp_source(dest: str, width: int, *, signed: bool) -> int:
     value = _value_of_width(random.randint(0, magnitude_bits))
     if signed and random.random() < 0.5:
         value = -value
-    return value & _mask(width)
+    return value & mask(width)
 
 
 def divide_sources(width: int, *, signed: bool) -> tuple[int, int]:
@@ -226,7 +171,7 @@ def divide_sources(width: int, *, signed: bool) -> tuple[int, int]:
     if signed:
         dividend = -dividend if random.random() < 0.5 else dividend
         divisor = -divisor if random.random() < 0.5 else divisor
-    return dividend & _mask(width), divisor & _mask(width)
+    return dividend & mask(width), divisor & mask(width)
 
 
 def xperm_indices(element_bits: int, xlen: int) -> int:
@@ -259,7 +204,7 @@ def count_zeros_source(width: int, *, leading: bool) -> int:
     if leading:
         top = width - 1 - zeros
         return (1 << top) | random_int(top, signed=False) if top else 1
-    return ((random_int(width - zeros - 1, signed=False) << 1 | 1) << zeros) & _mask(width)
+    return ((random_int(width - zeros - 1, signed=False) << 1 | 1) << zeros) & mask(width)
 
 
 ##################################

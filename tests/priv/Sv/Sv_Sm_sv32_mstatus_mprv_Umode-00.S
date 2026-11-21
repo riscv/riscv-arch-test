@@ -86,6 +86,24 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test1_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_load_test1_load:
   lw x14, 20(x13)
   nop
+
+  LI(x15, MSTATUS_MPRV)
+  csrc mstatus, x15
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x15, rvtest_data_1)
+  srli x15, x15, 22
+  andi x15, x15, 0x3ff
+  slli x15, x15, 2
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x15, x15, x13
+  LREG x13, 0(x15)
+  andi x13, x13, ~PTE_X
+  SREG x13, 0(x15)
+  sfence.vma
+  LI(x15, MSTATUS_MPRV)
+  csrs mstatus, x15
+  LI(x15, 0x1800)
+  csrc mstatus, x15
   LA(x13, rvtest_data_1)
 
 // Execute
@@ -95,6 +113,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_ins_test1_exec:
 
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x15, rvtest_data_1)
+  srli x15, x15, 22
+  andi x15, x15, 0x3ff
+  slli x15, x15, 2
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x15, x15, x13
+  LREG x13, 0(x15)
+  ori x13, x13, PTE_X
+  SREG x13, 0(x15)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test1_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test1_store_str)
@@ -127,6 +156,24 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test2_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_load_test2_load:
   lw x14, 20(x13)
   nop
+
+  LI(x15, MSTATUS_MPRV)
+  csrc mstatus, x15
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x15, rvtest_data_1)
+  srli x15, x15, 22
+  andi x15, x15, 0x3ff
+  slli x15, x15, 2
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x15, x15, x13
+  LREG x13, 0(x15)
+  andi x13, x13, ~PTE_X
+  SREG x13, 0(x15)
+  sfence.vma
+  LI(x15, MSTATUS_MPRV)
+  csrs mstatus, x15
+  LI(x15, 0x1800)
+  csrc mstatus, x15
   LA(x13, rvtest_data_1)
 
 // Execute
@@ -136,6 +183,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_ins_test2_exec:
 
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x15, rvtest_data_1)
+  srli x15, x15, 22
+  andi x15, x15, 0x3ff
+  slli x15, x15, 2
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x15, x15, x13
+  LREG x13, 0(x15)
+  ori x13, x13, PTE_X
+  SREG x13, 0(x15)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test2_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test2_store_str)

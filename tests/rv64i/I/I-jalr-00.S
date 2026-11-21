@@ -1579,17 +1579,17 @@ I_jalr_cg_cmp_rd_rs1_nx0_b31:
 1: addi x20, x20, 4 # backward jump target, increment check value
   j 3f # jump past backward jump
 2: LA(x15, 1b) # load backward jump target
-I_jalr_cg_cp_offset_jalr_neg:
+I_jalr_cg_cp_offset_neg:
   jalr x27, x15, 0 # backward jump
   addi x20, x20, -2 # jump not taken, decrement check value
 3:  # done with sequence
   # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x20, I_jalr_cg_cp_offset_jalr_neg, I_jalr_cg_cp_offset_jalr_neg_str)
+  RVTEST_SIGUPD(x9, x5, x4, x20, I_jalr_cg_cp_offset_neg, I_jalr_cg_cp_offset_neg_str)
   # check return address from jalr
   auipc x20, 0 # get current PC
   sub x27, x27, x20 # subtract PC to make position-independent
   # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x27, I_jalr_cg_cp_offset_jalr_neg, I_jalr_cg_cp_offset_jalr_neg_str)
+  RVTEST_SIGUPD(x9, x5, x4, x27, I_jalr_cg_cp_offset_neg, I_jalr_cg_cp_offset_neg_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=0, imm LSB=0)
   RVTEST_TESTDATA_LOAD_INT(x25, x28) # load jump check value: x28 = 0x5d9b8a9308ed3e8a
@@ -2208,7 +2208,7 @@ I_jalr_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 91; cg: I_jalr_cg; cp: cmp_rd
 I_jalr_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 92; cg: I_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
 I_jalr_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 93; cg: I_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
 I_jalr_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 94; cg: I_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
-I_jalr_cg_cp_offset_jalr_neg_str: .string "\"test: 95; cg: I_jalr_cg; cp: cp_offset_jalr; bin: neg\""
+I_jalr_cg_cp_offset_neg_str: .string "\"test: 95; cg: I_jalr_cg; cp: cp_offset; bin: neg\""
 I_jalr_cg_cp_offset_lsbs_0_0_str: .string "\"test: 96; cg: I_jalr_cg; cp: cp_offset_lsbs; bin: 0_0\""
 I_jalr_cg_cp_offset_lsbs_0_1_str: .string "\"test: 97; cg: I_jalr_cg; cp: cp_offset_lsbs; bin: 0_1\""
 I_jalr_cg_cp_offset_lsbs_1_0_str: .string "\"test: 98; cg: I_jalr_cg; cp: cp_offset_lsbs; bin: 1_0\""

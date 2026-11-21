@@ -106,6 +106,28 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test1_load:
   csrs mstatus, x14
   LI(x14, MSTATUS_SUM)
   csrc mstatus, x14
+
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 30
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x8, rvtest_Sroot_pg_tbl)
+  add x14, x14, x8
+  LREG x8, 0(x14)
+  andi x8, x8, ~PTE_X
+  SREG x8, 0(x14)
+  sfence.vma
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+  LI(x14, 0x1800)
+  csrc mstatus, x14
+  LI(x14, 0x800)
+  csrs mstatus, x14
+  LI(x14, MSTATUS_SUM)
+  csrc mstatus, x14
   LA(x8, rvtest_data_1)
 
 // Execute
@@ -115,6 +137,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test1_exec:
 
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 30
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x8, rvtest_Sroot_pg_tbl)
+  add x14, x14, x8
+  LREG x8, 0(x14)
+  ori x8, x8, PTE_X
+  SREG x8, 0(x14)
+  sfence.vma
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test1_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test1_store_str)
@@ -171,6 +204,28 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test2_load:
   csrs mstatus, x14
   LI(x14, MSTATUS_SUM)
   csrc mstatus, x14
+
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 30
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x8, rvtest_Sroot_pg_tbl)
+  add x14, x14, x8
+  LREG x8, 0(x14)
+  andi x8, x8, ~PTE_X
+  SREG x8, 0(x14)
+  sfence.vma
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+  LI(x14, 0x1800)
+  csrc mstatus, x14
+  LI(x14, 0x800)
+  csrs mstatus, x14
+  LI(x14, MSTATUS_SUM)
+  csrc mstatus, x14
   LA(x8, rvtest_data_1)
 
 // Execute
@@ -180,6 +235,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test2_exec:
 
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 30
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x8, rvtest_Sroot_pg_tbl)
+  add x14, x14, x8
+  LREG x8, 0(x14)
+  ori x8, x8, PTE_X
+  SREG x8, 0(x14)
+  sfence.vma
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test2_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test2_store_str)
@@ -237,6 +303,28 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test3_load:
   csrs mstatus, x14
   LI(x14, MSTATUS_SUM)
   csrc mstatus, x14
+
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 30
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x8, rvtest_Sroot_pg_tbl)
+  add x14, x14, x8
+  LREG x8, 0(x14)
+  andi x8, x8, ~PTE_X
+  SREG x8, 0(x14)
+  sfence.vma
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+  LI(x14, 0x1800)
+  csrc mstatus, x14
+  LI(x14, 0x800)
+  csrs mstatus, x14
+  LI(x14, MSTATUS_SUM)
+  csrc mstatus, x14
   LA(x8, rvtest_data_1)
 
 // Execute
@@ -246,6 +334,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test3_exec:
 
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 30
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x8, rvtest_Sroot_pg_tbl)
+  add x14, x14, x8
+  LREG x8, 0(x14)
+  ori x8, x8, PTE_X
+  SREG x8, 0(x14)
+  sfence.vma
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test3_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test3_store_str)

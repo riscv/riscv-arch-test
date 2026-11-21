@@ -645,17 +645,15 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData, mode: str, of_name
         lines.extend(write_of_pattern(r_of_bit, of_name, of_bit_fn, mode, of_state))
         test_data.int_regs.return_registers([r_of_bit])
 
-        walk_coverpoint = f"{coverpoint}_{of_name}_{mode.lower()}"
-
         r_mcounteren, r_scountovf = test_data.int_regs.get_registers(2)
 
         for state_name, val in [("all_zeros", 0), ("all_ones", 0xFFFFFFF8)]:
-            binname = f"mcounteren_{state_name}"
+            binname = f"{of_name}_mcounteren_{state_name}"
             lines.extend(
                 [
                     f"LI(x{r_mcounteren}, {hex(val)})",
                     f"{tsbi_call_or_direct(f'csrw mcounteren, x{r_mcounteren}', mode)}",
-                    f"{test_data.add_testcase(binname, walk_coverpoint, covergroup)}",
+                    f"{test_data.add_testcase(binname, coverpoint, covergroup)}",
                     f"{tsbi_call_or_direct(f'csrr x{r_scountovf}, scountovf   # sample point', mode)}",
                     f"{write_sigupd(r_scountovf, test_data)}",
                     "",
@@ -663,12 +661,12 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData, mode: str, of_name
             )
 
         for bit in range(3, 32):
-            binname = f"mcounteren_walk_bit_{bit}"
+            binname = f"{of_name}_mcounteren_walk_bit_{bit}"
             lines.extend(
                 [
                     f"LI(x{r_mcounteren}, {1 << bit})",
                     f"{tsbi_call_or_direct(f'csrw mcounteren, x{r_mcounteren}', mode)}",
-                    f"{test_data.add_testcase(binname, walk_coverpoint, covergroup)}",
+                    f"{test_data.add_testcase(binname, coverpoint, covergroup)}",
                     f"{tsbi_call_or_direct(f'csrr x{r_scountovf}, scountovf   # sample point', mode)}",
                     f"{write_sigupd(r_scountovf, test_data)}",
                     "",

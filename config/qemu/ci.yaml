@@ -142,6 +142,9 @@ exclude_extensions:
   - Sstc_HSm
   # Runs in VS-mode and VU-mode, which QEMU never enters (see H above).
   - Ssnpm_H
+  # The same mstatus.MPV bug keeps the VS-mode and VU-mode WRS tests in HS-mode
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
+  - Zawrs_H
   # QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
   # same issue as Exceptions_ZicboU/Exceptions_ZicboS and Sv_Zicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
   - Ssnpm_bare_pmm00_sweep

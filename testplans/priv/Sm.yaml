@@ -76,6 +76,16 @@ coverpoints:
     description: With mcountinhibit[2/0] = {0, 1}, read mcycle and minstret multiple times and check whether they increment.
     expectation: Count when not inhibited, remain constant when inhibited
     bins: "2"
+  - name: cp_cntr_shadow
+    goal: cycle, instret and hpmcounters are read-only shadows of the machine counters
+    description: In M-mode, write mcycle, minstret and each implemented mhpmcounter. Then read cycle, instret and hpmcounter.
+    expectation: cycle is less than 100 above the written value. instret and the frozen hpmcounters equal the written value.
+    bins: (2 + implemented hpmcounters)
+  - name: cp_cntrh_shadow
+    goal: On RV32, cycleh, instreth and hpmcounterh return the upper half of the machine counters
+    description: In M-mode, write 0 to the low half and a different value to mcycleh, minstreth and each implemented mhpmcounterh. Then read cycleh, instreth and hpmcounterh.
+    expectation: Each read equals the written high half.
+    bins: (2 + implemented hpmcounters)
   - name: cp_mcause_write
     goal: Legal values can be written to mcause
     description: |-

@@ -1,0 +1,1 @@
+run-cv32e40s.sh --cfg rv32imc-pma-pmp --elf

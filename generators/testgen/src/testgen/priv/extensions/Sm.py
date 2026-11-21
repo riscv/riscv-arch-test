@@ -11,12 +11,13 @@
 
 """Sm privileged extension test generator."""
 
-from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
+from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, upper_half
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.FCommon import gen_fcsr_tests
+from testgen.priv.extensions.H import CSR_FORMS
 from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_M_CSRS,
@@ -54,6 +55,8 @@ from testgen.priv.extensions.ZicntrCommon import (
     instret_retire_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
+
+MENVCFG_CDE = 1 << 60  # Smcdeleg counter delegation enable
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
 SM_VADDR_CSRS = {
@@ -572,7 +575,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
         | (1 << 59)  # DTE: Double Trap Enable
-        | (0 << 60)  # CDE: Smcdeleg is not modeled by Sail; walked only without Smcdeleg (see menvcfg_cde)
+        | (0 << 60)  # CDE: Sail does not implement Smcdeleg; only the walks cover it (MENVCFG_CDE)
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
@@ -626,18 +629,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
-    # The walks also cover menvcfg.CDE, which is read-only zero without Smcdeleg. Sail does not model
-    # Smcdeleg, so with Smcdeleg CDE is neither written nor checked.
-    # TODO: walk and check CDE everywhere (fold it into menvcfg_mask) when Sail implements Smcdeleg
-    menvcfg_cde = 1 << 60
-    csr_menvcfg_walk = ("menvcfg", menvcfg_mask | menvcfg_cde)
-    menvcfg_cde_unchecked = [(menvcfg_cde, "SMCDELEG_SUPPORTED")]
+    # TODO: Walk menvcfg.CDE everywhere (and add it to menvcfg_mask) once Sail implements Smcdeleg.
+    # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
+    # as read-only zero elsewhere.
+    cde_unwalked = [(MENVCFG_CDE, "defined(SMCDELEG_SUPPORTED)")]
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
-    csr_menvcfgh_walk = ("menvcfgh", (menvcfg_mask | menvcfg_cde) >> 32)
-    menvcfgh_cde_unchecked = [(menvcfg_cde >> 32, "SMCDELEG_SUPPORTED")]
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
     # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
     csr_medelegh = ("0x312", 0x00000000)
@@ -790,12 +789,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfg_walk,
+            csr_menvcfg,
             covergroup,
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
-            unchecked_bits=menvcfg_cde_unchecked,
+            unchecked_bits=cde_unwalked,
         )
     )
     tc.code.append("#endif")
@@ -820,11 +819,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfgh_walk,
+            csr_menvcfgh,
             covergroup,
             coverpoint_masked,
             maskedwrites=True,
-            unchecked_bits=menvcfgh_cde_unchecked,
+            unchecked_bits=upper_half(cde_unwalked),
         )
     )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
@@ -2109,12 +2108,7 @@ def _h_tvm_tests(test_data: TestData) -> list[str]:
     )
     zero_reg = test_data.int_regs.get_register()
     lines.append(f"LI(x{zero_reg}, 0)")
-    atp_forms = {
-        "csrr": "csrr x{rd}, {csr}",
-        "csrrw": "csrrw x{rd}, {csr}, x{zero}",
-        "csrrs": "csrrs x{rd}, {csr}, x{zero}",
-        "csrrwi": "csrrwi x{rd}, {csr}, 0",
-    }
+    atp_forms = {form: CSR_FORMS[form] for form in ("csrrs_x0", "csrrw", "csrrs_zero", "csrrwi")}
     for mode, vtvms in (("VS", (0, 1)), ("VU", (0,))):
         for tvm in (0, 1):
             for vtvm in vtvms:

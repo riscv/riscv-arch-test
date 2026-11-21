@@ -142,21 +142,12 @@ coverpoints:
     bins: 768 CSRs
   - name: cp_hcsr_virtualinstructionfault
     goal: HS and VS registers cause virtual instruction fault from VS-mode
-    description: csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR
-    expectation: Virtual instruction fault, or illegal instruction for an access that HS-mode could not perform (a write to hgeip)
-    bins: 5 * (14-17 + 9-11)
-    rules:
-      - H_csrs_hs_not_vs
-      - H_vscsrs_acc_vs
-  - name: cp_hcsr_forms_vs
-    goal: Every CSR instruction form decides read or write correctly for the HS and VS H CSRs in VS-mode
-    description: "In VS-mode (test group H_vsforms), access each {HS/VS} H-Extension CSR, including hgeip, with each of eight forms: csrrw, csrrs and csrrc with rs1 = x0 and with a zero-valued rs1 != x0, csrrwi, csrrsi with uimm = 0 and csrrci with uimm != 0.  Record rd."
+    description: "Access each {HS/VS} H-Extension CSR, including hgeip, with each of the eight CSR forms: csrrw, csrrs and csrrc with rs1 = x0 and with a zero-valued rs1 != x0, csrrwi, csrrsi with uimm = 0 and csrrci with uimm != 0.  Record rd."
     expectation: "Virtual instruction fault for every access HS-mode could perform.  csrrs/csrrc with rs1 = x0 and csrrsi with uimm = 0 are reads; every other form is a write, even with a zero value, so it raises illegal instruction for the read-only hgeip.  rd is unchanged"
-    bins: 8 forms * (14-17 + 9-11)
+    bins: 8 * (14-17 + 9-11)
     rules:
       - H_csrs_hs_not_vs
       - H_vscsrs_acc_vs
-      - H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
   - name: cp_illegalupper
     goal: In RV64, h half of CSRs are illegal.
     description: "RV64 ONLY: csrrw, csrrs, csrrc, csrr  each h H-extension CSR"
@@ -200,26 +191,32 @@ coverpoints:
       - vsstatus_sd_xs_op
   - heading: Tests executed in VU-mode (H_vucsr_cg)
   - name: cp_csr_insufficient_priv
-    goal: CSRs other than user CSRs are inaccessible from VU-mode
-    description: In VU-mode, attempt to read each CSR number that is not a user CSR (0x100-0x3FF, 0x500-0x7FF except 0x7AA mscontext, which may be accessible from S-mode, 0x900-0xBFF, 0xD00-0xFFF) with a nonzero rd, as U_ucsr_cg/cp_csr_insufficient_priv in U-mode.  The custom supervisor and hypervisor CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF, 0xDC0-0xDFF, 0xEC0-0xEFF) are left out, because an implemented one raises virtual instruction.  U-mode accesses are covered by the U suite.
-    expectation: Virtual instruction fault for an implemented supervisor, hypervisor or VS CSR whose access HS-mode could perform; otherwise illegal instruction fault.  rd is unchanged
-    bins: 2687 CSRs
+    goal: M-mode CSRs are inaccessible from VU-mode
+    description: In VU-mode, attempt to read each CSR number in the M-mode ranges (0x300-0x3FF, 0x700-0x7FF except 0x7AA mscontext, 0xB00-0xBFF, 0xF00-0xFFF) with a nonzero rd, as H_vscsr_cg/cp_csr_insufficient_priv in VS-mode.  The supervisor, hypervisor and VS CSR numbers are not swept, because from VU-mode an implemented one raises virtual instruction and an unimplemented one raises illegal instruction, and the reference model knows only the CSRs of the extensions it implements.  Those CSRs are accessed by name in cp_hcsr_virtualinstructionfault and cp_scsr_virtualinstructionfault.
+    expectation: Illegal instruction fault, and rd is unchanged
+    bins: 1023 CSRs
     rules:
-      - H_vscsrs_acc_vs
       - Zicsr_illegal_mode
   - name: cp_csr_ro
     goal: User read-only CSRs cannot be written from VU-mode
     description: In VU-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xCFF, as U_ucsr_cg/cp_csr_ro in U-mode
     expectation: Illegal instruction fault, and rd is unchanged
     bins: 256 CSRs
-  - name: cp_scsr_forms_vu
-    goal: Every CSR instruction form decides read or write correctly for the S, HS and VS CSRs in VU-mode
-    description: "In VU-mode (test group H_vuforms), access each S CSR (sstatus, sie, stvec, scounteren, senvcfg, sscratch, sepc, scause, stval, sip, satp) and each {HS/VS} H-Extension CSR with the eight forms of cp_hcsr_forms_vs.  Record rd.  The group is not named H_vucsr, whose exclusions concern the AIA and Sscsrind CSRs, which it does not access."
-    expectation: Virtual instruction fault for every access HS-mode could perform; illegal instruction for the writing forms of hgeip.  rd is unchanged
-    bins: 8 forms * (11 + 14-17 + 9-11)
-    rules:
-      - H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
-      - H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
+  - name: cp_hcsr_virtualinstructionfault
+    goal: HS and VS registers cause virtual instruction fault from VU-mode
+    description: "Access each {HS/VS} H-Extension CSR, including hgeip, with each of the eight CSR forms: csrrw, csrrs and csrrc with rs1 = x0 and with a zero-valued rs1 != x0, csrrwi, csrrsi with uimm = 0 and csrrci with uimm != 0.  Record rd."
+    expectation: "Virtual instruction fault for every access HS-mode could perform.  csrrs/csrrc with rs1 = x0 and csrrsi with uimm = 0 are reads; every other form is a write, even with a zero value, so it raises illegal instruction for the read-only hgeip.  rd is unchanged"
+    bins: 8 * (14-17 + 9-11)
+  - name: cp_scsr_virtualinstructionfault
+    goal: S registers cause virtual instruction fault from VU-mode
+    description: Access each S CSR (sstatus, sie, stvec, sscratch, sepc, scause, stval, sip, satp, scounteren, senvcfg) with the eight CSR forms of cp_hcsr_virtualinstructionfault.  Record rd.
+    expectation: Virtual instruction fault, and rd is unchanged
+    bins: 8 * (10-11)
+  - name: cp_illegalupper
+    goal: In RV64, h half of CSRs are illegal from VU-mode
+    description: "RV64 ONLY: csrrw, csrrs, csrrc, csrr each h H-extension CSR"
+    expectation: Illegal instruction fault
+    bins: 5 * 4
   - heading: Instructions (H_inst_cg)
   - name: cp_hlv
     goal: Basic load

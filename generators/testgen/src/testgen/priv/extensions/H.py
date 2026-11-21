@@ -51,7 +51,10 @@ VSSTATUS_CG = "H_vsstatus_cg"
 VU_CG = "H_vucsr_cg"
 INST_CG = "H_inst_cg"
 
-# The CSR numbers of the M-mode CSRs, which VS-mode cannot access, as in S (cp_csr_insufficient_priv)
+# The CSR numbers of the M-mode CSRs, which VS-mode and VU-mode cannot access, as in S (cp_csr_insufficient_priv).
+# Only M-mode CSRs are swept, because an access from V=1 raises illegal instruction whether or not the CSR is
+# implemented.  An implemented supervisor, hypervisor or VS CSR raises virtual instruction instead, so those are
+# accessed by name (cp_hcsr_virtualinstructionfault, cp_scsr_virtualinstructionfault).
 M_CSR_RANGES = [
     range(0x300, 0x400),
     range(0x700, 0x7AA),  # exclude 0x7AA mscontext, which is accessible from S-mode
@@ -59,23 +62,7 @@ M_CSR_RANGES = [
     range(0xB00, 0xC00),
     range(0xF00, 0x1000),
 ]
-# The CSR numbers that are not user CSRs, and the user read-only CSRs, as in U (cp_csr_insufficient_priv, cp_csr_ro).
-# 0x7AA mscontext is left out as in S, because it may be accessible from S-mode and so raise virtual instruction.
-# The custom supervisor and hypervisor CSRs are left out because VU-mode access to an implemented one raises virtual
-# instruction, and which ones are implemented is up to the implementation.
-NONUSER_CSR_RANGES = [
-    range(0x100, 0x400),
-    range(0x500, 0x5C0),
-    range(0x600, 0x6C0),
-    range(0x700, 0x7AA),
-    range(0x7AB, 0x800),
-    range(0x900, 0x9C0),
-    range(0xA00, 0xAC0),
-    range(0xB00, 0xC00),
-    range(0xD00, 0xDC0),
-    range(0xE00, 0xEC0),
-    range(0xF00, 0x1000),
-]
+# The user read-only CSR numbers VU-mode tries to write, as in U (cp_csr_ro)
 USER_RO_CSR_RANGES = [range(0xC00, 0xD00)]
 # The read-only CSR numbers VS-mode tries to write, as in S (cp_csr_ro)
 S_RO_CSR_RANGES = [range(0xC00, 0xF00)]
@@ -92,6 +79,8 @@ S_UNREPLICATED_CSRS = [
     HCsr("scounteren"),
     HCsr("senvcfg", gate="defined(S1P12P0_OR_LATER_SUPPORTED)"),
 ]
+# S CSRs that VU-mode cannot access, which raise virtual instruction because HS-mode can access them
+S_CSRS = [*(HCsr(rep.s) for rep in REPLICAS), *S_UNREPLICATED_CSRS]
 # scountinhibit raises illegal instruction with menvcfg.CDE = 0, as boot leaves it, and virtual instruction in
 # VS-mode and VU-mode with CDE = 1
 SCOUNTINHIBIT = HCsr("scountinhibit", gate="defined(SSCCFG_SUPPORTED)")
@@ -101,6 +90,41 @@ def _csr_trap_test(test_data: TestData, csr: HCsr, covergroup: str, coverpoint: 
     """Access a CSR that traps in the current mode, as csr_access_test does a CSR that does not."""
     lines = csr_access_test(test_data, (csr.operand, None), covergroup, coverpoint)
     return gated([*csr.setup, *lines, *csr.restore], csr.gate)
+
+
+# The eight CSR instruction forms: rs1 = x0 and uimm = 0 read only; every other form writes, even with a zero value
+CSR_FORMS = {
+    "csrrw": "csrrw x{rd}, {csr}, x{zero}",
+    "csrrs_x0": "csrrs x{rd}, {csr}, x0",
+    "csrrs_zero": "csrrs x{rd}, {csr}, x{zero}",
+    "csrrc_x0": "csrrc x{rd}, {csr}, x0",
+    "csrrc_zero": "csrrc x{rd}, {csr}, x{zero}",
+    "csrrwi": "csrrwi x{rd}, {csr}, 0",
+    "csrrsi_zero": "csrrsi x{rd}, {csr}, 0",
+    "csrrci_nz": "csrrci x{rd}, {csr}, 1",
+}
+
+
+def _csr_forms_test(test_data: TestData, csr: HCsr, covergroup: str, coverpoint: str) -> list[str]:
+    """Access a CSR that traps in the current mode with each of the eight CSR forms; rd keeps its old value.
+
+    An access raises virtual instruction when the same access is legal in HS-mode, so whether a form reads or
+    writes decides the cause for the read-only hgeip.
+    """
+    rd, zero_reg = test_data.int_regs.get_registers(2)
+    lines = [*csr.setup, f"LI(x{zero_reg}, 0)"]
+    for form, instr in CSR_FORMS.items():
+        lines.extend(
+            [
+                f"LI(x{rd}, 42)",
+                test_data.add_testcase(f"{csr.name}_{form}", coverpoint, covergroup),
+                instr.format(rd=rd, csr=csr.operand, zero=zero_reg),
+                write_sigupd(rd, test_data),
+            ]
+        )
+    lines.extend(csr.restore)
+    test_data.int_regs.return_registers([rd, zero_reg])
+    return gated(lines, csr.gate)
 
 
 def _vgein_tests(test_data: TestData) -> list[str]:
@@ -223,12 +247,12 @@ def _vs_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     tc = test_data.new_test_chunk(test_chunks)
     tc.section_header = comment_banner(
         "cp_hcsr_virtualinstructionfault, cp_illegalupper",
-        "In VS-mode, access each HS and VS H CSR (virtual instruction when the access is legal in HS-mode),\n"
-        "and on RV64 each high-half H CSR (illegal instruction)",
+        "In VS-mode, access each HS and VS H CSR with all eight CSR forms (virtual instruction when the access is\n"
+        "legal in HS-mode), and on RV64 each high-half H CSR (illegal instruction)",
     )
     tc.code.append("RVTEST_TSBI_GOTO_VSMODE")
     for csr in HS_VS_CSRS:
-        tc.code.extend(_csr_trap_test(test_data, csr, VS_CG, "cp_hcsr_virtualinstructionfault"))
+        tc.code.extend(_csr_forms_test(test_data, csr, VS_CG, "cp_hcsr_virtualinstructionfault"))
     for csr in H_UPPER_CSRS:
         tc.code.extend(_csr_trap_test(test_data, csr, VS_CG, "cp_illegalupper"))
     tc.code.append("RVTEST_TSBI_GOTO_SMODE")
@@ -259,114 +283,36 @@ def _vs_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     )
 
 
-# The eight CSR instruction forms: rs1 = x0 and uimm = 0 read only; every other form writes, even with a zero value
-CSR_FORMS = {
-    "csrrw": "csrrw x{rd}, {csr}, x{zero}",
-    "csrrs_x0": "csrrs x{rd}, {csr}, x0",
-    "csrrs_zero": "csrrs x{rd}, {csr}, x{zero}",
-    "csrrc_x0": "csrrc x{rd}, {csr}, x0",
-    "csrrc_zero": "csrrc x{rd}, {csr}, x{zero}",
-    "csrrwi": "csrrwi x{rd}, {csr}, 0",
-    "csrrsi_zero": "csrrsi x{rd}, {csr}, 0",
-    "csrrci_nz": "csrrci x{rd}, {csr}, 1",
-}
-# S CSRs, which VU-mode cannot access
-S_CSRS = [
-    HCsr("sstatus"),
-    HCsr("sie"),
-    HCsr("stvec"),
-    HCsr("scounteren"),
-    HCsr("senvcfg", gate="defined(S1P12P0_OR_LATER_SUPPORTED)"),
-    HCsr("sscratch"),
-    HCsr("sepc"),
-    HCsr("scause"),
-    HCsr("stval"),
-    HCsr("sip"),
-    HCsr("satp"),
-]
-
-
-def _csr_forms_tests(test_data: TestData, csrs: list[HCsr], mode: str, covergroup: str, coverpoint: str) -> list[str]:
-    """Access each CSR with all eight CSR instruction forms in mode (already entered); every access traps.
-
-    Reads and writes are decided separately: an access raises virtual instruction when the same access is legal in
-    HS-mode, so writes to the read-only hgeip raise illegal instruction.  rd keeps its old value.
-    """
-    rd, zero_reg = test_data.int_regs.get_registers(2)
-    lines = [f"LI(x{zero_reg}, 0)"]
-    for csr in csrs:
-        body = list(csr.setup)
-        for form, instr in CSR_FORMS.items():
-            body.extend(
-                [
-                    f"LI(x{rd}, 42)",
-                    test_data.add_testcase(f"{mode.lower()}_{csr.name}_{form}", coverpoint, covergroup),
-                    instr.format(rd=rd, csr=csr.operand, zero=zero_reg),
-                    write_sigupd(rd, test_data),
-                ]
-            )
-        body.extend(csr.restore)
-        lines.extend(gated(body, csr.gate))
-    test_data.int_regs.return_registers([rd, zero_reg])
-    return lines
-
-
-def _csr_forms_chunks(test_data: TestData, test_chunks: list[TestChunk]) -> None:
-    """The H and VS CSRs from VS-mode, and the S, H and VS CSRs from VU-mode, with all eight CSR forms.
-
-    The VU-mode group is not named vucsr, so the H_vucsr exclusions, which concern the AIA and Sscsrind CSRs, do not
-    cover it.
-    """
-    tc = test_data.new_test_chunk(test_chunks, "vsforms")
-    tc.section_header = comment_banner(
-        "cp_hcsr_forms_vs",
-        "In VS-mode, access each HS and VS H CSR with csrrw, csrrs/csrrc (rs1 = x0 and a zero-valued rs1 != x0),\n"
-        "csrrwi, csrrsi (uimm = 0) and csrrci (uimm != 0)",
-    )
-    for start in range(0, len(HS_VS_CSRS), CSRS_PER_CHUNK):
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(
-            [
-                "RVTEST_TSBI_GOTO_VSMODE",
-                *_csr_forms_tests(
-                    test_data, HS_VS_CSRS[start : start + CSRS_PER_CHUNK], "VS", VS_CG, "cp_hcsr_forms_vs"
-                ),
-                "RVTEST_TSBI_GOTO_SMODE",
-            ]
-        )
-
-    vu_csrs = [*S_CSRS, *HS_VS_CSRS]
-    tc = test_data.new_test_chunk(test_chunks, "vuforms")
-    tc.section_header = comment_banner(
-        "cp_scsr_forms_vu",
-        "In VU-mode, access each S CSR and each HS and VS H CSR with the same eight CSR forms",
-    )
-    for start in range(0, len(vu_csrs), CSRS_PER_CHUNK):
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(
-            [
-                "RVTEST_TSBI_GOTO_VUMODE",
-                *_csr_forms_tests(test_data, vu_csrs[start : start + CSRS_PER_CHUNK], "VU", VU_CG, "cp_scsr_forms_vu"),
-                "RVTEST_TSBI_GOTO_SMODE",
-            ]
-        )
-
-
 def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     """CSR accesses from VU-mode, as the U suite's from U-mode."""
     csr_insufficient_priv_tests(
         test_data,
         test_chunks,
         VU_CG,
-        NONUSER_CSR_RANGES,
+        M_CSR_RANGES,
         "vucsr",
-        "In VU-mode, attempt to read each CSR that is not a user CSR.  Should throw illegal or virtual instruction",
+        "In VU-mode, attempt to read each M-mode CSR.  Should throw illegal instruction",
         mode="VU",
         csrs_per_chunk=CSRS_PER_CHUNK,
     )
     csr_ro_write_tests(
         test_data, test_chunks, VU_CG, USER_RO_CSR_RANGES, "vucsr_ro", mode="VU", csrs_per_chunk=CSRS_PER_CHUNK
     )
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        "cp_hcsr_virtualinstructionfault, cp_scsr_virtualinstructionfault, cp_illegalupper",
+        "In VU-mode, access each HS and VS H CSR and each S CSR with all eight CSR forms (virtual instruction when\n"
+        "the access is legal in HS-mode), and on RV64 each high-half H CSR (illegal instruction)",
+    )
+    tc.code.append("RVTEST_TSBI_GOTO_VUMODE")
+    for csr in HS_VS_CSRS:
+        tc.code.extend(_csr_forms_test(test_data, csr, VU_CG, "cp_hcsr_virtualinstructionfault"))
+    for csr in S_CSRS:
+        tc.code.extend(_csr_forms_test(test_data, csr, VU_CG, "cp_scsr_virtualinstructionfault"))
+    for csr in H_UPPER_CSRS:
+        tc.code.extend(_csr_trap_test(test_data, csr, VU_CG, "cp_illegalupper"))
+    tc.code.append("RVTEST_TSBI_GOTO_SMODE")
 
 
 def _xret_tests(test_data: TestData) -> list[str]:
@@ -551,7 +497,6 @@ def make_h(test_data: TestData) -> list[TestChunk]:
 
     _vs_csr_tests(test_data, test_chunks)
     _vu_csr_tests(test_data, test_chunks)
-    _csr_forms_chunks(test_data, test_chunks)
 
     tc = test_data.new_test_chunk(test_chunks, "inst")
     tc.code.extend(

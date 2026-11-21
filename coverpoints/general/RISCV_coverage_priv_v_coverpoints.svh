@@ -68,9 +68,9 @@ walking_ones_rs1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.curren
 
 // ensures vd updates
 //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+std_vec: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 0 &
+                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTART) == 0 &
+                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) != 0 &
                     ins.trap == 0
                 }
 {
@@ -136,15 +136,15 @@ rs2_sew : coverpoint ins.current.rs2_val[5:3] {
 // writes vtype with legal lmul and sew values starting with vill = 1
 //////////////////////////////////////////////////////////////////////////////////
 
-vtype_prev_vill_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+vtype_prev_vill_set: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
     bins vill_set = {1};
 }
 
-vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+vtype_lmul_8: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
     bins eight = {3};
 }
 
-vtype_all_sew_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+vtype_all_sew_supported: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") {
     `ifdef SEW8_SUPPORTED
     bins eight      = {0};
     `endif
@@ -230,7 +230,7 @@ rs2_lmul_1 : coverpoint ins.current.rs2_val[2:0] {
     bins lmul1 = {3'b000};
 }
 
-vtype_prev_vill_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+vtype_prev_vill_clear: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") {
     bins vill_not_set = {0};
 }
 
@@ -243,7 +243,7 @@ rs1_non_zero : coverpoint ins.current.rs1_val {
     bins nonzero = { [0:`UDB_MXLEN-1] };
 }
 
-vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     //Any value between max and 1
     bins target = {[64'h1:64'h10000]};
 }
@@ -258,7 +258,7 @@ vsetvl_i_instructions: coverpoint ins.current.insn {
     wildcard bins vsetvl    =   {VSETVL};
 }
 
-vl_not_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") ==
+vl_not_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) ==
                         `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
     bins target = {1'b0};
 }
@@ -281,7 +281,7 @@ vset_i_vli_vlmax_unchanged : coverpoint (get_vtype_vlmax(ins.hart, ins.issue, `S
                                         bins true = {1};
                                     }
 
-vtype_all_lmul_supported : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+vtype_all_lmul_supported : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
     `ifdef LMULf8_SUPPORTED
     bins eighth  = {5};
     `endif
@@ -331,7 +331,7 @@ imm5_edges : coverpoint ins.current.insn[19:15] {
     // all generated bins for imm edges
 }
 
-vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+vtype_lmul_1: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul") {
     bins one = {0};
 }
 

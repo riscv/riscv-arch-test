@@ -54,7 +54,23 @@
 #endif
 
 ##### ADDRESSES #####
-// If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, no access faults are tested
+// Each RVMODEL_ACCESS_FAULT_ADDRESS_<TYPE> defaults to RVMODEL_ACCESS_FAULT_ADDRESS.
+// Access faults of a type are tested only if its macro is defined.
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS) && !defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
+  #define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS) && !defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
+  #define RVMODEL_ACCESS_FAULT_ADDRESS_STORE RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS) && !defined(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
+  #define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS) && !defined(RVMODEL_ACCESS_FAULT_ADDRESS_AMO)
+  #define RVMODEL_ACCESS_FAULT_ADDRESS_AMO RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
+#if defined(RVMODEL_ACCESS_FAULT_ADDRESS) && !defined(RVMODEL_ACCESS_FAULT_ADDRESS_LRSC)
+  #define RVMODEL_ACCESS_FAULT_ADDRESS_LRSC RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
 
 ##### MTIME #####
 
@@ -225,6 +241,11 @@
   #if UDB_NUM_USABLE_PMP_ENTRIES < 8
     #error "DUTs with fewer than 8 usable PMP entries are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
   #endif
+#endif
+
+// Boot and the S/U-mode tests write satp = 0 to run untranslated
+#if defined(S_SUPPORTED) && !defined(UDB_SATP_MODE_BARE)
+  #error "DUTs with S-mode but without satp.MODE = Bare (SATP_MODE_BARE: false) are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
 #endif
 
 // Generated vector tests size their data and signature regions for VLEN <= RVTEST_VLEN_MAX.

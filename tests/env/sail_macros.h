@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 // This header is included AFTER rvmodel_macros.h for signature ELF builds
-// (non-selfcheck). It overrides DUT-specific macros with Sail-compatible
-// implementations for IO, termination, and interrupts. Macros that should
-// always come from the DUT (e.g. RVMODEL_ACCESS_FAULT_ADDRESS) are NOT
-// redefined here.
+// and coverage ELF builds (RVTEST_SAIL_MACROS). It overrides DUT-specific
+// macros with Sail-compatible implementations for IO, termination, and interrupts.
+// Macros that should always come from the DUT (e.g. RVMODEL_ACCESS_FAULT_ADDRESS_*)
+// are NOT redefined here.
 
 #ifndef _SAIL_MACROS_H
 #define _SAIL_MACROS_H

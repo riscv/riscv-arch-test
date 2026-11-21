@@ -61,14 +61,24 @@ M_CSR_RANGES = [
 ]
 # The CSR numbers that are not user CSRs, and the user read-only CSRs, as in U (cp_csr_insufficient_priv, cp_csr_ro).
 # 0x7AA mscontext is left out as in S, because it may be accessible from S-mode and so raise virtual instruction.
+# The custom supervisor and hypervisor CSRs are left out because VU-mode access to an implemented one raises virtual
+# instruction, and which ones are implemented is up to the implementation.
 NONUSER_CSR_RANGES = [
     range(0x100, 0x400),
-    range(0x500, 0x7AA),
+    range(0x500, 0x5C0),
+    range(0x600, 0x6C0),
+    range(0x700, 0x7AA),
     range(0x7AB, 0x800),
-    range(0x900, 0xC00),
-    range(0xD00, 0x1000),
+    range(0x900, 0x9C0),
+    range(0xA00, 0xAC0),
+    range(0xB00, 0xC00),
+    range(0xD00, 0xDC0),
+    range(0xE00, 0xEC0),
+    range(0xF00, 0x1000),
 ]
 USER_RO_CSR_RANGES = [range(0xC00, 0xD00)]
+# The read-only CSR numbers VS-mode tries to write, as in S (cp_csr_ro)
+S_RO_CSR_RANGES = [range(0xC00, 0xF00)]
 # Each VS-mode and VU-mode chunk of the CSR sweeps enters the mode once
 CSRS_PER_CHUNK = 16
 
@@ -205,6 +215,9 @@ def _vs_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         "In VS-mode, attempt to read each M-mode CSR.  Should throw illegal instruction",
         mode="VS",
         csrs_per_chunk=CSRS_PER_CHUNK,
+    )
+    csr_ro_write_tests(
+        test_data, test_chunks, VS_CG, S_RO_CSR_RANGES, "vscsr_ro", mode="VS", csrs_per_chunk=CSRS_PER_CHUNK
     )
 
     tc = test_data.new_test_chunk(test_chunks)
@@ -519,33 +532,14 @@ def make_h_zicntr(test_data: TestData) -> list[TestChunk]:
     required_extensions=["H", "F"],
     march_extensions=["F", "D", "Zfa"],
     extra_defines=["#define BOOT_TO_SMODE"],
+    testcases_per_file=256,
 )
 def make_h_f(test_data: TestData) -> list[TestChunk]:
     """Generate H_F tests: the floating-point CSRs and instructions in VS and VU modes against vsstatus.FS and sstatus.FS."""
-
-    test_chunks: list[TestChunk] = []
-
-    tc = test_data.begin_test_chunk("F_vs")
-    tc.code.extend(
-        [
-            "RVTEST_TSBI_GOTO_VSMODE",
-            *gen_fcsr_tests(test_data, "VS", "H_F_cg"),
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
-    )
-    test_chunks.append(test_data.end_test_chunk())
-
-    tc = test_data.begin_test_chunk("F_vu")
-    tc.code.extend(
-        [
-            "RVTEST_TSBI_GOTO_VUMODE",
-            *gen_fcsr_tests(test_data, "VU", "H_F_cg"),
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
-    )
-    test_chunks.append(test_data.end_test_chunk())
-
-    return test_chunks
+    return [
+        *gen_fcsr_tests(test_data, "VS", "H_F_cg", "F_vs", ("RVTEST_TSBI_GOTO_VSMODE",), ("RVTEST_TSBI_GOTO_SMODE",)),
+        *gen_fcsr_tests(test_data, "VU", "H_F_cg", "F_vu", ("RVTEST_TSBI_GOTO_VUMODE",), ("RVTEST_TSBI_GOTO_SMODE",)),
+    ]
 
 
 @add_priv_test_generator(

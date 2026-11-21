@@ -6,12 +6,17 @@
 #include "rvtest_config.h"
 #include "derived_config.h"
 #include "encoding.h"
+#include "tsbi.h"
 #ifdef ENABLE_EXPERIMENTAL_EXTENSIONS
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"
+// Signature builds and coverage builds run on Sail, so they replace DUT-specific macros with Sail macros.
+#if !defined(RVTEST_SELFCHECK) && !defined(RVTEST_SAIL_MACROS)
+  #define RVTEST_SAIL_MACROS
+#endif
 #include "rvmodel_macros.h"
-#ifndef RVTEST_SELFCHECK
+#ifdef RVTEST_SAIL_MACROS
   #include "sail_macros.h"
 #endif
 #include "check_defines.h"
@@ -22,9 +27,6 @@
 #endif
 #ifdef RVTEST_VECTOR
   #include "rvtest_macros_vector.h"
-#endif
-#ifdef H_SUPPORTED
-  #include "rvtest_macros_hypervisor.h"
 #endif
 #include "rvtest_trap_handler.h"
 #include "rvtest_invisible_trap_handler.h"

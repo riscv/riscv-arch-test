@@ -11,7 +11,7 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-type_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "type")[3:0] {
+type_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "type")[3:0] {
     type_option.weight = 0;
     bins disabled = {4'd15};
 }
@@ -28,7 +28,7 @@ dmode_written: coverpoint ins.current.rs1_val[XLEN-5] {
     type_option.weight = 0;
     bins set = {1'b1};
 }
-dmode_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "dmode")[0] {
+dmode_after: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "dmode")[0] {
     type_option.weight = 0;
     bins clear = {1'b0};
 }

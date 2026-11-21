@@ -34,7 +34,7 @@ _OLD_PATTERN_BASE = 0x5A5A0000
 _BEYOND_PATTERN_BASE = 0x3C3C0000
 
 
-class _CboField(NamedTuple):
+class CboField(NamedTuple):
     """One cbie/cbcfe/cbze binned config test: bit position, values walked, the
     instruction(s) executed, and the feature #ifdef guarding the block."""
 
@@ -44,19 +44,23 @@ class _CboField(NamedTuple):
     guard: str
 
 
-_CBO_FIELDS: dict[str, _CboField] = {
-    "cbie": _CboField(shift=4, bins=["00", "01", "11"], instrs=["cbo.inval"], guard="ZICBOM_SUPPORTED"),
-    "cbcfe": _CboField(
+CBO_FIELDS: dict[str, CboField] = {
+    "cbie": CboField(shift=4, bins=["00", "01", "11"], instrs=["cbo.inval"], guard="ZICBOM_SUPPORTED"),
+    "cbcfe": CboField(
         shift=6,
         bins=["0", "1"],
         instrs=["cbo.clean", "cbo.flush"],
         guard="ZICBOM_SUPPORTED",
     ),
-    "cbze": _CboField(shift=7, bins=["0", "1"], instrs=["cbo.zero"], guard="ZICBOZ_SUPPORTED"),
+    "cbze": CboField(shift=7, bins=["0", "1"], instrs=["cbo.zero"], guard="ZICBOZ_SUPPORTED"),
 }
 
 
-def _cbo_test(
+# The nonzero word that a test stores before cbo.zero
+CBO_ZERO_FILL = 0x0C0B0000
+
+
+def cbo_test(
     instr: str,
     name: str,
     coverpoint: str,
@@ -70,7 +74,7 @@ def _cbo_test(
         lines.extend(
             [
                 "# Store a nonzero value so the test can check cbo.zero",
-                f"LI(x{val_reg}, {0x0C0B0000:#x})",
+                f"LI(x{val_reg}, {CBO_ZERO_FILL:#x})",
                 f"sw x{val_reg}, 0(x{addr_reg})",
             ]
         )
@@ -108,7 +112,7 @@ def _mode_tag(mode: str, cross_senvcfg: bool) -> str:
 def cbo_config_helper(
     test_data: TestData,
     covergroup: str,
-    field: str,  # "cbie" | "cbcfe" | "cbze" -- looked up in _CBO_FIELDS
+    field: str,  # "cbie" | "cbcfe" | "cbze" -- looked up in CBO_FIELDS
     *,
     mode: str,  # "Sm" | "S" | "U"
     cross_senvcfg: bool = False,
@@ -122,7 +126,7 @@ def cbo_config_helper(
     gives envcfg bits to keep set. ``case(tag, m_val, s_val, addr_reg, val_reg)``
     replaces the per-instruction tests; ``s_val`` is None when senvcfg is not set."""
     assert not (mode == "Sm" and cross_senvcfg), "senvcfg is not applicable in M-mode"
-    cfg = _CBO_FIELDS[field]
+    cfg = CBO_FIELDS[field]
     coverpoint = f"cp_{field}"
     shift, instrs, guard = cfg.shift, cfg.instrs, cfg.guard
     bins = bins or cfg.bins
@@ -141,7 +145,7 @@ def cbo_config_helper(
         return [
             line
             for instr in instrs
-            for line in _cbo_test(instr, f"{instr}{tag}", coverpoint, covergroup, addr_reg, val_reg, test_data)
+            for line in cbo_test(instr, f"{instr}{tag}", coverpoint, covergroup, addr_reg, val_reg, test_data)
         ]
 
     lines = [
@@ -210,17 +214,17 @@ def cbo_access_fault_helper(
     mode: str,
     cross_senvcfg: bool = False,
 ) -> list[str]:
-    """Generate cbo/prefetch access-fault tests against RVMODEL_ACCESS_FAULT_ADDRESS."""
+    """Generate cbo/prefetch access-fault tests against RVMODEL_ACCESS_FAULT_ADDRESS_STORE."""
     assert not (mode == "Sm" and cross_senvcfg), "senvcfg is not applicable in M-mode."
     coverpoint = "cp_cbo_access_fault"
     addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
     mode_tag = _mode_tag(mode, cross_senvcfg)
 
     lines = [
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE",
         comment_banner(
             coverpoint,
-            "cbo.{inval,clean,flush,zero} and prefetch.{i,r,w} to\nRVMODEL_ACCESS_FAULT_ADDRESS raise an access fault",
+            "cbo.{inval,clean,flush,zero} and prefetch.{i,r,w} to\nRVMODEL_ACCESS_FAULT_ADDRESS_STORE raise an access fault",
         ),
         "",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
@@ -251,7 +255,7 @@ def cbo_access_fault_helper(
         lines.append("#ifdef ZICBOZ_SUPPORTED" if cbo == "zero" else "#ifdef ZICBOM_SUPPORTED")
         lines.extend(
             [
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
                 test_data.add_testcase(f"cbo.{cbo}{mode_tag}_access_fault_0", coverpoint, covergroup),
                 f"cbo.{cbo}    0(x{addr_reg})",
                 f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",
@@ -264,7 +268,7 @@ def cbo_access_fault_helper(
     for prefetch in PREFETCH_INSTRS:
         lines.extend(
             [
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)",
                 test_data.add_testcase(f"prefetch.{prefetch}{mode_tag}_access_fault_0", coverpoint, covergroup),
                 f"prefetch.{prefetch}    0(x{addr_reg})",
                 f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",
@@ -273,7 +277,7 @@ def cbo_access_fault_helper(
             ]
         )
 
-    lines.append("#endif // RVMODEL_ACCESS_FAULT_ADDRESS")
+    lines.append("#endif // RVMODEL_ACCESS_FAULT_ADDRESS_STORE")
 
     test_data.int_regs.return_registers([addr_reg, cfg_reg])
     return lines

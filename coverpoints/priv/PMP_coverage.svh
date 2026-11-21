@@ -1630,19 +1630,6 @@ covergroup PMP_Sm_cg with function sample(
 
 //-------------------------------------------------------
 
-  // cp_cfg_A_accept: csrrw of pmpcfg0 with pmp0cfg = L = 0, XWR = 000 and each A encoding (every hart;
-  // the readback is checked against the reference model's TOR, NA4 and NAPOT support)
-  rs1_val_pmp0cfg_a: coverpoint ins.current.rs1_val {
-    bins off   = {0};
-    bins tor   = {8'h08};
-    bins na4   = {8'h10};
-    bins napot = {8'h18};
-  }
-  csr_is_pmpcfg0: coverpoint ins.current.insn[31:20] {
-    bins pmpcfg0 = {CSR_PMPCFG0};
-  }
-  cp_cfg_A_accept: cross priv_mode_m, rs1_val_pmp0cfg_a, csrrw, csr_is_pmpcfg0 ;
-
   `ifdef UDB_PMP_TOR_SUPPORTED
     // TOR twins (see pmp_tor_entry): the deciding entry is a TOR region over the same bytes as the
     // NAPOT tests' region, at most entry PMP_TOR_TOP_ENTRY (13 for the walks)

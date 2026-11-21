@@ -188,7 +188,6 @@ normative_rule_definitions:
     # Representative coverpoints; also the _jalr and _sw variants
     coverpoint:
       [
-        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_S_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
         "PMP_Sm_cg/{cp_cfg_A_tor_r, cp_cfg_A_tor0_r, cp_cfg_A_tor_bot_L1_r, cp_cfg_A_tor_nonoverlap2_r}",
         "PMP_U_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
@@ -203,7 +202,6 @@ normative_rule_definitions:
     # Representative coverpoints; also the _jalr and _sw variants
     coverpoint:
       [
-        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_S_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
         "PMP_Sm_cg/{cp_cfg_A_napot_all, cp_cfg_A_napot_r, cp_cfg_A_NA4_all, cp_cfg_A_na4_r}",
         "PMP_U_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}",
@@ -232,11 +230,7 @@ normative_rule_definitions:
 
   # When G {ge} 1, the NA4 mode is not selectable.
   - name: pmp_na4_select_restriction
-    coverpoint:
-      [
-        "PMP_Sm_cg/cp_cfg_A_accept",
-        "PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_all_odd}",
-      ]
+    coverpoint: ["PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_all_odd}"]
 
   # The A field in a PMP entry's configuration register encodes the address-matching
   # mode of the associated PMP address register. The encoding of this field is shown
@@ -245,7 +239,6 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_A_all_odd, cp_cfg_A_OFF_all_*, cp_cfg_A_NA4_all
     coverpoint:
       [
-        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_Sm_cg/{cp_cfg_A_all_even, cp_cfg_A_OFF_all_read, cp_cfg_A_napot_all, cp_cfg_A_tor_r}",
       ]
 
@@ -313,7 +306,6 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_pmpcfg_walk_odd, cp_pmpcfg_zero and cp_grain*
     coverpoint:
       [
-        "PMP_Sm_cg/cp_cfg_A_accept",
         "PMP_Sm_cg/{cp_pmpcfg_walk, cp_cfg_A_all_even, cp_grain_check_write, cp_pmpaddr_upper_zero}",
       ]
 

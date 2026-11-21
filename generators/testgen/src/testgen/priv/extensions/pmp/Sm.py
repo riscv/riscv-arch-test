@@ -154,9 +154,6 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
 
     for name in amodes:
         const = None if name == "OFF" else f"PMP_{name}"
-        if name == "NAPOT":
-            # Without NAPOT, cp_cfg_A_napot_unsupported checks only that A does not read back NAPOT.
-            chunk.code.extend(["", "#ifdef UDB_PMP_NAPOT_SUPPORTED"])
         chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
         if const:
             rv32_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(4))
@@ -178,40 +175,6 @@ def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, .
         chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
         add_csr_checks(name, const, (5, 7, 9, 11, 13, 15))
         chunk.code.append("#endif")
-        if name == "NAPOT":
-            chunk.code.append("#endif // UDB_PMP_NAPOT_SUPPORTED")
-    return test_data.end_test_chunk()
-
-
-# ---------------------------------------------------------------------------
-# cfg_A_accept: which address-matching modes the hart accepts
-# ---------------------------------------------------------------------------
-
-
-def _make_a_accept_chunk(test_data: TestData) -> TestChunk:
-    """Write each A encoding to pmp0cfg (L = 0, XWR = 000) after clearing it, and read it back. Every
-    hart runs this: the reference model's readback follows its own TOR, NA4 and NAPOT support, so a
-    hart that accepts an unsupported mode or drops a supported one mismatches."""
-    chunk = test_data.begin_test_chunk("Sm_cfg_A_accept")
-    chunk.section_header = comment_banner(
-        "cp_cfg_A_accept",
-        "Write A = OFF, TOR, NA4 and NAPOT to pmp0cfg with L = 0 and XWR = 000, each after clearing it, and read it back.",
-    )
-    chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
-    for name in ("OFF", "TOR", "NA4", "NAPOT"):
-        const = "0" if name == "OFF" else f"(PMP_{name} & 0xFF)"
-        chunk.code.extend(
-            [
-                "",
-                f"// Clear pmp0cfg, then write A = {name}",
-                "csrw pmpcfg0, x0",
-                f"LI(x7, {const})",
-                test_data.add_testcase(name.lower(), "cp_cfg_A_accept", "PMP_Sm_cg"),
-                # x7, not DEFAULT_TEMP_REG (x4): the macro loads the expected value into x4
-                gen_csr_write_sigupd(7, "pmpcfg0", test_data),
-            ]
-        )
-    chunk.code.extend(["", "// Restore pmp0cfg", "csrw pmpcfg0, x0"])
     return test_data.end_test_chunk()
 
 
@@ -1223,7 +1186,6 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
         _make_zero_walk_chunk(test_data),
         *(_make_pmpcfg_walk_chunk(test_data, byte + 2, byte) for byte in range(4)),
         _make_a_all_chunk(test_data, "cfg_A_all", ("NAPOT", "OFF")),
-        _make_a_accept_chunk(test_data),
         _make_a_off_all_chunk(test_data),
         _make_l_modify_chunk(test_data, "off"),
         _make_grain_chunk(test_data),

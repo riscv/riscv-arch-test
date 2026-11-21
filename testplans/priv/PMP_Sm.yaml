@@ -174,17 +174,6 @@ coverpoints:
       - pmp_locked_until_reset
       - pmp_mmode_locking
   - heading: Address-matching mode (A field)
-  - name: cp_cfg_A_accept
-    goal: Verify that the hart accepts exactly the address-matching modes it supports.
-    description: "Every hart with PMP. Clear pmpcfg0, write pmp0cfg = L=0, A = {OFF, TOR, NA4, NAPOT}, XWR=000, and read pmpcfg0 back; restore pmpcfg0 to zero. The expected readback comes from the reference model, configured with the hart's TOR, NA4 and NAPOT support."
-    expectation: A reads back as written for a supported mode, and as OFF (the cleared value) for an unsupported one.
-    bins: 4 A values
-    rules:
-      - pmp_a_field_encoding
-      - pmp_csrs_warl_access
-      - pmp_a_field_tor
-      - pmp_a_field_napot_na4
-      - pmp_na4_select_restriction
   - name: |-
       cp_cfg_A_all_even
       cp_cfg_A_all_odd

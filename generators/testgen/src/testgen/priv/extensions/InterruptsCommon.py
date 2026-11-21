@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/InterruptsCommon.py
 #
-# Shared interrupt test generation for InterruptsS and InterruptsSm.
+# Shared interrupt test generation for the Interrupts suite.
 # David_Harris@hmc.edu 6 September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -27,7 +27,7 @@ reg_ints = {"MIP_SEIP": 9, "MIP_SSIP": 1, "SIP_SSIP": 1, "SIP_LCOFIP": 13}
 # STI raised through stimecmp with menvcfg.STCE = 1, and with STCE = 0, where the same stimecmp
 # write must not raise it (cp_trigger_sti_sstc)
 sstc_ints = {"SSTC_STCE0": 5, "SSTC_STCE1": 5}
-# VS-level interrupts, raised through hvip. hideleg is left at its boot value of 0, so they trap to HS-mode.
+# VS-level interrupts, raised through hvip. They trap to HS-mode unless hideleg delegates them to VS-mode.
 vs_ints = {"VSEI": 10, "VSTI": 6, "VSSI": 2}
 # mip/mie bit position of every interrupt type
 int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints | vs_ints
@@ -56,13 +56,13 @@ def label_coverpoint(
 ) -> str:
     """Coverpoint a testcase label names: ``coverpoint``, or its ``_tsbi`` twin when the coverage model
     records the case on the T-SBI xret back to the test (the interrupt is raised through T-SBI because
-    ``priv`` cannot reach its pending bit). Mirrors the tsbi ignore_bins of <suite>_coverage.svh.
+    ``priv`` cannot reach its pending bit). Mirrors the tsbi ignore_bins of Interrupts_coverage.svh.
     """
     lower = priv != suite.boot
     # Below HS, VS-mode and VU-mode reach the interrupt sources as U-mode does, and the VS-level
     # interrupts are raised through T-SBI because only M-mode and HS-mode write hvip.
     below_s = priv in ("U", "VS", "VU")
-    if suite.boot == "M":  # InterruptsSm
+    if suite.boot == "M":  # Interrupts_Sm
         tsbi = {
             "cp_trigger": (lower and int_type in ("MSI", "MTI"))
             or (below_s and int_type in ("STI", "LCOFI", "SIP_LCOFIP", *vs_ints))
@@ -74,7 +74,7 @@ def label_coverpoint(
             "cp_priority_mie": lower,
             "cp_priority_mideleg": lower,
         }
-    else:  # InterruptsS
+    else:  # Interrupts
         tsbi = {
             "cp_trigger": below_s and int_type in ("STI", "LCOFI", "SIP_LCOFIP", *vs_ints),
             "cp_trigger_sti_sstc": below_s and int_type == "SSTC_STCE1",
@@ -97,6 +97,9 @@ int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": 
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
 int_macro |= {"VSEI": "VSEXT", "VSTI": "VSTIME", "VSSI": "VSSW"}
 
+# Modes below M, named as in RVTEST_TSBI_GOTO_<mode>MODE (S is HS-mode with H)
+lower_modes = ["S", "U", "VS", "VU"]
+
 
 def flavor(priv: str) -> str:
     """Mode whose RVTEST_SET/CLR_<name>_INT_<mode> macros and CSR accesses a test running in ``priv`` uses.
@@ -111,7 +114,7 @@ def flavor(priv: str) -> str:
 class InterruptSuite:
     """Per-suite setup shared by the interrupt coverpoint generators."""
 
-    name: str
+    group: str  # covergroup Interrupts_<group>_cg and test file prefix, or "" for Interrupts_cg
     boot: str  # mode the suite boots into and returns to after each case
     types: list[str]  # interrupts raised by cp_enable
     priority_types: list[str]  # interrupts paired by cp_priority
@@ -125,7 +128,7 @@ class InterruptSuite:
     @property
     def covergroup(self) -> str:
         """Covergroup that samples this suite's testcases."""
-        return f"{self.name}_cg"
+        return f"Interrupts_{self.group}_cg" if self.group else "Interrupts_cg"
 
 
 Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
@@ -157,6 +160,36 @@ def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
     return [f"RVTEST_TSBI_GOTO_{suite.boot}MODE # return to {suite.boot}-mode"]
 
 
+def hideleg_vs_target(hideleg: int, int_type: str, mode: int, sie: int, reg: int) -> tuple[list[str], list[str]]:
+    """Lines that open and close a case where hideleg delegates int_type to VS-mode, with vstvec.MODE = mode and
+    vsstatus.SIE = sie. The close restores hideleg, vstvec.MODE and vsstatus.SIE/SPIE to their boot values. Both are
+    empty when hideleg = 0."""
+    if not hideleg:
+        return [], []
+    modecmd = "csrs" if mode == 1 else "csrc"
+    siecmd = "csrs" if sie == 1 else "csrc"
+    return [
+        f"#ifdef UDB_VSTVEC_MODES_{mode}",
+        f"LI(x{reg}, {1 << int_bit[int_type]:#x})",
+        f"csrw hideleg, x{reg} # hideleg delegates {int_type} to VS-mode",
+        f"LI(x{reg}, 1)",
+        f"{modecmd} vstvec, x{reg} # vstvec.mode = {mode}",
+        f"LI(x{reg}, 0x22) # SIE, SPIE",
+        f"{siecmd} vsstatus, x{reg} # vsstatus.SIE = {sie}",
+    ], [
+        "csrw hideleg, zero # hideleg = 0",
+        # Boot sets vstvec.MODE = 0 when direct mode is supported, else 1
+        *(
+            ["#ifdef UDB_VSTVEC_MODES_0", f"LI(x{reg}, 1)", f"csrc vstvec, x{reg} # vstvec.mode = 0", "#endif"]
+            if mode == 1
+            else []
+        ),
+        f"LI(x{reg}, 0x22) # SIE, SPIE",
+        f"csrc vsstatus, x{reg} # vsstatus.SIE = SPIE = 0",
+        "#endif // UDB_VSTVEC_MODES",
+    ]
+
+
 def int_xepc_arm(reg: int) -> list[str]:
     """Make the trap handler record xEPC in the trap signature entry of each interrupt.
 
@@ -174,14 +207,24 @@ def int_xepc_arm(reg: int) -> list[str]:
     ]
 
 
-def int_xepc_disarm(label: str, reg: int) -> list[str]:
-    """Stop recording xEPC (see int_xepc_arm). ``label`` is the instruction after the CSR write or xRET,
-    where the interrupts it enables are taken; the handler of one returns there and its xRET enables the
-    next, which is taken there too. An interrupt taken in the two instructions before the disarming store
-    records its late xEPC, and a later one records 0, so both mismatch.
+def int_xepc_label(test_data: TestData) -> str:
+    """Label of the instruction after the current testcase's checked CSR write or xRET (see int_xepc_checked)."""
+    return f"{test_data.current_testcase_label}_xepc"
+
+
+def int_xepc_checked(test_data: TestData, reg: int, lines: list[str], checked: bool = True) -> list[str]:
+    """Check the xEPC of the interrupts that ``lines`` enable or raise: arm the check before them (int_xepc_arm),
+    and after them place int_xepc_label, where those interrupts are taken, and disarm. The handler of one returns
+    there and its xRET enables the next, which is taken there too. An interrupt taken in the two instructions
+    before the disarming store records its late xEPC, and a later one records 0, so both mismatch. ``lines``
+    alone if not ``checked``.
     """
+    if not checked:
+        return lines
     return [
-        f"{label}: # an interrupt enabled by the previous instruction is taken here",
+        *int_xepc_arm(reg),
+        *lines,
+        f"{int_xepc_label(test_data)}: # an interrupt enabled by the previous instruction is taken here",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
         f"LA(x{reg}, rvtest_int_xepc)",
         f"SREG x0, 0(x{reg}) # disarm",
@@ -225,9 +268,9 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
                     suite.covergroup,
                 ),
                 *mode_enter(suite, priv),
-                *(int_xepc_arm(tmp_reg) if checked else []),
-                f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
-                *(int_xepc_disarm(f"cp_enable_priv_{priv}_{int_type}_{ie}_{enable}_xepc", tmp_reg) if checked else []),
+                *int_xepc_checked(
+                    test_data, tmp_reg, [f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt"], checked
+                ),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                 f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the interrupt handler hasn't done so",
                 *mode_exit(suite, priv),
@@ -297,12 +340,23 @@ def _priority_label(suite: InterruptSuite, coverpoint: str, priv: str, pair: lis
 
 
 def generate_cp_priority(
-    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str, vary: str
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    suite: InterruptSuite,
+    priv: str,
+    vary: str,
+    *,
+    split_vs: bool = False,
 ) -> None:
     """Raise pairs of interrupts so the higher priority one is taken first.
 
     ``vary`` is the CSR that distinguishes the pair: "ip" (pair pending, all enabled), "ie" (all pending,
-    pair enabled), or "mideleg" (pair pending and enabled, one of the pair delegated).
+    pair enabled), or "mideleg" (pair pending and enabled, one of the pair delegated). With H, the "ip" cases of
+    the S-mode suite are repeated with hideleg delegating each nonempty subset of the pair's VS-level members to
+    VS-mode, where vsstatus.SIE = 1.  HS-mode takes the undelegated member first, and VS-mode takes the delegated
+    ones only in VS-mode and VU-mode.
+
+    With ``split_vs``, the pairs that include a VS-level interrupt go in their own test file.
     """
     ie = suite.ie
     status = suite.status
@@ -310,11 +364,12 @@ def generate_cp_priority(
     ######################################
     coverpoint = f"cp_priority_{csr}"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, f"priority_{csr}_{priv}")
-    tc.section_header = comment_banner(
-        coverpoint,
-        f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending",
+    split_name = f"priority_{csr}_{priv}"
+    title = (
+        f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending"
     )
+    tc = test_data.new_test_chunk(test_chunks, split_name)
+    tc.section_header = comment_banner(coverpoint, title)
     tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     types = suite.priority_types
@@ -329,7 +384,13 @@ def generate_cp_priority(
     for int_type in types:
         if int_bit[int_type] in supervisor_bits:
             delegatable.append(int_type)
-    for first, second in combinations(types, 2):
+    pairs = list(combinations(types, 2))
+    if split_vs:
+        pairs.sort(key=lambda pair: any(int_type in vs_ints for int_type in pair))
+    for first, second in pairs:
+        if split_vs and tc.split_name == split_name and (first in vs_ints or second in vs_ints):
+            tc = test_data.new_test_chunk(test_chunks, f"{split_name}_vs")
+            tc.section_header = comment_banner(coverpoint, title)
         pair = [first, second]
         # ie: everything is pending and only the pair is enabled; otherwise only the pair is pending
         raised = types if vary == "ie" else pair
@@ -344,7 +405,12 @@ def generate_cp_priority(
             for member in pair:
                 if member in delegatable:
                     delegations.append(member)
-        for deleg in delegations:
+        # hideleg: 0, then each nonempty subset of the VS-level members (the case is already guarded by H_SUPPORTED)
+        hidelegs = [0]
+        if vary == "ip" and suite.hie:
+            vs_bits = [1 << int_bit[int_type] for int_type in pair if int_type in vs_ints]
+            hidelegs += [sum(bits) for r in range(1, len(vs_bits) + 1) for bits in combinations(vs_bits, r)]
+        for deleg, hideleg in [(deleg, hideleg) for deleg in delegations for hideleg in hidelegs]:
             deleg_lines = suite.deleg
             bin_name = f"priv_{priv}_{first}_{second}"
             if deleg is not None:
@@ -355,11 +421,21 @@ def generate_cp_priority(
                     "#endif // S_SUPPORTED",
                 ]
                 bin_name += f"_deleg_{deleg}"
+            hideleg_lines, hideleg_clear = [], []
+            if hideleg:
+                hideleg_lines = [
+                    f"LI(x{tmp_reg}, {hideleg:#x})",
+                    f"csrw hideleg, x{tmp_reg} # hideleg = {hideleg:#x}",
+                    f"LI(x{tmp_reg}, SSTATUS_SIE)",
+                    f"csrs vsstatus, x{tmp_reg} # vsstatus.SIE = 1",
+                ]
+                hideleg_clear = ["csrw hideleg, zero # hideleg = 0", f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = 0"]
+                bin_name += f"_hideleg_{hideleg:03x}"
             # The instruction that enables the pending pair is last, so they are arbitrated together and
             # taken in priority order, before the next instruction. It is the write to the enable CSR
             # (through T-SBI below the CSR's mode, so the T-SBI xRET enables them). In the boot mode,
             # the pending flavor also runs with the global enable (mstatus.MIE or sstatus.SIE) written last.
-            for last in ["ie", "status"] if vary == "ip" and priv == suite.boot else ["ie"]:
+            for last in ["ie", "status"] if vary == "ip" and priv == suite.boot and not hideleg else ["ie"]:
                 case_name = bin_name if last == "ie" else f"{bin_name}_status_last"
                 if last == "ie":
                     setup = [
@@ -387,6 +463,7 @@ def generate_cp_priority(
                     f"#ifdef {guard_symbol(first)}",
                     f"#ifdef {guard_symbol(second)}",
                     *deleg_lines,
+                    *hideleg_lines,
                     *setup,
                     *mode_enter(suite, priv),
                     *_raise(raised, pair, "SET", priv),
@@ -406,11 +483,10 @@ def generate_cp_priority(
                     f"LI(x{tmp_reg}, {raised_mask:#x})",
                     f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
                     write_sigupd(check_reg, test_data),
-                    *int_xepc_arm(tmp_reg),
-                    *enable,
-                    *int_xepc_disarm(f"{coverpoint}_{case_name}_xepc", tmp_reg),
+                    *int_xepc_checked(test_data, tmp_reg, enable),
                     *_raise(raised, pair, "CLR", priv),
                     *mode_exit(suite, priv),
+                    *([f"LI(x{tmp_reg}, SSTATUS_SIE)", *hideleg_clear] if hideleg else []),
                     f"#endif // {guard_symbol(second)}",
                     f"#endif // {guard_symbol(first)}",
                     "",
@@ -441,7 +517,7 @@ def generate_cp_xret_same_mode(
     One interrupt is pending and enabled in the enable CSR, but masked by mstatus.MIE = 0 (sstatus.SIE = 0).
     With xPIE = 1 the xRET enables it, so it is taken at the xRET's target, the next instruction
     (norm:intr_mip_mie_xret_csrwr). With xPIE = 0 it stays masked. VS-level interrupts are never taken
-    in M-mode, so InterruptsSm records no interrupt for them.
+    in M-mode, so Interrupts_Sm records no interrupt for them.
     """
 
     ######################################
@@ -464,7 +540,6 @@ def generate_cp_xret_same_mode(
         guard = guard_symbol(int_type)
         for pie in [0, 1]:
             case_name = f"priv_{priv}_{int_type}_{xpie.lower()}_{pie}"
-            label = f"{coverpoint}_{case_name}_xepc"
             tc.code += [
                 f"#ifdef {guard}",
                 *suite.deleg,
@@ -489,11 +564,9 @@ def generate_cp_xret_same_mode(
                         "#endif // H_SUPPORTED",
                     ]
                 ),
-                f"LA(x{tmp_reg}, {label})",
+                f"LA(x{tmp_reg}, {int_xepc_label(test_data)})",
                 f"csrw {xepc}, x{tmp_reg} # {xret} to the next instruction",
-                *int_xepc_arm(tmp_reg),
-                f"{xret} # {csr}.{xie} = {xpie} = {pie}",
-                *int_xepc_disarm(label, tmp_reg),
+                *int_xepc_checked(test_data, tmp_reg, [f"{xret} # {csr}.{xie} = {xpie} = {pie}"]),
                 f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
                 f"#endif // {guard}",
                 "",
@@ -505,7 +578,7 @@ def generate_cp_xret_same_mode(
 def generate_cp_undeleg(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
     """A delegation write that takes back a pending, enabled interrupt.
 
-    InterruptsSm in M-mode delegates one S-level interrupt with mideleg, and InterruptsS in HS-mode one
+    Interrupts_Sm in M-mode delegates one S-level interrupt with mideleg, and Interrupts in HS-mode one
     VS-level interrupt with hideleg, so the pending interrupt is not taken in the current mode. Clearing
     the delegation bit makes it a pending, enabled interrupt of the current mode, which is taken before
     the next instruction (norm:intr_mip_mie_xret_csrwr).
@@ -533,7 +606,6 @@ def generate_cp_undeleg(test_data: TestData, test_chunks: list[TestChunk], suite
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
         case_name = f"priv_{priv}_{int_type}"
-        label = f"{coverpoint}_{case_name}_xepc"
         tc.code += [
             f"#ifdef {guard}",
             f"LI(x{tmp_reg}, {1 << int_bit[int_type]:#x})",
@@ -545,9 +617,7 @@ def generate_cp_undeleg(test_data: TestData, test_chunks: list[TestChunk], suite
             test_data.add_testcase(case_name, coverpoint, suite.covergroup),
             f"RVTEST_SET_{macro}_INT_{priv} # pending, but delegated below {priv}-mode",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until the interrupt is pending",
-            *int_xepc_arm(tmp_reg),
-            f"csrw {deleg_csr}, zero # {int_type} is now taken in {priv}-mode",
-            *int_xepc_disarm(label, tmp_reg),
+            *int_xepc_checked(test_data, tmp_reg, [f"csrw {deleg_csr}, zero # {int_type} is now taken in {priv}-mode"]),
             f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
             f"#endif // {guard}",
             "",
@@ -579,7 +649,8 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
     )
     if priv == "U":
-        tc.code.append("#ifndef S_SUPPORTED // U-mode WFI only waits when S-mode is not implemented")
+        # With S-mode, U-mode WFI traps after a bounded time; without it, WFI_U_MODE says whether it is legal at all
+        tc.code.append("#if !defined(S_SUPPORTED) && defined(UDB_WFI_U_MODE) // U-mode WFI waits only without S")
     addr_reg, tmp_reg = test_data.int_regs.get_registers(2)
 
     # mstatus.TW only affects modes below M, so sweep it in M-mode where it must not matter
@@ -603,7 +674,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = 1",
                 test_data.add_testcase(
                     f"priv_{priv}_tw_{tw}_{status['field']}_{enable}",
-                    # InterruptsSm records M-mode WFI in cp_wfi_m; both suites record VS-mode WFI in cp_wfi_vs
+                    # Interrupts_Sm_cg records M-mode WFI in cp_wfi_m; both groups record VS-mode WFI in cp_wfi_vs
                     {"M": "cp_wfi_m", "VS": "cp_wfi_vs"}.get(priv, coverpoint),
                     suite.covergroup,
                 ),
@@ -622,7 +693,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
 
     test_data.int_regs.return_registers([addr_reg, tmp_reg])
     if priv == "U":
-        tc.code.append("#endif // S_SUPPORTED")
+        tc.code.append("#endif // !S_SUPPORTED && UDB_WFI_U_MODE")
 
 
 def generate_cp_trigger_vsti_sstc(
@@ -633,7 +704,7 @@ def generate_cp_trigger_vsti_sstc(
     With hie.VSTIE = 1, VS-mode takes STI when hideleg.VSTI = 1, and HS-mode takes VSTI otherwise.  The boot mode
     (HS or M) writes vstimecmp, and VS-mode writes its own timer through stimecmp, which is vstimecmp there.  For
     U-mode and VU-mode, HS-mode writes vstimecmp and then enters them.  HS-mode takes an undelegated VSTI in place
-    with sstatus.SIE = 1; M-mode never takes VSTI, so InterruptsSm enters VS-mode.  U-mode never takes a delegated
+    with sstatus.SIE = 1; M-mode never takes VSTI, so Interrupts_Sm enters VS-mode.  U-mode never takes a delegated
     VSTI, since V = 0.
     """
 
@@ -797,4 +868,9 @@ def emit_interrupts(
         generate(test_data, test_chunks, suite, priv)
 
     test_chunks.append(test_data.end_test_chunk())
+    # Prefix split names with the group so each group's test files start with its name
+    if suite.group:
+        for tc in test_chunks:
+            if tc.split_name is not None:
+                tc.split_name = f"{suite.group}_{tc.split_name}"
     return test_chunks

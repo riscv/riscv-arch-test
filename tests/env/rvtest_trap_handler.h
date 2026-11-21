@@ -49,7 +49,7 @@
 //    tramp_sz + 10*8        | 8             | sved_shared   — S-mode area: saved hgatp
 //    tramp_sz + 11*8        | 8             | tentry_sv      — common handler entry point address
 //    tramp_sz + 12*8        | 8             | xedeleg_sv     — saved xEDELEG value
-//    tramp_sz + 13*8        | 8             | xtvec_new      — trampoline address currently in xTVEC
+//    tramp_sz + 13*8        | 8             | xtvec_new      — BASE (no MODE bits) currently in xTVEC
 //    tramp_sz + 14*8        | 8             | xtvec_save     — original xTVEC value before prolog
 //    tramp_sz + 15*8        | 8             | xscratch_save  — original xSCRATCH value before prolog
 //    tramp_sz + 16*8        | 8             | medeleg_illegal_sv — shadow value of medeleg[2]
@@ -267,7 +267,7 @@
                                                     //   and hideleg in the M area's slot
 #define tentry_addr_off             (tramp_sz+11*8) // offset to common handler entry point address
 #define xedeleg_sv_off              (tramp_sz+12*8) // offset to saved xEDELEG value
-#define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC value (trampoline addr)
+#define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC BASE (trampoline addr, no MODE bits)
 #define xtvec_sav_off               (tramp_sz+14*8) // offset to saved original xTVEC value
 #define xscr_save_off               (tramp_sz+15*8) // offset to saved original xSCRATCH value
 #define medeleg_illegal_sv_off      (tramp_sz+16*8) // offset to logical medeleg[2] value
@@ -835,11 +835,14 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T5, unexpected_int_str; la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
 
 // Trap handler version. The M-mode handler uses rvtest_code_end_mmode: with Smdbltrp,
-// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap.
+// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap. Both versions
+// leave unexpected_int_str in T5, so RVTEST_CODE_END reports the abort instead of
+// checking the signature counts of a test that did not finish.
 .macro RVTEST_DFLT_INT_HNDLR_MODE __MODE__
+        LA(     T5, unexpected_int_str)
   .ifc \__MODE__ , M
         LA(     T1, rvtest_code_end_mmode)
   .else
@@ -1021,8 +1024,10 @@ init_\__MODE__\()tvec:
     .endif
   #endif
 #endif
+        // xtvec_new_off holds the BASE only. sv_\__MODE__\()vect subtracts it from the stub
+        // return address to find which stub ran, so the MODE bits must not be included.
+        SREG    T5, xtvec_new_off(T1)              // save new xTVEC BASE (no MODE bits) in save area
         or      T2, T5, T2                         // T2 = handler BASE + selected mode bits
-        SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
         csrw    CSR_XTVEC, T2                      // attempt to write handler address to xTVEC
 
         csrr    T5, CSR_XTVEC                      // read back xTVEC to verify it was written
@@ -1031,11 +1036,11 @@ init_\__MODE__\()tvec:
 #endif
         // xTVEC is NOT fully writable — need to copy trampoline to xTVEC target
         csrw    CSR_XTVEC, T3                      // restore original xTVEC (we'll overwrite its target)
-        SREG    T3, xtvec_new_off(T1)               // update tvec_new with the original (now-in-use) xTVEC
 
 //---------- Copy trampoline to fixed xTVEC target ----------
 init_\__MODE__\()tramp:
         andi    T2, T3, ~WDBYTMSK                 // T2 = xTVEC target address (clear mode bits)
+        SREG    T2, xtvec_new_off(T1)              // update tvec_new with the BASE of the original (now-in-use) xTVEC
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
@@ -1303,6 +1308,56 @@ common_\__MODE__\()entry:                       // common entry for all traps in
       jr T2
       invisible_Mcontinue:
   .endif
+
+  // A failed self-check jumps to a failure entry (failedtest_*). The entries follow
+  // rvtest_code_end, which starts a fresh page so that a test can map its own code for
+  // a less-privileged mode while keeping the handlers and failure code out of reach. The
+  // jump from that mode then takes a fetch page or access fault at the entry. Run the
+  // entry in this handler's mode instead: set xPP to this mode and xret to xEPC with every
+  // register restored. A fault taken from this handler's own mode is recorded as usual,
+  // because retrying it would loop.
+        LI(T4, CAUSE_FETCH_PAGE_FAULT)
+        beq     T5, T4, \__MODE__\()fail_fetch_chk
+        LI(T4, CAUSE_FETCH_ACCESS)
+        bne     T5, T4, \__MODE__\()fail_fetch_done
+\__MODE__\()fail_fetch_chk:
+        csrr    T4, CSR_XEPC
+        LA(T3, failedtest_x5_x4)
+        bltu    T4, T3, \__MODE__\()fail_fetch_done
+        LA(T3, failedtest_saveregs)
+        bgeu    T4, T3, \__MODE__\()fail_fetch_done
+        csrr    T4, CSR_XSTATUS
+  .ifc \__MODE__ , M
+        LI(T3, MSTATUS_MPP)
+        and     T2, T4, T3
+        beq     T2, T3, \__MODE__\()fail_fetch_done  // fault from M-mode itself
+        LI(T2, MSTATUS_MPIE)
+  .else
+    .ifc \__MODE__ , S
+      #ifdef H_SUPPORTED
+        // In HS-mode, a trap from VS or VU (SPV=1) also comes from a less-privileged
+        // mode, whatever SPP says. Clear SPV so that sret returns to HS, not VS.
+        csrr    T2, CSR_HSTATUS
+        andi    T2, T2, HSTATUS_SPV
+        beqz    T2, \__MODE__\()fail_fetch_nonguest
+        csrc    CSR_HSTATUS, T2                     // SPV = 0
+        j       \__MODE__\()fail_fetch_lower
+\__MODE__\()fail_fetch_nonguest:
+      #endif
+    .endif
+        LI(T3, SSTATUS_SPP)
+        and     T2, T4, T3
+        bnez    T2, \__MODE__\()fail_fetch_done      // fault from this handler's own mode
+\__MODE__\()fail_fetch_lower:
+        // The failure code reads the failed check's instructions from the code that
+        // jumped here, which may be on a U-mode page: set SUM so those loads work.
+        LI(T3, SSTATUS_SPP | SSTATUS_SUM)
+        LI(T2, SSTATUS_SPIE)
+  .endif
+        csrs    CSR_XSTATUS, T3                     // xPP = this mode (mret with MPP=M also leaves V=0)
+        csrc    CSR_XSTATUS, T2                     // report with this mode's interrupts disabled
+        j       resto_\__MODE__\()rtn
+\__MODE__\()fail_fetch_done:
 
 
 //==============================================================================
@@ -2334,7 +2389,7 @@ tsbi_instr_table:
 // armed rvtest_int_xepc, else 0 (see common_\__MODE__\()int_handler).
 
 sv_\__MODE__\()vect:
-        LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
+        LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address (BASE, no MODE bits)
         sub     T6, T6, T3                          // T6 = vector stub address - trampoline base = spreader offset
         slli    T4, T6, 1                           // T4 = offset * 2 (part of compression: multiply by 3)
         add     T6, T6, T4                          // T6 = offset * 3
@@ -2425,9 +2480,11 @@ common_\__MODE__\()excpt_handler:
 
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
-        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
-        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
-        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+        // Tests that arm mcontrol6 triggers define SDTRIG_IMPRECISE_XEPC: the spec only suggests where those
+        // fire, so DUTs take the breakpoint at different instructions and xEPC is not recorded for cause 3
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_BREAKPOINT)
+        beq     T2, T6, skpsv_\__MODE__\()epc
 #endif
         TRAP_SIGUPD_ADDR(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
 skpsv_\__MODE__\()epc:

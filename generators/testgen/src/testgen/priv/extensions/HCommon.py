@@ -79,10 +79,13 @@ HEDELEG_P113_WRITABLE = (1 << 18) | (1 << 19)
 P113_GATE = "defined(SM1P13P0_OR_LATER_SUPPORTED)"
 # hideleg: VS-level interrupts 2, 6 and 10 are writable; 1, 5, 9 and 12 are read-only zero.
 HIDELEG_MASK = 0x1666
-# The VS-level interrupts (MIP_VS_MASK).  hie.SGEIE is left out: it is writable only if GEILEN > 0 (hie_acc).
+# The VS-level interrupts (MIP_VS_MASK)
 VS_INTERRUPTS = 0x444
-# hip also has the read-only SGEIP, which is zero while no guest external interrupt is pending (MIP_HS_MASK)
-HIP_MASK = 0x1444
+# hie and hip are walked across bits 15:0, as mie and mip are in Sm.  The reference model decides each bit:
+# the VS-level bits and hie.SGEIE (when GEILEN > 0) are writable in hie, only VSSIP is writable in hip, and the
+# bits that are writable in sie, the reserved bits, and hip.SGEIP (no guest external interrupt is pending)
+# read zero.
+HIE_HIP_MASK = 0xFFFF
 # henvcfg fields, as for menvcfg in Sm
 HENVCFG_MASK = (
     (1 << 0)  # FIOM
@@ -121,12 +124,12 @@ H_HS_CSRS = [
     HCsr("hstatus", HSTATUS_MASK, masked=True),
     HCsr("hedeleg", HEDELEG_MASK),
     HCsr("hideleg", HIDELEG_MASK),
-    HCsr("hie", VS_INTERRUPTS),
+    HCsr("hie", HIE_HIP_MASK),
     HCsr("hcounteren"),
     HCsr("hgeie"),
     HCsr("henvcfg", HENVCFG_MASK, masked=True, warl_fields=HENVCFG_WARL),
     HCsr("htval", zero=True),
-    HCsr("hip", HIP_MASK),
+    HCsr("hip", HIE_HIP_MASK),
     HCsr("hvip", VS_INTERRUPTS),
     HCsr("htinst", zero=True),
     HCsr("hgatp", zero=True),

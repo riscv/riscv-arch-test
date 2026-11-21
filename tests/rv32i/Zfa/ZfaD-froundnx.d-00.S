@@ -34,7 +34,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Testcase cp_fs1 (Test source fs1 = f0)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f0) # load fs1: f0 = 0x79de840f8aa93a86
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f0) # load fs1: f0 = 0x39185b3434d49f5a
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b0:
   froundnx.d f5, f0 # perform operation
@@ -42,23 +42,23 @@ ZfaD_froundnx_d_cg_cp_fs1_b0:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, ZfaD_froundnx_d_cg_cp_fs1_b0, ZfaD_froundnx_d_cg_cp_fs1_b0_str)
 
 # Testcase cp_fs1 (Test source fs1 = f1)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0xb4d49f5abf957eb7
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x4296564292aafa6b
+  fsflagsi 0b01001 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b1:
-  froundnx.d f5, f1 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, ZfaD_froundnx_d_cg_cp_fs1_b1, ZfaD_froundnx_d_cg_cp_fs1_b1_str)
+  froundnx.d f14, f1 # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, ZfaD_froundnx_d_cg_cp_fs1_b1, ZfaD_froundnx_d_cg_cp_fs1_b1_str)
 
 # Testcase cp_fs1 (Test source fs1 = f2)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x45128e1fd7023520
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x4089b7dfeb15a0c2
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b2:
-  froundnx.d f7, f2 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, ZfaD_froundnx_d_cg_cp_fs1_b2, ZfaD_froundnx_d_cg_cp_fs1_b2_str)
+  froundnx.d f29, f2 # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, ZfaD_froundnx_d_cg_cp_fs1_b2, ZfaD_froundnx_d_cg_cp_fs1_b2_str)
 
 # Testcase cp_fs1 (Test source fs1 = f3)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x309be456777f21df
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0xc1779456bc6693b8
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b3:
   froundnx.d f20, f3 # perform operation
@@ -66,486 +66,486 @@ ZfaD_froundnx_d_cg_cp_fs1_b3:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, ZfaD_froundnx_d_cg_cp_fs1_b3, ZfaD_froundnx_d_cg_cp_fs1_b3_str)
 
 # Testcase cp_fs1 (Test source fs1 = f4)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f4) # load fs1: f4 = 0xb2b214bf92aafa6b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f4) # load fs1: f4 = 0xc094c6001a075f6c
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b4:
-  froundnx.d f31, f4 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, ZfaD_froundnx_d_cg_cp_fs1_b4, ZfaD_froundnx_d_cg_cp_fs1_b4_str)
+  froundnx.d f3, f4 # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, ZfaD_froundnx_d_cg_cp_fs1_b4, ZfaD_froundnx_d_cg_cp_fs1_b4_str)
 
 # Testcase cp_fs1 (Test source fs1 = f5)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x5b90fba44586d923
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x421336bd8b6c710a
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b5:
-  froundnx.d f24, f5 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, ZfaD_froundnx_d_cg_cp_fs1_b5, ZfaD_froundnx_d_cg_cp_fs1_b5_str)
+  froundnx.d f17, f5 # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, ZfaD_froundnx_d_cg_cp_fs1_b5, ZfaD_froundnx_d_cg_cp_fs1_b5_str)
 
 # Testcase cp_fs1 (Test source fs1 = f6)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0xcbc8bbc03c59559f
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x42e049c672db1a2b
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b6:
-  froundnx.d f28, f6 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, ZfaD_froundnx_d_cg_cp_fs1_b6, ZfaD_froundnx_d_cg_cp_fs1_b6_str)
+  froundnx.d f19, f6 # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, ZfaD_froundnx_d_cg_cp_fs1_b6, ZfaD_froundnx_d_cg_cp_fs1_b6_str)
 
 # Testcase cp_fs1 (Test source fs1 = f7)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0x69750e1381d4b6f8
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0xc014da29cfba68f5
+  fsflagsi 0b11101 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b7:
-  froundnx.d f3, f7 # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, ZfaD_froundnx_d_cg_cp_fs1_b7, ZfaD_froundnx_d_cg_cp_fs1_b7_str)
+  froundnx.d f27, f7 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f27, ZfaD_froundnx_d_cg_cp_fs1_b7, ZfaD_froundnx_d_cg_cp_fs1_b7_str)
 
 # Testcase cp_fs1 (Test source fs1 = f8)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0xf933a58c842ca21a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0x40ce2786b0ac89f2
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b8:
-  froundnx.d f5, f8 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, ZfaD_froundnx_d_cg_cp_fs1_b8, ZfaD_froundnx_d_cg_cp_fs1_b8_str)
+  froundnx.d f2, f8 # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f2, ZfaD_froundnx_d_cg_cp_fs1_b8, ZfaD_froundnx_d_cg_cp_fs1_b8_str)
 
 # Testcase cp_fs1 (Test source fs1 = f9)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x95b10e3adefe2df3
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x79667f7f283adecc
+  fsflagsi 0b11011 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b9:
-  froundnx.d f20, f9 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, ZfaD_froundnx_d_cg_cp_fs1_b9, ZfaD_froundnx_d_cg_cp_fs1_b9_str)
+  froundnx.d f2, f9 # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f2, ZfaD_froundnx_d_cg_cp_fs1_b9, ZfaD_froundnx_d_cg_cp_fs1_b9_str)
 
 # Testcase cp_fs1 (Test source fs1 = f10)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x944d07adf2f4953b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x4309c262b6130094
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b10:
-  froundnx.d f13, f10 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, ZfaD_froundnx_d_cg_cp_fs1_b10, ZfaD_froundnx_d_cg_cp_fs1_b10_str)
+  froundnx.d f14, f10 # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f14, ZfaD_froundnx_d_cg_cp_fs1_b10, ZfaD_froundnx_d_cg_cp_fs1_b10_str)
 
 # Testcase cp_fs1 (Test source fs1 = f11)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x0bed87101673a1e8
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x3fed3e99a9cf7397
+  fsflagsi 0b01010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b11:
-  froundnx.d f19, f11 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, ZfaD_froundnx_d_cg_cp_fs1_b11, ZfaD_froundnx_d_cg_cp_fs1_b11_str)
+  froundnx.d f16, f11 # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f16, ZfaD_froundnx_d_cg_cp_fs1_b11, ZfaD_froundnx_d_cg_cp_fs1_b11_str)
 
 # Testcase cp_fs1 (Test source fs1 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x0fdbd08fe72da36a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x4100e2d2627d6608
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b12:
-  froundnx.d f28, f12 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, ZfaD_froundnx_d_cg_cp_fs1_b12, ZfaD_froundnx_d_cg_cp_fs1_b12_str)
+  froundnx.d f22, f12 # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f22, ZfaD_froundnx_d_cg_cp_fs1_b12, ZfaD_froundnx_d_cg_cp_fs1_b12_str)
 
 # Testcase cp_fs1 (Test source fs1 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x834aa0455e71a463
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x41e1d63b019c3a42
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b13:
-  froundnx.d f27, f13 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_fs1_b13, ZfaD_froundnx_d_cg_cp_fs1_b13_str)
+  froundnx.d f29, f13 # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, ZfaD_froundnx_d_cg_cp_fs1_b13, ZfaD_froundnx_d_cg_cp_fs1_b13_str)
 
 # Testcase cp_fs1 (Test source fs1 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x47975291ee0afcb0
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0xc08576718a5bb00c
+  fsflagsi 0b11101 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b14:
-  froundnx.d f27, f14 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_fs1_b14, ZfaD_froundnx_d_cg_cp_fs1_b14_str)
+  froundnx.d f16, f14 # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, ZfaD_froundnx_d_cg_cp_fs1_b14, ZfaD_froundnx_d_cg_cp_fs1_b14_str)
 
 # Testcase cp_fs1 (Test source fs1 = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0x44f29787024e324c
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0xc00d636a99f0fafa
+  fsflagsi 0b01010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b15:
-  froundnx.d f16, f15 # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, ZfaD_froundnx_d_cg_cp_fs1_b15, ZfaD_froundnx_d_cg_cp_fs1_b15_str)
+  froundnx.d f27, f15 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_fs1_b15, ZfaD_froundnx_d_cg_cp_fs1_b15_str)
 
 # Testcase cp_fs1 (Test source fs1 = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x310019d1cb9e49b0
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x4025ec890a49722d
+  fsflagsi 0b00101 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b16:
-  froundnx.d f17, f16 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, ZfaD_froundnx_d_cg_cp_fs1_b16, ZfaD_froundnx_d_cg_cp_fs1_b16_str)
+  froundnx.d f24, f16 # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, ZfaD_froundnx_d_cg_cp_fs1_b16, ZfaD_froundnx_d_cg_cp_fs1_b16_str)
 
 # Testcase cp_fs1 (Test source fs1 = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x2b352650e4183874
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x829f965b8111e81a
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b17:
-  froundnx.d f8, f17 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, ZfaD_froundnx_d_cg_cp_fs1_b17, ZfaD_froundnx_d_cg_cp_fs1_b17_str)
+  froundnx.d f9, f17 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, ZfaD_froundnx_d_cg_cp_fs1_b17, ZfaD_froundnx_d_cg_cp_fs1_b17_str)
 
 # Testcase cp_fs1 (Test source fs1 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0xa6d14a2bcfba68f5
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0xc10486e98f970021
+  fsflagsi 0b10110 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b18:
-  froundnx.d f16, f18 # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, ZfaD_froundnx_d_cg_cp_fs1_b18, ZfaD_froundnx_d_cg_cp_fs1_b18_str)
+  froundnx.d f12, f18 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_fs1_b18, ZfaD_froundnx_d_cg_cp_fs1_b18_str)
 
 # Testcase cp_fs1 (Test source fs1 = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0x2b53eb4175bc8c59
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0xc27676ec6c28860b
+  fsflagsi 0b11000 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b19:
-  froundnx.d f11, f19 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, ZfaD_froundnx_d_cg_cp_fs1_b19, ZfaD_froundnx_d_cg_cp_fs1_b19_str)
+  froundnx.d f26, f19 # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfaD_froundnx_d_cg_cp_fs1_b19, ZfaD_froundnx_d_cg_cp_fs1_b19_str)
 
 # Testcase cp_fs1 (Test source fs1 = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x04ed16dcfbfd2ec7
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x41935a1a0aefe61a
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b20:
-  froundnx.d f27, f20 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_fs1_b20, ZfaD_froundnx_d_cg_cp_fs1_b20_str)
+  froundnx.d f30, f20 # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, ZfaD_froundnx_d_cg_cp_fs1_b20, ZfaD_froundnx_d_cg_cp_fs1_b20_str)
 
 # Testcase cp_fs1 (Test source fs1 = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0x29b89d30ca667e08
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0x8ab08cddf7bf387d
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b21:
-  froundnx.d f24, f21 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, ZfaD_froundnx_d_cg_cp_fs1_b21, ZfaD_froundnx_d_cg_cp_fs1_b21_str)
+  froundnx.d f9, f21 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, ZfaD_froundnx_d_cg_cp_fs1_b21, ZfaD_froundnx_d_cg_cp_fs1_b21_str)
 
 # Testcase cp_fs1 (Test source fs1 = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0xbf9f59f8b79cf23f
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0xc23c340abe93c4e7
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b22:
-  froundnx.d f19, f22 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, ZfaD_froundnx_d_cg_cp_fs1_b22, ZfaD_froundnx_d_cg_cp_fs1_b22_str)
+  froundnx.d f9, f22 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, ZfaD_froundnx_d_cg_cp_fs1_b22, ZfaD_froundnx_d_cg_cp_fs1_b22_str)
 
 # Testcase cp_fs1 (Test source fs1 = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0xae4459c87c92e92f
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0xc12c55496e69905e
+  fsflagsi 0b11010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b23:
-  froundnx.d f12, f23 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_fs1_b23, ZfaD_froundnx_d_cg_cp_fs1_b23_str)
+  froundnx.d f9, f23 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, ZfaD_froundnx_d_cg_cp_fs1_b23, ZfaD_froundnx_d_cg_cp_fs1_b23_str)
 
 # Testcase cp_fs1 (Test source fs1 = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs1: f24 = 0xf9667f7f283adecc
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs1: f24 = 0x4154332ce05847dd
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fs1_b24:
-  froundnx.d f21, f24 # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, ZfaD_froundnx_d_cg_cp_fs1_b24, ZfaD_froundnx_d_cg_cp_fs1_b24_str)
+  froundnx.d f15, f24 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, ZfaD_froundnx_d_cg_cp_fs1_b24, ZfaD_froundnx_d_cg_cp_fs1_b24_str)
 
 # Testcase cp_fs1 (Test source fs1 = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x5760b762dc899554
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0xc24915dfbe0d04b3
+  fsflagsi 0b10011 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b25:
   froundnx.d f11, f25 # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, ZfaD_froundnx_d_cg_cp_fs1_b25, ZfaD_froundnx_d_cg_cp_fs1_b25_str)
 
 # Testcase cp_fs1 (Test source fs1 = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0x581ef190e9c1a403
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0xc25327c615535328
+  fsflagsi 0b10110 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b26:
-  froundnx.d f5, f26 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, ZfaD_froundnx_d_cg_cp_fs1_b26, ZfaD_froundnx_d_cg_cp_fs1_b26_str)
+  froundnx.d f18, f26 # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, ZfaD_froundnx_d_cg_cp_fs1_b26, ZfaD_froundnx_d_cg_cp_fs1_b26_str)
 
 # Testcase cp_fs1 (Test source fs1 = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0xec4594e1789d362d
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x8a4bda02863792f6
+  fsflagsi 0b11111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b27:
-  froundnx.d f18, f27 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, ZfaD_froundnx_d_cg_cp_fs1_b27, ZfaD_froundnx_d_cg_cp_fs1_b27_str)
+  froundnx.d f17, f27 # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, ZfaD_froundnx_d_cg_cp_fs1_b27, ZfaD_froundnx_d_cg_cp_fs1_b27_str)
 
 # Testcase cp_fs1 (Test source fs1 = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x361300943fa7fde0
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0xc06cb4d66472473c
+  fsflagsi 0b10110 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b28:
-  froundnx.d f26, f28 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfaD_froundnx_d_cg_cp_fs1_b28, ZfaD_froundnx_d_cg_cp_fs1_b28_str)
+  froundnx.d f19, f28 # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, ZfaD_froundnx_d_cg_cp_fs1_b28, ZfaD_froundnx_d_cg_cp_fs1_b28_str)
 
 # Testcase cp_fs1 (Test source fs1 = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x3086ba3b15cbe210
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x4348285e54c489e2
+  fsflagsi 0b10111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b29:
-  froundnx.d f27, f29 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_fs1_b29, ZfaD_froundnx_d_cg_cp_fs1_b29_str)
+  froundnx.d f1, f29 # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, ZfaD_froundnx_d_cg_cp_fs1_b29, ZfaD_froundnx_d_cg_cp_fs1_b29_str)
 
 # Testcase cp_fs1 (Test source fs1 = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x379021d7b53ae113
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x8bc1c6b42ef03e90
+  fsflagsi 0b10100 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b30:
-  froundnx.d f6, f30 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, ZfaD_froundnx_d_cg_cp_fs1_b30, ZfaD_froundnx_d_cg_cp_fs1_b30_str)
+  froundnx.d f0, f30 # perform operation
+  # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f0, ZfaD_froundnx_d_cg_cp_fs1_b30, ZfaD_froundnx_d_cg_cp_fs1_b30_str)
 
 # Testcase cp_fs1 (Test source fs1 = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0xca2a3cf1f5ab03a2
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0xc22693fc901e24dc
+  fsflagsi 0b10010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fs1_b31:
-  froundnx.d f13, f31 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, ZfaD_froundnx_d_cg_cp_fs1_b31, ZfaD_froundnx_d_cg_cp_fs1_b31_str)
+  froundnx.d f26, f31 # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfaD_froundnx_d_cg_cp_fs1_b31, ZfaD_froundnx_d_cg_cp_fs1_b31_str)
 
 /////////////////////////////////
 // cp_fd
 /////////////////////////////////
 
 # Testcase cp_fd (Test destination fd = f0)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x3845416e03566b3e
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x42d91bf26e7cb41b
+  fsflagsi 0b10011 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b0:
   froundnx.d f0, f28 # perform operation
   # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f0, ZfaD_froundnx_d_cg_cp_fd_b0, ZfaD_froundnx_d_cg_cp_fd_b0_str)
 
 # Testcase cp_fd (Test destination fd = f1)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0x4171eb2500042abb
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0xc16a5d18acc4bc8d
+  fsflagsi 0b10100 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b1:
-  froundnx.d f1, f26 # perform operation
+  froundnx.d f1, f5 # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, ZfaD_froundnx_d_cg_cp_fd_b1, ZfaD_froundnx_d_cg_cp_fd_b1_str)
 
 # Testcase cp_fd (Test destination fd = f2)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0x98690c27a2a4b543
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0xc65c85cd253db38e
+  fsflagsi 0b00001 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b2:
-  froundnx.d f2, f15 # perform operation
+  froundnx.d f2, f1 # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, ZfaD_froundnx_d_cg_cp_fd_b2, ZfaD_froundnx_d_cg_cp_fd_b2_str)
 
 # Testcase cp_fd (Test destination fd = f3)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x2cc4bc8d88659986
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0x432f9886fce533a5
+  fsflagsi 0b00110 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b3:
-  froundnx.d f3, f22 # perform operation
+  froundnx.d f3, f19 # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, ZfaD_froundnx_d_cg_cp_fd_b3, ZfaD_froundnx_d_cg_cp_fd_b3_str)
 
 # Testcase cp_fd (Test destination fd = f4)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x8f596ce2985d8f45
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x389f81571f3e388b
+  fsflagsi 0b01111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b4:
-  froundnx.d f4, f14 # perform operation
+  froundnx.d f4, f29 # perform operation
   # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f4, ZfaD_froundnx_d_cg_cp_fd_b4, ZfaD_froundnx_d_cg_cp_fd_b4_str)
 
 # Testcase cp_fd (Test destination fd = f5)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x465c85cd253db38e
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f4) # load fs1: f4 = 0xc07bc8ed7ed063a3
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b5:
-  froundnx.d f5, f23 # perform operation
+  froundnx.d f5, f4 # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f5, ZfaD_froundnx_d_cg_cp_fd_b5, ZfaD_froundnx_d_cg_cp_fd_b5_str)
 
 # Testcase cp_fd (Test destination fd = f6)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x57a9e2dbe955887a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0xc1f1fd5b1e1df0f1
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b6:
-  froundnx.d f6, f9 # perform operation
+  froundnx.d f6, f30 # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f6, ZfaD_froundnx_d_cg_cp_fd_b6, ZfaD_froundnx_d_cg_cp_fd_b6_str)
 
 # Testcase cp_fd (Test destination fd = f7)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0xc548ca6d7cc43553
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x42c9001ac9ff8952
+  fsflagsi 0b11010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b7:
-  froundnx.d f7, f25 # perform operation
+  froundnx.d f7, f1 # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, ZfaD_froundnx_d_cg_cp_fd_b7, ZfaD_froundnx_d_cg_cp_fd_b7_str)
 
 # Testcase cp_fd (Test destination fd = f8)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x5e5cc1cf5e83f18c
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0xe2a1bd3851e65991
+  fsflagsi 0b10100 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b8:
-  froundnx.d f8, f5 # perform operation
+  froundnx.d f8, f11 # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, ZfaD_froundnx_d_cg_cp_fd_b8, ZfaD_froundnx_d_cg_cp_fd_b8_str)
 
 # Testcase cp_fd (Test destination fd = f9)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x92e9490c30ceb56a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0x40c36c0932518a72
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b9:
-  froundnx.d f9, f27 # perform operation
+  froundnx.d f9, f15 # perform operation
   # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, ZfaD_froundnx_d_cg_cp_fd_b9, ZfaD_froundnx_d_cg_cp_fd_b9_str)
 
 # Testcase cp_fd (Test destination fd = f10)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x0368943645b287ba
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0xd04fc84ac0879be9
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b10:
-  froundnx.d f10, f5 # perform operation
+  froundnx.d f10, f14 # perform operation
   # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, ZfaD_froundnx_d_cg_cp_fd_b10, ZfaD_froundnx_d_cg_cp_fd_b10_str)
 
 # Testcase cp_fd (Test destination fd = f11)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x9f3e388bbf9c9639
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x41db181e6e8af82b
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b11:
-  froundnx.d f11, f17 # perform operation
+  froundnx.d f11, f16 # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, ZfaD_froundnx_d_cg_cp_fd_b11, ZfaD_froundnx_d_cg_cp_fd_b11_str)
 
 # Testcase cp_fd (Test destination fd = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x9875f94c6f6e2032
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs1: f24 = 0x433d4c1ff2c5129f
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b12:
-  froundnx.d f12, f2 # perform operation
+  froundnx.d f12, f24 # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, ZfaD_froundnx_d_cg_cp_fd_b12, ZfaD_froundnx_d_cg_cp_fd_b12_str)
 
 # Testcase cp_fd (Test destination fd = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0xaa08bdf3b03bd0ae
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0xc1b7ace518c84ae2
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b13:
-  froundnx.d f13, f17 # perform operation
+  froundnx.d f13, f7 # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, ZfaD_froundnx_d_cg_cp_fd_b13, ZfaD_froundnx_d_cg_cp_fd_b13_str)
 
 # Testcase cp_fd (Test destination fd = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0xfed063a3f8a171f2
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0x41f808b09120d6d6
+  fsflagsi 0b00100 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b14:
-  froundnx.d f14, f5 # perform operation
+  froundnx.d f14, f8 # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, ZfaD_froundnx_d_cg_cp_fd_b14, ZfaD_froundnx_d_cg_cp_fd_b14_str)
 
 # Testcase cp_fd (Test destination fd = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0x9e1df0f143b93f61
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0xc0a72a0b2ff0dbf6
+  fsflagsi 0b10110 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b15:
-  froundnx.d f15, f26 # perform operation
+  froundnx.d f15, f21 # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, ZfaD_froundnx_d_cg_cp_fd_b15, ZfaD_froundnx_d_cg_cp_fd_b15_str)
 
 # Testcase cp_fd (Test destination fd = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x865f0b3b0903a12c
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x40c2891cc4465913
+  fsflagsi 0b10111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b16:
-  froundnx.d f16, f29 # perform operation
+  froundnx.d f16, f10 # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, ZfaD_froundnx_d_cg_cp_fd_b16, ZfaD_froundnx_d_cg_cp_fd_b16_str)
 
 # Testcase cp_fd (Test destination fd = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0xbae624da66cd0883
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0xc076e59a0315b41c
+  fsflagsi 0b11011 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b17:
-  froundnx.d f17, f20 # perform operation
+  froundnx.d f17, f26 # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, ZfaD_froundnx_d_cg_cp_fd_b17, ZfaD_froundnx_d_cg_cp_fd_b17_str)
 
 # Testcase cp_fd (Test destination fd = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0xd7061379cb50bbfa
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0x40d5b6a2a1fa1493
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b18:
-  froundnx.d f18, f17 # perform operation
+  froundnx.d f18, f21 # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, ZfaD_froundnx_d_cg_cp_fd_b18, ZfaD_froundnx_d_cg_cp_fd_b18_str)
 
 # Testcase cp_fd (Test destination fd = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0xadf38e072a3f4a40
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0xc0234a1212eb4333
+  fsflagsi 0b00001 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b19:
-  froundnx.d f19, f7 # perform operation
+  froundnx.d f19, f14 # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, ZfaD_froundnx_d_cg_cp_fd_b19, ZfaD_froundnx_d_cg_cp_fd_b19_str)
 
 # Testcase cp_fd (Test destination fd = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0xb2eeee41e2a1bd38
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0xaad364655b85ad88
+  fsflagsi 0b01001 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b20:
-  froundnx.d f20, f11 # perform operation
+  froundnx.d f20, f31 # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, ZfaD_froundnx_d_cg_cp_fd_b20, ZfaD_froundnx_d_cg_cp_fd_b20_str)
 
 # Testcase cp_fd (Test destination fd = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x7d164b28987c418a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0xc2d54b4b6b82455a
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b21:
-  froundnx.d f21, f14 # perform operation
+  froundnx.d f21, f5 # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, ZfaD_froundnx_d_cg_cp_fd_b21, ZfaD_froundnx_d_cg_cp_fd_b21_str)
 
 # Testcase cp_fd (Test destination fd = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x4016f29b2393dc9d
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x4300ccd005884bd2
+  fsflagsi 0b01111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b22:
-  froundnx.d f22, f5 # perform operation
+  froundnx.d f22, f6 # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, ZfaD_froundnx_d_cg_cp_fd_b22, ZfaD_froundnx_d_cg_cp_fd_b22_str)
 
 # Testcase cp_fd (Test destination fd = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0x59d2f5643df7a699
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x1494bb170b5ffbbf
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b23:
-  froundnx.d f23, f18 # perform operation
+  froundnx.d f23, f29 # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, ZfaD_froundnx_d_cg_cp_fd_b23, ZfaD_froundnx_d_cg_cp_fd_b23_str)
 
 # Testcase cp_fd (Test destination fd = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0x1bbc1cd525eaaf61
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x40294c6a7884b041
+  fsflagsi 0b00100 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b24:
-  froundnx.d f24, f18 # perform operation
+  froundnx.d f24, f27 # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, ZfaD_froundnx_d_cg_cp_fd_b24, ZfaD_froundnx_d_cg_cp_fd_b24_str)
 
 # Testcase cp_fd (Test destination fd = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x7bad7b0f638e2404
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f0) # load fs1: f0 = 0x87e98a355dd18323
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b25:
-  froundnx.d f25, f3 # perform operation
+  froundnx.d f25, f0 # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, ZfaD_froundnx_d_cg_cp_fd_b25, ZfaD_froundnx_d_cg_cp_fd_b25_str)
 
 # Testcase cp_fd (Test destination fd = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x0f1f21149c0a6184
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x41ef947e7d890329
+  fsflagsi 0b00100 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b26:
-  froundnx.d f26, f16 # perform operation
+  froundnx.d f26, f28 # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfaD_froundnx_d_cg_cp_fd_b26, ZfaD_froundnx_d_cg_cp_fd_b26_str)
 
 # Testcase cp_fd (Test destination fd = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x0b1d82316275f1a3
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0xc33102b998a464fa
+  fsflagsi 0b00111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b27:
-  froundnx.d f27, f28 # perform operation
+  froundnx.d f27, f7 # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_fd_b27, ZfaD_froundnx_d_cg_cp_fd_b27_str)
 
 # Testcase cp_fd (Test destination fd = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0xadca532fa550f7d5
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x405955c9ee176c5b
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b28:
-  froundnx.d f28, f17 # perform operation
+  froundnx.d f28, f25 # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, ZfaD_froundnx_d_cg_cp_fd_b28, ZfaD_froundnx_d_cg_cp_fd_b28_str)
 
 # Testcase cp_fd (Test destination fd = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x55584ff3fef17d3f
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x40e58b058abb5fc8
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b29:
-  froundnx.d f29, f12 # perform operation
+  froundnx.d f29, f5 # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, ZfaD_froundnx_d_cg_cp_fd_b29, ZfaD_froundnx_d_cg_cp_fd_b29_str)
 
 # Testcase cp_fd (Test destination fd = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x72c5129f0a7e9e55
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0xc14628f070cc10f5
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_fd_b30:
-  froundnx.d f30, f10 # perform operation
+  froundnx.d f30, f23 # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, ZfaD_froundnx_d_cg_cp_fd_b30, ZfaD_froundnx_d_cg_cp_fd_b30_str)
 
 # Testcase cp_fd (Test destination fd = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x40867708ecdbf916
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x40a607cd842d4ea3
+  fsflagsi 0b01011 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_fd_b31:
-  froundnx.d f31, f25 # perform operation
+  froundnx.d f31, f3 # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, ZfaD_froundnx_d_cg_cp_fd_b31, ZfaD_froundnx_d_cg_cp_fd_b31_str)
 
@@ -782,7 +782,7 @@ ZfaD_froundnx_d_cg_cp_fs1_edges_D_b0xa6e895993737426c:
 /////////////////////////////////
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f0)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f0) # load fs1: f0 = 0xf67c05638738d2bd
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f0) # load fs1: f0 = 0xc0c22143087e7a23
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b0:
   froundnx.d f0, f0 # perform operation
@@ -790,372 +790,372 @@ ZfaD_froundnx_d_cg_cmp_fd_fs1_b0:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f0, ZfaD_froundnx_d_cg_cmp_fd_fs1_b0, ZfaD_froundnx_d_cg_cmp_fd_fs1_b0_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f1)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x36b2bd6b0770560e
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x428bcd53ea88f7ef
+  fsflagsi 0b10110 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b1:
   froundnx.d f1, f1 # perform operation
   # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, ZfaD_froundnx_d_cg_cmp_fd_fs1_b1, ZfaD_froundnx_d_cg_cmp_fd_fs1_b1_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f2)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x887e7a23b7f92d21
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0xc1e28c186d1b0e47
+  fsflagsi 0b10001 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b2:
   froundnx.d f2, f2 # perform operation
   # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, ZfaD_froundnx_d_cg_cmp_fd_fs1_b2, ZfaD_froundnx_d_cg_cmp_fd_fs1_b2_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f3)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0x949def67facc6f92
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0xe25c24e47676063b
+  fsflagsi 0b11001 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b3:
   froundnx.d f3, f3 # perform operation
   # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, ZfaD_froundnx_d_cg_cmp_fd_fs1_b3, ZfaD_froundnx_d_cg_cmp_fd_fs1_b3_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f4)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f4) # load fs1: f4 = 0x5fd9202d6d12eeb9
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f4) # load fs1: f4 = 0xc32e9f98657a0d97
+  fsflagsi 0b10111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b4:
   froundnx.d f4, f4 # perform operation
-  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f4, ZfaD_froundnx_d_cg_cmp_fd_fs1_b4, ZfaD_froundnx_d_cg_cmp_fd_fs1_b4_str)
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, ZfaD_froundnx_d_cg_cmp_fd_fs1_b4, ZfaD_froundnx_d_cg_cmp_fd_fs1_b4_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f5)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x66f0b3c1ad11a994
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0xc17c691301024a3b
+  fsflagsi 0b11010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b5:
   froundnx.d f5, f5 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f5, ZfaD_froundnx_d_cg_cmp_fd_fs1_b5, ZfaD_froundnx_d_cg_cmp_fd_fs1_b5_str)
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, ZfaD_froundnx_d_cg_cmp_fd_fs1_b5, ZfaD_froundnx_d_cg_cmp_fd_fs1_b5_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f6)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x922cac62addf6eec
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0xc08a02038034a474
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b6:
   froundnx.d f6, f6 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f6, ZfaD_froundnx_d_cg_cmp_fd_fs1_b6, ZfaD_froundnx_d_cg_cmp_fd_fs1_b6_str)
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, ZfaD_froundnx_d_cg_cmp_fd_fs1_b6, ZfaD_froundnx_d_cg_cmp_fd_fs1_b6_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f7)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0xc6c45eb823ba74a8
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0x41aff236ddb0dd15
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b7:
   froundnx.d f7, f7 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, ZfaD_froundnx_d_cg_cmp_fd_fs1_b7, ZfaD_froundnx_d_cg_cmp_fd_fs1_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, ZfaD_froundnx_d_cg_cmp_fd_fs1_b7, ZfaD_froundnx_d_cg_cmp_fd_fs1_b7_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f8)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0xef379fe687cb2d7e
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0xc17f7ce72e0925b4
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b8:
   froundnx.d f8, f8 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, ZfaD_froundnx_d_cg_cmp_fd_fs1_b8, ZfaD_froundnx_d_cg_cmp_fd_fs1_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, ZfaD_froundnx_d_cg_cmp_fd_fs1_b8, ZfaD_froundnx_d_cg_cmp_fd_fs1_b8_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f9)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0xed1b0e47cfeed9b7
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x423755e4fd7e868a
+  fsflagsi 0b11000 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b9:
   froundnx.d f9, f9 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, ZfaD_froundnx_d_cg_cmp_fd_fs1_b9, ZfaD_froundnx_d_cg_cmp_fd_fs1_b9_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, ZfaD_froundnx_d_cg_cmp_fd_fs1_b9, ZfaD_froundnx_d_cg_cmp_fd_fs1_b9_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f10)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x8c190c03754d09d4
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0x40c9902476f1b8b8
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b10:
   froundnx.d f10, f10 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, ZfaD_froundnx_d_cg_cmp_fd_fs1_b10, ZfaD_froundnx_d_cg_cmp_fd_fs1_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, ZfaD_froundnx_d_cg_cmp_fd_fs1_b10, ZfaD_froundnx_d_cg_cmp_fd_fs1_b10_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f11)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0xbfa256830fa91180
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0xc208313189e565bb
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b11:
   froundnx.d f11, f11 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, ZfaD_froundnx_d_cg_cmp_fd_fs1_b11, ZfaD_froundnx_d_cg_cmp_fd_fs1_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, ZfaD_froundnx_d_cg_cmp_fd_fs1_b11, ZfaD_froundnx_d_cg_cmp_fd_fs1_b11_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x4ca09382d2f4deb1
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0xc052b779ee18e0cc
+  fsflagsi 0b00100 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b12:
   froundnx.d f12, f12 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, ZfaD_froundnx_d_cg_cmp_fd_fs1_b12, ZfaD_froundnx_d_cg_cmp_fd_fs1_b12_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cmp_fd_fs1_b12, ZfaD_froundnx_d_cg_cmp_fd_fs1_b12_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x4f543ed90801aa63
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0xc1312dcff4742819
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b13:
   froundnx.d f13, f13 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, ZfaD_froundnx_d_cg_cmp_fd_fs1_b13, ZfaD_froundnx_d_cg_cmp_fd_fs1_b13_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, ZfaD_froundnx_d_cg_cmp_fd_fs1_b13, ZfaD_froundnx_d_cg_cmp_fd_fs1_b13_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x742a2a19fe06764d
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0xc15fd6321e611894
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b14:
   froundnx.d f14, f14 # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, ZfaD_froundnx_d_cg_cmp_fd_fs1_b14, ZfaD_froundnx_d_cg_cmp_fd_fs1_b14_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, ZfaD_froundnx_d_cg_cmp_fd_fs1_b14, ZfaD_froundnx_d_cg_cmp_fd_fs1_b14_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0xee028bb9b15a8b4a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs1: f15 = 0xc2eb395c2bab0e48
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b15:
   froundnx.d f15, f15 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaD_froundnx_d_cg_cmp_fd_fs1_b15, ZfaD_froundnx_d_cg_cmp_fd_fs1_b15_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, ZfaD_froundnx_d_cg_cmp_fd_fs1_b15, ZfaD_froundnx_d_cg_cmp_fd_fs1_b15_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x386cc9b5ff2e0871
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0xc1e17f6dbefb44e7
+  fsflagsi 0b10101 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b16:
   froundnx.d f16, f16 # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, ZfaD_froundnx_d_cg_cmp_fd_fs1_b16, ZfaD_froundnx_d_cg_cmp_fd_fs1_b16_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, ZfaD_froundnx_d_cg_cmp_fd_fs1_b16, ZfaD_froundnx_d_cg_cmp_fd_fs1_b16_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0x27fccdbcd6fdb8c7
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs1: f17 = 0xc2b4a2ffb8c2b0ab
+  fsflagsi 0b00101 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b17:
   froundnx.d f17, f17 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, ZfaD_froundnx_d_cg_cmp_fd_fs1_b17, ZfaD_froundnx_d_cg_cmp_fd_fs1_b17_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, ZfaD_froundnx_d_cg_cmp_fd_fs1_b17, ZfaD_froundnx_d_cg_cmp_fd_fs1_b17_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0xf4fcc6ae657a0d97
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0xc0a23c3a4ffa5742
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b18:
   froundnx.d f18, f18 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, ZfaD_froundnx_d_cg_cmp_fd_fs1_b18, ZfaD_froundnx_d_cg_cmp_fd_fs1_b18_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, ZfaD_froundnx_d_cg_cmp_fd_fs1_b18, ZfaD_froundnx_d_cg_cmp_fd_fs1_b18_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0x1ffbf38e9535c1f6
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs1: f19 = 0xbfea054b36086865
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b19:
   froundnx.d f19, f19 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, ZfaD_froundnx_d_cg_cmp_fd_fs1_b19, ZfaD_froundnx_d_cg_cmp_fd_fs1_b19_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, ZfaD_froundnx_d_cg_cmp_fd_fs1_b19, ZfaD_froundnx_d_cg_cmp_fd_fs1_b19_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0xe3489efc01024a3b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs1: f20 = 0x419243d581e89b01
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b20:
   froundnx.d f20, f20 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, ZfaD_froundnx_d_cg_cmp_fd_fs1_b20, ZfaD_froundnx_d_cg_cmp_fd_fs1_b20_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, ZfaD_froundnx_d_cg_cmp_fd_fs1_b20, ZfaD_froundnx_d_cg_cmp_fd_fs1_b20_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0x4d6d942eac6238dd
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0x410bfd44ac018517
+  fsflagsi 0b10111 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b21:
   froundnx.d f21, f21 # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, ZfaD_froundnx_d_cg_cmp_fd_fs1_b21, ZfaD_froundnx_d_cg_cmp_fd_fs1_b21_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, ZfaD_froundnx_d_cg_cmp_fd_fs1_b21, ZfaD_froundnx_d_cg_cmp_fd_fs1_b21_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x654c24250de80746
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x4012a61c29adf272
+  fsflagsi 0b10010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b22:
   froundnx.d f22, f22 # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, ZfaD_froundnx_d_cg_cmp_fd_fs1_b22, ZfaD_froundnx_d_cg_cmp_fd_fs1_b22_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, ZfaD_froundnx_d_cg_cmp_fd_fs1_b22, ZfaD_froundnx_d_cg_cmp_fd_fs1_b22_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x0034a474cd030f23
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0xc22e2e3479010176
+  fsflagsi 0b11101 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b23:
   froundnx.d f23, f23 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, ZfaD_froundnx_d_cg_cmp_fd_fs1_b23, ZfaD_froundnx_d_cg_cmp_fd_fs1_b23_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, ZfaD_froundnx_d_cg_cmp_fd_fs1_b23, ZfaD_froundnx_d_cg_cmp_fd_fs1_b23_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs1: f24 = 0xa06e4172af82a079
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs1: f24 = 0xc0ba36f970da6352
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b24:
   froundnx.d f24, f24 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, ZfaD_froundnx_d_cg_cmp_fd_fs1_b24, ZfaD_froundnx_d_cg_cmp_fd_fs1_b24_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, ZfaD_froundnx_d_cg_cmp_fd_fs1_b24, ZfaD_froundnx_d_cg_cmp_fd_fs1_b24_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x49c38e695ff349e7
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs1: f25 = 0x4226574cabcd0705
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b25:
   froundnx.d f25, f25 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, ZfaD_froundnx_d_cg_cmp_fd_fs1_b25, ZfaD_froundnx_d_cg_cmp_fd_fs1_b25_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, ZfaD_froundnx_d_cg_cmp_fd_fs1_b25, ZfaD_froundnx_d_cg_cmp_fd_fs1_b25_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0xf653644cd0e8135e
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs1: f26 = 0x413c35ee19bf44d7
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b26:
   froundnx.d f26, f26 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, ZfaD_froundnx_d_cg_cmp_fd_fs1_b26, ZfaD_froundnx_d_cg_cmp_fd_fs1_b26_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfaD_froundnx_d_cg_cmp_fd_fs1_b26, ZfaD_froundnx_d_cg_cmp_fd_fs1_b26_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x88ccc689e3b8f13b
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x420e4876b853a554
+  fsflagsi 0b01001 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b27:
   froundnx.d f27, f27 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaD_froundnx_d_cg_cmp_fd_fs1_b27, ZfaD_froundnx_d_cg_cmp_fd_fs1_b27_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cmp_fd_fs1_b27, ZfaD_froundnx_d_cg_cmp_fd_fs1_b27_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0xfa33e2e0559b6fa5
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0x426e5c6f750c8522
+  fsflagsi 0b11010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b28:
   froundnx.d f28, f28 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, ZfaD_froundnx_d_cg_cmp_fd_fs1_b28, ZfaD_froundnx_d_cg_cmp_fd_fs1_b28_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, ZfaD_froundnx_d_cg_cmp_fd_fs1_b28, ZfaD_froundnx_d_cg_cmp_fd_fs1_b28_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0xfda5574a6ada1d72
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs1: f29 = 0x328a356359aac22a
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b29:
   froundnx.d f29, f29 # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, ZfaD_froundnx_d_cg_cmp_fd_fs1_b29, ZfaD_froundnx_d_cg_cmp_fd_fs1_b29_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, ZfaD_froundnx_d_cg_cmp_fd_fs1_b29, ZfaD_froundnx_d_cg_cmp_fd_fs1_b29_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x03ad3c019d9cfd2f
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0xc313aa4686b5ae2e
+  fsflagsi 0b01110 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b30:
   froundnx.d f30, f30 # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, ZfaD_froundnx_d_cg_cmp_fd_fs1_b30, ZfaD_froundnx_d_cg_cmp_fd_fs1_b30_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, ZfaD_froundnx_d_cg_cmp_fd_fs1_b30, ZfaD_froundnx_d_cg_cmp_fd_fs1_b30_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0x7d7e868a1b66bad2
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs1: f31 = 0xb42d58227a6d3b5f
+  fsflagsi 0b00101 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cmp_fd_fs1_b31:
   froundnx.d f31, f31 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, ZfaD_froundnx_d_cg_cmp_fd_fs1_b31, ZfaD_froundnx_d_cg_cmp_fd_fs1_b31_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, ZfaD_froundnx_d_cg_cmp_fd_fs1_b31, ZfaD_froundnx_d_cg_cmp_fd_fs1_b31_str)
 
 /////////////////////////////////
 // cp_frm_2
 /////////////////////////////////
 
 # Testcase cp_frm_2 (Test frm, mode = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x340aac4940c0361e
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0xc20da5c467c679e0
+  fsflagsi 0b01010 # preset fflags, which the instruction must keep
   fsrmi 0
 ZfaD_froundnx_d_cg_cp_frm_2_bdyn:
-  froundnx.d f5, f13, dyn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, ZfaD_froundnx_d_cg_cp_frm_2_bdyn, ZfaD_froundnx_d_cg_cp_frm_2_bdyn_str)
+  froundnx.d f6, f13, dyn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, ZfaD_froundnx_d_cg_cp_frm_2_bdyn, ZfaD_froundnx_d_cg_cp_frm_2_bdyn_str)
   fsrmi 0x0
 
 # Testcase cp_frm_2 (Test frm, mode = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0xcb431c148d32d148
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0x811c6bdd99db34ca
+  fsflagsi 0b00010 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_frm_2_brdn:
-  froundnx.d f12, f27, rdn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaD_froundnx_d_cg_cp_frm_2_brdn, ZfaD_froundnx_d_cg_cp_frm_2_brdn_str)
+  froundnx.d f7, f22, rdn # perform operation
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, ZfaD_froundnx_d_cg_cp_frm_2_brdn, ZfaD_froundnx_d_cg_cp_frm_2_brdn_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f4) # load fs1: f4 = 0x275fd9bb4f2553b3
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0x3bfa65b681e75ef9
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brmm:
-  froundnx.d f27, f4, rmm # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaD_froundnx_d_cg_cp_frm_2_brmm, ZfaD_froundnx_d_cg_cp_frm_2_brmm_str)
+  froundnx.d f22, f23, rmm # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, ZfaD_froundnx_d_cg_cp_frm_2_brmm, ZfaD_froundnx_d_cg_cp_frm_2_brmm_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x8c7b25d26d2e20df
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0xbfe722c3b2629e4f
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brne:
-  froundnx.d f23, f14, rne # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, ZfaD_froundnx_d_cg_cp_frm_2_brne, ZfaD_froundnx_d_cg_cp_frm_2_brne_str)
+  froundnx.d f27, f13, rne # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_frm_2_brne, ZfaD_froundnx_d_cg_cp_frm_2_brne_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0xb4842147e5f05a83
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0xbfd2a5996f17a83e
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brtz:
-  froundnx.d f11, f6, rtz # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, ZfaD_froundnx_d_cg_cp_frm_2_brtz, ZfaD_froundnx_d_cg_cp_frm_2_brtz_str)
+  froundnx.d f26, f14, rtz # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfaD_froundnx_d_cg_cp_frm_2_brtz, ZfaD_froundnx_d_cg_cp_frm_2_brtz_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x70c583ac6ec5fdf6
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs1: f24 = 0xc0d465fc4dda10e4
+  fsflagsi 0b01011 # preset fflags, which the instruction must keep
 ZfaD_froundnx_d_cg_cp_frm_2_brup:
-  froundnx.d f12, f1, rup # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaD_froundnx_d_cg_cp_frm_2_brup, ZfaD_froundnx_d_cg_cp_frm_2_brup_str)
+  froundnx.d f17, f24, rup # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, ZfaD_froundnx_d_cg_cp_frm_2_brup, ZfaD_froundnx_d_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
 // cp_csr_fflags_vn
 /////////////////////////////////
 
 # Testcase cp_csr_fflags_vn (fflags = 10001)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x30d0d41256444d12
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x30d0d41256444d12
   fsflagsi 0b00000 # clear all fflags
   csrsi fcsr, 0b10001 # set fflags
 ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001:
-  froundnx.d f11, f5 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001, ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001_str)
+  froundnx.d f11, f6 # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001, ZfaD_froundnx_d_cg_cp_csr_fflags_vn_b10001_str)
 
 /////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 0)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0xf5d6b4a299f99785
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0xc2d2192a8ae00a65
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
 ZfaD_froundnx_d_cg_cp_csr_frm_rne:
   froundnx.d f12, f1, dyn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaD_froundnx_d_cg_cp_csr_frm_rne, ZfaD_froundnx_d_cg_cp_csr_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_csr_frm_rne, ZfaD_froundnx_d_cg_cp_csr_frm_rne_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 1)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x100f96f6a640322b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0xc0d83687b4451772
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 ZfaD_froundnx_d_cg_cp_csr_frm_rtz:
-  froundnx.d f28, f5, dyn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, ZfaD_froundnx_d_cg_cp_csr_frm_rtz, ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str)
+  froundnx.d f20, f9, dyn # perform operation
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, ZfaD_froundnx_d_cg_cp_csr_frm_rtz, ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 2)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0xea643dfc4258f5c8
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x429908ef9dc45eff
+  fsflagsi 0b01101 # preset fflags, which the instruction must keep
   fsrmi 2
 ZfaD_froundnx_d_cg_cp_csr_frm_rdn:
-  froundnx.d f12, f18, dyn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaD_froundnx_d_cg_cp_csr_frm_rdn, ZfaD_froundnx_d_cg_cp_csr_frm_rdn_str)
+  froundnx.d f13, f11, dyn # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, ZfaD_froundnx_d_cg_cp_csr_frm_rdn, ZfaD_froundnx_d_cg_cp_csr_frm_rdn_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 3)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0xd91f57a3b2e859c5
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs1: f16 = 0x4088e360ba144ccb
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 ZfaD_froundnx_d_cg_cp_csr_frm_rup:
-  froundnx.d f27, f10, dyn # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaD_froundnx_d_cg_cp_csr_frm_rup, ZfaD_froundnx_d_cg_cp_csr_frm_rup_str)
+  froundnx.d f11, f16, dyn # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, ZfaD_froundnx_d_cg_cp_csr_frm_rup, ZfaD_froundnx_d_cg_cp_csr_frm_rup_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 4)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0xb32fcc49b1ad9c45
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0xc1d75cd89dc79e54
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 ZfaD_froundnx_d_cg_cp_csr_frm_rmm:
-  froundnx.d f8, f2, dyn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, ZfaD_froundnx_d_cg_cp_csr_frm_rmm, ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str)
+  froundnx.d f29, f1, dyn # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, ZfaD_froundnx_d_cg_cp_csr_frm_rmm, ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str)
   fsrmi 0x0
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1165,70 +1165,70 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-.dword 0x79de840f8aa93a86
-.dword 0xb4d49f5abf957eb7
-.dword 0x45128e1fd7023520
-.dword 0x309be456777f21df
-.dword 0xb2b214bf92aafa6b
-.dword 0x5b90fba44586d923
-.dword 0xcbc8bbc03c59559f
-.dword 0x69750e1381d4b6f8
-.dword 0xf933a58c842ca21a
-.dword 0x95b10e3adefe2df3
-.dword 0x944d07adf2f4953b
-.dword 0x0bed87101673a1e8
-.dword 0x0fdbd08fe72da36a
-.dword 0x834aa0455e71a463
-.dword 0x47975291ee0afcb0
-.dword 0x44f29787024e324c
-.dword 0x310019d1cb9e49b0
-.dword 0x2b352650e4183874
-.dword 0xa6d14a2bcfba68f5
-.dword 0x2b53eb4175bc8c59
-.dword 0x04ed16dcfbfd2ec7
-.dword 0x29b89d30ca667e08
-.dword 0xbf9f59f8b79cf23f
-.dword 0xae4459c87c92e92f
-.dword 0xf9667f7f283adecc
-.dword 0x5760b762dc899554
-.dword 0x581ef190e9c1a403
-.dword 0xec4594e1789d362d
-.dword 0x361300943fa7fde0
-.dword 0x3086ba3b15cbe210
-.dword 0x379021d7b53ae113
-.dword 0xca2a3cf1f5ab03a2
-.dword 0x3845416e03566b3e
-.dword 0x4171eb2500042abb
-.dword 0x98690c27a2a4b543
-.dword 0x2cc4bc8d88659986
-.dword 0x8f596ce2985d8f45
-.dword 0x465c85cd253db38e
-.dword 0x57a9e2dbe955887a
-.dword 0xc548ca6d7cc43553
-.dword 0x5e5cc1cf5e83f18c
-.dword 0x92e9490c30ceb56a
-.dword 0x0368943645b287ba
-.dword 0x9f3e388bbf9c9639
-.dword 0x9875f94c6f6e2032
-.dword 0xaa08bdf3b03bd0ae
-.dword 0xfed063a3f8a171f2
-.dword 0x9e1df0f143b93f61
-.dword 0x865f0b3b0903a12c
-.dword 0xbae624da66cd0883
-.dword 0xd7061379cb50bbfa
-.dword 0xadf38e072a3f4a40
-.dword 0xb2eeee41e2a1bd38
-.dword 0x7d164b28987c418a
-.dword 0x4016f29b2393dc9d
-.dword 0x59d2f5643df7a699
-.dword 0x1bbc1cd525eaaf61
-.dword 0x7bad7b0f638e2404
-.dword 0x0f1f21149c0a6184
-.dword 0x0b1d82316275f1a3
-.dword 0xadca532fa550f7d5
-.dword 0x55584ff3fef17d3f
-.dword 0x72c5129f0a7e9e55
-.dword 0x40867708ecdbf916
+.dword 0x39185b3434d49f5a
+.dword 0x4296564292aafa6b
+.dword 0x4089b7dfeb15a0c2
+.dword 0xc1779456bc6693b8
+.dword 0xc094c6001a075f6c
+.dword 0x421336bd8b6c710a
+.dword 0x42e049c672db1a2b
+.dword 0xc014da29cfba68f5
+.dword 0x40ce2786b0ac89f2
+.dword 0x79667f7f283adecc
+.dword 0x4309c262b6130094
+.dword 0x3fed3e99a9cf7397
+.dword 0x4100e2d2627d6608
+.dword 0x41e1d63b019c3a42
+.dword 0xc08576718a5bb00c
+.dword 0xc00d636a99f0fafa
+.dword 0x4025ec890a49722d
+.dword 0x829f965b8111e81a
+.dword 0xc10486e98f970021
+.dword 0xc27676ec6c28860b
+.dword 0x41935a1a0aefe61a
+.dword 0x8ab08cddf7bf387d
+.dword 0xc23c340abe93c4e7
+.dword 0xc12c55496e69905e
+.dword 0x4154332ce05847dd
+.dword 0xc24915dfbe0d04b3
+.dword 0xc25327c615535328
+.dword 0x8a4bda02863792f6
+.dword 0xc06cb4d66472473c
+.dword 0x4348285e54c489e2
+.dword 0x8bc1c6b42ef03e90
+.dword 0xc22693fc901e24dc
+.dword 0x42d91bf26e7cb41b
+.dword 0xc16a5d18acc4bc8d
+.dword 0xc65c85cd253db38e
+.dword 0x432f9886fce533a5
+.dword 0x389f81571f3e388b
+.dword 0xc07bc8ed7ed063a3
+.dword 0xc1f1fd5b1e1df0f1
+.dword 0x42c9001ac9ff8952
+.dword 0xe2a1bd3851e65991
+.dword 0x40c36c0932518a72
+.dword 0xd04fc84ac0879be9
+.dword 0x41db181e6e8af82b
+.dword 0x433d4c1ff2c5129f
+.dword 0xc1b7ace518c84ae2
+.dword 0x41f808b09120d6d6
+.dword 0xc0a72a0b2ff0dbf6
+.dword 0x40c2891cc4465913
+.dword 0xc076e59a0315b41c
+.dword 0x40d5b6a2a1fa1493
+.dword 0xc0234a1212eb4333
+.dword 0xaad364655b85ad88
+.dword 0xc2d54b4b6b82455a
+.dword 0x4300ccd005884bd2
+.dword 0x1494bb170b5ffbbf
+.dword 0x40294c6a7884b041
+.dword 0x87e98a355dd18323
+.dword 0x41ef947e7d890329
+.dword 0xc33102b998a464fa
+.dword 0x405955c9ee176c5b
+.dword 0x40e58b058abb5fc8
+.dword 0xc14628f070cc10f5
+.dword 0x40a607cd842d4ea3
 .dword 0x0000000000000000
 .dword 0x8000000000000000
 .dword 0x3ff0000000000000
@@ -1257,50 +1257,50 @@ RVTEST_DATA_BEGIN
 .dword 0xfff0000000000001
 .dword 0x5a392534a57711ad
 .dword 0xa6e895993737426c
-.dword 0xf67c05638738d2bd
-.dword 0x36b2bd6b0770560e
-.dword 0x887e7a23b7f92d21
-.dword 0x949def67facc6f92
-.dword 0x5fd9202d6d12eeb9
-.dword 0x66f0b3c1ad11a994
-.dword 0x922cac62addf6eec
-.dword 0xc6c45eb823ba74a8
-.dword 0xef379fe687cb2d7e
-.dword 0xed1b0e47cfeed9b7
-.dword 0x8c190c03754d09d4
-.dword 0xbfa256830fa91180
-.dword 0x4ca09382d2f4deb1
-.dword 0x4f543ed90801aa63
-.dword 0x742a2a19fe06764d
-.dword 0xee028bb9b15a8b4a
-.dword 0x386cc9b5ff2e0871
-.dword 0x27fccdbcd6fdb8c7
-.dword 0xf4fcc6ae657a0d97
-.dword 0x1ffbf38e9535c1f6
-.dword 0xe3489efc01024a3b
-.dword 0x4d6d942eac6238dd
-.dword 0x654c24250de80746
-.dword 0x0034a474cd030f23
-.dword 0xa06e4172af82a079
-.dword 0x49c38e695ff349e7
-.dword 0xf653644cd0e8135e
-.dword 0x88ccc689e3b8f13b
-.dword 0xfa33e2e0559b6fa5
-.dword 0xfda5574a6ada1d72
-.dword 0x03ad3c019d9cfd2f
-.dword 0x7d7e868a1b66bad2
-.dword 0x340aac4940c0361e
-.dword 0xcb431c148d32d148
-.dword 0x275fd9bb4f2553b3
-.dword 0x8c7b25d26d2e20df
-.dword 0xb4842147e5f05a83
-.dword 0x70c583ac6ec5fdf6
+.dword 0xc0c22143087e7a23
+.dword 0x428bcd53ea88f7ef
+.dword 0xc1e28c186d1b0e47
+.dword 0xe25c24e47676063b
+.dword 0xc32e9f98657a0d97
+.dword 0xc17c691301024a3b
+.dword 0xc08a02038034a474
+.dword 0x41aff236ddb0dd15
+.dword 0xc17f7ce72e0925b4
+.dword 0x423755e4fd7e868a
+.dword 0x40c9902476f1b8b8
+.dword 0xc208313189e565bb
+.dword 0xc052b779ee18e0cc
+.dword 0xc1312dcff4742819
+.dword 0xc15fd6321e611894
+.dword 0xc2eb395c2bab0e48
+.dword 0xc1e17f6dbefb44e7
+.dword 0xc2b4a2ffb8c2b0ab
+.dword 0xc0a23c3a4ffa5742
+.dword 0xbfea054b36086865
+.dword 0x419243d581e89b01
+.dword 0x410bfd44ac018517
+.dword 0x4012a61c29adf272
+.dword 0xc22e2e3479010176
+.dword 0xc0ba36f970da6352
+.dword 0x4226574cabcd0705
+.dword 0x413c35ee19bf44d7
+.dword 0x420e4876b853a554
+.dword 0x426e5c6f750c8522
+.dword 0x328a356359aac22a
+.dword 0xc313aa4686b5ae2e
+.dword 0xb42d58227a6d3b5f
+.dword 0xc20da5c467c679e0
+.dword 0x811c6bdd99db34ca
+.dword 0x3bfa65b681e75ef9
+.dword 0xbfe722c3b2629e4f
+.dword 0xbfd2a5996f17a83e
+.dword 0xc0d465fc4dda10e4
 .dword 0x30d0d41256444d12
-.dword 0xf5d6b4a299f99785
-.dword 0x100f96f6a640322b
-.dword 0xea643dfc4258f5c8
-.dword 0xd91f57a3b2e859c5
-.dword 0xb32fcc49b1ad9c45
+.dword 0xc2d2192a8ae00a65
+.dword 0xc0d83687b4451772
+.dword 0x429908ef9dc45eff
+.dword 0x4088e360ba144ccb
+.dword 0xc1d75cd89dc79e54
 
 // Testcase strings
 ZfaD_froundnx_d_cg_cp_fs1_b0_str: .string "\"test: 1; cg: ZfaD_froundnx.d_cg; cp: cp_fs1; bin: b0\""

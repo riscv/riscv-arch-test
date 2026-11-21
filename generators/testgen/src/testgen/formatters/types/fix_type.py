@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_float_reg, write_sigupd
+from testgen.asm.helpers import fflags_setup, load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -22,7 +22,7 @@ def format_fix_type(
     assert params.rd is not None
     setup = [
         load_float_reg("fs1", params.fs1, params.fs1val, test_data, params.fp_load_type),
-        "fsflagsi 0b00000 # clear all fflags",
+        fflags_setup(params),
     ]
     test = [
         f"{instr_name} x{params.rd}, f{params.fs1} # perform operation",

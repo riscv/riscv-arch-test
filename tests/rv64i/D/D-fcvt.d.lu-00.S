@@ -34,7 +34,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Testcase cp_rs1 (Test source rs1 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x8eecb827517f70fd
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x001cfc12a705ee2c
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b0:
   fcvt.d.lu f29, x0 # perform operation
@@ -42,791 +42,791 @@ D_fcvt_d_lu_cg_cp_rs1_b0:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fcvt_d_lu_cg_cp_rs1_b0, D_fcvt_d_lu_cg_cp_rs1_b0_str)
 
 # Testcase cp_rs1 (Test source rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x361ad0f56e8ace25
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x0000000d4ca0f890
+  fsflagsi 0b11100 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b1:
-  fcvt.d.lu f26, x1 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, D_fcvt_d_lu_cg_cp_rs1_b1, D_fcvt_d_lu_cg_cp_rs1_b1_str)
+  fcvt.d.lu f23, x1 # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fcvt_d_lu_cg_cp_rs1_b1, D_fcvt_d_lu_cg_cp_rs1_b1_str)
 
-  mv x18, x2 # switch signature pointer register to avoid conflict with test
+  mv x17, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0xdf419d164ca0f890
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x0038ba854129719f
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b2:
-  fcvt.d.lu f25, x2 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x5, x4, f4, f25, D_fcvt_d_lu_cg_cp_rs1_b2, D_fcvt_d_lu_cg_cp_rs1_b2_str)
+  fcvt.d.lu f6, x2 # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f6, D_fcvt_d_lu_cg_cp_rs1_b2, D_fcvt_d_lu_cg_cp_rs1_b2_str)
 
-  mv x16, x3 # switch data pointer register to avoid conflict with test
+  mv x27, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x7fcd4f74dd0f98a4
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs1: x3 = 0x00000000001f069b
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b3:
   fcvt.d.lu f6, x3 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x5, x4, f4, f6, D_fcvt_d_lu_cg_cp_rs1_b3, D_fcvt_d_lu_cg_cp_rs1_b3_str)
+  # Check if f6 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f6, D_fcvt_d_lu_cg_cp_rs1_b3, D_fcvt_d_lu_cg_cp_rs1_b3_str)
 
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load rs1: x4 = 0xedd2f9efc46eec7a
+  RVTEST_TESTDATA_LOAD_INT(x27, x4) # load rs1: x4 = 0x0000000000002fdd
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b4:
-  fcvt.d.lu f18, x4 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x8, x7, f4, f18, D_fcvt_d_lu_cg_cp_rs1_b4, D_fcvt_d_lu_cg_cp_rs1_b4_str)
+  fcvt.d.lu f24, x4 # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x8, x7, f4, f24, D_fcvt_d_lu_cg_cp_rs1_b4, D_fcvt_d_lu_cg_cp_rs1_b4_str)
 
 # Testcase cp_rs1 (Test source rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x16, x5) # load rs1: x5 = 0xb9d58c9136549dd5
+  RVTEST_TESTDATA_LOAD_INT(x27, x5) # load rs1: x5 = 0x00006a0297ca6182
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b5:
-  fcvt.d.lu f6, x5 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x8, x7, f4, f6, D_fcvt_d_lu_cg_cp_rs1_b5, D_fcvt_d_lu_cg_cp_rs1_b5_str)
+  fcvt.d.lu f11, x5 # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x8, x7, f4, f11, D_fcvt_d_lu_cg_cp_rs1_b5, D_fcvt_d_lu_cg_cp_rs1_b5_str)
 
 # Testcase cp_rs1 (Test source rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs1: x6 = 0x46214d317e9fcd2b
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs1: x6 = 0x0000000000c3acfb
+  fsflagsi 0b01100 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b6:
-  fcvt.d.lu f8, x6 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x8, x7, f4, f8, D_fcvt_d_lu_cg_cp_rs1_b6, D_fcvt_d_lu_cg_cp_rs1_b6_str)
+  fcvt.d.lu f6, x6 # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x8, x7, f4, f6, D_fcvt_d_lu_cg_cp_rs1_b6, D_fcvt_d_lu_cg_cp_rs1_b6_str)
 
-  mv x13, x7 # switch temp register to avoid conflict with test
-  mv x14, x8 # switch link pointer register to avoid conflict with test
+  mv x4, x7 # switch temp register to avoid conflict with test
+  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x6432cacccd7eecb3
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load rs1: x7 = 0x00000000000e8217
+  fsflagsi 0b10011 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b7:
-  fcvt.d.lu f24, x7 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x14, x13, f4, f24, D_fcvt_d_lu_cg_cp_rs1_b7, D_fcvt_d_lu_cg_cp_rs1_b7_str)
+  fcvt.d.lu f20, x7 # perform operation
+  # Check if f20 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f20, D_fcvt_d_lu_cg_cp_rs1_b7, D_fcvt_d_lu_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs1: x8 = 0x735b235ce95ed377
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load rs1: x8 = 0x0000000000000448
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b8:
-  fcvt.d.lu f24, x8 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x14, x13, f4, f24, D_fcvt_d_lu_cg_cp_rs1_b8, D_fcvt_d_lu_cg_cp_rs1_b8_str)
+  fcvt.d.lu f7, x8 # perform operation
+  # Check if f7 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f7, D_fcvt_d_lu_cg_cp_rs1_b8, D_fcvt_d_lu_cg_cp_rs1_b8_str)
 
 # Testcase cp_rs1 (Test source rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0x795af79ae7b4d307
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs1: x9 = 0x22769c24d18905d7
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b9:
-  fcvt.d.lu f11, x9 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x14, x13, f4, f11, D_fcvt_d_lu_cg_cp_rs1_b9, D_fcvt_d_lu_cg_cp_rs1_b9_str)
+  fcvt.d.lu f19, x9 # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f19, D_fcvt_d_lu_cg_cp_rs1_b9, D_fcvt_d_lu_cg_cp_rs1_b9_str)
 
 # Testcase cp_rs1 (Test source rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0xdec00dd8737742ee
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs1: x10 = 0x781a03f985d2e230
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b10:
-  fcvt.d.lu f28, x10 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x14, x13, f4, f28, D_fcvt_d_lu_cg_cp_rs1_b10, D_fcvt_d_lu_cg_cp_rs1_b10_str)
+  fcvt.d.lu f21, x10 # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f21, D_fcvt_d_lu_cg_cp_rs1_b10, D_fcvt_d_lu_cg_cp_rs1_b10_str)
 
 # Testcase cp_rs1 (Test source rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0xf6f527875f5b35d9
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs1: x11 = 0x006a4888181315fb
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b11:
-  fcvt.d.lu f6, x11 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x14, x13, f4, f6, D_fcvt_d_lu_cg_cp_rs1_b11, D_fcvt_d_lu_cg_cp_rs1_b11_str)
+  fcvt.d.lu f17, x11 # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f17, D_fcvt_d_lu_cg_cp_rs1_b11, D_fcvt_d_lu_cg_cp_rs1_b11_str)
 
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x456c1470c21d1899
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs1: x12 = 0x00000d764d190a47
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b12:
-  fcvt.d.lu f7, x12 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x14, x13, f4, f7, D_fcvt_d_lu_cg_cp_rs1_b12, D_fcvt_d_lu_cg_cp_rs1_b12_str)
+  fcvt.d.lu f9, x12 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f9, D_fcvt_d_lu_cg_cp_rs1_b12, D_fcvt_d_lu_cg_cp_rs1_b12_str)
 
-  mv x4, x13 # switch temp register to avoid conflict with test
-  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0x66672d93ab84059b
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs1: x13 = 0x000000001e5da109
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b13:
-  fcvt.d.lu f18, x13 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x5, x4, f4, f18, D_fcvt_d_lu_cg_cp_rs1_b13, D_fcvt_d_lu_cg_cp_rs1_b13_str)
+  fcvt.d.lu f2, x13 # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f2, D_fcvt_d_lu_cg_cp_rs1_b13, D_fcvt_d_lu_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x9be4e6ad42bc072f
+  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs1: x14 = 0x00000000b507268a
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b14:
-  fcvt.d.lu f20, x14 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x5, x4, f4, f20, D_fcvt_d_lu_cg_cp_rs1_b14, D_fcvt_d_lu_cg_cp_rs1_b14_str)
+  fcvt.d.lu f13, x14 # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_b14, D_fcvt_d_lu_cg_cp_rs1_b14_str)
 
 # Testcase cp_rs1 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0xb2951cca1301ecd2
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x15) # load rs1: x15 = 0x0000000079bbe3d9
+  fsflagsi 0b11000 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b15:
-  fcvt.d.lu f17, x15 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x5, x4, f4, f17, D_fcvt_d_lu_cg_cp_rs1_b15, D_fcvt_d_lu_cg_cp_rs1_b15_str)
+  fcvt.d.lu f16, x15 # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f16, D_fcvt_d_lu_cg_cp_rs1_b15, D_fcvt_d_lu_cg_cp_rs1_b15_str)
 
-  mv x3, x16 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0x038b92c10902426b
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load rs1: x16 = 0x001196fd128aa151
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b16:
-  fcvt.d.lu f12, x16 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x5, x4, f4, f12, D_fcvt_d_lu_cg_cp_rs1_b16, D_fcvt_d_lu_cg_cp_rs1_b16_str)
+  fcvt.d.lu f5, x16 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x17, x5, x4, f4, f5, D_fcvt_d_lu_cg_cp_rs1_b16, D_fcvt_d_lu_cg_cp_rs1_b16_str)
 
+  mv x1, x17 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x5755e494b6e33c8c
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs1: x17 = 0x0000284e5f662d3a
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b17:
-  fcvt.d.lu f27, x17 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x18, x5, x4, f4, f27, D_fcvt_d_lu_cg_cp_rs1_b17, D_fcvt_d_lu_cg_cp_rs1_b17_str)
+  fcvt.d.lu f15, x17 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f15, D_fcvt_d_lu_cg_cp_rs1_b17, D_fcvt_d_lu_cg_cp_rs1_b17_str)
 
-  mv x2, x18 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x2744d3b535dcb53d
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs1: x18 = 0x00000000014d5c03
+  fsflagsi 0b01111 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b18:
-  fcvt.d.lu f17, x18 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fcvt_d_lu_cg_cp_rs1_b18, D_fcvt_d_lu_cg_cp_rs1_b18_str)
+  fcvt.d.lu f28, x18 # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f28, D_fcvt_d_lu_cg_cp_rs1_b18, D_fcvt_d_lu_cg_cp_rs1_b18_str)
 
 # Testcase cp_rs1 (Test source rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0xc28a9184563c915f
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs1: x19 = 0x0003f7ae754928b6
+  fsflagsi 0b01110 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b19:
-  fcvt.d.lu f17, x19 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fcvt_d_lu_cg_cp_rs1_b19, D_fcvt_d_lu_cg_cp_rs1_b19_str)
+  fcvt.d.lu f15, x19 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f15, D_fcvt_d_lu_cg_cp_rs1_b19, D_fcvt_d_lu_cg_cp_rs1_b19_str)
 
 # Testcase cp_rs1 (Test source rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x8e51dffd94da0273
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs1: x20 = 0x0000000000000000
+  fsflagsi 0b00010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b20:
-  fcvt.d.lu f25, x20 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fcvt_d_lu_cg_cp_rs1_b20, D_fcvt_d_lu_cg_cp_rs1_b20_str)
+  fcvt.d.lu f5, x20 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f5, D_fcvt_d_lu_cg_cp_rs1_b20, D_fcvt_d_lu_cg_cp_rs1_b20_str)
 
 # Testcase cp_rs1 (Test source rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x75273363cdeb7c5a
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load rs1: x21 = 0x00000000000000e8
+  fsflagsi 0b11100 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b21:
-  fcvt.d.lu f21, x21 # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, D_fcvt_d_lu_cg_cp_rs1_b21, D_fcvt_d_lu_cg_cp_rs1_b21_str)
+  fcvt.d.lu f14, x21 # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f14, D_fcvt_d_lu_cg_cp_rs1_b21, D_fcvt_d_lu_cg_cp_rs1_b21_str)
 
 # Testcase cp_rs1 (Test source rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0x3218e2efbeace518
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs1: x22 = 0x0000000000000331
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b22:
-  fcvt.d.lu f11, x22 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fcvt_d_lu_cg_cp_rs1_b22, D_fcvt_d_lu_cg_cp_rs1_b22_str)
+  fcvt.d.lu f26, x22 # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f26, D_fcvt_d_lu_cg_cp_rs1_b22, D_fcvt_d_lu_cg_cp_rs1_b22_str)
 
 # Testcase cp_rs1 (Test source rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xb4c50815a4584726
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs1: x23 = 0x0000000000000007
+  fsflagsi 0b10000 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b23:
-  fcvt.d.lu f7, x23 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fcvt_d_lu_cg_cp_rs1_b23, D_fcvt_d_lu_cg_cp_rs1_b23_str)
+  fcvt.d.lu f19, x23 # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f19, D_fcvt_d_lu_cg_cp_rs1_b23, D_fcvt_d_lu_cg_cp_rs1_b23_str)
 
 # Testcase cp_rs1 (Test source rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0xc131468958153683
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs1: x24 = 0x0000000046a3b6a1
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b24:
-  fcvt.d.lu f22, x24 # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fcvt_d_lu_cg_cp_rs1_b24, D_fcvt_d_lu_cg_cp_rs1_b24_str)
+  fcvt.d.lu f9, x24 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f9, D_fcvt_d_lu_cg_cp_rs1_b24, D_fcvt_d_lu_cg_cp_rs1_b24_str)
 
 # Testcase cp_rs1 (Test source rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0xd96d8f24d76dae0d
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs1: x25 = 0x0000026d4cb5b5a4
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b25:
-  fcvt.d.lu f11, x25 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fcvt_d_lu_cg_cp_rs1_b25, D_fcvt_d_lu_cg_cp_rs1_b25_str)
+  fcvt.d.lu f14, x25 # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f14, D_fcvt_d_lu_cg_cp_rs1_b25, D_fcvt_d_lu_cg_cp_rs1_b25_str)
 
 # Testcase cp_rs1 (Test source rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x82814641769a9625
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs1: x26 = 0x000000000090d0ab
+  fsflagsi 0b01100 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b26:
-  fcvt.d.lu f23, x26 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fcvt_d_lu_cg_cp_rs1_b26, D_fcvt_d_lu_cg_cp_rs1_b26_str)
+  fcvt.d.lu f1, x26 # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f1, D_fcvt_d_lu_cg_cp_rs1_b26, D_fcvt_d_lu_cg_cp_rs1_b26_str)
 
+  mv x6, x27 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0x930adc6e66fde24b
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x000a76503919ddf1
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b27:
-  fcvt.d.lu f13, x27 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_b27, D_fcvt_d_lu_cg_cp_rs1_b27_str)
+  fcvt.d.lu f5, x27 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f5, D_fcvt_d_lu_cg_cp_rs1_b27, D_fcvt_d_lu_cg_cp_rs1_b27_str)
 
 # Testcase cp_rs1 (Test source rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0xe26cc3c86c2a7e51
+  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rs1: x28 = 0x000000000006bb9d
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_b28:
-  fcvt.d.lu f26, x28 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, D_fcvt_d_lu_cg_cp_rs1_b28, D_fcvt_d_lu_cg_cp_rs1_b28_str)
+  fcvt.d.lu f22, x28 # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f22, D_fcvt_d_lu_cg_cp_rs1_b28, D_fcvt_d_lu_cg_cp_rs1_b28_str)
 
 # Testcase cp_rs1 (Test source rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x4a2dc6293737dbe3
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x00000056040d8623
+  fsflagsi 0b00010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b29:
-  fcvt.d.lu f5, x29 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, D_fcvt_d_lu_cg_cp_rs1_b29, D_fcvt_d_lu_cg_cp_rs1_b29_str)
+  fcvt.d.lu f23, x29 # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f23, D_fcvt_d_lu_cg_cp_rs1_b29, D_fcvt_d_lu_cg_cp_rs1_b29_str)
 
 # Testcase cp_rs1 (Test source rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0xf1b0b1ba7ca4ed5f
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x00018463781cd573
+  fsflagsi 0b11100 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b30:
-  fcvt.d.lu f31, x30 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, D_fcvt_d_lu_cg_cp_rs1_b30, D_fcvt_d_lu_cg_cp_rs1_b30_str)
+  fcvt.d.lu f5, x30 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f5, D_fcvt_d_lu_cg_cp_rs1_b30, D_fcvt_d_lu_cg_cp_rs1_b30_str)
 
 # Testcase cp_rs1 (Test source rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0xf377c7b33e6b6116
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x000000000003dcb1
+  fsflagsi 0b01010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_rs1_b31:
-  fcvt.d.lu f22, x31 # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, D_fcvt_d_lu_cg_cp_rs1_b31, D_fcvt_d_lu_cg_cp_rs1_b31_str)
+  fcvt.d.lu f31, x31 # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f31, D_fcvt_d_lu_cg_cp_rs1_b31, D_fcvt_d_lu_cg_cp_rs1_b31_str)
 
 /////////////////////////////////
 // cp_rs1_edges
 /////////////////////////////////
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x0000000000000000
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x0:
   fcvt.d.lu f25, x17 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, D_fcvt_d_lu_cg_cp_rs1_edges_0x0, D_fcvt_d_lu_cg_cp_rs1_edges_0x0_str)
+  # Check if f25 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f25, D_fcvt_d_lu_cg_cp_rs1_edges_0x0, D_fcvt_d_lu_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x0000000000000001
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x1:
   fcvt.d.lu f26, x22 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, D_fcvt_d_lu_cg_cp_rs1_edges_0x1, D_fcvt_d_lu_cg_cp_rs1_edges_0x1_str)
+  # Check if f26 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f26, D_fcvt_d_lu_cg_cp_rs1_edges_0x1, D_fcvt_d_lu_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000000000002
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x2:
   fcvt.d.lu f9, x7 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fcvt_d_lu_cg_cp_rs1_edges_0x2, D_fcvt_d_lu_cg_cp_rs1_edges_0x2_str)
+  # Check if f9 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f9, D_fcvt_d_lu_cg_cp_rs1_edges_0x2, D_fcvt_d_lu_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x8000000000000000
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000000:
   fcvt.d.lu f8, x15 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000000, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000000_str)
+  # Check if f8 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f8, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000000, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x8000000000000001
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000001:
   fcvt.d.lu f7, x24 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000001, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000001_str)
+  # Check if f7 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f7, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000001, D_fcvt_d_lu_cg_cp_rs1_edges_0x8000000000000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffffffffffff
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffffffffffff:
   fcvt.d.lu f11, x11 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffffffffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if f11 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f11, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffffffffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x7ffffffffffffffe
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x7ffffffffffffffe:
   fcvt.d.lu f20, x21 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fcvt_d_lu_cg_cp_rs1_edges_0x7ffffffffffffffe, D_fcvt_d_lu_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  # Check if f20 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f20, D_fcvt_d_lu_cg_cp_rs1_edges_0x7ffffffffffffffe, D_fcvt_d_lu_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xffffffffffffffff
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffffffffffff:
   fcvt.d.lu f29, x14 # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffffffffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  # Check if f29 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f29, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffffffffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffffffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0xfffffffffffffffe
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffffffffffe:
   fcvt.d.lu f17, x24 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffffffffffe, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  # Check if f17 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f17, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffffffffffe, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x5bbc887763ae86f2
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x5bbc887763ae86f2:
   fcvt.d.lu f13, x17 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_edges_0x5bbc887763ae86f2, D_fcvt_d_lu_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  # Check if f13 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_edges_0x5bbc887763ae86f2, D_fcvt_d_lu_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0xaaaaaaaaaaaaaaaa
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
   fcvt.d.lu f13, x25 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, D_fcvt_d_lu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  # Check if f13 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, D_fcvt_d_lu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x5555555555555555
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x5555555555555555:
   fcvt.d.lu f13, x10 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_edges_0x5555555555555555, D_fcvt_d_lu_cg_cp_rs1_edges_0x5555555555555555_str)
+  # Check if f13 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f13, D_fcvt_d_lu_cg_cp_rs1_edges_0x5555555555555555, D_fcvt_d_lu_cg_cp_rs1_edges_0x5555555555555555_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rs1: x28 = 0x00000000ffffffff
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffff:
   fcvt.d.lu f11, x28 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffff_str)
+  # Check if f11 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f11, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x00000000fffffffe
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffe:
   fcvt.d.lu f23, x10 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffe, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffe_str)
+  # Check if f23 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f23, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffe, D_fcvt_d_lu_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000100000000
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x100000000:
   fcvt.d.lu f23, x7 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000000, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000000_str)
+  # Check if f23 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f23, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000000, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x0000000100000001
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x100000001:
   fcvt.d.lu f20, x19 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000001, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000001_str)
+  # Check if f20 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f20, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000001, D_fcvt_d_lu_cg_cp_rs1_edges_0x100000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x0000000080000000
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x80000000:
   fcvt.d.lu f9, x18 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, D_fcvt_d_lu_cg_cp_rs1_edges_0x80000000, D_fcvt_d_lu_cg_cp_rs1_edges_0x80000000_str)
+  # Check if f9 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f9, D_fcvt_d_lu_cg_cp_rs1_edges_0x80000000, D_fcvt_d_lu_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x000000007fffffff
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffff:
   fcvt.d.lu f15, x12 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffff_str)
+  # Check if f15 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f15, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffff, D_fcvt_d_lu_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cp_fd
 /////////////////////////////////
 
 # Testcase cp_fd (Test destination fd = f0)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x45705a5212da6b1e
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000f66f95
+  fsflagsi 0b00101 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b0:
   fcvt.d.lu f0, x12 # perform operation
-  # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f0, D_fcvt_d_lu_cg_cp_fd_b0, D_fcvt_d_lu_cg_cp_fd_b0_str)
+  # Check if f0 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f0, D_fcvt_d_lu_cg_cp_fd_b0, D_fcvt_d_lu_cg_cp_fd_b0_str)
 
 # Testcase cp_fd (Test destination fd = f1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x3dc2296cc08a17a5
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x0000000001c7723b
+  fsflagsi 0b10011 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b1:
-  fcvt.d.lu f1, x25 # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, D_fcvt_d_lu_cg_cp_fd_b1, D_fcvt_d_lu_cg_cp_fd_b1_str)
+  fcvt.d.lu f1, x18 # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f1, D_fcvt_d_lu_cg_cp_fd_b1, D_fcvt_d_lu_cg_cp_fd_b1_str)
 
 # Testcase cp_fd (Test destination fd = f2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x56256b5f62dbc773
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rs1: x28 = 0x0000000001728589
+  fsflagsi 0b01000 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b2:
-  fcvt.d.lu f2, x18 # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, D_fcvt_d_lu_cg_cp_fd_b2, D_fcvt_d_lu_cg_cp_fd_b2_str)
+  fcvt.d.lu f2, x28 # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f2, D_fcvt_d_lu_cg_cp_fd_b2, D_fcvt_d_lu_cg_cp_fd_b2_str)
 
 # Testcase cp_fd (Test destination fd = f3)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x278f24b29ba2d784
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x00000000000126f0
+  fsflagsi 0b11010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b3:
-  fcvt.d.lu f3, x18 # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, D_fcvt_d_lu_cg_cp_fd_b3, D_fcvt_d_lu_cg_cp_fd_b3_str)
+  fcvt.d.lu f3, x7 # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f4, f3, D_fcvt_d_lu_cg_cp_fd_b3, D_fcvt_d_lu_cg_cp_fd_b3_str)
 
 # Testcase cp_fd (Test destination fd = f4)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x319e3d1befcfafeb
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x000000000f0b6234
+  fsflagsi 0b01011 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b4:
-  fcvt.d.lu f4, x30 # perform operation
-  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f4, D_fcvt_d_lu_cg_cp_fd_b4, D_fcvt_d_lu_cg_cp_fd_b4_str)
+  fcvt.d.lu f4, x2 # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f4, D_fcvt_d_lu_cg_cp_fd_b4, D_fcvt_d_lu_cg_cp_fd_b4_str)
 
 # Testcase cp_fd (Test destination fd = f5)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0xa61d9a8e57968081
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x000da0cf09a0060a
+  fsflagsi 0b10111 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b5:
-  fcvt.d.lu f5, x16 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f5, D_fcvt_d_lu_cg_cp_fd_b5, D_fcvt_d_lu_cg_cp_fd_b5_str)
+  fcvt.d.lu f5, x25 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f5, D_fcvt_d_lu_cg_cp_fd_b5, D_fcvt_d_lu_cg_cp_fd_b5_str)
 
 # Testcase cp_fd (Test destination fd = f6)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xb942c4fa87b5d2fc
+  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x0000000b6d096b4c
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b6:
-  fcvt.d.lu f6, x10 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f6, D_fcvt_d_lu_cg_cp_fd_b6, D_fcvt_d_lu_cg_cp_fd_b6_str)
+  fcvt.d.lu f6, x31 # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f6, D_fcvt_d_lu_cg_cp_fd_b6, D_fcvt_d_lu_cg_cp_fd_b6_str)
 
 # Testcase cp_fd (Test destination fd = f7)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0x9b4dd5703f320933
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x000103c36a7cecc3
+  fsflagsi 0b10110 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b7:
-  fcvt.d.lu f7, x16 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, D_fcvt_d_lu_cg_cp_fd_b7, D_fcvt_d_lu_cg_cp_fd_b7_str)
+  fcvt.d.lu f7, x18 # perform operation
+  # Check if f7 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f13, f7, D_fcvt_d_lu_cg_cp_fd_b7, D_fcvt_d_lu_cg_cp_fd_b7_str)
 
 # Testcase cp_fd (Test destination fd = f8)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0x4f7642e65cad511c
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0xfcacb778d8602a92
+  fsflagsi 0b10000 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b8:
-  fcvt.d.lu f8, x16 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, D_fcvt_d_lu_cg_cp_fd_b8, D_fcvt_d_lu_cg_cp_fd_b8_str)
+  fcvt.d.lu f8, x22 # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f13, f8, D_fcvt_d_lu_cg_cp_fd_b8, D_fcvt_d_lu_cg_cp_fd_b8_str)
 
 # Testcase cp_fd (Test destination fd = f9)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x0e20b73f8baf97e3
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x000000365171dd2f
+  fsflagsi 0b10101 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b9:
-  fcvt.d.lu f9, x30 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, D_fcvt_d_lu_cg_cp_fd_b9, D_fcvt_d_lu_cg_cp_fd_b9_str)
+  fcvt.d.lu f9, x18 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f13, f9, D_fcvt_d_lu_cg_cp_fd_b9, D_fcvt_d_lu_cg_cp_fd_b9_str)
 
 # Testcase cp_fd (Test destination fd = f10)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0xbd0494ebc81a8bda
+  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x0001011015391f91
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b10:
-  fcvt.d.lu f10, x25 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, D_fcvt_d_lu_cg_cp_fd_b10, D_fcvt_d_lu_cg_cp_fd_b10_str)
+  fcvt.d.lu f10, x20 # perform operation
+  # Check if f10 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f13, f10, D_fcvt_d_lu_cg_cp_fd_b10, D_fcvt_d_lu_cg_cp_fd_b10_str)
 
 # Testcase cp_fd (Test destination fd = f11)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x95451ca95fe1b173
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x000b8b7981627947
+  fsflagsi 0b11110 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b11:
-  fcvt.d.lu f11, x24 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, D_fcvt_d_lu_cg_cp_fd_b11, D_fcvt_d_lu_cg_cp_fd_b11_str)
+  fcvt.d.lu f11, x29 # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f13, f11, D_fcvt_d_lu_cg_cp_fd_b11, D_fcvt_d_lu_cg_cp_fd_b11_str)
 
 # Testcase cp_fd (Test destination fd = f12)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0xf0b6234bd8eba780
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs1: x0 = 0x00000000000000d0
+  fsflagsi 0b01010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b12:
-  fcvt.d.lu f12, x11 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, D_fcvt_d_lu_cg_cp_fd_b12, D_fcvt_d_lu_cg_cp_fd_b12_str)
+  fcvt.d.lu f12, x0 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f13, f12, D_fcvt_d_lu_cg_cp_fd_b12, D_fcvt_d_lu_cg_cp_fd_b12_str)
 
 # Testcase cp_fd (Test destination fd = f13)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x8b52a38999a8f7ee
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x000000001bbb76a6
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b13:
-  fcvt.d.lu f13, x25 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, D_fcvt_d_lu_cg_cp_fd_b13, D_fcvt_d_lu_cg_cp_fd_b13_str)
+  fcvt.d.lu f13, x18 # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f13, D_fcvt_d_lu_cg_cp_fd_b13, D_fcvt_d_lu_cg_cp_fd_b13_str)
 
 # Testcase cp_fd (Test destination fd = f14)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0xe84e990c083434f7
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0x000000000000018e
+  fsflagsi 0b00100 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b14:
-  fcvt.d.lu f14, x9 # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, D_fcvt_d_lu_cg_cp_fd_b14, D_fcvt_d_lu_cg_cp_fd_b14_str)
+  fcvt.d.lu f14, x26 # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f14, D_fcvt_d_lu_cg_cp_fd_b14, D_fcvt_d_lu_cg_cp_fd_b14_str)
 
 # Testcase cp_fd (Test destination fd = f15)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x89a0060ad9723702
+  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x0000000000000625
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b15:
-  fcvt.d.lu f15, x18 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, D_fcvt_d_lu_cg_cp_fd_b15, D_fcvt_d_lu_cg_cp_fd_b15_str)
+  fcvt.d.lu f15, x16 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f15, D_fcvt_d_lu_cg_cp_fd_b15, D_fcvt_d_lu_cg_cp_fd_b15_str)
 
 # Testcase cp_fd (Test destination fd = f16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x7d6eadf5b46a67cc
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0001ba38080c5cee
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b16:
-  fcvt.d.lu f16, x9 # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, D_fcvt_d_lu_cg_cp_fd_b16, D_fcvt_d_lu_cg_cp_fd_b16_str)
+  fcvt.d.lu f16, x10 # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f16, D_fcvt_d_lu_cg_cp_fd_b16, D_fcvt_d_lu_cg_cp_fd_b16_str)
 
 # Testcase cp_fd (Test destination fd = f17)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0xc85ec8175b6b5eba
+  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x000009c4023c9ffc
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b17:
   fcvt.d.lu f17, x16 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, D_fcvt_d_lu_cg_cp_fd_b17, D_fcvt_d_lu_cg_cp_fd_b17_str)
+  # Check if f17 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f17, D_fcvt_d_lu_cg_cp_fd_b17, D_fcvt_d_lu_cg_cp_fd_b17_str)
 
 # Testcase cp_fd (Test destination fd = f18)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x8ea92b6c93ce76f6
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x000abd3949e00770
+  fsflagsi 0b11101 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b18:
-  fcvt.d.lu f18, x10 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, D_fcvt_d_lu_cg_cp_fd_b18, D_fcvt_d_lu_cg_cp_fd_b18_str)
+  fcvt.d.lu f18, x30 # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f18, D_fcvt_d_lu_cg_cp_fd_b18, D_fcvt_d_lu_cg_cp_fd_b18_str)
 
 # Testcase cp_fd (Test destination fd = f19)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xfe93656124f5a3ce
+  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x000000000000e6b8
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b19:
-  fcvt.d.lu f19, x18 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, D_fcvt_d_lu_cg_cp_fd_b19, D_fcvt_d_lu_cg_cp_fd_b19_str)
+  fcvt.d.lu f19, x21 # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f19, D_fcvt_d_lu_cg_cp_fd_b19, D_fcvt_d_lu_cg_cp_fd_b19_str)
 
 # Testcase cp_fd (Test destination fd = f20)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x5d6ca0014035b912
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x0000000000006ae5
+  fsflagsi 0b00111 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b20:
-  fcvt.d.lu f20, x31 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, D_fcvt_d_lu_cg_cp_fd_b20, D_fcvt_d_lu_cg_cp_fd_b20_str)
+  fcvt.d.lu f20, x20 # perform operation
+  # Check if f20 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f20, D_fcvt_d_lu_cg_cp_fd_b20, D_fcvt_d_lu_cg_cp_fd_b20_str)
 
 # Testcase cp_fd (Test destination fd = f21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x00998de78d8003c1
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x0000000000002e64
+  fsflagsi 0b00011 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b21:
-  fcvt.d.lu f21, x17 # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, D_fcvt_d_lu_cg_cp_fd_b21, D_fcvt_d_lu_cg_cp_fd_b21_str)
+  fcvt.d.lu f21, x24 # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f21, D_fcvt_d_lu_cg_cp_fd_b21, D_fcvt_d_lu_cg_cp_fd_b21_str)
 
 # Testcase cp_fd (Test destination fd = f22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0xfcacb778d8602a92
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x0000000000073469
+  fsflagsi 0b01010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b22:
-  fcvt.d.lu f22, x25 # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, D_fcvt_d_lu_cg_cp_fd_b22, D_fcvt_d_lu_cg_cp_fd_b22_str)
+  fcvt.d.lu f22, x17 # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f22, D_fcvt_d_lu_cg_cp_fd_b22, D_fcvt_d_lu_cg_cp_fd_b22_str)
 
 # Testcase cp_fd (Test destination fd = f23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xf29aed337c261e91
+  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x00000000009f943e
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b23:
-  fcvt.d.lu f23, x26 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, D_fcvt_d_lu_cg_cp_fd_b23, D_fcvt_d_lu_cg_cp_fd_b23_str)
+  fcvt.d.lu f23, x15 # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f23, D_fcvt_d_lu_cg_cp_fd_b23, D_fcvt_d_lu_cg_cp_fd_b23_str)
 
 # Testcase cp_fd (Test destination fd = f24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x4d5ec5c9be5ef5ae
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x0000000000000318
+  fsflagsi 0b10111 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b24:
-  fcvt.d.lu f24, x1 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, D_fcvt_d_lu_cg_cp_fd_b24, D_fcvt_d_lu_cg_cp_fd_b24_str)
+  fcvt.d.lu f24, x27 # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f24, D_fcvt_d_lu_cg_cp_fd_b24, D_fcvt_d_lu_cg_cp_fd_b24_str)
 
 # Testcase cp_fd (Test destination fd = f25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0xd80486c95171dd2f
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x00000000000390cc
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b25:
-  fcvt.d.lu f25, x31 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, D_fcvt_d_lu_cg_cp_fd_b25, D_fcvt_d_lu_cg_cp_fd_b25_str)
+  fcvt.d.lu f25, x27 # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f25, D_fcvt_d_lu_cg_cp_fd_b25, D_fcvt_d_lu_cg_cp_fd_b25_str)
 
 # Testcase cp_fd (Test destination fd = f26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x50f57618ea520b86
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x00003adefc105b33
+  fsflagsi 0b01011 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b26:
-  fcvt.d.lu f26, x7 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, D_fcvt_d_lu_cg_cp_fd_b26, D_fcvt_d_lu_cg_cp_fd_b26_str)
+  fcvt.d.lu f26, x20 # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f26, D_fcvt_d_lu_cg_cp_fd_b26, D_fcvt_d_lu_cg_cp_fd_b26_str)
 
 # Testcase cp_fd (Test destination fd = f27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xe3a491044e0c5092
+  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rs1: x28 = 0x000000000000687b
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b27:
-  fcvt.d.lu f27, x18 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, D_fcvt_d_lu_cg_cp_fd_b27, D_fcvt_d_lu_cg_cp_fd_b27_str)
+  fcvt.d.lu f27, x28 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f27, D_fcvt_d_lu_cg_cp_fd_b27, D_fcvt_d_lu_cg_cp_fd_b27_str)
 
 # Testcase cp_fd (Test destination fd = f28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x37b0441edcb90fd6
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x00000000c6eecd9b
+  fsflagsi 0b11001 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b28:
-  fcvt.d.lu f28, x0 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, D_fcvt_d_lu_cg_cp_fd_b28, D_fcvt_d_lu_cg_cp_fd_b28_str)
+  fcvt.d.lu f28, x27 # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f28, D_fcvt_d_lu_cg_cp_fd_b28, D_fcvt_d_lu_cg_cp_fd_b28_str)
 
 # Testcase cp_fd (Test destination fd = f29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xab2c7d7b7408f296
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x001b2679355fe1e0
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b29:
-  fcvt.d.lu f29, x10 # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, D_fcvt_d_lu_cg_cp_fd_b29, D_fcvt_d_lu_cg_cp_fd_b29_str)
+  fcvt.d.lu f29, x3 # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f29, D_fcvt_d_lu_cg_cp_fd_b29, D_fcvt_d_lu_cg_cp_fd_b29_str)
 
 # Testcase cp_fd (Test destination fd = f30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0xed169ce886721764
+  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x000d1fc65c1f03b0
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_fd_b30:
   fcvt.d.lu f30, x20 # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, D_fcvt_d_lu_cg_cp_fd_b30, D_fcvt_d_lu_cg_cp_fd_b30_str)
+  # Check if f30 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f30, D_fcvt_d_lu_cg_cp_fd_b30, D_fcvt_d_lu_cg_cp_fd_b30_str)
 
 # Testcase cp_fd (Test destination fd = f31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x7551fbd3950a3a79
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x000000000012af1e
+  fsflagsi 0b10011 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_fd_b31:
-  fcvt.d.lu f31, x10 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, D_fcvt_d_lu_cg_cp_fd_b31, D_fcvt_d_lu_cg_cp_fd_b31_str)
+  fcvt.d.lu f31, x15 # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f31, D_fcvt_d_lu_cg_cp_fd_b31, D_fcvt_d_lu_cg_cp_fd_b31_str)
 
 /////////////////////////////////
 // cp_frm_2
 /////////////////////////////////
 
 # Testcase cp_frm_2 (Test frm, mode = dyn)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x97259436e9aa89a8
+  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x000d0f5e87211c48
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 D_fcvt_d_lu_cg_cp_frm_2_bdyn:
   fcvt.d.lu f1, x11, dyn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, D_fcvt_d_lu_cg_cp_frm_2_bdyn, D_fcvt_d_lu_cg_cp_frm_2_bdyn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f1, D_fcvt_d_lu_cg_cp_frm_2_bdyn, D_fcvt_d_lu_cg_cp_frm_2_bdyn_str)
   fsrmi 0x0
 
 # Testcase cp_frm_2 (Test frm, mode = rdn)
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0x45f6358479d092a1
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x0000c3fd331c7879
+  fsflagsi 0b11101 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_frm_2_brdn:
-  fcvt.d.lu f18, x22, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, D_fcvt_d_lu_cg_cp_frm_2_brdn, D_fcvt_d_lu_cg_cp_frm_2_brdn_str)
+  fcvt.d.lu f26, x21, rdn # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f26, D_fcvt_d_lu_cg_cp_frm_2_brdn, D_fcvt_d_lu_cg_cp_frm_2_brdn_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rmm)
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x9205957cde7985b8
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000003a9227
+  fsflagsi 0b11010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_frm_2_brmm:
-  fcvt.d.lu f26, x15, rmm # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, D_fcvt_d_lu_cg_cp_frm_2_brmm, D_fcvt_d_lu_cg_cp_frm_2_brmm_str)
+  fcvt.d.lu f11, x13, rmm # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f11, D_fcvt_d_lu_cg_cp_frm_2_brmm, D_fcvt_d_lu_cg_cp_frm_2_brmm_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rne)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x7a3f959a21381964
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x0d75c331aaefa859
+  fsflagsi 0b00101 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_frm_2_brne:
-  fcvt.d.lu f10, x18, rne # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, D_fcvt_d_lu_cg_cp_frm_2_brne, D_fcvt_d_lu_cg_cp_frm_2_brne_str)
+  fcvt.d.lu f2, x25, rne # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f2, D_fcvt_d_lu_cg_cp_frm_2_brne, D_fcvt_d_lu_cg_cp_frm_2_brne_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rtz)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x637e35b107314ae1
+  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x000000000012e3ba
   fsflagsi 0b00000 # clear all fflags
 D_fcvt_d_lu_cg_cp_frm_2_brtz:
-  fcvt.d.lu f25, x20, rtz # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, D_fcvt_d_lu_cg_cp_frm_2_brtz, D_fcvt_d_lu_cg_cp_frm_2_brtz_str)
+  fcvt.d.lu f3, x18, rtz # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f3, D_fcvt_d_lu_cg_cp_frm_2_brtz, D_fcvt_d_lu_cg_cp_frm_2_brtz_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rup)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x0ece7b5ef2f5f114
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x025f93febc372f64
+  fsflagsi 0b11010 # preset fflags, which the instruction must keep
 D_fcvt_d_lu_cg_cp_frm_2_brup:
-  fcvt.d.lu f14, x1, rup # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, D_fcvt_d_lu_cg_cp_frm_2_brup, D_fcvt_d_lu_cg_cp_frm_2_brup_str)
+  fcvt.d.lu f24, x10, rup # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f24, D_fcvt_d_lu_cg_cp_frm_2_brup, D_fcvt_d_lu_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
 // cp_csr_fflags_n
 /////////////////////////////////
 
 # Testcase cp_csr_fflags_n (fflags = 00001)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xacd7cb89482bde0d
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xacd7cb89482bde0d
   fsflagsi 0b00000 # clear all fflags
   csrsi fcsr, 0b00001 # set fflags
 D_fcvt_d_lu_cg_cp_csr_fflags_n_b00001:
-  fcvt.d.lu f17, x1 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, D_fcvt_d_lu_cg_cp_csr_fflags_n_b00001, D_fcvt_d_lu_cg_cp_csr_fflags_n_b00001_str)
+  fcvt.d.lu f17, x2 # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f17, D_fcvt_d_lu_cg_cp_csr_fflags_n_b00001, D_fcvt_d_lu_cg_cp_csr_fflags_n_b00001_str)
 
 /////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0xeb4829b87195c1c1
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000000094
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
 D_fcvt_d_lu_cg_cp_csr_frm_rne:
   fcvt.d.lu f21, x12, dyn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, D_fcvt_d_lu_cg_cp_csr_frm_rne, D_fcvt_d_lu_cg_cp_csr_frm_rne_str)
+  # Check if f21 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f21, D_fcvt_d_lu_cg_cp_csr_frm_rne, D_fcvt_d_lu_cg_cp_csr_frm_rne_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0xe275e897a262cf31
+  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x0000000604e292d7
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 D_fcvt_d_lu_cg_cp_csr_frm_rtz:
-  fcvt.d.lu f6, x15, dyn # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, D_fcvt_d_lu_cg_cp_csr_frm_rtz, D_fcvt_d_lu_cg_cp_csr_frm_rtz_str)
+  fcvt.d.lu f6, x17, dyn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f6, D_fcvt_d_lu_cg_cp_csr_frm_rtz, D_fcvt_d_lu_cg_cp_csr_frm_rtz_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x5d78b0d8de567fcd
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000000000026c8
+  fsflagsi 0b10110 # preset fflags, which the instruction must keep
   fsrmi 2
 D_fcvt_d_lu_cg_cp_csr_frm_rdn:
-  fcvt.d.lu f22, x9, dyn # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, D_fcvt_d_lu_cg_cp_csr_frm_rdn, D_fcvt_d_lu_cg_cp_csr_frm_rdn_str)
+  fcvt.d.lu f16, x8, dyn # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f16, D_fcvt_d_lu_cg_cp_csr_frm_rdn, D_fcvt_d_lu_cg_cp_csr_frm_rdn_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x84e292d7f9408adb
-  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x001ac180a9edac94
+  fsflagsi 0b01001 # preset fflags, which the instruction must keep
   fsrmi 3
 D_fcvt_d_lu_cg_cp_csr_frm_rup:
-  fcvt.d.lu f31, x17, dyn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, D_fcvt_d_lu_cg_cp_csr_frm_rup, D_fcvt_d_lu_cg_cp_csr_frm_rup_str)
+  fcvt.d.lu f23, x17, dyn # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f23, D_fcvt_d_lu_cg_cp_csr_frm_rup, D_fcvt_d_lu_cg_cp_csr_frm_rup_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xf3d0f78c445482eb
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x000000000000069b
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 D_fcvt_d_lu_cg_cp_csr_frm_rmm:
-  fcvt.d.lu f8, x18, dyn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, D_fcvt_d_lu_cg_cp_csr_frm_rmm, D_fcvt_d_lu_cg_cp_csr_frm_rmm_str)
+  fcvt.d.lu f29, x12, dyn # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x1, x5, x4, f7, f29, D_fcvt_d_lu_cg_cp_csr_frm_rmm, D_fcvt_d_lu_cg_cp_csr_frm_rmm_str)
   fsrmi 0x0
+
+  mv x2, x1 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -835,38 +835,38 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-.dword 0x8eecb827517f70fd
-.dword 0x361ad0f56e8ace25
-.dword 0xdf419d164ca0f890
-.dword 0x7fcd4f74dd0f98a4
-.dword 0xedd2f9efc46eec7a
-.dword 0xb9d58c9136549dd5
-.dword 0x46214d317e9fcd2b
-.dword 0x6432cacccd7eecb3
-.dword 0x735b235ce95ed377
-.dword 0x795af79ae7b4d307
-.dword 0xdec00dd8737742ee
-.dword 0xf6f527875f5b35d9
-.dword 0x456c1470c21d1899
-.dword 0x66672d93ab84059b
-.dword 0x9be4e6ad42bc072f
-.dword 0xb2951cca1301ecd2
-.dword 0x038b92c10902426b
-.dword 0x5755e494b6e33c8c
-.dword 0x2744d3b535dcb53d
-.dword 0xc28a9184563c915f
-.dword 0x8e51dffd94da0273
-.dword 0x75273363cdeb7c5a
-.dword 0x3218e2efbeace518
-.dword 0xb4c50815a4584726
-.dword 0xc131468958153683
-.dword 0xd96d8f24d76dae0d
-.dword 0x82814641769a9625
-.dword 0x930adc6e66fde24b
-.dword 0xe26cc3c86c2a7e51
-.dword 0x4a2dc6293737dbe3
-.dword 0xf1b0b1ba7ca4ed5f
-.dword 0xf377c7b33e6b6116
+.dword 0x001cfc12a705ee2c
+.dword 0x0000000d4ca0f890
+.dword 0x0038ba854129719f
+.dword 0x00000000001f069b
+.dword 0x0000000000002fdd
+.dword 0x00006a0297ca6182
+.dword 0x0000000000c3acfb
+.dword 0x00000000000e8217
+.dword 0x0000000000000448
+.dword 0x22769c24d18905d7
+.dword 0x781a03f985d2e230
+.dword 0x006a4888181315fb
+.dword 0x00000d764d190a47
+.dword 0x000000001e5da109
+.dword 0x00000000b507268a
+.dword 0x0000000079bbe3d9
+.dword 0x001196fd128aa151
+.dword 0x0000284e5f662d3a
+.dword 0x00000000014d5c03
+.dword 0x0003f7ae754928b6
+.dword 0x0000000000000000
+.dword 0x00000000000000e8
+.dword 0x0000000000000331
+.dword 0x0000000000000007
+.dword 0x0000000046a3b6a1
+.dword 0x0000026d4cb5b5a4
+.dword 0x000000000090d0ab
+.dword 0x000a76503919ddf1
+.dword 0x000000000006bb9d
+.dword 0x00000056040d8623
+.dword 0x00018463781cd573
+.dword 0x000000000003dcb1
 .dword 0x0000000000000000
 .dword 0x0000000000000001
 .dword 0x0000000000000002
@@ -885,50 +885,50 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000001
 .dword 0x0000000080000000
 .dword 0x000000007fffffff
-.dword 0x45705a5212da6b1e
-.dword 0x3dc2296cc08a17a5
-.dword 0x56256b5f62dbc773
-.dword 0x278f24b29ba2d784
-.dword 0x319e3d1befcfafeb
-.dword 0xa61d9a8e57968081
-.dword 0xb942c4fa87b5d2fc
-.dword 0x9b4dd5703f320933
-.dword 0x4f7642e65cad511c
-.dword 0x0e20b73f8baf97e3
-.dword 0xbd0494ebc81a8bda
-.dword 0x95451ca95fe1b173
-.dword 0xf0b6234bd8eba780
-.dword 0x8b52a38999a8f7ee
-.dword 0xe84e990c083434f7
-.dword 0x89a0060ad9723702
-.dword 0x7d6eadf5b46a67cc
-.dword 0xc85ec8175b6b5eba
-.dword 0x8ea92b6c93ce76f6
-.dword 0xfe93656124f5a3ce
-.dword 0x5d6ca0014035b912
-.dword 0x00998de78d8003c1
+.dword 0x0000000000f66f95
+.dword 0x0000000001c7723b
+.dword 0x0000000001728589
+.dword 0x00000000000126f0
+.dword 0x000000000f0b6234
+.dword 0x000da0cf09a0060a
+.dword 0x0000000b6d096b4c
+.dword 0x000103c36a7cecc3
 .dword 0xfcacb778d8602a92
-.dword 0xf29aed337c261e91
-.dword 0x4d5ec5c9be5ef5ae
-.dword 0xd80486c95171dd2f
-.dword 0x50f57618ea520b86
-.dword 0xe3a491044e0c5092
-.dword 0x37b0441edcb90fd6
-.dword 0xab2c7d7b7408f296
-.dword 0xed169ce886721764
-.dword 0x7551fbd3950a3a79
-.dword 0x97259436e9aa89a8
-.dword 0x45f6358479d092a1
-.dword 0x9205957cde7985b8
-.dword 0x7a3f959a21381964
-.dword 0x637e35b107314ae1
-.dword 0x0ece7b5ef2f5f114
+.dword 0x000000365171dd2f
+.dword 0x0001011015391f91
+.dword 0x000b8b7981627947
+.dword 0x00000000000000d0
+.dword 0x000000001bbb76a6
+.dword 0x000000000000018e
+.dword 0x0000000000000625
+.dword 0x0001ba38080c5cee
+.dword 0x000009c4023c9ffc
+.dword 0x000abd3949e00770
+.dword 0x000000000000e6b8
+.dword 0x0000000000006ae5
+.dword 0x0000000000002e64
+.dword 0x0000000000073469
+.dword 0x00000000009f943e
+.dword 0x0000000000000318
+.dword 0x00000000000390cc
+.dword 0x00003adefc105b33
+.dword 0x000000000000687b
+.dword 0x00000000c6eecd9b
+.dword 0x001b2679355fe1e0
+.dword 0x000d1fc65c1f03b0
+.dword 0x000000000012af1e
+.dword 0x000d0f5e87211c48
+.dword 0x0000c3fd331c7879
+.dword 0x00000000003a9227
+.dword 0x0d75c331aaefa859
+.dword 0x000000000012e3ba
+.dword 0x025f93febc372f64
 .dword 0xacd7cb89482bde0d
-.dword 0xeb4829b87195c1c1
-.dword 0xe275e897a262cf31
-.dword 0x5d78b0d8de567fcd
-.dword 0x84e292d7f9408adb
-.dword 0xf3d0f78c445482eb
+.dword 0x0000000000000094
+.dword 0x0000000604e292d7
+.dword 0x00000000000026c8
+.dword 0x001ac180a9edac94
+.dword 0x000000000000069b
 
 // Testcase strings
 D_fcvt_d_lu_cg_cp_rs1_b0_str: .string "\"test: 1; cg: D_fcvt.d.lu_cg; cp: cp_rs1; bin: b0\""

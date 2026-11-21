@@ -34,420 +34,424 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Testcase cp_rs1 (Test source rs1 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x7fc4b452c9b57e9b
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0x6bb46577184b22c6
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x000001aff66b2a88
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0x0000000000000258
 M_divu_cg_cp_rs1_b0:
   divu x9, x0, x12 # perform operation
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, M_divu_cg_cp_rs1_b0, M_divu_cg_cp_rs1_b0_str)
 
 # Testcase cp_rs1 (Test source rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x766b2a88debafe4a
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs2: x7 = 0xcbdf37561628fd63
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x000007b5a4cc8ae0
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs2: x7 = 0x0000000000004669
 M_divu_cg_cp_rs1_b1:
-  divu x15, x1, x7 # perform operation
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, M_divu_cg_cp_rs1_b1, M_divu_cg_cp_rs1_b1_str)
+  divu x9, x1, x7 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, M_divu_cg_cp_rs1_b1, M_divu_cg_cp_rs1_b1_str)
 
-  mv x10, x2 # switch signature pointer register to avoid conflict with test
+  mv x1, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0xbabce84576a99fd0
-  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs2: x0 = 0x906b72c53c744bd0
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x00000000007fd9d5
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x0000000000000003
 M_divu_cg_cp_rs1_b2:
-  divu x6, x2, x0 # perform operation
-  # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, M_divu_cg_cp_rs1_b2, M_divu_cg_cp_rs1_b2_str)
+  divu x8, x2, x10 # perform operation
+  # Check if x8 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x8, M_divu_cg_cp_rs1_b2, M_divu_cg_cp_rs1_b2_str)
 
-  mv x11, x3 # switch data pointer register to avoid conflict with test
+  mv x10, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs1: x3 = 0xba960919e09f3546
-  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0xf16b448e91ae9a3d
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs1: x3 = 0x00000000010aba43
+  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs2: x12 = 0x0000000000000004
 M_divu_cg_cp_rs1_b3:
-  divu x9, x3, x12 # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, M_divu_cg_cp_rs1_b3, M_divu_cg_cp_rs1_b3_str)
+  divu x14, x3, x12 # perform operation
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, M_divu_cg_cp_rs1_b3, M_divu_cg_cp_rs1_b3_str)
 
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0xf15f92b158db6d9a
-  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs2: x2 = 0x8a5329dc7fb3aac7
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs1: x4 = 0x35924be1b7fb9df9
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x00008a01d90a4706
 M_divu_cg_cp_rs1_b4:
-  divu x5, x4, x2 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, M_divu_cg_cp_rs1_b4, M_divu_cg_cp_rs1_b4_str)
+  divu x13, x4, x9 # perform operation
+  # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x1, x8, x7, x13, M_divu_cg_cp_rs1_b4, M_divu_cg_cp_rs1_b4_str)
 
 # Testcase cp_rs1 (Test source rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0xf85f1c57f814424c
-  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0xe7e11029c0073d55
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs1: x5 = 0x0000000000000010
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs2: x13 = 0x0000000000000010
 M_divu_cg_cp_rs1_b5:
-  divu x9, x5, x12 # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x9, M_divu_cg_cp_rs1_b5, M_divu_cg_cp_rs1_b5_str)
+  divu x9, x5, x13 # perform operation
+  # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x1, x8, x7, x9, M_divu_cg_cp_rs1_b5, M_divu_cg_cp_rs1_b5_str)
 
 # Testcase cp_rs1 (Test source rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0x855d21908ad0aae8
-  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs2: x1 = 0x08d17a06d4f133e0
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs1: x6 = 0x0000000000000135
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs2: x2 = 0x0000000000000003
 M_divu_cg_cp_rs1_b6:
-  divu x13, x6, x1 # perform operation
-  # Check if x13 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x13, M_divu_cg_cp_rs1_b6, M_divu_cg_cp_rs1_b6_str)
+  divu x5, x6, x2 # perform operation
+  # Check if x5 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x1, x8, x7, x5, M_divu_cg_cp_rs1_b6, M_divu_cg_cp_rs1_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0x2ff276e1cd88fdb9
-  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs2: x2 = 0x2f751a687ea33cde
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs1: x7 = 0x0000000000384458
+  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load rs2: x0 = 0x00000000000125f9
 M_divu_cg_cp_rs1_b7:
-  divu x8, x7, x2 # perform operation
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, M_divu_cg_cp_rs1_b7, M_divu_cg_cp_rs1_b7_str)
+  divu x6, x7, x0 # perform operation
+  # Check if x6 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x6, M_divu_cg_cp_rs1_b7, M_divu_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0x7ef104c4e3136106
-  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load rs2: x15 = 0x3b0114718dd27c6a
+  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs1: x8 = 0x0000000000c3eaf0
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0x00000000000024b4
 M_divu_cg_cp_rs1_b8:
-  divu x1, x8, x15 # perform operation
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, M_divu_cg_cp_rs1_b8, M_divu_cg_cp_rs1_b8_str)
+  divu x5, x8, x3 # perform operation
+  # Check if x5 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x5, M_divu_cg_cp_rs1_b8, M_divu_cg_cp_rs1_b8_str)
 
 # Testcase cp_rs1 (Test source rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x4d0463f61c3fc0c6
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs2: x7 = 0x9aa4a5aece8854c5
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0x0000001dda471d7b
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0x000000030406a9ca
 M_divu_cg_cp_rs1_b9:
-  divu x14, x9, x7 # perform operation
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, M_divu_cg_cp_rs1_b9, M_divu_cg_cp_rs1_b9_str)
+  divu x11, x9, x5 # perform operation
+  # Check if x11 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x11, M_divu_cg_cp_rs1_b9, M_divu_cg_cp_rs1_b9_str)
 
-  mv x3, x10 # switch signature pointer register to avoid conflict with test
+  mv x15, x10 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0x667b034efb49351d
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x0594b66427b1c3ef
+  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0x00000037e96ad393
+  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rs2: x2 = 0x000000000010c524
 M_divu_cg_cp_rs1_b10:
-  divu x15, x10, x8 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs1_b10, M_divu_cg_cp_rs1_b10_str)
+  divu x3, x10, x2 # perform operation
+  # Check if x3 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x3, M_divu_cg_cp_rs1_b10, M_divu_cg_cp_rs1_b10_str)
 
-  mv x1, x11 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x011503e9dc106faa
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x92fcd38d9366f0cd
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0x0000000000000001
 M_divu_cg_cp_rs1_b11:
-  divu x0, x11, x8 # perform operation
-  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x0, M_divu_cg_cp_rs1_b11, M_divu_cg_cp_rs1_b11_str)
+  divu x4, x11, x6 # perform operation
+  # Check if x4 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x4, M_divu_cg_cp_rs1_b11, M_divu_cg_cp_rs1_b11_str)
 
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x586615b8e3b3c757
-  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0xb3e89df12158aa76
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0xc56890b1f20cc7d7
+  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs2: x7 = 0x000000000000071d
 M_divu_cg_cp_rs1_b12:
-  divu x14, x12, x2 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cp_rs1_b12, M_divu_cg_cp_rs1_b12_str)
+  divu x8, x12, x7 # perform operation
+  # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x8, M_divu_cg_cp_rs1_b12, M_divu_cg_cp_rs1_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xf28b1de51410e08f
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xf0e2fcf7b8e42ad1
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x000dbc4100e55893
+  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0x0000445a06bc777f
 M_divu_cg_cp_rs1_b13:
-  divu x15, x13, x6 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs1_b13, M_divu_cg_cp_rs1_b13_str)
+  divu x12, x13, x9 # perform operation
+  # Check if x12 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x12, M_divu_cg_cp_rs1_b13, M_divu_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xca864d8cbaea32c3
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x5a471d7b4938a6fb
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0x5507715a171dfed7
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0x000004776e8d9130
 M_divu_cg_cp_rs1_b14:
-  divu x15, x14, x8 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs1_b14, M_divu_cg_cp_rs1_b14_str)
+  divu x11, x14, x6 # perform operation
+  # Check if x11 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x11, M_divu_cg_cp_rs1_b14, M_divu_cg_cp_rs1_b14_str)
 
+  mv x3, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x8406a9ca94f822a4
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xe1facd7ca0f85a1f
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x00009b56d5559bd2
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x000000009900a357
 M_divu_cg_cp_rs1_b15:
-  divu x12, x15, x6 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cp_rs1_b15, M_divu_cg_cp_rs1_b15_str)
+  divu x7, x15, x10 # perform operation
+  # Check if x7 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x7, M_divu_cg_cp_rs1_b15, M_divu_cg_cp_rs1_b15_str)
 
 /////////////////////////////////
 // cp_rs2
 /////////////////////////////////
 
 # Testcase cp_rs2 (Test source rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x62fead2fd5839aac
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xf461d6ca070a5861
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x0000004f5da96c42
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs2: x0 = 0x00000000043f2c91
 M_divu_cg_cp_rs2_b0:
   divu x13, x6, x0 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cp_rs2_b0, M_divu_cg_cp_rs2_b0_str)
+  # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x13, M_divu_cg_cp_rs2_b0, M_divu_cg_cp_rs2_b0_str)
 
-  mv x9, x1 # switch data pointer register to avoid conflict with test
+  mv x11, x1 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0xea1b60c31e3b6a82
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs2: x1 = 0x5f8a1057a5c12334
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x000000015c8ee477
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs2: x1 = 0x0000000000005f96
 M_divu_cg_cp_rs2_b1:
-  divu x8, x11, x1 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cp_rs2_b1, M_divu_cg_cp_rs2_b1_str)
+  divu x13, x6, x1 # perform operation
+  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x13, M_divu_cg_cp_rs2_b1, M_divu_cg_cp_rs2_b1_str)
 
 # Testcase cp_rs2 (Test source rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0xf9a457e7a9ff5b37
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs2: x2 = 0xe70c3a44850da9f6
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x0000000000033b2b
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0x0000000000000003
 M_divu_cg_cp_rs2_b2:
-  divu x13, x12, x2 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cp_rs2_b2, M_divu_cg_cp_rs2_b2_str)
+  divu x12, x14, x2 # perform operation
+  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x12, M_divu_cg_cp_rs2_b2, M_divu_cg_cp_rs2_b2_str)
 
-  mv x2, x3 # switch signature pointer register to avoid conflict with test
+  mv x6, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xbf2c36083998fe44
-  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs2: x3 = 0xf4b417d5f3eef612
+  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xf667d43addcc463b
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x000000000000f5a0
 M_divu_cg_cp_rs2_b3:
-  divu x7, x10, x3 # perform operation
-  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x7, M_divu_cg_cp_rs2_b3, M_divu_cg_cp_rs2_b3_str)
+  divu x13, x14, x3 # perform operation
+  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x13, M_divu_cg_cp_rs2_b3, M_divu_cg_cp_rs2_b3_str)
 
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xa1def7b8514336c1
-  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0xe06538ff95ca9600
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x100a830daa2f1db5
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x000000000000003d
 M_divu_cg_cp_rs2_b4:
-  divu x12, x10, x4 # perform operation
-  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cp_rs2_b4, M_divu_cg_cp_rs2_b4_str)
+  divu x3, x1, x4 # perform operation
+  # Check if x3 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x3, M_divu_cg_cp_rs2_b4, M_divu_cg_cp_rs2_b4_str)
 
 # Testcase cp_rs2 (Test source rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0xd7cf77a5aabf7f80
-  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0xe7ce2baa45c885ee
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000000000007
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000000000002
 M_divu_cg_cp_rs2_b5:
-  divu x13, x14, x5 # perform operation
-  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cp_rs2_b5, M_divu_cg_cp_rs2_b5_str)
+  divu x0, x2, x5 # perform operation
+  # Check if x0 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x0, M_divu_cg_cp_rs2_b5, M_divu_cg_cp_rs2_b5_str)
 
+  mv x2, x6 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs1: x5 = 0x5dcc463beda5e7bf
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x9e7c8b53f40ac127
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x000000000000008d
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x0000000000000002
 M_divu_cg_cp_rs2_b6:
-  divu x12, x5, x6 # perform operation
-  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cp_rs2_b6, M_divu_cg_cp_rs2_b6_str)
+  divu x14, x15, x6 # perform operation
+  # Check if x14 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x14, M_divu_cg_cp_rs2_b6, M_divu_cg_cp_rs2_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x840852bb2b63a2a2
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x8fc73ff9d96b6016
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x000000000000000f
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x000000000000000a
 M_divu_cg_cp_rs2_b7:
-  divu x6, x1, x7 # perform operation
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, M_divu_cg_cp_rs2_b7, M_divu_cg_cp_rs2_b7_str)
+  divu x9, x10, x7 # perform operation
+  # Check if x9 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x9, M_divu_cg_cp_rs2_b7, M_divu_cg_cp_rs2_b7_str)
 
 # Testcase cp_rs2 (Test source rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs1: x0 = 0xf5e05e6e15575846
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x6a89131cca40f0a9
+  RVTEST_TESTDATA_LOAD_INT(x2, x4) # load rs1: x4 = 0x0000000000000007
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x000000000000000e
 M_divu_cg_cp_rs2_b8:
-  divu x12, x0, x8 # perform operation
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, M_divu_cg_cp_rs2_b8, M_divu_cg_cp_rs2_b8_str)
+  divu x3, x4, x8 # perform operation
+  # Check if x3 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x3, M_divu_cg_cp_rs2_b8, M_divu_cg_cp_rs2_b8_str)
 
-  mv x10, x9 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs1: x12 = 0xc1ba6bae8c4c9522
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x846b8f3585fea3a3
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x0006b9e5ce303cbc
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x000000018349ed42
 M_divu_cg_cp_rs2_b9:
-  divu x13, x12, x9 # perform operation
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, M_divu_cg_cp_rs2_b9, M_divu_cg_cp_rs2_b9_str)
+  divu x3, x6, x9 # perform operation
+  # Check if x3 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x3, M_divu_cg_cp_rs2_b9, M_divu_cg_cp_rs2_b9_str)
 
-  mv x12, x10 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x12, x1) # load rs1: x1 = 0x190b5295cfbc832c
-  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rs2: x10 = 0x08c01204e1a4bf60
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x000000000000001d
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x0000000000000006
 M_divu_cg_cp_rs2_b10:
-  divu x6, x1, x10 # perform operation
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, M_divu_cg_cp_rs2_b10, M_divu_cg_cp_rs2_b10_str)
+  divu x9, x15, x10 # perform operation
+  # Check if x9 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x9, M_divu_cg_cp_rs2_b10, M_divu_cg_cp_rs2_b10_str)
 
+  mv x6, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rs1: x7 = 0x5f750d0caec9a5f4
-  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x9b19b9cb13eb5fcc
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x0000a32b54f09f4a
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x00000000000004c4
 M_divu_cg_cp_rs2_b11:
-  divu x3, x7, x11 # perform operation
-  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x3, M_divu_cg_cp_rs2_b11, M_divu_cg_cp_rs2_b11_str)
+  divu x3, x10, x11 # perform operation
+  # Check if x3 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x3, M_divu_cg_cp_rs2_b11, M_divu_cg_cp_rs2_b11_str)
 
-  mv x9, x12 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x80cec5274a6fb556
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs2: x12 = 0x878c5c9040791c96
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x00584baefc82c36d
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x00000000774dadaa
 M_divu_cg_cp_rs2_b12:
-  divu x11, x13, x12 # perform operation
-  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, M_divu_cg_cp_rs2_b12, M_divu_cg_cp_rs2_b12_str)
+  divu x7, x8, x12 # perform operation
+  # Check if x7 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x7, M_divu_cg_cp_rs2_b12, M_divu_cg_cp_rs2_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0xa28687a9e2922d03
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs2: x13 = 0xcb001ed45dd863c7
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x00001bf887b9d120
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x00000000b2943edf
 M_divu_cg_cp_rs2_b13:
-  divu x11, x3, x13 # perform operation
-  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, M_divu_cg_cp_rs2_b13, M_divu_cg_cp_rs2_b13_str)
+  divu x10, x1, x13 # perform operation
+  # Check if x10 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x10, M_divu_cg_cp_rs2_b13, M_divu_cg_cp_rs2_b13_str)
 
 # Testcase cp_rs2 (Test source rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0xe133c3686b677f18
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs2: x14 = 0x78223930e2931b10
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x65a3fe53041c5724
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x0000000000000202
 M_divu_cg_cp_rs2_b14:
-  divu x11, x6, x14 # perform operation
-  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, M_divu_cg_cp_rs2_b14, M_divu_cg_cp_rs2_b14_str)
+  divu x11, x10, x14 # perform operation
+  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x11, M_divu_cg_cp_rs2_b14, M_divu_cg_cp_rs2_b14_str)
 
 # Testcase cp_rs2 (Test source rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0xe5cef312ee65cef7
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0x4e303cbccc4c5c1a
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x0000000cf240968c
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x000000000003878c
 M_divu_cg_cp_rs2_b15:
-  divu x7, x13, x15 # perform operation
-  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x7, M_divu_cg_cp_rs2_b15, M_divu_cg_cp_rs2_b15_str)
+  divu x14, x3, x15 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x14, M_divu_cg_cp_rs2_b15, M_divu_cg_cp_rs2_b15_str)
 
 /////////////////////////////////
 // cp_rd
 /////////////////////////////////
 
 # Testcase cp_rd (Test destination rd = x0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0xdc85c65b10670ec1
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0xd3d3606407b0732a
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x1eeed53aa051b82c
+  RVTEST_TESTDATA_LOAD_INT(x2, x4) # load rs2: x4 = 0x01d4a3d1ab413e7d
 M_divu_cg_cp_rd_b0:
-  divu x0, x11, x6 # perform operation
-  # Check if x0 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x0, M_divu_cg_cp_rd_b0, M_divu_cg_cp_rd_b0_str)
+  divu x0, x11, x4 # perform operation
+  # Check if x0 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x0, M_divu_cg_cp_rd_b0, M_divu_cg_cp_rd_b0_str)
 
 # Testcase cp_rd (Test destination rd = x1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x4f312a273e012d72
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs2: x11 = 0x25b2643c97e77dba
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x0000000000000122
+  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs2: x0 = 0x0000000000000187
 M_divu_cg_cp_rd_b1:
-  divu x1, x12, x11 # perform operation
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, M_divu_cg_cp_rd_b1, M_divu_cg_cp_rd_b1_str)
+  divu x1, x14, x0 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x1, M_divu_cg_cp_rd_b1, M_divu_cg_cp_rd_b1_str)
 
-  mv x12, x2 # switch signature pointer register to avoid conflict with test
+  mv x10, x2 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x2)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x03ca49d899f2093a
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs2: x0 = 0x11f2de160a7c3026
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs1: x3 = 0x115eaf8a383f5e34
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0x0000000000000002
 M_divu_cg_cp_rd_b2:
-  divu x2, x11, x0 # perform operation
-  # Check if x2 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x2, M_divu_cg_cp_rd_b2, M_divu_cg_cp_rd_b2_str)
+  divu x2, x3, x1 # perform operation
+  # Check if x2 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x2, M_divu_cg_cp_rd_b2, M_divu_cg_cp_rd_b2_str)
 
 # Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x91be6bb2e3c040e4
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs2: x14 = 0xf7bb0fd2fd331d0d
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs1: x13 = 0x000adbe128f61cc3
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs2: x2 = 0x000000000001df0a
 M_divu_cg_cp_rd_b3:
-  divu x3, x2, x14 # perform operation
-  # Check if x3 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x3, M_divu_cg_cp_rd_b3, M_divu_cg_cp_rd_b3_str)
+  divu x3, x13, x2 # perform operation
+  # Check if x3 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x3, M_divu_cg_cp_rd_b3, M_divu_cg_cp_rd_b3_str)
 
-  mv x13, x4 # switch temp register to avoid conflict with test
-  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x982ada8e55ae75ea
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0xb83f5e34c003730c
+  RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs1: x11 = 0x00000000000299a3
+  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs2: x12 = 0x000000000000001d
 M_divu_cg_cp_rd_b4:
-  divu x4, x2, x6 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x4, M_divu_cg_cp_rd_b4, M_divu_cg_cp_rd_b4_str)
+  divu x4, x11, x12 # perform operation
+  # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x4, M_divu_cg_cp_rd_b4, M_divu_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs1: x0 = 0x055c49b83a362cc4
-  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0xfbc4f77f9a3dacd3
+  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load rs1: x14 = 0x00000000000002fd
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs2: x13 = 0x00000000000002ba
 M_divu_cg_cp_rd_b5:
-  divu x5, x0, x4 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x5, M_divu_cg_cp_rd_b5, M_divu_cg_cp_rd_b5_str)
+  divu x5, x14, x13 # perform operation
+  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x5, M_divu_cg_cp_rd_b5, M_divu_cg_cp_rd_b5_str)
 
+  mv x15, x6 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x6d4cf85524f30295
-  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0x30b5599ad2de3295
+  RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs1: x11 = 0x0000000b7ddcee32
+  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs2: x12 = 0x000000032015615c
 M_divu_cg_cp_rd_b6:
-  divu x6, x1, x4 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x6, M_divu_cg_cp_rd_b6, M_divu_cg_cp_rd_b6_str)
+  divu x6, x11, x12 # perform operation
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, M_divu_cg_cp_rd_b6, M_divu_cg_cp_rd_b6_str)
 
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0xbc1bd522c2fcc2b6
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0x3894f37a88f54846
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs1: x3 = 0x0000000000000026
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x000000000000006a
 M_divu_cg_cp_rd_b7:
-  divu x7, x2, x15 # perform operation
-  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x7, M_divu_cg_cp_rd_b7, M_divu_cg_cp_rd_b7_str)
+  divu x7, x3, x9 # perform operation
+  # Check if x7 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x7, M_divu_cg_cp_rd_b7, M_divu_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x993ac9101a5cdcf8
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs2: x2 = 0x3cb6f0182668ccf5
+  RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs1: x11 = 0x071c7847028d143d
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0x00000000007f27b4
 M_divu_cg_cp_rd_b8:
-  divu x8, x11, x2 # perform operation
-  # Check if x8 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x8, M_divu_cg_cp_rd_b8, M_divu_cg_cp_rd_b8_str)
+  divu x8, x11, x5 # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x8, M_divu_cg_cp_rd_b8, M_divu_cg_cp_rd_b8_str)
 
-  mv x6, x9 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0d8faef63c0dbf6a
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x2df37750ff45484e
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs1: x6 = 0xaeb222abb236c1bc
+  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load rs2: x0 = 0x000000000277f9bb
 M_divu_cg_cp_rd_b9:
-  divu x9, x11, x10 # perform operation
-  # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x9, M_divu_cg_cp_rd_b9, M_divu_cg_cp_rd_b9_str)
+  divu x9, x6, x0 # perform operation
+  # Check if x9 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x9, M_divu_cg_cp_rd_b9, M_divu_cg_cp_rd_b9_str)
 
+  mv x6, x10 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x1e79d7843f6b3e28
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x7008aa909820a87d
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x000001ac13994a8d
+  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x000000000000064c
 M_divu_cg_cp_rd_b10:
-  divu x10, x1, x9 # perform operation
-  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x10, M_divu_cg_cp_rd_b10, M_divu_cg_cp_rd_b10_str)
+  divu x10, x7, x12 # perform operation
+  # Check if x10 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x10, M_divu_cg_cp_rd_b10, M_divu_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x10a25b5e4650e94f
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x070294da30329e0a
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000000003822
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000000000002
 M_divu_cg_cp_rd_b11:
-  divu x11, x15, x8 # perform operation
-  # Check if x11 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x12, x14, x13, x11, M_divu_cg_cp_rd_b11, M_divu_cg_cp_rd_b11_str)
+  divu x11, x1, x7 # perform operation
+  # Check if x11 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x11, M_divu_cg_cp_rd_b11, M_divu_cg_cp_rd_b11_str)
 
-  mv x3, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x6bffcf9c32d2552a
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0xa5fa2d234d78e19b
+  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs1: x0 = 0x000000000e90c49c
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x000000000000000f
 M_divu_cg_cp_rd_b12:
-  divu x12, x7, x15 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x3, x14, x13, x12, M_divu_cg_cp_rd_b12, M_divu_cg_cp_rd_b12_str)
+  divu x12, x0, x2 # perform operation
+  # Check if x12 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x12, M_divu_cg_cp_rd_b12, M_divu_cg_cp_rd_b12_str)
 
-  mv x4, x13 # switch temp register to avoid conflict with test
-  mv x5, x14 # switch link pointer register to avoid conflict with test
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x5eba8fcd59827e1a
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x23697a118a1b292e
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00edb2fbe8209f5e
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x000000000000001b
 M_divu_cg_cp_rd_b13:
-  divu x13, x9, x12 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cp_rd_b13, M_divu_cg_cp_rd_b13_str)
+  divu x13, x2, x1 # perform operation
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, M_divu_cg_cp_rd_b13, M_divu_cg_cp_rd_b13_str)
 
 # Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xe38f08fa028d143d
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x51c4008a0fdc8522
+  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x0000000000000ce4
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000000000010
 M_divu_cg_cp_rd_b14:
-  divu x14, x7, x12 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cp_rd_b14, M_divu_cg_cp_rd_b14_str)
+  divu x14, x9, x3 # perform operation
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, M_divu_cg_cp_rd_b14, M_divu_cg_cp_rd_b14_str)
 
+  mv x2, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x3236c1bc7ee7b48f
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x4f2828b9fc98048a
+  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x000000007f574843
+  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000000000003
 M_divu_cg_cp_rd_b15:
-  divu x15, x11, x7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rd_b15, M_divu_cg_cp_rd_b15_str)
+  divu x15, x10, x14 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cp_rd_b15, M_divu_cg_cp_rd_b15_str)
 
 /////////////////////////////////
 // cp_rs1_edges
@@ -458,144 +462,144 @@ M_divu_cg_cp_rd_b15:
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x30e084d0280ff10a
 M_divu_cg_cp_rs1_edges_0x0:
   divu x10, x14, x9 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cp_rs1_edges_0x0, M_divu_cg_cp_rs1_edges_0x0_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cp_rs1_edges_0x0, M_divu_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xb88280e3ed815c29
 M_divu_cg_cp_rs1_edges_0x1:
   divu x13, x15, x14 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cp_rs1_edges_0x1, M_divu_cg_cp_rs1_edges_0x1_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cp_rs1_edges_0x1, M_divu_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xd12b3bb4c0f676a7
 M_divu_cg_cp_rs1_edges_0x2:
   divu x13, x15, x14 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cp_rs1_edges_0x2, M_divu_cg_cp_rs1_edges_0x2_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cp_rs1_edges_0x2, M_divu_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0xa2d3bb2813b821ec
 M_divu_cg_cp_rs1_edges_0x8000000000000000:
   divu x13, x14, x10 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cp_rs1_edges_0x8000000000000000, M_divu_cg_cp_rs1_edges_0x8000000000000000_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cp_rs1_edges_0x8000000000000000, M_divu_cg_cp_rs1_edges_0x8000000000000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x70db4133427d2016
 M_divu_cg_cp_rs1_edges_0x8000000000000001:
   divu x15, x12, x11 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs1_edges_0x8000000000000001, M_divu_cg_cp_rs1_edges_0x8000000000000001_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cp_rs1_edges_0x8000000000000001, M_divu_cg_cp_rs1_edges_0x8000000000000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x197bf63e320ed959
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x197bf63e320ed959
 M_divu_cg_cp_rs1_edges_0x7fffffffffffffff:
-  divu x7, x14, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cp_rs1_edges_0x7fffffffffffffff, M_divu_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  divu x4, x14, x3 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cp_rs1_edges_0x7fffffffffffffff, M_divu_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0xe48179c1f38d59ff
 M_divu_cg_cp_rs1_edges_0x7ffffffffffffffe:
   divu x11, x15, x1 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cp_rs1_edges_0x7ffffffffffffffe, M_divu_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cp_rs1_edges_0x7ffffffffffffffe, M_divu_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xcebc649fbbf8ddca
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0xcebc649fbbf8ddca
 M_divu_cg_cp_rs1_edges_0xffffffffffffffff:
-  divu x11, x9, x8 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cp_rs1_edges_0xffffffffffffffff, M_divu_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  divu x11, x9, x5 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cp_rs1_edges_0xffffffffffffffff, M_divu_cg_cp_rs1_edges_0xffffffffffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xae726a7821ed5ef5
 M_divu_cg_cp_rs1_edges_0xfffffffffffffffe:
-  divu x7, x1, x14 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cp_rs1_edges_0xfffffffffffffffe, M_divu_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  divu x4, x1, x14 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cp_rs1_edges_0xfffffffffffffffe, M_divu_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0xae63152b55ceea79
 M_divu_cg_cp_rs1_edges_0x5bbc887763ae86f2:
-  divu x9, x8, x12 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cp_rs1_edges_0x5bbc887763ae86f2, M_divu_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  divu x9, x5, x12 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cp_rs1_edges_0x5bbc887763ae86f2, M_divu_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x70f7a31b6ec64a5e
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x70f7a31b6ec64a5e
 M_divu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
-  divu x14, x13, x2 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, M_divu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  divu x14, x13, x3 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, M_divu_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x04266d1ec2b82081
 M_divu_cg_cp_rs1_edges_0x5555555555555555:
-  divu x11, x8, x10 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cp_rs1_edges_0x5555555555555555, M_divu_cg_cp_rs1_edges_0x5555555555555555_str)
+  divu x11, x5, x10 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cp_rs1_edges_0x5555555555555555, M_divu_cg_cp_rs1_edges_0x5555555555555555_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xbb5f137b61612e79
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xbb5f137b61612e79
 M_divu_cg_cp_rs1_edges_0xffffffff:
-  divu x8, x11, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cp_rs1_edges_0xffffffff, M_divu_cg_cp_rs1_edges_0xffffffff_str)
+  divu x5, x11, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cp_rs1_edges_0xffffffff, M_divu_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x5c9ee03730bb8a66
 M_divu_cg_cp_rs1_edges_0xfffffffe:
-  divu x1, x2, x13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cp_rs1_edges_0xfffffffe, M_divu_cg_cp_rs1_edges_0xfffffffe_str)
+  divu x1, x3, x13 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cp_rs1_edges_0xfffffffe, M_divu_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xf68f3472ecdd12ab
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xf68f3472ecdd12ab
 M_divu_cg_cp_rs1_edges_0x100000000:
-  divu x12, x1, x7 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cp_rs1_edges_0x100000000, M_divu_cg_cp_rs1_edges_0x100000000_str)
+  divu x12, x1, x4 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cp_rs1_edges_0x100000000, M_divu_cg_cp_rs1_edges_0x100000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x28c4c5be215e3fb3
 M_divu_cg_cp_rs1_edges_0x100000001:
-  divu x8, x1, x12 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cp_rs1_edges_0x100000001, M_divu_cg_cp_rs1_edges_0x100000001_str)
+  divu x5, x1, x12 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cp_rs1_edges_0x100000001, M_divu_cg_cp_rs1_edges_0x100000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x4ba6efd8cd1a39b8
 M_divu_cg_cp_rs1_edges_0x80000000:
   divu x11, x15, x9 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cp_rs1_edges_0x80000000, M_divu_cg_cp_rs1_edges_0x80000000_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cp_rs1_edges_0x80000000, M_divu_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0xc834cb651c3c9ae6
 M_divu_cg_cp_rs1_edges_0x7fffffff:
   divu x11, x14, x15 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cp_rs1_edges_0x7fffffff, M_divu_cg_cp_rs1_edges_0x7fffffff_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cp_rs1_edges_0x7fffffff, M_divu_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cp_rs2_edges
@@ -606,3302 +610,3303 @@ M_divu_cg_cp_rs1_edges_0x7fffffff:
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000000000
 M_divu_cg_cp_rs2_edges_0x0:
   divu x15, x14, x1 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs2_edges_0x0, M_divu_cg_cp_rs2_edges_0x0_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cp_rs2_edges_0x0, M_divu_cg_cp_rs2_edges_0x0_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xba58b469fef58d78
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000000000001
 M_divu_cg_cp_rs2_edges_0x1:
   divu x13, x14, x12 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cp_rs2_edges_0x1, M_divu_cg_cp_rs2_edges_0x1_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cp_rs2_edges_0x1, M_divu_cg_cp_rs2_edges_0x1_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x3462b1f7a20ac239
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x3462b1f7a20ac239
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000000000002
 M_divu_cg_cp_rs2_edges_0x2:
-  divu x11, x2, x12 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cp_rs2_edges_0x2, M_divu_cg_cp_rs2_edges_0x2_str)
+  divu x11, x3, x12 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cp_rs2_edges_0x2, M_divu_cg_cp_rs2_edges_0x2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xfc829394f2c0d4c4
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x8000000000000000
 M_divu_cg_cp_rs2_edges_0x8000000000000000:
   divu x15, x11, x9 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs2_edges_0x8000000000000000, M_divu_cg_cp_rs2_edges_0x8000000000000000_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cp_rs2_edges_0x8000000000000000, M_divu_cg_cp_rs2_edges_0x8000000000000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xb583dc0d1dc0bf07
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x8000000000000001
 M_divu_cg_cp_rs2_edges_0x8000000000000001:
-  divu x1, x15, x8 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cp_rs2_edges_0x8000000000000001, M_divu_cg_cp_rs2_edges_0x8000000000000001_str)
+  divu x1, x15, x5 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cp_rs2_edges_0x8000000000000001, M_divu_cg_cp_rs2_edges_0x8000000000000001_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xbeffeac2f5440078
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x7fffffffffffffff
 M_divu_cg_cp_rs2_edges_0x7fffffffffffffff:
   divu x10, x14, x9 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cp_rs2_edges_0x7fffffffffffffff, M_divu_cg_cp_rs2_edges_0x7fffffffffffffff_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cp_rs2_edges_0x7fffffffffffffff, M_divu_cg_cp_rs2_edges_0x7fffffffffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x8d6ada1ccc42c17b
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x7ffffffffffffffe
 M_divu_cg_cp_rs2_edges_0x7ffffffffffffffe:
-  divu x7, x11, x12 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cp_rs2_edges_0x7ffffffffffffffe, M_divu_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
+  divu x4, x11, x12 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cp_rs2_edges_0x7ffffffffffffffe, M_divu_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x3c5ca69fc9e7595a
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x3c5ca69fc9e7595a
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xffffffffffffffff
 M_divu_cg_cp_rs2_edges_0xffffffffffffffff:
-  divu x15, x8, x14 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs2_edges_0xffffffffffffffff, M_divu_cg_cp_rs2_edges_0xffffffffffffffff_str)
+  divu x15, x5, x14 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cp_rs2_edges_0xffffffffffffffff, M_divu_cg_cp_rs2_edges_0xffffffffffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xe5bfe9f357d6f234
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xfffffffffffffffe
 M_divu_cg_cp_rs2_edges_0xfffffffffffffffe:
-  divu x15, x1, x2 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cp_rs2_edges_0xfffffffffffffffe, M_divu_cg_cp_rs2_edges_0xfffffffffffffffe_str)
+  divu x15, x1, x3 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cp_rs2_edges_0xfffffffffffffffe, M_divu_cg_cp_rs2_edges_0xfffffffffffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x937267a80597fca7
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x937267a80597fca7
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x5bbc887763ae86f2
 M_divu_cg_cp_rs2_edges_0x5bbc887763ae86f2:
-  divu x1, x8, x15 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cp_rs2_edges_0x5bbc887763ae86f2, M_divu_cg_cp_rs2_edges_0x5bbc887763ae86f2_str)
+  divu x1, x5, x15 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cp_rs2_edges_0x5bbc887763ae86f2, M_divu_cg_cp_rs2_edges_0x5bbc887763ae86f2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xb7fa33cd18acaafe
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
-  divu x2, x10, x8 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, M_divu_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
+  divu x3, x10, x5 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, M_divu_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x2e5f297de423a0f3
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x2e5f297de423a0f3
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x5555555555555555
 M_divu_cg_cp_rs2_edges_0x5555555555555555:
-  divu x9, x7, x2 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cp_rs2_edges_0x5555555555555555, M_divu_cg_cp_rs2_edges_0x5555555555555555_str)
+  divu x9, x4, x3 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cp_rs2_edges_0x5555555555555555, M_divu_cg_cp_rs2_edges_0x5555555555555555_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xe00c931ef511e713
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0xe00c931ef511e713
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x00000000ffffffff
 M_divu_cg_cp_rs2_edges_0xffffffff:
-  divu x12, x2, x11 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cp_rs2_edges_0xffffffff, M_divu_cg_cp_rs2_edges_0xffffffff_str)
+  divu x12, x3, x11 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cp_rs2_edges_0xffffffff, M_divu_cg_cp_rs2_edges_0xffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x39ee1c635a56d1fe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x00000000fffffffe
 M_divu_cg_cp_rs2_edges_0xfffffffe:
   divu x12, x13, x14 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cp_rs2_edges_0xfffffffe, M_divu_cg_cp_rs2_edges_0xfffffffe_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cp_rs2_edges_0xfffffffe, M_divu_cg_cp_rs2_edges_0xfffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xc1d10010c8f7d405
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000100000000
 M_divu_cg_cp_rs2_edges_0x100000000:
-  divu x7, x14, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cp_rs2_edges_0x100000000, M_divu_cg_cp_rs2_edges_0x100000000_str)
+  divu x4, x14, x3 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cp_rs2_edges_0x100000000, M_divu_cg_cp_rs2_edges_0x100000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x3696fb76c64eb519
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000100000001
 M_divu_cg_cp_rs2_edges_0x100000001:
-  divu x12, x11, x8 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cp_rs2_edges_0x100000001, M_divu_cg_cp_rs2_edges_0x100000001_str)
+  divu x12, x11, x5 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cp_rs2_edges_0x100000001, M_divu_cg_cp_rs2_edges_0x100000001_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xa04d19e5d1f7fa92
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000080000000
 M_divu_cg_cp_rs2_edges_0x80000000:
   divu x10, x9, x14 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cp_rs2_edges_0x80000000, M_divu_cg_cp_rs2_edges_0x80000000_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cp_rs2_edges_0x80000000, M_divu_cg_cp_rs2_edges_0x80000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x6fde60a8477e1f4b
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x000000007fffffff
 M_divu_cg_cp_rs2_edges_0x7fffffff:
   divu x10, x1, x14 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cp_rs2_edges_0x7fffffff, M_divu_cg_cp_rs2_edges_0x7fffffff_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cp_rs2_edges_0x7fffffff, M_divu_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cr_rs1_rs2_edges
 /////////////////////////////////
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0:
-  divu x14, x8, x10 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0_str)
+  divu x14, x5, x10 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1:
   divu x9, x14, x13 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2:
-  divu x8, x1, x11 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2_str)
+  divu x5, x1, x11 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000000:
-  divu x8, x1, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000000_str)
+  divu x5, x1, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000001:
-  divu x2, x11, x9 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000001_str)
+  divu x3, x11, x9 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffffffffffff:
-  divu x2, x15, x10 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffffffffffff_str)
+  divu x3, x15, x10 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffffffffffe:
-  divu x13, x11, x2 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffffffffffe_str)
+  divu x13, x11, x3 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffffffffffff:
-  divu x14, x2, x9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffffffffffff_str)
+  divu x14, x3, x9 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffffffffffe:
-  divu x13, x9, x2 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffffffffffe_str)
+  divu x13, x9, x3 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc887763ae86f2:
-  divu x12, x2, x9 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc887763ae86f2_str)
+  divu x12, x3, x9 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x9, x13, x11 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5555555555555555:
-  divu x8, x9, x13 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5555555555555555_str)
+  divu x5, x9, x13 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff:
-  divu x11, x7, x8 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff_str)
+  divu x11, x4, x5 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe:
-  divu x15, x12, x7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe_str)
+  divu x15, x12, x4 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000000:
   divu x11, x9, x14 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000000_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001:
-  divu x11, x14, x7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001_str)
+  divu x11, x14, x4 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000:
-  divu x11, x13, x7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000_str)
+  divu x11, x13, x4 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000000 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff:
-  divu x10, x1, x2 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff_str)
+  divu x10, x1, x3 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0:
   divu x1, x15, x13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1:
-  divu x12, x2, x13 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str)
+  divu x12, x3, x13 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2:
-  divu x13, x2, x11 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str)
+  divu x13, x3, x11 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000:
-  divu x14, x8, x12 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000_str)
+  divu x14, x5, x12 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001:
   divu x11, x15, x10 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff:
-  divu x8, x14, x1 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff_str)
+  divu x5, x14, x1 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe:
   divu x10, x14, x13 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff:
   divu x13, x15, x14 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe:
-  divu x7, x9, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe_str)
+  divu x4, x9, x3 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2:
-  divu x2, x12, x14 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2_str)
+  divu x3, x12, x14 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x15, x12, x9 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555:
   divu x12, x15, x13 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff:
-  divu x7, x10, x11 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str)
+  divu x4, x10, x11 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe:
   divu x12, x1, x15 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000:
   divu x15, x11, x9 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001:
   divu x10, x13, x1 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000:
   divu x14, x12, x11 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000001 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff:
-  divu x10, x15, x8 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff_str)
+  divu x10, x15, x5 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0:
-  divu x11, x1, x8 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str)
+  divu x11, x1, x5 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1:
   divu x9, x11, x13 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2:
   divu x9, x14, x15 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000:
-  divu x7, x8, x10 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000_str)
+  divu x4, x5, x10 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001:
   divu x10, x14, x15 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff:
   divu x1, x13, x11 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe:
   divu x1, x12, x9 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff:
-  divu x12, x15, x8 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff_str)
+  divu x12, x15, x5 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe:
-  divu x11, x10, x7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe_str)
+  divu x11, x10, x4 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2:
-  divu x13, x15, x2 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2_str)
+  divu x13, x15, x3 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x1, x12, x11 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555:
-  divu x8, x13, x2 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555_str)
+  divu x5, x13, x3 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff:
-  divu x2, x11, x9 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str)
+  divu x3, x11, x9 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe:
   divu x10, x14, x13 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000:
-  divu x1, x8, x2 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000_str)
+  divu x1, x5, x3 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001:
-  divu x8, x7, x13 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001_str)
+  divu x5, x4, x13 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000:
-  divu x7, x10, x9 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000_str)
+  divu x4, x10, x9 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000000000002 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff:
-  divu x2, x15, x1 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff_str)
+  divu x3, x15, x1 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0:
-  divu x8, x13, x10 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0_str)
+  divu x5, x13, x10 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1:
-  divu x11, x12, x7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1_str)
+  divu x11, x12, x4 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2:
-  divu x12, x2, x1 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2_str)
+  divu x12, x3, x1 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000:
-  divu x15, x9, x7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000_str)
+  divu x15, x9, x4 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001:
-  divu x7, x11, x1 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001_str)
+  divu x4, x11, x1 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff:
-  divu x1, x2, x10 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff_str)
+  divu x1, x3, x10 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe:
-  divu x8, x15, x10 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe_str)
+  divu x5, x15, x10 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff:
-  divu x1, x8, x7 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff_str)
+  divu x1, x5, x4 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe:
   divu x1, x11, x15 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2:
-  divu x14, x7, x1 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2_str)
+  divu x14, x4, x1 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x10, x12, x1 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555:
   divu x11, x13, x14 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff:
-  divu x8, x7, x12 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff_str)
+  divu x5, x4, x12 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe:
   divu x13, x10, x15 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000:
-  divu x7, x8, x13 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000_str)
+  divu x4, x5, x13 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001:
-  divu x13, x2, x9 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001_str)
+  divu x13, x3, x9 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000:
   divu x1, x10, x13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000000 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff:
   divu x14, x1, x12 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000000_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0:
-  divu x8, x1, x14 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0_str)
+  divu x5, x1, x14 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1:
-  divu x15, x12, x2 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1_str)
+  divu x15, x12, x3 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2:
-  divu x7, x15, x9 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2_str)
+  divu x4, x15, x9 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000:
   divu x11, x14, x9 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001:
   divu x10, x12, x1 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff:
-  divu x11, x8, x10 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff_str)
+  divu x11, x5, x10 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe:
-  divu x1, x15, x7 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe_str)
+  divu x1, x15, x4 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff:
   divu x14, x1, x10 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe:
-  divu x12, x7, x2 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe_str)
+  divu x12, x4, x3 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2:
-  divu x14, x1, x8 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2_str)
+  divu x14, x1, x5 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa:
-  divu x15, x8, x1 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  divu x15, x5, x1 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555:
-  divu x8, x2, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555_str)
+  divu x5, x3, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff:
   divu x9, x11, x10 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe:
-  divu x11, x2, x7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe_str)
+  divu x11, x3, x4 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000:
   divu x14, x15, x11 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001:
   divu x1, x10, x15 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000:
-  divu x2, x1, x11 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000_str)
+  divu x3, x1, x11 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x8000000000000001 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff:
-  divu x8, x14, x1 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff_str)
+  divu x5, x14, x1 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x8000000000000001_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0:
   divu x14, x15, x1 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1:
   divu x11, x10, x13 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2:
-  divu x8, x2, x12 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2_str)
+  divu x5, x3, x12 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000:
-  divu x7, x12, x10 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000_str)
+  divu x4, x12, x10 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001:
-  divu x7, x11, x14 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001_str)
+  divu x4, x11, x14 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff:
   divu x11, x15, x9 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe:
-  divu x12, x11, x2 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe_str)
+  divu x12, x11, x3 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff:
-  divu x11, x1, x7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff_str)
+  divu x11, x1, x4 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe:
-  divu x1, x2, x11 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe_str)
+  divu x1, x3, x11 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2:
-  divu x14, x8, x15 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
+  divu x14, x5, x15 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x1, x11, x9 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555:
   divu x11, x14, x12 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff:
-  divu x10, x11, x7 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff_str)
+  divu x10, x11, x4 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe:
-  divu x1, x7, x13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe_str)
+  divu x1, x4, x13 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000:
   divu x12, x15, x9 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001:
-  divu x7, x9, x11 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001_str)
+  divu x4, x9, x11 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x0000000080000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000:
-  divu x10, x8, x13 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000_str)
+  divu x10, x5, x13 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffffffffffff rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff:
-  divu x9, x1, x7 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff_str)
+  divu x9, x1, x4 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffffffffffff_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0:
   divu x11, x12, x14 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1:
   divu x11, x9, x15 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2:
   divu x14, x12, x9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000:
-  divu x7, x12, x9 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000_str)
+  divu x4, x12, x9 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001:
   divu x14, x11, x9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff:
   divu x1, x15, x13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe:
-  divu x14, x7, x15 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
+  divu x14, x4, x15 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff:
-  divu x13, x15, x7 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff_str)
+  divu x13, x15, x4 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe:
-  divu x1, x8, x7 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe_str)
+  divu x1, x5, x4 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2:
-  divu x7, x13, x8 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2_str)
+  divu x4, x13, x5 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x9, x11, x12 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555:
   divu x14, x13, x12 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff:
   divu x15, x10, x1 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe:
-  divu x7, x9, x10 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe_str)
+  divu x4, x9, x10 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000:
   divu x15, x10, x12 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001:
-  divu x7, x8, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001_str)
+  divu x4, x5, x3 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000:
   divu x14, x11, x9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffffffffffe rs2 = 0x000000007fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff:
-  divu x15, x8, x12 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff_str)
+  divu x15, x5, x12 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffffffffffe_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0:
-  divu x14, x7, x15 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0_str)
+  divu x14, x4, x15 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1:
   divu x11, x14, x12 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2:
-  divu x7, x11, x8 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2_str)
+  divu x4, x11, x5 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000:
-  divu x14, x7, x2 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000_str)
+  divu x14, x4, x3 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001:
-  divu x11, x9, x8 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001_str)
+  divu x11, x9, x5 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff:
-  divu x10, x7, x9 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff_str)
+  divu x10, x4, x9 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe:
   divu x14, x10, x1 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff:
-  divu x2, x7, x12 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff_str)
+  divu x3, x4, x12 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe:
-  divu x12, x11, x2 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe_str)
+  divu x12, x11, x3 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2:
   divu x11, x1, x13 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x13, x11, x15 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555:
-  divu x12, x10, x2 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555_str)
+  divu x12, x10, x3 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff:
   divu x1, x15, x10 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe:
-  divu x12, x8, x15 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe_str)
+  divu x12, x5, x15 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000:
-  divu x7, x11, x8 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000_str)
+  divu x4, x11, x5 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001:
-  divu x14, x7, x15 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001_str)
+  divu x14, x4, x15 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000:
-  divu x7, x1, x8 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000_str)
+  divu x4, x1, x5 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffffffffffff rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff:
   divu x1, x11, x9 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffffffffffff_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0:
-  divu x14, x2, x10 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0_str)
+  divu x14, x3, x10 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1:
   divu x9, x11, x15 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2:
-  divu x14, x9, x7 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2_str)
+  divu x14, x9, x4 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000:
   divu x13, x11, x14 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001:
-  divu x2, x10, x14 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001_str)
+  divu x3, x10, x14 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff:
-  divu x2, x1, x14 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff_str)
+  divu x3, x1, x14 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe:
   divu x1, x11, x12 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff:
   divu x13, x14, x9 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe:
-  divu x10, x7, x9 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe_str)
+  divu x10, x4, x9 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2:
-  divu x7, x14, x8 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2_str)
+  divu x4, x14, x5 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x9, x12, x14 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555:
-  divu x10, x7, x11 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555_str)
+  divu x10, x4, x11 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff:
-  divu x2, x13, x14 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff_str)
+  divu x3, x13, x14 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe:
   divu x9, x1, x12 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000:
-  divu x7, x15, x10 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000_str)
+  divu x4, x15, x10 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001:
   divu x1, x15, x12 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000:
   divu x13, x10, x15 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffffffffffe rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff:
   divu x14, x12, x9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffffffffffe_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0:
   divu x14, x13, x1 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1:
-  divu x14, x2, x9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1_str)
+  divu x14, x3, x9 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2:
-  divu x2, x15, x9 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2_str)
+  divu x3, x15, x9 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000:
-  divu x7, x1, x15 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000_str)
+  divu x4, x1, x15 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001:
-  divu x8, x2, x11 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001_str)
+  divu x5, x3, x11 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff:
   divu x9, x11, x14 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe:
   divu x1, x14, x9 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff:
-  divu x12, x7, x14 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff_str)
+  divu x12, x4, x14 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe:
-  divu x14, x8, x7 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe_str)
+  divu x14, x5, x4 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2:
-  divu x9, x15, x2 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2_str)
+  divu x9, x15, x3 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x13, x10, x14 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555:
-  divu x9, x10, x7 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555_str)
+  divu x9, x10, x4 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff:
-  divu x13, x7, x10 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff_str)
+  divu x13, x4, x10 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe:
   divu x12, x11, x9 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000:
   divu x11, x9, x15 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001:
-  divu x12, x8, x11 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001_str)
+  divu x12, x5, x11 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000:
-  divu x2, x9, x1 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000_str)
+  divu x3, x9, x1 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc887763ae86f2 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff:
-  divu x13, x11, x8 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff_str)
+  divu x13, x11, x5 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5bbc887763ae86f2_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0:
-  divu x1, x8, x11 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0_str)
+  divu x1, x5, x11 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1:
   divu x1, x9, x15 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2:
-  divu x2, x12, x1 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2_str)
+  divu x3, x12, x1 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000:
   divu x15, x10, x12 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001:
   divu x14, x13, x15 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff:
   divu x10, x11, x14 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe:
-  divu x9, x13, x2 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe_str)
+  divu x9, x13, x3 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff:
-  divu x13, x8, x9 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff_str)
+  divu x13, x5, x9 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe:
   divu x1, x11, x12 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2:
   divu x13, x15, x9 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa:
-  divu x14, x10, x7 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  divu x14, x10, x4 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555:
   divu x13, x9, x15 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff:
-  divu x12, x10, x7 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff_str)
+  divu x12, x10, x4 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe:
-  divu x8, x2, x12 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe_str)
+  divu x5, x3, x12 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000:
-  divu x8, x14, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000_str)
+  divu x5, x14, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001:
-  divu x7, x9, x15 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001_str)
+  divu x4, x9, x15 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000:
-  divu x8, x1, x2 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000_str)
+  divu x5, x1, x3 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaaaaaaaaaa rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff:
-  divu x2, x9, x10 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff_str)
+  divu x3, x9, x10 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaaaaaaaaaa_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0:
-  divu x15, x7, x11 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0_str)
+  divu x15, x4, x11 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1:
-  divu x9, x8, x10 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1_str)
+  divu x9, x5, x10 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2:
   divu x9, x15, x12 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000:
   divu x14, x11, x9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001:
-  divu x9, x12, x8 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001_str)
+  divu x9, x12, x5 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff:
-  divu x8, x7, x14 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff_str)
+  divu x5, x4, x14 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe:
-  divu x13, x12, x7 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe_str)
+  divu x13, x12, x4 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff:
   divu x12, x14, x1 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe:
-  divu x8, x15, x1 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe_str)
+  divu x5, x15, x1 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2:
-  divu x7, x12, x9 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2_str)
+  divu x4, x12, x9 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa:
-  divu x13, x15, x8 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  divu x13, x15, x5 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555:
-  divu x15, x13, x7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555_str)
+  divu x15, x13, x4 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff:
-  divu x2, x13, x11 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff_str)
+  divu x3, x13, x11 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe:
-  divu x7, x8, x9 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe_str)
+  divu x4, x5, x9 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000:
-  divu x1, x15, x2 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000_str)
+  divu x1, x15, x3 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001:
   divu x1, x14, x11 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000:
   divu x9, x1, x13 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5555555555555555 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff:
   divu x11, x12, x13 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x5555555555555555_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0:
-  divu x9, x11, x8 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str)
+  divu x9, x11, x5 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1:
-  divu x7, x15, x1 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str)
+  divu x4, x15, x1 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2:
-  divu x11, x2, x12 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str)
+  divu x11, x3, x12 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000:
   divu x15, x1, x9 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001:
   divu x11, x14, x10 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001_str)
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff:
-  divu x14, x15, x2 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff_str)
+  divu x14, x15, x3 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe:
-  divu x9, x8, x11 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe_str)
+  divu x9, x5, x11 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff:
-  divu x14, x7, x10 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff_str)
+  divu x14, x4, x10 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe:
-  divu x10, x2, x1 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe_str)
+  divu x10, x3, x1 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2:
-  divu x14, x1, x7 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2_str)
+  divu x14, x1, x4 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa:
-  divu x2, x14, x12 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  divu x3, x14, x12 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555:
   divu x12, x15, x14 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff:
   divu x15, x13, x14 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe:
-  divu x8, x12, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str)
+  divu x5, x12, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000:
   divu x12, x13, x1 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001:
-  divu x9, x7, x15 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001_str)
+  divu x9, x4, x15 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000:
   divu x13, x1, x10 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000ffffffff rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff:
   divu x13, x1, x10 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0:
   divu x9, x13, x14 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1:
-  divu x12, x7, x15 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str)
+  divu x12, x4, x15 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2:
-  divu x1, x7, x13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str)
+  divu x1, x4, x13 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000:
-  divu x8, x13, x14 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000_str)
+  divu x5, x13, x14 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001:
-  divu x14, x10, x7 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001_str)
+  divu x14, x10, x4 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff:
   divu x9, x14, x10 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe:
-  divu x13, x2, x7 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe_str)
+  divu x13, x3, x4 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff:
-  divu x7, x1, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff_str)
+  divu x4, x1, x3 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe:
-  divu x15, x8, x7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe_str)
+  divu x15, x5, x4 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2:
-  divu x1, x2, x14 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2_str)
+  divu x1, x3, x14 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa:
-  divu x12, x8, x9 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  divu x12, x5, x9 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555:
-  divu x11, x2, x14 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555_str)
+  divu x11, x3, x14 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff:
   divu x10, x1, x14 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe:
-  divu x12, x2, x1 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
+  divu x12, x3, x1 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000:
   divu x10, x1, x11 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001:
-  divu x10, x15, x8 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001_str)
+  divu x10, x15, x5 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x0000000080000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000:
-  divu x7, x8, x1 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000_str)
+  divu x4, x5, x1 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000fffffffe rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff:
-  divu x8, x10, x1 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff_str)
+  divu x5, x10, x1 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0:
   divu x15, x10, x9 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1:
-  divu x8, x2, x1 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1_str)
+  divu x5, x3, x1 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2:
-  divu x14, x13, x2 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2_str)
+  divu x14, x13, x3 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000:
   divu x15, x10, x14 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001:
-  divu x9, x15, x2 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001_str)
+  divu x9, x15, x3 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff:
-  divu x1, x2, x7 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff_str)
+  divu x1, x3, x4 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe:
-  divu x8, x11, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe_str)
+  divu x5, x11, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff:
-  divu x7, x13, x11 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff_str)
+  divu x4, x13, x11 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe:
-  divu x7, x15, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe_str)
+  divu x4, x15, x3 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2:
-  divu x12, x7, x13 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2_str)
+  divu x12, x4, x13 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa:
-  divu x2, x10, x8 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  divu x3, x10, x5 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555:
-  divu x7, x2, x10 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555_str)
+  divu x4, x3, x10 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff:
-  divu x8, x15, x13 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff_str)
+  divu x5, x15, x13 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe:
-  divu x8, x7, x14 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe_str)
+  divu x5, x4, x14 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000:
   divu x1, x12, x9 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001:
-  divu x12, x9, x2 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001_str)
+  divu x12, x9, x3 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000:
   divu x9, x1, x14 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000000 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff:
-  divu x10, x14, x8 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff_str)
+  divu x10, x14, x5 # perform operation
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000000_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0:
   divu x15, x11, x12 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1:
-  divu x8, x2, x11 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1_str)
+  divu x5, x3, x11 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2:
-  divu x1, x12, x2 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2_str)
+  divu x1, x12, x3 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000:
-  divu x8, x12, x15 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000_str)
+  divu x5, x12, x15 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001:
   divu x10, x9, x14 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff:
-  divu x7, x12, x8 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff_str)
+  divu x4, x12, x5 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe:
-  divu x11, x2, x8 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe_str)
+  divu x11, x3, x5 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff:
-  divu x8, x11, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff_str)
+  divu x5, x11, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe:
   divu x9, x14, x15 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2:
-  divu x2, x1, x15 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2_str)
+  divu x3, x1, x15 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa:
-  divu x13, x7, x8 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  divu x13, x4, x5 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555:
-  divu x13, x2, x8 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555_str)
+  divu x13, x3, x5 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff:
-  divu x8, x2, x7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff_str)
+  divu x5, x3, x4 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe:
   divu x15, x1, x10 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000:
-  divu x12, x14, x2 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000_str)
+  divu x12, x14, x3 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001:
-  divu x13, x2, x15 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001_str)
+  divu x13, x3, x15 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x0000000080000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000:
-  divu x15, x2, x7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000_str)
+  divu x15, x3, x4 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000100000001 rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff:
   divu x9, x14, x10 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x100000001_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0:
-  divu x12, x7, x11 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0_str)
+  divu x12, x4, x11 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1:
-  divu x1, x10, x8 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1_str)
+  divu x1, x10, x5 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2:
-  divu x13, x10, x7 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2_str)
+  divu x13, x10, x4 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000:
-  divu x8, x15, x13 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000_str)
+  divu x5, x15, x13 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001:
-  divu x13, x1, x2 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001_str)
+  divu x13, x1, x3 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff:
   divu x14, x11, x10 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe:
-  divu x13, x1, x8 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe_str)
+  divu x13, x1, x5 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff:
   divu x14, x11, x13 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe:
-  divu x1, x14, x2 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe_str)
+  divu x1, x14, x3 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2:
   divu x15, x11, x12 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x13, x14, x9 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555:
-  divu x12, x2, x1 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555_str)
+  divu x12, x3, x1 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff:
   divu x12, x15, x14 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe:
-  divu x7, x1, x8 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe_str)
+  divu x4, x1, x5 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000:
-  divu x8, x13, x9 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000_str)
+  divu x5, x13, x9 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000080000000
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001:
-  divu x9, x7, x14 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001_str)
+  divu x9, x4, x14 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000:
-  divu x13, x10, x8 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000_str)
+  divu x13, x10, x5 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0000000080000000 rs2 = 0x000000007fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x0000000080000000
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff:
-  divu x9, x8, x2 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff_str)
+  divu x9, x5, x3 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x0000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0:
   divu x1, x10, x13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x0000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1:
   divu x14, x12, x15 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000000000002
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2:
-  divu x8, x1, x2 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2_str)
+  divu x5, x1, x3 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x8000000000000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000:
   divu x13, x15, x11 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x8000000000000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001:
-  divu x15, x11, x2 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001_str)
+  divu x15, x11, x3 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x8000000000000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x7fffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff:
-  divu x8, x7, x13 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff_str)
+  divu x5, x4, x13 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x7ffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe:
   divu x10, x9, x13 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x10, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xffffffffffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff:
   divu x15, x12, x14 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffffffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0xfffffffffffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe:
-  divu x14, x15, x8 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe_str)
+  divu x14, x15, x5 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffffffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x5bbc887763ae86f2
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2:
-  divu x2, x13, x8 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2_str)
+  divu x3, x13, x5 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc887763ae86f2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0xaaaaaaaaaaaaaaaa
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa:
   divu x9, x11, x12 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x5555555555555555
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555:
-  divu x8, x7, x2 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555_str)
+  divu x5, x4, x3 # perform operation
+  # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x5, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5555555555555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x00000000ffffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff:
-  divu x11, x14, x8 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff_str)
+  divu x11, x14, x5 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x11, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x000000007fffffff
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x00000000fffffffe
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe:
-  divu x7, x2, x15 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe_str)
+  divu x4, x3, x15 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x0000000100000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000:
   divu x1, x11, x14 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x0000000100000001
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001:
-  divu x7, x9, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001_str)
+  divu x4, x9, x3 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x100000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x000000007fffffff
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs2: x7 = 0x0000000080000000
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000080000000
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000:
-  divu x15, x9, x7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000_str)
+  divu x15, x9, x4 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x000000007fffffff rs2 = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x000000007fffffff
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0x000000007fffffff
 M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff:
-  divu x7, x15, x9 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff_str)
+  divu x4, x15, x9 # perform operation
+  # Check if x4 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x4, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff, M_divu_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2
 /////////////////////////////////
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs1: x0 = 0x4cfc409c01b80cf0
-  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs2: x0 = 0xb6f2a39e3f2797bc
+  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs1: x0 = 0x0000000219a7c4c4
+  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs2: x0 = 0x0000000000025ec3
 M_divu_cg_cmp_rs1_rs2_b0:
-  divu x2, x0, x0 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cmp_rs1_rs2_b0, M_divu_cg_cmp_rs1_rs2_b0_str)
+  divu x3, x0, x0 # perform operation
+  # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x3, M_divu_cg_cmp_rs1_rs2_b0, M_divu_cg_cmp_rs1_rs2_b0_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x8dc043ce19a7c4c4
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0xa4cb1dc4c275760a
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x0000000000077a51
+  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x0000000000007547
 M_divu_cg_cmp_rs1_rs2_b1:
-  divu x9, x1, x1 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cmp_rs1_rs2_b1, M_divu_cg_cmp_rs1_rs2_b1_str)
+  divu x15, x1, x1 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cmp_rs1_rs2_b1, M_divu_cg_cmp_rs1_rs2_b1_str)
 
+  mv x9, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xa4aa9fe202d41fb5
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x48b2a3a0c321d409
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x00000001a95ca76d
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x00000000001ce637
 M_divu_cg_cmp_rs1_rs2_b2:
-  divu x7, x2, x2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, M_divu_cg_cmp_rs1_rs2_b2, M_divu_cg_cmp_rs1_rs2_b2_str)
+  divu x5, x2, x2 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, M_divu_cg_cmp_rs1_rs2_b2, M_divu_cg_cmp_rs1_rs2_b2_str)
 
-  mv x10, x3 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0xcb1981b2e45403b4
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0xed3205c4c953d412
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x000000000324a9fb
+  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x00000000000004b5
 M_divu_cg_cmp_rs1_rs2_b3:
-  divu x9, x3, x3 # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, M_divu_cg_cmp_rs1_rs2_b3, M_divu_cg_cmp_rs1_rs2_b3_str)
+  divu x14, x3, x3 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, M_divu_cg_cmp_rs1_rs2_b3, M_divu_cg_cmp_rs1_rs2_b3_str)
 
-  mv x13, x4 # switch temp register to avoid conflict with test
-  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0a988edc307cb9d2
-  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x2e17ab0346c4afeb
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x0000000000000007
 M_divu_cg_cmp_rs1_rs2_b4:
   divu x15, x4, x4 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x15, M_divu_cg_cmp_rs1_rs2_b4, M_divu_cg_cmp_rs1_rs2_b4_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, M_divu_cg_cmp_rs1_rs2_b4, M_divu_cg_cmp_rs1_rs2_b4_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x3bedbce79ed47fc5
-  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x9fda85429f3c4876
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x0eaa081b47e9dfb4
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x003c99a3b1f84b6d
 M_divu_cg_cmp_rs1_rs2_b5:
-  divu x4, x5, x5 # perform operation
-  # Check if x4 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x4, M_divu_cg_cmp_rs1_rs2_b5, M_divu_cg_cmp_rs1_rs2_b5_str)
+  divu x3, x5, x5 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, M_divu_cg_cmp_rs1_rs2_b5, M_divu_cg_cmp_rs1_rs2_b5_str)
 
-  mv x11, x6 # switch data pointer register to avoid conflict with test
+  mv x1, x6 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0x8007fe520e3a7e65
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0x9f6c534eb7171673
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x00001940b8e3bdfd
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x00000000007b99fa
 M_divu_cg_cmp_rs1_rs2_b6:
-  divu x12, x6, x6 # perform operation
-  # Check if x12 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x12, M_divu_cg_cmp_rs1_rs2_b6, M_divu_cg_cmp_rs1_rs2_b6_str)
+  divu x5, x6, x6 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, M_divu_cg_cmp_rs1_rs2_b6, M_divu_cg_cmp_rs1_rs2_b6_str)
 
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0x7dd643f6cc724c16
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs2: x7 = 0x6881e5908578e940
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs1: x7 = 0x043f2d52f77889cb
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs2: x7 = 0x00000000000023ce
 M_divu_cg_cmp_rs1_rs2_b7:
-  divu x5, x7, x7 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x5, M_divu_cg_cmp_rs1_rs2_b7, M_divu_cg_cmp_rs1_rs2_b7_str)
+  divu x0, x7, x7 # perform operation
+  # Check if x0 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x0, M_divu_cg_cmp_rs1_rs2_b7, M_divu_cg_cmp_rs1_rs2_b7_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0xb22f8dae44147e76
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x803bcaf94c70636b
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x000000876aa37ace
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x0000000037be22ad
 M_divu_cg_cmp_rs1_rs2_b8:
-  divu x12, x8, x8 # perform operation
-  # Check if x12 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x12, M_divu_cg_cmp_rs1_rs2_b8, M_divu_cg_cmp_rs1_rs2_b8_str)
+  divu x4, x8, x8 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x4, M_divu_cg_cmp_rs1_rs2_b8, M_divu_cg_cmp_rs1_rs2_b8_str)
 
+  mv x11, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x25b1e4416aa2506f
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0xe2a1845e58e56f8e
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x00000000e5670526
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x000000000000033a
 M_divu_cg_cmp_rs1_rs2_b9:
-  divu x2, x9, x9 # perform operation
-  # Check if x2 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x10, x14, x13, x2, M_divu_cg_cmp_rs1_rs2_b9, M_divu_cg_cmp_rs1_rs2_b9_str)
+  divu x8, x9, x9 # perform operation
+  # Check if x8 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x8, M_divu_cg_cmp_rs1_rs2_b9, M_divu_cg_cmp_rs1_rs2_b9_str)
 
-  mv x1, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0xe648c1c2a5a0d81b
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x06010971d38bdcfc
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x000000000000000a
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x0000000000000014
 M_divu_cg_cmp_rs1_rs2_b10:
   divu x12, x10, x10 # perform operation
-  # Check if x12 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x12, M_divu_cg_cmp_rs1_rs2_b10, M_divu_cg_cmp_rs1_rs2_b10_str)
+  # Check if x12 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x12, M_divu_cg_cmp_rs1_rs2_b10, M_divu_cg_cmp_rs1_rs2_b10_str)
 
-  mv x6, x11 # switch data pointer register to avoid conflict with test
+  mv x12, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x0200db9795bd1561
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x482c4ce60809d8ab
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x0000000000959bf2
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x0000000000000baf
 M_divu_cg_cmp_rs1_rs2_b11:
-  divu x12, x11, x11 # perform operation
-  # Check if x12 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x12, M_divu_cg_cmp_rs1_rs2_b11, M_divu_cg_cmp_rs1_rs2_b11_str)
+  divu x10, x11, x11 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, M_divu_cg_cmp_rs1_rs2_b11, M_divu_cg_cmp_rs1_rs2_b11_str)
 
+  mv x2, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x31f84b6dd641ebac
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x6d7d9be999734a76
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x000143a44234a712
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x0000000000000003
 M_divu_cg_cmp_rs1_rs2_b12:
-  divu x8, x12, x12 # perform operation
-  # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x8, M_divu_cg_cmp_rs1_rs2_b12, M_divu_cg_cmp_rs1_rs2_b12_str)
+  divu x7, x12, x12 # perform operation
+  # Check if x7 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x7, M_divu_cg_cmp_rs1_rs2_b12, M_divu_cg_cmp_rs1_rs2_b12_str)
 
   mv x7, x13 # switch temp register to avoid conflict with test
   mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xbc48df3115cf6709
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0x5a76491985344e53
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x000000000000000c
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0x0000000000000007
 M_divu_cg_cmp_rs1_rs2_b13:
-  divu x5, x13, x13 # perform operation
-  # Check if x5 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x5, M_divu_cg_cmp_rs1_rs2_b13, M_divu_cg_cmp_rs1_rs2_b13_str)
+  divu x12, x13, x13 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cmp_rs1_rs2_b13, M_divu_cg_cmp_rs1_rs2_b13_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x38e3bdfd59a8d037
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0x4bfecbc3eaea3732
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x0000000000000130
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x0000000000000015
 M_divu_cg_cmp_rs1_rs2_b14:
-  divu x9, x14, x14 # perform operation
-  # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x9, M_divu_cg_cmp_rs1_rs2_b14, M_divu_cg_cmp_rs1_rs2_b14_str)
+  divu x12, x14, x14 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x12, M_divu_cg_cmp_rs1_rs2_b14, M_divu_cg_cmp_rs1_rs2_b14_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xebba53fe4b1be736
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0xa9431d4d23598939
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x1750306b536b3871
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x0000000000008e60
 M_divu_cg_cmp_rs1_rs2_b15:
-  divu x0, x15, x15 # perform operation
-  # Check if x0 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x0, M_divu_cg_cmp_rs1_rs2_b15, M_divu_cg_cmp_rs1_rs2_b15_str)
+  divu x9, x15, x15 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x9, M_divu_cg_cmp_rs1_rs2_b15, M_divu_cg_cmp_rs1_rs2_b15_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs1: x0 = 0x06fe407b7426b4f4
-  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x3cff34b063ba16a0
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0x000000000034f89c
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs2: x5 = 0x000000000000035c
 M_divu_cg_cmp_rd_rs1_b0:
-  divu x0, x0, x4 # perform operation
-  # Check if x0 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x0, M_divu_cg_cmp_rd_rs1_b0, M_divu_cg_cmp_rd_rs1_b0_str)
+  divu x0, x0, x5 # perform operation
+  # Check if x0 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x0, M_divu_cg_cmp_rd_rs1_b0, M_divu_cg_cmp_rd_rs1_b0_str)
 
-  mv x12, x1 # switch signature pointer register to avoid conflict with test
+  mv x3, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xcbea999ee6883d7b
-  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs2: x0 = 0xe4de038e7f4e69bc
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x0000000000000190
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0x000000000000001a
 M_divu_cg_cmp_rd_rs1_b1:
-  divu x1, x1, x0 # perform operation
-  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x1, M_divu_cg_cmp_rd_rs1_b1, M_divu_cg_cmp_rd_rs1_b1_str)
+  divu x1, x1, x15 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cmp_rd_rs1_b1, M_divu_cg_cmp_rd_rs1_b1_str)
 
+  mv x9, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xd92eae7c564ca2c4
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0xdd7866c55632228c
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x0000002c87ba5f98
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x000000000000000f
 M_divu_cg_cmp_rd_rs1_b2:
-  divu x2, x2, x13 # perform operation
-  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x2, M_divu_cg_cmp_rd_rs1_b2, M_divu_cg_cmp_rd_rs1_b2_str)
+  divu x2, x2, x10 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, M_divu_cg_cmp_rd_rs1_b2, M_divu_cg_cmp_rd_rs1_b2_str)
 
+  mv x12, x3 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x208f9a989e11095f
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs2: x11 = 0x3b43eec07cdc3108
+  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rs1: x3 = 0x000e13ed3940f2be
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x00000093f6d6f047
 M_divu_cg_cmp_rd_rs1_b3:
   divu x3, x3, x11 # perform operation
-  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x3, M_divu_cg_cmp_rd_rs1_b3, M_divu_cg_cmp_rd_rs1_b3_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, M_divu_cg_cmp_rd_rs1_b3, M_divu_cg_cmp_rd_rs1_b3_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xac72df2ee786cb8f
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0xe76ba6c995d16469
+  RVTEST_TESTDATA_LOAD_INT(x12, x4) # load rs1: x4 = 0x0000001b26116f9e
+  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rs2: x3 = 0x000000078f28b779
 M_divu_cg_cmp_rd_rs1_b4:
-  divu x4, x4, x13 # perform operation
-  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x4, M_divu_cg_cmp_rd_rs1_b4, M_divu_cg_cmp_rd_rs1_b4_str)
+  divu x4, x4, x3 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, M_divu_cg_cmp_rd_rs1_b4, M_divu_cg_cmp_rd_rs1_b4_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x1e5bafe59d8e1898
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x93b918d7f6d6f047
+  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rs1: x5 = 0x0000000000000172
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x0000000000000005
 M_divu_cg_cmp_rd_rs1_b5:
-  divu x5, x5, x10 # perform operation
-  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x5, M_divu_cg_cmp_rd_rs1_b5, M_divu_cg_cmp_rd_rs1_b5_str)
+  divu x5, x5, x11 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, M_divu_cg_cmp_rd_rs1_b5, M_divu_cg_cmp_rd_rs1_b5_str)
 
-  mv x1, x6 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0xbda81f36dbbba787
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x5357e3c509d6bdaa
+  RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rs1: x6 = 0x0000000000000679
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x00000000000000c8
 M_divu_cg_cmp_rd_rs1_b6:
   divu x6, x6, x11 # perform operation
-  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x6, M_divu_cg_cmp_rd_rs1_b6, M_divu_cg_cmp_rd_rs1_b6_str)
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, M_divu_cg_cmp_rd_rs1_b6, M_divu_cg_cmp_rd_rs1_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs1: x7 = 0x1902c61b01364bef
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x54e0a7d6f1f34f7d
+  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rs1: x7 = 0x00000000002fd2d5
+  RVTEST_TESTDATA_LOAD_INT(x12, x0) # load rs2: x0 = 0x0000000000000002
 M_divu_cg_cmp_rd_rs1_b7:
-  divu x7, x7, x9 # perform operation
-  # Check if x7 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x7, M_divu_cg_cmp_rd_rs1_b7, M_divu_cg_cmp_rd_rs1_b7_str)
+  divu x7, x7, x0 # perform operation
+  # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x7, M_divu_cg_cmp_rd_rs1_b7, M_divu_cg_cmp_rd_rs1_b7_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x0f28b779c8031e04
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xa372f47e75a5dce7
+  RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rs1: x8 = 0x0000000061632cfb
+  RVTEST_TESTDATA_LOAD_INT(x12, x2) # load rs2: x2 = 0x0000000000001763
 M_divu_cg_cmp_rd_rs1_b8:
-  divu x8, x8, x14 # perform operation
-  # Check if x8 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x8, M_divu_cg_cmp_rd_rs1_b8, M_divu_cg_cmp_rd_rs1_b8_str)
+  divu x8, x8, x2 # perform operation
+  # Check if x8 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x8, M_divu_cg_cmp_rd_rs1_b8, M_divu_cg_cmp_rd_rs1_b8_str)
 
+  mv x2, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x06aae97bb807b4c0
-  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0x61029d653957f31e
+  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rs1: x9 = 0x00001200d6a333bb
+  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rs2: x3 = 0x0000000008b01dfd
 M_divu_cg_cmp_rd_rs1_b9:
-  divu x9, x9, x2 # perform operation
-  # Check if x9 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x9, M_divu_cg_cmp_rd_rs1_b9, M_divu_cg_cmp_rd_rs1_b9_str)
+  divu x9, x9, x3 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x9, M_divu_cg_cmp_rd_rs1_b9, M_divu_cg_cmp_rd_rs1_b9_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x257a37773f6a3a4c
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x796e4784e8ac782a
+  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rs1: x10 = 0x0005826eef77481b
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x000000318b588359
 M_divu_cg_cmp_rd_rs1_b10:
   divu x10, x10, x11 # perform operation
-  # Check if x10 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x10, M_divu_cg_cmp_rd_rs1_b10, M_divu_cg_cmp_rd_rs1_b10_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x10, M_divu_cg_cmp_rd_rs1_b10, M_divu_cg_cmp_rd_rs1_b10_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x397569338660b607
-  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0xc8b8a789c9f08d9a
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs1: x11 = 0x000e22fc1d667598
+  RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rs2: x8 = 0x00000032ce9535c9
 M_divu_cg_cmp_rd_rs1_b11:
-  divu x11, x11, x2 # perform operation
-  # Check if x11 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x11, M_divu_cg_cmp_rd_rs1_b11, M_divu_cg_cmp_rd_rs1_b11_str)
+  divu x11, x11, x8 # perform operation
+  # Check if x11 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x11, M_divu_cg_cmp_rd_rs1_b11, M_divu_cg_cmp_rd_rs1_b11_str)
 
-  mv x6, x12 # switch signature pointer register to avoid conflict with test
+  mv x15, x12 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0xb55e22e16e8fd56f
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xb7d8882182ab19e6
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x000112295e4b5cbd
+  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs2: x5 = 0x000000000005e3f2
 M_divu_cg_cmp_rd_rs1_b12:
-  divu x12, x12, x0 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, M_divu_cg_cmp_rd_rs1_b12, M_divu_cg_cmp_rd_rs1_b12_str)
+  divu x12, x12, x5 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x12, M_divu_cg_cmp_rd_rs1_b12, M_divu_cg_cmp_rd_rs1_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xbf4b576adbab3ae3
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0x5b4a3c19251072ca
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x0014ec2fb4332780
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0x0000000002b9abde
 M_divu_cg_cmp_rd_rs1_b13:
-  divu x13, x13, x0 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, M_divu_cg_cmp_rd_rs1_b13, M_divu_cg_cmp_rd_rs1_b13_str)
+  divu x13, x13, x6 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x13, M_divu_cg_cmp_rd_rs1_b13, M_divu_cg_cmp_rd_rs1_b13_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xbd4e814a02fbdfe6
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0xbb18f141ecf1a3a5
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0x0000000000006e4c
+  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0x000000000000002d
 M_divu_cg_cmp_rd_rs1_b14:
-  divu x14, x14, x13 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, M_divu_cg_cmp_rd_rs1_b14, M_divu_cg_cmp_rd_rs1_b14_str)
+  divu x14, x14, x9 # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x14, M_divu_cg_cmp_rd_rs1_b14, M_divu_cg_cmp_rd_rs1_b14_str)
 
+  mv x3, x15 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x6625259acf044ed7
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x9a77bd67499f55dc
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x000000002d9d85b6
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs2: x14 = 0x000000000000004f
 M_divu_cg_cmp_rd_rs1_b15:
-  divu x15, x15, x3 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x15, M_divu_cg_cmp_rd_rs1_b15, M_divu_cg_cmp_rd_rs1_b15_str)
+  divu x15, x15, x14 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x15, M_divu_cg_cmp_rd_rs1_b15, M_divu_cg_cmp_rd_rs1_b15_str)
 
 /////////////////////////////////
 // cmp_rd_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7a15053ca9151fad
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xb9266bddb36fcc7f
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x000000000002f9f4
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs2: x0 = 0x0000000000002857
 M_divu_cg_cmp_rd_rs2_b0:
   divu x0, x11, x0 # perform operation
-  # Check if x0 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x0, M_divu_cg_cmp_rd_rs2_b0, M_divu_cg_cmp_rd_rs2_b0_str)
+  # Check if x0 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x0, M_divu_cg_cmp_rd_rs2_b0, M_divu_cg_cmp_rd_rs2_b0_str)
 
-  mv x3, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x6068d7a1215ed544
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs2: x1 = 0x977341c43181f692
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x0000000000000015
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs2: x1 = 0x0000000000000001
 M_divu_cg_cmp_rd_rs2_b1:
-  divu x1, x8, x1 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, M_divu_cg_cmp_rd_rs2_b1, M_divu_cg_cmp_rd_rs2_b1_str)
+  divu x1, x10, x1 # perform operation
+  # Check if x1 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x2, x8, x7, x1, M_divu_cg_cmp_rd_rs2_b1, M_divu_cg_cmp_rd_rs2_b1_str)
 
+  mv x9, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x4cc74a3c0e15bd8c
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0x798e1abab16f9e8c
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x000000cd9e972e15
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0x0000000111e8b5ad
 M_divu_cg_cmp_rd_rs2_b2:
-  divu x2, x10, x2 # perform operation
-  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x2, M_divu_cg_cmp_rd_rs2_b2, M_divu_cg_cmp_rd_rs2_b2_str)
+  divu x2, x13, x2 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, M_divu_cg_cmp_rd_rs2_b2, M_divu_cg_cmp_rd_rs2_b2_str)
 
-  mv x2, x3 # switch data pointer register to avoid conflict with test
+  mv x10, x3 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x56fe5accbd55d913
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x96061aef2e747c2c
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs1: x13 = 0x07a9ed329d9bbd3b
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0x0000000000000222
 M_divu_cg_cmp_rd_rs2_b3:
-  divu x3, x11, x3 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, M_divu_cg_cmp_rd_rs2_b3, M_divu_cg_cmp_rd_rs2_b3_str)
+  divu x3, x13, x3 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, M_divu_cg_cmp_rd_rs2_b3, M_divu_cg_cmp_rd_rs2_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x2fb9a60c0a0eda23
-  RVTEST_TESTDATA_LOAD_INT(x2, x4) # load rs2: x4 = 0x3f030af99c5a970e
+  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs1: x12 = 0x00150180b42216b8
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x00000000006d7784
 M_divu_cg_cmp_rd_rs2_b4:
-  divu x4, x1, x4 # perform operation
-  # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x4, M_divu_cg_cmp_rd_rs2_b4, M_divu_cg_cmp_rd_rs2_b4_str)
+  divu x4, x12, x4 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, M_divu_cg_cmp_rd_rs2_b4, M_divu_cg_cmp_rd_rs2_b4_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x91e8b5adf05cc8ca
-  RVTEST_TESTDATA_LOAD_INT(x2, x5) # load rs2: x5 = 0x75dffbcdeba181d6
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs1: x1 = 0x0000000000003d3d
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0x000000000000000f
 M_divu_cg_cmp_rd_rs2_b5:
-  divu x5, x14, x5 # perform operation
-  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x5, M_divu_cg_cmp_rd_rs2_b5, M_divu_cg_cmp_rd_rs2_b5_str)
+  divu x5, x1, x5 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, M_divu_cg_cmp_rd_rs2_b5, M_divu_cg_cmp_rd_rs2_b5_str)
 
-  mv x11, x6 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0xfbae2eb4723e2ee9
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x3505549c9efd72bf
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs1: x5 = 0x0000000000007244
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0x0000000000000059
 M_divu_cg_cmp_rd_rs2_b6:
-  divu x6, x10, x6 # perform operation
-  # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x11, x8, x7, x6, M_divu_cg_cmp_rd_rs2_b6, M_divu_cg_cmp_rd_rs2_b6_str)
+  divu x6, x5, x6 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, M_divu_cg_cmp_rd_rs2_b6, M_divu_cg_cmp_rd_rs2_b6_str)
 
-  mv x13, x7 # switch temp register to avoid conflict with test
-  mv x14, x8 # switch link pointer register to avoid conflict with test
+  mv x4, x7 # switch temp register to avoid conflict with test
+  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x11155718a29a46ed
-  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x51003703c8e5c3bf
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs1: x13 = 0x004f36c82c4ff43f
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs2: x7 = 0x00000005593bff96
 M_divu_cg_cmp_rd_rs2_b7:
-  divu x7, x12, x7 # perform operation
-  # Check if x7 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x7, M_divu_cg_cmp_rd_rs2_b7, M_divu_cg_cmp_rd_rs2_b7_str)
+  divu x7, x13, x7 # perform operation
+  # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x7, M_divu_cg_cmp_rd_rs2_b7, M_divu_cg_cmp_rd_rs2_b7_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0xa80c074eb42216b8
-  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0xdaef091dcf73e7b4
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0x0000000001a8ee86
+  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs2: x8 = 0x00000000000aef83
 M_divu_cg_cmp_rd_rs2_b8:
-  divu x8, x1, x8 # perform operation
-  # Check if x8 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x8, M_divu_cg_cmp_rd_rs2_b8, M_divu_cg_cmp_rd_rs2_b8_str)
+  divu x8, x2, x8 # perform operation
+  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x8, M_divu_cg_cmp_rd_rs2_b8, M_divu_cg_cmp_rd_rs2_b8_str)
 
+  mv x3, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x9a94c329e0e6463a
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0xa0f92a3886018e55
+  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs1: x12 = 0x9dd8817bf89497a1
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x004d641dc31db316
 M_divu_cg_cmp_rd_rs2_b9:
-  divu x9, x15, x9 # perform operation
-  # Check if x9 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x9, M_divu_cg_cmp_rd_rs2_b9, M_divu_cg_cmp_rd_rs2_b9_str)
+  divu x9, x12, x9 # perform operation
+  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x9, M_divu_cg_cmp_rd_rs2_b9, M_divu_cg_cmp_rd_rs2_b9_str)
 
+  mv x15, x10 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x289e0cf2c4bdcd8a
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x5adb7023215e0911
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0x0002768dba712b1d
+  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x0000000002c753c6
 M_divu_cg_cmp_rd_rs2_b10:
-  divu x10, x6, x10 # perform operation
-  # Check if x10 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x10, M_divu_cg_cmp_rd_rs2_b10, M_divu_cg_cmp_rd_rs2_b10_str)
+  divu x10, x11, x10 # perform operation
+  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x10, M_divu_cg_cmp_rd_rs2_b10, M_divu_cg_cmp_rd_rs2_b10_str)
 
-  mv x6, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0xffef901130cc95ad
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x1e7e648bde9e153f
+  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs1: x7 = 0x1b8ec0d039f7d8e4
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x00000000004867da
 M_divu_cg_cmp_rd_rs2_b11:
-  divu x11, x15, x11 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x6, x14, x13, x11, M_divu_cg_cmp_rd_rs2_b11, M_divu_cg_cmp_rd_rs2_b11_str)
+  divu x11, x7, x11 # perform operation
+  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x11, M_divu_cg_cmp_rd_rs2_b11, M_divu_cg_cmp_rd_rs2_b11_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0x41ab1d4c41b3fe32
-  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x83a63f43c10ce5ff
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x3838285f8286cff9
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs2: x12 = 0x00000000089434cf
 M_divu_cg_cmp_rd_rs2_b12:
-  divu x12, x7, x12 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x6, x14, x13, x12, M_divu_cg_cmp_rd_rs2_b12, M_divu_cg_cmp_rd_rs2_b12_str)
+  divu x12, x13, x12 # perform operation
+  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x12, M_divu_cg_cmp_rd_rs2_b12, M_divu_cg_cmp_rd_rs2_b12_str)
 
-  mv x7, x13 # switch temp register to avoid conflict with test
-  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x2, x4) # load rs1: x4 = 0xa4d57fe22a77133b
-  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0xecd67d2603d86274
+  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0x0000007b1a6d23f4
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs2: x13 = 0x0000000000000066
 M_divu_cg_cmp_rd_rs2_b13:
-  divu x13, x4, x13 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x13, M_divu_cg_cmp_rd_rs2_b13, M_divu_cg_cmp_rd_rs2_b13_str)
+  divu x13, x10, x13 # perform operation
+  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x13, M_divu_cg_cmp_rd_rs2_b13, M_divu_cg_cmp_rd_rs2_b13_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x2198942125f85556
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x0cb6610fbd1822c8
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x000000ce81583eee
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs2: x14 = 0x0000000cf5271349
 M_divu_cg_cmp_rd_rs2_b14:
-  divu x14, x1, x14 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x14, M_divu_cg_cmp_rd_rs2_b14, M_divu_cg_cmp_rd_rs2_b14_str)
+  divu x14, x13, x14 # perform operation
+  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x14, M_divu_cg_cmp_rd_rs2_b14, M_divu_cg_cmp_rd_rs2_b14_str)
 
+  mv x9, x15 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0xbb694e93d10afb39
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x707b746f2ef83740
+  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0x0000000000000009
+  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0x000000000000001e
 M_divu_cg_cmp_rd_rs2_b15:
-  divu x15, x9, x15 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x15, M_divu_cg_cmp_rd_rs2_b15, M_divu_cg_cmp_rd_rs2_b15_str)
+  divu x15, x14, x15 # perform operation
+  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x15, M_divu_cg_cmp_rd_rs2_b15, M_divu_cg_cmp_rd_rs2_b15_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs1: x0 = 0x332ce39b6148777d
-  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs2: x0 = 0xfd39746fb327ecf7
+  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs1: x0 = 0x0000000000000004
+  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs2: x0 = 0x0000000000000002
 M_divu_cg_cmp_rd_rs1_rs2_b0:
   divu x0, x0, x0 # perform operation
-  # Check if x0 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x0, M_divu_cg_cmp_rd_rs1_rs2_b0, M_divu_cg_cmp_rd_rs1_rs2_b0_str)
+  # Check if x0 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x0, M_divu_cg_cmp_rd_rs1_rs2_b0, M_divu_cg_cmp_rd_rs1_rs2_b0_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x335dff0c04195119
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x32330df38dd91919
+  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x0023f238f6bd2a65
+  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs2: x1 = 0x0000000000000009
 M_divu_cg_cmp_rd_rs1_rs2_b1:
   divu x1, x1, x1 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x1, M_divu_cg_cmp_rd_rs1_rs2_b1, M_divu_cg_cmp_rd_rs1_rs2_b1_str)
+  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x1, M_divu_cg_cmp_rd_rs1_rs2_b1, M_divu_cg_cmp_rd_rs1_rs2_b1_str)
 
-  mv x3, x2 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0xef88c9f7cc313922
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0xab3f17601cbd561b
+  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x000041716368303a
+  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs2: x2 = 0x000000000089e49f
 M_divu_cg_cmp_rd_rs1_rs2_b2:
   divu x2, x2, x2 # perform operation
-  # Check if x2 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x2, M_divu_cg_cmp_rd_rs1_rs2_b2, M_divu_cg_cmp_rd_rs1_rs2_b2_str)
+  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x2, M_divu_cg_cmp_rd_rs1_rs2_b2, M_divu_cg_cmp_rd_rs1_rs2_b2_str)
 
-  mv x12, x3 # switch data pointer register to avoid conflict with test
+  mv x12, x3 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rs1: x3 = 0x264ef420e42d437b
-  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rs2: x3 = 0x8cd121ef0fc8e034
+  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x009e5b922198a43f
+  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs2: x3 = 0x00000000000001d1
 M_divu_cg_cmp_rd_rs1_rs2_b3:
   divu x3, x3, x3 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x3, M_divu_cg_cmp_rd_rs1_rs2_b3, M_divu_cg_cmp_rd_rs1_rs2_b3_str)
+  # Check if x3 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x3, M_divu_cg_cmp_rd_rs1_rs2_b3, M_divu_cg_cmp_rd_rs1_rs2_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x12, x4) # load rs1: x4 = 0xefb083570e898a76
-  RVTEST_TESTDATA_LOAD_INT(x12, x4) # load rs2: x4 = 0x6cf0fed546777ec6
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0x000000000000000d
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0x000000000000001b
 M_divu_cg_cmp_rd_rs1_rs2_b4:
   divu x4, x4, x4 # perform operation
-  # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x4, M_divu_cg_cmp_rd_rs1_rs2_b4, M_divu_cg_cmp_rd_rs1_rs2_b4_str)
+  # Check if x4 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x4, M_divu_cg_cmp_rd_rs1_rs2_b4, M_divu_cg_cmp_rd_rs1_rs2_b4_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rs1: x5 = 0xe368303a5cf6992b
-  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rs2: x5 = 0x0a130f6a5d4b4b9c
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs1: x5 = 0x000000000357f452
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x000000000000000d
 M_divu_cg_cmp_rd_rs1_rs2_b5:
   divu x5, x5, x5 # perform operation
-  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x5, M_divu_cg_cmp_rd_rs1_rs2_b5, M_divu_cg_cmp_rd_rs1_rs2_b5_str)
+  # Check if x5 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x5, M_divu_cg_cmp_rd_rs1_rs2_b5, M_divu_cg_cmp_rd_rs1_rs2_b5_str)
 
-  mv x11, x6 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rs1: x6 = 0x43bef2b43e420473
-  RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rs2: x6 = 0x84926a92687f47b2
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x0000000000007ed0
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x0000000000001a34
 M_divu_cg_cmp_rd_rs1_rs2_b6:
   divu x6, x6, x6 # perform operation
-  # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x11, x8, x7, x6, M_divu_cg_cmp_rd_rs1_rs2_b6, M_divu_cg_cmp_rd_rs1_rs2_b6_str)
+  # Check if x6 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x6, M_divu_cg_cmp_rd_rs1_rs2_b6, M_divu_cg_cmp_rd_rs1_rs2_b6_str)
 
-  mv x13, x7 # switch temp register to avoid conflict with test
-  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rs1: x7 = 0x9e5b92bf2198a43f
-  RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rs2: x7 = 0xabeb8b33023df0f3
+  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x00000000000003a2
+  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x0000000000000033
 M_divu_cg_cmp_rd_rs1_rs2_b7:
   divu x7, x7, x7 # perform operation
-  # Check if x7 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x7, M_divu_cg_cmp_rd_rs1_rs2_b7, M_divu_cg_cmp_rd_rs1_rs2_b7_str)
+  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x7, M_divu_cg_cmp_rd_rs1_rs2_b7, M_divu_cg_cmp_rd_rs1_rs2_b7_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rs1: x8 = 0xdeb21d1aa8306191
-  RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rs2: x8 = 0x71aeb95b5f1e8218
+  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x00012db745cd3038
+  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x000000ae2ae576a8
 M_divu_cg_cmp_rd_rs1_rs2_b8:
   divu x8, x8, x8 # perform operation
-  # Check if x8 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x8, M_divu_cg_cmp_rd_rs1_rs2_b8, M_divu_cg_cmp_rd_rs1_rs2_b8_str)
+  # Check if x8 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x8, M_divu_cg_cmp_rd_rs1_rs2_b8, M_divu_cg_cmp_rd_rs1_rs2_b8_str)
 
+  mv x1, x9 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rs1: x9 = 0x5605cbd5dafc2b1d
-  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rs2: x9 = 0x7f99aed77a6e9e1f
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x0000000000000002
 M_divu_cg_cmp_rd_rs1_rs2_b9:
   divu x9, x9, x9 # perform operation
-  # Check if x9 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x9, M_divu_cg_cmp_rd_rs1_rs2_b9, M_divu_cg_cmp_rd_rs1_rs2_b9_str)
+  # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x9, M_divu_cg_cmp_rd_rs1_rs2_b9, M_divu_cg_cmp_rd_rs1_rs2_b9_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rs1: x10 = 0xfa2a51a8cb4a2eea
-  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rs2: x10 = 0x11017310eca338c5
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x00000036772b5103
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x00000000000278d0
 M_divu_cg_cmp_rd_rs1_rs2_b10:
   divu x10, x10, x10 # perform operation
-  # Check if x10 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x11, x14, x13, x10, M_divu_cg_cmp_rd_rs1_rs2_b10, M_divu_cg_cmp_rd_rs1_rs2_b10_str)
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, M_divu_cg_cmp_rd_rs1_rs2_b10, M_divu_cg_cmp_rd_rs1_rs2_b10_str)
 
-  mv x1, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs1: x11 = 0xb5bec1125be4d3e1
-  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x02504cf1cf87f2a0
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x0378a05555c8b4bc
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x0000003e7a3cdcc4
 M_divu_cg_cmp_rd_rs1_rs2_b11:
   divu x11, x11, x11 # perform operation
-  # Check if x11 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x11, M_divu_cg_cmp_rd_rs1_rs2_b11, M_divu_cg_cmp_rd_rs1_rs2_b11_str)
+  # Check if x11 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x11, M_divu_cg_cmp_rd_rs1_rs2_b11, M_divu_cg_cmp_rd_rs1_rs2_b11_str)
 
-  mv x6, x12 # switch data pointer register to avoid conflict with test
+  mv x6, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x454337fe3d952827
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0xd1a11427dd76a903
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x0000000066de78d3
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x000000000000006f
 M_divu_cg_cmp_rd_rs1_rs2_b12:
   divu x12, x12, x12 # perform operation
-  # Check if x12 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
-  RVTEST_SIGUPD(x1, x14, x13, x12, M_divu_cg_cmp_rd_rs1_rs2_b12, M_divu_cg_cmp_rd_rs1_rs2_b12_str)
+  # Check if x12 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x12, M_divu_cg_cmp_rd_rs1_rs2_b12, M_divu_cg_cmp_rd_rs1_rs2_b12_str)
 
-  mv x7, x13 # switch temp register to avoid conflict with test
-  mv x8, x14 # switch link pointer register to avoid conflict with test
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x5a5b7aefbc10091a
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0xe89d192e12206303
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x07ad66245a26188c
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0x000004b15251a6f9
 M_divu_cg_cmp_rd_rs1_rs2_b13:
   divu x13, x13, x13 # perform operation
-  # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x13, M_divu_cg_cmp_rd_rs1_rs2_b13, M_divu_cg_cmp_rd_rs1_rs2_b13_str)
+  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x13, M_divu_cg_cmp_rd_rs1_rs2_b13, M_divu_cg_cmp_rd_rs1_rs2_b13_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xa6592ccd4c2155ba
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xeb65d719f292ec2f
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000000000462cd
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x00000000000011e5
 M_divu_cg_cmp_rd_rs1_rs2_b14:
   divu x14, x14, x14 # perform operation
-  # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x14, M_divu_cg_cmp_rd_rs1_rs2_b14, M_divu_cg_cmp_rd_rs1_rs2_b14_str)
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, M_divu_cg_cmp_rd_rs1_rs2_b14, M_divu_cg_cmp_rd_rs1_rs2_b14_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5c15c514d72e0af2
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x7913bb7299e9bbd3
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x0000000522c4efd0
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x0000000000000001
 M_divu_cg_cmp_rd_rs1_rs2_b15:
   divu x15, x15, x15 # perform operation
-  # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x15, M_divu_cg_cmp_rd_rs1_rs2_b15, M_divu_cg_cmp_rd_rs1_rs2_b15_str)
+  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x15, M_divu_cg_cmp_rd_rs1_rs2_b15, M_divu_cg_cmp_rd_rs1_rs2_b15_str)
 
-  mv x2, x1 # restore signature pointer to default register for teardown
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -3910,102 +3915,102 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-.dword 0x7fc4b452c9b57e9b
-.dword 0x6bb46577184b22c6
-.dword 0x766b2a88debafe4a
-.dword 0xcbdf37561628fd63
-.dword 0xbabce84576a99fd0
-.dword 0x906b72c53c744bd0
-.dword 0xba960919e09f3546
-.dword 0xf16b448e91ae9a3d
-.dword 0xf15f92b158db6d9a
-.dword 0x8a5329dc7fb3aac7
-.dword 0xf85f1c57f814424c
-.dword 0xe7e11029c0073d55
-.dword 0x855d21908ad0aae8
-.dword 0x08d17a06d4f133e0
-.dword 0x2ff276e1cd88fdb9
-.dword 0x2f751a687ea33cde
-.dword 0x7ef104c4e3136106
-.dword 0x3b0114718dd27c6a
-.dword 0x4d0463f61c3fc0c6
-.dword 0x9aa4a5aece8854c5
-.dword 0x667b034efb49351d
-.dword 0x0594b66427b1c3ef
-.dword 0x011503e9dc106faa
-.dword 0x92fcd38d9366f0cd
-.dword 0x586615b8e3b3c757
-.dword 0xb3e89df12158aa76
-.dword 0xf28b1de51410e08f
-.dword 0xf0e2fcf7b8e42ad1
-.dword 0xca864d8cbaea32c3
-.dword 0x5a471d7b4938a6fb
-.dword 0x8406a9ca94f822a4
-.dword 0xe1facd7ca0f85a1f
-.dword 0x62fead2fd5839aac
-.dword 0xf461d6ca070a5861
-.dword 0xea1b60c31e3b6a82
-.dword 0x5f8a1057a5c12334
-.dword 0xf9a457e7a9ff5b37
-.dword 0xe70c3a44850da9f6
-.dword 0xbf2c36083998fe44
-.dword 0xf4b417d5f3eef612
-.dword 0xa1def7b8514336c1
-.dword 0xe06538ff95ca9600
-.dword 0xd7cf77a5aabf7f80
-.dword 0xe7ce2baa45c885ee
-.dword 0x5dcc463beda5e7bf
-.dword 0x9e7c8b53f40ac127
-.dword 0x840852bb2b63a2a2
-.dword 0x8fc73ff9d96b6016
-.dword 0xf5e05e6e15575846
-.dword 0x6a89131cca40f0a9
-.dword 0xc1ba6bae8c4c9522
-.dword 0x846b8f3585fea3a3
-.dword 0x190b5295cfbc832c
-.dword 0x08c01204e1a4bf60
-.dword 0x5f750d0caec9a5f4
-.dword 0x9b19b9cb13eb5fcc
-.dword 0x80cec5274a6fb556
-.dword 0x878c5c9040791c96
-.dword 0xa28687a9e2922d03
-.dword 0xcb001ed45dd863c7
-.dword 0xe133c3686b677f18
-.dword 0x78223930e2931b10
-.dword 0xe5cef312ee65cef7
-.dword 0x4e303cbccc4c5c1a
-.dword 0xdc85c65b10670ec1
-.dword 0xd3d3606407b0732a
-.dword 0x4f312a273e012d72
-.dword 0x25b2643c97e77dba
-.dword 0x03ca49d899f2093a
-.dword 0x11f2de160a7c3026
-.dword 0x91be6bb2e3c040e4
-.dword 0xf7bb0fd2fd331d0d
-.dword 0x982ada8e55ae75ea
-.dword 0xb83f5e34c003730c
-.dword 0x055c49b83a362cc4
-.dword 0xfbc4f77f9a3dacd3
-.dword 0x6d4cf85524f30295
-.dword 0x30b5599ad2de3295
-.dword 0xbc1bd522c2fcc2b6
-.dword 0x3894f37a88f54846
-.dword 0x993ac9101a5cdcf8
-.dword 0x3cb6f0182668ccf5
-.dword 0x0d8faef63c0dbf6a
-.dword 0x2df37750ff45484e
-.dword 0x1e79d7843f6b3e28
-.dword 0x7008aa909820a87d
-.dword 0x10a25b5e4650e94f
-.dword 0x070294da30329e0a
-.dword 0x6bffcf9c32d2552a
-.dword 0xa5fa2d234d78e19b
-.dword 0x5eba8fcd59827e1a
-.dword 0x23697a118a1b292e
-.dword 0xe38f08fa028d143d
-.dword 0x51c4008a0fdc8522
-.dword 0x3236c1bc7ee7b48f
-.dword 0x4f2828b9fc98048a
+.dword 0x000001aff66b2a88
+.dword 0x0000000000000258
+.dword 0x000007b5a4cc8ae0
+.dword 0x0000000000004669
+.dword 0x00000000007fd9d5
+.dword 0x0000000000000003
+.dword 0x00000000010aba43
+.dword 0x0000000000000004
+.dword 0x35924be1b7fb9df9
+.dword 0x00008a01d90a4706
+.dword 0x0000000000000010
+.dword 0x0000000000000010
+.dword 0x0000000000000135
+.dword 0x0000000000000003
+.dword 0x0000000000384458
+.dword 0x00000000000125f9
+.dword 0x0000000000c3eaf0
+.dword 0x00000000000024b4
+.dword 0x0000001dda471d7b
+.dword 0x000000030406a9ca
+.dword 0x00000037e96ad393
+.dword 0x000000000010c524
+.dword 0x0000000000000002
+.dword 0x0000000000000001
+.dword 0xc56890b1f20cc7d7
+.dword 0x000000000000071d
+.dword 0x000dbc4100e55893
+.dword 0x0000445a06bc777f
+.dword 0x5507715a171dfed7
+.dword 0x000004776e8d9130
+.dword 0x00009b56d5559bd2
+.dword 0x000000009900a357
+.dword 0x0000004f5da96c42
+.dword 0x00000000043f2c91
+.dword 0x000000015c8ee477
+.dword 0x0000000000005f96
+.dword 0x0000000000033b2b
+.dword 0x0000000000000003
+.dword 0xf667d43addcc463b
+.dword 0x000000000000f5a0
+.dword 0x100a830daa2f1db5
+.dword 0x000000000000003d
+.dword 0x0000000000000007
+.dword 0x0000000000000002
+.dword 0x000000000000008d
+.dword 0x0000000000000002
+.dword 0x000000000000000f
+.dword 0x000000000000000a
+.dword 0x0000000000000007
+.dword 0x000000000000000e
+.dword 0x0006b9e5ce303cbc
+.dword 0x000000018349ed42
+.dword 0x000000000000001d
+.dword 0x0000000000000006
+.dword 0x0000a32b54f09f4a
+.dword 0x00000000000004c4
+.dword 0x00584baefc82c36d
+.dword 0x00000000774dadaa
+.dword 0x00001bf887b9d120
+.dword 0x00000000b2943edf
+.dword 0x65a3fe53041c5724
+.dword 0x0000000000000202
+.dword 0x0000000cf240968c
+.dword 0x000000000003878c
+.dword 0x1eeed53aa051b82c
+.dword 0x01d4a3d1ab413e7d
+.dword 0x0000000000000122
+.dword 0x0000000000000187
+.dword 0x115eaf8a383f5e34
+.dword 0x0000000000000002
+.dword 0x000adbe128f61cc3
+.dword 0x000000000001df0a
+.dword 0x00000000000299a3
+.dword 0x000000000000001d
+.dword 0x00000000000002fd
+.dword 0x00000000000002ba
+.dword 0x0000000b7ddcee32
+.dword 0x000000032015615c
+.dword 0x0000000000000026
+.dword 0x000000000000006a
+.dword 0x071c7847028d143d
+.dword 0x00000000007f27b4
+.dword 0xaeb222abb236c1bc
+.dword 0x000000000277f9bb
+.dword 0x000001ac13994a8d
+.dword 0x000000000000064c
+.dword 0x0000000000003822
+.dword 0x0000000000000002
+.dword 0x000000000e90c49c
+.dword 0x000000000000000f
+.dword 0x00edb2fbe8209f5e
+.dword 0x000000000000001b
+.dword 0x0000000000000ce4
+.dword 0x0000000000000010
+.dword 0x000000007f574843
+.dword 0x0000000000000003
 .dword 0x0000000000000000
 .dword 0x30e084d0280ff10a
 .dword 0x0000000000000001
@@ -4726,134 +4731,134 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000080000000
 .dword 0x000000007fffffff
 .dword 0x000000007fffffff
-.dword 0x4cfc409c01b80cf0
-.dword 0xb6f2a39e3f2797bc
-.dword 0x8dc043ce19a7c4c4
-.dword 0xa4cb1dc4c275760a
-.dword 0xa4aa9fe202d41fb5
-.dword 0x48b2a3a0c321d409
-.dword 0xcb1981b2e45403b4
-.dword 0xed3205c4c953d412
-.dword 0x0a988edc307cb9d2
-.dword 0x2e17ab0346c4afeb
-.dword 0x3bedbce79ed47fc5
-.dword 0x9fda85429f3c4876
-.dword 0x8007fe520e3a7e65
-.dword 0x9f6c534eb7171673
-.dword 0x7dd643f6cc724c16
-.dword 0x6881e5908578e940
-.dword 0xb22f8dae44147e76
-.dword 0x803bcaf94c70636b
-.dword 0x25b1e4416aa2506f
-.dword 0xe2a1845e58e56f8e
-.dword 0xe648c1c2a5a0d81b
-.dword 0x06010971d38bdcfc
-.dword 0x0200db9795bd1561
-.dword 0x482c4ce60809d8ab
-.dword 0x31f84b6dd641ebac
-.dword 0x6d7d9be999734a76
-.dword 0xbc48df3115cf6709
-.dword 0x5a76491985344e53
-.dword 0x38e3bdfd59a8d037
-.dword 0x4bfecbc3eaea3732
-.dword 0xebba53fe4b1be736
-.dword 0xa9431d4d23598939
-.dword 0x06fe407b7426b4f4
-.dword 0x3cff34b063ba16a0
-.dword 0xcbea999ee6883d7b
-.dword 0xe4de038e7f4e69bc
-.dword 0xd92eae7c564ca2c4
-.dword 0xdd7866c55632228c
-.dword 0x208f9a989e11095f
-.dword 0x3b43eec07cdc3108
-.dword 0xac72df2ee786cb8f
-.dword 0xe76ba6c995d16469
-.dword 0x1e5bafe59d8e1898
-.dword 0x93b918d7f6d6f047
-.dword 0xbda81f36dbbba787
-.dword 0x5357e3c509d6bdaa
-.dword 0x1902c61b01364bef
-.dword 0x54e0a7d6f1f34f7d
-.dword 0x0f28b779c8031e04
-.dword 0xa372f47e75a5dce7
-.dword 0x06aae97bb807b4c0
-.dword 0x61029d653957f31e
-.dword 0x257a37773f6a3a4c
-.dword 0x796e4784e8ac782a
-.dword 0x397569338660b607
-.dword 0xc8b8a789c9f08d9a
-.dword 0xb55e22e16e8fd56f
-.dword 0xb7d8882182ab19e6
-.dword 0xbf4b576adbab3ae3
-.dword 0x5b4a3c19251072ca
-.dword 0xbd4e814a02fbdfe6
-.dword 0xbb18f141ecf1a3a5
-.dword 0x6625259acf044ed7
-.dword 0x9a77bd67499f55dc
-.dword 0x7a15053ca9151fad
-.dword 0xb9266bddb36fcc7f
-.dword 0x6068d7a1215ed544
-.dword 0x977341c43181f692
-.dword 0x4cc74a3c0e15bd8c
-.dword 0x798e1abab16f9e8c
-.dword 0x56fe5accbd55d913
-.dword 0x96061aef2e747c2c
-.dword 0x2fb9a60c0a0eda23
-.dword 0x3f030af99c5a970e
-.dword 0x91e8b5adf05cc8ca
-.dword 0x75dffbcdeba181d6
-.dword 0xfbae2eb4723e2ee9
-.dword 0x3505549c9efd72bf
-.dword 0x11155718a29a46ed
-.dword 0x51003703c8e5c3bf
-.dword 0xa80c074eb42216b8
-.dword 0xdaef091dcf73e7b4
-.dword 0x9a94c329e0e6463a
-.dword 0xa0f92a3886018e55
-.dword 0x289e0cf2c4bdcd8a
-.dword 0x5adb7023215e0911
-.dword 0xffef901130cc95ad
-.dword 0x1e7e648bde9e153f
-.dword 0x41ab1d4c41b3fe32
-.dword 0x83a63f43c10ce5ff
-.dword 0xa4d57fe22a77133b
-.dword 0xecd67d2603d86274
-.dword 0x2198942125f85556
-.dword 0x0cb6610fbd1822c8
-.dword 0xbb694e93d10afb39
-.dword 0x707b746f2ef83740
-.dword 0x332ce39b6148777d
-.dword 0xfd39746fb327ecf7
-.dword 0x335dff0c04195119
-.dword 0x32330df38dd91919
-.dword 0xef88c9f7cc313922
-.dword 0xab3f17601cbd561b
-.dword 0x264ef420e42d437b
-.dword 0x8cd121ef0fc8e034
-.dword 0xefb083570e898a76
-.dword 0x6cf0fed546777ec6
-.dword 0xe368303a5cf6992b
-.dword 0x0a130f6a5d4b4b9c
-.dword 0x43bef2b43e420473
-.dword 0x84926a92687f47b2
-.dword 0x9e5b92bf2198a43f
-.dword 0xabeb8b33023df0f3
-.dword 0xdeb21d1aa8306191
-.dword 0x71aeb95b5f1e8218
-.dword 0x5605cbd5dafc2b1d
-.dword 0x7f99aed77a6e9e1f
-.dword 0xfa2a51a8cb4a2eea
-.dword 0x11017310eca338c5
-.dword 0xb5bec1125be4d3e1
-.dword 0x02504cf1cf87f2a0
-.dword 0x454337fe3d952827
-.dword 0xd1a11427dd76a903
-.dword 0x5a5b7aefbc10091a
-.dword 0xe89d192e12206303
-.dword 0xa6592ccd4c2155ba
-.dword 0xeb65d719f292ec2f
-.dword 0x5c15c514d72e0af2
-.dword 0x7913bb7299e9bbd3
+.dword 0x0000000219a7c4c4
+.dword 0x0000000000025ec3
+.dword 0x0000000000077a51
+.dword 0x0000000000007547
+.dword 0x00000001a95ca76d
+.dword 0x00000000001ce637
+.dword 0x000000000324a9fb
+.dword 0x00000000000004b5
+.dword 0x0000000000000002
+.dword 0x0000000000000007
+.dword 0x0eaa081b47e9dfb4
+.dword 0x003c99a3b1f84b6d
+.dword 0x00001940b8e3bdfd
+.dword 0x00000000007b99fa
+.dword 0x043f2d52f77889cb
+.dword 0x00000000000023ce
+.dword 0x000000876aa37ace
+.dword 0x0000000037be22ad
+.dword 0x00000000e5670526
+.dword 0x000000000000033a
+.dword 0x000000000000000a
+.dword 0x0000000000000014
+.dword 0x0000000000959bf2
+.dword 0x0000000000000baf
+.dword 0x000143a44234a712
+.dword 0x0000000000000003
+.dword 0x000000000000000c
+.dword 0x0000000000000007
+.dword 0x0000000000000130
+.dword 0x0000000000000015
+.dword 0x1750306b536b3871
+.dword 0x0000000000008e60
+.dword 0x000000000034f89c
+.dword 0x000000000000035c
+.dword 0x0000000000000190
+.dword 0x000000000000001a
+.dword 0x0000002c87ba5f98
+.dword 0x000000000000000f
+.dword 0x000e13ed3940f2be
+.dword 0x00000093f6d6f047
+.dword 0x0000001b26116f9e
+.dword 0x000000078f28b779
+.dword 0x0000000000000172
+.dword 0x0000000000000005
+.dword 0x0000000000000679
+.dword 0x00000000000000c8
+.dword 0x00000000002fd2d5
+.dword 0x0000000000000002
+.dword 0x0000000061632cfb
+.dword 0x0000000000001763
+.dword 0x00001200d6a333bb
+.dword 0x0000000008b01dfd
+.dword 0x0005826eef77481b
+.dword 0x000000318b588359
+.dword 0x000e22fc1d667598
+.dword 0x00000032ce9535c9
+.dword 0x000112295e4b5cbd
+.dword 0x000000000005e3f2
+.dword 0x0014ec2fb4332780
+.dword 0x0000000002b9abde
+.dword 0x0000000000006e4c
+.dword 0x000000000000002d
+.dword 0x000000002d9d85b6
+.dword 0x000000000000004f
+.dword 0x000000000002f9f4
+.dword 0x0000000000002857
+.dword 0x0000000000000015
+.dword 0x0000000000000001
+.dword 0x000000cd9e972e15
+.dword 0x0000000111e8b5ad
+.dword 0x07a9ed329d9bbd3b
+.dword 0x0000000000000222
+.dword 0x00150180b42216b8
+.dword 0x00000000006d7784
+.dword 0x0000000000003d3d
+.dword 0x000000000000000f
+.dword 0x0000000000007244
+.dword 0x0000000000000059
+.dword 0x004f36c82c4ff43f
+.dword 0x00000005593bff96
+.dword 0x0000000001a8ee86
+.dword 0x00000000000aef83
+.dword 0x9dd8817bf89497a1
+.dword 0x004d641dc31db316
+.dword 0x0002768dba712b1d
+.dword 0x0000000002c753c6
+.dword 0x1b8ec0d039f7d8e4
+.dword 0x00000000004867da
+.dword 0x3838285f8286cff9
+.dword 0x00000000089434cf
+.dword 0x0000007b1a6d23f4
+.dword 0x0000000000000066
+.dword 0x000000ce81583eee
+.dword 0x0000000cf5271349
+.dword 0x0000000000000009
+.dword 0x000000000000001e
+.dword 0x0000000000000004
+.dword 0x0000000000000002
+.dword 0x0023f238f6bd2a65
+.dword 0x0000000000000009
+.dword 0x000041716368303a
+.dword 0x000000000089e49f
+.dword 0x009e5b922198a43f
+.dword 0x00000000000001d1
+.dword 0x000000000000000d
+.dword 0x000000000000001b
+.dword 0x000000000357f452
+.dword 0x000000000000000d
+.dword 0x0000000000007ed0
+.dword 0x0000000000001a34
+.dword 0x00000000000003a2
+.dword 0x0000000000000033
+.dword 0x00012db745cd3038
+.dword 0x000000ae2ae576a8
+.dword 0x0000000000000001
+.dword 0x0000000000000002
+.dword 0x00000036772b5103
+.dword 0x00000000000278d0
+.dword 0x0378a05555c8b4bc
+.dword 0x0000003e7a3cdcc4
+.dword 0x0000000066de78d3
+.dword 0x000000000000006f
+.dword 0x07ad66245a26188c
+.dword 0x000004b15251a6f9
+.dword 0x00000000000462cd
+.dword 0x00000000000011e5
+.dword 0x0000000522c4efd0
+.dword 0x0000000000000001
 
 // Testcase strings
 M_divu_cg_cp_rs1_b0_str: .string "\"test: 1; cg: M_divu_cg; cp: cp_rs1; bin: b0\""

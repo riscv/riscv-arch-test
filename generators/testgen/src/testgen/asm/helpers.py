@@ -12,6 +12,7 @@ from functools import lru_cache
 from typing import Literal
 
 from testgen.constants import INDENT
+from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 
 
@@ -139,6 +140,13 @@ def load_float_reg(
     test_data.test_chunk.data_values.append(val)
     fp_load_bits = {"half": 16, "single": 32, "double": 64, "quad": 128}.get(fp_load_type, test_data.flen)
     return f"{INDENT}RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val & ((1 << fp_load_bits) - 1), fp_load_bits)}"
+
+
+def fflags_setup(params: InstructionParams) -> str:
+    """Set fflags before an FP instruction: cleared, or preset so the check also shows that flags are sticky."""
+    if params.preset_fflags:
+        return f"fsflagsi 0b{params.preset_fflags:05b} # preset fflags, which the instruction must keep"
+    return "fsflagsi 0b00000 # clear all fflags"
 
 
 def write_sigupd(

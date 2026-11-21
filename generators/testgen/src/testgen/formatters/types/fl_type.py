@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import to_hex, write_sigupd
+from testgen.asm.helpers import fflags_setup, to_hex, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -35,7 +35,7 @@ def format_fl_type(
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
-    setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
+    setup: list[str] = [fflags_setup(params)]
 
     # Handle special case where offset is -2048 (can't represent +2048 in 12 bits)
     if params.immval == -2048:

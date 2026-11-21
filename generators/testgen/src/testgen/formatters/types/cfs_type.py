@@ -7,6 +7,7 @@
 
 from testgen.asm.helpers import (
     check_store_target,
+    fflags_setup,
     fill_store_target,
     load_float_reg,
     write_sigupd,
@@ -53,7 +54,7 @@ def format_cfs_type(
 
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data),
-        "fsflagsi 0b00000 # clear all fflags",
+        fflags_setup(params),
         f"LA(x{params.rs1}, scratch) # point base at scratch",
         *fill_store_target(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
         f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset",

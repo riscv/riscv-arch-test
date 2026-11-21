@@ -67,5 +67,30 @@ normative_rule_definitions:
   - name: ieee_std_tininess
     coverpoint:
       [
-        "ZicsrF_cg/{cp_underflow_after_rounding_fma_s, cp_underflow_after_rounding_fmul_s}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_s, cp_underflow_after_rounding_fmul_s, cp_underflow_after_rounding_fmul_emin_s, cp_underflow_after_rounding_fdiv_s}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_d, cp_underflow_after_rounding_fmul_d, cp_underflow_after_rounding_fcvt_s_d, cp_underflow_after_rounding_fmul_emin_d, cp_underflow_after_rounding_fdiv_d}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_h, cp_underflow_after_rounding_fmul_h, cp_underflow_after_rounding_fmul_emin_h, cp_underflow_after_rounding_fdiv_h, cp_underflow_after_rounding_fcvt_h_s}",
       ]
+
+  # The fused multiply-add instructions must set the invalid operation exception flag when
+  # the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
+  - name: fma_nv_flag
+    coverpoint:
+      ["ZicsrF_cg/{cp_fma_inf_zero_s, cp_fma_inf_zero_d, cp_fma_inf_zero_h}"]
+
+  # computational instructions compliant with the IEEE 754-2008 arithmetic standard's binary32
+  # format and operations.
+  # (IEEE 754-2008 6.3: an exact zero sum is +0 in every rounding mode except roundTowardNegative)
+  - name: F_ieee_compliance
+    coverpoint:
+      [
+        "ZicsrF_cg/{cp_fma_exact_zero_s, cp_fma_exact_zero_d, cp_fma_exact_zero_h}",
+      ]
+  # insn:fnmsub.s[] multiplies the values in rs1 and rs2, negates the product, adds the value
+  # in rs3, and writes the final result to rd. insn:fnmsub.s[] computes −(rs1×rs2)+rs3.
+  - name: fnmsub-s_op
+    coverpoint: ["ZicsrF_cg/cp_fma_exact_zero_s"]
+  # insn:fnmadd.s[] multiplies the values in rs1 and rs2, negates the product, subtracts the
+  # value in rs3, and writes the final result to rd. insn:fnmadd.s[] computes −(rs1×rs2)−rs3.
+  - name: fnmadd-s_op
+    coverpoint: ["ZicsrF_cg/cp_fma_exact_zero_s"]

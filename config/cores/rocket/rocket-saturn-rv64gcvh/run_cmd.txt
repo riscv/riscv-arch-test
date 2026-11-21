@@ -1,1 +1,1 @@
-run-rocket.sh --elf
+run-chipyard.sh --elf

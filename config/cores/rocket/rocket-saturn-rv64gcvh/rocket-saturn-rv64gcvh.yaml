@@ -2,7 +2,7 @@
 ---
 # UDB architecture configuration for the Rocket core with the Saturn vector unit and the
 # hypervisor extension, built through Chipyard (ACTRocketSaturnHConfig, see
-# .github/scripts/install-rocket.sh):
+# .github/scripts/install-chipyard.sh):
 #   WithNPerfCounters(29) ++ WithHypervisor ++ WithSV48 ++ WithBroadcastManager ++ WithNoDebug ++
 #   MINV128D64RocketConfig
 #

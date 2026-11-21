@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # CI configuration for the Rocket family (Rocket + Saturn + H, Chipyard 1.14.0).
 #
-# Measured on act4 2dc36dd2f with the simulator from .github/scripts/install-rocket.sh:
+# Measured on act4 2dc36dd2f with the simulator from .github/scripts/install-chipyard.sh:
 # RC = chipsalliance/rocket-chip@55bcad0f with PR #3820 (d1d2c5e7), the TLB superpage-refill fix
 # and htimedelta, SAT = ucb-bar/saturn-vectors@8ef05c9c with the acc_done fix. Of the 3441 tests
 # that `make tests` generates for this config, the CI selection (3124 tests) all pass; every
@@ -337,6 +337,5 @@ exclude_extensions:
   - Sv_H_sv48x4_hlv
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler"
-install_script: ".github/scripts/install-rocket.sh"
-setup_script: ".github/scripts/setup-rocket.sh"
+install_script: ".github/scripts/install-chipyard.sh"
 shards: 4

@@ -23,7 +23,7 @@ simulated with Verilator 5.036.
 
 ## Chipyard configuration
 
-`.github/scripts/install-rocket.sh` adds `ACTRocketSaturnHConfig` to Chipyard:
+`.github/scripts/install-chipyard.sh` adds `ACTRocketSaturnHConfig` to Chipyard:
 
 ```scala
 new chipyard.config.WithNPerfCounters(29) ++
@@ -77,10 +77,10 @@ that the remaining exclusions in `ci.yaml` reflect the other behavior of the cor
 ## Building and running
 
 ```bash
-.github/scripts/install-rocket.sh ~/repos/chipyard-builds
+.github/scripts/install-chipyard.sh ~/repos/chipyard-builds rocket
 export PATH=$HOME/repos/chipyard-builds/bin:$PATH
 make CONFIG_FILES=config/cores/rocket/rocket-saturn-rv64gcvh/test_config.yaml
-./run_tests.py "run-rocket.sh --elf" work/rocket-saturn-rv64gcvh/elfs
+./run_tests.py "run-chipyard.sh --elf" work/rocket-saturn-rv64gcvh/elfs
 ```
 
 ## Platform

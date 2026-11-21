@@ -11,6 +11,10 @@
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"
+// Signature builds and coverage builds run on Sail, so they replace DUT-specific macros with Sail macros.
+#if !defined(RVTEST_SELFCHECK) && !defined(RVTEST_SAIL_MACROS)
+  #define RVTEST_SAIL_MACROS
+#endif
 #include "rvmodel_macros.h"
 // The DUT build sends illegal instructions from S- and U-mode to M-mode first for invisible emulation
 // (see RVTEST_SAVE_MEDELEG_ILLEGAL), then forwards them to S in software. sail_macros.h turns emulation
@@ -19,7 +23,7 @@
 #if (defined(RVMODEL_INVISIBLE_TRAP_HANDLER) || defined(RVTEST_EMULATE_TIME_CSR)) && defined(S_SUPPORTED)
   #define RVTEST_ILLEGAL_THROUGH_M
 #endif
-#ifndef RVTEST_SELFCHECK
+#ifdef RVTEST_SAIL_MACROS
   #include "sail_macros.h"
 #endif
 #include "check_defines.h"

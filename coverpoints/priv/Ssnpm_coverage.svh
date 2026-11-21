@@ -53,7 +53,7 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     `endif // ZICFISS_SUPPORTED
     cp_pmlen_misaligned_word: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_mxr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, sw_lw_insn;
-    cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, jalr_insn;
+    cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits_jalr, mxr_bit, satp_mode, jalr_insn;
     `ifdef UDB_UXLEN_32
         cp_pmm_uxl_clear: cross priv_mode_s, pmm, uxl_rv32;
     `endif // UDB_UXLEN_32

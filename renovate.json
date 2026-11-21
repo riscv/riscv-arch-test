@@ -110,7 +110,7 @@
         "/^Dockerfile$/"
       ],
       "matchStrings": [
-        "riscv-toolchain-version:[^\\n]+\\n\\s+description:[^\\n]+\\n\\s+required: false\\n\\s+default: \\\"(?<currentValue>[\\d.]+)\\\"",
+        "riscv-toolchain-version:[^\\n]*\\n\\s+description:[^\\n]+\\n\\s+required: false\\n\\s+default: \\\"(?<currentValue>[\\d.]+)\\\"",
         "RISCV_TOOLCHAIN_VERSION[=:]\\s*\\\"?(?<currentValue>[\\d.]+)\\\"?"
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
@@ -122,11 +122,11 @@
       "customType": "regex",
       "managerFilePatterns": ["/^\\.github/actions/setup-tools/action\\.yml$/"],
       "matchStrings": [
-        "llvm-version:[^\\n]+\\n\\s+description:[^\\n]+\\n\\s+required: false\\n\\s+default: \\\"(?<currentValue>\\d+)\\\""
+        "llvm-version:[^\\n]*\\n\\s+description:[^\\n]+\\n\\s+required: false\\n\\s+default: \\\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\\\""
       ],
       "depNameTemplate": "llvm/llvm-project",
-      "datasourceTemplate": "github-tags",
-      "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^llvmorg-(?<version>\\d+\\.\\d+\\.\\d+)$"
     },
     {
       "description": "Bundler version recorded in Gemfile.lock (kept in sync with .mise.toml gem:bundler)",

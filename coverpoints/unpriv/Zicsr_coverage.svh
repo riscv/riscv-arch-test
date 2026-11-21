@@ -14,10 +14,12 @@
 `define COVER_ZICSR
 covergroup Zicsr_csrrc_cg with function sample(ins_t ins);
     option.per_instance = 0;
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
 
+`endif
     cp_asm_count : coverpoint ins.ins_str == "csrrc"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -27,10 +29,13 @@ covergroup Zicsr_csrrc_cg with function sample(ins_t ins);
         // RD register assignment
     }
 
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
+`endif
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef UDB_MXLEN_32
             bins zero     = {0};
@@ -67,6 +72,7 @@ covergroup Zicsr_csrrc_cg with function sample(ins_t ins);
         `endif
     }
 
+`endif
 endgroup
 // ---------------------
 covergroup Zicsr_csrrci_cg with function sample(ins_t ins);
@@ -80,18 +86,22 @@ covergroup Zicsr_csrrci_cg with function sample(ins_t ins);
         // RD register assignment
     }
 
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cp_uimm_5 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit immediates for csr*i, iw, and vector instructions
     }
 
+`endif
 endgroup
 // ---------------------
 covergroup Zicsr_csrrs_cg with function sample(ins_t ins);
     option.per_instance = 0;
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
 
+`endif
     cp_asm_count : coverpoint ins.ins_str == "csrrs"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -101,10 +111,13 @@ covergroup Zicsr_csrrs_cg with function sample(ins_t ins);
         // RD register assignment
     }
 
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
+`endif
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef UDB_MXLEN_32
             bins zero     = {0};
@@ -141,6 +154,7 @@ covergroup Zicsr_csrrs_cg with function sample(ins_t ins);
         `endif
     }
 
+`endif
 endgroup
 // ---------------------
 covergroup Zicsr_csrrsi_cg with function sample(ins_t ins);
@@ -154,12 +168,15 @@ covergroup Zicsr_csrrsi_cg with function sample(ins_t ins);
         // RD register assignment
     }
 
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     cp_uimm_5 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit immediates for csr*i, iw, and vector instructions
     }
 
+`endif
 endgroup
 // ---------------------
+`ifndef RVTEST_READ_ONLY_TEST_CSR
 covergroup Zicsr_csrrw_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
@@ -217,6 +234,8 @@ covergroup Zicsr_csrrw_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
+`ifndef RVTEST_READ_ONLY_TEST_CSR
 covergroup Zicsr_csrrwi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "csrrwi"  iff (ins.trap == 0 )  {
@@ -234,6 +253,7 @@ covergroup Zicsr_csrrwi_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 function void zicsr_sample(int hart, int issue, ins_t ins);
     string inst_name = traceDataQ[hart][issue][0].inst_name;
 
@@ -250,12 +270,16 @@ function void zicsr_sample(int hart, int issue, ins_t ins);
         "csrrsi"     : begin
             Zicsr_csrrsi_cg.sample(ins);
         end
+`ifndef RVTEST_READ_ONLY_TEST_CSR
         "csrrw"     : begin
             Zicsr_csrrw_cg.sample(ins);
         end
+`endif
+`ifndef RVTEST_READ_ONLY_TEST_CSR
         "csrrwi"     : begin
             Zicsr_csrrwi_cg.sample(ins);
         end
+`endif
         default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

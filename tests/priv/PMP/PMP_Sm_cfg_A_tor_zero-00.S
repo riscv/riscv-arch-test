@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 19
+#define SIGUPD_COUNT 16
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -33,7 +33,7 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // cp_cfg_A_tor0_x, cp_cfg_A_tor0_r and cp_cfg_A_tor0_w
-//   {sw, lw, jalr} at pmpaddr0, pmpaddr0-4 and 0 with entry 0 = L, TOR, XWR.
+//   {sw, lw, jalr} at 0 and pmpaddr0-4 with entry 0 = L, TOR, no permissions: each faults on entry 0, whatever the platform maps at 0, while the background entry would allow it.
 /////////////////////////////////
 
 // Clear every pmpcfg and pmpaddr CSR
@@ -48,77 +48,62 @@ RVTEST_BEGIN
   .set pmpaddri, pmpaddri + 1
   .endr
 
-#define PMPREGION_TOR (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_TOR (((PMP_L | PMP_TOR) & 0xFF) << PMP0_CFG_SHIFT)
 
   RVTEST_PMP_SET_BACKGROUND x4
 
-  LA(x5, TEST_FOR_EXECUTION)
-  srl x5, x5, PMP_SHIFT
+// Entry 0 denies [0, PMP_TOR_REGION_BYTES), so skip the probes if the image or the trap vector is there.
+  LI(x4, PMP_TOR_REGION_BYTES)
+  LA(x5, rvtest_entry_point)
+  bltu x5, x4, pmp_tor_zero_skip
+  csrr x5, mtvec
+  andi x5, x5, -4
+  bltu x5, x4, pmp_tor_zero_skip
+
+  LI(x5, PMP_TOR_REGION_BYTES >> 2)
   csrw pmpaddr0, x5
 
-// PMP configuration 1: pmpcfg0 = L, TOR, XWR: region 0 spans [0, TEST_FOR_EXECUTION)
+// pmpcfg0 = L, TOR, no permissions: region 0 spans [0, PMP_TOR_REGION_BYTES)
   LI(x4, PMPREGION_TOR)
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Store probes
-  LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_top:
+  LI(a5, 0)
+PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_zero:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_top, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_top_str)
-  addi a5, a5, -4
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_zero, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_zero_str)
+  LI(a5, PMP_TOR_REGION_BYTES - 4)
 PMP_Sm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4_str)
   LI(a5, 0)
-PMP_Sm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero:
-  sw a4, 0(a5)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero, PMP_Sm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero_str)
-
-// Load probes
-  LA(a5, TEST_FOR_EXECUTION)
-PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_top:
+PMP_Sm_cg_cp_cfg_A_tor0_r_region0_3_lw_zero:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_top, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_top_str)
-  addi a5, a5, -4
-PMP_Sm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_3_lw_zero, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_3_lw_zero_str)
+  LI(a5, PMP_TOR_REGION_BYTES - 4)
+PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_topm4:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4_str)
-  LI(a5, 0)
-PMP_Sm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero:
-  lw a4, 0(a5)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero_str)
-
-// Execute probes
-  RVTEST_FENCEI
-  LA(a4, TEST_FOR_EXECUTION)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_topm4, PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_topm4_str)
+  LI(a4, 0)
   LA(ra, 1f)
-PMP_Sm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top:
+PMP_Sm_cg_cp_cfg_A_tor0_x_region0_5_jalr_zero:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top_str)
-  addi a4, a4, -4
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_5_jalr_zero, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_5_jalr_zero_str)
+  LI(a4, PMP_TOR_REGION_BYTES - 4)
   LA(ra, 2f)
-PMP_Sm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4:
+PMP_Sm_cg_cp_cfg_A_tor0_x_region0_6_jalr_topm4:
   jalr x0, 0(a4)
 2:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4_str)
-  LI(a5, 0)
-  LA(ra, 3f)
-PMP_Sm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero:
-  jalr x0, 0(a5)
-3:
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_6_jalr_topm4, PMP_Sm_cg_cp_cfg_A_tor0_x_region0_6_jalr_topm4_str)
+pmp_tor_zero_skip:
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -128,37 +113,14 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-  .p2align 12
-  .p2align (UDB_PMP_GRANULARITY)
-  .option push
-  .option norvc
-TEST_FOR_EXECUTION_0:
-  .rept (PMP_TOR_REGION_BYTES / 4)
-  jr ra
-  .endr
-  .option pop
-TEST_FOR_EXECUTION:
-  .rept (PMP_TOR_REGION_BYTES / 4)
-  nop
-  .endr
-  .option push
-  .option norvc
-RETURN_INSTRUCTION:
-  nop
-  nop
-  jr ra
-  .option pop
 
 // Testcase strings
-PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_top_str: .string "\"test: 41; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_w; bin: region0_1_sw_top\""
+PMP_Sm_cg_cp_cfg_A_tor0_w_region0_1_sw_zero_str: .string "\"test: 41; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_w; bin: region0_1_sw_zero\""
 PMP_Sm_cg_cp_cfg_A_tor0_w_region0_2_sw_topm4_str: .string "\"test: 42; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_w; bin: region0_2_sw_top-4\""
-PMP_Sm_cg_cp_cfg_A_tor0_w_region0_3_sw_zero_str: .string "\"test: 43; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_w; bin: region0_3_sw_zero\""
-PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_top_str: .string "\"test: 44; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_r; bin: region0_4_lw_top\""
-PMP_Sm_cg_cp_cfg_A_tor0_r_region0_5_lw_topm4_str: .string "\"test: 45; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_r; bin: region0_5_lw_top-4\""
-PMP_Sm_cg_cp_cfg_A_tor0_r_region0_6_lw_zero_str: .string "\"test: 46; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_r; bin: region0_6_lw_zero\""
-PMP_Sm_cg_cp_cfg_A_tor0_x_region0_7_jalr_top_str: .string "\"test: 47; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_x; bin: region0_7_jalr_top\""
-PMP_Sm_cg_cp_cfg_A_tor0_x_region0_8_jalr_topm4_str: .string "\"test: 48; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_x; bin: region0_8_jalr_top-4\""
-PMP_Sm_cg_cp_cfg_A_tor0_x_region0_9_jalr_zero_str: .string "\"test: 49; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_x; bin: region0_9_jalr_zero\""
+PMP_Sm_cg_cp_cfg_A_tor0_r_region0_3_lw_zero_str: .string "\"test: 43; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_r; bin: region0_3_lw_zero\""
+PMP_Sm_cg_cp_cfg_A_tor0_r_region0_4_lw_topm4_str: .string "\"test: 44; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_r; bin: region0_4_lw_top-4\""
+PMP_Sm_cg_cp_cfg_A_tor0_x_region0_5_jalr_zero_str: .string "\"test: 45; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_x; bin: region0_5_jalr_zero\""
+PMP_Sm_cg_cp_cfg_A_tor0_x_region0_6_jalr_topm4_str: .string "\"test: 46; cg: PMP_Sm_cg; cp: cp_cfg_A_tor0_x; bin: region0_6_jalr_top-4\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -13,7 +13,8 @@ normative_rule_definitions:
   # instructions in the ext:zalrsc[] extension be contiguous, naturally aligned, and
   # at most 64 bytes in size.
   - name: Za64rs_res_set_req
-    coverpoint: ["Za64rs_cg/cp_za64rs"]
+    # cp_za64rs_d exists only on RV64.
+    coverpoint: ["Za64rs_cg/cp_za64rs", "Za64rs_cg/cp_za64rs_d"]
 
   # The ext:za64rs[] extension implies the ext:za128rs[] extension.
   - name: Za64rs_implies_Za128rs

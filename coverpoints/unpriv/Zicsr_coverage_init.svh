@@ -14,5 +14,9 @@
     Zicsr_csrrci_cg = new(); Zicsr_csrrci_cg.set_inst_name("obj_Zicsr_csrrci");
     Zicsr_csrrs_cg = new(); Zicsr_csrrs_cg.set_inst_name("obj_Zicsr_csrrs");
     Zicsr_csrrsi_cg = new(); Zicsr_csrrsi_cg.set_inst_name("obj_Zicsr_csrrsi");
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     Zicsr_csrrw_cg = new(); Zicsr_csrrw_cg.set_inst_name("obj_Zicsr_csrrw");
+`endif
+`ifndef RVTEST_READ_ONLY_TEST_CSR
     Zicsr_csrrwi_cg = new(); Zicsr_csrrwi_cg.set_inst_name("obj_Zicsr_csrrwi");
+`endif

@@ -46,7 +46,7 @@ RVTEST_BEGIN
 Zicsr_csrrsi_cg_cp_rd_b0:
 // perform operation
 #ifdef RVTEST_READ_ONLY_TEST_CSR
-  li x0, 0x42 # avoid write to read-only CSR, or inconsistent result with rd = 0
+  csrrsi x0, RVTEST_TEST_CSR, 0  # uimm = 0 does not write; the result is discarded
 #else
   csrrsi x0, RVTEST_TEST_CSR, 30
 #endif
@@ -1441,7 +1441,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 // perform operation
 #ifdef RVTEST_READ_ONLY_TEST_CSR
-  li x0, 0x42 # avoid write to read-only CSR, or inconsistent result with rd = 0
+  csrrsi x0, RVTEST_TEST_CSR, 0  # uimm = 0 does not write; the result is discarded
 #else
   csrrsi x0, RVTEST_TEST_CSR, 10
 #endif

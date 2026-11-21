@@ -212,6 +212,12 @@ def _check_macro_stage(mode: SvMode) -> None:
         )
 
 
+def _pte_setup_macro(macro: str, mode: SvMode, address: str) -> str:
+    """The PTE_SETUP_* macro that loads ``address``: the _FIXED variant, which uses LI_FIXED_LEN, for an
+    RVMODEL_* address, and otherwise the variant that uses LA."""
+    return f"{macro}_{mode.suffix}{'_FIXED' if 'RVMODEL_' in address else ''}"
+
+
 def write_pte(
     mode: SvMode,
     *,
@@ -224,12 +230,13 @@ def write_pte(
     pa_is_label: bool = True,
     superpage: bool = False,
     pa_reg: int | None = None,
+    va_reg: int | None = None,
 ) -> list[str]:
     """Emit code that writes one PTE into ``mode``'s table at ``level``, using three scratch registers.
 
     A label address is loaded with LA at run time; any other address is an assembler constant.  With ``pa_reg``,
-    register x{pa_reg} holds the physical address instead.  The PPN is the physical address shifted right by 12,
-    or for a superpage by the leaf's page offset width.
+    register x{pa_reg} holds the physical address instead, and with ``va_reg`` register x{va_reg} holds the virtual
+    address.  The PPN is the physical address shifted right by 12, or for a superpage by the leaf's page offset width.
     """
     _check_level(mode, level)
     pte, addr, tmp = regs
@@ -237,11 +244,11 @@ def write_pte(
     ppn_shift = shift if superpage else 12
     size_bits = 2 if mode.xlen == 32 else 3
     table = mode.page_table_label(level)
-    if va_is_label:
+    if va_is_label or va_reg is not None:
         top = mode.xlen - mode.index_bits(level)
         lines = [
-            f"LA(x{addr}, {virtual_address})",
-            f"srli x{addr}, x{addr}, {shift}",
+            *([f"LA(x{addr}, {virtual_address})"] if va_reg is None else []),
+            f"srli x{addr}, x{addr if va_reg is None else va_reg}, {shift}",
             f"slli x{addr}, x{addr}, {top}",
             f"srli x{addr}, x{addr}, {top - size_bits}",
             f"LA(x{tmp}, {table})",
@@ -275,13 +282,17 @@ def create_page_walk(
     table_addresses: Mapping[int, str] | None = None,
     regs: tuple[int, int, int] | None = None,
     va_is_label: bool = False,
+    va_reg: int | None = None,
 ) -> list[str]:
     """Emit the non-leaf PTEs above ``leaf_level``.
 
     Without ``regs`` the satp PTE_SETUP_* macros write them, clobbering a0, a1, t0 and t1.  With ``regs``
-    write_pte writes them, in any stage; a VS-stage table address is then a guest physical address.
+    write_pte writes them, in any stage; a VS-stage table address is then a guest physical address, and ``va_reg``
+    may name the register that holds the virtual address.
     """
     _check_level(mode, leaf_level)
+    if regs is None and va_reg is not None:
+        raise ValueError("va_reg needs regs: the PTE_SETUP_* macros take the virtual address as an operand")
     overrides = overrides or {}
     table_addresses = table_addresses or {}
 
@@ -292,9 +303,9 @@ def create_page_walk(
         table_address = table_addresses.get(pte_level, mode.page_table_label(table_level))
         if regs is None:
             _check_macro_stage(mode)
+            macro = _pte_setup_macro("PTE_SETUP", mode, table_address)
             lines.append(
-                f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(permissions)}), "
-                f"{virtual_address}, LEVEL{pte_level})"
+                f"{macro}({table_address}, ({_pte_expression(permissions)}), {virtual_address}, LEVEL{pte_level})"
             )
         else:
             lines.extend(
@@ -306,6 +317,7 @@ def create_page_walk(
                     physical_address=table_address,
                     regs=regs,
                     va_is_label=va_is_label,
+                    va_reg=va_reg,
                 )
             )
     return lines
@@ -324,7 +336,8 @@ def create_nonleaf_pte(
         raise ValueError(f"Non-leaf level {level} is outside 1..{mode.levels - 1}")
     _check_macro_stage(mode)
     table_address = table_address or mode.page_table_label(level - 1)
-    return f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
+    macro = _pte_setup_macro("PTE_SETUP", mode, table_address)
+    return f"{macro}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_leaf_pte(
@@ -342,7 +355,8 @@ def create_leaf_pte(
     if superpage is None:
         superpage = level > 0
     macro = "SUPERPAGE_PTE_SETUP" if superpage and level > 0 else "PTE_SETUP"
-    return f"{macro}_{mode.suffix}({physical_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
+    macro = _pte_setup_macro(macro, mode, physical_address)
+    return f"{macro}({physical_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_page_mapping(
@@ -358,8 +372,15 @@ def create_page_mapping(
     regs: tuple[int, int, int] | None = None,
     va_is_label: bool = False,
     pa_is_label: bool = True,
+    va_reg: int | None = None,
+    pa_reg: int | None = None,
 ) -> list[str]:
-    """Emit one page-table walk and its leaf PTE, with the satp macros or, given ``regs``, with write_pte."""
+    """Emit one page-table walk and its leaf PTE, with the satp macros or, given ``regs``, with write_pte.
+
+    With ``regs``, ``va_reg`` and ``pa_reg`` may name the registers that hold the addresses.
+    """
+    if regs is None and (va_reg is not None or pa_reg is not None):
+        raise ValueError("va_reg and pa_reg need regs: the PTE_SETUP_* macros take the addresses as operands")
     walk = create_page_walk(
         mode,
         leaf_level=leaf_level,
@@ -368,6 +389,7 @@ def create_page_mapping(
         table_addresses=walk_table_addresses,
         regs=regs,
         va_is_label=va_is_label,
+        va_reg=va_reg,
     )
     if regs is None:
         return [
@@ -391,5 +413,7 @@ def create_page_mapping(
         va_is_label=va_is_label,
         pa_is_label=pa_is_label,
         superpage=leaf_level > 0 if superpage is None else superpage,
+        pa_reg=pa_reg,
+        va_reg=va_reg,
     )
     return [*walk, *leaf]

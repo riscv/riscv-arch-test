@@ -1542,6 +1542,12 @@ endgroup
 // the DUT then provides RVMODEL_SET/CLR_GUEST_EXT_INT to raise them
 `ifdef RVTEST_SGEI_INTR_IMPL
 
+// {old VGEIN == 0, hgeip[old VGEIN], new VGEIN == 0, hgeip[new VGEIN]} for a write of hstatus
+`define VGEIN_SWITCH {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12] == 0, \
+                      ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGEIP) >> get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12]) & 1) != 0, \
+                      get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12] == 0, \
+                      ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HGEIP) >> get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS)[17:12]) & 1) != 0}
+
 // Guest external interrupts taken from HS, U, VS and VU modes, and hgeip, hgeie, hip.SGEIP, hstatus.VGEIN and the SGEI
 // priority, sampled in HS-mode
 covergroup Interrupts_Sgei_cg with function sample(ins_t ins);
@@ -1644,6 +1650,38 @@ covergroup Interrupts_Sgei_cg with function sample(ins_t ins);
             ignore_bins no_others = !binsof(vgein.zero) && binsof(hgeip_vs_vgein.others);
         `endif
     }
+
+    // A csrrw, csrrs or csrrc of hstatus that moves VGEIN, after which the test reads hip.VSEIP:
+    // {old VGEIN == 0, hgeip[old VGEIN], new VGEIN == 0, hgeip[new VGEIN]}, where hgeip bit 0 reads 0.
+    // csrrs cannot reach VGEIN = 0 and csrrc cannot leave it, so each form has the transitions it can make.
+    hstatus_csr : coverpoint ins.current.insn[31:20] {
+        bins hstatus = {CSR_HSTATUS};
+    }
+    csrrs : coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+    }
+    csrrc : coverpoint ins.current.insn {
+        wildcard bins csrrc = {CSRRC};
+    }
+    vgein_switch_rw : coverpoint `VGEIN_SWITCH {
+        bins pending_to_zero = {4'b0110};
+        bins pending_to_idle = {4'b0100};
+        bins zero_to_pending = {4'b1001};
+        bins idle_to_pending = {4'b0001};
+    }
+    vgein_switch_set : coverpoint `VGEIN_SWITCH {
+        bins pending_to_idle = {4'b0100};
+        bins zero_to_pending = {4'b1001};
+        bins idle_to_pending = {4'b0001};
+    }
+    vgein_switch_clear : coverpoint `VGEIN_SWITCH {
+        bins pending_to_zero = {4'b0110};
+        bins pending_to_idle = {4'b0100};
+        bins idle_to_pending = {4'b0001};
+    }
+    cp_vgein_switch_csrrw: cross priv_mode_hs, csrrw, hstatus_csr, vgein_switch_rw;
+    cp_vgein_switch_csrrs: cross priv_mode_hs, csrrs, hstatus_csr, vgein_switch_set;
+    cp_vgein_switch_csrrc: cross priv_mode_hs, csrrc, hstatus_csr, vgein_switch_clear;
 endgroup
 
 `ifndef EXCLUDE_SM
@@ -1675,6 +1713,8 @@ covergroup Interrupts_SgeiSm_cg with function sample(ins_t ins);
     cp_trigger_sgei: cross sgei_mode, mstatus_sie, hie_sgeie, sgei_pending, mideleg_zeros;
 endgroup
 `endif // EXCLUDE_SM
+
+`undef VGEIN_SWITCH
 
 `endif // RVTEST_SGEI_INTR_IMPL
 

@@ -537,10 +537,18 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
         `endif
     }
     // The fetch fault is recorded with the jalr, the last instruction that retired before it.
-    scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-                         iff (ins.current.csr_wb[CSR_SEPC]) {
-        bins access_fault = {INSTRUCTION_ACCESS_FAULT};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_1
+        scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                             iff (ins.current.csr_wb[CSR_SEPC]) {
+            bins access_fault = {INSTRUCTION_ACCESS_FAULT};
+        }
+    `else
+        // medeleg[1] is read-only 0, so instruction access faults are taken in M-mode
+        scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")
+                             iff (ins.current.csr_wb[CSR_MEPC]) {
+            bins access_fault = {INSTRUCTION_ACCESS_FAULT};
+        }
+    `endif
 
     // ── Main coverpoints ──────────────────────────────────────────────────
     // Instruction behaviour (Zicfiss active)
@@ -751,7 +759,14 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
         hstatus_hu: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hu")[0] {}
     `endif
     // Delegation of the software-check exception (cause 18).
-    medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {}
+    `ifdef UDB_MEDELEG_DELEGATABLE_18
+        medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {}
+    `else
+        // medeleg[18] is read-only 0
+        medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {
+            bins not_delegated = {0};
+        }
+    `endif
     `ifdef H_SUPPORTED
         hedeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[18] {}
     `endif

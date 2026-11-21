@@ -52,63 +52,79 @@ RVTEST_BEGIN
 
 // PMP configuration: write A = TOR to every byte of every pmpcfg CSR
 #if __riscv_xlen == 64
-  LI(x4, ((PMP_TOR&0xFF) << PMP0_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP1_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP2_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP3_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP4_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP5_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP6_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP7_CFG_SHIFT))
+  LI(x13, ((PMP_TOR&0xFF) << PMP0_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP1_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP2_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP3_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP4_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP5_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP6_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP7_CFG_SHIFT))
 #else
-  LI(x4, ((PMP_TOR&0xFF) << PMP0_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP1_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP2_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP3_CFG_SHIFT))
+  LI(x13, ((PMP_TOR&0xFF) << PMP0_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP1_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP2_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP3_CFG_SHIFT))
 #endif
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg0:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg0, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg0_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg0, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg0_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg2:
-  # Write x4 to pmpcfg2, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg2, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg2_str)
+  # Write x12 to pmpcfg2, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg2, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg2_str)
 #if __riscv_xlen == 32
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg1:
-  # Write x4 to pmpcfg1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg1, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg1, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg1_str)
+  # Write x12 to pmpcfg1, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg1, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg1, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg1_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg3:
-  # Write x4 to pmpcfg3, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg3, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg3_str)
+  # Write x12 to pmpcfg3, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg3, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg3_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg4:
-  # Write x4 to pmpcfg4, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg4_str)
+  # Write x12 to pmpcfg4, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg4_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg6:
-  # Write x4 to pmpcfg6, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg6, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg6_str)
+  # Write x12 to pmpcfg6, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg6, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg6_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg8:
-  # Write x4 to pmpcfg8, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg8, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg8_str)
+  # Write x12 to pmpcfg8, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg8, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg8_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg10:
-  # Write x4 to pmpcfg10, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg10, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg10_str)
+  # Write x12 to pmpcfg10, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg10, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg10_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg12:
-  # Write x4 to pmpcfg12, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg12_str)
+  # Write x12 to pmpcfg12, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg12_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg14:
-  # Write x4 to pmpcfg14, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg14, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg14_str)
+  # Write x12 to pmpcfg14, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x12, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg14, PMP_Sm_cg_cp_cfg_A_all_even_TOR_pmpcfg14_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg5:
-  # Write x4 to pmpcfg5, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg5, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg5, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg5_str)
+  # Write x12 to pmpcfg5, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg5, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg5, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg5_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg7:
-  # Write x4 to pmpcfg7, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg7, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg7, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg7_str)
+  # Write x12 to pmpcfg7, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg7, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg7, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg7_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg9:
-  # Write x4 to pmpcfg9, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg9, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg9, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg9_str)
+  # Write x12 to pmpcfg9, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg9, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg9, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg9_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg11:
-  # Write x4 to pmpcfg11, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg11, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg11, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg11_str)
+  # Write x12 to pmpcfg11, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg11, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg11, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg11_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg13:
-  # Write x4 to pmpcfg13, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg13, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg13, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg13_str)
+  # Write x12 to pmpcfg13, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg13, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg13, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg13_str)
+  mv x12, x13
 PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg15:
-  # Write x4 to pmpcfg15, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x4, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg15, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg15_str)
+  # Write x12 to pmpcfg15, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x12, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg15, PMP_Sm_cg_cp_cfg_A_all_odd_TOR_pmpcfg15_str)
 #endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

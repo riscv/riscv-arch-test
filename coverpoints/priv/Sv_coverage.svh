@@ -38,23 +38,20 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
         }
     `endif
 
-    `ifdef UDB_MXLEN_64
-        asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[15:0] { //sat.5
-            bins values = {16'h0001, 16'h0002, 16'h0004, 16'h0008, 16'h0010, 16'h0020, 16'h0040, 16'h0080, 16'h0100, 16'h0200, 16'h0400, 16'h0800, 16'h1000, 16'h2000, 16'h0400, 16'h8000};
-        }
-    `else
-        asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[8:0] {
-            bins values = {9'h001, 9'h002, 9'h004, 9'h008, 9'h010, 9'h020, 9'h040, 9'h080, 9'h100};
-        }
-    `endif
+    // One bin per implemented ASID bit: the UDB_ASID_WIDTH least-significant bits, none when ASIDLEN = 0
+    asid_length: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "asid")[15:0] { //sat.5
+        bins values[] = {16'h0001, 16'h0002, 16'h0004, 16'h0008, 16'h0010, 16'h0020, 16'h0040, 16'h0080,
+                         16'h0100, 16'h0200, 16'h0400, 16'h0800, 16'h1000, 16'h2000, 16'h4000, 16'h8000}
+                        with (item < (1 << `UDB_ASID_WIDTH));
+    }
 
     tvm_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tvm")[0]{
         bins zero = {0};
     }
 
-    Scause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins illegal_ins  = {ILLEGAL_INSTRUCTION};
-        bins no_exception = {0};
+    Scause: coverpoint s_trap(ins) {
+        bins illegal_ins          = {6'b100010};
+        wildcard bins no_exception = {6'b0?????};
     }
 
     cp_ins: coverpoint ins.current.insn {
@@ -395,14 +392,14 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     write_acc: coverpoint ins.current.write_access{
         bins set = {1};
     }
-    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins load_page_fault = {LOAD_PAGE_FAULT};
+    load_page_fault: coverpoint s_trap(ins) {
+        bins load_page_fault = {6'b101101};
     }
-    ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
+    ins_page_fault: coverpoint s_trap(ins) {
+        bins ins_page_fault = {6'b101100};
     }
-    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
+    store_page_fault: coverpoint s_trap(ins) {
+        bins store_amo_page_fault = {6'b101111};
     }
     Nopagefault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL){
         bins no_fault  = {64'd0};
@@ -841,8 +838,11 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins reserved_bit_56 = {7'b0000100};
             bins reserved_bit_57 = {7'b0001000};
             bins reserved_bit_58 = {7'b0010000};
-            bins reserved_bit_59 = {7'b0100000};
-            bins reserved_bit_60 = {7'b1000000};
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifndef SVRSW60T59B_SUPPORTED
+                bins reserved_bit_59 = {7'b0100000};
+                bins reserved_bit_60 = {7'b1000000};
+            `endif
         }
         reserved_PTE_d: coverpoint ins.current.pte_d[60:54] {
             bins reserved_bit_54 = {7'b0000001};
@@ -850,8 +850,11 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             bins reserved_bit_56 = {7'b0000100};
             bins reserved_bit_57 = {7'b0001000};
             bins reserved_bit_58 = {7'b0010000};
-            bins reserved_bit_59 = {7'b0100000};
-            bins reserved_bit_60 = {7'b1000000};
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifndef SVRSW60T59B_SUPPORTED
+                bins reserved_bit_59 = {7'b0100000};
+                bins reserved_bit_60 = {7'b1000000};
+            `endif
         }
 
         PBMTE_unset: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "pbmte")[0] {
@@ -882,14 +885,14 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         write_acc: coverpoint ins.current.write_access {
             bins set = {1};
         }
-        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins load_page_fault = {LOAD_PAGE_FAULT};
+        load_page_fault: coverpoint s_trap(ins) {
+            bins load_page_fault = {6'b101101};
         }
-        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT};
+        ins_page_fault: coverpoint s_trap(ins) {
+            bins ins_page_fault = {6'b101100};
         }
-        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
+        store_page_fault: coverpoint s_trap(ins) {
+            bins store_amo_page_fault = {6'b101111};
         }
 
         //pte.17
@@ -966,7 +969,7 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     tvm_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "tvm")[0] {
         bins set = {1};
     }
-    Mcause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+    Mcause: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins illegal_ins = {ILLEGAL_INSTRUCTION};
     }
     cp_ins: coverpoint ins.current.insn {
@@ -1042,10 +1045,10 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
         }
     `endif
 
-    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins load_page_fault = {LOAD_PAGE_FAULT};
     }
-    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
     }
     sum_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "sum")[0] {
@@ -1085,9 +1088,21 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     }
     `ifdef UDB_MXLEN_64
         sbe_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "sbe")[0] { //ms.5
+            // mstatus.SBE can be written only when S-mode endianness is dynamic
+            `ifdef UDB_S_MODE_ENDIANNESS_LITTLE
+                bins little = {1'b0};
+            `elsif UDB_S_MODE_ENDIANNESS_BIG
+                bins big = {1'b1};
+            `endif
         }
     `else
         sbe_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "sbe")[0] { //ms.5
+            // mstatus.SBE can be written only when S-mode endianness is dynamic
+            `ifdef UDB_S_MODE_ENDIANNESS_LITTLE
+                bins little = {1'b0};
+            `elsif UDB_S_MODE_ENDIANNESS_BIG
+                bins big = {1'b1};
+            `endif
         }
     `endif
 
@@ -1230,15 +1245,15 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         }
     `endif
 
-    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE) iff (ins.trap == 1) {
-        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
+    store_page_fault: coverpoint s_trap(ins) {
+        bins store_amo_page_fault = {6'b101111};
     }
     // Only reachable when the DUT has an address that faults: its sole bin is the
     // store/AMO access fault cause, and its only consumers are the guarded
     // cp_*_to_nonexistent_pa_cbo_* crosses below.
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE) iff (ins.trap == 1) {
-            bins store_amo_access_fault = {STORE_AMO_ACCESS_FAULT};
+        store_acc_fault: coverpoint s_trap(ins) {
+            bins store_amo_access_fault = {6'b100111};
         }
     `endif
     sum_sstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SSTATUS, "sum")[0]{
@@ -1398,13 +1413,13 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    instr_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+    instr_page_fault: coverpoint (s_trap(ins) == 6'b101100) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+    load_page_fault: coverpoint (s_trap(ins) == 6'b101101) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+    store_page_fault: coverpoint (s_trap(ins) == 6'b101111) {
         // auto fill 0/1
     }
     // The PC of the target: a fetch that spans two parcels may report either parcel in virt_adr_i
@@ -1546,13 +1561,13 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         bins u_mode = {2'b00};
         bins s_mode = {2'b01};
     }
-    instr_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+    instr_page_fault: coverpoint (ins.current.csr_wb[CSR_MCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+    load_page_fault: coverpoint (ins.current.csr_wb[CSR_MCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+    store_page_fault: coverpoint (ins.current.csr_wb[CSR_MCAUSE] && get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
     i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {
@@ -1569,33 +1584,34 @@ covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
         wildcard bins sw = {SW};
         wildcard bins lw = {LW};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_?1?1_11??}; // access faults might not be possible to delegate if they don't exist
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-            bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+            `ifdef UDB_MEDELEG_DELEGATABLE_1 bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-            bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_5 bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-            bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_7 bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
         `endif
     }
     jalr: coverpoint ins.prev.insn {
@@ -1718,28 +1734,29 @@ covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
     amoops: coverpoint ins.current.insn {
         wildcard bins amoadd_w = {AMOADD_W};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_1  bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_5  bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_7  bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_1111_111?};
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints
@@ -1839,28 +1856,29 @@ covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
         wildcard bins sc_w = {SC_W};
     }
+    // The values the test writes, as read back: a bit that is not delegatable is read-only 0
     medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef ZCA_SUPPORTED
-            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+            `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled = {16'b0000_0000_0000_0001}; `endif
         `endif
-        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_1  bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_5  bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_7  bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
         // Delegating ecall to S mode makes it impossible to escape S mode
         // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
         // bit 10 reserved
         // bit 11 is read only zero
-        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
         // bit 14 reserved
-        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-        wildcard bins ones            = {16'b1011_0001_1111_111?};
+        `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+        bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
 
     // main coverpoints
@@ -1938,8 +1956,8 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     hgatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare = {0};
     }
-    // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    // The trap into HS-mode that the access takes, if any, or into M-mode when medeleg cannot delegate it
+    trap : coverpoint s_trap(ins) {
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
     }
@@ -1999,7 +2017,7 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
             bins sv32x4 = {1};
         `endif
     }
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    trap : coverpoint s_trap(ins) {
         wildcard bins none     = {6'b0?????};
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
@@ -2099,36 +2117,41 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
             `endif
         `endif
     }
-    trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    trap : coverpoint s_trap(ins) {
         wildcard bins none     = {6'b0?????};
         bins page_fault        = {6'b101100, 6'b101101, 6'b101111};
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
-    guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    guest_page_fault : coverpoint s_trap(ins) {
         bins guest_page_fault  = {6'b110100, 6'b110101, 6'b110111};
     }
-    page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    page_fault : coverpoint s_trap(ins) {
         bins page_fault = {6'b101100, 6'b101101, 6'b101111};
     }
-    access_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    access_fault : coverpoint s_trap(ins) {
         bins access_fault = {6'b100001, 6'b100101, 6'b100111};
     }
-    // A page fault delegated to VS-mode
-    vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE)[4:0]} {
-        bins page_fault = {6'b101100, 6'b101101, 6'b101111};
-    }
+    // A page fault delegated to VS-mode, which needs medeleg to delegate it too
+    `ifdef UDB_MEDELEG_DELEGATABLE_12 `ifdef UDB_MEDELEG_DELEGATABLE_15
+        vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE)[4:0]} {
+            bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+        }
+    `endif `endif
     hedeleg_page_faults : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[15:12] {
         bins delegated = {4'b1011};
     }
     mstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
     vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
-    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
-        `ifdef UDB_MXLEN_64
-            bins read = {'h3000};
-        `else
-            bins read = {'h2000};
-        `endif
-    }
+    // htinst and htval are written only by guest-page faults taken in HS-mode, so need medeleg to delegate them
+    `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+        htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
+            `ifdef UDB_MXLEN_64
+                bins read = {'h3000};
+            `else
+                bins read = {'h2000};
+            `endif
+        }
+    `endif `endif `endif
     // A fetch at the last halfword of a page
     page_end : coverpoint ins.current.rs1_val[11:0] {
         bins page_end = {12'hffe};
@@ -2170,15 +2193,17 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
             // A guest-page fault on a guest physical address above the G-stage mode's width: htval holds it shifted
             // right by 2, so bits 63:39 (Sv39x4) or 63:48 (Sv48x4) of htval are not all zero.  A VS-stage PPN reaches
             // guest physical address bit 55 at most, which is within Sv57x4.
-            htval_gpa_wide : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")
-                             iff (ins.current.csr_wb[CSR_HTVAL]) {
-                `ifdef UDB_SV39X4_TRANSLATION
-                    bins sv39x4 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:39] != 0);
-                `endif
-                `ifdef UDB_SV48X4_TRANSLATION
-                    bins sv48x4 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:48] != 0);
-                `endif
-            }
+            `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+                htval_gpa_wide : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")
+                                 iff (ins.current.csr_wb[CSR_HTVAL]) {
+                    `ifdef UDB_SV39X4_TRANSLATION
+                        bins sv39x4 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:39] != 0);
+                    `endif
+                    `ifdef UDB_SV48X4_TRANSLATION
+                        bins sv48x4 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:48] != 0);
+                    `endif
+                }
+            `endif `endif `endif
         `endif
     `else
         menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue") {
@@ -2191,20 +2216,23 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
         // The two guest physical address bits an x4 mode adds above its Sv mode's virtual address width (33:32 for
         // Sv32x4, 40:39 for Sv39x4, 49:48 for Sv48x4), with the bits above them zero, which htval reports shifted right
-        // by 2 after a guest-page fault.  A VS-stage PPN cannot reach Sv57x4's bits 58:57.
-        htval_x4_bits : coverpoint x4_gpa_bits(ins, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL), 2)
-                        iff (ins.current.csr_wb[CSR_HTVAL]) {
-            `ifdef UDB_MXLEN_64
-                `ifdef UDB_SV39X4_TRANSLATION
-                    bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
+        // by 2 after a guest-page fault.  A VS-stage PPN cannot reach Sv57x4's bits 58:57.  Only a guest-page fault
+        // taken in HS-mode writes htval, so these need medeleg to delegate it.
+        `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+            htval_x4_bits : coverpoint x4_gpa_bits(ins, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL), 2)
+                            iff (ins.current.csr_wb[CSR_HTVAL]) {
+                `ifdef UDB_MXLEN_64
+                    `ifdef UDB_SV39X4_TRANSLATION
+                        bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
+                    `endif
+                    `ifdef UDB_SV48X4_TRANSLATION
+                        bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
+                    `endif
+                `else
+                    bins sv32x4_01 = {8'h11}; bins sv32x4_10 = {8'h12}; bins sv32x4_11 = {8'h13};
                 `endif
-                `ifdef UDB_SV48X4_TRANSLATION
-                    bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
-                `endif
-            `else
-                bins sv32x4_01 = {8'h11}; bins sv32x4_10 = {8'h12}; bins sv32x4_11 = {8'h13};
-            `endif
-        }
+            }
+        `endif `endif `endif
     `endif
 
     // VS-stage and G-stage permissions combined: a VS-stage denial is a page fault, a G-stage one a guest-page fault
@@ -2213,10 +2241,12 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     cp_twostage_mxr    : cross priv_mode_vs_vu, lw, stage_modes, vsstatus_mxr, mstatus_mxr;
     // Svade in both stages.  Svadu_H_cg has the ADUE = 1 cases.
     cp_twostage_svade  : cross priv_mode_vs, access, stage_modes, menvcfg_adue, henvcfg_adue;
-    // Guest-page faults on implicit VS-stage page-table reads
-    cp_implicit_gpf    : cross priv_mode_vs, access, stage_modes, htinst_read;
-    // MXR does not make an execute-only G-stage leaf of a VS-stage page table readable to an implicit read
-    cp_implicit_mxr    : cross priv_mode_vs, lw, stage_modes, vsstatus_mxr, mstatus_mxr, htinst_read;
+    `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+        // Guest-page faults on implicit VS-stage page-table reads
+        cp_implicit_gpf    : cross priv_mode_vs, access, stage_modes, htinst_read;
+        // MXR does not make an execute-only G-stage leaf of a VS-stage page table readable to an implicit read
+        cp_implicit_mxr    : cross priv_mode_vs, lw, stage_modes, vsstatus_mxr, mstatus_mxr, htinst_read;
+    `endif `endif `endif
     // An access fault on the final address or on a VS-stage or G-stage page-table read reports the original access
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
         cp_twostage_access_fault_load  : cross priv_mode_vs, lw, stage_modes, access_fault;
@@ -2231,7 +2261,18 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         cp_twostage_access_fault_fetch : cross priv_mode_vs, jalr, stage_modes, access_fault;
     `endif
     // Page faults go to VS-mode when hedeleg delegates them; guest-page faults cannot be delegated
-    cp_hedeleg_page_fault       : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
+    `ifdef UDB_MEDELEG_DELEGATABLE_12 `ifdef UDB_MEDELEG_DELEGATABLE_15
+        `ifdef UDB_MEDELEG_DELEGATABLE_13
+            cp_hedeleg_page_fault       : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
+        `else
+            // medeleg[13] is read-only 0, so load page faults are taken in M-mode and never reach VS-mode
+            store_fetch : coverpoint ins.current.insn {
+                wildcard bins sw   = {SW};
+                wildcard bins jalr = {JALR};
+            }
+            cp_hedeleg_page_fault       : cross priv_mode_vs_vu, store_fetch, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
+        `endif
+    `endif `endif
     cp_hedeleg_guest_page_fault : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, guest_page_fault;
     cp_stage_both_bare : cross priv_mode_vs_vu, access, vsatp_bare, hgatp_bare;
     `ifdef ZCA_SUPPORTED
@@ -2249,12 +2290,16 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         cp_twostage_canonical : cross priv_mode_vs_vu, access, va_noncanonical, page_fault;
         `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
             // A guest physical address from a VS-stage leaf or non-leaf PPN that is wider than the G-stage mode allows
-            cp_twostage_gpa_width : cross priv_mode_vs, access, vsatp_paged, htval_gpa_wide, guest_page_fault;
+            `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+                cp_twostage_gpa_width : cross priv_mode_vs, access, vsatp_paged, htval_gpa_wide, guest_page_fault;
+            `endif `endif `endif
         `endif
     `endif
     `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
         // A guest-page fault on a guest physical address from a VS-stage leaf that sets the x4 mode's top two bits
-        cp_twostage_x4_gpa : cross priv_mode_vs, access, vsatp_paged, htval_x4_bits, guest_page_fault;
+        `ifdef UDB_MEDELEG_DELEGATABLE_20 `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+            cp_twostage_x4_gpa : cross priv_mode_vs, access, vsatp_paged, htval_x4_bits, guest_page_fault;
+        `endif `endif `endif
     `endif
 endgroup
 
@@ -2299,7 +2344,7 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         `endif
     }
     // The load page fault (VS-stage) or load guest-page fault (G-stage) that HLVX takes on a non-executable page
-    load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+    load_fault : coverpoint s_trap(ins) {
         bins page_fault       = {6'b101101};
         bins guest_page_fault = {6'b110101};
     }
@@ -2308,25 +2353,43 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
     sstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum")[0] {}
     vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
     sstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0] {}
-    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
-        `ifdef UDB_MXLEN_64
-            bins read = {'h3000};
-        `else
-            bins read = {'h2000};
-        `endif
-    }
-    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
-        // htval holds the guest physical address of the VS-stage root PTE, shifted right by 2
-        htval_root : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) iff (ins.current.csr_wb[CSR_HTVAL]) {
+    // htinst and htval are written only by the load (HLV, HLVX) and store (HSV) guest-page faults taken in HS-mode
+    `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+        htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
             `ifdef UDB_MXLEN_64
-                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) >> 10) ==
-                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP) & 64'h00000fffffffffff));
+                bins read = {'h3000};
             `else
-                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) >> 10) ==
-                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP) & 32'h003fffff));
+                bins read = {'h2000};
             `endif
         }
-    `endif
+        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+            // htval holds the guest physical address of the VS-stage root PTE, shifted right by 2
+            htval_root : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) iff (ins.current.csr_wb[CSR_HTVAL]) {
+                `ifdef UDB_MXLEN_64
+                    bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) >> 10) ==
+                                             (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP) & 64'h00000fffffffffff));
+                `else
+                    bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL) >> 10) ==
+                                             (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP) & 32'h003fffff));
+                `endif
+            }
+            // The two guest physical address bits an x4 mode adds (33:32, 40:39 or 49:48), with the bits above them
+            // zero, reported in htval shifted right by 2 after a guest-page fault
+            htval_x4_bits : coverpoint x4_gpa_bits(ins, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL), 2)
+                            iff (ins.current.csr_wb[CSR_HTVAL]) {
+                `ifdef UDB_MXLEN_64
+                    `ifdef UDB_SV39X4_TRANSLATION
+                        bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
+                    `endif
+                    `ifdef UDB_SV48X4_TRANSLATION
+                        bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
+                    `endif
+                `else
+                    bins sv32x4_01 = {8'h11}; bins sv32x4_10 = {8'h12}; bins sv32x4_11 = {8'h13};
+                `endif
+            }
+        `endif
+    `endif `endif
 
     vsatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins bare = {0};
@@ -2357,23 +2420,6 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
             `endif
         }
     `endif
-    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
-        // The two guest physical address bits an x4 mode adds (33:32, 40:39 or 49:48), with the bits above them
-        // zero, reported in htval shifted right by 2 after a guest-page fault
-        htval_x4_bits : coverpoint x4_gpa_bits(ins, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL), 2)
-                        iff (ins.current.csr_wb[CSR_HTVAL]) {
-            `ifdef UDB_MXLEN_64
-                `ifdef UDB_SV39X4_TRANSLATION
-                    bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
-                `endif
-                `ifdef UDB_SV48X4_TRANSLATION
-                    bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
-                `endif
-            `else
-                bins sv32x4_01 = {8'h11}; bins sv32x4_10 = {8'h12}; bins sv32x4_11 = {8'h13};
-            `endif
-        }
-    `endif
 
     // hstatus.SPVP selects VU-level or VS-level access; vsstatus.SUM applies and sstatus.SUM does not
     cp_hlv_priv  : cross priv_mode_hs, hlv, stage_modes, hstatus_spvp, vsstatus_sum, sstatus_sum;
@@ -2381,14 +2427,16 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
     cp_hlv_mxr   : cross priv_mode_hs, hlv_load, stage_modes, vsstatus_mxr, sstatus_mxr;
     // HLVX needs execute permission in both stages, which neither MXR grants
     cp_hlvx_perm : cross priv_mode_hs, hlvx, stage_modes, vsstatus_mxr, sstatus_mxr, load_fault;
-    // Guest-page faults on the implicit VS-stage page-table reads of HLV, HLVX and HSV
-    cp_hlv_implicit : cross priv_mode_hs, hlv, stage_modes, htinst_read;
-    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
-        // A guest-page fault on the read of the VS-stage root table
-        cp_hlv_root_gpf : cross priv_mode_hs, hlv, stage_modes, htinst_read, htval_root;
-        // A guest-page fault on a guest physical address from a VS-stage leaf that sets the x4 mode's top two bits
-        cp_hlv_x4_gpa : cross priv_mode_hs, hlv, vsatp_paged, htval_x4_bits, hlv_guest_page_fault;
-    `endif
+    `ifdef UDB_MEDELEG_DELEGATABLE_21 `ifdef UDB_MEDELEG_DELEGATABLE_23
+        // Guest-page faults on the implicit VS-stage page-table reads of HLV, HLVX and HSV
+        cp_hlv_implicit : cross priv_mode_hs, hlv, stage_modes, htinst_read;
+        `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+            // A guest-page fault on the read of the VS-stage root table
+            cp_hlv_root_gpf : cross priv_mode_hs, hlv, stage_modes, htinst_read, htval_root;
+            // A guest-page fault on a guest physical address from a VS-stage leaf that sets the x4 mode's top two bits
+            cp_hlv_x4_gpa : cross priv_mode_hs, hlv, vsatp_paged, htval_x4_bits, hlv_guest_page_fault;
+        `endif
+    `endif `endif
     `ifdef UDB_MXLEN_64
         // Guest physical addresses that set the x4 mode's top two bits (vsatp = Bare), through valid and invalid
         // G-stage leaves
@@ -2701,16 +2749,16 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
     }
   `endif
 
-  // The trap the CBO takes, from the scause the trace shows it writing
-  vs_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+  // The trap the CBO takes into HS-mode, or into M-mode when medeleg cannot delegate it
+  vs_pte_outcome: coverpoint s_trap(ins) {
     wildcard bins no_fault = {6'b0?????};
     bins store_page_fault  = {6'b101111};
   }
-  g_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+  g_pte_outcome: coverpoint s_trap(ins) {
     wildcard bins no_fault       = {6'b0?????};
     bins store_guest_page_fault  = {6'b110111};
   }
-  gpa_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+  gpa_outcome: coverpoint s_trap(ins) {
     bins store_guest_page_fault = {6'b110111};
     // Only a VS-stage table in the load access-fault region raises this fault
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
@@ -2722,13 +2770,16 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   no_fault: coverpoint ins.current.csr_wb[CSR_SCAUSE] {
     bins no_fault = {0};
   }
-  store_access_fault: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+  store_access_fault: coverpoint s_trap(ins) {
     bins store_access_fault = {6'b100111};
   }
-  // htinst holds the pseudoinstruction of a guest-page fault on an implicit VS-stage page-table read
-  pseudoinstruction: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
-    bins read = {'h2000, 'h3000};
-  }
+  // htinst holds the pseudoinstruction of a guest-page fault on an implicit VS-stage page-table read, which a CBO
+  // takes as a store guest-page fault in HS-mode only when medeleg delegates it
+  `ifdef UDB_MEDELEG_DELEGATABLE_23
+    pseudoinstruction: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTINST) iff (ins.current.csr_wb[CSR_HTINST]) {
+      bins read = {'h2000, 'h3000};
+    }
+  `endif
   // In VS-mode the trace logs vsstatus as sstatus
   vsstatus_sum: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum") {
     bins set = {1};
@@ -2737,7 +2788,9 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   cp_vs_pte:          cross priv_mode_vs_vu, cbo, vs_stage, vs_pte_outcome, vsatp_paged, hgatp_paged;
   cp_vs_sum:          cross priv_mode_vs, cbo, vs_stage, vsstatus_sum, no_fault;
   cp_vs_gpa:          cross priv_mode_vs_vu, cbo, vs_stage, gpa_outcome;
-  cp_vs_gpa_implicit: cross priv_mode_vs_vu, cbo, vs_stage, pseudoinstruction;
+  `ifdef UDB_MEDELEG_DELEGATABLE_23
+    cp_vs_gpa_implicit: cross priv_mode_vs_vu, cbo, vs_stage, pseudoinstruction;
+  `endif
   cp_g_pte:           cross priv_mode_vs_vu, cbo, g_stage, g_pte_outcome, vsatp_paged, hgatp_paged;
   `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
     cp_g_pa:          cross priv_mode_vs_vu, cbo, g_stage, store_access_fault;

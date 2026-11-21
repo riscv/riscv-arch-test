@@ -59,7 +59,7 @@
       "len": 32,
       "value": "0xFFFF_FFFF"
     },
-    // "hcounteren_d = csr_wdata[31:0];" (csr_bsc.sv#L1385)
+    // "hcounteren_d = csr_wdata[31:0];" (csr_bsc.sv#L1501)
     "hcounteren_writable_bits": {
       "len": 32,
       "value": "0xFFFF_FFFF"
@@ -79,7 +79,7 @@
         "supported": true,
         "base_alignment": 2
       },
-      // csr_bsc.sv#L1580-L1585 forces mtvec[7:1] to zero when MODE=1, i.e. a vectored
+      // csr_bsc.sv#L1708-L1713 forces mtvec[7:1] to zero when MODE=1, i.e. a vectored
       // base must be 256-byte (2^8) aligned:
       //   "// we are in vector mode, this implementation requires the additional
       //    // alignment constraint of 64 * 4 bytes
@@ -98,12 +98,14 @@
       "direct": {
         "supported": true
       },
+      // Like mtvec, a vectored stvec base must be 256-byte aligned
+      // ("if (csr_wdata[0]) stvec_d = {csr_wdata[63:8], 7'b0, csr_wdata[0]};", csr_bsc.sv#L1338-L1343).
       "vectored": {
         "supported": true,
-        "base_alignment": 2
+        "base_alignment": 8
       }
     },
-    // "vstvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};" (csr_bsc.sv#L1484)
+    // "vstvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};" (csr_bsc.sv#L1600)
     "vstvec": {
       "direct": {
         "supported": true
@@ -123,7 +125,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        // csr_bsc.sv#L1536-L1553 builds the medeleg write mask from INSTR_ADDR_MISALIGNED,
+        // csr_bsc.sv#L1664-L1681 builds the medeleg write mask from INSTR_ADDR_MISALIGNED,
         // INSTR_ACCESS_FAULT, ILLEGAL_INSTR, BREAKPOINT, LD_ADDR_MISALIGNED,
         // LD_ACCESS_FAULT, ST_AMO_ADDR_MISALIGNED, ST_AMO_ACCESS_FAULT, USER_ECALL,
         // INSTR_PAGE_FAULT, LOAD_PAGE_FAULT and ST_AMO_PAGE_FAULT, plus VIRTUALSUPERVISOR_ECALL,
@@ -143,7 +145,7 @@
       "delegatable_bits": {
         "len": "xlen",
         // "mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP
-        //         | ... | riscv_pkg::MIP_LCOFIP;"  (csr_bsc.sv#L1558-L1563)
+        //         | ... | riscv_pkg::MIP_LCOFIP;"  (csr_bsc.sv#L1686-L1691)
         "value": "0x0000_0000_0000_2222"
       }
     },
@@ -255,11 +257,12 @@
     "invalid_physical_address": {
       "None": null
     },
-    "asidlen": 13,
-    // "parameter VMID_WIDTH = 11" (csr_bsc.sv#L28)
-    "vmidlen": 11,
+    // "parameter ASID_WIDTH = drac_pkg::ASID_SIZE," (csr_bsc.sv#L27) with ASID_SIZE = 7
+    "asidlen": 7,
+    // "parameter VMID_WIDTH = drac_pkg::ASID_SIZE - 2," (csr_bsc.sv#L28)
+    "vmidlen": 5,
     // PMP is not implemented.  pmpcfg0-3 and pmpaddr0-15 are empty case arms in
-    // csr_bsc.sv#L881-L903 (read) and #L1801-L1822 (write): they read as zero and drop
+    // csr_bsc.sv#L967-L989 (read) and #L1801-L1822 (write): they read as zero and drop
     // writes without trapping, and there is no address matcher anywhere in rtl/.
     "pmp": {
       "grain": 0,
@@ -282,14 +285,14 @@
       // before address translation.  If a fault is specified for an access,
       // it will have a higher priority than memory-protection faults arising from
       // that access if it were allowed to proceed.
-      // Every misaligned scalar access traps before translation.  The load/store queue
-      // checks alignment on the untranslated address and raises cause 4 or 6:
+      // Misaligned scalar loads and stores are split into byte requests by the memory
+      // unit ("// Misaligned scalar loads are packed byte by byte", mem_unit.sv#L1104),
+      // so they do not trap.  Misaligned AMOs and LR/SC still raise cause 4 or 6:
       //   "translated_instr.ex.cause = (instr_to_translate.is_amo_store_or_cmo &&
       //    ~is_load_reserved) ? ST_AMO_ADDR_MISALIGNED : LD_ADDR_MISALIGNED;"
-      //   load_store_queue.sv#L148-L161, which covers plain loads/stores, AMOs and LR/SC
-      //   alike (is_amo_store_or_cmo is set for AMO in exe_stage.sv#L270).
+      //   load_store_queue.sv#L203-L211.
       "exceptions": {
-        "load_store": { "Some": "AlignmentException" },
+        "load_store": { "None": null },
         "vector": { "Some": "AlignmentException" },
         "amo": { "Some": "AlignmentException" },
         "lrsc": { "Some": "AlignmentException" }
@@ -325,7 +328,7 @@
     // `memory.misaligned.exceptions` above.
     "regions": [
       // The reference model's CLINT and interrupt generator live here.  The DUT maps
-      // nothing in this range (drac_pkg.sv#L1297-L1299 starts main memory at
+      // nothing in this range (drac_pkg.sv#L1320-L1326 starts main memory at
       // 0x0040000000), so an access here faults on the DUT; only the interrupt suites
       // reach it, and ci.yaml excludes them.
       {
@@ -363,7 +366,7 @@
         "include_in_device_tree": false
       },
       // The tile's default address decode maps 0x0040000000-0x3fffffffff as normal
-      // memory ("InitMappedBase: {40'h0040000000, ...}", drac_pkg.sv#L1297-L1299) and
+      // memory ("InitMappedBase: {40'h0040000000, ...}", drac_pkg.sv#L1320-L1326) and
       // the boot ROM jumps to 0x8000_0000, so the tests get a single main-memory
       // region there.  It must stay in step with RAM_ORIGIN/RAM_LENGTH in link.ld.
       // Nothing else is declared: the tile has no CLINT, no PLIC and no UART, and
@@ -387,8 +390,10 @@
           "writable": true,
           "read_idempotent": true,
           "write_idempotent": true,
+          // Misaligned scalar loads and stores to main memory are split into bytes
+          // (memory.misaligned above), so they do not fault here either.
           "misaligned_exceptions": {
-            "load_store": { "Some": "AlignmentException" },
+            "load_store": { "None": null },
             "vector": { "Some": "AlignmentException" },
             "amo": "AlignmentException",
             "lrsc": "AlignmentException"
@@ -406,11 +411,11 @@
     ]
   },
   "platform": {
-    // "riscv_pkg::CSR_MVENDORID: csr_rdata = 64'b0; // not implemented" (csr_bsc.sv#L694)
+    // "riscv_pkg::CSR_MVENDORID: csr_rdata = 64'b0; // not implemented" (csr_bsc.sv#L775)
     "vendorid": 0,
-    // "riscv_pkg::CSR_MARCHID: csr_rdata = 64'd51;" (csr_bsc.sv#L695)
+    // "riscv_pkg::CSR_MARCHID: csr_rdata = 64'd51;" (csr_bsc.sv#L776)
     "archid": 51,
-    // "riscv_pkg::CSR_MIMPID: csr_rdata = 64'h300; //v3.0.0" (csr_bsc.sv#L696)
+    // "riscv_pkg::CSR_MIMPID: csr_rdata = 64'h300; //v3.0.0" (csr_bsc.sv#L777)
     "impid": 768,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
@@ -441,7 +446,7 @@
     // There is no CLINT in the tile: mtime/mtimecmp/msip do not exist as memory-mapped
     // registers anywhere in rtl/, and the simulation testbench ties every interrupt
     // input off ("// No support for timer, interrupts, etc in simulation",
-    // core_tile simulator/sim_top.sv#L263-L268).  ACT nevertheless requires the Sail
+    // core_tile simulator/sim_top.sv#L298-L304).  ACT nevertheless requires the Sail
     // reference model to have one (framework/src/act/build_plan.py:53), so it is placed
     // at the conventional 0x0200_0000 inside an IO region that the DUT does not map.
     // rvmodel_macros.h leaves RVMODEL_MTIME_ADDRESS undefined, so no test pokes it.
@@ -472,7 +477,7 @@
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
     // WFI is an S-level system instruction, so U-mode WFI raises an illegal-instruction exception
-    // at once (csr_bsc.sv#L2531).
+    // at once (csr_bsc.sv#L2706).
     "wfi_available_to_user_mode": false,
     // The maximum increment in the time CSR before a wait instruction
     // (e.g. WFI, WRS.NTO, WRS.STO) that is not a NOP expires its
@@ -620,7 +625,7 @@
       "supported": true
     },
 
-    // hgeip and hgeie read 0 (csr_bsc.sv#L581-L586); hgatp takes Bare or Sv39x4
+    // hgeip and hgeie read 0 (csr_bsc.sv#L650-L655); hgatp takes Bare or Sv39x4
     // (#L1409-L1410); vsatp takes Bare or Sv39 (#L1510-L1511).
     "H": {
       "mutable_misa": false,
@@ -630,15 +635,15 @@
       // This applies to integer and floating-point loads and stores
       // (including compressed forms), LR/SC, AMOs, HLV/HLVX/HSV and CBOs.
       // If false, zero is written instead.
-      // csr_bsc.sv writes ex_tinst_i for every exception except fetch faults,
-      // illegal/virtual instruction, breakpoint and ecall.
+      // Every source of ex_tinst drives zero ("translated_instr.ex.tinst = '0;",
+      // load_store_queue.sv#L214-L278), so mtinst/htinst are always written with 0.
       "transformed_instruction": {
         "load_access_fault": false,
-        "load_address_misaligned": true,
+        "load_address_misaligned": false,
         "load_guest_page_fault": false,
         "load_page_fault": false,
         "samo_access_fault": false,
-        "samo_address_misaligned": true,
+        "samo_address_misaligned": false,
         "samo_guest_page_fault": false,
         "samo_page_fault": false
       },
@@ -660,7 +665,7 @@
       }
     },
 
-    "Sha": { "supported": false },
+    "Sha": { "supported": true },
     "Shcounterenw": { "supported": true },
     "Shgatpa": { "supported": true },
     "Shtvala": { "supported": true },
@@ -698,7 +703,7 @@
       "supported": true
     },
     "Zicclsm": {
-      "supported": false
+      "supported": true
     },
     "Ziccrse": {
       "supported": true
@@ -731,7 +736,7 @@
       "supported": true
     },
     "Zimop": {
-      "supported": false
+      "supported": true
     },
     "Zmmul": {
       "supported": true
@@ -757,16 +762,21 @@
       "supported": false
     },
     "Zawrs": {
-      "supported": false,
+      "supported": true,
       // Whether `WRS.NTO` and `WRS.STO` behave as NOPS.  If they do
       // not, see above note for `platform.max_time_to_wait`.  If
       // Zawrs is not supported, these `is_nop` fields need to be
       // present but their boolean values are ignored.
+      // Both wake on the reservation-lost input, which the tile ties high outside
+      // OpenPiton ("`else .rs_lost_i(1'b1)", core_tile rtl/top_tile.sv#L411-L416),
+      // so neither waits.  WRS.NTO is still not a NOP: with mstatus.TW = 1 below M-mode
+      // it raises illegal instruction (csr_bsc.sv#L2917-L2930), which Sail models as a
+      // non-NOP wait that times out.  WRS.STO never traps.
       "nto": {
         "is_nop": false
       },
       "sto": {
-        "is_nop": false
+        "is_nop": true
       }
     },
     "Zfa": {
@@ -788,19 +798,19 @@
       "supported": false
     },
     "Zca": {
-      "supported": false
+      "supported": true
     },
     "Zcf": {
       "supported": false
     },
     "Zcd": {
-      "supported": false
+      "supported": true
     },
     "Zcb": {
-      "supported": false
+      "supported": true
     },
     "Zcmop": {
-      "supported": false
+      "supported": true
     },
     "Zba": {
       "supported": true
@@ -911,7 +921,7 @@
       "supported": true
     },
     "Sstc": {
-      "supported": false
+      "supported": true
     },
     // Enabling Sstvala requires that the exceptions specified in the extension
     // have their appropriate settings under `base.xtval_nonzero`.
@@ -925,16 +935,16 @@
       "supported": false
     },
     "Svinval": {
-      "supported": false
+      "supported": true
     },
     "Svrsw60t59b": {
       "supported": false
     },
     "Svnapot": {
-      "supported": false
+      "supported": true
     },
     "Ssnpm": {
-      "supported": false,
+      "supported": true,
       "supported_pmlen_7": true,
       "supported_pmlen_16": true
     },
@@ -949,7 +959,7 @@
       "supported_pmlen_16": true
     },
     "Smcntrpmf": {
-      "supported": false
+      "supported": true
     },
     "Svbare": {
       "supported": true,
@@ -1021,7 +1031,7 @@
       "mcid_length": 12
     },
     "Svpbmt": {
-      "supported": false
+      "supported": true
     },
     "Svvptc": {
       "supported": false

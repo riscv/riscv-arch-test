@@ -382,9 +382,6 @@ normative_rule_definitions:
   - name: sret_presence
     coverpoint: ["Sm_mprivinst_cg/cp_sret"]
 
-  - name: sret_ill_inst_exc_rst
-    coverpoint: ["TODO"]
-
   - name: xret_in_higher_mode
     coverpoint: ["Sm_mprivinst_cg/cp_sret"]
 

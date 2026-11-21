@@ -10,21 +10,23 @@
 
 `define COVER_SVVPTC
 
+`include "general/RISCV_coverage_hypervisor.svh"
+
 // Each testcase takes a page fault on a PTE with V=0, sets V=1 with a plain store and no SFENCE.VMA,
 // and retries the access; the signature checks the retry. The coverpoints sample the page fault.
 covergroup Svvptc_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    load_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
+    load_page_fault: coverpoint s_trap(ins) {
+        bins fault = {6'b101101} iff (ins.current.insn ==? LW);
     }
-    store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
+    store_page_fault: coverpoint s_trap(ins) {
+        bins fault = {6'b101111} iff (ins.current.insn ==? SW);
     }
-    // A fetch page fault is reported on the jump to the page.
-    fetch_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? JALR);
+    // A fetch page fault is not a trap of the jump to the page, so it is not tied to the jalr record
+    fetch_page_fault: coverpoint s_trap(ins) {
+        bins fault = {6'b101100};
     }
 
     `ifdef UDB_MXLEN_64

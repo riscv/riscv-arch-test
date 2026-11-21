@@ -61,7 +61,7 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     scratch = common.pickPrivScratch(instruction_data[1])
 
     _emit_vsetvli_str(scratch, vl=vl, sew=sew, lmul_flag=lmul_flag)
-    init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=("vs2", "vs3"))
+    init_operand_regs(instruction, instruction_data[0], scratch, regs=("vs2", "vs3"))
     _emit_vsetvli_str(scratch, vl=vl, sew=sew, lmul_flag=lmul_flag)
 
     if addr_offset:

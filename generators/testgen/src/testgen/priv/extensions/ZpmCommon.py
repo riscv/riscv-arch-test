@@ -15,9 +15,10 @@ test generators.
 from dataclasses import dataclass
 
 from testgen.asm.csr import gen_csr_write_sigupd
-from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
+from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
+from testgen.priv.extensions.PrivCommon import pmm_legal_values
 from testgen.priv.extensions.sv.page_tables import RV64_SV_MODES, SV39, PteFlags, create_page_mapping
 
 # ── Constants ──────────────────────────────────────────────────────────────
@@ -1423,4 +1424,87 @@ def generate_mprv_lower_mode_tests(
             *mprv_teardown(test_data, sum_bit=s_mode, mxr=s_mode),
         ]
     )
+    return lines
+
+
+# ── PMM writes, including the reserved 01 ──────────────────────────────────
+
+
+def _pmm_legal_check(csr: str, val: int, ok: int) -> list[str]:
+    """Set x*ok* to 1 when the PMM value in x*val* is legal for *csr*'s field (pmm_legal_values)."""
+    lines = [f"LI(x{ok}, 0)    # legal PMM values, one bit per value"]
+    for value, cond in pmm_legal_values(_PMM_EXTENSION[csr])["pmm"]:
+        lines.extend(gated([f"ori x{ok}, x{ok}, {1 << value:#x}    # {value:02b} is legal"], cond))
+    return [*lines, f"srl x{ok}, x{ok}, x{val}", f"andi x{ok}, x{ok}, 1    # 1 if PMM holds a legal value"]
+
+
+def generate_pmm_write_tests(
+    csr: str,
+    test_data: TestData,
+    cg: str,
+    coverpoint: str,
+    *,
+    initial_values: tuple[int, ...] = (0b00,),
+    writes: tuple[int, ...] = (0b00, 0b01, 0b10, 0b11),
+) -> list[str]:
+    """From each PMM value in *initial_values*, csrrw *csr* with its PMM field (hstatus.HUPMM for hstatus) set to each
+    value in *writes* and its other bits unchanged, then read the field back.
+
+    A supported value reads back as written. 01 is reserved and 10/11 may be unsupported; the WARL field then
+    reads back some legal value, and the test records only whether it does.
+    """
+    field, shift = _PMM_FIELDS.get(csr, (f"{csr.upper()}_PMM", _PMM_SHIFT))
+    ext = _PMM_EXTENSION[csr]
+    val, tmp, ok = test_data.int_regs.get_registers(3)
+    lines = []
+    for before in initial_values:
+        pmlen = PMLEN_BY_PMM[before]
+        body: list[str] = []
+        for written in writes:
+            body.extend(
+                [
+                    *set_pmm_field(csr, before, pmlen, test_data),
+                    f"csrr x{val}, {csr}",
+                    f"LI(x{tmp}, {field})",
+                    f"not x{tmp}, x{tmp}",
+                    f"and x{val}, x{val}, x{tmp}",
+                    f"LI(x{tmp}, {written} << {shift})",
+                    f"or x{val}, x{val}, x{tmp}",
+                    test_data.add_testcase(f"{csr}_pmm{before:02b}_write{written:02b}", coverpoint, cg),
+                    f"csrw {csr}, x{val}",
+                    f"csrr x{val}, {csr}",
+                    f"srli x{val}, x{val}, {shift}",
+                    f"andi x{val}, x{val}, 3",
+                ]
+            )
+            check = [*_pmm_legal_check(csr, val, ok), write_sigupd(ok, test_data)]
+            if written == 0b00:
+                body.append(write_sigupd(val, test_data))
+            elif written == 0b01:
+                body.extend(check)
+            else:
+                guard = f"UDB_SUPPORTED_PMLEN_{ext}_{PMLEN_BY_PMM[written]}"
+                body.extend([f"#ifdef {guard}", write_sigupd(val, test_data), "#else", *check, "#endif"])
+        lines.extend(pmm_ifdef(csr, pmlen, body))
+    lines.extend(set_pmm_field(csr, 0b00, 0, test_data))
+    test_data.int_regs.return_registers([val, tmp, ok])
+    return lines
+
+
+def generate_pmm_reserved_tests(csr: str, mpp: str, test_data: TestData, cg: str, coverpoint: str) -> list[str]:
+    """Write the reserved PMM = 01 to *csr* from M-mode and check that it reads back legal, then load an untagged
+    pointer with MPRV = 1 and MPP = *mpp*, the mode *csr*.PMM governs. Whatever legal PMM the field holds, the load
+    reads the seeded value; the access only makes the hart compute PMLEN from the field."""
+    val = test_data.int_regs.get_register()
+    lines = [
+        *generate_pmm_write_tests(csr, test_data, cg, coverpoint, writes=(0b01,)),
+        *set_pmm_field(csr, 0b01, None, test_data),
+        f"LA(x{val}, pm_lo_page)",
+        *set_mprv(True, test_data, mpp),
+        f"ld x{val}, 0(x{val})  # untagged, so not affected by PMLEN",
+        *set_mprv(False, test_data),
+        write_sigupd(val, test_data),
+        *set_pmm_field(csr, 0b00, 0, test_data),
+    ]
+    test_data.int_regs.return_register(val)
     return lines

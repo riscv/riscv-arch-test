@@ -23,6 +23,7 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_edge_case_tests,
     generate_instruction_sweep_tests,
     generate_mprv_lower_mode_tests,
+    generate_pmm_reserved_tests,
     generate_sign_extension_tests,
     generate_zicfiss_tests,
     map_pm_hi_page,
@@ -179,6 +180,12 @@ def make_smnpmssm(test_data: TestData) -> list[TestChunk]:
             pmm_csr="menvcfg",
             cp="cp_pm_mprv_mpp_s",
         ),
+        comment_banner(
+            "cp_menvcfg_pmm_rsv",
+            "Write the reserved menvcfg.PMM = 01 and read it back, then load through an untagged pointer with\n"
+            "MPRV = 1 and MPP = S. The field must read back 00 or a supported PMLEN, and the load must succeed.",
+        ),
+        *generate_pmm_reserved_tests("menvcfg", "PRV_S", test_data, COVERGROUP_SSM, "cp_menvcfg_pmm_rsv"),
     ]
     return [test_data.end_test_chunk()]
 

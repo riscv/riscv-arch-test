@@ -547,33 +547,14 @@ def make_h_zicntr(test_data: TestData) -> list[TestChunk]:
     required_extensions=["H", "F"],
     march_extensions=["F", "D", "Zfa"],
     extra_defines=["#define BOOT_TO_SMODE"],
+    testcases_per_file=256,
 )
 def make_h_f(test_data: TestData) -> list[TestChunk]:
     """Generate H_F tests: the floating-point CSRs and instructions in VS and VU modes against vsstatus.FS and sstatus.FS."""
-
-    test_chunks: list[TestChunk] = []
-
-    tc = test_data.begin_test_chunk("F_vs")
-    tc.code.extend(
-        [
-            "RVTEST_TSBI_GOTO_VSMODE",
-            *gen_fcsr_tests(test_data, "VS", "H_F_cg"),
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
-    )
-    test_chunks.append(test_data.end_test_chunk())
-
-    tc = test_data.begin_test_chunk("F_vu")
-    tc.code.extend(
-        [
-            "RVTEST_TSBI_GOTO_VUMODE",
-            *gen_fcsr_tests(test_data, "VU", "H_F_cg"),
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
-    )
-    test_chunks.append(test_data.end_test_chunk())
-
-    return test_chunks
+    return [
+        *gen_fcsr_tests(test_data, "VS", "H_F_cg", "F_vs", ("RVTEST_TSBI_GOTO_VSMODE",), ("RVTEST_TSBI_GOTO_SMODE",)),
+        *gen_fcsr_tests(test_data, "VU", "H_F_cg", "F_vu", ("RVTEST_TSBI_GOTO_VUMODE",), ("RVTEST_TSBI_GOTO_SMODE",)),
+    ]
 
 
 @add_priv_test_generator(

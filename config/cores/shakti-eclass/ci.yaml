@@ -14,9 +14,7 @@ exclude_extensions:
   # InterruptsSm_enable_U and InterruptsSm_trigger_U first miss a machine external interrupt raised
   # in U-mode: mip.MEIP follows the interrupt input only while the hart is in M-mode
   # (csrfile.bsv#L1263-L1268).
-  - U-
-  - U_Zicntr
-  - U_ucsr
+  - U
   - Exceptions_U
   - Exceptions_Sm-
   - Exceptions_Zc
@@ -98,4 +96,3 @@ exclude_extensions:
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache libgmp10"
 install_script: ".github/scripts/install-shakti.sh"
-setup_script: ".github/scripts/setup-shakti.sh"

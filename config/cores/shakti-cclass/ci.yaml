@@ -118,4 +118,3 @@ exclude_extensions:
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache libgmp10 python3-venv"
 install_script: ".github/scripts/install-shakti.sh"
-setup_script: ".github/scripts/setup-shakti.sh"

@@ -15,34 +15,21 @@ declares `Sm` 1.11.
 
 ## Build options
 
-`install-shakti.sh` builds C-class from `sample_config/c64` and changes only the options below.
-The script repeats each reason.
-
-- `reset_pc: 0x80000000`: start at the base of RAM, where the test is loaded, instead of in the
-  boot ROM.
-- 8 usable PMP entries instead of 4, and the CSRs of all 16 present. csrbox 1.12.0 generates
-  BSV that does not compile for RV64 entries 8 to 15, so those are read-only zero, and the
-  `pmpentries` define is set to 8 to match what csrbox builds.
-- `medeleg` and `mideleg` masks that delegate only what the privileged specification allows.
-  The sample's 0xF7FF also makes reserved and machine-interrupt bits writable.
-- `satp.ASID` with 8 writable bits. The sample leaves the field unchanged on a write of all ones,
-  the privileged specification's way to find ASIDLEN.
-
-The script also drops `-static` from the Verilator link and silences Verilator 5.052's
-`MULTIDRIVEN` warning on bsc's `FIFOL1.v`. bsc is pinned to 2025.01.1, as for E-class. C-class's
-Python configurator, `soc_config` 3.0.4, runs in a virtual environment.
+`install-shakti.sh` builds C-class from `sample_config/c64` with the reset PC at the base of RAM, 8
+usable PMP entries (and the CSRs of all 16), `medeleg` and `mideleg` masks that delegate only what
+the privileged specification allows, and 8 writable `satp.ASID` bits. Its comments give the reason
+for each option and for the patches to the build flow.
 
 ## The testbench
 
-test_soc has main memory at 0x8000_0000 (64 MB), loaded from `code.mem`, a CLINT at
-0x0200_0000, a UART at 0x1_1300, and an error slave behind every unmapped address. A write to
-0x2_000C ends the simulation, and so does committing `j .`. The testbench copies the UART's
-output to `app_log` and always exits 0, so `run-shakti.sh` runs each test in its own directory
-and passes it only if `app_log` holds `RVCP-SUMMARY: TEST PASSED`; a test that never ends is
-stopped by the runner's timeout. A byte load from the UART status register never completes, so
-the console macros read it with `lhu`. The installer adds byte registers at 0x20004 (MEIP) and
-0x20005 (SEIP) to the signature-dump device and connects them to the core's interrupt inputs;
-the interrupt macros set and clear each input independently.
+test_soc has main memory at 0x8000_0000 (64 MB), loaded from `code.mem`, a CLINT at 0x0200_0000, a
+UART at 0x1_1300, and an error slave behind every unmapped address. A write to 0x2_000C ends the
+simulation, and so does committing `j .`. The testbench copies the UART's output to `app_log` and
+always exits 0, so `run-shakti.sh` runs each test in its own directory and prints `app_log`; a test
+that never ends is stopped by run_tests.py's timeout. A byte load from the UART status register
+never completes, so the console macros read it with `lhu`. The installer adds byte registers at
+0x20004 (MEIP) and 0x20005 (SEIP) to the signature-dump device and connects them to the core's
+interrupt inputs; the interrupt macros set and clear each input independently.
 
 ## Checked with the UDB feature extractor
 
@@ -72,7 +59,7 @@ make shakti-cclass
 in `bin/`, and installs `run-shakti.sh` beside it. Without the core argument it takes the core
 from the install directory's name (`shakti-cclass`), which is how CI calls it. It uses the bsc
 tarball for Ubuntu 24.04; set `BSC_PLATFORM` (and `BSC_SHA256`) for another platform, for
-example `BSC_PLATFORM=rockylinux-9.5`. The export matches what `setup-shakti.sh` sets in CI.
+example `BSC_PLATFORM=rockylinux-9.5`.
 
 `ci.yaml` excludes the tests that fail on C-class bugs, with the cause of each and its upstream
 issue where one is filed.

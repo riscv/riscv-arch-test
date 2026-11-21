@@ -11,8 +11,9 @@
 from typing import Literal
 
 from testgen.asm.csr import write_stce
-from testgen.asm.helpers import comment_banner, write64_csr, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write64_csr, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
+from testgen.coverpoints.special.cp_cntr import cntr_readable
 from testgen.data.state import TestData
 from testgen.priv.extensions.PrivCommon import HTIMEDELTAS, read_time
 
@@ -22,15 +23,8 @@ Counteren = Literal["ones", "zeros"]
 _COUNTERS = ["cycle", "time", "instret"]
 
 
-def _when_instret_readable(lines: list[str], mode: Mode) -> list[str]:
-    """Gate direct counter measurements; inaccessible-CSR tests remain separate."""
-    if mode == "M":
-        return lines
-    assert mode in ("S", "U")
-    condition = "defined(UDB_MCOUNTENABLE_EN_2)"
-    if mode == "U":
-        condition += " && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_2))"
-    return [f"#if {condition}", *lines, "#endif // instret readable for measurement"]
+# Direct instret measurements run only where the test's mode can read instret.
+_INSTRET_READABLE: dict[str, str | None] = {"M": None, "S": "defined(UDB_MCOUNTENABLE_EN_2)", "U": cntr_readable(2)}
 
 
 def _access_counter(
@@ -178,7 +172,7 @@ def counter_inc_inaccessible_tests(test_data: TestData, covergroup: str, mode: M
         write_sigupd(read_reg, test_data),
     ]
     test_data.int_regs.return_registers([old_reg, read_reg])
-    return _when_instret_readable(lines, mode)
+    return gated(lines, _INSTRET_READABLE[mode])
 
 
 def htimedelta_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
@@ -320,7 +314,7 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
     elif mode == "S":
         lines += _instret_sret_case(test_data, covergroup, mode)
 
-    return _when_instret_readable(lines, mode)
+    return gated(lines, _INSTRET_READABLE[mode])
 
 
 def _instret_sret_case(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
@@ -350,7 +344,7 @@ def _instret_sret_case(test_data: TestData, covergroup: str, mode: Mode) -> list
         "",
     ]
     test_data.int_regs.return_registers([r_save, r_tmp, r_before, r_after, r_diff])
-    return _when_instret_readable(lines, "U")
+    return gated(lines, _INSTRET_READABLE["U"])
 
 
 def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
@@ -384,7 +378,7 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         *_instret_case(test_data, covergroup, "load_misaligned", mode, [f"lw x{r_tmp}, 0(x{r_addr})"]),
     ]
     test_data.int_regs.return_registers([r_addr, r_tmp])
-    return _when_instret_readable(lines, mode)
+    return gated(lines, _INSTRET_READABLE[mode])
 
 
 def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
@@ -455,7 +449,7 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         ),
         "#endif // ZAWRS_SUPPORTED",
     ]
-    return _when_instret_readable(lines, mode)
+    return gated(lines, _INSTRET_READABLE[mode])
 
 
 def _instret_wfi_m_tests(test_data: TestData, covergroup: str) -> list[str]:

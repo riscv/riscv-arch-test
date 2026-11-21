@@ -1,0 +1,19 @@
+# Parameter mappings for Sscounterenw
+#
+# Neither parameter is read by the generator. The walking signature comes from the
+# reference model's scounteren legalization. SscounterenwSm probes mhpmcounter,
+# and mhpmcounter<n>h on RV32, and does not use them.
+
+parameter_definitions:
+  - name: SCOUNTENABLE_EN
+    coverpoint: ["cp_scounteren_writable"]
+    effect:
+      - >-
+        Expected results of the reference-model walk only. Sail validate_config requires
+        scounteren_writable_bits to be a superset of writable_hpm_counters.
+  - name: HPM_COUNTER_EN
+    coverpoint: ["cp_scounteren_writable"]
+    effect:
+      - >-
+        Expected results of the reference-model walk only. SscounterenwSm writes
+        mhpmcounter, and mhpmcounter<n>h on RV32, and does not consult this list.

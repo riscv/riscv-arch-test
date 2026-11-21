@@ -10,21 +10,23 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
+_COVERGROUP = "Sscounterenw_cg"
+
 
 def _generate_scounteren_tests(test_data: TestData) -> list[str]:
     """Generate tests for scounteren CSR."""
-    covergroup = "Sscounterenw_cg"
     coverpoint = "cp_scounteren_writable"
     lines = [
         comment_banner(
             coverpoint,
-            "Set and clear each bit individually in scounteren.",
+            "Set and clear each bit of the 32-bit scounteren CSR.",
         ),
         "",
     ]
 
-    lines.extend(csr_walk_test(test_data, ("scounteren", None), covergroup, coverpoint))
-    lines.extend(csr_access_test(test_data, ("scounteren", None), covergroup, coverpoint))
+    # scounteren is 32 bits. Readbacks stay full XLEN, so bits 63:32 must still be zero.
+    lines.extend(csr_walk_test(test_data, ("scounteren", None), _COVERGROUP, coverpoint, end_bit=31))
+    lines.extend(csr_access_test(test_data, ("scounteren", None), _COVERGROUP, coverpoint))
     return lines
 
 
@@ -34,7 +36,7 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_scounterenw(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for Scounteren supervisor counter-enable register."""
+    """Generate the S-mode scounteren walk. The hpmcounter probe is SscounterenwSm."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
     tc.code.extend(_generate_scounteren_tests(test_data))

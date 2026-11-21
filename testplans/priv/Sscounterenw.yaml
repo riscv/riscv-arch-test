@@ -4,9 +4,7 @@ source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73
 coverpoints:
   - name: cp_scounteren_writable
     goal: Check scounteren bits are writable
-    description: In S-mode, write walking 1s and walking 0s to scounteren.
-    expectation: Match reference model
-    bins: 2*XLEN
-    rules:
-      - Sscounterenw_hpmcounter_scounteren
-  - heading: Note that this overlaps tests in S_Zicntr
+    description: In S-mode, write walking 1s and walking 0s to scounteren[31:0].
+    expectation: Match reference model. Readbacks are the full XLEN value, so bits 63:32 stay zero.
+    bins: "64"
+  - heading: Note that U-mode counteren walks overlap S_Zicntr

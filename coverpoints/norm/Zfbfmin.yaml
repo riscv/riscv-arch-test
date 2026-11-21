@@ -44,7 +44,9 @@ normative_rule_definitions:
   # NaN-boxing the result.
   - name: fmv-h-x_op
     coverpoint:
-      ["Zfbfmin_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
+      [
+        "Zfbfmin_fmv_h_x_cg/{cp_rs1_edges, cp_fd, cp_NaNBox_S_H, cp_rs1_fp_edges_H}",
+      ]
   # BF16 computational instructions defined in this chapter support all IEEE 754-2008
   # features, including all rounding modes, subnormal inputs and outputs, overflow and
   # underflow, and default exception handling. Tininess is detected after rounding.
@@ -59,7 +61,9 @@ normative_rule_definitions:
   # Narrowing convert FP32 value to a BF16 value. Round according to the RM field.
   - name: fcvt-bf16-s_op
     coverpoint:
-      ["Zfbfmin_fcvt_bf16_s_cg/{cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_frm}"]
+      [
+        "Zfbfmin_fcvt_bf16_s_cg/{cp_fd, cp_fs1_edges, cr_fs1_cvt_edges_frm_S_BF16, cp_csr_frm}",
+      ]
   # Converts a BF16 value to an FP32 value. The conversion is exact.
   - name: fcvt-s-bf16_op
     coverpoint:

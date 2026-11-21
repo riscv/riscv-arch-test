@@ -9,6 +9,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     Svpbmt_cg = new(); Svpbmt_cg.set_inst_name("obj_Svpbmt");
+`ifdef ZICBOM_SUPPORTED
+    Svpbmt_Zicbom_cg = new(); Svpbmt_Zicbom_cg.set_inst_name("obj_Svpbmt_Zicbom");
+`endif // ZICBOM_SUPPORTED
+`ifdef ZICBOZ_SUPPORTED
+    Svpbmt_Zicboz_cg = new(); Svpbmt_Zicboz_cg.set_inst_name("obj_Svpbmt_Zicboz");
+`endif // ZICBOZ_SUPPORTED
 `ifdef H_SUPPORTED
     Svpbmt_H_cg = new(); Svpbmt_H_cg.set_inst_name("obj_Svpbmt_H");
 `endif

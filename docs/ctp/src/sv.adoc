@@ -139,6 +139,14 @@ include::norm/Svadu_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Svpbmt.adoc[]
 
+===== Svpbmt_Zicbom Cache-Block Flush Through PBMT Aliases
+
+include::{testplansdir}/priv/Svpbmt_Zicbom.adoc[]
+
+===== Svpbmt_Zicboz Cache-Block Zero on PBMT Pages
+
+include::{testplansdir}/priv/Svpbmt_Zicboz.adoc[]
+
 ===== Svpbmt_H Hypervisor Page-Based Memory Types
 
 Checks henvcfg.PBMTE in the VS-stage and menvcfg.PBMTE in the G-stage.

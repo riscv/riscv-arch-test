@@ -72,9 +72,7 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
         comment_banner(coverpoint, "delegated illegal instruction in S/U mode goes to stvec"),
     ]
 
-    if priv_mode == 1:
-        lines.append("RVTEST_TSBI_GOTO_SMODE")
-    elif priv_mode == 0:
+    if priv_mode == 0:
         lines.append("RVTEST_TSBI_GOTO_UMODE")
 
     for name, word in (("zeros", "0x00000000"), ("ones", "0xFFFFFFFF")):

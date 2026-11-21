@@ -116,11 +116,7 @@ normative_rule_definitions:
   # used as an address, the lower two bits are filled with zeroes to obtain an
   # XLEN-bit address that is always aligned on a 4-byte boundary.
   - name: stvec_sz_base
-    coverpoint:
-      [
-        "S_scsr_cg/{cp_stvec_vaddr_walk1, cp_stvec_vaddr_walk0}",
-        "Exceptions_S_cg/cp_stvec",
-      ]
+    coverpoint: ["S_scsr_cg/{cp_stvec_vaddr_walk1, cp_stvec_vaddr_walk0}"]
 
   # Value|Name|Description === 0 1 ≥2|Direct Vectored|All exceptions set pc to BASE.
   # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===

@@ -184,19 +184,18 @@ def _make_cbo_adue(test_data: TestData, sv: SvMode, family: str) -> TestChunk:
     D (cmo.adoc).  Each CBO gets a fresh leaf, which is read back after it.
     """
     regs = SvRegs.allocate(test_data)
-    kind = "cbm" if family == "zicbom" else "cbz"
     chunk = begin_sv_test(
         test_data,
         regs,
         sv,
         "Smode",
         f"{sv.name}_Svadu_{family}",
-        coverpoint=f"Abit_unset_{kind}_s, Dbit_unset_{kind}_s",
+        coverpoint="Abit_unset_cbo_s, Dbit_unset_cbo_s",
         setup_asm=_enable_adue(sv, regs),
     )
     expected = "A = 1, D = " + ("1" if family == "zicboz" else "0")
     for level in sv.levels_desc:
-        for accessed, coverpoint in ((False, f"Abit_unset_{kind}_s"), (True, f"Dbit_unset_{kind}_s")):
+        for accessed, coverpoint in ((False, "Abit_unset_cbo_s"), (True, "Dbit_unset_cbo_s")):
             for op in CBOS[family]:
                 name = f"l{level}_a{int(accessed)}_d0_{op.replace('.', '_')}"
                 chunk.code.extend(

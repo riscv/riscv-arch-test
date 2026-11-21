@@ -17,6 +17,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.generate import set_atp
 from testgen.priv.extensions.sv.page_tables import (
+    PTE_SETUP_ADDR_REG,
     SV32X4,
     SV39X4,
     VS_SV32,
@@ -252,9 +253,10 @@ def _t_mprv_sum_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_mprv_cbo(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, family: str) -> None:
+def _t_mprv_cbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> TestChunk:
     """CBOs in M-mode follow MPRV, MPP and MPV like stores (cmo.adoc), but menvcfg enables them by the mode that
-    executes them, which is M-mode, so they run with the menvcfg CBO fields clear."""
+    executes them, which is M-mode, so they run with the menvcfg CBO fields clear.  The end restores the values
+    those fields had."""
     chunk = begin_chunk(
         test_data,
         f"HSm_{g.name}_mprv_{family}",
@@ -267,9 +269,9 @@ def _t_mprv_cbo(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         "store guest-page fault with the transformed CBO or zero in mtinst",
     )
     ops = CBO_OPS[family]
-    reg = test_data.int_regs.get_register()
+    saved = test_data.int_regs.get_register(exclude_regs=[0, PTE_SETUP_ADDR_REG])
     enables = "MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE"
-    code = [f"LI(x{reg}, {enables})", f"csrc menvcfg, x{reg}"]
+    code = [f"LI(x{saved}, {enables})", f"csrrc x{saved}, menvcfg, x{saved}"]
     # VS-stage translation with MPRV = 1 and MPV = 1
     code.extend([*guest_chunk_setup(test_data, None, vs, "VS"), "csrw satp, zero", "sfence.vma"])
     for mpp_name, mpp in (("s", "MPP_SMODE"), ("u", "0")):
@@ -299,10 +301,18 @@ def _t_mprv_cbo(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
                     va_is_label=True,
                 )
             )
-    code.extend([*guest_chunk_teardown(test_data, g.xlen), f"LI(x{reg}, {enables})", f"csrs menvcfg, x{reg}"])
-    test_data.int_regs.return_register(reg)
+    reg = test_data.int_regs.get_register()
+    code.extend(
+        [
+            *guest_chunk_teardown(test_data, g.xlen),
+            f"LI(x{reg}, {enables})",
+            f"and x{saved}, x{saved}, x{reg}",
+            f"csrs menvcfg, x{saved}",
+        ]
+    )
+    test_data.int_regs.return_registers([saved, reg])
     chunk.code.extend(code)
-    test_chunks.append(test_data.end_test_chunk())
+    return test_data.end_test_chunk()
 
 
 def _t_guest_faults(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
@@ -450,12 +460,6 @@ def make_svhsm_ldst_straddle_sv39(test_data: TestData) -> list[TestChunk]:
     return test_chunks
 
 
-def _make_svhsm_cbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    _t_mprv_cbo(test_data, test_chunks, g, vs, family)
-    return test_chunks
-
-
 @add_priv_test_generator(
     "Sv",
     required_extensions=["Sm", "H", "Zicbom"],
@@ -463,7 +467,7 @@ def _make_svhsm_cbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> 
     params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svhsm_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svhsm_cbo(test_data, SV32X4, VS_SV32, "zicbom")
+    return [_t_mprv_cbo(test_data, SV32X4, VS_SV32, "zicbom")]
 
 
 @add_priv_test_generator(
@@ -473,7 +477,7 @@ def make_svhsm_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
     params=["SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
 def make_svhsm_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svhsm_cbo(test_data, SV32X4, VS_SV32, "zicboz")
+    return [_t_mprv_cbo(test_data, SV32X4, VS_SV32, "zicboz")]
 
 
 @add_priv_test_generator(
@@ -483,7 +487,7 @@ def make_svhsm_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
     params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svhsm_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svhsm_cbo(test_data, SV39X4, VS_SV39, "zicbom")
+    return [_t_mprv_cbo(test_data, SV39X4, VS_SV39, "zicbom")]
 
 
 @add_priv_test_generator(
@@ -493,4 +497,4 @@ def make_svhsm_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
     params=["SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
 def make_svhsm_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svhsm_cbo(test_data, SV39X4, VS_SV39, "zicboz")
+    return [_t_mprv_cbo(test_data, SV39X4, VS_SV39, "zicboz")]

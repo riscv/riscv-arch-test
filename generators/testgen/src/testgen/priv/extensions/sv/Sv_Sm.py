@@ -228,18 +228,19 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
 def _t_mprv_cbo(test_data: TestData, sv: SvMode, family: str) -> TestChunk:
     """CBOs in M-mode with mstatus.MPRV = 1 are translated and checked with the privilege in MPP, like stores
     (cmo.adoc), but menvcfg enables them by the mode that executes them, which is M-mode.  The menvcfg CBO fields
-    are clear throughout."""
+    are clear throughout, and the end restores the values they had."""
     regs = SvRegs.allocate(test_data)
     chunk = begin_sv_test(test_data, regs, sv, "Smode", f"Sm_{sv.name}_mprv_{family}", coverpoint="cp_mprv_cbo")
     ops = CBOS[family]
     t = f"x{regs.scratch}"
+    saved = regs.result  # menvcfg on entry; the chunk has no data-region routine or sc to write result
     enables = "MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE"
     code = [
         f"// With the menvcfg CBO fields clear, execute {', '.join(ops)} in M-mode with MPRV = 1 and MPP = M (no",
         "// translation), S and U, on a supervisor page and a user page.  sstatus.SUM = 0, so a store page fault",
         "// is expected where the page's U does not match MPP.",
-        f"LI({t}, {enables})",
-        f"csrc menvcfg, {t}",
+        f"LI(x{saved}, {enables})",
+        f"csrrc x{saved}, menvcfg, x{saved}",
     ]
     mprv_m = (f"LI({t}, MSTATUS_MPRV | MSTATUS_MPP)", f"csrs mstatus, {t}")
     faults = 0
@@ -256,7 +257,7 @@ def _t_mprv_cbo(test_data: TestData, sv: SvMode, family: str) -> TestChunk:
             for op in ops:
                 label = test_data.add_testcase(f"u{int(user)}_mpp_{mpp}_{op.replace('.', '_')}", "cp_mprv_cbo", MPRV_CG)
                 code.extend([*setup, label, f"{op} (x{regs.addr})", *mprv_cleanup(regs.scratch)])
-    code.extend([f"LI({t}, {enables})", f"csrs menvcfg, {t}"])
+    code.extend([f"LI({t}, {enables})", f"and x{saved}, x{saved}, {t}", f"csrs menvcfg, x{saved}"])
     chunk.code.extend(code)
     chunk.raw_data.extend(sv_data(sv, regs))
     chunk.trap_sigupd_count = trap_sigupd_count(faults)

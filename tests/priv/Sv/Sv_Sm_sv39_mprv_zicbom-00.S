@@ -62,8 +62,8 @@ RVTEST_BEGIN
 // With the menvcfg CBO fields clear, execute cbo.clean, cbo.flush, cbo.inval in M-mode with MPRV = 1 and MPP = M (no
 // translation), S and U, on a supervisor page and a user page.  sstatus.SUM = 0, so a store page fault
 // is expected where the page's U does not match MPP.
-  LI(x9, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
-  csrc menvcfg, x9
+  LI(x15, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
+  csrrc x15, menvcfg, x15
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -239,7 +239,8 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_cbo_u1_mpp_u_cbo_inval:
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
   LI(x9, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
-  csrs menvcfg, x9
+  and x15, x15, x9
+  csrs menvcfg, x15
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

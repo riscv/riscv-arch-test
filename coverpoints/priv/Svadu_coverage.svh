@@ -147,21 +147,19 @@ covergroup Svadu_cg with function sample(ins_t ins);
     // A CBO sets A.  cbo.zero also sets D, because it writes; a cache-block management instruction never checks or
     // sets D (cmo.adoc).  The tests read each leaf back.  The tests run at every level, but the crosses leave out
     // PageType_d, which Sail's trace reports as a kilopage for every access.
-    `ifdef ZICBOM_SUPPORTED
-        cbm: coverpoint ins.current.insn {
-            wildcard bins clean = {CBO_CLEAN};
-            wildcard bins flush = {CBO_FLUSH};
-            wildcard bins inval = {CBO_INVAL};
+    `ifdef CBO_SUPPORTED
+        cbo: coverpoint ins.current.insn {
+            `ifdef ZICBOM_SUPPORTED
+                wildcard bins clean = {CBO_CLEAN};
+                wildcard bins flush = {CBO_FLUSH};
+                wildcard bins inval = {CBO_INVAL};
+            `endif
+            `ifdef ZICBOZ_SUPPORTED
+                wildcard bins zero = {CBO_ZERO};
+            `endif
         }
-        Abit_unset_cbm_s: cross PTE_Abit_unset_s_d, Svadu_enabled, cbm, priv_mode_s;
-        Dbit_unset_cbm_s: cross PTE_Dbit_unset_s_d, Svadu_enabled, cbm, priv_mode_s;
-    `endif
-    `ifdef ZICBOZ_SUPPORTED
-        cbz: coverpoint ins.current.insn {
-            wildcard bins zero = {CBO_ZERO};
-        }
-        Abit_unset_cbz_s: cross PTE_Abit_unset_s_d, Svadu_enabled, cbz, priv_mode_s;
-        Dbit_unset_cbz_s: cross PTE_Dbit_unset_s_d, Svadu_enabled, cbz, priv_mode_s;
+        Abit_unset_cbo_s: cross PTE_Abit_unset_s_d, Svadu_enabled, cbo, priv_mode_s;
+        Dbit_unset_cbo_s: cross PTE_Dbit_unset_s_d, Svadu_enabled, cbo, priv_mode_s;
     `endif
 
 endgroup

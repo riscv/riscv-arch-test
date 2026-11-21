@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// Abit_unset_cbz_s, Dbit_unset_cbz_s
+// Abit_unset_cbo_s, Dbit_unset_cbo_s
 /////////////////////////////////
 
 
@@ -72,12 +72,12 @@ RVTEST_BEGIN
   slli x6, x6, 34
   srli x6, x6, 34
   add x9, x9, x6
-Svadu_cg_Abit_unset_cbz_s_l2_a0_d0_cbo_zero:
+Svadu_cg_Abit_unset_cbo_s_l2_a0_d0_cbo_zero:
   cbo.zero (x9)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbz_s_l2_a0_d0_cbo_zero, Svadu_cg_Abit_unset_cbz_s_l2_a0_d0_cbo_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l2_a0_d0_cbo_zero, Svadu_cg_Abit_unset_cbo_s_l2_a0_d0_cbo_zero_str)
 
 // cbo.zero at level 2 with A = 1, D = 0: expected A = 1, D = 1
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
@@ -87,12 +87,12 @@ Svadu_cg_Abit_unset_cbz_s_l2_a0_d0_cbo_zero:
   slli x6, x6, 34
   srli x6, x6, 34
   add x9, x9, x6
-Svadu_cg_Dbit_unset_cbz_s_l2_a1_d0_cbo_zero:
+Svadu_cg_Dbit_unset_cbo_s_l2_a1_d0_cbo_zero:
   cbo.zero (x9)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbz_s_l2_a1_d0_cbo_zero, Svadu_cg_Dbit_unset_cbz_s_l2_a1_d0_cbo_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l2_a1_d0_cbo_zero, Svadu_cg_Dbit_unset_cbo_s_l2_a1_d0_cbo_zero_str)
 
 // cbo.zero at level 1 with A = 0, D = 0: expected A = 1, D = 1
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -103,12 +103,12 @@ Svadu_cg_Dbit_unset_cbz_s_l2_a1_d0_cbo_zero:
   slli x6, x6, 43
   srli x6, x6, 43
   add x9, x9, x6
-Svadu_cg_Abit_unset_cbz_s_l1_a0_d0_cbo_zero:
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_zero:
   cbo.zero (x9)
   LA(x6, rvtest_slvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbz_s_l1_a0_d0_cbo_zero, Svadu_cg_Abit_unset_cbz_s_l1_a0_d0_cbo_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_zero, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_zero_str)
 
 // cbo.zero at level 1 with A = 1, D = 0: expected A = 1, D = 1
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -119,12 +119,12 @@ Svadu_cg_Abit_unset_cbz_s_l1_a0_d0_cbo_zero:
   slli x6, x6, 43
   srli x6, x6, 43
   add x9, x9, x6
-Svadu_cg_Dbit_unset_cbz_s_l1_a1_d0_cbo_zero:
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_zero:
   cbo.zero (x9)
   LA(x6, rvtest_slvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbz_s_l1_a1_d0_cbo_zero, Svadu_cg_Dbit_unset_cbz_s_l1_a1_d0_cbo_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_zero, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_zero_str)
 
 // cbo.zero at level 0 with A = 0, D = 0: expected A = 1, D = 1
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -136,12 +136,12 @@ Svadu_cg_Dbit_unset_cbz_s_l1_a1_d0_cbo_zero:
   slli x6, x6, 52
   srli x6, x6, 52
   add x9, x9, x6
-Svadu_cg_Abit_unset_cbz_s_l0_a0_d0_cbo_zero:
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_zero:
   cbo.zero (x9)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbz_s_l0_a0_d0_cbo_zero, Svadu_cg_Abit_unset_cbz_s_l0_a0_d0_cbo_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_zero, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_zero_str)
 
 // cbo.zero at level 0 with A = 1, D = 0: expected A = 1, D = 1
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -153,12 +153,12 @@ Svadu_cg_Abit_unset_cbz_s_l0_a0_d0_cbo_zero:
   slli x6, x6, 52
   srli x6, x6, 52
   add x9, x9, x6
-Svadu_cg_Dbit_unset_cbz_s_l0_a1_d0_cbo_zero:
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_zero:
   cbo.zero (x9)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbz_s_l0_a1_d0_cbo_zero, Svadu_cg_Dbit_unset_cbz_s_l0_a1_d0_cbo_zero_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_zero, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_zero_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -191,12 +191,12 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svadu_cg_Abit_unset_cbz_s_l2_a0_d0_cbo_zero_str: .string "\"test: 1; cg: Svadu_cg; cp: Abit_unset_cbz_s; bin: l2_a0_d0_cbo_zero\""
-Svadu_cg_Dbit_unset_cbz_s_l2_a1_d0_cbo_zero_str: .string "\"test: 2; cg: Svadu_cg; cp: Dbit_unset_cbz_s; bin: l2_a1_d0_cbo_zero\""
-Svadu_cg_Abit_unset_cbz_s_l1_a0_d0_cbo_zero_str: .string "\"test: 3; cg: Svadu_cg; cp: Abit_unset_cbz_s; bin: l1_a0_d0_cbo_zero\""
-Svadu_cg_Dbit_unset_cbz_s_l1_a1_d0_cbo_zero_str: .string "\"test: 4; cg: Svadu_cg; cp: Dbit_unset_cbz_s; bin: l1_a1_d0_cbo_zero\""
-Svadu_cg_Abit_unset_cbz_s_l0_a0_d0_cbo_zero_str: .string "\"test: 5; cg: Svadu_cg; cp: Abit_unset_cbz_s; bin: l0_a0_d0_cbo_zero\""
-Svadu_cg_Dbit_unset_cbz_s_l0_a1_d0_cbo_zero_str: .string "\"test: 6; cg: Svadu_cg; cp: Dbit_unset_cbz_s; bin: l0_a1_d0_cbo_zero\""
+Svadu_cg_Abit_unset_cbo_s_l2_a0_d0_cbo_zero_str: .string "\"test: 1; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l2_a0_d0_cbo_zero\""
+Svadu_cg_Dbit_unset_cbo_s_l2_a1_d0_cbo_zero_str: .string "\"test: 2; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l2_a1_d0_cbo_zero\""
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_zero_str: .string "\"test: 3; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l1_a0_d0_cbo_zero\""
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_zero_str: .string "\"test: 4; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l1_a1_d0_cbo_zero\""
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_zero_str: .string "\"test: 5; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l0_a0_d0_cbo_zero\""
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_zero_str: .string "\"test: 6; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l0_a1_d0_cbo_zero\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// Abit_unset_cbm_s, Dbit_unset_cbm_s
+// Abit_unset_cbo_s, Dbit_unset_cbo_s
 /////////////////////////////////
 
 
@@ -72,12 +72,12 @@ RVTEST_BEGIN
   slli x6, x6, 10
   srli x6, x6, 10
   add x8, x8, x6
-Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean:
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_clean, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_clean_str)
 
 // cbo.flush at level 1 with A = 0, D = 0: expected A = 1, D = 0
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
@@ -87,12 +87,12 @@ Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean:
   slli x6, x6, 10
   srli x6, x6, 10
   add x8, x8, x6
-Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush:
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_flush, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_flush_str)
 
 // cbo.inval at level 1 with A = 0, D = 0: expected A = 1, D = 0
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
@@ -102,12 +102,12 @@ Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush:
   slli x6, x6, 10
   srli x6, x6, 10
   add x8, x8, x6
-Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval:
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval, Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_inval, Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_inval_str)
 
 // cbo.clean at level 1 with A = 1, D = 0: expected A = 1, D = 0
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
@@ -117,12 +117,12 @@ Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval:
   slli x6, x6, 10
   srli x6, x6, 10
   add x8, x8, x6
-Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean:
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_clean, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_clean_str)
 
 // cbo.flush at level 1 with A = 1, D = 0: expected A = 1, D = 0
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
@@ -132,12 +132,12 @@ Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean:
   slli x6, x6, 10
   srli x6, x6, 10
   add x8, x8, x6
-Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush:
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_flush, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_flush_str)
 
 // cbo.inval at level 1 with A = 1, D = 0: expected A = 1, D = 0
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
@@ -147,84 +147,84 @@ Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush:
   slli x6, x6, 10
   srli x6, x6, 10
   add x8, x8, x6
-Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval:
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_Sroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval, Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_inval, Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_inval_str)
 
 // cbo.clean at level 0 with A = 0, D = 0: expected A = 1, D = 0
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(x8, va_data)
-Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean:
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_clean, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_clean_str)
 
 // cbo.flush at level 0 with A = 0, D = 0: expected A = 1, D = 0
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(x8, va_data)
-Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush:
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_flush, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_flush_str)
 
 // cbo.inval at level 0 with A = 0, D = 0: expected A = 1, D = 0
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(x8, va_data)
-Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval:
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval, Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_inval, Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_inval_str)
 
 // cbo.clean at level 0 with A = 1, D = 0: expected A = 1, D = 0
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(x8, va_data)
-Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean:
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_clean:
   cbo.clean (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_clean, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_clean_str)
 
 // cbo.flush at level 0 with A = 1, D = 0: expected A = 1, D = 0
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(x8, va_data)
-Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush:
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_flush:
   cbo.flush (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_flush, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_flush_str)
 
 // cbo.inval at level 0 with A = 1, D = 0: expected A = 1, D = 0
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
   LI(x8, va_data)
-Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_inval:
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_inval:
   cbo.inval (x8)
   LA(x6, rvtest_slvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LREG x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_inval, Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_inval, Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_inval_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -254,18 +254,18 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_clean_str: .string "\"test: 1; cg: Svadu_cg; cp: Abit_unset_cbm_s; bin: l1_a0_d0_cbo_clean\""
-Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_flush_str: .string "\"test: 2; cg: Svadu_cg; cp: Abit_unset_cbm_s; bin: l1_a0_d0_cbo_flush\""
-Svadu_cg_Abit_unset_cbm_s_l1_a0_d0_cbo_inval_str: .string "\"test: 3; cg: Svadu_cg; cp: Abit_unset_cbm_s; bin: l1_a0_d0_cbo_inval\""
-Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_clean_str: .string "\"test: 4; cg: Svadu_cg; cp: Dbit_unset_cbm_s; bin: l1_a1_d0_cbo_clean\""
-Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_flush_str: .string "\"test: 5; cg: Svadu_cg; cp: Dbit_unset_cbm_s; bin: l1_a1_d0_cbo_flush\""
-Svadu_cg_Dbit_unset_cbm_s_l1_a1_d0_cbo_inval_str: .string "\"test: 6; cg: Svadu_cg; cp: Dbit_unset_cbm_s; bin: l1_a1_d0_cbo_inval\""
-Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_clean_str: .string "\"test: 7; cg: Svadu_cg; cp: Abit_unset_cbm_s; bin: l0_a0_d0_cbo_clean\""
-Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_flush_str: .string "\"test: 8; cg: Svadu_cg; cp: Abit_unset_cbm_s; bin: l0_a0_d0_cbo_flush\""
-Svadu_cg_Abit_unset_cbm_s_l0_a0_d0_cbo_inval_str: .string "\"test: 9; cg: Svadu_cg; cp: Abit_unset_cbm_s; bin: l0_a0_d0_cbo_inval\""
-Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_clean_str: .string "\"test: 10; cg: Svadu_cg; cp: Dbit_unset_cbm_s; bin: l0_a1_d0_cbo_clean\""
-Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_flush_str: .string "\"test: 11; cg: Svadu_cg; cp: Dbit_unset_cbm_s; bin: l0_a1_d0_cbo_flush\""
-Svadu_cg_Dbit_unset_cbm_s_l0_a1_d0_cbo_inval_str: .string "\"test: 12; cg: Svadu_cg; cp: Dbit_unset_cbm_s; bin: l0_a1_d0_cbo_inval\""
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_clean_str: .string "\"test: 1; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l1_a0_d0_cbo_clean\""
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_flush_str: .string "\"test: 2; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l1_a0_d0_cbo_flush\""
+Svadu_cg_Abit_unset_cbo_s_l1_a0_d0_cbo_inval_str: .string "\"test: 3; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l1_a0_d0_cbo_inval\""
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_clean_str: .string "\"test: 4; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l1_a1_d0_cbo_clean\""
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_flush_str: .string "\"test: 5; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l1_a1_d0_cbo_flush\""
+Svadu_cg_Dbit_unset_cbo_s_l1_a1_d0_cbo_inval_str: .string "\"test: 6; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l1_a1_d0_cbo_inval\""
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_clean_str: .string "\"test: 7; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l0_a0_d0_cbo_clean\""
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_flush_str: .string "\"test: 8; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l0_a0_d0_cbo_flush\""
+Svadu_cg_Abit_unset_cbo_s_l0_a0_d0_cbo_inval_str: .string "\"test: 9; cg: Svadu_cg; cp: Abit_unset_cbo_s; bin: l0_a0_d0_cbo_inval\""
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_clean_str: .string "\"test: 10; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l0_a1_d0_cbo_clean\""
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_flush_str: .string "\"test: 11; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l0_a1_d0_cbo_flush\""
+Svadu_cg_Dbit_unset_cbo_s_l0_a1_d0_cbo_inval_str: .string "\"test: 12; cg: Svadu_cg; cp: Dbit_unset_cbo_s; bin: l0_a1_d0_cbo_inval\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

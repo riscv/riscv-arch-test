@@ -41,68 +41,68 @@ RVTEST_BEGIN
 //   store guest-page fault with the transformed CBO or zero in mtinst
 /////////////////////////////////
 
-  LI(x13, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
-  csrc menvcfg, x13
+  LI(x14, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
+  csrrc x14, menvcfg, x14
 // Identity map the test image in both stages
-  LA(x14, rvtest_code_begin)
-  srli x14, x14, 30
-  slli x14, x14, 55
-  srli x14, x14, 52
+  LA(x13, rvtest_code_begin)
+  srli x13, x13, 30
+  slli x13, x13, 55
+  srli x13, x13, 52
   LA(x6, rvtest_Vroot_pg_tbl)
-  add x14, x14, x6
+  add x13, x13, x6
   LA(x9, rvtest_code_begin)
   srli x9, x9, 30
   slli x9, x9, 28
   LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_data_begin)
-  srli x14, x14, 30
-  slli x14, x14, 55
-  srli x14, x14, 52
+  SREG x9, 0(x13)
+  LA(x13, rvtest_data_begin)
+  srli x13, x13, 30
+  slli x13, x13, 55
+  srli x13, x13, 52
   LA(x6, rvtest_Vroot_pg_tbl)
-  add x14, x14, x6
+  add x13, x13, x6
   LA(x9, rvtest_data_begin)
   srli x9, x9, 30
   slli x9, x9, 28
   LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x6
-  SREG x9, 0(x14)
-  LA(x14, rvtest_sig_end)
-  srli x14, x14, 30
-  slli x14, x14, 55
-  srli x14, x14, 52
+  SREG x9, 0(x13)
+  LA(x13, rvtest_sig_end)
+  srli x13, x13, 30
+  slli x13, x13, 55
+  srli x13, x13, 52
   LA(x6, rvtest_Vroot_pg_tbl)
-  add x14, x14, x6
+  add x13, x13, x6
   LA(x9, rvtest_sig_end)
   srli x9, x9, 30
   slli x9, x9, 28
   LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x6
-  SREG x9, 0(x14)
+  SREG x9, 0(x13)
 // Map the code region again at the guest alias
-  LA(x14, rvtest_Vroot_pg_tbl + (((0x180000000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x180000000) >> 30) & 0x1ff) * 8)
   LA(x9, rvtest_code_begin)
   srli x9, x9, 30
   slli x9, x9, 28
   LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x6
-  SREG x9, 0(x14)
+  SREG x9, 0(x13)
 // Register the alias of rvtest_code_begin
   LI(x9, ((0x180000000) >> 30) << 30)
-  LA(x14, rvtest_code_begin)
-  slli x14, x14, 34
-  srli x14, x14, 34
-  or x9, x9, x14
-  LA(x14, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x14)
+  LA(x13, rvtest_code_begin)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  or x9, x9, x13
+  LA(x13, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x13)
 
   csrw hgatp, zero
   LI(x9, 0x8000000000000000)
-  LA(x14, rvtest_Vroot_pg_tbl)
-  srli x14, x14, 12
-  or x14, x14, x9
-  csrw vsatp, x14
+  LA(x13, rvtest_Vroot_pg_tbl)
+  srli x13, x13, 12
+  or x13, x13, x9
+  csrw vsatp, x13
   hfence.gvma
   hfence.vvma
   LI(x15, SSTATUS_SUM | SSTATUS_MXR)
@@ -112,27 +112,27 @@ RVTEST_BEGIN
   csrw hedeleg, zero
   csrw satp, zero
   sfence.vma
-  LA(x14, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x15, rvtest_vlvl1_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x6, PTE_V)
   or x15, x15, x6
-  SREG x15, 0(x14)
-  LA(x14, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  SREG x15, 0(x13)
+  LA(x13, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
   LA(x15, rvtest_vlvl0_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x6, PTE_V)
   or x15, x15, x6
-  SREG x15, 0(x14)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  SREG x15, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LA(x15, svh_page)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x6, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x15, x15, x6
-  SREG x15, 0(x14)
+  SREG x15, 0(x13)
   hfence.vvma
   hfence.gvma
   LI(x6, 0x140802000)
@@ -181,30 +181,30 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_vsatp_vs_mpp_s_u1_cbo_zero:
   csrc mstatus, x6
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x14, rvtest_vlvl1_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
+  LA(x13, rvtest_vlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
   LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x15)
+  or x13, x13, x8
+  SREG x13, 0(x15)
   LA(x15, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x14, rvtest_vlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
   LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x15)
+  or x13, x13, x8
+  SREG x13, 0(x15)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x14, svh_page)
-  srli x14, x14, 12
-  slli x14, x14, 10
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
   LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x15)
+  or x13, x13, x8
+  SREG x13, 0(x15)
   hfence.vvma
   hfence.gvma
   LI(x8, 0x140802000)
-  LI(x14, 0x102)
+  LI(x13, 0x102)
   LI(x6, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x6
   LI(x6, MSTATUS_MPRV | MSTATUS_MPV)
@@ -238,7 +238,7 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_vsatp_vs_mpp_u_u0_cbo_zero:
   hfence.vvma
   hfence.gvma
   LI(x6, 0x140802000)
-  LI(x14, 0x103)
+  LI(x13, 0x103)
   LI(x15, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MSTATUS_MPV)
@@ -252,9 +252,9 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_vsatp_vs_mpp_u_u1_cbo_zero:
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x14, rvtest_code_begin)
+  LA(x13, rvtest_code_begin)
   LA(x8, Vtramptbl_sv)
-  SREG x14, code_bgn_off(x8)
+  SREG x13, code_bgn_off(x8)
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc sstatus, x6
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
@@ -267,37 +267,37 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_vsatp_vs_mpp_u_u1_cbo_zero:
   srli x8, x8, 30
   slli x8, x8, 53
   srli x8, x8, 50
-  LA(x14, rvtest_Hroot_pg_tbl)
-  add x8, x8, x14
+  LA(x13, rvtest_Hroot_pg_tbl)
+  add x8, x8, x13
   LA(x6, rvtest_hlvl1_pg_tbl)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x14, PTE_V)
-  or x6, x6, x14
+  LI(x13, PTE_V)
+  or x6, x6, x13
   SREG x6, 0(x8)
   LA(x8, svh_page)
   srli x8, x8, 21
   slli x8, x8, 55
   srli x8, x8, 52
-  LA(x14, rvtest_hlvl1_pg_tbl)
-  add x8, x8, x14
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  add x8, x8, x13
   LA(x6, rvtest_hlvl0_pg_tbl)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x14, PTE_V)
-  or x6, x6, x14
+  LI(x13, PTE_V)
+  or x6, x6, x13
   SREG x6, 0(x8)
   LA(x8, svh_page)
   srli x8, x8, 12
   slli x8, x8, 55
   srli x8, x8, 52
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  add x8, x8, x14
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  add x8, x8, x13
   LA(x6, svh_page)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x14
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
   SREG x6, 0(x8)
   LI(x6, 0x8000000000000000)
   LA(x8, rvtest_Hroot_pg_tbl)
@@ -311,28 +311,28 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_vsatp_vs_mpp_u_u1_cbo_zero:
   hfence.vvma
   LA(x15, svh_page)
   LI(x9, 0x104)
-  LI(x14, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
-  csrc mstatus, x14
-  LI(x14, MSTATUS_MPP)
-  csrs mstatus, x14
+  LI(x13, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
+  csrc mstatus, x13
+  LI(x13, MSTATUS_MPP)
+  csrs mstatus, x13
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv0_m_cbo_zero:
   cbo.zero (x15)
-  LI(x14, MSTATUS_MPRV)
-  csrc mstatus, x14
+  LI(x13, MSTATUS_MPRV)
+  csrc mstatus, x13
 
   LA(x15, svh_page)
   LI(x6, 0x105)
-  LI(x14, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
-  csrc mstatus, x14
-  LI(x14, MSTATUS_MPP | MSTATUS_MPV)
-  csrs mstatus, x14
+  LI(x13, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
+  csrc mstatus, x13
+  LI(x13, MSTATUS_MPP | MSTATUS_MPV)
+  csrs mstatus, x13
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv0_m_mpv1_cbo_zero:
   cbo.zero (x15)
-  LI(x14, MSTATUS_MPRV)
-  csrc mstatus, x14
+  LI(x13, MSTATUS_MPRV)
+  csrc mstatus, x13
 
   LA(x9, svh_page)
-  LI(x14, 0x106)
+  LI(x13, 0x106)
   LI(x6, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x6
   LI(x6, MPP_SMODE)
@@ -342,45 +342,45 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv0_hs_cbo_zero:
   LI(x6, MSTATUS_MPRV)
   csrc mstatus, x6
 
-  LA(x14, svh_page)
+  LA(x13, svh_page)
   LI(x6, 0x107)
   LI(x15, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x15
   LI(x15, MPP_SMODE | MSTATUS_MPV)
   csrs mstatus, x15
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv0_vs_cbo_zero:
-  cbo.zero (x14)
+  cbo.zero (x13)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
 
-  LA(x14, svh_page)
+  LA(x13, svh_page)
   LI(x6, 0x108)
   LI(x15, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x15
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv0_u_cbo_zero:
-  cbo.zero (x14)
+  cbo.zero (x13)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
 
-  LA(x14, svh_page)
+  LA(x13, svh_page)
   LI(x15, 0x109)
   LI(x9, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x9
   LI(x9, MSTATUS_MPV)
   csrs mstatus, x9
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv0_vu_cbo_zero:
-  cbo.zero (x14)
+  cbo.zero (x13)
   LI(x9, MSTATUS_MPRV)
   csrc mstatus, x9
 
-  LA(x14, svh_page)
+  LA(x13, svh_page)
   LI(x8, 0x10a)
   LI(x15, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV | MSTATUS_MPP)
   csrs mstatus, x15
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv1_m_cbo_zero:
-  cbo.zero (x14)
+  cbo.zero (x13)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
 
@@ -408,23 +408,23 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv1_hs_cbo_zero:
 
   LA(x8, svh_page)
   LI(x9, 0x10d)
-  LI(x14, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
-  csrc mstatus, x14
-  LI(x14, MSTATUS_MPRV | MPP_SMODE | MSTATUS_MPV)
-  csrs mstatus, x14
+  LI(x13, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
+  csrc mstatus, x13
+  LI(x13, MSTATUS_MPRV | MPP_SMODE | MSTATUS_MPV)
+  csrs mstatus, x13
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv1_vs_cbo_zero:
   cbo.zero (x8)
-  LI(x14, MSTATUS_MPRV)
-  csrc mstatus, x14
+  LI(x13, MSTATUS_MPRV)
+  csrc mstatus, x13
 
-  LA(x14, svh_page)
+  LA(x13, svh_page)
   LI(x8, 0x10e)
   LI(x15, MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV)
   csrc mstatus, x15
   LI(x15, MSTATUS_MPRV)
   csrs mstatus, x15
 Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv1_u_cbo_zero:
-  cbo.zero (x14)
+  cbo.zero (x13)
   LI(x15, MSTATUS_MPRV)
   csrc mstatus, x15
 
@@ -443,19 +443,20 @@ Sv_HSm_mprv_cg_cp_mprv_cbo_hgatp_g_mprv1_vu_cbo_zero:
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x14, rvtest_code_begin)
-  LA(x9, Vtramptbl_sv)
-  SREG x14, code_bgn_off(x9)
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x8
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x8
-  LI(x8, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x8
+  LA(x9, rvtest_code_begin)
+  LA(x15, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x15)
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x13, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x13
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
-  LI(x13, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
-  csrs menvcfg, x13
+  LI(x8, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
+  and x14, x14, x8
+  csrs menvcfg, x14
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

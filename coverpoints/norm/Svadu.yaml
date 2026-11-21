@@ -18,7 +18,7 @@ normative_rule_definitions:
   - name: cbm_unperm_translate
     coverpoint:
       [
-        "Svadu_cg/{Abit_unset_cbm_s,Dbit_unset_cbm_s}",
+        "Svadu_cg/{Abit_unset_cbo_s,Dbit_unset_cbo_s}",
         "Svadu_H_cg/{cp_vsatp_adue_cbo,cp_hgatp_adue_cbo}",
       ]
 
@@ -27,7 +27,7 @@ normative_rule_definitions:
   - name: cbz_unperm_translate
     coverpoint:
       [
-        "Svadu_cg/{Abit_unset_cbz_s,Dbit_unset_cbz_s}",
+        "Svadu_cg/{Abit_unset_cbo_s,Dbit_unset_cbo_s}",
         "Svadu_H_cg/{cp_vsatp_adue_cbo,cp_hgatp_adue_cbo}",
       ]
 

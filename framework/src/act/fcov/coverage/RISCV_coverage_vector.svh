@@ -484,6 +484,47 @@ function vl_t vl_check(int hart, int issue, int egs = 1);
 endfunction
 
 
+// Classes for the unordered floating-point sum reduction coverpoints (cp_custom_vfredusum_*)
+typedef enum {
+  vred_vl_2,
+  vred_vl_3,
+  vred_vl_4,
+  vred_vl_7,
+  vred_vl_vlmax,
+  vred_vl_other
+} vred_vl_t;
+
+// vl = 7 is below every VLMAX at LMUL=8, so its bin and the VLMAX bin are both reachable
+function vred_vl_t vred_vl_class(int hart, int issue);
+  int vl = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, CSR_VL));
+  int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
+  case (vl)
+    2: return vred_vl_2;
+    3: return vred_vl_3;
+    4: return vred_vl_4;
+    7: return vred_vl_7;
+    default: ;
+  endcase
+  if (vl == vlmax) return vred_vl_vlmax;
+  return vred_vl_other;
+endfunction
+
+typedef enum {
+  vred_unmasked,
+  vred_some_active,
+  vred_none_active
+} vred_mask_t;
+
+// Whether a reduction is unmasked, or masked with at least one or with no active element below vl
+function vred_mask_t vred_mask_class(int hart, int issue, logic vm, `VLEN_BITS mask_val);
+  int vl = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, CSR_VL));
+  if (vm) return vred_unmasked;
+  for (int i = 0; i < vl && i < $bits(mask_val); i++)
+    if (mask_val[i]) return vred_some_active;
+  return vred_none_active;
+endfunction
+
+
 typedef enum {
   vstart_one,
   vstart_vlmaxm1,

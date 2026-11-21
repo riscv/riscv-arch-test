@@ -65,11 +65,13 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         `endif
     }
 
-    // S-level interrupt bits: SEI, STI, SSI, and LCOFI with Sscofpmf
+    // S-level interrupt bits: SEI, STI, SSI, and LCOFI with Sscofpmf, limited to those mideleg can delegate.
+    // One that mideleg cannot delegate has its sip and sie bits read-only zero, so it never reaches S-mode;
+    // InterruptsSm covers it in M-mode. The bins below that name a single S-level interrupt are gated the same way.
     `ifdef SSCOFPMF_SUPPORTED
-        `define INTS_NOH_MASK 16'h2222
+        `define INTS_NOH_MASK (16'h2222 & 16'(`UDB_MIDELEG_DELEGATABLE_MASK))
     `else
-        `define INTS_NOH_MASK 16'h0222
+        `define INTS_NOH_MASK (16'h0222 & 16'(`UDB_MIDELEG_DELEGATABLE_MASK))
     `endif
 
     // Interrupt bits this config supports below M: the S-level bits, plus VSEI, VSTI, and VSSI with H
@@ -79,7 +81,7 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         `define INTS_MASK `INTS_NOH_MASK
     `endif
 
-    // mideleg delegates every S-level interrupt, as it does from boot. Bits outside INTS_NOH_MASK are
+    // mideleg delegates every delegatable S-level interrupt, as it does from boot. Bits outside INTS_NOH_MASK are
     // don't care: the tests never delegate M-level interrupts, and H hardwires the VS bits to 1.
     mideleg_s_ones: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG)[15:0] & `INTS_NOH_MASK) == `INTS_NOH_MASK) {
         bins ones = {1'b1};
@@ -92,9 +94,15 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         bins ones = {1'b1};
     }
 
-    sie_stie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "stie")[0] {
-        // autofill 0/1
-    }
+    `ifdef UDB_MIDELEG_DELEGATABLE_5
+        sie_stie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "stie")[0] {
+            // autofill 0/1
+        }
+    `else
+        sie_stie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "stie")[0] {
+            bins zero = {0}; // sie.STIE is read-only zero when mideleg cannot delegate STI
+        }
+    `endif
     sie_stie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE, "stie")[0] {
         bins one = {1'b1};
     }
@@ -102,11 +110,11 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // Exactly one interrupt in INTS_MASK enabled. M-level enables are not touched by writes to sie
     // or hie, so they are masked off.
     walking_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)[15:0] & `INTS_MASK) {
-        bins seie = {16'h0200};
-        bins stie = {16'h0020};
-        bins ssie = {16'h0002};
+        `ifdef UDB_MIDELEG_DELEGATABLE_9 bins seie = {16'h0200}; `endif
+        `ifdef UDB_MIDELEG_DELEGATABLE_5 bins stie = {16'h0020}; `endif
+        `ifdef UDB_MIDELEG_DELEGATABLE_1 bins ssie = {16'h0002}; `endif
         `ifdef SSCOFPMF_SUPPORTED
-            bins lcofie = {16'h2000};
+            `ifdef UDB_MIDELEG_DELEGATABLE_13 bins lcofie = {16'h2000}; `endif
         `endif
         `ifdef H_SUPPORTED
             bins vseie = {16'h0400};
@@ -119,11 +127,11 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // is one-hot. The bin names the single interrupt left disabled. As in sie_ones, the VS enables
     // are in hie rather than sie, so they are masked off.
     walking_sie_zero: coverpoint ((~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)[15:0]) & `INTS_NOH_MASK) {
-        bins seie = {16'h0200};
-        bins stie = {16'h0020};
-        bins ssie = {16'h0002};
+        `ifdef UDB_MIDELEG_DELEGATABLE_9 bins seie = {16'h0200}; `endif
+        `ifdef UDB_MIDELEG_DELEGATABLE_5 bins stie = {16'h0020}; `endif
+        `ifdef UDB_MIDELEG_DELEGATABLE_1 bins ssie = {16'h0002}; `endif
         `ifdef SSCOFPMF_SUPPORTED
-            bins lcofie = {16'h2000};
+            `ifdef UDB_MIDELEG_DELEGATABLE_13 bins lcofie = {16'h2000}; `endif
         `endif
     }
 
@@ -161,11 +169,11 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // One interrupt in INTS_MASK pending at a time. M-level bits are masked off: the tests neither
     // raise nor depend on them.
     sip_walking: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & `INTS_MASK) {
-        bins seip = {16'h0200};
-        bins stip = {16'h0020};
-        bins ssip = {16'h0002};
+        `ifdef UDB_MIDELEG_DELEGATABLE_9 bins seip = {16'h0200}; `endif
+        `ifdef UDB_MIDELEG_DELEGATABLE_5 bins stip = {16'h0020}; `endif
+        `ifdef UDB_MIDELEG_DELEGATABLE_1 bins ssip = {16'h0002}; `endif
         `ifdef SSCOFPMF_SUPPORTED
-            bins lcofip = {16'h2000};
+            `ifdef UDB_MIDELEG_DELEGATABLE_13 bins lcofip = {16'h2000}; `endif
         `endif
         `ifdef H_SUPPORTED
             bins vseip = {16'h0400};
@@ -372,10 +380,14 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         // when Sstc is implemented, and SSI and SEI through the platform interrupt controller.
         // U has no sip or stimecmp access, so it reaches only the interrupt controller.
         // U cannot reach stimecmp or mip.STIP, so U-mode STI is raised through T-SBI (cp_trigger_tsbi)
-        ignore_bins u_sti_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.stip);
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            ignore_bins u_sti_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.stip);
+        `endif
         `ifdef SSCOFPMF_SUPPORTED
-            // U has no sip, so U-mode LCOFI is raised through T-SBI and recorded by cp_trigger_tsbi
-            ignore_bins u_lcofi_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.lcofip);
+            `ifdef UDB_MIDELEG_DELEGATABLE_13
+                // U has no sip, so U-mode LCOFI is raised through T-SBI and recorded by cp_trigger_tsbi
+                ignore_bins u_lcofi_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.lcofip);
+            `endif
         `endif
         `ifdef H_SUPPORTED
             // VS and VU are like U: in VS, sip and stimecmp are vsip and vstimecmp. The VS-level
@@ -385,10 +397,12 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
                                        (binsof(sip_walking.vseip) || binsof(sip_walking.vstip) || binsof(sip_walking.vssip));
         `endif
         `ifndef SSTC_SUPPORTED
-            // Without Sstc, STI is raised only by an M-mode write to mip.STIP. With SIE = 0 it stays
-            // pending in S and is recorded here; with SIE = 1 it is taken on the mret.
-            ignore_bins s_sti_tsbi = binsof(priv_mode_interrupts.S_mode) && binsof(sip_walking.stip) &&
-                                     binsof(sstatus_sie) intersect {1};
+            `ifdef UDB_MIDELEG_DELEGATABLE_5
+                // Without Sstc, STI is raised only by an M-mode write to mip.STIP. With SIE = 0 it stays
+                // pending in S and is recorded here; with SIE = 1 it is taken on the mret.
+                ignore_bins s_sti_tsbi = binsof(priv_mode_interrupts.S_mode) && binsof(sip_walking.stip) &&
+                                         binsof(sstatus_sie) intersect {1};
+            `endif
         `endif
     }
     // Every S-level interrupt has a T-SBI path: mip.STIP, mip.SSIP, mip.SEIP, and mip.LCOFIP are
@@ -409,14 +423,16 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_trigger_reg_sip_ssip:    cross csrrs_csrrsi, csr_sip, rs1_ssip, sstatus_sie, mideleg_s_ones, sie_ones, stvec_both;
 
     `ifdef SSTC_SUPPORTED
-        cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, sstatus_sie, sie_ones, mideleg_s_ones, stvec_both, stimecmp_max_min {
-            // U-mode cannot write stimecmp. With STCE = 1 the S handler writes it on U's behalf and
-            // STI is taken on the sret, so only cp_trigger_sti_sstc_tsbi records it.
-            // With STCE = 0 the S handler cannot write stimecmp either (it is not accessible in S),
-            // so the generator skips U-mode STCE = 0; InterruptsSm covers it from M-mode.
-            ignore_bins u_min = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(stimecmp_max_min.min);
-        }
-        cp_trigger_sti_sstc_tsbi: cross tsbi_return_sret, menvcfg_stce_one, stimecmp_min, sstatus_sie_on_return, sie_ones, mideleg_s_ones, stvec_both;
+        `ifdef UDB_MIDELEG_DELEGATABLE_5 // sie.STIE and sip.STIP are read-only zero unless mideleg can delegate STI
+            cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, sstatus_sie, sie_ones, mideleg_s_ones, stvec_both, stimecmp_max_min {
+                // U-mode cannot write stimecmp. With STCE = 1 the S handler writes it on U's behalf and
+                // STI is taken on the sret, so only cp_trigger_sti_sstc_tsbi records it.
+                // With STCE = 0 the S handler cannot write stimecmp either (it is not accessible in S),
+                // so the generator skips U-mode STCE = 0; InterruptsSm covers it from M-mode.
+                ignore_bins u_min = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(stimecmp_max_min.min);
+            }
+            cp_trigger_sti_sstc_tsbi: cross tsbi_return_sret, menvcfg_stce_one, stimecmp_min, sstatus_sie_on_return, sie_ones, mideleg_s_ones, stvec_both;
+        `endif
         `ifdef H_SUPPORTED
             // vstimecmp = 0 raises VSTI in HS-mode or, delegated by hideleg, STI in VS-mode
             cp_trigger_vsti_sstc:      cross priv_mode_hs, vstimecmp_min, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
@@ -430,9 +446,13 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_enable_one:              cross priv_mode_interrupts, mideleg_s_ones, sstatus_sie_one, walking_sie_one, sip_matches_sie_one {
         // STI and LCOFI are raised through T-SBI by RVTEST_SET_STIME_INT and RVTEST_SET_LCOFI_INT,
         // so with their enable set they are taken on the xret and covered by cp_enable_one_tsbi
-        ignore_bins sti_tsbi = binsof(walking_sie_one.stie); // taken on the T-SBI xret: cp_enable_one_tsbi
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            ignore_bins sti_tsbi = binsof(walking_sie_one.stie); // taken on the T-SBI xret: cp_enable_one_tsbi
+        `endif
         `ifdef SSCOFPMF_SUPPORTED
-            ignore_bins lcofi_tsbi = binsof(walking_sie_one.lcofie); // taken on the T-SBI xret: cp_enable_one_tsbi
+            `ifdef UDB_MIDELEG_DELEGATABLE_13
+                ignore_bins lcofi_tsbi = binsof(walking_sie_one.lcofie); // taken on the T-SBI xret: cp_enable_one_tsbi
+            `endif
         `endif
         `ifdef H_SUPPORTED
             // Below HS the VS-level interrupts are raised through T-SBI (hvip): cp_enable_one_tsbi
@@ -444,7 +464,8 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // runs with SIE = 0.
     cp_enable_one_tsbi:         cross tsbi_return, mideleg_s_ones, sstatus_sie_on_return_one, walking_sie_one, sip_matches_sie_one {
         // SSI and SEI come from the platform interrupt controller, written from the test mode itself
-        ignore_bins platform = binsof(walking_sie_one.ssie) || binsof(walking_sie_one.seie);
+        `ifdef UDB_MIDELEG_DELEGATABLE_1 ignore_bins platform_ssi = binsof(walking_sie_one.ssie); `endif
+        `ifdef UDB_MIDELEG_DELEGATABLE_9 ignore_bins platform_sei = binsof(walking_sie_one.seie); `endif
         `ifdef H_SUPPORTED
             // S writes hvip directly, so its VS-level interrupts are taken in S (cp_enable_one)
             ignore_bins s_writes_hvip = binsof(tsbi_return.S_mode) &&
@@ -478,10 +499,13 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // WFI wakes on the Sstc supervisor timer whether or not SIE is set. Not tested in U-mode: with
     // S-mode implemented, U-mode WFI traps after a bounded time (cp_wfi_timeout). VS-mode WFI waits
     // only with hstatus.VTW = 0; VU-mode WFI never waits.
+    // sie.STIE and sip.STIP are read-only zero unless mideleg can delegate STI, so the WFI cannot wake on it then.
     `ifdef SSTC_SUPPORTED
-        cp_wfi:                 cross priv_mode_s, sstatus_sie, sie_stie_one, mstatus_tw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
-        `ifdef H_SUPPORTED
-            cp_wfi_vs:          cross priv_mode_vs, sstatus_sie, sie_stie_one, mstatus_tw_zero, hstatus_vtw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            cp_wfi:                 cross priv_mode_s, sstatus_sie, sie_stie_one, mstatus_tw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+            `ifdef H_SUPPORTED
+                cp_wfi_vs:          cross priv_mode_vs, sstatus_sie, sie_stie_one, mstatus_tw_zero, hstatus_vtw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+            `endif
         `endif
     `endif
 
@@ -494,10 +518,12 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         cp_wfi_timeout_vs:          cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_one, hstatus_vtw, wfi;
         cp_wfi_timeout_vs_vtw_one:  cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_zero, hstatus_vtw_one, wfi;
         cp_wfi_timeout_vu:          cross priv_mode_vu, sstatus_sie, sie_stie, mstatus_tw, hstatus_vtw, wfi;
-        // Every TW and VTW in VS-mode: the WFI waits with TW = VTW = 0 (cp_wfi_vs, which needs Sstc) and times
-        // out otherwise
+        // Every TW and VTW in VS-mode: the WFI waits with TW = VTW = 0 (cp_wfi_vs, which needs Sstc and a
+        // delegatable STI) and times out otherwise
         `ifdef SSTC_SUPPORTED
-            cp_wfi_vs_tw_vtw:       cross priv_mode_vs, sstatus_sie, mstatus_tw, hstatus_vtw, wfi;
+            `ifdef UDB_MIDELEG_DELEGATABLE_5
+                cp_wfi_vs_tw_vtw:       cross priv_mode_vs, sstatus_sie, mstatus_tw, hstatus_vtw, wfi;
+            `endif
         `endif
     `endif
 

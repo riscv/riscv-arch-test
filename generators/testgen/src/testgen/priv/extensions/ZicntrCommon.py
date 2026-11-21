@@ -479,7 +479,7 @@ def _instret_wfi_s_tests(test_data: TestData, covergroup: str) -> list[str]:
     r_tmp = test_data.int_regs.get_register()
     lines = [
         "csrci sstatus, 2  # SIE = 0",
-        "#ifdef UDB_SSI_INTR_IMPL",
+        "#if defined(UDB_SSI_INTR_IMPL) && defined(UDB_MIDELEG_DELEGATABLE_1) // sip.SSIP and sie.SSIE need SSI delegation",
         comment_banner("cp_instret_wfi_pending", "wfi with SSIP pending, sie.SSIE = 1 and sstatus.SIE = 0: no trap."),
         "",
         f"LI(x{r_tmp}, 0x2)",
@@ -488,13 +488,13 @@ def _instret_wfi_s_tests(test_data: TestData, covergroup: str) -> list[str]:
         *_instret_case(test_data, covergroup, "wfi_pending", "S", ["wfi  # already pending, not taken"]),
         "csrci sip, 2  # clear SSIP",
         "csrw sie, zero",
-        "#endif // UDB_SSI_INTR_IMPL",
+        "#endif // UDB_SSI_INTR_IMPL && UDB_MIDELEG_DELEGATABLE_1",
         "",
     ]
     test_data.int_regs.return_register(r_tmp)
 
     lines += [
-        "#ifdef SSTC_SUPPORTED",
+        "#if defined(SSTC_SUPPORTED) && defined(UDB_MIDELEG_DELEGATABLE_5) // sip.STIP and sie.STIE need STI delegation",
         comment_banner(
             "cp_instret_wfi_wake",
             "wfi woken by an Sstc timer interrupt with sie.STIE = 1 and sstatus.SIE = 0: no trap.\n"
@@ -529,5 +529,5 @@ def _instret_wfi_s_tests(test_data: TestData, covergroup: str) -> list[str]:
         "csrw sie, zero",
     ]
     test_data.int_regs.return_registers([r_tmp, r_tally, r_before, r_after, r_diff])
-    lines += [*write_stce(test_data, False, "S"), "#endif // SSTC_SUPPORTED", ""]
+    lines += [*write_stce(test_data, False, "S"), "#endif // SSTC_SUPPORTED && UDB_MIDELEG_DELEGATABLE_5", ""]
     return lines

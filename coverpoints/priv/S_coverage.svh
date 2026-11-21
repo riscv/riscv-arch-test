@@ -1400,21 +1400,26 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     mstatus_sie_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0] {
         bins zero = {0};
     }
+    // only used by cp_instret_wfi_pending and cp_instret_wfi_wake, under the same guards
     `ifdef UDB_SSI_INTR_IMPL
-        mip_ssip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "ssip")[0] {
-            bins one = {1};
-        }
-        mie_ssie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "ssie")[0] {
-            bins one = {1};
-        }
+        `ifdef UDB_MIDELEG_DELEGATABLE_1
+            mip_ssip_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "ssip")[0] {
+                bins one = {1};
+            }
+            mie_ssie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "ssie")[0] {
+                bins one = {1};
+            }
+        `endif
     `endif
     `ifdef SSTC_SUPPORTED
-        mip_stip_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "stip")[0] {
-            bins zero = {0};
-        }
-        mie_stie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "stie")[0] {
-            bins one = {1};
-        }
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            mip_stip_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "stip")[0] {
+                bins zero = {0};
+            }
+            mie_stie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "stie")[0] {
+                bins one = {1};
+            }
+        `endif
     `endif
 
     // retiring instructions
@@ -1433,11 +1438,16 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     `ifdef UDB_WFI_FINITE
         cp_instret_wfi_timeout: cross priv_mode_s, wfi, mie_zero, prev_instret_read;
     `endif
+    // sip and sie show SSIP/SSIE and STIP/STIE only when mideleg can delegate SSI and STI
     `ifdef UDB_SSI_INTR_IMPL
-        cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
+        `ifdef UDB_MIDELEG_DELEGATABLE_1
+            cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
+        `endif
     `endif
     `ifdef SSTC_SUPPORTED
-        cp_instret_wfi_wake: cross priv_mode_s, wfi, mip_stip_zero, mie_stie_one, mstatus_sie_zero;
+        `ifdef UDB_MIDELEG_DELEGATABLE_5
+            cp_instret_wfi_wake: cross priv_mode_s, wfi, mip_stip_zero, mie_stie_one, mstatus_sie_zero;
+        `endif
     `endif
     `ifdef ZAWRS_SUPPORTED
         cp_instret_wrs_nto: cross priv_mode_s, wrs_nto, prev_instret_read;

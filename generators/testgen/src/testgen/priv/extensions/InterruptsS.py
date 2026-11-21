@@ -46,8 +46,15 @@ SUITE = InterruptSuite(
     ip="sip",
     ie="sie",
     status={"csr": "sstatus", "mask": 0x22, "field": "SIE"},
-    # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP
-    wfi={"guard": "SSTC_SUPPORTED", "timer": "SSTC", "ie": ("STIE", 0x20), "ip": ("sip", "STIP", 0x20), "stce": True},
+    # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP. sie.STIE and sip.STIP
+    # are read-only zero unless mideleg can delegate STI, so the WFI would never wake without it.
+    wfi={
+        "guard": "defined(SSTC_SUPPORTED) && defined(UDB_MIDELEG_DELEGATABLE_5)",
+        "timer": "SSTC",
+        "ie": ("STIE", 0x20),
+        "ip": ("sip", "STIP", 0x20),
+        "stce": True,
+    },
     deleg=[],
     hie=True,
 )

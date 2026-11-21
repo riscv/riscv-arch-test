@@ -32,3 +32,11 @@ coverpoints:
       Also VGEIN = 0 with hgeip = hgeie = 1s in all writable bits
     expectation: hip.VSEIP = hgeip[i] independent of hgeie.  With VGEIN = 0, hip.VSEIP = 0 and hip.SGEIP = 1.
     bins: GEILEN * 3 * 2 + 1
+  - name: |-
+      cp_vgein_switch_csrrw
+      cp_vgein_switch_csrrs
+      cp_vgein_switch_csrrc
+    goal: hip.VSEIP follows the guest file that hstatus.VGEIN selects after every change of VGEIN
+    description: With GEILEN >= 3, hvip = hie = hgeie = 0, raise guest external interrupt 3 and leave the other guest files idle.  Move VGEIN 3->0, 3->1, 0->3 and 1->3 with csrrw; 0->3, 1->3 and 3->7 with csrrs; 3->0, 3->1 and 7->3 with csrrc (the cases with VGEIN = 7 need GEILEN >= 7).  Read hip after each write.
+    expectation: hip.VSEIP = hgeip[VGEIN] after every write, and 0 when VGEIN = 0.  hip.SGEIP = 0, because hgeie = 0.
+    bins: "csrrw: pending->0, pending->idle, 0->pending, idle->pending; csrrs: 0->pending, idle->pending, pending->idle; csrrc: pending->0, pending->idle, idle->pending"

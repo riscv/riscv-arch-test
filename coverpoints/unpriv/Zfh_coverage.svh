@@ -37,8 +37,8 @@ covergroup Zfh_fadd_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_von : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -49,7 +49,7 @@ covergroup Zfh_fadd_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -305,8 +305,8 @@ covergroup Zfh_fcvt_h_s_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -319,7 +319,7 @@ covergroup Zfh_fcvt_h_s_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -413,8 +413,8 @@ covergroup Zfh_fcvt_h_w_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_on : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins OF   = {10'b??0??_??1??};
@@ -423,7 +423,7 @@ covergroup Zfh_fcvt_h_w_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -513,8 +513,8 @@ covergroup Zfh_fcvt_h_wu_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_on : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins OF   = {10'b??0??_??1??};
@@ -523,7 +523,7 @@ covergroup Zfh_fcvt_h_wu_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -608,8 +608,8 @@ covergroup Zfh_fcvt_s_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -697,8 +697,8 @@ covergroup Zfh_fcvt_w_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_vn : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -707,7 +707,7 @@ covergroup Zfh_fcvt_w_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -812,8 +812,8 @@ covergroup Zfh_fcvt_wu_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_vn : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -822,7 +822,7 @@ covergroup Zfh_fcvt_wu_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -944,8 +944,8 @@ covergroup Zfh_fdiv_h_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_fflags_vdoun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -962,7 +962,7 @@ covergroup Zfh_fdiv_h_cg with function sample(ins_t ins);
 
     //// end cp_csr_fflags_vdoun////////////////////////////////////////////////
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -1115,8 +1115,8 @@ covergroup Zfh_feq_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -1267,8 +1267,8 @@ covergroup Zfh_fle_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -1495,8 +1495,8 @@ covergroup Zfh_flt_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -1668,8 +1668,8 @@ covergroup Zfh_fmadd_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -1682,7 +1682,7 @@ covergroup Zfh_fmadd_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -1915,8 +1915,8 @@ covergroup Zfh_fmax_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -2080,8 +2080,8 @@ covergroup Zfh_fmin_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -2253,8 +2253,8 @@ covergroup Zfh_fmsub_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -2267,7 +2267,7 @@ covergroup Zfh_fmsub_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -2504,8 +2504,8 @@ covergroup Zfh_fmul_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -2518,7 +2518,7 @@ covergroup Zfh_fmul_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -2856,8 +2856,8 @@ covergroup Zfh_fnmadd_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -2870,7 +2870,7 @@ covergroup Zfh_fnmadd_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -3111,8 +3111,8 @@ covergroup Zfh_fnmsub_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -3125,7 +3125,7 @@ covergroup Zfh_fnmsub_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -3926,8 +3926,8 @@ covergroup Zfh_fsqrt_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_vn : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -3936,7 +3936,7 @@ covergroup Zfh_fsqrt_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -4039,8 +4039,8 @@ covergroup Zfh_fsub_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_von : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -4051,7 +4051,7 @@ covergroup Zfh_fsub_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -4214,8 +4214,8 @@ covergroup Zfh_fcvt_h_l_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_on : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins OF   = {10'b??0??_??1??};
@@ -4224,7 +4224,7 @@ covergroup Zfh_fcvt_h_l_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -4314,8 +4314,8 @@ covergroup Zfh_fcvt_h_lu_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_on : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins OF   = {10'b??0??_??1??};
@@ -4324,7 +4324,7 @@ covergroup Zfh_fcvt_h_lu_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -4409,8 +4409,8 @@ covergroup Zfh_fcvt_l_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_vn : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -4419,7 +4419,7 @@ covergroup Zfh_fcvt_l_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -4524,8 +4524,8 @@ covergroup Zfh_fcvt_lu_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_vn : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -4534,7 +4534,7 @@ covergroup Zfh_fcvt_lu_h_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -4741,8 +4741,8 @@ covergroup ZfhD_fcvt_d_h_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_v : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -4839,8 +4839,8 @@ covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -4853,7 +4853,7 @@ covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FRM)  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};

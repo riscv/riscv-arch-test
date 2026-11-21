@@ -50,6 +50,7 @@ implemented_extensions:
   #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/doc/01_overview/compliance.rst#L57-L59
   # MEASURED: c.zext.b (0x9de1) on 0x00001234 produced 0x00000034.
   - { name: Zcb, version: "= 1.0.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
   # Zcmp IS implemented by this build (RV32ZcaZcbZcmp; cm.push/cm.pop MEASURED to
   # execute correctly) but is deliberately NOT claimed: sail-riscv 0.14.1, the
   # reference model ACT builds signatures with, has no Zcmp knob in its configuration

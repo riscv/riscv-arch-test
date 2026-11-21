@@ -17,8 +17,14 @@
 //  _R - Register containing value to store/compare
 //  _INST_PTR - label on instruction being tested (for PC reporting)
 //  _STR_PTR - label to string describing the test
+// _R must not be _TEMP_REG: the self-check loads the expected value into _TEMP_REG,
+// so it would compare the expected value with itself.
+#define RVTEST_SIGUPD_CHECK_REGS(_TEMP_REG, _R)                                        \
+    .ifc _R, _TEMP_REG ; .error "RVTEST_SIGUPD: the checked register is the temporary register" ; .endif
+
 #ifdef RVTEST_SELFCHECK
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)  \
+    RVTEST_SIGUPD_CHECK_REGS(_TEMP_REG, _R)                ;\
     .option push                                           ;\
     .option norvc                                          ;\
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -31,6 +37,7 @@
     .option pop
 #else
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)  \
+    RVTEST_SIGUPD_CHECK_REGS(_TEMP_REG, _R)                ;\
     .option push                                           ;\
     .option norvc                                          ;\
     SREG _R, 0(_SIG_PTR)                                   ;\
@@ -60,45 +67,45 @@
     nop
 #endif
 
-// TRAP_SIGUPD(tempreg, sigreg, offset, instptr, strptr)
+// TRAP_SIGUPD(tempreg, sigreg, offset, instptr, strptr, failure)
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to
-// failedtest_trap_x7_x9 in case of a mismatch.
+// failure, which ends at failedtest_trap_x7_x9, in case of a mismatch.
 // On failure, x6/T1 carries the actual value, DEFAULT_TEMP_REG carries the
 // expected value, x7/T2 is the link register, and x9/T4 is scratch.
 // If not in Self Check mode, just store signatures to the trap signature region
 #ifdef RVTEST_SELFCHECK
-  #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
+  #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR, _FAIL)    \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 2f                                        ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
-    jal  T2, failedtest_trap_x7_x9                              ;\
+    jal  T2, _FAIL                                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
     .word CSR_XEPC                                              ;\
     2:                                                          ;
 #else
-  #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
+  #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR, _FAIL)    \
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
     beq  x0, x0, 2f                                             ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
-    jal  T2, failedtest_trap_x7_x9                              ;\
+    jal  T2, _FAIL                                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
     .word CSR_XEPC                                              ;\
     2:                                                          ;
 #endif
 
-// TRAP_SIGUPD_ZERO(tempreg, sigreg, offset, zeroreg, instptr, strptr)
+// TRAP_SIGUPD_ZERO(tempreg, sigreg, offset, zeroreg, instptr, strptr, failure)
 // TRAP_SIGUPD for a trap CSR that may hold zero in place of the reference model's value.
 // In Self Check mode, zero in sigreg also matches when zeroreg is nonzero. Each pass path
 // executes four instructions, so the handler's instruction count does not depend on which
 // legal value the hart wrote. Both compile modes emit the same instructions so the signature
 // and self-check ELFs have identical code layout.
 #ifdef RVTEST_SELFCHECK
-  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR) \
+  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR, _FAIL) \
     .option push                                                ;\
     .option norvc                                               ;\
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
@@ -108,7 +115,7 @@
     3:                                                          ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
-    jal  T2, failedtest_trap_x7_x9                              ;\
+    jal  T2, _FAIL                                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
     .word CSR_XEPC                                              ;\
@@ -118,7 +125,7 @@
     2:                                                          ;\
     .option pop
 #else
-  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR) \
+  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR, _FAIL) \
     .option push                                                ;\
     .option norvc                                               ;\
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
@@ -127,7 +134,7 @@
     nop                                                         ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
-    jal  T2, failedtest_trap_x7_x9                              ;\
+    jal  T2, _FAIL                                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
     .word CSR_XEPC                                              ;\
@@ -138,7 +145,7 @@
     .option pop
 #endif
 
-// TRAP_SIGUPD_ADDR(tempreg, sigreg, offset, instptr, strptr)
+// TRAP_SIGUPD_ADDR(tempreg, sigreg, offset, instptr, strptr, failure)
 // TRAP_SIGUPD for xtval and xepc. An implementation need not hold every invalid address
 // in xtval or xepc and may replace one invalid address with another (norm:mtval_inv_addr_conv,
 // stval_inv_addr_conv, mepc_inv_addr_conv, sepc_acc_invalid_addr). The check passes when
@@ -315,7 +322,7 @@
   #define TRAP_ADDR_NONCANONICAL_CHECK(_TMPREG, _R)
 #endif
 
-#define TRAP_SIGUPD_ADDR(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+#define TRAP_SIGUPD_ADDR(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR, _FAIL) \
     TRAP_SIGUPD_ADDR_PREFIX(_TMPREG, _R, _OFF)                   \
     TRAP_ADDR_OUTSIDE_IMAGE_CHECK(_TMPREG, _R)                   \
     6:                                                          ;\
@@ -323,7 +330,7 @@
     8:                                                          ;\
     mv   T1, _R                    /* actual value */           ;\
     mv   DEFAULT_TEMP_REG, _TMPREG /* expected value */         ;\
-    jal  T2, failedtest_trap_x7_x9 /* report failure */         ;\
+    jal  T2, _FAIL                 /* report failure */         ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
     .word CSR_XEPC                                              ;\

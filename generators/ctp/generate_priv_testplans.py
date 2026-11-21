@@ -91,14 +91,23 @@ def covergroup_suites(coverage_dir: Path) -> dict[str, str]:
     return owners
 
 
-def rule_map(norm_dir: Path, coverage_dir: Path) -> tuple[dict[str, dict[str, list[str]]], set[str]]:
+def plan_of(covergroup: str, plans: set[str]) -> str | None:
+    """The longest plan name p for which the covergroup is p_<group>_cg."""
+    matches = [p for p in plans if covergroup.startswith(f"{p}_")]
+    return max(matches, key=len, default=None)
+
+
+def rule_map(
+    norm_dir: Path, coverage_dir: Path, plan_names: set[str]
+) -> tuple[dict[str, dict[str, list[str]]], set[str]]:
     """suite -> coverpoint -> [rule names], inverted from every coverpoints/norm/*.yaml, and the
     rule names of suites whose tags are not yet in the ISA manual.
 
     A rule belongs to the suite whose <suite>_coverage.svh declares the covergroup it names.
     A covergroup that no coverage file declares belongs to the suite its name starts with
     (<suite>_cg or <suite>_<group>_cg). A rule naming a declared <suite>_<group>_cg also belongs
-    to <suite>_<group>, the test plan for that covergroup.
+    to <suite>_<group>, the test plan for that covergroup, or to the plan with the longest name that
+    prefixes it (Sv_H for Sv_H_vsstage_cg).
     """
     owners = covergroup_suites(coverage_dir)
     out: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
@@ -121,6 +130,9 @@ def rule_map(norm_dir: Path, coverage_dir: Path) -> tuple[dict[str, dict[str, li
                     plans = [suite]
                     if covergroup in owners and covergroup != f"{suite}_cg":
                         plans.append(covergroup.removesuffix("_cg"))
+                        group_plan = plan_of(covergroup, plan_names)
+                        if group_plan and group_plan not in plans:
+                            plans.append(group_plan)
                     for plan in plans:
                         rules = out[plan][coverpoint]
                         rules += [n for n in names if n not in rules]
@@ -263,14 +275,18 @@ def main() -> None:
     ap.add_argument("--out", default="docs/ctp/build/generated/testplans/priv", type=Path)
     a = ap.parse_args()
 
-    rules, untagged = rule_map(a.norm, a.coverage)
-    known = set(load_norm_rules(a.json)) | untagged
-    a.out.mkdir(parents=True, exist_ok=True)
-    grouped: dict[tuple[str, str], list[str]] = defaultdict(list)
+    loaded: list[tuple[Path, dict[str, Any]]] = []
     for f in sorted(a.plans.glob("*.yaml")):
         plan = load_yaml(f)
         if not isinstance(plan, dict):
             sys.exit(f"Error: {f}: expected a mapping")
+        loaded.append((f, plan))
+    plan_names = {plan["suite"] for _, plan in loaded}
+    rules, untagged = rule_map(a.norm, a.coverage, plan_names)
+    known = set(load_norm_rules(a.json)) | untagged
+    a.out.mkdir(parents=True, exist_ok=True)
+    grouped: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for f, plan in loaded:
         suite = plan["suite"]
         text, warnings = render(plan, rules.get(suite, {}), known, coverage_names(a.coverage, suite), f)
         (a.out / f"{suite}.adoc").write_text(text, encoding="utf-8")

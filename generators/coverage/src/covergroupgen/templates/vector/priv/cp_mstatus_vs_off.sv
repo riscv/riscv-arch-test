@@ -5,11 +5,11 @@
     // a non-Off value so the trap can only be attributed to VS being Off (not FS).
     //////////////////////////////////////////////////////////////////////////////////
 
-    mstatus_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+    mstatus_vs_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "vs") {
         bins inactive = {0};
     }
 
-    mstatus_fs_active_for_vs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+    mstatus_fs_active_for_vs_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "fs") {
         bins active = {[1:3]};
     }
 

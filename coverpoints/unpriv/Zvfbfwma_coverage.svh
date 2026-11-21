@@ -27,8 +27,8 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -41,7 +41,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")  iff (ins.trap == 0 )  {
+    cp_csr_frm_v : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "frm")  iff (ins.trap == 0 )  {
         // Value of FCSR.frm for vector FP instructions, which do not specify dynamic rounding mode in opcode
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -119,7 +119,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
 
     //// end cp_vd_emul2////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -167,7 +167,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -187,7 +187,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -209,16 +209,12 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -251,8 +247,8 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     }
 
     cp_csr_fflags_voun : coverpoint {
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
-        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "fflags")[4:0],
+        get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_FCSR, "fflags")[4:0]
     } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = {10'b0????_1????};
@@ -265,7 +261,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
         wildcard bins NX1  = {10'b????1_????1};
     }
 
-    cp_csr_frm_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")  iff (ins.trap == 0 )  {
+    cp_csr_frm_v : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_FCSR, "frm")  iff (ins.trap == 0 )  {
         // Value of FCSR.frm for vector FP instructions, which do not specify dynamic rounding mode in opcode
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -309,7 +305,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
 
     //// end cp_vd_emul2////////////////////////////////////////////////
 
-    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VL) {
     bins zero = {0};
     }
 
@@ -397,7 +393,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16, excluding LMUL = 8
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -417,7 +413,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul4max_sew16 : cross cp_csr_vtype_lmul_all_lmul4max_sew16_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -439,16 +435,12 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vta : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vta")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vta (vector tail agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
-    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+    cp_csr_vtype_vma : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vma")[0]  iff (ins.trap == 0)  {
         // Value of VTYPE.vma (vector mask agnostic)
-        bins undisturbed = {0};
-        bins agnostic    = {1};
     }
 
     mask_enabled_agnostic: coverpoint ins.current.insn[25] {
@@ -469,8 +461,8 @@ function void zvfbfwma_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
     // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
     // associated sew with these tests
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
-        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+    if (get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1 ||
+        get_csr_field(hart, issue, `SAMPLE_BEFORE, CSR_VTYPE, "vill") == 1) begin
         case (inst_name)
             "vfwmaccbf16.vf"     : begin
                 Zvfbfwma_vfwmaccbf16_vf_cg.sample(ins);

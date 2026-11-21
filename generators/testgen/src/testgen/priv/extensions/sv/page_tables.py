@@ -12,6 +12,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from typing import Literal
 
+from testgen.asm.helpers import load_constant
+
 # Root and lower-level page-table labels of each translation stage
 _TABLES = {"s": ("Sroot", "slvl"), "vs": ("Vroot", "vlvl"), "g": ("Hroot", "hlvl")}
 
@@ -79,17 +81,29 @@ class SvMode:
     def pte_bytes(self) -> int:
         return 4 if self.xlen == 32 else 8
 
-    def access_fault_pte_address(self) -> str:
-        """The first PTE-aligned address at or above RVMODEL_ACCESS_FAULT_ADDRESS, inside the faulting region, which the
-        ACT contract guarantees for only 128 bytes from that address."""
-        return f"((RVMODEL_ACCESS_FAULT_ADDRESS + {self.pte_bytes - 1}) & ~{self.pte_bytes - 1})"
+    @property
+    def va_bits(self) -> int:
+        """The width of the addresses this mode translates: virtual addresses, or guest physical addresses for x4."""
+        top = self.levels - 1
+        return self.page_offset_bits(top) + self.index_bits(top)
 
-    def access_fault_walk_va(self, virtual_address: str, level: int) -> str:
+    def pte_address(self, level: int, virtual_address: str) -> str:
+        """An assembler expression for the address of the PTE at ``level`` that maps the constant ``virtual_address``."""
+        mask = (1 << self.index_bits(level)) - 1
+        index = f"((({virtual_address}) >> {self.page_offset_bits(level)}) & {mask:#x})"
+        return f"{self.page_table_label(level)} + {index} * {self.pte_bytes}"
+
+    def access_fault_pte_address(self, fault_address: str) -> str:
+        """The first PTE-aligned address at or above ``fault_address`` (an RVMODEL_ACCESS_FAULT_ADDRESS_* macro), inside
+        the faulting region, which the ACT contract guarantees for only 128 bytes from that address."""
+        return f"(({fault_address} + {self.pte_bytes - 1}) & ~{self.pte_bytes - 1})"
+
+    def access_fault_walk_va(self, virtual_address: str, level: int, fault_address: str) -> str:
         """``virtual_address`` with its index at ``level`` replaced, so that a walk whose table at ``level`` is the page
-        of access_fault_pte_address reads the PTE at that address."""
+        of access_fault_pte_address(fault_address) reads the PTE at that address."""
         shift = self.page_offset_bits(level)
         mask = ((1 << self.index_bits(level)) - 1) << shift
-        index = f"(({self.access_fault_pte_address()} & 0xFFF) / {self.pte_bytes})"
+        index = f"(({self.access_fault_pte_address(fault_address)} & 0xFFF) / {self.pte_bytes})"
         return f"((({virtual_address}) & ~{mask:#x}) | ({index} << {shift}))"
 
     def page_table_label(self, level: int) -> str:
@@ -198,6 +212,12 @@ def _check_macro_stage(mode: SvMode) -> None:
         )
 
 
+def _pte_setup_macro(macro: str, mode: SvMode, address: str) -> str:
+    """The PTE_SETUP_* macro that loads ``address``: the _FIXED variant, which uses LI_FIXED_LEN, for an
+    RVMODEL_* address, and otherwise the variant that uses LA."""
+    return f"{macro}_{mode.suffix}{'_FIXED' if 'RVMODEL_' in address else ''}"
+
+
 def write_pte(
     mode: SvMode,
     *,
@@ -210,12 +230,13 @@ def write_pte(
     pa_is_label: bool = True,
     superpage: bool = False,
     pa_reg: int | None = None,
+    va_reg: int | None = None,
 ) -> list[str]:
     """Emit code that writes one PTE into ``mode``'s table at ``level``, using three scratch registers.
 
     A label address is loaded with LA at run time; any other address is an assembler constant.  With ``pa_reg``,
-    register x{pa_reg} holds the physical address instead.  The PPN is the physical address shifted right by 12,
-    or for a superpage by the leaf's page offset width.
+    register x{pa_reg} holds the physical address instead, and with ``va_reg`` register x{va_reg} holds the virtual
+    address.  The PPN is the physical address shifted right by 12, or for a superpage by the leaf's page offset width.
     """
     _check_level(mode, level)
     pte, addr, tmp = regs
@@ -223,19 +244,18 @@ def write_pte(
     ppn_shift = shift if superpage else 12
     size_bits = 2 if mode.xlen == 32 else 3
     table = mode.page_table_label(level)
-    if va_is_label:
+    if va_is_label or va_reg is not None:
         top = mode.xlen - mode.index_bits(level)
         lines = [
-            f"LA(x{addr}, {virtual_address})",
-            f"srli x{addr}, x{addr}, {shift}",
+            *([f"LA(x{addr}, {virtual_address})"] if va_reg is None else []),
+            f"srli x{addr}, x{addr if va_reg is None else va_reg}, {shift}",
             f"slli x{addr}, x{addr}, {top}",
             f"srli x{addr}, x{addr}, {top - size_bits}",
             f"LA(x{tmp}, {table})",
             f"add x{addr}, x{addr}, x{tmp}",
         ]
     else:
-        mask = (1 << mode.index_bits(level)) - 1
-        lines = [f"LA(x{addr}, {table} + ((({virtual_address}) >> {shift}) & {mask:#x}) * {1 << size_bits})"]
+        lines = [f"LA(x{addr}, {mode.pte_address(level, virtual_address)})"]
     if pa_reg is not None or pa_is_label:
         lines.extend(
             [
@@ -248,7 +268,7 @@ def write_pte(
         )
     else:
         pte_value = f"(({physical_address}) >> {ppn_shift}) << {ppn_shift - 2}"
-        lines.append(f"LI(x{pte}, ({pte_value}) | ({_pte_expression(flags)}))")
+        lines.append(load_constant(f"x{pte}", f"({pte_value}) | ({_pte_expression(flags)})"))
     lines.append(f"SREG x{pte}, 0(x{addr})")
     return lines
 
@@ -262,13 +282,17 @@ def create_page_walk(
     table_addresses: Mapping[int, str] | None = None,
     regs: tuple[int, int, int] | None = None,
     va_is_label: bool = False,
+    va_reg: int | None = None,
 ) -> list[str]:
     """Emit the non-leaf PTEs above ``leaf_level``.
 
     Without ``regs`` the satp PTE_SETUP_* macros write them, clobbering a0, a1, t0 and t1.  With ``regs``
-    write_pte writes them, in any stage; a VS-stage table address is then a guest physical address.
+    write_pte writes them, in any stage; a VS-stage table address is then a guest physical address, and ``va_reg``
+    may name the register that holds the virtual address.
     """
     _check_level(mode, leaf_level)
+    if regs is None and va_reg is not None:
+        raise ValueError("va_reg needs regs: the PTE_SETUP_* macros take the virtual address as an operand")
     overrides = overrides or {}
     table_addresses = table_addresses or {}
 
@@ -279,9 +303,9 @@ def create_page_walk(
         table_address = table_addresses.get(pte_level, mode.page_table_label(table_level))
         if regs is None:
             _check_macro_stage(mode)
+            macro = _pte_setup_macro("PTE_SETUP", mode, table_address)
             lines.append(
-                f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(permissions)}), "
-                f"{virtual_address}, LEVEL{pte_level})"
+                f"{macro}({table_address}, ({_pte_expression(permissions)}), {virtual_address}, LEVEL{pte_level})"
             )
         else:
             lines.extend(
@@ -293,6 +317,7 @@ def create_page_walk(
                     physical_address=table_address,
                     regs=regs,
                     va_is_label=va_is_label,
+                    va_reg=va_reg,
                 )
             )
     return lines
@@ -311,7 +336,8 @@ def create_nonleaf_pte(
         raise ValueError(f"Non-leaf level {level} is outside 1..{mode.levels - 1}")
     _check_macro_stage(mode)
     table_address = table_address or mode.page_table_label(level - 1)
-    return f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
+    macro = _pte_setup_macro("PTE_SETUP", mode, table_address)
+    return f"{macro}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_leaf_pte(
@@ -329,7 +355,8 @@ def create_leaf_pte(
     if superpage is None:
         superpage = level > 0
     macro = "SUPERPAGE_PTE_SETUP" if superpage and level > 0 else "PTE_SETUP"
-    return f"{macro}_{mode.suffix}({physical_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
+    macro = _pte_setup_macro(macro, mode, physical_address)
+    return f"{macro}({physical_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_page_mapping(
@@ -345,8 +372,15 @@ def create_page_mapping(
     regs: tuple[int, int, int] | None = None,
     va_is_label: bool = False,
     pa_is_label: bool = True,
+    va_reg: int | None = None,
+    pa_reg: int | None = None,
 ) -> list[str]:
-    """Emit one page-table walk and its leaf PTE, with the satp macros or, given ``regs``, with write_pte."""
+    """Emit one page-table walk and its leaf PTE, with the satp macros or, given ``regs``, with write_pte.
+
+    With ``regs``, ``va_reg`` and ``pa_reg`` may name the registers that hold the addresses.
+    """
+    if regs is None and (va_reg is not None or pa_reg is not None):
+        raise ValueError("va_reg and pa_reg need regs: the PTE_SETUP_* macros take the addresses as operands")
     walk = create_page_walk(
         mode,
         leaf_level=leaf_level,
@@ -355,6 +389,7 @@ def create_page_mapping(
         table_addresses=walk_table_addresses,
         regs=regs,
         va_is_label=va_is_label,
+        va_reg=va_reg,
     )
     if regs is None:
         return [
@@ -378,5 +413,7 @@ def create_page_mapping(
         va_is_label=va_is_label,
         pa_is_label=pa_is_label,
         superpage=leaf_level > 0 if superpage is None else superpage,
+        pa_reg=pa_reg,
+        va_reg=va_reg,
     )
     return [*walk, *leaf]

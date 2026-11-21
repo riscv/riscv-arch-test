@@ -58,49 +58,49 @@ covergroup EndianH_cg with function sample(ins_t ins);
         }
     `endif
 
-    cp_byteoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
+    cp_byteoffset: coverpoint ins.current.eff_addr[2:0] {
         // all byte offsets
     }
-    cp_halfoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
+    cp_halfoffset: coverpoint ins.current.eff_addr[2:0] {
         wildcard ignore_bins lsb = {3'b??1};
         // all halfword offsets
     }
-    cp_wordoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
+    cp_wordoffset: coverpoint ins.current.eff_addr[2:0] {
         wildcard ignore_bins b0 = {3'b??1};
         wildcard ignore_bins b2 = {3'b?1?};
         // all word offsets
     }
 
 
-    hstatus_vsbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "vsbe")[0] {
+    hstatus_vsbe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "vsbe")[0] {
     }
 
 
-    mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
+    mstatus_mprv: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mprv")[0] {
     }
 
-    mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpp")[1:0] {
+    mstatus_mpp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mpp")[1:0] {
         bins S_Mode = {2'b01};
         bins M_Mode = {2'b11};
     }
 
     `ifdef UDB_MXLEN_64
-        mstatus_mpv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpv")[0] {
+        mstatus_mpv: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mpv")[0] {
         }
     `else
-        mstatus_mpv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mpv")[0] {
+        mstatus_mpv: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "mpv")[0] {
         }
     `endif
 
     `ifdef UDB_MXLEN_64
-        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mbe")[0] {
+        mstatus_mbe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "mbe")[0] {
         }
     `else
-        mstatus_mbe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mbe")[0] {
+        mstatus_mbe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "mbe")[0] {
         }
     `endif
 
-    vsstatus_ube: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsstatus", "ube")[0] {
+    vsstatus_ube: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSSTATUS, "ube")[0] {
     }
 
 

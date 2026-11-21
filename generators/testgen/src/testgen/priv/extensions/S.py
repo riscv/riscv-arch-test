@@ -30,7 +30,13 @@ from testgen.priv.extensions.PrivCommon import (
 )
 from testgen.priv.extensions.VCommon import gen_v_tests
 from testgen.priv.extensions.VFCommon import gen_vf_tests
-from testgen.priv.extensions.ZicntrCommon import counter_inc_inaccessible_tests, counteren_walk_tests
+from testgen.priv.extensions.ZicntrCommon import (
+    counter_inc_inaccessible_tests,
+    counteren_walk_tests,
+    instret_exception_tests,
+    instret_interrupt_tests,
+    instret_retire_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}.
@@ -357,7 +363,7 @@ _ZICNTR_CG = "S_Zicntr_cg"
 @add_priv_test_generator(
     "S",
     required_extensions=["S", "Zicntr"],
-    march_extensions=["Zicntr", "Zihpm"],
+    march_extensions=["Zicntr", "Zihpm", "Zawrs"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_zicntrs(test_data: TestData) -> list[TestChunk]:
@@ -410,5 +416,8 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("RVTEST_TSBI_GOTO_SMODE")
     tc.code.extend(counter_inc_inaccessible_tests(test_data, _ZICNTR_CG, "S"))
+    tc.code.extend(instret_retire_tests(test_data, _ZICNTR_CG, "S"))
+    tc.code.extend(instret_exception_tests(test_data, _ZICNTR_CG, "S"))
+    tc.code.extend(instret_interrupt_tests(test_data, _ZICNTR_CG, "S"))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

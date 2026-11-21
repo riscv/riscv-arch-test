@@ -11,17 +11,15 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-cbo_select: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "select")[0] {
+cbo_select: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "select")[0] {
     type_option.weight = 0;
-    bins address = {1'b0};
-    bins data    = {1'b1};
 }
 // tdata2 relative to the cache block address in rs1
-cbo_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
+cbo_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) {
     type_option.weight = 0;
-    wildcard bins block      = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val);
-    wildcard bins below      = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val - 1);
-    wildcard bins next_block = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val + XLEN'(`UDB_CACHE_BLOCK_SIZE));
+    wildcard bins block      = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) == ins.current.rs1_val);
+    wildcard bins below      = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) == ins.current.rs1_val - 1);
+    wildcard bins next_block = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) == ins.current.rs1_val + XLEN'(`UDB_CACHE_BLOCK_SIZE));
     bins zero                = {'0};
 }
 // fired (into M, mcause = 3) iff the operation matches as a store

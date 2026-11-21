@@ -19,11 +19,11 @@ covergroup Zicclsm_lh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:62]};
         bins yes = {[63:63]};
@@ -38,11 +38,11 @@ covergroup Zicclsm_lhu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:62]};
         bins yes = {[63:63]};
@@ -57,11 +57,11 @@ covergroup Zicclsm_lw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -76,11 +76,11 @@ covergroup Zicclsm_sh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_hword : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:62]};
         bins yes = {[63:63]};
@@ -95,11 +95,11 @@ covergroup Zicclsm_sw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -115,11 +115,11 @@ covergroup Zicclsm_ld_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};
@@ -134,11 +134,11 @@ covergroup Zicclsm_lwu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -153,11 +153,11 @@ covergroup Zicclsm_sd_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};
@@ -174,11 +174,11 @@ covergroup ZicclsmD_fld_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};
@@ -193,11 +193,11 @@ covergroup ZicclsmD_fsd_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};
@@ -214,11 +214,11 @@ covergroup ZicclsmF_flw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -233,11 +233,11 @@ covergroup ZicclsmF_fsw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -254,11 +254,11 @@ covergroup ZicclsmZca_c_lw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -273,11 +273,11 @@ covergroup ZicclsmZca_c_lwsp_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -292,11 +292,11 @@ covergroup ZicclsmZca_c_sw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -311,11 +311,11 @@ covergroup ZicclsmZca_c_swsp_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_word : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:60]};
         bins yes = {[61:63]};
@@ -331,11 +331,11 @@ covergroup ZicclsmZca_c_ld_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};
@@ -350,11 +350,11 @@ covergroup ZicclsmZca_c_ldsp_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};
@@ -369,11 +369,11 @@ covergroup ZicclsmZca_c_sd_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};
@@ -388,11 +388,11 @@ covergroup ZicclsmZca_c_sdsp_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    cp_misalign : coverpoint ins.current.eff_addr[2:0] iff (ins.trap == 0) {
         // all 8 byte offsets within a doubleword
     }
 
-    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+    cp_misalign_cross64_double : coverpoint ins.current.eff_addr[5:0] iff (ins.trap == 0) {
         // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
         bins no  = {[0:56]};
         bins yes = {[57:63]};

@@ -401,7 +401,7 @@
       //   Quote: "(lsu_addr_dc5[pt.XLEN-1:pt.XLEN_ADDR_OFF] == lr_addr[i][pt.XLEN-1:pt.XLEN_ADDR_OFF]) & lsu_pkt_dc5.valid & lsu_pkt_dc5.sc & lr_vld[i]"
       //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/lsu/eh2_lsu_lsc_ctl.sv#L422
       "reservation_set_size_exp": 2,
-      "require_exact_reservation_addr": true,
+      "require_exact_reservation_addr": false,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within

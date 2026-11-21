@@ -2,7 +2,7 @@
     // cr_vl_lmul_lmul2max_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_2 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
+    cp_csr_vtype_lmul_all_sew16_lmul_le_2 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1) {
         // Value of VTYPE.vlmul (vector register grouping), SEW = 16
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
@@ -21,7 +21,7 @@
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_lmul2max_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_2, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_lmul2max_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_2, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == 1)  {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 

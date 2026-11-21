@@ -147,12 +147,12 @@ def write_event_pattern(r_val: int, r_hval: int, inhibit_pattern: int, priv_mode
     """Write RVMODEL_MHPMEVENT_VAL with the given MINH/SINH/UINH/VSINH/VUINH pattern and OF=0."""
     return [
         "#if __riscv_xlen == 32",
-        f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
+        f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
         tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
-        f"LI(x{r_hval}, {EVENT_VAL_HI} | ({inhibit_pattern} << 26))   # 58-32 = 26",
+        f"LI_FIXED_LEN(x{r_hval}, {EVENT_VAL_HI} | ({inhibit_pattern} << 26))   # 58-32 = 26",
         tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}", priv_mode),
         "#else",
-        f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({inhibit_pattern} << 58))   # OF starts at 0",
+        f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({inhibit_pattern} << 58))   # OF starts at 0",
         tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
         "#endif",
     ]
@@ -239,12 +239,12 @@ def _generate_xinh_inhibits_tests(
             [
                 f"# Testcase: {inh_prefix}inh = {inh_val}",
                 "#if __riscv_xlen == 32",
-                f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
+                f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
                 f"{tsbi_call_or_direct(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
-                f"LI(x{r_val}, {EVENT_VAL_HI} | {hex(higher_inhibits_32 | (inh_val << inh_bit_pos_32))})",
+                f"LI_FIXED_LEN(x{r_val}, {EVENT_VAL_HI} | {hex(higher_inhibits_32 | (inh_val << inh_bit_pos_32))})",
                 f"{tsbi_call_or_direct(f'csrw RVTEST_CSR_MHPMEVENTH, x{r_val}', priv_mode)}",
                 "#else",
-                f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(higher_inhibits | (inh_val << inh_bit_pos))})",
+                f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(higher_inhibits | (inh_val << inh_bit_pos))})",
                 f"{tsbi_call_or_direct(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
                 "#endif",
                 f"{tsbi_call_or_direct('csrw RVTEST_CSR_MHPMCOUNTER, zero', priv_mode)}",
@@ -262,10 +262,10 @@ def _generate_xinh_inhibits_tests(
 
     lines.extend(
         [
-            f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
+            f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
             f"{tsbi_call_or_direct(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
             "#if __riscv_xlen == 32",
-            f"LI(x{r_val}, {EVENT_VAL_HI})",
+            f"LI_FIXED_LEN(x{r_val}, {EVENT_VAL_HI})",
             f"{tsbi_call_or_direct(f'csrw RVTEST_CSR_MHPMEVENTH, x{r_val}', priv_mode)}",
             "#endif",
             "",
@@ -279,10 +279,10 @@ def _generate_xinh_inhibits_tests(
         lines.extend(
             [
                 "#if __riscv_xlen == 32",
-                f"LI(x{r_hval}, {EVENT_VAL_HI} | ({combo} << 26))",
+                f"LI_FIXED_LEN(x{r_hval}, {EVENT_VAL_HI} | ({combo} << 26))",
                 f"{tsbi_call_or_direct(f'csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}', priv_mode)}",
                 "#else",
-                f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({combo} << 58))",
+                f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({combo} << 58))",
                 f"{tsbi_call_or_direct(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
                 "#endif",
                 "",
@@ -424,12 +424,12 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             tsbi_call_or_direct(f"csrr x{r_preset}, RVTEST_CSR_MHPMCOUNTER   # preset as read back", priv_mode),
             *clear_lcofip(r_temp, priv_mode),
             "#if __riscv_xlen == 32",
-            f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
+            f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
             tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
-            f"LI(x{r_hval}, {EVENT_VAL_HI} | {hex((1 << 31) | HIGHER_MODE_INHIBITS_32[priv_mode])})   # OF = 1",
+            f"LI_FIXED_LEN(x{r_hval}, {EVENT_VAL_HI} | {hex((1 << 31) | HIGHER_MODE_INHIBITS_32[priv_mode])})   # OF = 1",
             tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}", priv_mode),
             "#else",
-            f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex((1 << 63) | HIGHER_MODE_INHIBITS[priv_mode])})   # OF = 1",
+            f"LI_FIXED_LEN(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex((1 << 63) | HIGHER_MODE_INHIBITS[priv_mode])})   # OF = 1",
             tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
             "#endif",
             "# Counting starts here, after LCOFIP was cleared, so a wrongly raised LCOFIP stays visible",

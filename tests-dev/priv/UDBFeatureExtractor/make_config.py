@@ -299,8 +299,9 @@ def bundle_env() -> dict[str, str]:
     if UDB_DATA_HOME is not None:
         # RubyGems puts user-installed gems under $XDG_DATA_HOME/gem, so keep the original gem path
         env["GEM_PATH"] = gem_path()
+        data_home = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
+        env.setdefault("MISE_DATA_DIR", str(data_home / "mise"))
         env["XDG_DATA_HOME"] = str(UDB_DATA_HOME)
-        env.setdefault("MISE_DATA_DIR", str(Path.home() / ".local/share/mise"))
     return env
 
 

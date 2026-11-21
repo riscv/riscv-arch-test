@@ -9,7 +9,7 @@
 
 from functools import partial
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, gated
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
@@ -53,13 +53,16 @@ def _make_unlocked_chunk(test_data: TestData, name: str, probe: ProbeGenerator, 
         f"{label} against an unlocked page-sized NAPOT region with XWR = 000 and 001; never faults.",
     )
     chunk.code.extend(
-        lxwr_walk_body(
-            test_data,
-            [("0000", 0), ("0001", 0)],
-            "napot",
-            probe,
-            lambda instruction: f"cp_cfg_L_access_cbo_{instruction.removeprefix('cbo.')}",
-            napot_mask=napot_mask_defines(12),
+        gated(
+            lxwr_walk_body(
+                test_data,
+                [("0000", 0), ("0001", 0)],
+                "napot",
+                probe,
+                lambda instruction: f"cp_cfg_L_access_cbo_{instruction.removeprefix('cbo.')}",
+                napot_mask=napot_mask_defines(12),
+            ),
+            "defined(UDB_PMP_NAPOT_SUPPORTED)",
         )
     )
     chunk.raw_data.extend(_PAGE_REGION)
@@ -88,12 +91,17 @@ def _make_none_chunk(test_data: TestData, name: str, probe: ProbeGenerator, labe
             "// PMP configuration 1: every entry off",
             *probe(test_data, "off", _none_cbo, "TEST_FOR_EXECUTION"),
             "",
-            "// PMP configuration 2: entry 0 = L=1, XWR=000 just above the region; entry 1 = L=0, XWR=000 just below it",
-            *set_pmpaddr("napot", 0, "PMPZICBO_ABOVE"),
-            *set_pmpaddr("napot", 1, "TEST_FOR_EXECUTION - (1 << PMP_REGION_SHIFT)"),
-            *set_pmpcfg(0, neighbors),
-            "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-            *probe(test_data, "active", _none_cbo, "TEST_FOR_EXECUTION"),
+            *gated(
+                [
+                    "// PMP configuration 2: entry 0 = L=1, XWR=000 just above the region; entry 1 = L=0, XWR=000 just below it",
+                    *set_pmpaddr("napot", 0, "PMPZICBO_ABOVE"),
+                    *set_pmpaddr("napot", 1, "TEST_FOR_EXECUTION - (1 << PMP_REGION_SHIFT)"),
+                    *set_pmpcfg(0, neighbors),
+                    "RVTEST_SFENCE_VMA_IF_SUPPORTED",
+                    *probe(test_data, "active", _none_cbo, "TEST_FOR_EXECUTION"),
+                ],
+                "defined(UDB_PMP_NAPOT_SUPPORTED)",
+            ),
         ]
     )
     chunk.raw_data.extend(_NONE_REGIONS)

@@ -3159,17 +3159,21 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
 
     // Weight 0 like wr_combinations: unlocked_xwr, none_cfg and mprv_off are used only by cp_cfg_L_access_cbo_*
     // and cp_none_cbo_*. Entry 0 over the region, L=0, A=NAPOT
+  `ifdef UDB_PMP_NAPOT_SUPPORTED
     unlocked_xwr: coverpoint pmpcfg[0] {
         type_option.weight = 0;
         bins cfg_000 = {8'b00011000};
         bins cfg_001 = {8'b00011001};
     }
+  `endif
 
-    // No entry matches the region; pmp_none = {active, off} from pmp_Zicbo_sample
+    // No entry matches the region; pmp_none = {active, off} from pmp_Zicbo_sample. active uses NAPOT entries.
     none_cfg: coverpoint pmp_none {
         type_option.weight = 0;
         bins off    = {2'b01};
+      `ifdef UDB_PMP_NAPOT_SUPPORTED
         bins active = {2'b10};
+      `endif
     }
 
     mprv_off: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0] {
@@ -3179,16 +3183,20 @@ covergroup PMP_Zicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
 
   `ifdef ZICBOZ_SUPPORTED
     cp_cbo_zero:  cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_zero_instr;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     cp_cfg_L_access_cbo_zero:  cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_zero_instr;
+    `endif
     cp_none_cbo_zero:  cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_zero_instr;
   `endif
   `ifdef ZICBOM_SUPPORTED
     cp_cbo_inval: cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_inval_instr;
     cp_cbo_flush: cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_flush_instr;
     cp_cbo_clean: cross priv_mode_m, wr_combinations, pmpaddr_region, cbo_clean_instr;
+    `ifdef UDB_PMP_NAPOT_SUPPORTED
     cp_cfg_L_access_cbo_clean: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_clean_instr;
     cp_cfg_L_access_cbo_flush: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_flush_instr;
     cp_cfg_L_access_cbo_inval: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, mprv_off, cbo_inval_instr;
+    `endif
     cp_none_cbo_clean: cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_clean_instr;
     cp_none_cbo_flush: cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_flush_instr;
     cp_none_cbo_inval: cross priv_mode_m, none_cfg, addr_in_region, mprv_off, cbo_inval_instr;

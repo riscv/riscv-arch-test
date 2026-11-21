@@ -37,7 +37,7 @@ coverpoints:
       cp_cfg_L_access_cbo_flush
       cp_cfg_L_access_cbo_inval
     goal: Verify that an unlocked (L=0) entry never restricts an M-mode cache-block instruction.
-    description: "Entry 0 over the region: L=0, A=NAPOT, XWR = 000, then 001. For each, with Zicboz, store a nonzero word at the start of the region, run cbo.zero there and load the word back; with Zicbom, run cbo.clean, cbo.flush and cbo.inval there."
+    description: "PMP_NAPOT_SUPPORTED only. Entry 0 over the region: L=0, A=NAPOT, XWR = 000, then 001. For each, with Zicboz, store a nonzero word at the start of the region, run cbo.zero there and load the word back; with Zicbom, run cbo.clean, cbo.flush and cbo.inval there."
     expectation: No exception. The word reads as zero after cbo.zero.
     bins: 2 XWR each
     rules:
@@ -51,7 +51,7 @@ coverpoints:
       cp_none_cbo_flush
       cp_none_cbo_inval
     goal: Verify that an M-mode cache-block instruction that matches no entry succeeds.
-    description: "No background entry, and no entry covers the region. Bin off: every pmpcfg.A = OFF. Bin active: entry 0 (L=1, A=NAPOT, XWR=000) covers a same-size region just above the region under test, entry 1 (L=0, A=NAPOT, XWR=000) one just below it, and every other entry is OFF. Off runs first, before entry 0 is locked. Same accesses as cp_cfg_L_access_cbo_*."
+    description: "No background entry, and no entry covers the region. Bin off: every pmpcfg.A = OFF. Bin active (PMP_NAPOT_SUPPORTED only): entry 0 (L=1, A=NAPOT, XWR=000) covers a same-size region just above the region under test, entry 1 (L=0, A=NAPOT, XWR=000) one just below it, and every other entry is OFF. Off runs first, before entry 0 is locked. Same accesses as cp_cfg_L_access_cbo_*."
     expectation: No exception. The word reads as zero after cbo.zero.
     bins: 2 (off, active) each
     rules:

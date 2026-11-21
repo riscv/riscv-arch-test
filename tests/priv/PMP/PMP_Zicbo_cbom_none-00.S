@@ -73,6 +73,7 @@ PMP_Zicbo_cg_cp_none_cbo_inval_off_3_cbo_inval:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Zicbo_cg_cp_none_cbo_inval_off_3_cbo_inval, PMP_Zicbo_cg_cp_none_cbo_inval_off_3_cbo_inval_str)
 
+#if defined(UDB_PMP_NAPOT_SUPPORTED)
 // PMP configuration 2: entry 0 = L=1, XWR=000 just above the region; entry 1 = L=0, XWR=000 just below it
   LA(x5, PMPZICBO_ABOVE)
   srl x5, x5, PMP_SHIFT
@@ -105,6 +106,7 @@ PMP_Zicbo_cg_cp_none_cbo_inval_active_3_cbo_inval:
   cbo.inval (a4)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Zicbo_cg_cp_none_cbo_inval_active_3_cbo_inval, PMP_Zicbo_cg_cp_none_cbo_inval_active_3_cbo_inval_str)
+#endif // defined(UDB_PMP_NAPOT_SUPPORTED)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

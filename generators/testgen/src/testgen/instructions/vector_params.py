@@ -22,19 +22,7 @@ from testgen.data.state import TestData
 from testgen.formatters import get_instruction_type_config
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig
 from testgen.instructions.vector import VectorInstructionInfo, parse_vector_instruction_info
-from testgen.instructions.vector_data import instruction_random_elements
-
-# Gathers and slides whose immediate is an element index or offset
-LOG_RANDOM_IMM_INSTRUCTIONS = {"vrgather.vi", "vslideup.vi", "vslidedown.vi"}
-
-
-def log_random_imm() -> int:
-    """
-    Return a random 5-bit immediate with a random bit width from 0 to 5, so small values are as likely as large ones
-    and many index or offset immediates are below VLMAX even for a short VLEN.
-    """
-    width = random.randint(0, 5)
-    return 0 if width == 0 else random.randint(1 << (width - 1), (1 << width) - 1)
+from testgen.instructions.vector_data import instruction_immediate, instruction_random_elements, instruction_rs1val
 
 
 def pad_label_to_vlmax(test_data: TestData, label: str, vlmax_count: int) -> str:
@@ -529,17 +517,13 @@ def generate_random_vector_params(
             params, info, source_dest_different_eew, lmul, sew, instr_type_config.vector_data
         )
 
-    # vslideup writes only elements at or above its offset, so a base-suite test (vl=1) moves data only at offset 0
-    base_slideup = instruction.startswith("vslideup.") and suite == "base"
-    if base_slideup and params.rs1val is not None and "rs1val" not in fixed_params:
-        params.rs1val = 0
+    if params.rs1val is not None and "rs1val" not in fixed_params:
+        params.rs1val = instruction_rs1val(instruction, suite, params.rs1val)
 
     # Immediate handling, before the data, which can depend on the immediate
     if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:
-        if base_slideup:
-            params.immval = 0
-        elif instruction in LOG_RANDOM_IMM_INSTRUCTIONS:
-            params.immval = log_random_imm()
+        if (immval := instruction_immediate(instruction, suite)) is not None:
+            params.immval = immval
         elif instr_type_config.imm_range is not None:
             min_val, max_val = instr_type_config.imm_range
             params.immval = random_range(min_val, max_val, nonzero=instr_type_config.imm_nonzero)
@@ -604,15 +588,15 @@ def generate_random_vector_params(
                 element_count = vlmax_count
             else:
                 element_count = max(params.vl, egs) if isinstance(params.vl, int) else egs
-            elements = instruction_random_elements(instruction, register, element_count, eew, sew, params, test_data)
+            elements = instruction_random_elements(
+                instruction, register, suite, element_count, eew, sew, params, test_data
+            )
             if elements is None and instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
-            if elements is None:
-                elements = [random_int(eew) for _ in range(element_count)]
-                if instruction == "vcompress.vm" and register == "vs1" and suite == "base":
-                    # Set mask bit 0, so a vl=1 test compresses element 0 into vd
-                    elements[0] |= 1
-            test_data.register_vector_data(label, eew, elements=elements)
+            if elements is not None:
+                test_data.register_vector_data(label, eew, elements=elements)
+            else:
+                test_data.register_vector_data(label, eew, random_elements=element_count)
         elif loaded_at_vlmax:
             setattr(params, f"{register}_val_pointer", pad_label_to_vlmax(test_data, preset_label, vlmax_count))
 

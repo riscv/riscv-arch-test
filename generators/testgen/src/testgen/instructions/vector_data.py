@@ -25,6 +25,8 @@ CLIP_SATURATE_FRACTION = 0.25
 EQUALITY_COMPARES = re.compile(r"vm(f?eq|f?ne|seq|sne)\.v[vxif]$")
 NARROWING_CLIPS = re.compile(r"vnclipu?\.w[vxi]$")
 FP_TO_INT_CONVERTS = re.compile(r"v(f|fw|fn)cvt\.(rtz\.)?(xu?)\.f\.[vw]$")
+# Gathers and slides whose immediate is an element index or offset
+LOG_RANDOM_IMM_INSTRUCTIONS = {"vrgather.vi", "vslideup.vi", "vslidedown.vi"}
 # Compares and clips whose vs2 elements are fitted to vs1's
 VS1_FITTED = re.compile(r"vm(f?eq|f?ne|seq|sne)\.vv$|vnclipu?\.wv$")
 
@@ -115,13 +117,49 @@ def fp_to_int_sources(instruction: str, count: int, eew: int) -> list[int]:
     return [fp_to_int_source(FP_FORMAT_OF_SEW[eew], int_width, signed=signed) for _ in range(count)]
 
 
+def log_random_imm() -> int:
+    """
+    Return a random 5-bit immediate with a random bit width from 0 to 5, so small values are as likely as large ones
+    and many index or offset immediates are below VLMAX even for a short VLEN.
+    """
+    width = random.randint(0, 5)
+    return 0 if width == 0 else random.randint(1 << (width - 1), (1 << width) - 1)
+
+
+def instruction_rs1val(instruction: str, suite: str, rs1val: int) -> int:
+    """The random rs1 value, or a fixed one where a random value would make the result uninformative."""
+    # vslideup writes only elements at or above its offset, so a base-suite test (vl=1) moves data only at offset 0
+    return 0 if instruction == "vslideup.vx" and suite == "base" else rs1val
+
+
+def instruction_immediate(instruction: str, suite: str) -> int | None:
+    """An immediate for instructions where a uniformly random one would be uninformative, or None."""
+    if instruction == "vslideup.vi" and suite == "base":
+        return 0  # As for vslideup.vx
+    if instruction in LOG_RANDOM_IMM_INSTRUCTIONS:
+        return log_random_imm()
+    return None
+
+
 def instruction_random_elements(
-    instruction: str, register: str, count: int, eew: int, sew: int, params: InstructionParams, test_data: TestData
+    instruction: str,
+    register: str,
+    suite: str,
+    count: int,
+    eew: int,
+    sew: int,
+    params: InstructionParams,
+    test_data: TestData,
 ) -> list[int] | None:
     """
     Random elements for a source register whose uniformly random bits would make the result uninformative,
     or None to use uniformly random data.
     """
+    if instruction == "vcompress.vm" and register == "vs1" and suite == "base":
+        # Set mask bit 0, so a vl=1 test compresses element 0 into vd
+        elements = [random_int(eew) for _ in range(count)]
+        elements[0] |= 1
+        return elements
     if register == "vs1" and VS1_FITTED.match(instruction):
         # Give vs1 an element list, never a label into shared data, so vs2 can be fitted to its elements
         return [random_int(eew) for _ in range(count)]

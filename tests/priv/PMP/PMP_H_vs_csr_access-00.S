@@ -31,32 +31,32 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// PMP_H cp_pmpaddr_access_vs and cp_pmpcfg_access_vs
+// PMPS cp_pmpaddr_access_s and cp_pmpcfg_access_s
 //   Write every pmpaddr and pmpcfg CSR from VS mode; each traps with an illegal instruction, and the trapping read leaves its destination register unchanged.
 /////////////////////////////////
 
   RVTEST_PMP_SET_BACKGROUND x4
 
-PMP_H_cg_cp_pmpaddr_access_vs_write_all:
+PMP_S_cg_cp_pmpaddr_access_s_write_all:
 // Write all ones to every pmpaddr CSR from VS mode
   LI(x12, -1)
   .set pmpaddri, CSR_PMPADDR0
   .rept 64
   RVTEST_TSBI_GOTO_VSMODE
 99:
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x12, 99b, PMP_H_cg_cp_pmpaddr_access_vs_write_all_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x12, 99b, PMP_S_cg_cp_pmpaddr_access_s_write_all_str)
   nop
   RVTEST_TSBI_GOTO_MMODE
   .set pmpaddri, pmpaddri+1
   .endr
 
-PMP_H_cg_cp_pmpcfg_access_vs_write_all:
+PMP_S_cg_cp_pmpcfg_access_s_write_all:
 // Write all ones to every pmpcfg CSR from VS mode
   .set pmpcfgi, CSR_PMPCFG0
   .rept 16
   RVTEST_TSBI_GOTO_VSMODE
 99:
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x12, 99b, PMP_H_cg_cp_pmpcfg_access_vs_write_all_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x12, 99b, PMP_S_cg_cp_pmpcfg_access_s_write_all_str)
   nop
   RVTEST_TSBI_GOTO_MMODE
   .set pmpcfgi, pmpcfgi+1
@@ -72,8 +72,8 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMP_H_cg_cp_pmpaddr_access_vs_write_all_str: .string "\"test: 148; cg: PMP_H_cg; cp: cp_pmpaddr_access_vs; bin: write_all\""
-PMP_H_cg_cp_pmpcfg_access_vs_write_all_str: .string "\"test: 149; cg: PMP_H_cg; cp: cp_pmpcfg_access_vs; bin: write_all\""
+PMP_S_cg_cp_pmpaddr_access_s_write_all_str: .string "\"test: 148; cg: PMP_S_cg; cp: cp_pmpaddr_access_s; bin: write_all\""
+PMP_S_cg_cp_pmpcfg_access_s_write_all_str: .string "\"test: 149; cg: PMP_S_cg; cp: cp_pmpcfg_access_s; bin: write_all\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

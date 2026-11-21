@@ -35,7 +35,7 @@ from testgen.priv.extensions.pmp.helpers import (
     napot_mask_defines,
     zero_pmp_regs,
 )
-from testgen.priv.extensions.pmp.probes import Cross
+from testgen.priv.extensions.pmp.probes import Cross, covergroup
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown, per_xlen
 from testgen.priv.extensions.sv.page_tables import (
@@ -46,11 +46,6 @@ from testgen.priv.extensions.sv.page_tables import (
     write_pte,
 )
 from testgen.priv.registry import add_priv_test_generator
-
-# Covergroups of the hypervisor load/store probes and of the two-stage scenarios; the walks from VS-mode and
-# VU-mode go to PMP_H_cg through probes.covergroup
-_HLV_CG = "PMP_H_hlv_cg"
-_GUEST_CG = "PMP_H_guest_cg"
 
 # The PMP entry each scenario programs, so that coverage can tell the scenarios apart: a page table
 # (0-5), the final supervisor physical address (6), the guest virtual addresses of the two mappings
@@ -67,9 +62,9 @@ _TABLES = {
 }
 # A deny region: (address label or register, entry, NAPOT low ones)
 _SPA = ("TEST_FOR_EXECUTION", 6, "PMP_REGION_SIZE")
-# A NAPOT region of 4 KiB page tables needs a PMP grain of at most 4 KiB, and entries 0-10 lie below the background
+# A NAPOT region of one 4 KiB page table needs a PMP grain of at most 4 KiB, and entries 0-10 lie below the background
 # entry
-_TABLE_GATE = "UDB_PMP_GRANULARITY <= 10 && UDB_NUM_USABLE_PMP_ENTRIES >= 12"
+_TABLE_GATE = "UDB_PMP_GRANULARITY <= 12 && UDB_NUM_USABLE_PMP_ENTRIES >= 12"
 _MAPPINGS = ("vs", "g")
 
 
@@ -110,7 +105,7 @@ def _hlv_probes(test_data: TestData, case: str, coverpoint: Cross, region: str) 
     lines = ["", f"LA(x{addr}, {region})", f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)"]
     for instr, rv64 in (*HSV_INSTRS, *HLV_INSTRS, *HLVX_INSTRS):
         body = [
-            test_data.add_testcase(f"{case}_{instr}", f"{coverpoint}_{instr.split('.')[0]}", _HLV_CG),
+            test_data.add_testcase(f"{case}_{instr}", f"{coverpoint}_{instr.split('.')[0]}", covergroup(test_data)),
             f"{instr} x{rd}, (x{addr})",
             write_sigupd(rd, test_data),
         ]
@@ -344,7 +339,7 @@ def _atomic_probes(
         ),
         ("Zalrsc", coverpoints[1], [f"LI(x{src}, 42)"], f"lr.w x{src}, (x{gva})", src),
     ):
-        label = test_data.add_testcase(f"{name}_{instr.split()[0]}", coverpoint, _GUEST_CG)
+        label = test_data.add_testcase(f"{name}_{instr.split()[0]}", coverpoint, covergroup(test_data))
         guard = f"{ext.upper()}_SUPPORTED"
         probes.extend([f"#ifdef {guard}", *setup, *arch_block([label, instr], ext), "#endif"])
         checks.extend([f"#ifdef {guard}", write_sigupd(result, test_data, label=label.removesuffix(":")), "#endif"])
@@ -382,16 +377,16 @@ def _guest_scenarios(test_data: TestData, mode: str, scenarios: list[_Scenario])
             body.extend(
                 [
                     "LA(ra, 1f)",
-                    test_data.add_testcase(f"{name}_jalr", scenario.coverpoint, _GUEST_CG),
+                    test_data.add_testcase(f"{name}_jalr", scenario.coverpoint, covergroup(test_data)),
                     f"jalr x0, 0(x{gva})",
                     "1:",
                     f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)",
-                    test_data.add_testcase(f"{name}_sw", scenario.coverpoint, _GUEST_CG),
+                    test_data.add_testcase(f"{name}_sw", scenario.coverpoint, covergroup(test_data)),
                     f"sw x{rd}, 0(x{gva})",
                     f"LI(x{rd}, 42)",
                 ]
             )
-            label = test_data.add_testcase(f"{name}_lw", scenario.coverpoint, _GUEST_CG)
+            label = test_data.add_testcase(f"{name}_lw", scenario.coverpoint, covergroup(test_data))
             body.extend([label, f"lw x{rd}, 0(x{gva})"])
             check = write_sigupd(rd, test_data, label=label.removesuffix(":"))
             if user:
@@ -432,7 +427,7 @@ def _hlv_scenarios(test_data: TestData, scenarios: list[_Scenario]) -> list[str]
             body.extend(
                 [
                     f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)",
-                    test_data.add_testcase(f"{name}_hsv.w", scenario.coverpoint, _HLV_CG),
+                    test_data.add_testcase(f"{name}_hsv.w", scenario.coverpoint, covergroup(test_data)),
                     f"hsv.w x{rd}, (x{gva})",
                 ]
             )
@@ -440,7 +435,7 @@ def _hlv_scenarios(test_data: TestData, scenarios: list[_Scenario]) -> list[str]
                 body.extend(
                     [
                         f"LI(x{rd}, 42)",
-                        test_data.add_testcase(f"{name}_{instr}", scenario.coverpoint, _HLV_CG),
+                        test_data.add_testcase(f"{name}_{instr}", scenario.coverpoint, covergroup(test_data)),
                         f"{instr} x{rd}, (x{gva})",
                         write_sigupd(rd, test_data),
                     ]

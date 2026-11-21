@@ -360,8 +360,18 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0]{}
 
-  mpp_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
-    bins S_mode = {2'b01};
+  // {MPV, MPP}: the mode whose privilege MPRV = 1 gives loads and stores, S-mode or, with H, VS-mode
+  `ifdef UDB_MXLEN_64
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `else
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `endif
+    bins S_mode = {3'b001};
+    `ifdef H_SUPPORTED
+      bins VS_mode = {3'b101};
+    `endif
   }
 
   lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
@@ -412,39 +422,39 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
-  cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
-  cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
+  cp_cfg_X: cross priv_mode_s_maybevs, legal_lxwr, exec_instr, addr_in_napot_region ;
+  cp_cfg_R: cross priv_mode_s_maybevs, legal_lxwr, read_instr, addr_in_napot_region ;
+  cp_cfg_W: cross priv_mode_s_maybevs, legal_lxwr, write_instr, addr_in_napot_region ;
 
-  cp_cfg_A_off_jalr: cross priv_mode_s, cfg_A_off, exec_instr, addr_in_region ;
-  cp_cfg_A_off_lw: cross priv_mode_s, cfg_A_off, read_instr_lw, addr_in_region ;
-  cp_cfg_A_off_sw: cross priv_mode_s, cfg_A_off, write_instr_sw, addr_in_region ;
+  cp_cfg_A_off_jalr: cross priv_mode_s_maybevs, cfg_A_off, exec_instr, addr_in_region ;
+  cp_cfg_A_off_lw: cross priv_mode_s_maybevs, cfg_A_off, read_instr_lw, addr_in_region ;
+  cp_cfg_A_off_sw: cross priv_mode_s_maybevs, cfg_A_off, write_instr_sw, addr_in_region ;
 
   // Access at start of region, start - 4, start + 4, highest word in region, just beyond top of the region
-  cp_cfg_A_napot_jalr: cross priv_mode_s, cfg_A_napot, exec_instr, addr_offset_napot ;
-  cp_cfg_A_napot_lw: cross priv_mode_s, cfg_A_napot, read_instr_lw, addr_offset_napot ;
-  cp_cfg_A_napot_sw: cross priv_mode_s, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  cp_cfg_A_napot_jalr: cross priv_mode_s_maybevs, cfg_A_napot, exec_instr, addr_offset_napot ;
+  cp_cfg_A_napot_lw: cross priv_mode_s_maybevs, cfg_A_napot, read_instr_lw, addr_offset_napot ;
+  cp_cfg_A_napot_sw: cross priv_mode_s_maybevs, cfg_A_napot, write_instr_sw, addr_offset_napot ;
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
-    cp_cfg_A_na4_jalr: cross priv_mode_s, cfg_A_na4, exec_instr, addr_offset_na4 ;
-    cp_cfg_A_na4_lw: cross priv_mode_s, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
-    cp_cfg_A_na4_sw: cross priv_mode_s, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
+    cp_cfg_A_na4_jalr: cross priv_mode_s_maybevs, cfg_A_na4, exec_instr, addr_offset_na4 ;
+    cp_cfg_A_na4_lw: cross priv_mode_s_maybevs, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
+    cp_cfg_A_na4_sw: cross priv_mode_s_maybevs, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // Access at address, address-4, address-g, address-g-4.
-    cp_cfg_A_tor_jalr: cross priv_mode_s, cfg_A_tor, exec_instr, addr_offset_tor ;
-    cp_cfg_A_tor_lw: cross priv_mode_s, cfg_A_tor, read_instr_lw, addr_offset_tor ;
-    cp_cfg_A_tor_sw: cross priv_mode_s, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+    cp_cfg_A_tor_jalr: cross priv_mode_s_maybevs, cfg_A_tor, exec_instr, addr_offset_tor ;
+    cp_cfg_A_tor_lw: cross priv_mode_s_maybevs, cfg_A_tor, read_instr_lw, addr_offset_tor ;
+    cp_cfg_A_tor_sw: cross priv_mode_s_maybevs, cfg_A_tor, write_instr_sw, addr_offset_tor ;
   `endif
 
   cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
   cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
   cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
 
-  cp_pmpaddr_access_s: cross priv_mode_s, csrrw, pmpaddr_entries ;
-  cp_pmpcfg_access_s: cross priv_mode_s, csrrw, pmpcfg_entries ;
+  cp_pmpaddr_access_s: cross priv_mode_s_maybevs, csrrw, pmpaddr_entries ;
+  cp_pmpcfg_access_s: cross priv_mode_s_maybevs, csrrw, pmpcfg_entries ;
 
 endgroup
 
@@ -2467,8 +2477,18 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0]{}
 
-  mpp_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
-    bins U_mode = {2'b00};
+  // {MPV, MPP}: the mode whose privilege MPRV = 1 gives loads and stores, U-mode or, with H, VU-mode
+  `ifdef UDB_MXLEN_64
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `else
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `endif
+    bins U_mode = {3'b000};
+    `ifdef H_SUPPORTED
+      bins VU_mode = {3'b100};
+    `endif
   }
 
   lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
@@ -2519,39 +2539,39 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_u, legal_lxwr, exec_instr, addr_in_napot_region ;
-  cp_cfg_R: cross priv_mode_u, legal_lxwr, read_instr, addr_in_napot_region ;
-  cp_cfg_W: cross priv_mode_u, legal_lxwr, write_instr, addr_in_napot_region ;
+  cp_cfg_X: cross priv_mode_u_maybevu, legal_lxwr, exec_instr, addr_in_napot_region ;
+  cp_cfg_R: cross priv_mode_u_maybevu, legal_lxwr, read_instr, addr_in_napot_region ;
+  cp_cfg_W: cross priv_mode_u_maybevu, legal_lxwr, write_instr, addr_in_napot_region ;
 
-  cp_cfg_A_off_jalr: cross priv_mode_u, cfg_A_off, exec_instr, addr_in_region ;
-  cp_cfg_A_off_lw: cross priv_mode_u, cfg_A_off, read_instr_lw, addr_in_region ;
-  cp_cfg_A_off_sw: cross priv_mode_u, cfg_A_off, write_instr_sw, addr_in_region ;
+  cp_cfg_A_off_jalr: cross priv_mode_u_maybevu, cfg_A_off, exec_instr, addr_in_region ;
+  cp_cfg_A_off_lw: cross priv_mode_u_maybevu, cfg_A_off, read_instr_lw, addr_in_region ;
+  cp_cfg_A_off_sw: cross priv_mode_u_maybevu, cfg_A_off, write_instr_sw, addr_in_region ;
 
   // Access at start of region, start - 4, start + 4, highest word in region, just beyond top of the region
-  cp_cfg_A_napot_jalr: cross priv_mode_u, cfg_A_napot, exec_instr, addr_offset_napot ;
-  cp_cfg_A_napot_lw: cross priv_mode_u, cfg_A_napot, read_instr_lw, addr_offset_napot ;
-  cp_cfg_A_napot_sw: cross priv_mode_u, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  cp_cfg_A_napot_jalr: cross priv_mode_u_maybevu, cfg_A_napot, exec_instr, addr_offset_napot ;
+  cp_cfg_A_napot_lw: cross priv_mode_u_maybevu, cfg_A_napot, read_instr_lw, addr_offset_napot ;
+  cp_cfg_A_napot_sw: cross priv_mode_u_maybevu, cfg_A_napot, write_instr_sw, addr_offset_napot ;
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
-    cp_cfg_A_na4_jalr: cross priv_mode_u, cfg_A_na4, exec_instr, addr_offset_na4 ;
-    cp_cfg_A_na4_lw: cross priv_mode_u, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
-    cp_cfg_A_na4_sw: cross priv_mode_u, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
+    cp_cfg_A_na4_jalr: cross priv_mode_u_maybevu, cfg_A_na4, exec_instr, addr_offset_na4 ;
+    cp_cfg_A_na4_lw: cross priv_mode_u_maybevu, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
+    cp_cfg_A_na4_sw: cross priv_mode_u_maybevu, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // Access at address, address-4, address-g, address-g-4.
-    cp_cfg_A_tor_jalr: cross priv_mode_u, cfg_A_tor, exec_instr, addr_offset_tor ;
-    cp_cfg_A_tor_lw: cross priv_mode_u, cfg_A_tor, read_instr_lw, addr_offset_tor ;
-    cp_cfg_A_tor_sw: cross priv_mode_u, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+    cp_cfg_A_tor_jalr: cross priv_mode_u_maybevu, cfg_A_tor, exec_instr, addr_offset_tor ;
+    cp_cfg_A_tor_lw: cross priv_mode_u_maybevu, cfg_A_tor, read_instr_lw, addr_offset_tor ;
+    cp_cfg_A_tor_sw: cross priv_mode_u_maybevu, cfg_A_tor, write_instr_sw, addr_offset_tor ;
   `endif
 
   cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
   cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
   cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
 
-  cp_pmpaddr_access_u: cross priv_mode_u, csrrw, pmpaddr_entries ;
-  cp_pmpcfg_access_u: cross priv_mode_u, csrrw, pmpcfg_entries ;
+  cp_pmpaddr_access_u: cross priv_mode_u_maybevu, csrrw, pmpaddr_entries ;
+  cp_pmpcfg_access_u: cross priv_mode_u_maybevu, csrrw, pmpcfg_entries ;
 
 endgroup
 
@@ -3591,293 +3611,10 @@ endfunction
 `endif
 
 `ifdef H_SUPPORTED
-// PMP enforcement with the hypervisor extension: PMP checked from VS-mode and VU-mode, by the
-// hypervisor loads and stores, and on the addresses that two-stage translation produces.
-covergroup PMP_H_cg with function sample(ins_t ins, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
-  option.per_instance = 0;
-  `include  "general/RISCV_coverage_standard_coverpoints.svh"
-
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
-  }
-
-  // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
-  // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
-  addr_offset_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};                // Access exactly at the region base
-    bins below_base   = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes below the region
-    bins just_inside  = {(`PMP_NAPOT_REGION_START + 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes into the region
-    bins highest_word = {(`PMP_NAPOT_REGION_START + `g_napot - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
-    bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};     // Access exactly at the end of the region
-  }
-
-  addr_offset_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};      // Access exactly at the region base
-    bins below_base  = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};  // Access below region base
-    bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
-  }
-
-  // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-  addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // Access exactly at the region base
-    bins below_base   = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};          // Access 4 bytes below the base
-    bins at_top       = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};     // Access exactly at top of range
-    bins highest_word = {(`PMP_REGION_START + `g_tor - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
-  }
-
-  exec_instr: coverpoint ins.current.insn {
-    wildcard bins jalr = {JALR};
-  }
-
-  read_instr: coverpoint ins.current.insn {
-    wildcard bins lb  = {LB};
-    wildcard bins lbu = {LBU};
-    wildcard bins lh  = {LH};
-    wildcard bins lhu = {LHU};
-    wildcard bins lw  = {LW};
-    `ifdef UDB_MXLEN_64
-      wildcard bins lwu = {LWU};
-      wildcard bins ld  = {LD};
-    `endif
-  }
-  read_instr_lw: coverpoint ins.current.insn {
-    wildcard bins lw  = {LW};
-  }
-
-  write_instr: coverpoint ins.current.insn {
-    wildcard bins sb = {SB};
-    wildcard bins sh = {SH};
-    wildcard bins sw = {SW};
-    `ifdef UDB_MXLEN_64
-      wildcard bins sd = {SD};
-    `endif
-  }
-
-  write_instr_sw: coverpoint ins.current.insn {
-    wildcard bins sw = {SW};
-  }
-
-//-------------------------------------------------------
-
-  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0) & `PMP_PMPADDR_LOWMASK) {
-    bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
-  }
-
-  // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
-  // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
-  // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
-  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
-  }
-
-  legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
-    wildcard bins cfg_1000 = {54'b????????????????????????????????????????10011000_100000};
-    wildcard bins cfg_1001 = {54'b????????????????????????????????10011001????????_?10000};
-    wildcard bins cfg_1011 = {54'b????????????????????????10011011????????????????_??1000};
-    wildcard bins cfg_1100 = {54'b????????????????10011100????????????????????????_???100};
-    wildcard bins cfg_1101 = {54'b????????10011101????????????????????????????????_????10};
-    wildcard bins cfg_1111 = {54'b10011111????????????????????????????????????????_?????1};
-    wildcard bins cfg_0000 = {54'b????????????????????????????????????????00011000_100000};
-    wildcard bins cfg_0001 = {54'b????????????????????????????????00011001????????_?10000};
-    wildcard bins cfg_0011 = {54'b????????????????????????00011011????????????????_??1000};
-    wildcard bins cfg_0100 = {54'b????????????????00011100????????????????????????_???100};
-    wildcard bins cfg_0101 = {54'b????????00011101????????????????????????????????_????10};
-    wildcard bins cfg_0111 = {54'b00011111????????????????????????????????????????_?????1};
-  }
-
-
-  pmpaddr_entries: coverpoint ins.current.insn[31:20] {
-    bins pmpaddr0   = {CSR_PMPADDR0};
-    bins pmpaddr1   = {CSR_PMPADDR1};
-    bins pmpaddr2   = {CSR_PMPADDR2};
-    bins pmpaddr3   = {CSR_PMPADDR3};
-    bins pmpaddr4   = {CSR_PMPADDR4};
-    bins pmpaddr5   = {CSR_PMPADDR5};
-    bins pmpaddr6   = {CSR_PMPADDR6};
-    bins pmpaddr7   = {CSR_PMPADDR7};
-    bins pmpaddr8   = {CSR_PMPADDR8};
-    bins pmpaddr9   = {CSR_PMPADDR9};
-    bins pmpaddr10  = {CSR_PMPADDR10};
-    bins pmpaddr11  = {CSR_PMPADDR11};
-    bins pmpaddr12  = {CSR_PMPADDR12};
-    bins pmpaddr13  = {CSR_PMPADDR13};
-    bins pmpaddr14  = {CSR_PMPADDR14};
-    bins pmpaddr15  = {CSR_PMPADDR15};
-    bins pmpaddr16  = {CSR_PMPADDR16};
-    bins pmpaddr17  = {CSR_PMPADDR17};
-    bins pmpaddr18  = {CSR_PMPADDR18};
-    bins pmpaddr19  = {CSR_PMPADDR19};
-    bins pmpaddr20  = {CSR_PMPADDR20};
-    bins pmpaddr21  = {CSR_PMPADDR21};
-    bins pmpaddr22  = {CSR_PMPADDR22};
-    bins pmpaddr23  = {CSR_PMPADDR23};
-    bins pmpaddr24  = {CSR_PMPADDR24};
-    bins pmpaddr25  = {CSR_PMPADDR25};
-    bins pmpaddr26  = {CSR_PMPADDR26};
-    bins pmpaddr27  = {CSR_PMPADDR27};
-    bins pmpaddr28  = {CSR_PMPADDR28};
-    bins pmpaddr29  = {CSR_PMPADDR29};
-    bins pmpaddr30  = {CSR_PMPADDR30};
-    bins pmpaddr31  = {CSR_PMPADDR31};
-    bins pmpaddr32  = {CSR_PMPADDR32};
-    bins pmpaddr33  = {CSR_PMPADDR33};
-    bins pmpaddr34  = {CSR_PMPADDR34};
-    bins pmpaddr35  = {CSR_PMPADDR35};
-    bins pmpaddr36  = {CSR_PMPADDR36};
-    bins pmpaddr37  = {CSR_PMPADDR37};
-    bins pmpaddr38  = {CSR_PMPADDR38};
-    bins pmpaddr39  = {CSR_PMPADDR39};
-    bins pmpaddr40  = {CSR_PMPADDR40};
-    bins pmpaddr41  = {CSR_PMPADDR41};
-    bins pmpaddr42  = {CSR_PMPADDR42};
-    bins pmpaddr43  = {CSR_PMPADDR43};
-    bins pmpaddr44  = {CSR_PMPADDR44};
-    bins pmpaddr45  = {CSR_PMPADDR45};
-    bins pmpaddr46  = {CSR_PMPADDR46};
-    bins pmpaddr47  = {CSR_PMPADDR47};
-    bins pmpaddr48  = {CSR_PMPADDR48};
-    bins pmpaddr49  = {CSR_PMPADDR49};
-    bins pmpaddr50  = {CSR_PMPADDR50};
-    bins pmpaddr51  = {CSR_PMPADDR51};
-    bins pmpaddr52  = {CSR_PMPADDR52};
-    bins pmpaddr53  = {CSR_PMPADDR53};
-    bins pmpaddr54  = {CSR_PMPADDR54};
-    bins pmpaddr55  = {CSR_PMPADDR55};
-    bins pmpaddr56  = {CSR_PMPADDR56};
-    bins pmpaddr57  = {CSR_PMPADDR57};
-    bins pmpaddr58  = {CSR_PMPADDR58};
-    bins pmpaddr59  = {CSR_PMPADDR59};
-    bins pmpaddr60  = {CSR_PMPADDR60};
-    bins pmpaddr61  = {CSR_PMPADDR61};
-    bins pmpaddr62  = {CSR_PMPADDR62};
-    bins pmpaddr63  = {CSR_PMPADDR63};
-  }
-
-  pmpcfg_entries: coverpoint ins.current.insn[31:20] {
-    bins pmpcfg0   = {CSR_PMPCFG0};
-    bins pmpcfg1   = {CSR_PMPCFG1};
-    bins pmpcfg2   = {CSR_PMPCFG2};
-    bins pmpcfg3   = {CSR_PMPCFG3};
-    bins pmpcfg4   = {CSR_PMPCFG4};
-    bins pmpcfg5   = {CSR_PMPCFG5};
-    bins pmpcfg6   = {CSR_PMPCFG6};
-    bins pmpcfg7   = {CSR_PMPCFG7};
-    bins pmpcfg8   = {CSR_PMPCFG8};
-    bins pmpcfg9   = {CSR_PMPCFG9};
-    bins pmpcfg10  = {CSR_PMPCFG10};
-    bins pmpcfg11  = {CSR_PMPCFG11};
-    bins pmpcfg12  = {CSR_PMPCFG12};
-    bins pmpcfg13  = {CSR_PMPCFG13};
-    bins pmpcfg14  = {CSR_PMPCFG14};
-    bins pmpcfg15  = {CSR_PMPCFG15};
-  }
-
-  csrrw: coverpoint ins.current.insn {
-    wildcard bins csrrw  = {CSRRW};
-  }
-
-  mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0] {}
-
-  // mstatus.MPP and MPV select VS-mode or VU-mode for MPRV accesses
-  mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS)[12:11] {
-    bins S_mode = {2'b01};
-    bins U_mode = {2'b00};
-  }
-
-  `ifdef UDB_MXLEN_64
-    mpv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS)[39] {
-  `else
-    mpv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH)[7] {
-  `endif
-    bins set = {1};
-  }
-
-  lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
-    bins cfg_1000 = {8'b10011000};
-    bins cfg_1111 = {8'b10011111};
-    bins cfg_0000 = {8'b00011000};
-    bins cfg_0111 = {8'b00011111};
-  }
-
-  // pmpcfg_i.L = 0, pmpcfg_i.A = OFF, pmpcfg_i.XWR = 000, pmpaddr_i = all 1s
-  cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0)} {
-    bins region_off = {8'b00000000,{(`EFFECTIVE_PMPADDR + 1){1'b1}}};
-  }
-
-  // pmpcfg_i.L = 0, pmpcfg_i.A = NAPOT, all legal pmpcfg_i.XWR, pmpaddr_i = `STANDARD_REGION
-  cfg_A_napot: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
-    wildcard bins napot_lwxr_0000 = {54'b????????????????????????????????????????00011000_100000};
-    wildcard bins napot_lwxr_0001 = {54'b????????????????????????????????00011001????????_?10000};
-    wildcard bins napot_lwxr_0011 = {54'b????????????????????????00011011????????????????_??1000};
-    wildcard bins napot_lwxr_0100 = {54'b????????????????00011100????????????????????????_???100};
-    wildcard bins napot_lwxr_0101 = {54'b????????00011101????????????????????????????????_????10};
-    wildcard bins napot_lwxr_0111 = {54'b00011111????????????????????????????????????????_?????1};
-  }
-
-  `ifdef UDB_PMP_NA4_SUPPORTED
-    // pmpcfg_i.L = 0, pmpcfg_i.A = NA4, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION
-    cfg_A_na4: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
-      wildcard bins na4_lwxr_0000 = {54'b????????????????????????????????????????00010000_100000};
-      wildcard bins na4_lwxr_0001 = {54'b????????????????????????????????00010001????????_?10000};
-      wildcard bins na4_lwxr_0011 = {54'b????????????????????????00010011????????????????_??1000};
-      wildcard bins na4_lwxr_0100 = {54'b????????????????00010100????????????????????????_???100};
-      wildcard bins na4_lwxr_0101 = {54'b????????00010101????????????????????????????????_????10};
-      wildcard bins na4_lwxr_0111 = {54'b00010111????????????????????????????????????????_?????1};
-    }
-  `endif
-
-  // pmpcfg_i.L = 0, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION + `g, pmpaddr_i-1 = `NON_STANDARD_REGION
-  cfg_A_tor: coverpoint {pmpcfg[1],pmpcfg[3],pmpcfg[5],pmpcfg[7],pmpcfg[9],pmpcfg[11],pmp_hit[11:0]} {
-    wildcard bins tor_lwxr_0000 = {60'b????????????????????????????????????????00001000_?10000000000};
-    wildcard bins tor_lwxr_0001 = {60'b????????????????????????????????00001001????????_???100000000};
-    wildcard bins tor_lwxr_0011 = {60'b????????????????????????00001011????????????????_?????1000000};
-    wildcard bins tor_lwxr_0100 = {60'b????????????????00001100????????????????????????_???????10000};
-    wildcard bins tor_lwxr_0101 = {60'b????????00001101????????????????????????????????_?????????100};
-    wildcard bins tor_lwxr_0111 = {60'b00001111????????????????????????????????????????_???????????1};
-  }
-
-//-------------------------------------------------------
-
-  cp_cfg_X: cross priv_mode_vs_vu, legal_lxwr, exec_instr, addr_in_napot_region ;
-  cp_cfg_R: cross priv_mode_vs_vu, legal_lxwr, read_instr, addr_in_napot_region ;
-  cp_cfg_W: cross priv_mode_vs_vu, legal_lxwr, write_instr, addr_in_napot_region ;
-
-  cp_cfg_A_off_jalr: cross priv_mode_vs_vu, cfg_A_off, exec_instr, addr_in_region ;
-  cp_cfg_A_off_lw: cross priv_mode_vs_vu, cfg_A_off, read_instr_lw, addr_in_region ;
-  cp_cfg_A_off_sw: cross priv_mode_vs_vu, cfg_A_off, write_instr_sw, addr_in_region ;
-
-  // Access at start of region, start - 4, start + 4, highest word in region, just beyond top of the region
-  cp_cfg_A_napot_jalr: cross priv_mode_vs_vu, cfg_A_napot, exec_instr, addr_offset_napot ;
-  cp_cfg_A_napot_lw: cross priv_mode_vs_vu, cfg_A_napot, read_instr_lw, addr_offset_napot ;
-  cp_cfg_A_napot_sw: cross priv_mode_vs_vu, cfg_A_napot, write_instr_sw, addr_offset_napot ;
-
-  `ifdef UDB_PMP_NA4_SUPPORTED
-    // Access at start of address, that address - 4, just beyond top of the region.
-    cp_cfg_A_na4_jalr: cross priv_mode_vs_vu, cfg_A_na4, exec_instr, addr_offset_na4 ;
-    cp_cfg_A_na4_lw: cross priv_mode_vs_vu, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
-    cp_cfg_A_na4_sw: cross priv_mode_vs_vu, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
-  `endif
-
-  // Access at address, address-4, address-g, address-g-4.
-  cp_cfg_A_tor_jalr: cross priv_mode_vs_vu, cfg_A_tor, exec_instr, addr_offset_tor ;
-  cp_cfg_A_tor_lw: cross priv_mode_vs_vu, cfg_A_tor, read_instr_lw, addr_offset_tor ;
-  cp_cfg_A_tor_sw: cross priv_mode_vs_vu, cfg_A_tor, write_instr_sw, addr_offset_tor ;
-
-  cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, mpv_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
-  cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, mpv_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
-  cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, mpv_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
-
-  cp_pmpaddr_access_vs: cross priv_mode_vs, csrrw, pmpaddr_entries ;
-  cp_pmpcfg_access_vs: cross priv_mode_vs, csrrw, pmpcfg_entries ;
-  cp_pmpaddr_access_vu: cross priv_mode_vu, csrrw, pmpaddr_entries ;
-  cp_pmpcfg_access_vu: cross priv_mode_vu, csrrw, pmpcfg_entries ;
-
-endgroup
-
 `include "general/RISCV_coverage_hypervisor.svh"
 
 // PMPH_TWO_STAGE: the two-stage chunks of pmp/H.py run, which needs H_TWO_STAGE, a PMP grain of at most 4 KiB
-// (UDB_PMP_GRANULARITY <= 10) and PMP entries 0-10 below the background entry (UDB_NUM_USABLE_PMP_ENTRIES >= 12)
+// (UDB_PMP_GRANULARITY <= 12) and PMP entries 0-10 below the background entry (UDB_NUM_USABLE_PMP_ENTRIES >= 12)
 `ifdef H_TWO_STAGE
   `ifdef UDB_PMP_GRANULARITY_2
     `define PMPH_TABLE_GRAIN
@@ -3896,6 +3633,10 @@ endgroup
   `elsif UDB_PMP_GRANULARITY_9
     `define PMPH_TABLE_GRAIN
   `elsif UDB_PMP_GRANULARITY_10
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_11
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_12
     `define PMPH_TABLE_GRAIN
   `endif
   `ifdef PMPH_TABLE_GRAIN
@@ -3929,9 +3670,10 @@ endgroup
   `define PMPH_G_SUPERPAGE 'h341
 `endif
 
-// hsv, hlv and hlvx from M-mode and HS-mode, against each legal XWR (vsatp and hgatp Bare) and
-// through two-stage translation with PMP denying a page table or the final address
-covergroup PMP_H_hlv_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, int pmp_entry);
+// PMP with the hypervisor extension: hsv, hlv and hlvx from M-mode and HS-mode against each legal XWR
+// (vsatp and hgatp Bare), and accesses through two-stage translation under PMP regions at the page tables,
+// the final address and the guest addresses.  PMP_S_cg and PMP_U_cg cover the walks from VS-mode and VU-mode.
+covergroup PMP_H_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, int pmp_entry, logic [2:0] pmp_xwr);
   option.per_instance = 0;
   `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -4006,23 +3748,6 @@ covergroup PMP_H_hlv_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0
     bins hroot = {5};
     bins spa   = {6};
   }
-  `endif
-
-  cp_pmp_hlv:  cross priv_mode_m_s, hlv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
-  cp_pmp_hlvx: cross priv_mode_m_s, hlvx, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
-  cp_pmp_hsv:  cross priv_mode_m_s, hsv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
-  `ifdef PMPH_TWO_STAGE
-  cp_pmp_hlv_pt: cross priv_mode_hs, hlv_w_hsv_w_hlvx_wu, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
-  `endif
-endgroup
-
-// jalr, sw, lw, amoswap.w and lr.w from VS-mode and VU-mode through both mappings
-covergroup PMP_H_guest_cg with function sample(ins_t ins, int pmp_entry, logic [2:0] pmp_xwr);
-  option.per_instance = 0;
-  `include "general/RISCV_coverage_standard_coverpoints.svh"
-
-  `ifdef PMPH_TWO_STAGE
-
   access_instr: coverpoint ins.current.insn {
     wildcard bins jalr = {JALR};
     wildcard bins sw   = {SW};
@@ -4038,16 +3763,6 @@ covergroup PMP_H_guest_cg with function sample(ins_t ins, int pmp_entry, logic [
     wildcard bins lr_w = {LR_W};
   }
   `endif
-  vsatp_paged: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
-    bins paged = {[1:15]};
-  }
-  hgatp_paged: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
-    bins paged = {[1:15]};
-  }
-  mapping: coverpoint `PMPH_GVA_SUPERPAGE(ins.current.rs1_val) {
-    bins vs = {`PMPH_VS_SUPERPAGE};
-    bins g  = {`PMPH_G_SUPERPAGE};
-  }
   `ifdef SVADU_SUPPORTED
   `ifdef UDB_MXLEN_64
   menvcfg_adue: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
@@ -4105,7 +3820,13 @@ covergroup PMP_H_guest_cg with function sample(ins_t ins, int pmp_entry, logic [
   access_fault: coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]} {
     bins access_fault = {6'b100001, 6'b100101, 6'b100111};
   }
+  `endif
 
+  cp_pmp_hlv:  cross priv_mode_m_s, hlv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
+  cp_pmp_hlvx: cross priv_mode_m_s, hlvx, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
+  cp_pmp_hsv:  cross priv_mode_m_s, hsv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
+  `ifdef PMPH_TWO_STAGE
+  cp_pmp_hlv_pt: cross priv_mode_hs, hlv_w_hsv_w_hlvx_wu, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
   cp_pmp_after_translation: cross priv_mode_vs_vu, access_instr, mapping, pmp_final, vsatp_paged, hgatp_paged;
   cp_pmp_pt:                cross priv_mode_vs_vu, access_instr, mapping, pmp_table, vsatp_paged, hgatp_paged;
   // PMP checks the supervisor physical address of a VS-stage page-table read, not its guest physical address
@@ -4166,7 +3887,7 @@ function void pmp_H_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
   end
 
   // The lowest-numbered enabled PMP entry below the background entry names the pmp/H.py scenario
@@ -4176,9 +3897,7 @@ function void pmp_H_sample(int hart, int issue, ins_t ins);
   end
   pmp_xwr = (pmp_entry >= 0) ? pmpcfg[pmp_entry][2:0] : 3'b000;
 
-  PMP_H_cg.sample(ins, pmpcfg, pmp_hit);
-  PMP_H_hlv_cg.sample(ins, pmpcfg, pmp_hit, pmp_entry);
-  PMP_H_guest_cg.sample(ins, pmp_entry, pmp_xwr);
+  PMP_H_cg.sample(ins, pmpcfg, pmp_hit, pmp_entry, pmp_xwr);
 endfunction
 `endif
 

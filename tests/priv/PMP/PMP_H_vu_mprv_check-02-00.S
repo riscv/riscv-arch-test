@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// PMP_H cp_mprv_jalr, cp_mprv_lw and cp_mprv_sw
+// PMPU cp_mprv_jalr, cp_mprv_lw and cp_mprv_sw
 //   {jalr, sw, lw} from M mode with mstatus.MPRV = {0, 1} and MPP/MPV = VU, region L = {0, 1}, XWR = 111.
 /////////////////////////////////
 
@@ -86,11 +86,11 @@ RVTEST_BEGIN
   csrs mstatush, t0
 #endif
   LA(ra, 1f)
-PMP_H_cg_cp_mprv_jalr_lock0_mprv0_1_jalr:
+PMP_U_cg_cp_mprv_jalr_lock0_mprv0_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_jalr_lock0_mprv0_1_jalr, PMP_H_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_jalr_lock0_mprv0_1_jalr, PMP_U_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
   LI(t0, (1 << 17) | (3 << 11))
@@ -104,10 +104,10 @@ PMP_H_cg_cp_mprv_jalr_lock0_mprv0_1_jalr:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_sw_lock0_mprv0_2_sw:
+PMP_U_cg_cp_mprv_sw_lock0_mprv0_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_sw_lock0_mprv0_2_sw, PMP_H_cg_cp_mprv_sw_lock0_mprv0_2_sw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_sw_lock0_mprv0_2_sw, PMP_U_cg_cp_mprv_sw_lock0_mprv0_2_sw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
@@ -119,10 +119,10 @@ PMP_H_cg_cp_mprv_sw_lock0_mprv0_2_sw:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_lw_lock0_mprv0_3_lw:
+PMP_U_cg_cp_mprv_lw_lock0_mprv0_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_lw_lock0_mprv0_3_lw, PMP_H_cg_cp_mprv_lw_lock0_mprv0_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_lw_lock0_mprv0_3_lw, PMP_U_cg_cp_mprv_lw_lock0_mprv0_3_lw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, 0)
@@ -151,11 +151,11 @@ PMP_H_cg_cp_mprv_lw_lock0_mprv0_3_lw:
   csrs mstatush, t0
 #endif
   LA(ra, 1f)
-PMP_H_cg_cp_mprv_jalr_lock0_mprv1_1_jalr:
+PMP_U_cg_cp_mprv_jalr_lock0_mprv1_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_jalr_lock0_mprv1_1_jalr, PMP_H_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_jalr_lock0_mprv1_1_jalr, PMP_U_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
   LI(t0, (1 << 17) | (3 << 11))
@@ -169,10 +169,10 @@ PMP_H_cg_cp_mprv_jalr_lock0_mprv1_1_jalr:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_sw_lock0_mprv1_2_sw:
+PMP_U_cg_cp_mprv_sw_lock0_mprv1_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_sw_lock0_mprv1_2_sw, PMP_H_cg_cp_mprv_sw_lock0_mprv1_2_sw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_sw_lock0_mprv1_2_sw, PMP_U_cg_cp_mprv_sw_lock0_mprv1_2_sw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
@@ -184,10 +184,10 @@ PMP_H_cg_cp_mprv_sw_lock0_mprv1_2_sw:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_lw_lock0_mprv1_3_lw:
+PMP_U_cg_cp_mprv_lw_lock0_mprv1_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_lw_lock0_mprv1_3_lw, PMP_H_cg_cp_mprv_lw_lock0_mprv1_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_lw_lock0_mprv1_3_lw, PMP_U_cg_cp_mprv_lw_lock0_mprv1_3_lw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, 0)
@@ -227,11 +227,11 @@ PMP_H_cg_cp_mprv_lw_lock0_mprv1_3_lw:
   csrs mstatush, t0
 #endif
   LA(ra, 1f)
-PMP_H_cg_cp_mprv_jalr_lock1_mprv0_1_jalr:
+PMP_U_cg_cp_mprv_jalr_lock1_mprv0_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_jalr_lock1_mprv0_1_jalr, PMP_H_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_jalr_lock1_mprv0_1_jalr, PMP_U_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
   LI(t0, (1 << 17) | (3 << 11))
@@ -245,10 +245,10 @@ PMP_H_cg_cp_mprv_jalr_lock1_mprv0_1_jalr:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_sw_lock1_mprv0_2_sw:
+PMP_U_cg_cp_mprv_sw_lock1_mprv0_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_sw_lock1_mprv0_2_sw, PMP_H_cg_cp_mprv_sw_lock1_mprv0_2_sw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_sw_lock1_mprv0_2_sw, PMP_U_cg_cp_mprv_sw_lock1_mprv0_2_sw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, MPP_LOWER)
@@ -260,10 +260,10 @@ PMP_H_cg_cp_mprv_sw_lock1_mprv0_2_sw:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_lw_lock1_mprv0_3_lw:
+PMP_U_cg_cp_mprv_lw_lock1_mprv0_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_lw_lock1_mprv0_3_lw, PMP_H_cg_cp_mprv_lw_lock1_mprv0_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_lw_lock1_mprv0_3_lw, PMP_U_cg_cp_mprv_lw_lock1_mprv0_3_lw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, 0)
@@ -292,11 +292,11 @@ PMP_H_cg_cp_mprv_lw_lock1_mprv0_3_lw:
   csrs mstatush, t0
 #endif
   LA(ra, 1f)
-PMP_H_cg_cp_mprv_jalr_lock1_mprv1_1_jalr:
+PMP_U_cg_cp_mprv_jalr_lock1_mprv1_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_jalr_lock1_mprv1_1_jalr, PMP_H_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_jalr_lock1_mprv1_1_jalr, PMP_U_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
   LI(t0, (1 << 17) | (3 << 11))
@@ -310,10 +310,10 @@ PMP_H_cg_cp_mprv_jalr_lock1_mprv1_1_jalr:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_sw_lock1_mprv1_2_sw:
+PMP_U_cg_cp_mprv_sw_lock1_mprv1_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_sw_lock1_mprv1_2_sw, PMP_H_cg_cp_mprv_sw_lock1_mprv1_2_sw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_sw_lock1_mprv1_2_sw, PMP_U_cg_cp_mprv_sw_lock1_mprv1_2_sw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, MPP_LOWER|MPRV)
@@ -325,10 +325,10 @@ PMP_H_cg_cp_mprv_sw_lock1_mprv1_2_sw:
   LI(t0, MSTATUSH_MPV)
   csrs mstatush, t0
 #endif
-PMP_H_cg_cp_mprv_lw_lock1_mprv1_3_lw:
+PMP_U_cg_cp_mprv_lw_lock1_mprv1_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_mprv_lw_lock1_mprv1_3_lw, PMP_H_cg_cp_mprv_lw_lock1_mprv1_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_mprv_lw_lock1_mprv1_3_lw, PMP_U_cg_cp_mprv_lw_lock1_mprv1_3_lw_str)
   LI(t0, (1 << 17) | (3 << 11))
   csrc mstatus, t0
   LI(t0, 0)
@@ -371,18 +371,18 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_H_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 335; cg: PMP_H_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
-PMP_H_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 336; cg: PMP_H_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
-PMP_H_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 337; cg: PMP_H_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
-PMP_H_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 338; cg: PMP_H_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
-PMP_H_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 339; cg: PMP_H_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
-PMP_H_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 340; cg: PMP_H_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
-PMP_H_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 341; cg: PMP_H_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
-PMP_H_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 342; cg: PMP_H_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
-PMP_H_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 343; cg: PMP_H_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
-PMP_H_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 344; cg: PMP_H_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
-PMP_H_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 345; cg: PMP_H_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
-PMP_H_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 346; cg: PMP_H_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 335; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 336; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 337; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 338; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 339; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 340; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 341; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 342; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 343; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 344; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 345; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 346; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

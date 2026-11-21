@@ -44,15 +44,20 @@ class Mode:
 
     letter: str  # "S" | "U" | "VS" | "VU"
     mpp: str  # mstatus.MPP encoding of the mode
-    mpv: bool = False  # mstatus.MPV: the mode is virtualized, and its walks belong to the H group
+    mpv: bool = False  # mstatus.MPV: the mode is virtualized, and its tests belong to the H group
 
     @property
     def prefix(self) -> str:
         return f"pmp{self.letter.lower()}"
 
     @property
+    def base(self) -> str:
+        """S or U: the walks from VS-mode and VU-mode sample PMP_S_cg and PMP_U_cg."""
+        return self.letter.removeprefix("V")
+
+    @property
     def suite(self) -> str:
-        return "PMP_H" if self.mpv else f"PMP{self.letter}"
+        return f"PMP{self.base}"
 
     @property
     def split(self) -> str:
@@ -127,7 +132,7 @@ def _csr_walk(symbol: str, first: str, count: int, string_label: str, mode: Mode
 
 
 def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
-    low = mode.letter.lower()
+    low = mode.base.lower()
     chunk = test_data.begin_test_chunk(f"{mode.split}_csr_access")
     chunk.section_header = comment_banner(
         f"{mode.suite} cp_pmpaddr_access_{low} and cp_pmpcfg_access_{low}",

@@ -19,10 +19,16 @@ _AMOS = ("amoadd", "amoand", "amoor", "amoxor", "amomax", "amomaxu", "amomin", "
 
 
 def covergroup(test_data: TestData) -> str:
-    """The covergroup of the active chunk; its split name starts with the group (``F_cfg_wr`` -> ``PMP_F_cg``)."""
+    """The covergroup of the active chunk; its split name starts with the group (``F_cfg_wr`` -> ``PMP_F_cg``).
+
+    The VS-mode and VU-mode walks of the H group (``H_vs_cfg_XWR``) sample PMP_S_cg and PMP_U_cg.
+    """
     chunk = test_data.test_chunk
     assert chunk is not None and chunk.split_name is not None, "PMP chunks need a split name that starts with the group"
-    return f"PMP_{chunk.split_name.split('_')[0]}_cg"
+    group, _, rest = chunk.split_name.partition("_")
+    if group == "H" and rest.startswith(("vs_", "vu_")):
+        group = rest[1].upper()
+    return f"PMP_{group}_cg"
 
 
 #: The covergroup cross a probe's testcase belongs to: a name, or a function of the probe's instruction.

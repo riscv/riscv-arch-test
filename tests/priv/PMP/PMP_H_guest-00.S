@@ -40,7 +40,7 @@ RVTEST_BEGIN
 #define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
 #define PMP_MASK        ~PMP_REGION_SIZE
   RVTEST_PMP_SET_BACKGROUND x4
-#if (((__riscv_xlen == 64 && defined(UDB_SV39_VSMODE_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32_VSMODE_TRANSLATION))) && ((__riscv_xlen == 64 && defined(UDB_SV39X4_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32X4_TRANSLATION)))) && UDB_PMP_GRANULARITY <= 10 && UDB_NUM_USABLE_PMP_ENTRIES >= 12
+#if (((__riscv_xlen == 64 && defined(UDB_SV39_VSMODE_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32_VSMODE_TRANSLATION))) && ((__riscv_xlen == 64 && defined(UDB_SV39X4_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32X4_TRANSLATION)))) && UDB_PMP_GRANULARITY <= 12 && UDB_NUM_USABLE_PMP_ENTRIES >= 12
 #if __riscv_xlen == 64
 // Identity map the test image in both stages
   LA(x14, rvtest_code_begin)
@@ -423,29 +423,29 @@ RVTEST_BEGIN
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_jalr:
+PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_sw:
+PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_sw:
   sw x8, 0(x9)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_lw:
+PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_lw:
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_lw, PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_lw, PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_jalr:
+PMP_H_cg_cp_pmp_after_translation_vs_gva_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_sw:
+PMP_H_cg_cp_pmp_after_translation_vs_gva_g_sw:
   sw x14, 0(x6)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_lw:
+PMP_H_cg_cp_pmp_after_translation_vs_gva_g_lw:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_lw, PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_after_translation_vs_gva_g_lw, PMP_H_cg_cp_pmp_after_translation_vs_gva_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_VSMODE
 #ifdef ZAAMO_SUPPORTED
@@ -453,7 +453,7 @@ PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_lw:
   LI(x14, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vs_gva_vs_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vs_gva_vs_amoswap_w:
   amoswap.w x14, x8, (x9)
   .option pop
 #endif
@@ -461,17 +461,17 @@ PMP_H_guest_cg_cp_pmp_amo_vs_gva_vs_amoswap_w:
   LI(x8, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vs_gva_vs_lr_w:
+PMP_H_cg_cp_pmp_lr_vs_gva_vs_lr_w:
   lr.w x8, (x9)
   .option pop
 #endif
 #ifdef ZAAMO_SUPPORTED
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_amo_vs_gva_vs_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vs_gva_vs_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_amo_vs_gva_vs_amoswap_w, PMP_H_cg_cp_pmp_amo_vs_gva_vs_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_lr_vs_gva_vs_lr_w, PMP_H_guest_cg_cp_pmp_lr_vs_gva_vs_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_lr_vs_gva_vs_lr_w, PMP_H_cg_cp_pmp_lr_vs_gva_vs_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_VSMODE
@@ -480,7 +480,7 @@ PMP_H_guest_cg_cp_pmp_lr_vs_gva_vs_lr_w:
   LI(x14, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vs_gva_g_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vs_gva_g_amoswap_w:
   amoswap.w x14, x8, (x6)
   .option pop
 #endif
@@ -488,17 +488,17 @@ PMP_H_guest_cg_cp_pmp_amo_vs_gva_g_amoswap_w:
   LI(x8, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vs_gva_g_lr_w:
+PMP_H_cg_cp_pmp_lr_vs_gva_g_lr_w:
   lr.w x8, (x6)
   .option pop
 #endif
 #ifdef ZAAMO_SUPPORTED
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_amo_vs_gva_g_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vs_gva_g_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_amo_vs_gva_g_amoswap_w, PMP_H_cg_cp_pmp_amo_vs_gva_g_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_lr_vs_gva_g_lr_w, PMP_H_guest_cg_cp_pmp_lr_vs_gva_g_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_lr_vs_gva_g_lr_w, PMP_H_cg_cp_pmp_lr_vs_gva_g_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies the supervisor physical address
@@ -531,29 +531,29 @@ PMP_H_guest_cg_cp_pmp_lr_vs_gva_g_lr_w:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_jalr:
+PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_sw:
+PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_sw:
   sw x8, 0(x9)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_lw:
+PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_lw:
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_lw, PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_lw, PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_jalr:
+PMP_H_cg_cp_pmp_after_translation_vs_spa_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_sw:
+PMP_H_cg_cp_pmp_after_translation_vs_spa_g_sw:
   sw x13, 0(x6)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_lw:
+PMP_H_cg_cp_pmp_after_translation_vs_spa_g_lw:
   lw x13, 0(x6)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_lw, PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_after_translation_vs_spa_g_lw, PMP_H_cg_cp_pmp_after_translation_vs_spa_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_VSMODE
 #ifdef ZAAMO_SUPPORTED
@@ -561,7 +561,7 @@ PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_lw:
   LI(x13, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vs_spa_vs_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vs_spa_vs_amoswap_w:
   amoswap.w x13, x8, (x9)
   .option pop
 #endif
@@ -569,17 +569,17 @@ PMP_H_guest_cg_cp_pmp_amo_vs_spa_vs_amoswap_w:
   LI(x8, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_vs_lr_w:
+PMP_H_cg_cp_pmp_lr_vs_spa_vs_lr_w:
   lr.w x8, (x9)
   .option pop
 #endif
 #ifdef ZAAMO_SUPPORTED
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_amo_vs_spa_vs_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vs_spa_vs_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_amo_vs_spa_vs_amoswap_w, PMP_H_cg_cp_pmp_amo_vs_spa_vs_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_lr_vs_spa_vs_lr_w, PMP_H_guest_cg_cp_pmp_lr_vs_spa_vs_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_lr_vs_spa_vs_lr_w, PMP_H_cg_cp_pmp_lr_vs_spa_vs_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_VSMODE
@@ -588,7 +588,7 @@ PMP_H_guest_cg_cp_pmp_lr_vs_spa_vs_lr_w:
   LI(x13, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vs_spa_g_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vs_spa_g_amoswap_w:
   amoswap.w x13, x8, (x6)
   .option pop
 #endif
@@ -596,17 +596,17 @@ PMP_H_guest_cg_cp_pmp_amo_vs_spa_g_amoswap_w:
   LI(x8, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_g_lr_w:
+PMP_H_cg_cp_pmp_lr_vs_spa_g_lr_w:
   lr.w x8, (x6)
   .option pop
 #endif
 #ifdef ZAAMO_SUPPORTED
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_amo_vs_spa_g_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vs_spa_g_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_amo_vs_spa_g_amoswap_w, PMP_H_cg_cp_pmp_amo_vs_spa_g_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_lr_vs_spa_g_lr_w, PMP_H_guest_cg_cp_pmp_lr_vs_spa_g_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_lr_vs_spa_g_lr_w, PMP_H_cg_cp_pmp_lr_vs_spa_g_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
 #if __riscv_xlen == 64
@@ -640,29 +640,29 @@ PMP_H_guest_cg_cp_pmp_lr_vs_spa_g_lr_w:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_sw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_sw:
   sw x13, 0(x9)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_lw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_lw:
   lw x13, 0(x9)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_lw, PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_jalr:
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_sw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_sw:
   sw x14, 0(x6)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_lw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_lw:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_lw, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_lw, PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 #endif // __riscv_xlen == 64
 // VS-mode: PMP denies the VS-stage table vlvl0; accesses whose walk reads it raise access faults
@@ -695,29 +695,29 @@ PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_sw:
   sw x14, 0(x9)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_lw:
   lw x14, 0(x9)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_sw:
   sw x8, 0(x6)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_lw:
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_lw, PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 #if __riscv_xlen == 64
 // VS-mode: PMP denies the G-stage table hlvl1; accesses whose walk reads it raise access faults
@@ -750,29 +750,29 @@ PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_sw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_sw:
   sw x13, 0(x9)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_lw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_lw:
   lw x13, 0(x9)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_lw, PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_jalr:
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_sw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_sw:
   sw x8, 0(x6)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_lw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_lw:
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_lw, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_lw, PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 #endif // __riscv_xlen == 64
 // VS-mode: PMP denies the G-stage table hlvl0; accesses whose walk reads it raise access faults
@@ -805,29 +805,29 @@ PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_sw:
   sw x13, 0(x9)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_lw:
   lw x13, 0(x9)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_sw:
   sw x8, 0(x6)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_lw:
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_lw, PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies the guest physical address of vlvl0, which does not affect the accesses
 // Clear every pmpcfg and pmpaddr CSR
@@ -859,29 +859,29 @@ PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_jalr:
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_sw:
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_sw:
   sw x8, 0(x9)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw:
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw:
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw, PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw, PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_jalr:
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_sw:
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_sw:
   sw x14, 0(x6)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw:
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw, PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw, PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies the supervisor physical address; R-only leaves fault jalr, sw and amoswap.w, and lw and lr.w raise access faults
 #if __riscv_xlen == 64
@@ -948,29 +948,29 @@ PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_sw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_sw:
   sw x8, 0(x9)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw:
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_sw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_sw:
   sw x13, 0(x6)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw:
   lw x13, 0(x6)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_VSMODE
 #ifdef ZAAMO_SUPPORTED
@@ -978,7 +978,7 @@ PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw:
   LI(x13, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w:
+PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w:
   amoswap.w x13, x8, (x9)
   .option pop
 #endif
@@ -986,17 +986,17 @@ PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w:
   LI(x8, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w:
+PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w:
   lr.w x8, (x9)
   .option pop
 #endif
 #ifdef ZAAMO_SUPPORTED
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w, PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w, PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w, PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
   RVTEST_TSBI_GOTO_VSMODE
@@ -1005,7 +1005,7 @@ PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w:
   LI(x13, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w:
+PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w:
   amoswap.w x13, x8, (x6)
   .option pop
 #endif
@@ -1013,17 +1013,17 @@ PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w:
   LI(x8, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w:
+PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w:
   lr.w x8, (x6)
   .option pop
 #endif
 #ifdef ZAAMO_SUPPORTED
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w, PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w, PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w, PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies the supervisor physical address; X-only leaves fault sw and lw, and jalr raises an access fault
@@ -1091,29 +1091,29 @@ PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_sw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_sw:
   sw x13, 0(x9)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw:
   lw x13, 0(x9)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_sw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_sw:
   sw x8, 0(x6)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw:
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw:
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw, PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies vlvl0, which holds the invalid VS-stage leaf, so its read raises an access fault first
 #if __riscv_xlen == 64
@@ -1180,29 +1180,29 @@ PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_sw:
   sw x13, 0(x9)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw:
   lw x13, 0(x9)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_sw:
   sw x14, 0(x6)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // VS-mode: PMP denies hlvl0, which holds the invalid G-stage leaf, so its read raises an access fault first
 #if __riscv_xlen == 64
@@ -1269,29 +1269,29 @@ PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VSMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x8, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_sw:
   sw x8, 0(x9)
   LI(x8, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw:
   lw x8, 0(x9)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw_str)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_jalr:
   jalr x0, 0(x6)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_sw:
   sw x14, 0(x6)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw, PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 // Clear every pmpcfg and pmpaddr CSR
   .set pmpcfgi, CSR_PMPCFG0
@@ -1693,37 +1693,37 @@ PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_jalr:
+PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_sw:
+PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_sw:
   sw x14, 0(x9)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_lw:
+PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_lw:
   lw x14, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_jalr:
+PMP_H_cg_cp_pmp_after_translation_vu_gva_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x6, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_sw:
+PMP_H_cg_cp_pmp_after_translation_vu_gva_g_sw:
   sw x6, 0(x8)
   LI(x6, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_lw:
+PMP_H_cg_cp_pmp_after_translation_vu_gva_g_lw:
   lw x6, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_lw, PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_lw, PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_lw_str)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_lw, PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_after_translation_vu_gva_g_lw, PMP_H_cg_cp_pmp_after_translation_vu_gva_g_lw_str)
   RVTEST_TSBI_GOTO_VUMODE
 #ifdef ZAAMO_SUPPORTED
   LI(x14, RVTEST_PMP_RET_ENCODING)
   LI(x6, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vu_gva_vs_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vu_gva_vs_amoswap_w:
   amoswap.w x6, x14, (x9)
   .option pop
 #endif
@@ -1731,18 +1731,18 @@ PMP_H_guest_cg_cp_pmp_amo_vu_gva_vs_amoswap_w:
   LI(x14, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vu_gva_vs_lr_w:
+PMP_H_cg_cp_pmp_lr_vu_gva_vs_lr_w:
   lr.w x14, (x9)
   .option pop
 #endif
   RVTEST_TSBI_GOTO_MMODE
 #ifdef ZAAMO_SUPPORTED
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_amo_vu_gva_vs_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vu_gva_vs_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_amo_vu_gva_vs_amoswap_w, PMP_H_cg_cp_pmp_amo_vu_gva_vs_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_lr_vu_gva_vs_lr_w, PMP_H_guest_cg_cp_pmp_lr_vu_gva_vs_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_lr_vu_gva_vs_lr_w, PMP_H_cg_cp_pmp_lr_vu_gva_vs_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
 #ifdef ZAAMO_SUPPORTED
@@ -1750,7 +1750,7 @@ PMP_H_guest_cg_cp_pmp_lr_vu_gva_vs_lr_w:
   LI(x6, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vu_gva_g_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vu_gva_g_amoswap_w:
   amoswap.w x6, x14, (x8)
   .option pop
 #endif
@@ -1758,18 +1758,18 @@ PMP_H_guest_cg_cp_pmp_amo_vu_gva_g_amoswap_w:
   LI(x14, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vu_gva_g_lr_w:
+PMP_H_cg_cp_pmp_lr_vu_gva_g_lr_w:
   lr.w x14, (x8)
   .option pop
 #endif
   RVTEST_TSBI_GOTO_MMODE
 #ifdef ZAAMO_SUPPORTED
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_amo_vu_gva_g_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vu_gva_g_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_amo_vu_gva_g_amoswap_w, PMP_H_cg_cp_pmp_amo_vu_gva_g_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_lr_vu_gva_g_lr_w, PMP_H_guest_cg_cp_pmp_lr_vu_gva_g_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_lr_vu_gva_g_lr_w, PMP_H_cg_cp_pmp_lr_vu_gva_g_lr_w_str)
 #endif
 // VU-mode: PMP denies the supervisor physical address
 // Clear every pmpcfg and pmpaddr CSR
@@ -1801,37 +1801,37 @@ PMP_H_guest_cg_cp_pmp_lr_vu_gva_g_lr_w:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_jalr:
+PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x6, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_sw:
+PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_sw:
   sw x6, 0(x9)
   LI(x6, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_lw:
+PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_lw:
   lw x6, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_jalr:
+PMP_H_cg_cp_pmp_after_translation_vu_spa_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_sw:
+PMP_H_cg_cp_pmp_after_translation_vu_spa_g_sw:
   sw x14, 0(x8)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_lw:
+PMP_H_cg_cp_pmp_after_translation_vu_spa_g_lw:
   lw x14, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_lw, PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_lw, PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_lw_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_lw, PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_after_translation_vu_spa_g_lw, PMP_H_cg_cp_pmp_after_translation_vu_spa_g_lw_str)
   RVTEST_TSBI_GOTO_VUMODE
 #ifdef ZAAMO_SUPPORTED
   LI(x6, RVTEST_PMP_RET_ENCODING)
   LI(x14, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vu_spa_vs_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vu_spa_vs_amoswap_w:
   amoswap.w x14, x6, (x9)
   .option pop
 #endif
@@ -1839,18 +1839,18 @@ PMP_H_guest_cg_cp_pmp_amo_vu_spa_vs_amoswap_w:
   LI(x6, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_vs_lr_w:
+PMP_H_cg_cp_pmp_lr_vu_spa_vs_lr_w:
   lr.w x6, (x9)
   .option pop
 #endif
   RVTEST_TSBI_GOTO_MMODE
 #ifdef ZAAMO_SUPPORTED
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_amo_vu_spa_vs_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vu_spa_vs_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_amo_vu_spa_vs_amoswap_w, PMP_H_cg_cp_pmp_amo_vu_spa_vs_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_lr_vu_spa_vs_lr_w, PMP_H_guest_cg_cp_pmp_lr_vu_spa_vs_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_lr_vu_spa_vs_lr_w, PMP_H_cg_cp_pmp_lr_vu_spa_vs_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
 #ifdef ZAAMO_SUPPORTED
@@ -1858,7 +1858,7 @@ PMP_H_guest_cg_cp_pmp_lr_vu_spa_vs_lr_w:
   LI(x14, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_vu_spa_g_amoswap_w:
+PMP_H_cg_cp_pmp_amo_vu_spa_g_amoswap_w:
   amoswap.w x14, x6, (x8)
   .option pop
 #endif
@@ -1866,18 +1866,18 @@ PMP_H_guest_cg_cp_pmp_amo_vu_spa_g_amoswap_w:
   LI(x6, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_g_lr_w:
+PMP_H_cg_cp_pmp_lr_vu_spa_g_lr_w:
   lr.w x6, (x8)
   .option pop
 #endif
   RVTEST_TSBI_GOTO_MMODE
 #ifdef ZAAMO_SUPPORTED
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_amo_vu_spa_g_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_vu_spa_g_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_amo_vu_spa_g_amoswap_w, PMP_H_cg_cp_pmp_amo_vu_spa_g_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_lr_vu_spa_g_lr_w, PMP_H_guest_cg_cp_pmp_lr_vu_spa_g_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_lr_vu_spa_g_lr_w, PMP_H_cg_cp_pmp_lr_vu_spa_g_lr_w_str)
 #endif
 #if __riscv_xlen == 64
 // VU-mode: PMP denies the VS-stage table vlvl1; accesses whose walk reads it raise access faults
@@ -1910,30 +1910,30 @@ PMP_H_guest_cg_cp_pmp_lr_vu_spa_g_lr_w:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x6, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_sw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_sw:
   sw x6, 0(x9)
   LI(x6, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_lw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_lw:
   lw x6, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_jalr:
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_sw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_sw:
   sw x14, 0(x8)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_lw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_lw:
   lw x14, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_lw, PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_lw_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_lw, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_lw, PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_lw_str)
 #endif // __riscv_xlen == 64
 // VU-mode: PMP denies the VS-stage table vlvl0; accesses whose walk reads it raise access faults
 // Clear every pmpcfg and pmpaddr CSR
@@ -1965,30 +1965,30 @@ PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x6, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_sw:
   sw x6, 0(x9)
   LI(x6, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_lw:
   lw x6, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_sw:
   sw x14, 0(x8)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_lw:
   lw x14, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_lw_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_lw, PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_lw_str)
 #if __riscv_xlen == 64
 // VU-mode: PMP denies the G-stage table hlvl1; accesses whose walk reads it raise access faults
 // Clear every pmpcfg and pmpaddr CSR
@@ -2020,30 +2020,30 @@ PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_sw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_sw:
   sw x14, 0(x9)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_lw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_lw:
   lw x14, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_jalr:
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_sw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_sw:
   sw x13, 0(x8)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_lw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_lw:
   lw x13, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_lw, PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_lw_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_lw, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_lw, PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_lw_str)
 #endif // __riscv_xlen == 64
 // VU-mode: PMP denies the G-stage table hlvl0; accesses whose walk reads it raise access faults
 // Clear every pmpcfg and pmpaddr CSR
@@ -2075,30 +2075,30 @@ PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_sw:
   sw x14, 0(x9)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_lw:
   lw x14, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x6, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_sw:
   sw x6, 0(x8)
   LI(x6, 42)
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_lw:
   lw x6, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_lw_str)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_lw, PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_lw_str)
 // VU-mode: PMP denies the guest physical address of vlvl0, which does not affect the accesses
 // Clear every pmpcfg and pmpaddr CSR
   .set pmpcfgi, CSR_PMPCFG0
@@ -2129,30 +2129,30 @@ PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_jalr:
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_sw:
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_sw:
   sw x13, 0(x9)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw:
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw:
   lw x13, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_jalr:
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_sw:
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_sw:
   sw x14, 0(x8)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw:
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw:
   lw x14, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw, PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw, PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw, PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw, PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw_str)
 // VU-mode: PMP denies the supervisor physical address; R-only leaves fault jalr, sw and amoswap.w, and lw and lr.w raise access faults
 #if __riscv_xlen == 64
   LA(x14, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
@@ -2218,37 +2218,37 @@ PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_sw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_sw:
   sw x13, 0(x9)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw:
   lw x13, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x6, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_sw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_sw:
   sw x6, 0(x8)
   LI(x6, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw:
   lw x6, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str)
   RVTEST_TSBI_GOTO_VUMODE
 #ifdef ZAAMO_SUPPORTED
   LI(x13, RVTEST_PMP_RET_ENCODING)
   LI(x6, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w:
+PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w:
   amoswap.w x6, x13, (x9)
   .option pop
 #endif
@@ -2256,18 +2256,18 @@ PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w:
   LI(x13, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w:
+PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w:
   lr.w x13, (x9)
   .option pop
 #endif
   RVTEST_TSBI_GOTO_MMODE
 #ifdef ZAAMO_SUPPORTED
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w, PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w, PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w, PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w_str)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
 #ifdef ZAAMO_SUPPORTED
@@ -2275,7 +2275,7 @@ PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w:
   LI(x6, 42)
   .option push
   .option arch, +zaamo
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w:
+PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w:
   amoswap.w x6, x13, (x8)
   .option pop
 #endif
@@ -2283,18 +2283,18 @@ PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w:
   LI(x13, 42)
   .option push
   .option arch, +zalrsc
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w:
+PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w:
   lr.w x13, (x8)
   .option pop
 #endif
   RVTEST_TSBI_GOTO_MMODE
 #ifdef ZAAMO_SUPPORTED
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w, PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w, PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w_str)
 #endif
 #ifdef ZALRSC_SUPPORTED
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w, PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w, PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w_str)
 #endif
 // VU-mode: PMP denies the supervisor physical address; X-only leaves fault sw and lw, and jalr raises an access fault
 #if __riscv_xlen == 64
@@ -2361,30 +2361,30 @@ PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw:
   sw x14, 0(x9)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw:
   lw x14, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw:
   sw x13, 0(x8)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw:
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw:
   lw x13, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw, PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw, PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str)
 // VU-mode: PMP denies vlvl0, which holds the invalid VS-stage leaf, so its read raises an access fault first
 #if __riscv_xlen == 64
   LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
@@ -2450,30 +2450,30 @@ PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw:
   sw x14, 0(x9)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw:
   lw x14, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x6, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw:
   sw x6, 0(x8)
   LI(x6, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw:
   lw x6, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str)
 // VU-mode: PMP denies hlvl0, which holds the invalid G-stage leaf, so its read raises an access fault first
 #if __riscv_xlen == 64
   LA(x14, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
@@ -2539,30 +2539,30 @@ PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw:
   RVTEST_FENCEI
   RVTEST_TSBI_GOTO_VUMODE
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_jalr:
   jalr x0, 0(x9)
 1:
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_sw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_sw:
   sw x14, 0(x9)
   LI(x14, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw:
   lw x14, 0(x9)
   LA(ra, 1f)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_jalr:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_jalr:
   jalr x0, 0(x8)
 1:
   LI(x13, RVTEST_PMP_RET_ENCODING)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_sw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_sw:
   sw x13, 0(x8)
   LI(x13, 42)
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw:
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw:
   lw x13, 0(x8)
   RVTEST_TSBI_GOTO_MMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw, PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw, PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw_str)
 // Clear every pmpcfg and pmpaddr CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
@@ -2646,162 +2646,162 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_jalr_str: .string "\"test: 157; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_gva_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_sw_str: .string "\"test: 158; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_gva_vs_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_vs_lw_str: .string "\"test: 159; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_gva_vs_lw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_jalr_str: .string "\"test: 160; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_gva_g_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_sw_str: .string "\"test: 161; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_gva_g_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_gva_g_lw_str: .string "\"test: 162; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_gva_g_lw\""
-PMP_H_guest_cg_cp_pmp_amo_vs_gva_vs_amoswap_w_str: .string "\"test: 163; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vs_gva_vs_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vs_gva_vs_lr_w_str: .string "\"test: 164; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vs_gva_vs_lr.w\""
-PMP_H_guest_cg_cp_pmp_amo_vs_gva_g_amoswap_w_str: .string "\"test: 165; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vs_gva_g_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vs_gva_g_lr_w_str: .string "\"test: 166; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vs_gva_g_lr.w\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_jalr_str: .string "\"test: 167; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_spa_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_sw_str: .string "\"test: 168; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_spa_vs_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_vs_lw_str: .string "\"test: 169; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_spa_vs_lw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_jalr_str: .string "\"test: 170; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_spa_g_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_sw_str: .string "\"test: 171; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_spa_g_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vs_spa_g_lw_str: .string "\"test: 172; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vs_spa_g_lw\""
-PMP_H_guest_cg_cp_pmp_amo_vs_spa_vs_amoswap_w_str: .string "\"test: 173; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vs_spa_vs_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_vs_lr_w_str: .string "\"test: 174; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vs_spa_vs_lr.w\""
-PMP_H_guest_cg_cp_pmp_amo_vs_spa_g_amoswap_w_str: .string "\"test: 175; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vs_spa_g_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_g_lr_w_str: .string "\"test: 176; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vs_spa_g_lr.w\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_jalr_str: .string "\"test: 177; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl1_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_sw_str: .string "\"test: 178; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl1_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_vs_lw_str: .string "\"test: 179; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl1_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_jalr_str: .string "\"test: 180; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl1_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_sw_str: .string "\"test: 181; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl1_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl1_g_lw_str: .string "\"test: 182; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl1_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_jalr_str: .string "\"test: 183; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_sw_str: .string "\"test: 184; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_vs_lw_str: .string "\"test: 185; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_jalr_str: .string "\"test: 186; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_sw_str: .string "\"test: 187; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_vlvl0_g_lw_str: .string "\"test: 188; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_vlvl0_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_jalr_str: .string "\"test: 189; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl1_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_sw_str: .string "\"test: 190; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl1_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_vs_lw_str: .string "\"test: 191; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl1_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_jalr_str: .string "\"test: 192; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl1_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_sw_str: .string "\"test: 193; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl1_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl1_g_lw_str: .string "\"test: 194; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl1_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_jalr_str: .string "\"test: 195; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_sw_str: .string "\"test: 196; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_vs_lw_str: .string "\"test: 197; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_jalr_str: .string "\"test: 198; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_sw_str: .string "\"test: 199; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vs_hlvl0_g_lw_str: .string "\"test: 200; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vs_hlvl0_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_jalr_str: .string "\"test: 201; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_sw_str: .string "\"test: 202; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw_str: .string "\"test: 203; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_jalr_str: .string "\"test: 204; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_sw_str: .string "\"test: 205; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw_str: .string "\"test: 206; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_lw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_jalr_str: .string "\"test: 207; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_sw_str: .string "\"test: 208; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw_str: .string "\"test: 209; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_jalr_str: .string "\"test: 210; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_sw_str: .string "\"test: 211; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str: .string "\"test: 212; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_lw\""
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w_str: .string "\"test: 213; cg: PMP_H_guest_cg; cp: cp_pmp_amo_pf_priority; bin: vs_spa_leaf_r_vs_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w_str: .string "\"test: 214; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vs_spa_leaf_r_vs_lr.w\""
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w_str: .string "\"test: 215; cg: PMP_H_guest_cg; cp: cp_pmp_amo_pf_priority; bin: vs_spa_leaf_r_g_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w_str: .string "\"test: 216; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vs_spa_leaf_r_g_lr.w\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_jalr_str: .string "\"test: 217; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_sw_str: .string "\"test: 218; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str: .string "\"test: 219; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_jalr_str: .string "\"test: 220; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_sw_str: .string "\"test: 221; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str: .string "\"test: 222; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 223; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 224; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 225; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 226; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 227; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 228; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_jalr_str: .string "\"test: 229; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_sw_str: .string "\"test: 230; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw_str: .string "\"test: 231; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_jalr_str: .string "\"test: 232; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_sw_str: .string "\"test: 233; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw_str: .string "\"test: 234; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_g_lw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_jalr_str: .string "\"test: 235; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_gva_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_sw_str: .string "\"test: 236; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_gva_vs_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_vs_lw_str: .string "\"test: 237; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_gva_vs_lw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_jalr_str: .string "\"test: 238; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_gva_g_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_sw_str: .string "\"test: 239; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_gva_g_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_gva_g_lw_str: .string "\"test: 240; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_gva_g_lw\""
-PMP_H_guest_cg_cp_pmp_amo_vu_gva_vs_amoswap_w_str: .string "\"test: 241; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vu_gva_vs_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vu_gva_vs_lr_w_str: .string "\"test: 242; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vu_gva_vs_lr.w\""
-PMP_H_guest_cg_cp_pmp_amo_vu_gva_g_amoswap_w_str: .string "\"test: 243; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vu_gva_g_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vu_gva_g_lr_w_str: .string "\"test: 244; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vu_gva_g_lr.w\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_jalr_str: .string "\"test: 245; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_spa_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_sw_str: .string "\"test: 246; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_spa_vs_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_vs_lw_str: .string "\"test: 247; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_spa_vs_lw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_jalr_str: .string "\"test: 248; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_spa_g_jalr\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_sw_str: .string "\"test: 249; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_spa_g_sw\""
-PMP_H_guest_cg_cp_pmp_after_translation_vu_spa_g_lw_str: .string "\"test: 250; cg: PMP_H_guest_cg; cp: cp_pmp_after_translation; bin: vu_spa_g_lw\""
-PMP_H_guest_cg_cp_pmp_amo_vu_spa_vs_amoswap_w_str: .string "\"test: 251; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vu_spa_vs_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_vs_lr_w_str: .string "\"test: 252; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vu_spa_vs_lr.w\""
-PMP_H_guest_cg_cp_pmp_amo_vu_spa_g_amoswap_w_str: .string "\"test: 253; cg: PMP_H_guest_cg; cp: cp_pmp_amo; bin: vu_spa_g_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_g_lr_w_str: .string "\"test: 254; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vu_spa_g_lr.w\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_jalr_str: .string "\"test: 255; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl1_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_sw_str: .string "\"test: 256; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl1_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_vs_lw_str: .string "\"test: 257; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl1_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_jalr_str: .string "\"test: 258; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl1_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_sw_str: .string "\"test: 259; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl1_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl1_g_lw_str: .string "\"test: 260; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl1_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_jalr_str: .string "\"test: 261; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_sw_str: .string "\"test: 262; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_vs_lw_str: .string "\"test: 263; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_jalr_str: .string "\"test: 264; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_sw_str: .string "\"test: 265; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_vlvl0_g_lw_str: .string "\"test: 266; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_vlvl0_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_jalr_str: .string "\"test: 267; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl1_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_sw_str: .string "\"test: 268; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl1_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_vs_lw_str: .string "\"test: 269; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl1_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_jalr_str: .string "\"test: 270; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl1_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_sw_str: .string "\"test: 271; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl1_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl1_g_lw_str: .string "\"test: 272; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl1_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_jalr_str: .string "\"test: 273; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_sw_str: .string "\"test: 274; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_vs_lw_str: .string "\"test: 275; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_jalr_str: .string "\"test: 276; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_sw_str: .string "\"test: 277; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_vu_hlvl0_g_lw_str: .string "\"test: 278; cg: PMP_H_guest_cg; cp: cp_pmp_pt; bin: vu_hlvl0_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_jalr_str: .string "\"test: 279; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_sw_str: .string "\"test: 280; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw_str: .string "\"test: 281; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_jalr_str: .string "\"test: 282; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_sw_str: .string "\"test: 283; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw_str: .string "\"test: 284; cg: PMP_H_guest_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_lw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_jalr_str: .string "\"test: 285; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_sw_str: .string "\"test: 286; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str: .string "\"test: 287; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_jalr_str: .string "\"test: 288; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_sw_str: .string "\"test: 289; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str: .string "\"test: 290; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_lw\""
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w_str: .string "\"test: 291; cg: PMP_H_guest_cg; cp: cp_pmp_amo_pf_priority; bin: vu_spa_leaf_r_vs_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w_str: .string "\"test: 292; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vu_spa_leaf_r_vs_lr.w\""
-PMP_H_guest_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w_str: .string "\"test: 293; cg: PMP_H_guest_cg; cp: cp_pmp_amo_pf_priority; bin: vu_spa_leaf_r_g_amoswap.w\""
-PMP_H_guest_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w_str: .string "\"test: 294; cg: PMP_H_guest_cg; cp: cp_pmp_lr; bin: vu_spa_leaf_r_g_lr.w\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_jalr_str: .string "\"test: 295; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw_str: .string "\"test: 296; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str: .string "\"test: 297; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr_str: .string "\"test: 298; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw_str: .string "\"test: 299; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_sw\""
-PMP_H_guest_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str: .string "\"test: 300; cg: PMP_H_guest_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 301; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 302; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 303; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 304; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 305; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 306; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_jalr_str: .string "\"test: 307; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_vs_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_sw_str: .string "\"test: 308; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_vs_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw_str: .string "\"test: 309; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_vs_lw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_jalr_str: .string "\"test: 310; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_g_jalr\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_sw_str: .string "\"test: 311; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_g_sw\""
-PMP_H_guest_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw_str: .string "\"test: 312; cg: PMP_H_guest_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_g_lw\""
+PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_jalr_str: .string "\"test: 157; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_gva_vs_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_sw_str: .string "\"test: 158; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_gva_vs_sw\""
+PMP_H_cg_cp_pmp_after_translation_vs_gva_vs_lw_str: .string "\"test: 159; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_gva_vs_lw\""
+PMP_H_cg_cp_pmp_after_translation_vs_gva_g_jalr_str: .string "\"test: 160; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_gva_g_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vs_gva_g_sw_str: .string "\"test: 161; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_gva_g_sw\""
+PMP_H_cg_cp_pmp_after_translation_vs_gva_g_lw_str: .string "\"test: 162; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_gva_g_lw\""
+PMP_H_cg_cp_pmp_amo_vs_gva_vs_amoswap_w_str: .string "\"test: 163; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vs_gva_vs_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vs_gva_vs_lr_w_str: .string "\"test: 164; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vs_gva_vs_lr.w\""
+PMP_H_cg_cp_pmp_amo_vs_gva_g_amoswap_w_str: .string "\"test: 165; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vs_gva_g_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vs_gva_g_lr_w_str: .string "\"test: 166; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vs_gva_g_lr.w\""
+PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_jalr_str: .string "\"test: 167; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_spa_vs_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_sw_str: .string "\"test: 168; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_spa_vs_sw\""
+PMP_H_cg_cp_pmp_after_translation_vs_spa_vs_lw_str: .string "\"test: 169; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_spa_vs_lw\""
+PMP_H_cg_cp_pmp_after_translation_vs_spa_g_jalr_str: .string "\"test: 170; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_spa_g_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vs_spa_g_sw_str: .string "\"test: 171; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_spa_g_sw\""
+PMP_H_cg_cp_pmp_after_translation_vs_spa_g_lw_str: .string "\"test: 172; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vs_spa_g_lw\""
+PMP_H_cg_cp_pmp_amo_vs_spa_vs_amoswap_w_str: .string "\"test: 173; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vs_spa_vs_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vs_spa_vs_lr_w_str: .string "\"test: 174; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vs_spa_vs_lr.w\""
+PMP_H_cg_cp_pmp_amo_vs_spa_g_amoswap_w_str: .string "\"test: 175; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vs_spa_g_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vs_spa_g_lr_w_str: .string "\"test: 176; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vs_spa_g_lr.w\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_jalr_str: .string "\"test: 177; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl1_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_sw_str: .string "\"test: 178; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl1_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_vs_lw_str: .string "\"test: 179; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl1_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_jalr_str: .string "\"test: 180; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl1_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_sw_str: .string "\"test: 181; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl1_g_sw\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl1_g_lw_str: .string "\"test: 182; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl1_g_lw\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_jalr_str: .string "\"test: 183; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_sw_str: .string "\"test: 184; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_vs_lw_str: .string "\"test: 185; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_jalr_str: .string "\"test: 186; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_sw_str: .string "\"test: 187; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_vs_vlvl0_g_lw_str: .string "\"test: 188; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_vlvl0_g_lw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_jalr_str: .string "\"test: 189; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl1_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_sw_str: .string "\"test: 190; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl1_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_vs_lw_str: .string "\"test: 191; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl1_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_jalr_str: .string "\"test: 192; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl1_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_sw_str: .string "\"test: 193; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl1_g_sw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl1_g_lw_str: .string "\"test: 194; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl1_g_lw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_jalr_str: .string "\"test: 195; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_sw_str: .string "\"test: 196; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_vs_lw_str: .string "\"test: 197; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_jalr_str: .string "\"test: 198; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_sw_str: .string "\"test: 199; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_vs_hlvl0_g_lw_str: .string "\"test: 200; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vs_hlvl0_g_lw\""
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_jalr_str: .string "\"test: 201; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_sw_str: .string "\"test: 202; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_sw\""
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_vs_lw_str: .string "\"test: 203; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_vs_lw\""
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_jalr_str: .string "\"test: 204; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_jalr\""
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_sw_str: .string "\"test: 205; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_sw\""
+PMP_H_cg_cp_pmp_pt_gpa_vs_vlvl0_gpa_g_lw_str: .string "\"test: 206; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vs_vlvl0_gpa_g_lw\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_jalr_str: .string "\"test: 207; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_sw_str: .string "\"test: 208; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_vs_lw_str: .string "\"test: 209; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_vs_lw\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_jalr_str: .string "\"test: 210; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_sw_str: .string "\"test: 211; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_r_g_lw_str: .string "\"test: 212; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_r_g_lw\""
+PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_vs_amoswap_w_str: .string "\"test: 213; cg: PMP_H_cg; cp: cp_pmp_amo_pf_priority; bin: vs_spa_leaf_r_vs_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_vs_lr_w_str: .string "\"test: 214; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vs_spa_leaf_r_vs_lr.w\""
+PMP_H_cg_cp_pmp_amo_pf_priority_vs_spa_leaf_r_g_amoswap_w_str: .string "\"test: 215; cg: PMP_H_cg; cp: cp_pmp_amo_pf_priority; bin: vs_spa_leaf_r_g_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vs_spa_leaf_r_g_lr_w_str: .string "\"test: 216; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vs_spa_leaf_r_g_lr.w\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_jalr_str: .string "\"test: 217; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_sw_str: .string "\"test: 218; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_vs_lw_str: .string "\"test: 219; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_vs_lw\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_jalr_str: .string "\"test: 220; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_sw_str: .string "\"test: 221; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vs_spa_leaf_x_g_lw_str: .string "\"test: 222; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vs_spa_leaf_x_g_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 223; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 224; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 225; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 226; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 227; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 228; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_vlvl0_g_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_jalr_str: .string "\"test: 229; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_sw_str: .string "\"test: 230; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_vs_lw_str: .string "\"test: 231; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_jalr_str: .string "\"test: 232; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_sw_str: .string "\"test: 233; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vs_leaf_invalid_hlvl0_g_lw_str: .string "\"test: 234; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vs_leaf_invalid_hlvl0_g_lw\""
+PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_jalr_str: .string "\"test: 235; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_gva_vs_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_sw_str: .string "\"test: 236; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_gva_vs_sw\""
+PMP_H_cg_cp_pmp_after_translation_vu_gva_vs_lw_str: .string "\"test: 237; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_gva_vs_lw\""
+PMP_H_cg_cp_pmp_after_translation_vu_gva_g_jalr_str: .string "\"test: 238; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_gva_g_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vu_gva_g_sw_str: .string "\"test: 239; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_gva_g_sw\""
+PMP_H_cg_cp_pmp_after_translation_vu_gva_g_lw_str: .string "\"test: 240; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_gva_g_lw\""
+PMP_H_cg_cp_pmp_amo_vu_gva_vs_amoswap_w_str: .string "\"test: 241; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vu_gva_vs_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vu_gva_vs_lr_w_str: .string "\"test: 242; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vu_gva_vs_lr.w\""
+PMP_H_cg_cp_pmp_amo_vu_gva_g_amoswap_w_str: .string "\"test: 243; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vu_gva_g_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vu_gva_g_lr_w_str: .string "\"test: 244; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vu_gva_g_lr.w\""
+PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_jalr_str: .string "\"test: 245; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_spa_vs_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_sw_str: .string "\"test: 246; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_spa_vs_sw\""
+PMP_H_cg_cp_pmp_after_translation_vu_spa_vs_lw_str: .string "\"test: 247; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_spa_vs_lw\""
+PMP_H_cg_cp_pmp_after_translation_vu_spa_g_jalr_str: .string "\"test: 248; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_spa_g_jalr\""
+PMP_H_cg_cp_pmp_after_translation_vu_spa_g_sw_str: .string "\"test: 249; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_spa_g_sw\""
+PMP_H_cg_cp_pmp_after_translation_vu_spa_g_lw_str: .string "\"test: 250; cg: PMP_H_cg; cp: cp_pmp_after_translation; bin: vu_spa_g_lw\""
+PMP_H_cg_cp_pmp_amo_vu_spa_vs_amoswap_w_str: .string "\"test: 251; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vu_spa_vs_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vu_spa_vs_lr_w_str: .string "\"test: 252; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vu_spa_vs_lr.w\""
+PMP_H_cg_cp_pmp_amo_vu_spa_g_amoswap_w_str: .string "\"test: 253; cg: PMP_H_cg; cp: cp_pmp_amo; bin: vu_spa_g_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vu_spa_g_lr_w_str: .string "\"test: 254; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vu_spa_g_lr.w\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_jalr_str: .string "\"test: 255; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl1_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_sw_str: .string "\"test: 256; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl1_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_vs_lw_str: .string "\"test: 257; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl1_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_jalr_str: .string "\"test: 258; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl1_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_sw_str: .string "\"test: 259; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl1_g_sw\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl1_g_lw_str: .string "\"test: 260; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl1_g_lw\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_jalr_str: .string "\"test: 261; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_sw_str: .string "\"test: 262; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_vs_lw_str: .string "\"test: 263; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_jalr_str: .string "\"test: 264; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_sw_str: .string "\"test: 265; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_vu_vlvl0_g_lw_str: .string "\"test: 266; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_vlvl0_g_lw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_jalr_str: .string "\"test: 267; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl1_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_sw_str: .string "\"test: 268; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl1_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_vs_lw_str: .string "\"test: 269; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl1_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_jalr_str: .string "\"test: 270; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl1_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_sw_str: .string "\"test: 271; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl1_g_sw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl1_g_lw_str: .string "\"test: 272; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl1_g_lw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_jalr_str: .string "\"test: 273; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_sw_str: .string "\"test: 274; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_vs_lw_str: .string "\"test: 275; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_jalr_str: .string "\"test: 276; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_sw_str: .string "\"test: 277; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_vu_hlvl0_g_lw_str: .string "\"test: 278; cg: PMP_H_cg; cp: cp_pmp_pt; bin: vu_hlvl0_g_lw\""
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_jalr_str: .string "\"test: 279; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_sw_str: .string "\"test: 280; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_sw\""
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_vs_lw_str: .string "\"test: 281; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_vs_lw\""
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_jalr_str: .string "\"test: 282; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_jalr\""
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_sw_str: .string "\"test: 283; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_sw\""
+PMP_H_cg_cp_pmp_pt_gpa_vu_vlvl0_gpa_g_lw_str: .string "\"test: 284; cg: PMP_H_cg; cp: cp_pmp_pt_gpa; bin: vu_vlvl0_gpa_g_lw\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_jalr_str: .string "\"test: 285; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_sw_str: .string "\"test: 286; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_vs_lw_str: .string "\"test: 287; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_vs_lw\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_jalr_str: .string "\"test: 288; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_sw_str: .string "\"test: 289; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_r_g_lw_str: .string "\"test: 290; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_r_g_lw\""
+PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_vs_amoswap_w_str: .string "\"test: 291; cg: PMP_H_cg; cp: cp_pmp_amo_pf_priority; bin: vu_spa_leaf_r_vs_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_vs_lr_w_str: .string "\"test: 292; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vu_spa_leaf_r_vs_lr.w\""
+PMP_H_cg_cp_pmp_amo_pf_priority_vu_spa_leaf_r_g_amoswap_w_str: .string "\"test: 293; cg: PMP_H_cg; cp: cp_pmp_amo_pf_priority; bin: vu_spa_leaf_r_g_amoswap.w\""
+PMP_H_cg_cp_pmp_lr_vu_spa_leaf_r_g_lr_w_str: .string "\"test: 294; cg: PMP_H_cg; cp: cp_pmp_lr; bin: vu_spa_leaf_r_g_lr.w\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_jalr_str: .string "\"test: 295; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_sw_str: .string "\"test: 296; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_vs_lw_str: .string "\"test: 297; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_vs_lw\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_jalr_str: .string "\"test: 298; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_jalr\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_sw_str: .string "\"test: 299; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_sw\""
+PMP_H_cg_cp_pmp_pf_priority_vu_spa_leaf_x_g_lw_str: .string "\"test: 300; cg: PMP_H_cg; cp: cp_pmp_pf_priority; bin: vu_spa_leaf_x_g_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_jalr_str: .string "\"test: 301; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_sw_str: .string "\"test: 302; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_vs_lw_str: .string "\"test: 303; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_jalr_str: .string "\"test: 304; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_sw_str: .string "\"test: 305; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_vlvl0_g_lw_str: .string "\"test: 306; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_vlvl0_g_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_jalr_str: .string "\"test: 307; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_vs_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_sw_str: .string "\"test: 308; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_vs_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_vs_lw_str: .string "\"test: 309; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_vs_lw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_jalr_str: .string "\"test: 310; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_g_jalr\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_sw_str: .string "\"test: 311; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_g_sw\""
+PMP_H_cg_cp_pmp_pt_priority_vu_leaf_invalid_hlvl0_g_lw_str: .string "\"test: 312; cg: PMP_H_cg; cp: cp_pmp_pt_priority; bin: vu_leaf_invalid_hlvl0_g_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

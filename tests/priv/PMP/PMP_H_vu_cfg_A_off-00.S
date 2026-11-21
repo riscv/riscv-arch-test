@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// PMP_H cp_cfg_A_off_jalr, cp_cfg_A_off_lw and cp_cfg_A_off_sw
+// PMPU cp_cfg_A_off_jalr, cp_cfg_A_off_lw and cp_cfg_A_off_sw
 //   {jalr, sw, lw} from VU mode at a region whose entry has A = OFF, XWR = 000 and pmpaddr = all ones; all succeed.
 /////////////////////////////////
 
@@ -59,21 +59,21 @@ RVTEST_BEGIN
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMP_H_cg_cp_cfg_A_off_jalr_off_1_jalr:
+PMP_U_cg_cp_cfg_A_off_jalr_off_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_cfg_A_off_jalr_off_1_jalr, PMP_H_cg_cp_cfg_A_off_jalr_off_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_cfg_A_off_jalr_off_1_jalr, PMP_U_cg_cp_cfg_A_off_jalr_off_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMP_H_cg_cp_cfg_A_off_sw_off_2_sw:
+PMP_U_cg_cp_cfg_A_off_sw_off_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_cfg_A_off_sw_off_2_sw, PMP_H_cg_cp_cfg_A_off_sw_off_2_sw_str)
-PMP_H_cg_cp_cfg_A_off_lw_off_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_cfg_A_off_sw_off_2_sw, PMP_U_cg_cp_cfg_A_off_sw_off_2_sw_str)
+PMP_U_cg_cp_cfg_A_off_lw_off_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_cfg_A_off_lw_off_3_lw, PMP_H_cg_cp_cfg_A_off_lw_off_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_cfg_A_off_lw_off_3_lw, PMP_U_cg_cp_cfg_A_off_lw_off_3_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -106,9 +106,9 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_H_cg_cp_cfg_A_off_jalr_off_1_jalr_str: .string "\"test: 174; cg: PMP_H_cg; cp: cp_cfg_A_off_jalr; bin: off_1_jalr\""
-PMP_H_cg_cp_cfg_A_off_sw_off_2_sw_str: .string "\"test: 175; cg: PMP_H_cg; cp: cp_cfg_A_off_sw; bin: off_2_sw\""
-PMP_H_cg_cp_cfg_A_off_lw_off_3_lw_str: .string "\"test: 176; cg: PMP_H_cg; cp: cp_cfg_A_off_lw; bin: off_3_lw\""
+PMP_U_cg_cp_cfg_A_off_jalr_off_1_jalr_str: .string "\"test: 174; cg: PMP_U_cg; cp: cp_cfg_A_off_jalr; bin: off_1_jalr\""
+PMP_U_cg_cp_cfg_A_off_sw_off_2_sw_str: .string "\"test: 175; cg: PMP_U_cg; cp: cp_cfg_A_off_sw; bin: off_2_sw\""
+PMP_U_cg_cp_cfg_A_off_lw_off_3_lw_str: .string "\"test: 176; cg: PMP_U_cg; cp: cp_cfg_A_off_lw; bin: off_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

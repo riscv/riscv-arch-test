@@ -40,7 +40,7 @@ RVTEST_BEGIN
 #define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
 #define PMP_MASK        ~PMP_REGION_SIZE
   RVTEST_PMP_SET_BACKGROUND x4
-#if (((__riscv_xlen == 64 && defined(UDB_SV39_VSMODE_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32_VSMODE_TRANSLATION))) && ((__riscv_xlen == 64 && defined(UDB_SV39X4_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32X4_TRANSLATION)))) && UDB_PMP_GRANULARITY <= 10 && UDB_NUM_USABLE_PMP_ENTRIES >= 12
+#if (((__riscv_xlen == 64 && defined(UDB_SV39_VSMODE_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32_VSMODE_TRANSLATION))) && ((__riscv_xlen == 64 && defined(UDB_SV39X4_TRANSLATION)) || (__riscv_xlen == 32 && defined(UDB_SV32X4_TRANSLATION)))) && UDB_PMP_GRANULARITY <= 12 && UDB_NUM_USABLE_PMP_ENTRIES >= 12
 #if __riscv_xlen == 64
 // Identity map the test image in both stages
   LA(x13, rvtest_code_begin)
@@ -403,31 +403,31 @@ RVTEST_BEGIN
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_none_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_none_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_none_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_none_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_none_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_none_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_none_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_none_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
 // HS-mode: PMP denies the VS-stage table Vroot; accesses whose walk reads it raise access faults
 // Clear every pmpcfg and pmpaddr CSR
@@ -458,31 +458,31 @@ PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlvx_wu:
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
 #if __riscv_xlen == 64
 // HS-mode: PMP denies the VS-stage table vlvl1; accesses whose walk reads it raise access faults
@@ -514,31 +514,31 @@ PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu:
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
 #endif // __riscv_xlen == 64
 // HS-mode: PMP denies the VS-stage table vlvl0; accesses whose walk reads it raise access faults
@@ -570,31 +570,31 @@ PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu:
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
 // HS-mode: PMP denies the supervisor physical address
 // Clear every pmpcfg and pmpaddr CSR
@@ -625,31 +625,31 @@ PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu:
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_spa_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
 // HS-mode: PMP denies the G-stage table Hroot; accesses whose walk reads it raise access faults
 // Clear every pmpcfg and pmpaddr CSR
@@ -680,31 +680,31 @@ PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu:
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
 #if __riscv_xlen == 64
 // HS-mode: PMP denies the G-stage table hlvl1; accesses whose walk reads it raise access faults
@@ -736,31 +736,31 @@ PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu:
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
 #endif // __riscv_xlen == 64
 // HS-mode: PMP denies the G-stage table hlvl0; accesses whose walk reads it raise access faults
@@ -792,31 +792,31 @@ PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu:
   hfence.vvma
   RVTEST_TSBI_GOTO_SMODE
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hsv_w:
   hsv.w x14, (x6)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w:
   hlv.w x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu:
   hlvx.wu x14, (x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu_str)
   LI(x14, RVTEST_PMP_RET_ENCODING)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hsv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hsv_w:
   hsv.w x14, (x8)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w:
   hlv.w x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w_str)
   LI(x14, 42)
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu:
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu:
   hlvx.wu x14, (x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu, PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu, PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu_str)
   RVTEST_TSBI_GOTO_MMODE
   LI(x14, HSTATUS_SPVP)
   csrc hstatus, x14
@@ -903,54 +903,54 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hsv_w_str: .string "\"test: 337; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: none_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlv_w_str: .string "\"test: 338; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: none_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu_str: .string "\"test: 339; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: none_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hsv_w_str: .string "\"test: 340; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: none_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlv_w_str: .string "\"test: 341; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: none_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_none_g_hlvx_wu_str: .string "\"test: 342; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: none_g_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hsv_w_str: .string "\"test: 343; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Vroot_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w_str: .string "\"test: 344; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Vroot_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu_str: .string "\"test: 345; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Vroot_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hsv_w_str: .string "\"test: 346; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Vroot_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w_str: .string "\"test: 347; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Vroot_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu_str: .string "\"test: 348; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Vroot_g_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hsv_w_str: .string "\"test: 349; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w_str: .string "\"test: 350; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu_str: .string "\"test: 351; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hsv_w_str: .string "\"test: 352; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w_str: .string "\"test: 353; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu_str: .string "\"test: 354; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_g_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hsv_w_str: .string "\"test: 355; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w_str: .string "\"test: 356; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu_str: .string "\"test: 357; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hsv_w_str: .string "\"test: 358; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w_str: .string "\"test: 359; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu_str: .string "\"test: 360; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_g_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hsv_w_str: .string "\"test: 361; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: spa_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlv_w_str: .string "\"test: 362; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: spa_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu_str: .string "\"test: 363; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: spa_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hsv_w_str: .string "\"test: 364; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: spa_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlv_w_str: .string "\"test: 365; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: spa_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu_str: .string "\"test: 366; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: spa_g_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hsv_w_str: .string "\"test: 367; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Hroot_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w_str: .string "\"test: 368; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Hroot_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu_str: .string "\"test: 369; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Hroot_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hsv_w_str: .string "\"test: 370; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Hroot_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w_str: .string "\"test: 371; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Hroot_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu_str: .string "\"test: 372; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: Hroot_g_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hsv_w_str: .string "\"test: 373; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w_str: .string "\"test: 374; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu_str: .string "\"test: 375; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hsv_w_str: .string "\"test: 376; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w_str: .string "\"test: 377; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu_str: .string "\"test: 378; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_g_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hsv_w_str: .string "\"test: 379; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_vs_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w_str: .string "\"test: 380; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_vs_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu_str: .string "\"test: 381; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_vs_hlvx.wu\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hsv_w_str: .string "\"test: 382; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_g_hsv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w_str: .string "\"test: 383; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_g_hlv.w\""
-PMP_H_hlv_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu_str: .string "\"test: 384; cg: PMP_H_hlv_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_none_vs_hsv_w_str: .string "\"test: 337; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: none_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlv_w_str: .string "\"test: 338; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: none_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_none_vs_hlvx_wu_str: .string "\"test: 339; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: none_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_none_g_hsv_w_str: .string "\"test: 340; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: none_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_none_g_hlv_w_str: .string "\"test: 341; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: none_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_none_g_hlvx_wu_str: .string "\"test: 342; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: none_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hsv_w_str: .string "\"test: 343; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Vroot_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlv_w_str: .string "\"test: 344; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Vroot_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_vs_hlvx_wu_str: .string "\"test: 345; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Vroot_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hsv_w_str: .string "\"test: 346; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Vroot_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlv_w_str: .string "\"test: 347; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Vroot_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Vroot_g_hlvx_wu_str: .string "\"test: 348; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Vroot_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hsv_w_str: .string "\"test: 349; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlv_w_str: .string "\"test: 350; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_vs_hlvx_wu_str: .string "\"test: 351; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hsv_w_str: .string "\"test: 352; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlv_w_str: .string "\"test: 353; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl1_g_hlvx_wu_str: .string "\"test: 354; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl1_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hsv_w_str: .string "\"test: 355; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlv_w_str: .string "\"test: 356; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_vs_hlvx_wu_str: .string "\"test: 357; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hsv_w_str: .string "\"test: 358; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlv_w_str: .string "\"test: 359; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_vlvl0_g_hlvx_wu_str: .string "\"test: 360; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: vlvl0_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hsv_w_str: .string "\"test: 361; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: spa_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlv_w_str: .string "\"test: 362; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: spa_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_spa_vs_hlvx_wu_str: .string "\"test: 363; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: spa_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_spa_g_hsv_w_str: .string "\"test: 364; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: spa_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlv_w_str: .string "\"test: 365; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: spa_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_spa_g_hlvx_wu_str: .string "\"test: 366; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: spa_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hsv_w_str: .string "\"test: 367; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Hroot_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlv_w_str: .string "\"test: 368; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Hroot_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_vs_hlvx_wu_str: .string "\"test: 369; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Hroot_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hsv_w_str: .string "\"test: 370; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Hroot_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlv_w_str: .string "\"test: 371; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Hroot_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_Hroot_g_hlvx_wu_str: .string "\"test: 372; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: Hroot_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hsv_w_str: .string "\"test: 373; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlv_w_str: .string "\"test: 374; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_vs_hlvx_wu_str: .string "\"test: 375; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hsv_w_str: .string "\"test: 376; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlv_w_str: .string "\"test: 377; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl1_g_hlvx_wu_str: .string "\"test: 378; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl1_g_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hsv_w_str: .string "\"test: 379; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_vs_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlv_w_str: .string "\"test: 380; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_vs_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_vs_hlvx_wu_str: .string "\"test: 381; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_vs_hlvx.wu\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hsv_w_str: .string "\"test: 382; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_g_hsv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlv_w_str: .string "\"test: 383; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_g_hlv.w\""
+PMP_H_cg_cp_pmp_hlv_pt_hlvl0_g_hlvx_wu_str: .string "\"test: 384; cg: PMP_H_cg; cp: cp_pmp_hlv_pt; bin: hlvl0_g_hlvx.wu\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -1,0 +1,21 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the XuanTie OpenE902
+
+# Disabled: the configuration needs the E base, which UDB 0.1.18 does not know
+# (riscv/riscv-unified-db#2643). Run locally with `make e902-rv32emc-u-pmp` once UDB has E.
+ci_enabled: false
+
+# Each test below fails at T-head-Semi/opene902 991836411b. RTL paths are relative to
+# https://github.com/T-head-Semi/opene902/blob/991836411b405ac6a0a8d7668f2f5de6fa2a5b8c/E902_RTL_FACTORY/gen_rtl/
+exclude_extensions:
+  # The Zca HINTs c.addi rd!=0 with nzimm=0, c.li rd=0, c.lui rd=0 and c.nop with nzimm!=0 raise
+  # illegal instruction instead of executing as no-ops: iu/rtl/cr_iu_decd.v#L620-L650
+  - Zca-c.addi
+  - Zca-c.li
+  - Zca-c.lui
+  - Zca-c.nop
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache patch"
+install_script: ".github/scripts/install-e902.sh"
+setup_script: ".github/scripts/setup-e902.sh"

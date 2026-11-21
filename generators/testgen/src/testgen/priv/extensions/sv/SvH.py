@@ -222,11 +222,13 @@ def guest_access(
     level: int = 0,
     va_is_label: bool = False,
     driver: str = "S",
+    check_physical_store: bool = False,
 ) -> list[str]:
     """Run ``setup``, then the ``ops`` at address ``va`` in ``mode`` (VS or VU), or in the driver mode for None.
 
     With ``sv``, the address is the ``level`` superpage of ``va`` holding svh_page.  Each load's destination is
-    checked back in the driver mode, because VU-mode cannot write the signature.
+    checked back in the driver mode, because VU-mode cannot write the signature.  When requested for a successful
+    store to svh_page, the driver also checks the expected physical word, independently of the guest load.
     """
     va_reg, data = test_data.int_regs.get_registers(2)
     if sv is not None:
@@ -242,6 +244,16 @@ def guest_access(
         if op in LOADS:
             lines.append(f"LI(x{data}, -1)")
         lines.extend([label, OPS[op].format(va=va_reg, data=data)])
+        if op == "store" and check_physical_store:
+            pa, observed = test_data.int_regs.get_registers(2)
+            checks.extend(
+                [
+                    f"LA(x{pa}, svh_page)",
+                    f"lw x{observed}, 8(x{pa})",
+                    write_sigupd(observed, test_data, label=label.removesuffix(":")),
+                ]
+            )
+            test_data.int_regs.return_registers([pa, observed])
         if op in LOADS:
             check = write_sigupd(data, test_data, label=label.removesuffix(":"))
             if mode is None:
@@ -1005,7 +1017,18 @@ def _t_page_sizes(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, 
             name = f"vs{vs.page_names[vs_level]}_g{g.page_names[g_level]}"
             level = min(vs_level, g_level)
             code.extend(
-                guest_access(test_data, TWO_CG, "cp_twostage_perm", name, "VS", va, setup=setup, sv=vs, level=level)
+                guest_access(
+                    test_data,
+                    TWO_CG,
+                    "cp_twostage_perm",
+                    name,
+                    "VS",
+                    va,
+                    setup=setup,
+                    sv=vs,
+                    level=level,
+                    check_physical_store=True,
+                )
             )
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())

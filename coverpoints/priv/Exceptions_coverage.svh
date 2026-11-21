@@ -440,35 +440,43 @@ covergroup Exceptions_Sm_cg with function sample(ins_t ins);
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
     `ifdef S_SUPPORTED
+        // The values the test writes, as read back: a bit that is not delegatable is read-only 0
         medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG) {
             bins zeros                    = {16'b0000_0000_0000_0000};
             `ifndef ZCA_SUPPORTED
-                bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
+                `ifdef UDB_MEDELEG_DELEGATABLE_0 bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001}; `endif
             `endif
-            bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
-            bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
-            bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
-            bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
-            bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
-            bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
-            bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
-            bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_1  bins instraccessfault_enabled = {16'b0000_0000_0000_0010}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_2  bins illegalinstr_enabled     = {16'b0000_0000_0000_0100}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_3  bins breakpoint_enabled       = {16'b0000_0000_0000_1000}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_4  bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_5  bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_6  bins storemisaligned_enabled  = {16'b0000_0000_0100_0000}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_7  bins storeaccessfault_enabled = {16'b0000_0000_1000_0000}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_8  bins ecallu_enabled           = {16'b0000_0001_0000_0000}; `endif
             // Delegating ecall to S mode makes it impossible to escape S mode
             // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
             // bit 10 reserved
             // bit 11 is read only zero
-            bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
-            bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+            `ifdef UDB_MEDELEG_DELEGATABLE_12 bins instrpagefault_enabled   = {16'b0001_0000_0000_0000}; `endif
+            `ifdef UDB_MEDELEG_DELEGATABLE_13 bins loadpagefault_enabled    = {16'b0010_0000_0000_0000}; `endif
             // bit 14 reserved
-            bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
-            wildcard bins ones            = {16'b1011_00?1_1111_111?};
+            `ifdef UDB_MEDELEG_DELEGATABLE_15 bins storepagefault_enabled   = {16'b1000_0000_0000_0000}; `endif
+            bins ones                     = {32'h0000_B1FF & `UDB_MEDELEG_DELEGATABLE_MASK};
         }
         mstatus_SIE: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sie")[0] {
             // auto fills 1 and 0
         }
-        medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[8] {
-            // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
-        }
+        `ifdef UDB_MEDELEG_DELEGATABLE_8
+            medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[8] {
+                // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
+            }
+        `else
+            // medeleg[8] is read-only 0, so ecall from U-mode is never delegated
+            medeleg_b8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[8] {
+                bins not_delegated = {0};
+            }
+        `endif
         jalr_target_bit1: coverpoint ins.current.eff_addr[1] {}
     `endif
 
@@ -1430,9 +1438,10 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     // CSR fields
     // ============================================================================
 
-    // medeleg as set up by BOOT_TO_SMODE: every exception but the ecalls from HS-mode and M-mode
-    medeleg_delegation: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg") {
-        wildcard bins ones = {32'b????_????_1111_??00_1011_0101_1111_111?};
+    // medeleg as set up by BOOT_TO_SMODE: every exception but the ecalls from HS-mode and M-mode, as read back
+    // (a bit that is not delegatable is read-only 0).  Bits 0, 18 and 19 may hold either value.
+    medeleg_delegation: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[31:0] & 32'h00F3_FFFE) {
+        bins ones = {32'h00F0_B5FE & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
     medeleg_ecall_u_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[8] {
         bins delegated = {1};

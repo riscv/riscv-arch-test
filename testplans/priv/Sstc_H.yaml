@@ -6,7 +6,7 @@ notes: |-
   An access that menvcfg.STCE or mcounteren.TM forbids raises illegal instruction; one that only henvcfg.STCE or hcounteren.TM forbids raises virtual instruction.
   henvcfg.STCE = 1 with menvcfg.STCE = 0 is skipped in every cross because henvcfg.STCE is read-only zero then.
   time has no reset value, so a check whose result depends on time compares hip.VSTIP with the comparison computed from a read of time, after waiting RVMODEL_INTERRUPT_LATENCY for a change of the comparison to reach hip.VSTIP.
-  Sstc_HSm repeats cp_vstip and cp_htimedelta from M-mode and adds the M-mode vstimecmp accesses.
+  Sstc_HSm repeats cp_vstip, cp_hvip_vstip_pending and cp_htimedelta from M-mode and adds the M-mode vstimecmp accesses.
   H cp_hcsrwalk walks vstimecmp and vstimecmph.
 coverpoints:
   - heading: In HS-Mode
@@ -25,6 +25,11 @@ coverpoints:
     description: Cross of menvcfg.STCE = {0/1}, henvcfg.STCE = {0/1}, hvip.VSTIP = {0/1}, htimedelta = 0, vstimecmp = {0, all 1s}.  Check hip.VSTIP.  henvcfg.STCE = 1 with menvcfg.STCE = 0 is skipped because henvcfg.STCE is read-only zero then.  For RV32, htimedeltah and vstimecmph are also written.
     expectation: If both STCE = 1 and vstimecmp = 0, hip.VSTIP = 1.  Else hip.VSTIP = hvip.VSTIP.
     bins: 3 STCE * 2 hvip * 2 vstimecmp
+  - name: cp_hvip_vstip_pending
+    goal: hvip.VSTIP stays writable while the vstimecmp comparison is true
+    description: With menvcfg.STCE = henvcfg.STCE = 1, htimedelta = 0 and vstimecmp = 0, wait for hip.VSTIP = 1, then with hvip.VSTIP = {0/1} set it (csrrs 0x40), write it (csrrw 0x40), clear it (csrrc 0x40) or write 0 to hvip.  Read hvip, then end the comparison with vstimecmp = all 1s or with henvcfg.STCE = 0 and read hip.
+    expectation: hvip.VSTIP reads as written, and hip.VSTIP equals it once the comparison has ended.
+    bins: 4 writes * 2 hvip, each run twice, ending the comparison with vstimecmp or with henvcfg.STCE
   - name: cp_htimedelta
     goal: htimedelta affects vstimecmp
     description: menvcfg.STCE = 1, henvcfg.STCE = 1, hvip.VSTIP = 0, htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60}, vstimecmp = {0, 2^29, 2^31, 2^61, -2^29, -2^31, -2^61}.  Check hip.VSTIP against the value computed from a read of time.  For RV32, htimedeltah and vstimecmph are involved; htimedelta = 2^32-1 exercises the carry into the high half and -1 the 64-bit wrap.

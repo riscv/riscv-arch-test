@@ -15,6 +15,7 @@ from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, load_float_reg
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.PrivCommon import (
     STATUS_CSR,
     gen_status_read_sigupd,
@@ -35,18 +36,31 @@ def _gen_fp_csr_init(csr_name: str, value: int, temp_reg: int, priv: str) -> str
     return "\n".join(lines)
 
 
-def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]:
-    """Generate FP CSR and xstatus.FS tests in privilege mode priv ("M", "S" or "U")."""
+def gen_fcsr_tests(
+    test_data: TestData,
+    priv: str,
+    covergroup: str,
+    split_name: str,
+    prologue: tuple[str, ...] = (),
+    epilogue: tuple[str, ...] = (),
+) -> list[TestChunk]:
+    """Generate FP CSR and xstatus.FS tests in privilege mode priv ("M", "S", "U", "VS" or "VU").
+
+    Each xstatus.FS value of each coverpoint is its own chunk, so the splitter can put the tests in
+    several files. Any chunk can start a file, so each one wraps its code in prologue and epilogue
+    and sets up the registers it reads.
+    """
     status = STATUS_CSR[priv]
 
     # fp CSRs
     fcsrs = [("fcsr", None), ("frm", None), ("fflags", None)]
-    lines = []
+    test_chunks: list[TestChunk] = []
+    banner = []
 
     ######################################
     coverpoint = "cp_fcsr_access"
     ######################################
-    lines.append(
+    banner.append(
         comment_banner(
             coverpoint,
             f"Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all fp CSRs from {priv}-mode with different {status}.FS",
@@ -54,9 +68,12 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
     )
 
     ones_reg, check_reg, scratch_reg, temp_reg, save_reg = test_data.int_regs.get_registers(5)
-    lines.append(f"LI(x{ones_reg}, -1)\n")
 
     for fs, hs in itertools.product(range(4), hs_status_values(priv)):
+        tc = test_data.new_test_chunk(test_chunks, None if test_chunks else split_name)
+        lines = tc.code
+        lines.extend([*prologue, *banner, f"LI(x{ones_reg}, -1)\n"])
+        banner = []
         for csr in fcsrs:
             csr_name, _mask = csr
             lines.extend(
@@ -97,11 +114,12 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
                     "",
                 ]
             )
+        lines.extend(epilogue)
 
     ######################################
     coverpoint = f"cp_{status}_FS_transition"
     ######################################
-    lines.append(
+    banner.append(
         comment_banner(
             coverpoint,
             f"Attempt different types of fp instructions crossed with values of {status}.FS",
@@ -154,9 +172,11 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
     # fsw, fmv.x.w, fclass.s, csrr of FP CSRs, and fmvh.x.d have their own cross
     coverpoint_nd = f"{coverpoint}_nondeterministic"
 
-    lines.extend(
-        [
+    def setup() -> list[str]:
+        return [
             f"{INDENT}# set up for {coverpoint}",
+            # The fp register loads need FS not Off.
+            *set_status_fields(temp_reg, priv, fs=3),
             f"LA(x{scratch_reg}, scratch)  # pointer to scratch register",
             load_float_reg("1.0", 1, 0x3F800000, test_data, "single"),
             load_float_reg("3.0", 2, 0x40400000, test_data, "single"),
@@ -165,9 +185,12 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
             load_float_reg("1.5", 5, 0x3FC00000, test_data, "single"),
             load_float_reg("-1.0", 6, 0xBF800000, test_data, "single"),
         ]
-    )
 
     for fs, hs in itertools.product(range(4), hs_status_values(priv)):
+        tc = test_data.new_test_chunk(test_chunks)
+        lines = tc.code
+        lines.extend([*prologue, *banner, *setup()])
+        banner = []
         imprecise = fs in (1, 2) or hs in (1, 2)  # FS=Initial or Clean at either level
         for insn in insns:
             if imprecise and insn in nondeterministic_initial_clean_insns:
@@ -265,7 +288,8 @@ def gen_fcsr_tests(test_data: TestData, priv: str, covergroup: str) -> list[str]
                 ]
             )
         lines.append("\n#endif")
+        lines.extend(epilogue)
 
     test_data.int_regs.return_registers([ones_reg, check_reg, temp_reg, scratch_reg, save_reg])
-
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

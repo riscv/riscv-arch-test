@@ -12,6 +12,8 @@
 
 `define COVER_SV
 
+`include "general/RISCV_coverage_hypervisor.svh"
+
 `ifdef ZICBOM_SUPPORTED
     `define SV_ZICBO_ANY
 `elsif ZICBOZ_SUPPORTED
@@ -1488,19 +1490,10 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
         // 0: completes, 1: faults in the first page, 2: faults in the next page, 3: faults with another stval,
         // 7: neither (another instruction, or a jalr that does not take an instruction page fault at its target)
         straddle_fetch_outcome: coverpoint ((ins.current.insn == 32'h00000013) && !ins.current.trap ? 3'd0 :
-                                            !(ins.current.insn ==? JALR) ||
-                                            `ifdef UDB_MEDELEG_DELEGATABLE_12
-                                                int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")) != INSTRUCTION_PAGE_FAULT ||
-                                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) != ins.current.rs1_val + ins.current.imm ? 3'd7 :
-                                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == ins.current.rs1_val + ins.current.imm ? 3'd1 :
-                                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
-                                            `else
-                                                // medeleg[12] is read-only 0, so instruction page faults are taken in M-mode
-                                                int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")) != INSTRUCTION_PAGE_FAULT ||
-                                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) != ins.current.rs1_val + ins.current.imm ? 3'd7 :
-                                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == ins.current.rs1_val + ins.current.imm ? 3'd1 :
-                                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
-                                            `endif
+                                            !(ins.current.insn ==? JALR) || s_trap(ins) != 6'b101100 ||
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, medeleg_blocked_trap(ins) ? CSR_MEPC : CSR_SEPC) != ins.current.rs1_val + ins.current.imm ? 3'd7 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, medeleg_blocked_trap(ins) ? CSR_MTVAL : CSR_STVAL) == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, medeleg_blocked_trap(ins) ? CSR_MTVAL : CSR_STVAL) == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
             bins completes = {0};
             `ifdef SV_STRADDLE_FETCH_TVAL_VA
                 bins first_faults = {1};
@@ -1530,16 +1523,9 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
             `define SV_STRADDLE_LOAD_TVAL_VA
         `endif
         straddle_load: coverpoint {(!ins.current.trap ? 3'd0 :
-                                    `ifdef UDB_MEDELEG_DELEGATABLE_13
-                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")) != LOAD_PAGE_FAULT ? 3'd7 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
-                                    `else
-                                        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
-                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")) != LOAD_PAGE_FAULT ? 3'd7 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
-                                    `endif
+                                    s_trap(ins) != 6'b101101 ? 3'd7 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, medeleg_blocked_trap(ins) ? CSR_MTVAL : CSR_STVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, medeleg_blocked_trap(ins) ? CSR_MTVAL : CSR_STVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
                                    ((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12], 4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
                                    iff (ins.current.insn[6:0] inside {7'b0000011, 7'b0000111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
             // Completes, at every offset
@@ -1675,16 +1661,9 @@ covergroup Sv_Exceptions_cg with function sample(ins_t ins);
             `define SV_STRADDLE_STORE_TVAL_VA
         `endif
         straddle_store: coverpoint {(!ins.current.trap ? 3'd0 :
-                                    `ifdef UDB_MEDELEG_DELEGATABLE_15
-                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")) != STORE_AMO_PAGE_FAULT ? 3'd7 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
-                                    `else
-                                        // medeleg[15] is read-only 0, so store page faults are taken in M-mode
-                                        int'(get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")) != STORE_AMO_PAGE_FAULT ? 3'd7 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
-                                        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
-                                    `endif
+                                    s_trap(ins) != 6'b101111 ? 3'd7 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, medeleg_blocked_trap(ins) ? CSR_MTVAL : CSR_STVAL) == (ins.current.rs1_val + ins.current.imm) ? 3'd1 :
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, medeleg_blocked_trap(ins) ? CSR_MTVAL : CSR_STVAL) == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3),
                                    ((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) > 'h1FFFF0, ins.current.insn[2], ins.current.insn[14:12], 4'('h1000 - ((ins.current.rs1_val + ins.current.imm) & 'hFFF))}
                                    iff (ins.current.insn[6:0] inside {7'b0100011, 7'b0100111} && ((ins.current.rs1_val + ins.current.imm) & 'hFFF) > 'hFF0) {
             // Completes, at every offset

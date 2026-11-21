@@ -541,11 +541,12 @@
 #define RVTEST_CLR_VSSTC_INT_M \
   jal rvtest_clr_vsstc_int_m          /* Clear VS-level timer interrupt with Sstc */
 
+// STI is raised through mip.STIP, inline so that the interrupt is taken in the test code
 #define RVTEST_SET_STIME_INT_M \
-  jal rvtest_set_stime_int_m     /* Trigger supervisor timer interrupt */
+  li a1, MIP_STIP; csrs mip, a1     /* Trigger supervisor timer interrupt through mip.STIP */
 
 #define RVTEST_CLR_STIME_INT_M \
-  jal rvtest_clr_stime_int_m     /* Clear supervisor timer interrupt */
+  li a1, MIP_STIP; csrc mip, a1     /* Clear mip.STIP */
 
 #define RVTEST_SET_SSW_INT_M \
   jal rvtest_set_ssw_int_m     /* Trigger supervisor software interrupt */
@@ -601,10 +602,10 @@
   jal rvtest_clr_vsstc_int_s          /* Clear VS-level timer interrupt with Sstc */
 
 #define RVTEST_SET_STIME_INT_S \
-  jal rvtest_set_stime_int_su     /* Trigger supervisor timer interrupt */
+  RVTEST_TSBI_CSR_SET(CSR_MIP, MIP_STIP)    /* Trigger supervisor timer interrupt through mip.STIP */
 
 #define RVTEST_CLR_STIME_INT_S \
-  jal rvtest_clr_stime_int_su     /* Clear supervisor timer interrupt */
+  RVTEST_TSBI_CSR_CLEAR(CSR_MIP, MIP_STIP)  /* Clear mip.STIP */
 
 #define RVTEST_SET_SSW_INT_S \
   jal rvtest_set_ssw_int_su     /* Trigger supervisor software interrupt */
@@ -650,11 +651,8 @@
 #define RVTEST_CLR_SSTC_INT_U \
   jal rvtest_clr_sstc_int_u     /* Clear supervisor timer interrupt with Sstc */
 
-#define RVTEST_SET_STIME_INT_U \
-  jal rvtest_set_stime_int_su     /* Trigger supervisor timer interrupt */
-
-#define RVTEST_CLR_STIME_INT_U \
-  jal rvtest_clr_stime_int_su     /* Clear supervisor timer interrupt */
+#define RVTEST_SET_STIME_INT_U RVTEST_SET_STIME_INT_S
+#define RVTEST_CLR_STIME_INT_U RVTEST_CLR_STIME_INT_S
 
 #define RVTEST_SET_SSW_INT_U \
   jal rvtest_set_ssw_int_su     /* Trigger supervisor software interrupt */

@@ -431,6 +431,27 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     mstatus_mpie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpie")[0] {
         // autofill 0/1
     }
+    // cp_xret_same_mode: mret back to M-mode with MIE = 0, which restores MIE from MPIE
+    mstatus_mie_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mie")[0] {
+        bins zero = {0};
+    }
+    mstatus_mpp_m: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
+        bins M_mode = {2'b11};
+    }
+    // cp_undeleg_mideleg: a write that clears the mideleg bit of a pending S-level interrupt.
+    // The bin names that interrupt.
+    `ifdef S_SUPPORTED
+        mideleg_undelegates_pending: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIDELEG)[15:0] &
+                                                 ~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIDELEG)[15:0] &
+                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & `SM_NOH_MASK) {
+            bins seip = {16'h0200};
+            bins stip = {16'h0020};
+            bins ssip = {16'h0002};
+            `ifdef SSCOFPMF_SUPPORTED
+                bins lcofip = {16'h2000};
+            `endif
+        }
+    `endif
 
     // main coverpoints
 
@@ -556,6 +577,14 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
             ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000, 3'b101, 3'b100};
         }
         cp_priority_mideleg_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mie_ones, mip_pairs_noh, mideleg_one_of_mip_pair;
+    `endif
+    // One interrupt pending and enabled in mie but masked by MIE = 0. An mret to M-mode with MPIE = 1
+    // enables it, so it is taken on the mret; with MPIE = 0 it stays masked.
+    cp_xret_same_mode:          cross priv_mode_m, mret_insn, mstatus_mpp_m, mstatus_mie_zero, mstatus_mpie, mideleg_zeros, walking_mie_one, mip_matches_mie_one;
+    // With MIE = 1 and mie = 1s, an S-level interrupt pending but delegated to S is taken in M-mode on the
+    // write that clears its mideleg bit
+    `ifdef S_SUPPORTED
+        cp_undeleg_mideleg:     cross priv_mode_m, mstatus_mie_one, mie_ones, mideleg_undelegates_pending;
     `endif
     cp_wfi_m:                   cross priv_mode_m, mstatus_mie, mstatus_tw, wfi, mideleg_zeros;
 

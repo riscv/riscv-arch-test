@@ -141,6 +141,35 @@ coverpoints:
       RVTEST_CLR_<type>_INT for both
     expectation: if supported - undelegated interrupt takes priority
     bins: 21 int * 2 mideleg * 5 priv
+  - name: cp_xret_same_mode
+    goal: mret back to M-mode enables a pending interrupt
+    description: |-
+      M-mode only
+      For <type> = {LCOFI, MTI, MSI, MEI, STI, SSI, SEI, VSTI, VSEI, VSSI}
+      mideleg = 0s
+      write mstatus.MIE = 0
+      write mie = <type> only
+      RVTEST_SET_<type>_INT_M
+      RVTEST_IDLE_FOR_INT
+      write mstatus.MPIE = {0/1}, MPP = M, mepc = next instruction
+      mret
+      RVTEST_CLR_<type>_INT_M
+    expectation: |-
+      with MPIE = 1 the interrupt is taken at the instruction after the mret (mepc checked, Priv 1.12+);
+      with MPIE = 0, and for the VS-level interrupts, which M-mode never takes, it is not taken
+    bins: 10 int * 2 MPIE
+  - name: cp_undeleg_mideleg
+    goal: Clearing the delegation of a pending interrupt makes it taken at once
+    description: |-
+      if S_SUPPORTED, M-mode only
+      For <type> = {LCOFI, STI, SSI, SEI (through mip.SEIP)}
+      write mideleg = <type> only, mie = 1s, mstatus.MIE = 1
+      RVTEST_SET_<type>_INT_M
+      RVTEST_IDLE_FOR_INT
+      write mideleg = 0s
+      RVTEST_CLR_<type>_INT_M
+    expectation: the interrupt is not taken while delegated, then is taken at the instruction after the mideleg write (mepc checked, Priv 1.12+)
+    bins: 4 int
   - name: cp_wfi
     goal: WFI waits until timer interrupt
     description: |-

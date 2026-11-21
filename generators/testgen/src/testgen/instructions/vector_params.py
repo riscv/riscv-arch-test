@@ -22,6 +22,7 @@ from testgen.data.state import TestData
 from testgen.formatters import get_instruction_type_config
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig
 from testgen.instructions.vector import VectorInstructionInfo, parse_vector_instruction_info
+from testgen.instructions.vector_data import instruction_random_elements
 
 # Gathers and slides whose immediate is an element index or offset
 LOG_RANDOM_IMM_INSTRUCTIONS = {"vrgather.vi", "vslideup.vi", "vslidedown.vi"}
@@ -528,6 +529,33 @@ def generate_random_vector_params(
             params, info, source_dest_different_eew, lmul, sew, instr_type_config.vector_data
         )
 
+    # vslideup writes only elements at or above its offset, so a base-suite test (vl=1) moves data only at offset 0
+    base_slideup = instruction.startswith("vslideup.") and suite == "base"
+    if base_slideup and params.rs1val is not None and "rs1val" not in fixed_params:
+        params.rs1val = 0
+
+    # Immediate handling, before the data, which can depend on the immediate
+    if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:
+        if base_slideup:
+            params.immval = 0
+        elif instruction in LOG_RANDOM_IMM_INSTRUCTIONS:
+            params.immval = log_random_imm()
+        elif instr_type_config.imm_range is not None:
+            min_val, max_val = instr_type_config.imm_range
+            params.immval = random_range(min_val, max_val, nonzero=instr_type_config.imm_nonzero)
+        elif instr_type_config.imm_bits is not None:
+            imm_bits = instr_type_config.imm_bits
+            if isinstance(imm_bits, int):
+                params.immval = random_int(
+                    imm_bits, signed=instr_type_config.imm_signed, nonzero=instr_type_config.imm_nonzero
+                )
+            else:
+                raise NotImplementedError("Vector random parameter generation only supports integer values of imm_bits")
+        else:
+            raise ValueError(
+                f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
+            )
+
     ####################################################################################
     # Randomize the instruction data & take vector registers from the register file
     ####################################################################################
@@ -547,8 +575,8 @@ def generate_random_vector_params(
         if not register.startswith("v"):
             continue
 
-        # Base-suite labels hold the elements the check depends on: one element group, or a whole register group
-        # for a source loaded at VLMAX (and vs1 when it shares that source's register).
+        # Base-suite labels hold the elements the instruction reads: those below vl (at least one element group), or a
+        # whole register group for a source loaded at VLMAX (and vs1 when it shares that source's register).
         vlmax_regs = instr_type_config.vector_data.vlmax_regs
         loaded_at_vlmax = register in vlmax_regs or (
             register == "vs1" and "vs2" in vlmax_regs and params.vs1 == params.vs2
@@ -571,12 +599,15 @@ def generate_random_vector_params(
             setattr(params, f"{register}_val_pointer", label)  # params.register_val_pointer = label
 
             # Register the label
-            element_count = (
-                instr_type_config.vector_data.egs if suite == "base" and not loaded_at_vlmax else vlmax_count
-            )
-            if instr_type_config.vector_data.random_element_generator:
-                elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
+            egs = instr_type_config.vector_data.egs
+            if suite != "base" or loaded_at_vlmax:
+                element_count = vlmax_count
             else:
+                element_count = max(params.vl, egs) if isinstance(params.vl, int) else egs
+            elements = instruction_random_elements(instruction, register, element_count, eew, sew, params, test_data)
+            if elements is None and instr_type_config.vector_data.random_element_generator:
+                elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
+            if elements is None:
                 elements = [random_int(eew) for _ in range(element_count)]
                 if instruction == "vcompress.vm" and register == "vs1" and suite == "base":
                     # Set mask bit 0, so a vl=1 test compresses element 0 into vd
@@ -584,33 +615,6 @@ def generate_random_vector_params(
             test_data.register_vector_data(label, eew, elements=elements)
         elif loaded_at_vlmax:
             setattr(params, f"{register}_val_pointer", pad_label_to_vlmax(test_data, preset_label, vlmax_count))
-
-    # vslideup writes only elements at or above its offset, so a base-suite test (vl=1) moves data only at offset 0
-    base_slideup = instruction.startswith("vslideup.") and suite == "base"
-    if base_slideup and params.rs1val is not None and "rs1val" not in fixed_params:
-        params.rs1val = 0
-
-    # immediate handling
-    if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:
-        if base_slideup:
-            params.immval = 0
-        elif instruction in LOG_RANDOM_IMM_INSTRUCTIONS:
-            params.immval = log_random_imm()
-        elif instr_type_config.imm_range is not None:
-            min_val, max_val = instr_type_config.imm_range
-            params.immval = random_range(min_val, max_val, nonzero=instr_type_config.imm_nonzero)
-        elif instr_type_config.imm_bits is not None:
-            imm_bits = instr_type_config.imm_bits
-            if isinstance(imm_bits, int):
-                params.immval = random_int(
-                    imm_bits, signed=instr_type_config.imm_signed, nonzero=instr_type_config.imm_nonzero
-                )
-            else:
-                raise NotImplementedError("Vector random parameter generation only supports integer values of imm_bits")
-        else:
-            raise ValueError(
-                f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
-            )
 
     # All vector floating point instructions use the dyn rounding mode
     if "vector_fp" in instr_type_config.instruction_class and params.csr_frm_val is None:

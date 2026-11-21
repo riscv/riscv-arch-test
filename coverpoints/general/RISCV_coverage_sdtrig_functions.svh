@@ -50,8 +50,8 @@ endfunction
 //   1: mode bit clear, count unchanged    2: mode bit set, counted to 0 (hard-wired 1: cleared) and fired (pending clear)
 //   3: count 0, pending stays clear 4: count 0, pending was set and firing cleared it    0: anything else
 function automatic logic [2:0] sdtrig_icount_outcome(ins_t ins, int mode_bit);
-    logic [XLEN-1:0] armed = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1");
-    logic [XLEN-1:0] now   = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "tdata1");
+    logic [XLEN-1:0] armed = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1);
+    logic [XLEN-1:0] now   = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1);
     if (sdtrig_icount_count(armed) == 0) begin
         if (!armed[8] && sdtrig_icount_count(now) == 0 && !now[8]) return 3'd3;
         if (armed[8] && sdtrig_icount_count(now) == 0 && !now[8])  return 3'd4;
@@ -71,8 +71,8 @@ endfunction
 // A data match compares the sc store data (rs2), or for lr the loaded data: the test stores the nonzero tdata2 at the
 // address first, so lr matches exactly when tdata2 is nonzero.
 function automatic logic sdtrig_a_as_expected(ins_t ins);
-    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "tdata1");
-    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2");
+    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1);
+    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2);
     logic is_lr  = ins.current.insn ==? LR_W  || ins.current.insn ==? LR_D;
     logic is_sc  = ins.current.insn ==? SC_W  || ins.current.insn ==? SC_D;
     logic is_amo = ins.current.insn[6:0] == 7'b0101111 && !is_lr && !is_sc;
@@ -87,8 +87,8 @@ endfunction
 // stores on the address in rs1 with select = 0 and size = 0; with select = 1 (no data) or another size they do not,
 // and prefetches never match. rs1 is the block base, so every allowed compare address agrees (Sdtrig_cache_compare_opts).
 function automatic logic sdtrig_cbo_as_expected(ins_t ins);
-    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "tdata1");
-    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2");
+    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1);
+    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2);
     logic is_cbo = ins.current.insn ==? CBO_CLEAN || ins.current.insn ==? CBO_FLUSH ||
                    ins.current.insn ==? CBO_INVAL || ins.current.insn ==? CBO_ZERO;
     return sdtrig_bp_taken(ins) == (is_cbo && !tdata1[21] && tdata1[18:16] == 3'd0 && tdata1[1] && tdata2 == ins.current.rs1_val);
@@ -108,9 +108,9 @@ endfunction
 // each active element below vl is matched as its own access of SEW bytes (Sdtrig_mult_mem_access), so an address
 // match fires when tdata2 is the address of an accessed element, size is 0 or SEW, and the x/s/l bit fits the access.
 function automatic logic sdtrig_vec_as_expected(ins_t ins);
-    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "tdata1");
-    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2");
-    int vl = int'(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vl", "vl"));
+    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1);
+    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2);
+    int vl = int'(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VL));
     int eew = sdtrig_vec_eew_bytes(ins.current.insn);
     logic masked = !ins.current.insn[25];
     logic store = ins.current.insn[6:0] == 7'b0100111;
@@ -150,13 +150,13 @@ function automatic logic sdtrig_trap_exception(ins_t ins);
 endfunction
 // Mode the trap was taken from: an interrupt taken on an xRET record is taken in the mode the xRET returns to
 function automatic logic [1:0] sdtrig_trap_origin(ins_t ins);
-    if (ins.current.insn == MRET) return get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0];
-    if (ins.current.insn == SRET) return {1'b0, get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0]};
+    if (ins.current.insn == MRET) return get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0];
+    if (ins.current.insn == SRET) return {1'b0, get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "spp")[0]};
     return ins.prev.mode;
 endfunction
 // {handler, tdata1 priv bit for the origin mode (itrigger/etrigger m 9, s 7, u 6), fired}
 function automatic logic [3:0] sdtrig_trap_result(ins_t ins);
-    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1");
+    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1);
     logic priv_bit;
     case (sdtrig_trap_origin(ins))
         2'd3:    priv_bit = tdata1[9];
@@ -167,13 +167,13 @@ function automatic logic [3:0] sdtrig_trap_result(ins_t ins);
 endfunction
 // 1 when tdata2 selects the cause taken on this record
 function automatic logic sdtrig_trap_selected(ins_t ins);
-    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata2", "tdata2");
+    logic [XLEN-1:0] tdata2 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA2);
     return tdata2[sdtrig_trap_cause(ins)[$clog2(XLEN)-1:0]];
 endfunction
 // 1 when xdeleg (mideleg for an interrupt, medeleg for an exception) delegates the cause taken on this record
 function automatic logic sdtrig_trap_delegated(ins_t ins);
-    logic [XLEN-1:0] deleg = sdtrig_trap_cause(ins)[XLEN-1] ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg") :
-                                                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "medeleg");
+    logic [XLEN-1:0] deleg = sdtrig_trap_cause(ins)[XLEN-1] ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIDELEG) :
+                                                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG);
     return deleg[sdtrig_trap_cause(ins)[$clog2(XLEN)-1:0]];
 endfunction
 
@@ -189,7 +189,7 @@ endfunction
 //   1: that bit is set and the breakpoint was taken (into S, or into M on harts that use tcontrol)
 //   2: it is clear, another of m (6), s (4), u (3) is set, and no breakpoint was taken    0: anything else
 function automatic logic [1:0] sdtrig_priv_bits_outcome(ins_t ins, int mode_bit);
-    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1");
+    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1);
     if (tdata1[mode_bit] && sdtrig_bp_taken(ins)) return 2'd1;
     if (!tdata1[mode_bit] && (tdata1[6] || tdata1[4] || tdata1[3]) && !sdtrig_bp_taken(ins)) return 2'd2;
     return 2'd0;
@@ -206,7 +206,7 @@ endfunction
 // with match = equal identifies the target by tdata2; otherwise the target is the instruction that retired.
 function automatic logic [1:0] sdtrig_exec_size_target(ins_t ins);
     if (sdtrig_exec_fired(ins))
-        return (ins.current.csr[CSR_TDATA2] == 32'h00008013) ? 2'd1 : (ins.current.csr[CSR_TDATA2] == 'h0001) ? 2'd2 : 2'd0;
+        return (ins.current.csr[CSR_TDATA2] == 'h00008013) ? 2'd1 : (ins.current.csr[CSR_TDATA2] == 'h0001) ? 2'd2 : 2'd0;
     if (ins.current.insn == 32'h00008013) return 2'd1;
     if (ins.current.insn[1:0] != 2'b11 && ins.current.insn[15:0] == 16'h0001) return 2'd2;
     return 2'd0;
@@ -215,7 +215,7 @@ endfunction
 // at tdata2, seen retiring or as the breakpoint that replaced it; 0 for anything else. The test puts a c.nop target at
 // an address that is 2 mod 4 and an addi target at 0 mod 4, so tdata2[1] names a target that did not retire.
 function automatic logic [3:0] sdtrig_exec_adr_size_case(ins_t ins);
-    logic [2:0] size = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0];
+    logic [2:0] size = get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "size")[2:0];
     if (sdtrig_exec_fired(ins) && sdtrig_bp_epc(ins) == ins.current.csr[CSR_TDATA2])
         return {size, ins.current.csr[CSR_TDATA2][1]};
     if (ins.current.pc_rdata != ins.current.csr[CSR_TDATA2]) return 4'd0;
@@ -230,7 +230,7 @@ function automatic logic [1:0] sdtrig_size_data_case(ins_t ins);
     int bytes, size_bytes;
     if (ins.current.insn[6:0] != 7'b0100011 || ins.current.insn[14]) return 2'd0;
     bytes = 1 << ins.current.insn[13:12];
-    case (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0])
+    case (get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "size")[2:0])
         3'd1:    size_bytes = 1;
         3'd2:    size_bytes = 2;
         3'd3:    size_bytes = 4;
@@ -258,13 +258,13 @@ function automatic logic [1:0] sdtrig_ms_case(ins_t ins, logic [2:0] xsl);
     string mode_bit = (origin == 2'd3) ? "m" : (origin == 2'd1) ? "s" : "u";
     int bytes, size_bytes;
     logic fired;
-    if (get_csr_val(ins.hart, ins.issue, when, "tdata1", "type")[3:0] != 4'd6 ||
-        get_csr_val(ins.hart, ins.issue, when, "tdata1", mode_bit)[0] != 1'b1 ||
-        get_csr_val(ins.hart, ins.issue, when, "tdata1", "chain")[0] != 1'b0 ||
-        get_csr_val(ins.hart, ins.issue, when, "tdata1", "select")[0] != 1'b1 ||
-        {get_csr_val(ins.hart, ins.issue, when, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, when, "tdata1", "store")[0],
-         get_csr_val(ins.hart, ins.issue, when, "tdata1", "load")[0]} != xsl) return 2'd0;
-    case (get_csr_val(ins.hart, ins.issue, when, "tdata1", "size")[2:0])
+    if (get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, "type")[3:0] != 4'd6 ||
+        get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, mode_bit)[0] != 1'b1 ||
+        get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, "chain")[0] != 1'b0 ||
+        get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, "select")[0] != 1'b1 ||
+        {get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, "execute")[0], get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, "store")[0],
+         get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, "load")[0]} != xsl) return 2'd0;
+    case (get_csr_field(ins.hart, ins.issue, when, CSR_TDATA1, "size")[2:0])
         3'd1:    size_bytes = 1;
         3'd2:    size_bytes = 2;
         3'd3:    size_bytes = 4;
@@ -330,7 +330,7 @@ endfunction
 // SdtrigS/U textra cases: the type of the trigger the instruction on this record acts on, an icount trigger armed
 // with count = 1 (a nop) or an mcontrol6 XLEN-wide data-store trigger (the store); 0 for any other instruction
 function automatic logic [3:0] sdtrig_textra_action(ins_t ins);
-    logic [3:0] trig_type = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0];
+    logic [3:0] trig_type = get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0];
     `ifdef UDB_MXLEN_64
         logic store_xlen = ins.current.insn ==? SD;
     `else

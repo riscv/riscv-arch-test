@@ -21,9 +21,10 @@ covergroup Zifencei_fence_i_cg with function sample(ins_t ins);
 
     // Custom coverpoints for fence.i
 
-    // the test should do some self-modifying code and then a fence.i and then run the code
-    // this is too complicated to express with a coverpoint, so just check that the fence.i
-    // is executed, and leave it to the test code to do the right thing
+    // The test fetches the old instruction and records it, stores a new instruction
+    // (sw, or sh of c.li when Zca is present), executes fence.i, and records the
+    // instruction fetched after fence.i. This coverpoint only records that each
+    // fence.i encoding ran.
 
     cp_custom_fencei : coverpoint ins.current.insn  {
         bins fencei            = {32'h0000100f}; // normal fence.i
@@ -35,8 +36,9 @@ covergroup Zifencei_fence_i_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zifencei_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "fence.i"     : begin
             Zifencei_fence_i_cg.sample(ins);
         end

@@ -86,13 +86,14 @@ def _hlv_fault_tests(test_data: TestData) -> list[str]:
             for word in (0, 4, 8, 12):
                 body.extend([f"lw x{rd}, {word}(x{addr_reg})", write_sigupd(rd, test_data)])
             lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
-    fault_lines = [
+    lines.append(
         comment_banner(
             "cp_hlv_access_fault, cp_hsv_access_fault",
-            "In M-mode, execute each hlv, hlvx and hsv at the access-fault address",
-        ),
-        f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-    ]
+            "In M-mode, execute each hlv and hlvx at the load access-fault address and each hsv at the store\n"
+            "access-fault address",
+        )
+    )
+    load_lines = [f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"]
     for instr, rv64 in (*HLV_INSTRS, *HLVX_INSTRS):
         body = [
             f"LI(x{rd}, 42)",
@@ -100,12 +101,17 @@ def _hlv_fault_tests(test_data: TestData) -> list[str]:
             f"{instr} x{rd}, (x{addr_reg})",
             write_sigupd(rd, test_data),
         ]
-        fault_lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
+        load_lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
+    store_lines = [f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"]
     for instr, rv64 in HSV_INSTRS:
         body = [test_data.add_testcase(instr, "cp_hsv_access_fault", CG), f"{instr} x{data_reg}, (x{addr_reg})"]
-        fault_lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
+        store_lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
     test_data.int_regs.return_registers([addr_reg, data_reg, rd])
-    return [*lines, *gated(fault_lines, "defined(RVMODEL_ACCESS_FAULT_ADDRESS)")]
+    return [
+        *lines,
+        *gated(load_lines, "defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"),
+        *gated(store_lines, "defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE)"),
+    ]
 
 
 def _tsr_tests(test_data: TestData) -> list[str]:

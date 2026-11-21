@@ -444,7 +444,7 @@
       // addresses at 0x01FF_FFxx) are deliberately NOT mapped: the reference ELF is
       // built with sail_macros.h, which replaces every DUT address with the
       // HTIF/CLINT equivalent.
-      // RVMODEL_ACCESS_FAULT_ADDRESS (0x0200_0000) is outside every region on purpose,
+      // RVMODEL_ACCESS_FAULT_ADDRESS_FETCH and _AMO (0x0200_0000) are outside every region on purpose,
       // so the DUT's error responder and the reference model both fault on it.
       {
         "base": {

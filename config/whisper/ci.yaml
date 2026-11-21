@@ -20,10 +20,6 @@ exclude_extensions:
   # vsiselect, vstopi, vstopei, hvien), where Sail raises illegal instruction because it lacks them.
   - Ssstrict_S_CSR
   - Ssstrict_H_vs_CSR
-  # The -mu configs pass. On the max configs Whisper implements Sscsrind and Ssaia, so
-  # mstateen0.CSRIND, AIA and IMSIC are writable, but Sail does not model those extensions
-  # (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/pull/1874).
-  - Smstateen
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

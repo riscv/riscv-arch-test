@@ -11,15 +11,12 @@ exclude_extensions:
   # Sail lacks Ssaia/Sscsrind, so expects illegal instead of virtual instruction for their CSRs from VU-mode
   # (https://github.com/riscv/sail-riscv/issues/1134).
   - H_vucsr
-  # The -max configs declare Smaia and Ssaia (for the IMSIC guest interrupt files), so mstateen0.IMSIC, AIA and
-  # CSRIND are writable, but Sail does not model those extensions (https://github.com/riscv/sail-riscv/issues/1134).
-  # The exclusion applies to every Spike config, so the -mu configs, which pass, lose Smstateen too until
+  # spike-rv32-max only: scontext is 16 bits wide on RV32 in Spike but 32 bits in Sail (cp_context).
+  # https://github.com/riscv/sail-riscv/issues/2054
+  # The exclusion applies to every Spike config, so the other configs, which pass, lose Smstateen too until
   # exclusions can be given per config.
   - Smstateen
-  # Spike stores tdata2 as written (trigger_t::tdata2_write in riscv/triggers.cc), so
-  # an all-ones write to an mcontrol6 NAPOT trigger reads back with bit maskmax6-1 set; the Debug spec requires it to
-  # read 0 (fix: https://github.com/riscv-software-src/riscv-isa-sim/pull/2481). Drop it when the Spike pin includes it.
-  - SdtrigSm_mcontrol6_napot_allones
+  - Ssstateen
   # Sscofpmf_Sm_access fails on rv32-max only; the other Sscofpmf groups pass. Spike hardwires mhpmcounter3..31
   # to 0 but keeps mhpmevent3..31 writable (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
   # writable_hpm_counters makes both or neither writable, so no reference config matches.

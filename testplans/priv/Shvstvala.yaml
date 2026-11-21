@@ -4,7 +4,7 @@ source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR
 notes: |-
   Shvstvala boots to HS-mode, which delegates the exceptions to VS-mode with hedeleg.  Each exception is raised in VS-mode and in VU-mode after vstval is set to a random value, so a hart that does not write vstval fails, and the VS-mode trap handler records vstval.  The access-fault and misaligned tests reuse the Exceptions test sequences with vsatp = hgatp = Bare; the page-fault tests run under two-stage translation.
   Virtual-instruction exceptions are never taken in VS-mode (hedeleg[22] is read-only zero), so the Sstvala case for them does not apply.
-  The access-fault tests need RVMODEL_ACCESS_FAULT_ADDRESS.  The misaligned load and store tests are compiled only without MISALIGNED_LDST, and the misaligned fetch test only without Zca; no current H configuration assembles them, so they were checked only with scratch Sail configurations.
+  Each access-fault test needs RVMODEL_ACCESS_FAULT_ADDRESS_{FETCH/LOAD/STORE} for its access type.  The misaligned load and store tests are compiled only without MISALIGNED_LDST, and the misaligned fetch test only without Zca; no current H configuration assembles them, so they were checked only with scratch Sail configurations.
 coverpoints:
   - name: cp_load_page_fault
     goal: Fault writes VA to vstval
@@ -25,17 +25,17 @@ coverpoints:
     bins: "{VS, VU} x jalr x instruction page fault x vstval = target"
   - name: cp_load_access_fault
     goal: Fault writes VA to vstval
-    description: In VS-mode and VU-mode, each load (lb, lbu, lh, lhu, lw, and lwu, ld on RV64) from RVMODEL_ACCESS_FAULT_ADDRESS
+    description: In VS-mode and VU-mode, each load (lb, lbu, lh, lhu, lw, and lwu, ld on RV64) from RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
     expectation: vstval written with VA
     bins: "{VS, VU} x each load x load access fault x vstval = address"
   - name: cp_store_access_fault
     goal: Fault writes VA to vstval
-    description: In VS-mode and VU-mode, each store (sb, sh, sw, and sd on RV64) to RVMODEL_ACCESS_FAULT_ADDRESS
+    description: In VS-mode and VU-mode, each store (sb, sh, sw, and sd on RV64) to RVMODEL_ACCESS_FAULT_ADDRESS_STORE
     expectation: vstval written with VA
     bins: "{VS, VU} x each store x store/AMO access fault x vstval = address"
   - name: cp_instr_access_fault
     goal: Fault writes VA to vstval
-    description: In VS-mode and VU-mode, jalr to RVMODEL_ACCESS_FAULT_ADDRESS
+    description: In VS-mode and VU-mode, jalr to RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
     expectation: vstval written with VA
     bins: "{VS, VU} x jalr x instruction access fault x vstval = target"
   - name: cp_load_address_misaligned

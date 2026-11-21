@@ -17,7 +17,7 @@
 //                                  deliberately NOT used as handler temporaries: they
 //                                  are the T-SBI argument/return registers.
 //    2. ARCHITECTURE CONSTANTS  — interrupt/exception cause counts, masks, mode encodings
-//    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes and macros
+//    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes (in tsbi.h)
 //    4. CSR RENAME MACROS       — XCSR_RENAME parameterizes CSR names by privilege mode
 //    5. T-SBI CONVENIENCE MACROS— Test-facing macros for the a0-based SBI calling convention
 //    6. DEFAULT INTERRUPT MACROS— Stubs for RVMODEL interrupt set/clear if not DUT-defined
@@ -49,7 +49,7 @@
 //    tramp_sz + 10*8        | 8             | sved_shared   — S-mode area: saved hgatp
 //    tramp_sz + 11*8        | 8             | tentry_sv      — common handler entry point address
 //    tramp_sz + 12*8        | 8             | xedeleg_sv     — saved xEDELEG value
-//    tramp_sz + 13*8        | 8             | xtvec_new      — trampoline address currently in xTVEC
+//    tramp_sz + 13*8        | 8             | xtvec_new      — BASE (no MODE bits) currently in xTVEC
 //    tramp_sz + 14*8        | 8             | xtvec_save     — original xTVEC value before prolog
 //    tramp_sz + 15*8        | 8             | xscratch_save  — original xSCRATCH value before prolog
 //    tramp_sz + 16*8        | 8             | medeleg_illegal_sv — shadow value of medeleg[2]
@@ -110,7 +110,7 @@
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
 //    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
 //    TSBI_SW/SWP4/SD  (a0=store opcode)— Store a2 to physical address a1
-//    Any other value                  — Returns -1 in a0 (TSBI_RESERVED_RET)
+//    Any other value                  — Fails the test or returns -1 in a0 (TSBI_RESERVED_RET)
 //
 //  Dispatch hierarchy:
 //    M-mode handler:  handles all operations directly
@@ -177,59 +177,6 @@
 #endif
 
 //==============================================================================
-// SECTION 3: T-SBI (TEST SUPERVISOR BINARY INTERFACE) CONSTANTS
-//
-// These #define constants specify the operation codes passed in a0 when making
-// T-SBI calls via ecall. The handler checks a0 against these values to dispatch
-// the appropriate service routine.
-//
-// Design rationale for the operation code values:
-//   - GOTO_xMODE uses small integers (1-5) for easy range checking
-//   - ECALL_TEST uses the ecall instruction encoding (0x73) itself, which is
-//     mnemonic and doesn't conflict with GOTO codes or CSR encodings
-//   - CSR_ACCESS uses the actual CSR instruction encoding (opcode 0x73 with
-//     funct3 != 0), making it self-describing — the handler doesn't need a
-//     lookup table; it just executes the encoding directly
-//     GOTO_MMODE fast path
-//
-// Dispatch order in the handler:
-//   1. If (a0-1) < 5  -> GOTO_xMODE      (a0 in range [1..5])
-//   2. If a0 == 0x73  -> ECALL_TEST      (exact match on ecall encoding)
-//   3. If a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (SYSTEM opcode with funct3)
-//   4. Otherwise       -> RESERVED        (return -1)
-//==============================================================================
-
-// a0 values for TSBI_GOTO_xMODE.
-#define TSBI_GOTO_MMODE     0x00000001
-#define TSBI_GOTO_SMODE     0x00000002
-#define TSBI_GOTO_UMODE     0x00000003
-#define TSBI_GOTO_VSMODE    0x00000004
-#define TSBI_GOTO_VUMODE    0x00000005
-#define TSBI_ECALL_TEST     0x00000073
-#define TSBI_SFENCE_VMA     0x12000073           // sfence.vma x0, x0: flush address-translation caches
-#define TSBI_LW             0x0005a503
-#define TSBI_LWP4           0x0045a503
-#define TSBI_LD             0x0005b503
-#define TSBI_SW             0x00c5a023
-#define TSBI_SWP4           0x00c5a223
-#define TSBI_SD             0x00c5b023
-
-// CSR access operation codes: the encoding of a CSR instruction with rs1 = a1 and rd = a0.
-// csr is a 12-bit CSR number such as CSR_MIP from encoding.h.
-#define TSBI_CSR_SET(csr)    ((((csr) & 0xFFF) << 20) | 0x0005a073)  // csrrs x0, csr, a1
-#define TSBI_CSR_CLEAR(csr)  ((((csr) & 0xFFF) << 20) | 0x0005b073)  // csrrc x0, csr, a1
-#define TSBI_CSR_WRITE(csr)  ((((csr) & 0xFFF) << 20) | 0x00059073)  // csrrw x0, csr, a1
-#define TSBI_CSR_READ(csr)   ((((csr) & 0xFFF) << 20) | 0x00002573)  // csrrs a0, csr, x0
-
-// CSR_ACCESS is not a single #define — it's any value where:
-//   bits[6:0]   == 0x73 (SYSTEM opcode)    AND
-//   bits[14:12] != 0    (funct3 selects CSRRW/CSRRS/CSRRC/CSRRWI/CSRRSI/CSRRCI)
-// The caller constructs this encoding. Example for "csrrs a0, mstatus, x0":
-//   encoding = 0x30002573  (CSR=0x300, rs1=x0=0, funct3=010, rd=a0=x10)
-
-#define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
-
-//==============================================================================
 // SECTION 5: MODE ENCODING CONSTANTS
 //
 // These constants encode privilege modes in various formats:
@@ -267,7 +214,7 @@
 //      - csrrw sp, xSCRATCH, sp    (swap sp with save area pointer)
 //      - SREG T6, offset(sp)       (save T6 in temp save area)
 //      - jal T6, common_Xhandler   (jump to common handler, T6 = vector addr)
-//   3. ENDTEST TRAMPOLINE: 9 instructions (long jump to rvtest_Xend)
+//   3. ENDTEST TRAMPOLINE: 3 instructions (long jump to rvtest_Xend)
 //   4. COMMON HANDLER ENTRY: 5 instructions (save T5, restore xSCRATCH, jump)
 //
 // actual_tramp_sz = total bytes of trampoline code
@@ -275,7 +222,7 @@
 // sv_area_sz      = total save area per mode (trampoline save + pointers + regs)
 //==============================================================================
 
-#define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)  // total trampoline bytes
+#define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 3 + 5) * 4)  // total trampoline bytes
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                       // round up to dword alignment
 #define ptr_sv_sz       (18*8)                                           // 18 metadata slots × 8 bytes each
 #define reg_sv_sz       ( 8*REGWIDTH)                                    // 8 handler temp regs saved
@@ -320,7 +267,7 @@
                                                     //   and hideleg in the M area's slot
 #define tentry_addr_off             (tramp_sz+11*8) // offset to common handler entry point address
 #define xedeleg_sv_off              (tramp_sz+12*8) // offset to saved xEDELEG value
-#define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC value (trampoline addr)
+#define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC BASE (trampoline addr, no MODE bits)
 #define xtvec_sav_off               (tramp_sz+14*8) // offset to saved original xTVEC value
 #define xscr_save_off               (tramp_sz+15*8) // offset to saved original xSCRATCH value
 #define medeleg_illegal_sv_off      (tramp_sz+16*8) // offset to logical medeleg[2] value
@@ -395,6 +342,22 @@
   beq     \STATUS_REG, \TMP_REG, 1f
   RVTEST_RESTORE_MEDELEG_ILLEGAL \SAVE_AREA_REG, \TMP_REG
 1:
+.endm
+
+// Clear mstatus.MDT on an M-mode trap handler failure exit, which does not use mret. The
+// failure code can make T-SBI ecalls (RVTEST_VECTOR enables mstatus.VS that way), which are
+// double traps while MDT is still 1 from trap entry. Failure exits clear it only after the
+// trap state has been captured, so a passing trap never sees MDT changed.
+.macro RVTEST_CLEAR_MDT TMP_REG
+#ifdef SMDBLTRP_SUPPORTED
+  #if (UDB_MXLEN==64)
+        LI(\TMP_REG, MSTATUS_MDT)
+        csrc    CSR_MSTATUS, \TMP_REG
+  #else // RV32
+        LI(\TMP_REG, MSTATUSH_MDT)
+        csrc    CSR_MSTATUSH, \TMP_REG
+  #endif // MXLEN
+#endif // SMDBLTRP_SUPPORTED
 .endm
 
 // Relocate the resume address (xEPC, already past the ecall) of
@@ -880,7 +843,7 @@
 // SECTION 11: DEFAULT INTERRUPT MACROS
 //
 // If the DUT does not define RVMODEL_SET/CLR_xxx_INT macros, these defaults
-// are used. The default action is to jump to cleanup_epilogs, which terminates
+// are used. The default action is to jump to rvtest_code_end, which terminates
 // the test. This ensures that if an unexpected interrupt fires for an
 // undefined interrupt type, the test fails cleanly rather than hanging.
 //
@@ -888,7 +851,21 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      la T1, cleanup_epilogs; jr T1  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T5, unexpected_int_str; la T1, rvtest_code_end; jr T1  // default: abort test on unexpected interrupt
+
+// Trap handler version. The M-mode handler uses rvtest_code_end_mmode: with Smdbltrp,
+// mstatus.MDT=1 there and the ecall to switch to M-mode is a double trap. Both versions
+// leave unexpected_int_str in T5, so RVTEST_CODE_END reports the abort instead of
+// checking the signature counts of a test that did not finish.
+.macro RVTEST_DFLT_INT_HNDLR_MODE __MODE__
+        LA(     T5, unexpected_int_str)
+  .ifc \__MODE__ , M
+        LA(     T1, rvtest_code_end_mmode)
+  .else
+        LA(     T1, rvtest_code_end)
+  .endif
+        jr      T1
+.endm
 
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
@@ -956,20 +933,22 @@ init_\__MODE__\()scratch:
 #ifdef RVMODEL_MTIMECMP_ADDRESS            // this looks a bit odd to keep it constant size
 init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its address is defined
         LI(  T2,  -1)
-        LI(  T4,  RVMODEL_MTIMECMP_ADDRESS)
+        LI_FIXED_LEN(T4, RVMODEL_MTIMECMP_ADDRESS)
         SREG T2,  0(T4)
   .if (UDB_MXLEN==32)
         SREG T2,  4(T4)
   .endif
         nop                                       // padding to keep code size constant vs #else branch
 #else
-        nop                                       // no timer: 5 nops to match the #ifdef branch size
-        nop
-        nop
   .if (UDB_MXLEN==32)
+        .rept 6                                   // no timer: nops to match the #ifdef branch size
         nop
+        .endr
+  .else
+        .rept 11
+        nop
+        .endr
   .endif
-        nop
 #endif
 
 //---------- Save and clear exception delegation ----------
@@ -1061,8 +1040,10 @@ init_\__MODE__\()tvec:
     .endif
   #endif
 #endif
+        // xtvec_new_off holds the BASE only. sv_\__MODE__\()vect subtracts it from the stub
+        // return address to find which stub ran, so the MODE bits must not be included.
+        SREG    T5, xtvec_new_off(T1)              // save new xTVEC BASE (no MODE bits) in save area
         or      T2, T5, T2                         // T2 = handler BASE + selected mode bits
-        SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
         csrw    CSR_XTVEC, T2                      // attempt to write handler address to xTVEC
 
         csrr    T5, CSR_XTVEC                      // read back xTVEC to verify it was written
@@ -1071,11 +1052,11 @@ init_\__MODE__\()tvec:
 #endif
         // xTVEC is NOT fully writable — need to copy trampoline to xTVEC target
         csrw    CSR_XTVEC, T3                      // restore original xTVEC (we'll overwrite its target)
-        SREG    T3, xtvec_new_off(T1)               // update tvec_new with the original (now-in-use) xTVEC
 
 //---------- Copy trampoline to fixed xTVEC target ----------
 init_\__MODE__\()tramp:
         andi    T2, T3, ~WDBYTMSK                 // T2 = xTVEC target address (clear mode bits)
+        SREG    T2, xtvec_new_off(T1)              // update tvec_new with the BASE of the original (now-in-use) xTVEC
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
@@ -1120,6 +1101,7 @@ endcopy_\__MODE__\()tramp:
 abort\__MODE__\()test:
         LA(     T6, rvtest_trap_prolog_error)
         SREG    T5, 0(T6)
+        LI(     T5, 0)                              // mark setup failure as not yet reported
         LA(     T2, exit_\__MODE__\()cleanup)        // load address of cleanup label
         jr      T2                                   // long jump to cleanup; x7 does not set ELP (Zicfilp)
 
@@ -1278,11 +1260,15 @@ rvtest_\__MODE__\()prolog_done:
   .endr
 //---------- End-of-test trampoline ----------
 // Reached for impossible/unhandled interrupt causes.
-// Long-jumps to rvtest_Xend which is the epilog cleanup entry.
+// Long-jumps to the failure summary entry, which prints the summary and runs the epilogs.
 
 rvtest_\__MODE__\()endtest:                      // impossible cause landed here
-        LA(     T2, rvtest_\__MODE__\()end)      // load epilog cleanup address (may be far away)
-        jr      T2                                // long jump to epilog cleanup; x7 does not set ELP (Zicfilp)
+.ifc \__MODE__ , M
+        LA(     T2, rvtest_fail_summary_mmode)    // M-mode is already in trap context
+.else
+        LA(     T2, rvtest_fail_summary)          // switch to M-mode before cleanup
+.endif
+        jr      T2                                // long jump to failure summary and cleanup
 
 //---------- Common Handler ----------
 // Entered via jal from per-cause stub. T6 has the stub's return address
@@ -1338,6 +1324,56 @@ common_\__MODE__\()entry:                       // common entry for all traps in
       jr T2
       invisible_Mcontinue:
   .endif
+
+  // A failed self-check jumps to a failure entry (failedtest_*). The entries follow
+  // rvtest_code_end, which starts a fresh page so that a test can map its own code for
+  // a less-privileged mode while keeping the handlers and failure code out of reach. The
+  // jump from that mode then takes a fetch page or access fault at the entry. Run the
+  // entry in this handler's mode instead: set xPP to this mode and xret to xEPC with every
+  // register restored. A fault taken from this handler's own mode is recorded as usual,
+  // because retrying it would loop.
+        LI(T4, CAUSE_FETCH_PAGE_FAULT)
+        beq     T5, T4, \__MODE__\()fail_fetch_chk
+        LI(T4, CAUSE_FETCH_ACCESS)
+        bne     T5, T4, \__MODE__\()fail_fetch_done
+\__MODE__\()fail_fetch_chk:
+        csrr    T4, CSR_XEPC
+        LA(T3, failedtest_x5_x4)
+        bltu    T4, T3, \__MODE__\()fail_fetch_done
+        LA(T3, failedtest_saveregs)
+        bgeu    T4, T3, \__MODE__\()fail_fetch_done
+        csrr    T4, CSR_XSTATUS
+  .ifc \__MODE__ , M
+        LI(T3, MSTATUS_MPP)
+        and     T2, T4, T3
+        beq     T2, T3, \__MODE__\()fail_fetch_done  // fault from M-mode itself
+        LI(T2, MSTATUS_MPIE)
+  .else
+    .ifc \__MODE__ , S
+      #ifdef H_SUPPORTED
+        // In HS-mode, a trap from VS or VU (SPV=1) also comes from a less-privileged
+        // mode, whatever SPP says. Clear SPV so that sret returns to HS, not VS.
+        csrr    T2, CSR_HSTATUS
+        andi    T2, T2, HSTATUS_SPV
+        beqz    T2, \__MODE__\()fail_fetch_nonguest
+        csrc    CSR_HSTATUS, T2                     // SPV = 0
+        j       \__MODE__\()fail_fetch_lower
+\__MODE__\()fail_fetch_nonguest:
+      #endif
+    .endif
+        LI(T3, SSTATUS_SPP)
+        and     T2, T4, T3
+        bnez    T2, \__MODE__\()fail_fetch_done      // fault from this handler's own mode
+\__MODE__\()fail_fetch_lower:
+        // The failure code reads the failed check's instructions from the code that
+        // jumped here, which may be on a U-mode page: set SUM so those loads work.
+        LI(T3, SSTATUS_SPP | SSTATUS_SUM)
+        LI(T2, SSTATUS_SPIE)
+  .endif
+        csrs    CSR_XSTATUS, T3                     // xPP = this mode (mret with MPP=M also leaves V=0)
+        csrc    CSR_XSTATUS, T2                     // report with this mode's interrupts disabled
+        j       resto_\__MODE__\()rtn
+\__MODE__\()fail_fetch_done:
 
 
 //==============================================================================
@@ -1414,6 +1450,9 @@ tsbi_\__MODE__\()goto_mode:
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
         TSBI_RELOCATE_EPC \__MODE__                  // move between code region and its alias if needed
+        LA(     T4, rvtest_current_mode)
+        addi    T2, a0, -TSBI_GOTO_MMODE             // 0 for M-mode, nonzero for lower modes
+        SREG    T2, 0(T4)
 
         // Dispatch based on caller's a0 (still live in a0 from the ecall)
         li      T2, TSBI_GOTO_MMODE                  // T2 = 1
@@ -1877,11 +1916,11 @@ tsbi_\__MODE__\()instr_dispatch:
         bltu    T5, T4, 2f                        // middle CSR below the key: search the upper half
         mv      T2, T3                            // key below the middle CSR: hi = middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 2:
         addi    T1, T3, 32                        // lo = group after the middle
         bltu    T1, T2, 1b
-        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+        j       tsbi_\__MODE__\()instr_not_found  // range empty: CSR is not in the table
 3:
         mv      T2, T3                            // T2 = first entry of the matching group
         addi    T1, T3, 32                        // T1 = end of the group
@@ -1894,7 +1933,7 @@ tsbi_\__MODE__\()instr_dispatch:
         beq     T3, a0, tsbi_\__MODE__\()instr_found
         addi    T2, T2, 8                         // skip instruction and ret
         bltu    T2, T1, 4b
-        j       tsbi_instr_not_found              // CSR is in the table, but not this access
+        j       tsbi_\__MODE__\()instr_not_found  // CSR is in the table, but not this access
 
         // Other instructions: search tsbi_instr_table in order
 tsbi_\__MODE__\()instr_other:
@@ -1906,7 +1945,7 @@ tsbi_\__MODE__\()instr_other:
           lwu     T3, 0(T2)                       // T3 = table instruction
         #endif
         beq     T3, a0, tsbi_\__MODE__\()instr_found
-        beqz    T3, tsbi_instr_not_found
+        beqz    T3, tsbi_\__MODE__\()instr_not_found
         addi    T2, T2, 8                          // skip instruction and ret
         j       5b
 tsbi_\__MODE__\()instr_found:
@@ -1919,8 +1958,18 @@ tsbi_\__MODE__\()instr_found:
         j       resto_\__MODE__\()rtn           // restore handler regs and xret
 .endif
 
+.ifc \__MODE__ , S
+tsbi_\__MODE__\()instr_not_found:
+        // The epilogs read M-mode CSRs: switch to M-mode first. a1 keeps the encoding.
+        mv      a1, a0
+        RVTEST_TSBI_GOTO_MMODE
+        mv      a0, a1
+        j       tsbi_instr_not_found
+.endif
+
 .ifc \__MODE__ , M
 
+tsbi_Minstr_not_found:
 tsbi_instr_not_found:
         // Requested instruction is not in the table: print the offending encoding and
         // terminate the simulation. Registers may be clobbered freely: this never returns.
@@ -1936,7 +1985,8 @@ tsbi_instr_not_found:
         call    rvmodel_io_write_str
         LA(a0, failstr)                         // RVCP-SUMMARY: TEST FAILED line so the harness classifies this run
         call    rvmodel_io_write_str
-        call    rvmodel_halt_fail
+        LA(     T1, rvtest_fail_epilogs_mmode)
+        jr      T1
 
 // Emit the 32-byte group for one CSR: csrr a0 / csrw a1 / csrs a1 / csrc a1, each followed by ret.
 // The groups must be in ascending CSR-address order for the binary search, so each use checks that
@@ -2215,6 +2265,7 @@ tsbi_csr_mstatus:                                 // dispatcher fast path
 #ifdef H_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
 #endif
+        TSBI_CSR_INSTR_TABLE(0xF14) // mhartid
 tsbi_csr_table_end:
 
 // Instructions other than CSR accesses, searched in order up to the sentinel.
@@ -2329,7 +2380,11 @@ tsbi_instr_table:
         // sig_end_canary but must never pass it.
         LA(     T3, sig_end_canary)
         add     T4, T1, T2                          // T4 = this mode's updated trap sig write pointer
-        bgtu    T4, T3, trap_sig_overflow           // overrun -> fail before corrupting the signature/tohost
+  .ifc \__MODE__ , M
+        bgtu    T4, T3, trap_sig_overflow_mmode     // overrun -> fail before corrupting the signature/tohost
+  .else
+        bgtu    T4, T3, trap_sig_overflow
+  .endif
 
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
@@ -2344,7 +2399,7 @@ tsbi_instr_table:
 // word 4 is the second trap value (mtval2 / htval) and word 5 is xtinst.
 
 sv_\__MODE__\()vect:
-        LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
+        LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address (BASE, no MODE bits)
         sub     T6, T6, T3                          // T6 = vector stub address - trampoline base = spreader offset
         slli    T4, T6, 1                           // T4 = offset * 2 (part of compression: multiply by 3)
         add     T6, T6, T4                          // T6 = offset * 3
@@ -2416,12 +2471,12 @@ sv_\__MODE__\()vect:
         andi    T4, T4, 0x1C0                        // extract bits 8:6 (SPVP, MPV, GVA)
         slli    T4, T4, 13+14-6                      // position at word 0 bits 29:27 (xstatus 16:14)
         or      T3, T3, T4                           // merge into word 0
-        TRAP_SIGUPD(T4, T3, 0, sv_\__MODE__\()vect, sv_\__MODE__\()vect_str) // write word 0 to trap sig
+        TRAP_SIGUPD(T4, T3, 0, sv_\__MODE__\()vect, sv_\__MODE__\()vect_str, \__MODE__\()trap_mismatch) // write word 0 to trap sig
 
 //---------- Trap Signature Word 1: xcause ----------
 sv_\__MODE__\()cause:
         mv      T3, T5                               // T3 = xcause (for TRAP_SIGUPD)
-        TRAP_SIGUPD(T4, T3, 1, sv_\__MODE__\()cause, sv_\__MODE__\()cause_str) // write word 1
+        TRAP_SIGUPD(T4, T3, 1, sv_\__MODE__\()cause, sv_\__MODE__\()cause_str, \__MODE__\()trap_mismatch) // write word 1
 
         bltz    T5, common_\__MODE__\()int_handler   // if MSB=1 -> interrupt -> branch to int handler
 
@@ -2435,11 +2490,13 @@ common_\__MODE__\()excpt_handler:
 
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
-        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
-        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
-        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+        // Tests that arm mcontrol6 triggers define SDTRIG_IMPRECISE_XEPC: the spec only suggests where those
+        // fire, so DUTs take the breakpoint at different instructions and xEPC is not recorded for cause 3
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_BREAKPOINT)
+        beq     T2, T6, skpsv_\__MODE__\()epc
 #endif
-        TRAP_SIGUPD_ADDR(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
+        TRAP_SIGUPD_ADDR(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str, \__MODE__\()trap_mismatch) // write word 2: xEPC
 skpsv_\__MODE__\()epc:
         csrr    T3, CSR_XEPC                          // reload xEPC (TRAP_SIGUPD may clobber T3 on its failure path)
 
@@ -2534,7 +2591,7 @@ sv_\__MODE__\()tval_words:
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)
 
 sv_\__MODE__\()tval:
-        TRAP_SIGUPD_ADDR(T4, T3, 3, sv_\__MODE__\()tval, sv_\__MODE__\()tval_str) // write word 3: xtval
+        TRAP_SIGUPD_ADDR(T4, T3, 3, sv_\__MODE__\()tval, sv_\__MODE__\()tval_str, \__MODE__\()trap_mismatch) // write word 3: xtval
 
 skp_\__MODE__\()tval:
 
@@ -2561,10 +2618,10 @@ skp_\__MODE__\()tval:
         #endif
       .endif
       .ifc \__MODE__ , M
-        TRAP_SIGUPD_ZERO(T4, T3, 4, T2, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
+        TRAP_SIGUPD_ZERO(T4, T3, 4, T2, sv_\__MODE__\()Mtval2, sv_Mtval2_str, \__MODE__\()trap_mismatch) // write word 4: mtval2
         csrr    T3, CSR_MTINST
       .else
-        TRAP_SIGUPD_ZERO(T4, T3, 4, T2, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
+        TRAP_SIGUPD_ZERO(T4, T3, 4, T2, sv_\__MODE__\()Htval2, sv_Htval2_str, \__MODE__\()trap_mismatch) // write word 4: htval
         csrr    T3, CSR_HTINST
       .endif
         // Word 5: xtinst. Sail writes the transformed instruction for a load, store, AMO, HLV/HSV or
@@ -2586,9 +2643,9 @@ skp_\__MODE__\()tval:
         or      T2, T2, T4
         sv_\__MODE__\()tinst:
       .ifc \__MODE__ , M
-        TRAP_SIGUPD_ZERO(T4, T3, 5, T2, sv_\__MODE__\()tinst, sv_Mtinst_str) // write word 5: mtinst
+        TRAP_SIGUPD_ZERO(T4, T3, 5, T2, sv_\__MODE__\()tinst, sv_Mtinst_str, \__MODE__\()trap_mismatch) // write word 5: mtinst
       .else
-        TRAP_SIGUPD_ZERO(T4, T3, 5, T2, sv_\__MODE__\()tinst, sv_Htinst_str) // write word 5: htinst
+        TRAP_SIGUPD_ZERO(T4, T3, 5, T2, sv_\__MODE__\()tinst, sv_Htinst_str, \__MODE__\()trap_mismatch) // write word 5: htinst
       .endif
     #endif
   .endif
@@ -2653,8 +2710,24 @@ common_\__MODE__\()int_handler:
   .endif
 
 sv_\__MODE__\()ip:
-        TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
+        TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str, \__MODE__\()trap_mismatch) // write word 2: xIP
 
+// Release an armed wait loop (wait_loop_arm/wait_loop in the test generator). The loop checks
+// rvtest_wait_loop's exit before each WFI or WRS and leaves when it is 0, so clearing it ends
+// the wait. If the interrupt was taken inside the loop, between that check and the wait
+// instruction, returning there would wait for an interrupt that this handler has just
+// cleared, so resume at the loop's exit instead. Leaving early is legal: a wait
+// instruction may complete at any time.
+        LA(     T6, rvtest_wait_loop)
+        LREG    T2, REGWIDTH(T6)                     // T2 = loop exit, 0 if no loop is armed
+        beqz    T2, nowait_\__MODE__\()int
+        SREG    zero, REGWIDTH(T6)                   // release the loop
+        LREG    T6, 0(T6)                            // T6 = first instruction of the loop
+        csrr    T3, CSR_XEPC
+        bltu    T3, T6, nowait_\__MODE__\()int     // interrupted outside the loop: return normally
+        bgeu    T3, T2, nowait_\__MODE__\()int
+        csrw    CSR_XEPC, T2                         // interrupted inside the loop: resume at its exit
+nowait_\__MODE__\()int:
         j       sv_\__MODE__\()tval_words           // words 3-5: xtval and, with H, second trap value and xtinst
 
 dispatch_\__MODE__\()int_handler:
@@ -2682,7 +2755,11 @@ spcl_\__MODE__\()dispatch_handling:
         srli    T2, T2,1                //odd entry>0, remove LSB, normalizing to cause range
         beq     T5, T2, resto_\__MODE__\()rtn // case range matches, not an error, just noop
 1:
+  .ifc \__MODE__ , M
+        j       abort_test_mmode
+  .else
         j       abort_test
+  .endif
 
 // The entry is in T2 (x7) because a jump through x7 does not set ELP (Zicfilp), so the
 // handler routines need no landing pad. The 15*4 offset above counts the instructions
@@ -2801,8 +2878,8 @@ excpt_\__MODE__\()hndlr_tbl:
 
 // Each routine below clears its interrupt source through the RVTEST_CLR_*_INT
 // flavor for the mode this handler runs in: _M performs the operation directly,
-// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h and
-// exist only when Sm is supported; without Sm these interrupts are unexpected.
+// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h.
+// Without a standard M-mode these handlers are not emitted.
 #ifdef STANDARD_SM_SUPPORTED
 
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt
@@ -2843,7 +2920,7 @@ excpt_\__MODE__\()hndlr_tbl:
         CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Ssw_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #ifdef S_SUPPORTED
@@ -2877,9 +2954,9 @@ excpt_\__MODE__\()hndlr_tbl:
 2:      CLR_INT_RETURN \__MODE__
 #else
 \__MODE__\()clr_Stmr_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 
 #else
@@ -2889,7 +2966,7 @@ excpt_\__MODE__\()hndlr_tbl:
 \__MODE__\()clr_Mext_int:
 \__MODE__\()clr_Ssw_int:
 \__MODE__\()clr_Sext_int:
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt: STIP comes from stimecmp or
         la      T2, resto_\__MODE__\()rtn            //   an M-mode mip write, which the test clears;
@@ -2934,7 +3011,7 @@ excpt_\__MODE__\()hndlr_tbl:
 #ifdef RVTEST_SGEI_INTR_IMPL
 \__MODE__\()clr_Sgei_int:                            // supervisor guest external interrupt
   .ifc \__MODE__ , V
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
   .else
         CLR_INT_ENTER
         csrr    T3, CSR_HGEIP                        // T3 = pending guest external interrupts
@@ -2956,7 +3033,7 @@ excpt_\__MODE__\()hndlr_tbl:
   .endif
 #else
 \__MODE__\()clr_Sgei_int:                            // no guest interrupt files: hgeip is always 0
-        RVTEST_DFLT_INT_HNDLR
+        RVTEST_DFLT_INT_HNDLR_MODE \__MODE__
 #endif
 #endif
 
@@ -2967,6 +3044,14 @@ excpt_\__MODE__\()hndlr_tbl:
         jr      T2
 
 .popsection                                          // end of .text.rvmodel section
+
+// Mismatch failure exit (also used by the fast M handler). It leaves the handler without an
+// xRET, so an M-mode handler clears MDT first. x7 = return address; T4 is free.
+\__MODE__\()trap_mismatch:
+  .ifc \__MODE__ , M
+        RVTEST_CLEAR_MDT T4
+  .endif
+        j       failedtest_trap_x7_x9
 
 .option pop
 .endm                                                 // end of RVTEST_TRAP_HANDLER
@@ -3035,10 +3120,10 @@ excpt_\__MODE__\()hndlr_tbl:
 //==============================================================================
 //==============================================================================
 
-// RVTEST_FAST_TRAP_FAILURE(epc, cause, tval, status, check, description)
+// RVTEST_FAST_TRAP_FAILURE(epc, cause, tval, status, check, description, failure)
 // Reports a fast-trap field mismatch. This path is cold, so it can use extra
 // registers to snapshot the trapping CSRs for the normal trap diagnostics.
-#define RVTEST_FAST_TRAP_FAILURE(_EPC, _CAUSE, _TVAL, _STATUS, _CHECK, _DESCRIPTION) \
+#define RVTEST_FAST_TRAP_FAILURE(_EPC, _CAUSE, _TVAL, _STATUS, _CHECK, _DESCRIPTION, _FAIL) \
         csrr x9, _EPC                                      ;\
         LA(x7, saved_xepc)                                 ;\
         SREG x9, 0(x7)                                     ;\
@@ -3050,7 +3135,7 @@ excpt_\__MODE__\()hndlr_tbl:
         SREG x9, 24(x7)                                    ;\
         mv x6, a0                                          ;\
         mv x4, a1                                          ;\
-        jal x7, failedtest_trap_x7_x9                      ;\
+        jal x7, _FAIL                                      ;\
         RVTEST_WORD_PTR _CHECK                             ;\
         RVTEST_WORD_PTR _DESCRIPTION                       ;\
         .word _EPC
@@ -3142,11 +3227,11 @@ fast_Mothertrap:
         j    Mtrampoline                // hand off all non-illegal-instruction traps
 
 fast_Mcause_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mcause_mismatch, sv_Mcause_str)
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mcause_mismatch, sv_Mcause_str, Mtrap_mismatch)
 fast_Mepc_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mepc_mismatch, sv_Mepc_str)
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mepc_mismatch, sv_Mepc_str, Mtrap_mismatch)
 fast_Mtval_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mtval_mismatch, sv_Mtval_str)
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mtval_mismatch, sv_Mtval_str, Mtrap_mismatch)
 
 #ifdef S_SUPPORTED
 // ── Fast S-mode handler (stvec) ─────────────────────────────────────────────
@@ -3219,11 +3304,11 @@ fast_Sothertrap:
         j    Strampoline                // hand off all non-illegal-instruction traps
 
 fast_Scause_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Scause_mismatch, sv_Scause_str)
+        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Scause_mismatch, sv_Scause_str, failedtest_trap_x7_x9)
 fast_Sepc_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Sepc_mismatch, sv_Sepc_str)
+        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Sepc_mismatch, sv_Sepc_str, failedtest_trap_x7_x9)
 fast_Stval_mismatch:
-        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Stval_mismatch, sv_Stval_str)
+        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Stval_mismatch, sv_Stval_str, failedtest_trap_x7_x9)
 #endif // S_SUPPORTED
 
 .option pop

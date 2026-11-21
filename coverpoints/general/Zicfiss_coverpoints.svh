@@ -84,7 +84,7 @@
         bins ssp = {CSR_SSP};
     }
     // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
-    ssp_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
+    ssp_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP) {
         type_option.weight = 0;
         `ifdef UDB_MXLEN_64
             bins ss_page  = {[64'h140300000:64'h140300FFF]};
@@ -96,7 +96,7 @@
     }
 
     // ── Enable-chain building blocks ──────────────────────────────────────
-    menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
+    menvcfg_sse: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "sse") {
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
     }
@@ -128,14 +128,10 @@
     // pte.U is bit 4.
     pte_u: coverpoint ins.current.pte_d[4] {
         type_option.weight = 0;
-        bins supervisor = {1'b0};
-        bins user       = {1'b1};
     }
     // MXR governs whether an R=0 page is readable; the SS page is R=0 by construction.
-    sstatus_mxr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
+    sstatus_mxr: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr")[0] {
         type_option.weight = 0;
-        bins mxr_clear = {1'b0};
-        bins mxr_set   = {1'b1};
     }
     ordinary_storeops: coverpoint ins.current.insn {
         type_option.weight = 0;
@@ -148,7 +144,7 @@
     }
 
     // Low three bits of an ordinary store's effective address.
-    store_addr_lsb: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+    store_addr_lsb: coverpoint ins.current.eff_addr[2:0] {
         type_option.weight = 0;
         // auto fills 000 through 111
     }
@@ -193,7 +189,7 @@
     // ── Alignment building blocks ─────────────────────────────────────────
     // ssp[1:0] are read-only zero, and so is ssp[2] unless UXLEN or SXLEN can be 32. The
     // test writes all eight low-bit values; only these can be held.
-    ssp_LSBs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[2:0] {
+    ssp_LSBs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP)[2:0] {
         type_option.weight = 0;
         bins aligned_8 = {3'b000};
         `ifdef ZICFISS_SSP_BIT2_WRITABLE
@@ -207,7 +203,7 @@
 
     // ── Fault building blocks ─────────────────────────────────────────────
     // SSPOPCHK's base is implicitly ssp, so the faulting address is ssp itself.
-    ssp_fault_address: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
+    ssp_fault_address: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSP) {
         type_option.weight = 0;
         `ifdef UDB_MXLEN_64
             bins unmapped = {64'h140400000};
@@ -225,8 +221,8 @@
     // On a software-check exception stval reports shadow stack fault (code 3), or 0 if the
     // implementation provides no information.
     // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
-    stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")
-                    iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
+    stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL)
+                    iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
         type_option.weight = 0;
         `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
             bins ss_fault = {3};
@@ -236,8 +232,8 @@
     }
     // The trap this instruction took is a software-check exception, so an unrelated memory fault
     // on a pop cannot fill the mismatch bins.
-    scause_sw_check: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
-                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
+    scause_sw_check: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
         type_option.weight = 0;
         bins sw_check = {SOFTWARE_CHECK};
     }

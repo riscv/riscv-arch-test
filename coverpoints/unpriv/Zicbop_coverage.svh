@@ -73,8 +73,9 @@ covergroup Zicbop_prefetch_w_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zicbop_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "prefetch.i"     : begin
             Zicbop_prefetch_i_cg.sample(ins);
         end

@@ -1,7 +1,8 @@
 # Normative rule to coverpoint mappings
 # Generated from riscv-isa-manual normative rule definitions
 #
-# The Zkr seed CSR tests run once per privilege mode: Zkr_Sm in M-mode, Zkr_S in S-mode, Zkr_U in U-mode.
+# The Zkr seed CSR tests run once per privilege mode: Zkr_Sm in M-mode, Zkr_S in S-mode, Zkr_U in U-mode,
+# and Zkr_H in VS-mode and VU-mode.
 
 normative_rule_definitions:
   # The entropy source extension defines the seed CSR at address 0x015. This CSR
@@ -14,7 +15,11 @@ normative_rule_definitions:
   # with rs1=x0, or csrrsi/csrrci with uimm=0) raise an illegal-instruction
   # exception; any other CSR-access instruction may access seed.
   - name: seed_ro_illegal
-    coverpoint: ["{Zkr_Sm_cg,Zkr_S_cg,Zkr_U_cg}/{cp_zkr_seed_illegal_csr_op}"]
+    coverpoint:
+      [
+        "{Zkr_Sm_cg,Zkr_S_cg,Zkr_U_cg}/{cp_zkr_seed_illegal_csr_op}",
+        "Zkr_H_cg/cp_zkr_seed_access_h",
+      ]
 
   # The write value (in rs1 or uimm) must be ignored by implementations.
   - name: seed_write_ignore
@@ -28,7 +33,11 @@ normative_rule_definitions:
   # raises an illegal-instruction exception unless access is explicitly granted
   # via mseccfg.sseed/useed.
   - name: seed_exec_mode_control
-    coverpoint: ["{Zkr_Sm_cg,Zkr_S_cg,Zkr_U_cg}/{cp_zkr_seed_csrrw}"]
+    coverpoint:
+      [
+        "{Zkr_Sm_cg,Zkr_S_cg,Zkr_U_cg}/{cp_zkr_seed_csrrw}",
+        "Zkr_H_cg/cp_zkr_seed_access_h",
+      ]
 
   # Each returned seed[15:0] entropy value represents unique randomness when
   # OPST=ES16.
@@ -85,7 +94,7 @@ normative_rule_definitions:
   # instruction leads to a virtual-instruction exception in VS and VU modes; all other types of
   # accesses raise an illegal-instruction exception.
   - name: mseccfg_sseed_vsorvu_mode_op
-    coverpoint: ["TODO: seed access from VS-mode and VU-mode"]
+    coverpoint: ["Zkr_H_cg/cp_zkr_seed_access_h"]
 
   # Mode|SSEED|USEED|Description === M|-|-|The seed CSR is always available in machine mode as
   # normal (with a CSR read-write instruction.) Attempted read without a write raises an
@@ -97,9 +106,9 @@ normative_rule_definitions:
   # read-write seed access raises a virtual-instruction exception, while other access conditions
   # raise an illegal-instruction exception. ===
   - name: mseccfg_sseed_useed_op_tbl
-    # Representative coverpoints: the M, S, and U rows of the table each need their own covergroup
+    # Representative coverpoints: the M, S, U and VS/VU rows of the table each need their own covergroup
     coverpoint:
       [
         "{Zkr_Sm_cg,Zkr_S_cg,Zkr_U_cg}/{cp_zkr_seed_csrrw, cp_zkr_seed_illegal_csr_op}",
-        "TODO: the VS and VU rows need the H extension",
+        "Zkr_H_cg/cp_zkr_seed_access_h",
       ]

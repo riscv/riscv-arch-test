@@ -899,9 +899,16 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     }
 
     // ── Hypervisor control building blocks ────────────────────────────────
-    medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {
-        bins delegated = {1};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_18
+        medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {
+            bins delegated = {1};
+        }
+    `else
+        // medeleg[18] is read-only 0
+        medeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[18] {
+            bins not_delegated = {0};
+        }
+    `endif
     hedeleg_swchk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[18] {}
     // hedeleg[15] and hedeleg[7]: store/AMO page and access faults, set and cleared together.
     hedeleg_ss_faults: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[15],

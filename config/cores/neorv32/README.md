@@ -72,13 +72,11 @@ which NEORV32 lacks, so not Zk), the fast multiplier, the barrel shifter and an 
 ```bash
 .github/scripts/install-neorv32.sh ~/repos/neorv32-builds
 export PATH=$HOME/repos/neorv32-builds/bin:$PATH
-export NEORV32_SIM=$HOME/repos/neorv32-builds/bin/neorv32-tb
 make neorv32-rv32imacbk-u-pmp
 ```
 
 The install script builds GHDL and Verilator, converts and verilates the processor, and installs
-the `run-neorv32.sh` runner. Building GHDL needs GNAT. The two exports do what
-`.github/scripts/setup-neorv32.sh` does in CI.
+the `run-neorv32.sh` runner next to the testbench. Building GHDL needs GNAT.
 
 ## Parameters confirmed by probes
 

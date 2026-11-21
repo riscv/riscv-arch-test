@@ -537,10 +537,18 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
         `endif
     }
     // The fetch fault is recorded with the jalr, the last instruction that retired before it.
-    scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-                         iff (ins.current.csr_wb[CSR_SEPC]) {
-        bins access_fault = {INSTRUCTION_ACCESS_FAULT};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_1
+        scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                             iff (ins.current.csr_wb[CSR_SEPC]) {
+            bins access_fault = {INSTRUCTION_ACCESS_FAULT};
+        }
+    `else
+        // medeleg[1] is read-only 0, so instruction access faults are taken in M-mode
+        scause_fetch_access: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")
+                             iff (ins.current.csr_wb[CSR_MEPC]) {
+            bins access_fault = {INSTRUCTION_ACCESS_FAULT};
+        }
+    `endif
 
     // ── Main coverpoints ──────────────────────────────────────────────────
     // Instruction behaviour (Zicfiss active)

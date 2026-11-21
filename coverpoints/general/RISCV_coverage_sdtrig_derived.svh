@@ -504,4 +504,31 @@
     `endif
 `endif
 
+// SDTRIG_ETRIGGER_DELEG_S (_U): medeleg can delegate one of the exceptions in etrigger_code_s_deleg
+// (etrigger_code_u_deleg); a false MEDELEG_DELEGATABLE bit makes that bit of medeleg read-only 0
+`ifdef UDB_MEDELEG_DELEGATABLE_1
+    `define SDTRIG_ETRIGGER_DELEG_S
+`endif
+`ifdef UDB_MEDELEG_DELEGATABLE_5
+    `define SDTRIG_ETRIGGER_DELEG_S
+`endif
+`ifdef UDB_MEDELEG_DELEGATABLE_7
+    `define SDTRIG_ETRIGGER_DELEG_S
+`endif
+`ifdef UDB_MEDELEG_DELEGATABLE_12
+    `define SDTRIG_ETRIGGER_DELEG_S
+`endif
+`ifdef UDB_MEDELEG_DELEGATABLE_13
+    `define SDTRIG_ETRIGGER_DELEG_S
+`endif
+`ifdef UDB_MEDELEG_DELEGATABLE_15
+    `define SDTRIG_ETRIGGER_DELEG_S
+`endif
+`ifdef SDTRIG_ETRIGGER_DELEG_S
+    `define SDTRIG_ETRIGGER_DELEG_U
+`endif
+`ifdef UDB_MEDELEG_DELEGATABLE_8
+    `define SDTRIG_ETRIGGER_DELEG_U
+`endif
+
 `endif // RISCV_COVERAGE_SDTRIG_DERIVED_SVH

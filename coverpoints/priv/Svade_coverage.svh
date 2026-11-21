@@ -79,15 +79,37 @@ covergroup Svade_cg with function sample(ins_t ins);
     write_acc: coverpoint ins.current.write_access{
         bins set = {1};
     }
-    ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
-    }
-    load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
-    }
-    store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_12
+        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `else
+        // medeleg[12] is read-only 0, so instruction page faults are taken in M-mode.  A fetch fault is logged on the
+        // record before it without TRAP, so the mcause write marks it.
+        ins_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.csr_wb[CSR_MCAUSE]);
+        }
+    `endif
+    `ifdef UDB_MEDELEG_DELEGATABLE_13
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `else
+        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
+        load_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `endif
+    `ifdef UDB_MEDELEG_DELEGATABLE_15
+        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
+            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `else
+        // medeleg[15] is read-only 0, so store/AMO page faults are taken in M-mode
+        store_page_fault: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
+            bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
+        }
+    `endif
 
     `ifdef UDB_MXLEN_64
         Svade_enabled: coverpoint  get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "adue")[0] {

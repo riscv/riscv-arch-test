@@ -328,43 +328,44 @@ covergroup SdtrigSm_etrigger_cg with function sample(ins_t ins);
     }
     // exceptions raised in S and delegated to S. ecall from S is not: the T-SBI return to M is itself one.
     // A delegated illegal instruction is not either: a DUT that emulates the time CSR forwards it in software.
+    // Nor is an exception whose medeleg bit is read-only 0 (here and for U below).
     etrigger_code_s_deleg: coverpoint sdtrig_trap_cause(ins)[7:0] {
         type_option.weight = 0;
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 bins iacc = {8'd1}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5 bins lacc = {8'd5}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_7 bins sacc = {8'd7}; `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 `ifdef UDB_MEDELEG_DELEGATABLE_1 bins iacc = {8'd1}; `endif `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5 `ifdef UDB_MEDELEG_DELEGATABLE_5 bins lacc = {8'd5}; `endif `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_7 `ifdef UDB_MEDELEG_DELEGATABLE_7 bins sacc = {8'd7}; `endif `endif
         `ifdef UDB_MXLEN_64
             `ifdef SV39_SUPPORTED
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 `ifdef UDB_MEDELEG_DELEGATABLE_12 bins ipf = {8'd12}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 `ifdef UDB_MEDELEG_DELEGATABLE_15 bins spf = {8'd15}; `endif `endif
             `endif
         `else
             `ifdef SV32_SUPPORTED
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 `ifdef UDB_MEDELEG_DELEGATABLE_12 bins ipf = {8'd12}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 `ifdef UDB_MEDELEG_DELEGATABLE_15 bins spf = {8'd15}; `endif `endif
             `endif
         `endif
     }
     // exceptions raised in U and delegated to S
     etrigger_code_u_deleg: coverpoint sdtrig_trap_cause(ins)[7:0] {
         type_option.weight = 0;
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 bins iacc = {8'd1}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5 bins lacc = {8'd5}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_7 bins sacc = {8'd7}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_8 bins ecu  = {8'd8}; `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 `ifdef UDB_MEDELEG_DELEGATABLE_1 bins iacc = {8'd1}; `endif `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5 `ifdef UDB_MEDELEG_DELEGATABLE_5 bins lacc = {8'd5}; `endif `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_7 `ifdef UDB_MEDELEG_DELEGATABLE_7 bins sacc = {8'd7}; `endif `endif
+        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_8 `ifdef UDB_MEDELEG_DELEGATABLE_8 bins ecu  = {8'd8}; `endif `endif
         `ifdef UDB_MXLEN_64
             `ifdef SV39_SUPPORTED
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 `ifdef UDB_MEDELEG_DELEGATABLE_12 bins ipf = {8'd12}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 `ifdef UDB_MEDELEG_DELEGATABLE_15 bins spf = {8'd15}; `endif `endif
             `endif
         `else
             `ifdef SV32_SUPPORTED
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 bins ipf = {8'd12}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 bins lpf = {8'd13}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 bins spf = {8'd15}; `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 `ifdef UDB_MEDELEG_DELEGATABLE_12 bins ipf = {8'd12}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 `ifdef UDB_MEDELEG_DELEGATABLE_13 bins lpf = {8'd13}; `endif `endif
+                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 `ifdef UDB_MEDELEG_DELEGATABLE_15 bins spf = {8'd15}; `endif `endif
             `endif
         `endif
     }
@@ -375,11 +376,15 @@ covergroup SdtrigSm_etrigger_cg with function sample(ins_t ins);
     cp_etrigger_m_other:         cross exec_mode_m, triggernum_etrigger, etrigger_exception, trap_not_selected, trap_result_m;                                           // NTRIG * 2 m
     `ifdef S_SUPPORTED
         cp_etrigger_s:           cross exec_mode_s, triggernum_etrigger, etrigger_exception, etrigger_code_s, trap_not_delegated, trap_selected, trap_result_m;         // NTRIG * S exceptions * 2 s
-        cp_etrigger_s_deleg:     cross exec_mode_s, triggernum_etrigger, etrigger_exception, etrigger_code_s_deleg, trap_delegated, trap_selected, trap_result_s;       // NTRIG * delegated S exceptions * 2 s
+        `ifdef SDTRIG_ETRIGGER_DELEG_S
+            cp_etrigger_s_deleg:     cross exec_mode_s, triggernum_etrigger, etrigger_exception, etrigger_code_s_deleg, trap_delegated, trap_selected, trap_result_s;       // NTRIG * delegated S exceptions * 2 s
+        `endif
         cp_etrigger_s_other:     cross exec_mode_s, triggernum_etrigger, etrigger_exception, trap_not_delegated, trap_not_selected, trap_result_m;                       // NTRIG * 2 s
         `ifdef U_SUPPORTED
             cp_etrigger_u:       cross exec_mode_u, triggernum_etrigger, etrigger_exception, etrigger_code_u, trap_not_delegated, trap_selected, trap_result_m;     // NTRIG * U exceptions * 2 u
-            cp_etrigger_u_deleg: cross exec_mode_u, triggernum_etrigger, etrigger_exception, etrigger_code_u_deleg, trap_delegated, trap_selected, trap_result_s;   // NTRIG * delegated U exceptions * 2 u
+            `ifdef SDTRIG_ETRIGGER_DELEG_U
+                cp_etrigger_u_deleg: cross exec_mode_u, triggernum_etrigger, etrigger_exception, etrigger_code_u_deleg, trap_delegated, trap_selected, trap_result_s;   // NTRIG * delegated U exceptions * 2 u
+            `endif
             cp_etrigger_u_other: cross exec_mode_u, triggernum_etrigger, etrigger_exception, trap_not_delegated, trap_not_selected, trap_result_m;                   // NTRIG * 2 u
         `endif
     `endif
@@ -480,17 +485,19 @@ covergroup SdtrigSm_textra_cg with function sample(ins_t ins);
             `ifdef SDTRIG_ITRIGGER_ANY
                 cp_textra_itrigger_mcontext: cross exec_mode_s, triggernum_itrigger, itrigger_interrupt, trap_delegated, trap_selected, textra_trap_mcontext;     // NTRIG * 2
             `endif
-            `ifdef SDTRIG_ETRIGGER_ANY
+            // The test raises a load access fault delegated to S-mode
+            `ifdef SDTRIG_ETRIGGER_ANY `ifdef UDB_MEDELEG_DELEGATABLE_5
                 cp_textra_etrigger_mcontext: cross exec_mode_s, triggernum_etrigger, etrigger_exception, trap_delegated, trap_selected, textra_trap_mcontext;     // NTRIG * 2
-            `endif
+            `endif `endif
         `endif
         `ifdef SDTRIG_TEXTRA_SCONTEXT
             `ifdef SDTRIG_ITRIGGER_ANY
                 cp_textra_itrigger_scontext: cross exec_mode_s, triggernum_itrigger, itrigger_interrupt, trap_delegated, trap_selected, textra_trap_scontext;     // NTRIG * 2
             `endif
-            `ifdef SDTRIG_ETRIGGER_ANY
+            // The test raises a load access fault delegated to S-mode
+            `ifdef SDTRIG_ETRIGGER_ANY `ifdef UDB_MEDELEG_DELEGATABLE_5
                 cp_textra_etrigger_scontext: cross exec_mode_s, triggernum_etrigger, etrigger_exception, trap_delegated, trap_selected, textra_trap_scontext;     // NTRIG * 2
-            `endif
+            `endif `endif
         `endif
     `endif
     `ifndef H_SUPPORTED

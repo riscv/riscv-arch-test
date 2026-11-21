@@ -113,7 +113,9 @@ class InterruptSuite:
     ip: str  # pending CSR
     ie: str  # enable CSR
     status: dict  # global enable written in the boot mode: csr, mask, field
-    wfi: dict  # cp_wfi timer: guard, timer macro, ie (name, mask), ip (csr, name, mask), stce
+    # cp_wfi timer: timer macro, ie (name, mask), ip (csr, name, mask), stce.  The generators that run cp_wfi
+    # require the timer, as those that run cp_trigger_vsti_sstc require H and Sstc
+    wfi: dict
     deleg: list[str]  # default delegation setup before each case
     hie: bool = False  # also write the enables to hie, which holds the VS-level enables that sie cannot reach
 
@@ -388,8 +390,6 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
         coverpoint,
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
     )
-    if priv == "U":
-        tc.code.append("#ifndef S_SUPPORTED // U-mode WFI only waits when S-mode is not implemented")
     addr_reg, tmp_reg = test_data.int_regs.get_registers(2)
 
     # mstatus.TW only affects modes below M, so sweep it in M-mode where it must not matter
@@ -401,7 +401,6 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
             # S-mode suite with SIE = 0); lower modes take it regardless of the global enable.
             taken = enable == 1 or priv != boot
             tc.code += [
-                f"#ifdef {wfi['guard']}",
                 *suite.deleg,
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
@@ -426,13 +425,10 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 *wait_loop(test_data, tmp_reg, ["wfi"], None if taken else (ip_csr, ip_mask)),
                 f"RVTEST_CLR_{wfi['timer']}_INT_{flavor(priv)} # Clear the timer interrupt",
                 *mode_exit(suite, priv),
-                f"#endif // {wfi['guard']}",
                 "",
             ]
 
     test_data.int_regs.return_registers([addr_reg, tmp_reg])
-    if priv == "U":
-        tc.code.append("#endif // S_SUPPORTED")
 
 
 def generate_cp_trigger_vsti_sstc(
@@ -461,8 +457,6 @@ def generate_cp_trigger_vsti_sstc(
     )
     tmp_reg = test_data.int_regs.get_register()
     tc.code += [
-        "#ifdef H_SUPPORTED",
-        "#ifdef SSTC_SUPPORTED",
         *write_stce(test_data, True, boot),
         *write_stce(test_data, True, boot, henvcfg=True),
         f"LI(x{tmp_reg}, SSTATUS_SIE)",
@@ -515,8 +509,6 @@ def generate_cp_trigger_vsti_sstc(
         f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = 0",
         *write_stce(test_data, False, boot, henvcfg=True),
         *write_stce(test_data, False, boot),
-        "#endif // SSTC_SUPPORTED",
-        "#endif // H_SUPPORTED",
         "",
     ]
     test_data.int_regs.return_register(tmp_reg)

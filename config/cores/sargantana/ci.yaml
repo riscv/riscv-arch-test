@@ -66,7 +66,7 @@ exclude_extensions:
   - H_Zicntr-
   # hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1436-L1455
   # (https://github.com/bsc-loca/sargantana/issues/126); henvcfg.CBIE keeps 0b10
-  # (https://github.com/bsc-loca/sargantana/issues/113 item 8). H_hcsr_walk-04 also hits the vstimecmp bug (NEW-1) below.
+  # (https://github.com/bsc-loca/sargantana/issues/113 item 8).
   - H_hcsr_access-
   - H_hcsr_walk-
   # hgatp[59:58] are stored instead of reading 0 (https://github.com/bsc-loca/sargantana/issues/146)
@@ -185,10 +185,11 @@ exclude_extensions:
 
   # Every denied vstimecmp access raises a virtual-instruction exception (csr:csr_bsc.sv#L731-L740, #L1617-L1627):
   # from HS-mode (V = 0) when henvcfg.STCE or hcounteren.TM is 0, and from VS/VU-mode when menvcfg.STCE is 0, where
-  # illegal instruction is required (NEW-1; H_hcsr_walk-04 is excluded above)
+  # illegal instruction is required (NEW-1). H_hcsr_walk_sstc accesses vstimecmp from HS-mode.
   - Sstc_H_hs
   - Sstc_H_vs-
   - Sstc_H_vu
+  - H_hcsr_walk_sstc
   # xtval on an access that crosses into a faulting page is the start address, not the address of the faulting
   # page: fetch, core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L270; load/store,
   # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L212-L280 (NEW-2)

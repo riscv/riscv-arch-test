@@ -54,6 +54,7 @@ class VectorTypeConfig:
         random_element_generator: Add custom random element generation (used in unordered operations)
         egs: Element group size (used in vector crypto instructions)
         index_register: Register used to store index variables (e.g. vs1 for vrgatherei16)
+        vlmax_regs: Source registers loaded at VLMAX in every suite, so their data labels hold a whole register group
         require_zero_vstart: Nonzero vstart will trap with an illegal instruction exception
     """
 
@@ -66,6 +67,7 @@ class VectorTypeConfig:
     random_element_generator: Callable[[int, int, str], list[int]] | None = None
     egs: int = 1
     index_register: str | None = None
+    vlmax_regs: set[str] = field(default_factory=set)
     require_zero_vstart: bool = False
 
 

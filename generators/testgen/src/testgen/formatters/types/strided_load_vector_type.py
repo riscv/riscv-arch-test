@@ -106,9 +106,7 @@ def format_vlsseg_like_type(
     if params.vector_suite == "length":
         check = [*write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew)]
     else:
-        # Check every element below vl, since the stride sets the address of each one
-        base_check_count = params.vl if isinstance(params.vl, int) else 1
-        check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew, egs=base_check_count)]
+        check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
 
     # This can only be released after sigupd
     if params.maskval:

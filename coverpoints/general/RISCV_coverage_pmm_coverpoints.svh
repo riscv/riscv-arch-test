@@ -19,6 +19,7 @@
 //
 ///////////////////////////////////////////
     pm_insn: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
         type_option.weight = 0;
         // Base integer stores
         wildcard bins sb  = {SB};

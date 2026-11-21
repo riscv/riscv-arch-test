@@ -32,7 +32,7 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         if instr_type in {"FL", "CFL", "CFLS"}:
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], temp_fval=val)
             value = test_data.flen_format_str.format(val)
-        elif instr_type in {"L", "CL", "CILS"}:
+        elif instr_type in {"L", "XL", "CL", "CILS"}:
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], temp_val=val)
             value = f"{val:#x}"
         elif instr_type == "A":

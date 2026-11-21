@@ -12,6 +12,7 @@ from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.instructions.zilx import ZILX_INSTRUCTIONS, indexed_load
 
 # 16 distinct bytes placed in the test window, as four little-endian words at offsets 0, 4, 8, 12.
 # Bytes 0-7 all have bit 7 clear, so the complement pass (bytes 88 99 aa bb cc dd ee ff 10 32 54 76 98 ba dc fe,
@@ -30,6 +31,8 @@ _OFFSETS = range(9)
 
 def _access_bytes(instr_name: str) -> int:
     """Return the access size in bytes of a scalar load/store mnemonic (lh, lwu, fld, c.sdsp, ...)."""
+    if instr_name in ZILX_INSTRUCTIONS:
+        return ZILX_INSTRUCTIONS[instr_name].size
     core = instr_name.removeprefix("c.").removesuffix("sp").removeprefix("f")[1:]  # drop l/s
     return {"h": 2, "hu": 2, "w": 4, "wu": 4, "d": 8}[core]
 
@@ -77,7 +80,24 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     # Allocate some registers for testing.  Restrict them to [8,15] in case the registers are used for compressed instructions
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0], reg_range=list(range(8, 16)))
 
-    if instr_type in {"L", "FL", "CL", "CILS"}:
+    if instr_type == "XL":
+        index = test_data.int_regs.get_register()
+        for words, suffix in ((_PATTERN, ""), (_PATTERN_INV, "_inv")):
+            tc.code.extend([*set_base(f"x{r1}"), *_fill_window(r1, r2, words, test_data)])
+            for alignment in _OFFSETS:
+                setup, load, cleanup = indexed_load(instr_name, r2, r1, index, alignment)
+                tc.code.extend(
+                    [
+                        *set_base(f"x{r1}"),
+                        *setup,
+                        test_data.add_testcase(bin_name(alignment, suffix), coverpoint),
+                        load,
+                        *cleanup,
+                        write_sigupd(r2, test_data),
+                    ]
+                )
+        test_data.int_regs.return_register(index)
+    elif instr_type in {"L", "FL", "CL", "CILS"}:
         # Two passes: the pattern, then its complement, so each misaligned load sees both sign-bit values
         for words, suffix in ((_PATTERN, ""), (_PATTERN_INV, "_inv")):
             tc.code.extend([*set_base(f"x{r1}"), *_fill_window(r1, r2, words, test_data), ""])

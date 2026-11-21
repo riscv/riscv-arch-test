@@ -102,3 +102,13 @@ coverpoints:
     bins: 3 modes * 2 medleg * 2 mie * 2 sie
   - heading: "Note: instruction/load/store fault pages are being tested in Sv_Exceptions"
   - heading: "Note: tests that differ from Exceptions_Sm are cp_medeleg_mu and cp_stvec.  cp_misaligned_priority is split by access type."
+  - heading: Zilx loads to x0
+  - name: cp_zilx_rd_x0_fault
+    goal: Verify that discarding an indexed-load result does not suppress load exceptions.
+    description: "Execute every legal Zilx load with rd=x0 at the configured load-access-fault address. Also execute each halfword, word, and doubleword load at scratch+1. Use a nonzero index; unsigned-word-index forms set the upper index bits. Check the trap signature and cause."
+    expectation: Access-fault addresses raise load access faults. Misaligned addresses raise load-address-misaligned exceptions on implementations configured to fault; implementations permitting misaligned accesses leave those fault bins uncovered.
+    bins: |-
+      privilege mode x zilx_loadops x rd {x0} x cause {load access fault, load address misaligned}
+      = 14 bins on RV32, 34 on RV64; byte-load misalignment is architecturally unreachable
+    rules:
+      - "[norm:Zilx_rd_x0]"

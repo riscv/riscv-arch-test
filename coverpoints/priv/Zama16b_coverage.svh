@@ -37,6 +37,17 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     // 1-byte accesses (lb, lbu, sb, amo*.b): offsets [0:15]
     // ================================================================
     insn_1byte: coverpoint ins.current.insn {
+        `ifdef ZILX_SUPPORTED
+                wildcard bins lxsb = {LXSB};
+                wildcard bins lxsbu = {LXSBU};
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsuwb = {LXSUWB};
+            `endif
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsuwbu = {LXSUWBU};
+            `endif
+        `endif
+
         type_option.weight = 0;
         wildcard bins lb  = {LB};
         wildcard bins lbu = {LBU};
@@ -63,6 +74,19 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     // 2-byte accesses (lh, lhu, sh, flh, fsh, amo*.h): offsets [0:14]
     // ================================================================
     insn_2byte: coverpoint ins.current.insn {
+        `ifdef ZILX_SUPPORTED
+                wildcard bins lxh = {LXH};
+                wildcard bins lxhu = {LXHU};
+                wildcard bins lxsh = {LXSH};
+                wildcard bins lxshu = {LXSHU};
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsuwh = {LXSUWH};
+            `endif
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsuwhu = {LXSUWHU};
+            `endif
+        `endif
+
         type_option.weight = 0;
         wildcard bins lh  = {LH};
         wildcard bins lhu = {LHU};
@@ -93,6 +117,23 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     // 4-byte accesses (lw, lwu, sw, flw, fsw, amo*.w, amocas.w): offsets [0:12]
     // ================================================================
     insn_4byte: coverpoint ins.current.insn {
+        `ifdef ZILX_SUPPORTED
+                wildcard bins lxw = {LXW};
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxwu = {LXWU};
+            `endif
+                wildcard bins lxsw = {LXSW};
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxswu = {LXSWU};
+            `endif
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsuww = {LXSUWW};
+            `endif
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsuwwu = {LXSUWWU};
+            `endif
+        `endif
+
         type_option.weight = 0;
         wildcard bins lw = {LW};
         wildcard bins sw = {SW};
@@ -128,6 +169,18 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     // 8-byte accesses (ld, sd, fld, fsd, amo*.d, amocas.d): offsets [0:8]
     // ================================================================
     insn_8byte: coverpoint ins.current.insn {
+        `ifdef ZILX_SUPPORTED
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxd = {LXD};
+            `endif
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsd = {LXSD};
+            `endif
+            `ifdef UDB_MXLEN_64
+                wildcard bins lxsuwd = {LXSUWD};
+            `endif
+        `endif
+
         type_option.weight = 0;
         `ifdef UDB_MXLEN_64
             wildcard bins ld = {LD};

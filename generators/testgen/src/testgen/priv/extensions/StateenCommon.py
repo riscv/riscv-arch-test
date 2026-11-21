@@ -41,15 +41,15 @@ CSR_GUARDS = {
 # Where the DUT implements the extension, the walks and accesses neither write nor check the bit, so its
 # coverage reports missing. Without the extension, the bit is written and checked as read-only zero.
 STATEEN0_SAIL_GAP_BITS = [
-    (1 << 2, "ZCMT_SUPPORTED"),  # JVT
-    (1 << 54, "SSCTR_SUPPORTED"),  # CTR
-    (0b11 << 58, "SSAIA_SUPPORTED"),  # IMSIC, AIA
-    (1 << 60, "SSCSRIND_SUPPORTED"),  # CSRIND
+    (1 << 2, "defined(ZCMT_SUPPORTED)"),  # JVT
+    (1 << 54, "defined(SSCTR_SUPPORTED)"),  # CTR
+    (0b11 << 58, "defined(SSAIA_SUPPORTED)"),  # IMSIC, AIA
+    (1 << 60, "defined(SSCSRIND_SUPPORTED)"),  # CSRIND
 ]
 
 
 def sail_gap_bits(csr: str) -> list[tuple[int, str]] | None:
-    """The STATEEN0_SAIL_GAP_BITS in csr, as unwalked_bits for csr_walk_test and csr_access_test.
+    """The STATEEN0_SAIL_GAP_BITS in csr, as unchecked_bits for csr_walk_test and csr_access_test.
 
     The RV32 upper halves hold the bits from 32 up, shifted down, and the 32-bit sstateen0 those below 32.
     """
@@ -197,8 +197,9 @@ def _csr_lines(test_data: TestData, cg: str, cp: str, csrs: tuple[str, ...], tag
     lines: list[str] = []
     if readable:
         for csr in csrs:
+            gap = sail_gap_bits(csr)
             access = csr_access_test(
-                test_data, (csr, None), cg, cp, bin_prefix=f"{tag}_", unwalked_bits=sail_gap_bits(csr)
+                test_data, (csr, None), cg, cp, bin_prefix=f"{tag}_", maskedwrites=gap is not None, unchecked_bits=gap
             )
             lines += gated(access, CSR_GUARDS.get(csr))
         return lines
@@ -317,16 +318,24 @@ def walk_tests(
     modes: list[str],
     base: str,
     guard: str | None = None,
-    unwalked_bits: list[tuple[int, str]] | None = None,
+    unchecked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """Walk a one and a zero through every bit of a CSR from each mode.
 
-    Each (bits, define) in `unwalked_bits` is neither walked nor checked when `define` is defined.
+    Each (bits, cond) in `unchecked_bits` is neither walked nor checked where cond holds.
     """
     lines = [comment_banner(cp, f"Walking ones and zeros on {csr} from {', '.join(modes)} mode")]
     for mode in modes:
         prefix = f"{mode.lower()}_" if len(modes) > 1 else ""
-        walk = csr_walk_test(test_data, (csr, None), cg, cp, bin_prefix=prefix, unwalked_bits=unwalked_bits)
+        walk = csr_walk_test(
+            test_data,
+            (csr, None),
+            cg,
+            cp,
+            bin_prefix=prefix,
+            maskedwrites=unchecked_bits is not None,
+            unchecked_bits=unchecked_bits,
+        )
         lines += _mode_block(mode, base, walk)
     return gated(lines, guard)
 
@@ -348,6 +357,6 @@ def stateen_walk_tests(
             tc = test_data.new_test_chunk(test_chunks)
             tc.code.extend(
                 walk_tests(
-                    test_data, cg, cp, name, modes=[base], base=base, guard=cond, unwalked_bits=sail_gap_bits(name)
+                    test_data, cg, cp, name, modes=[base], base=base, guard=cond, unchecked_bits=sail_gap_bits(name)
                 )
             )

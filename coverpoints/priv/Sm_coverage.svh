@@ -568,8 +568,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
     // Avoid testing WPRI bits and those that don't like being poked.
     // Keep the lists below in sync with the masks in Sm.py.
-    // mstatus UBE/UXL/SXL/SBE/MBE are walked only where read-only (Sail cannot model them when
-    // writable), so they stay out of these lists and report missing elsewhere.
+    // mstatus UBE/SBE/MBE are walked only where read-only (Sail cannot model them when writable), and
+    // UXL/SXL are not walked, so they stay out of these lists and report missing.
     cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
         ignore_bins mstatus_not_walked = binsof(mcsrname_masked.mstatus) &&
             binsof(walking_ones) intersect {0, 2, 4, [25:30], 40, [43:62]};

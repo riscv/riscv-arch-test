@@ -544,8 +544,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
         | (1 << 24)  # SDT: Supervisor Disable Trap
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
-        | (0 << 32)  # UXL: walked only where read-only (mstatus_unwalked)
-        | (0 << 34)  # SXL: walked only where read-only (mstatus_unwalked)
+        | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  Test in xlen suite.
+        | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
         | (0 << 36)  # SBE: walked only where read-only zero (mstatus_unwalked)
         | (0 << 37)  # MBE: checked only where read-only zero, without memory accesses (_mbe_check)
         | (1 << 38)
@@ -554,22 +554,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 42)  # MDT: Machine Disable Trap
         | (1 << 63)  # SD for RV64
     )
-    # Sail has no big-endian support and cannot change UXL/SXL.  Walk these bits only where they are
-    # read-only, so Sail predicts them; elsewhere their walking_ones bins report missing.
-    # TODO: walk them everywhere when Sail models writable UBE/SBE/MBE and UXL/SXL.
+    # Sail has no big-endian support.  Walk these bits only where they are read-only zero, so Sail
+    # predicts them; elsewhere their walking_ones bins report missing.
+    # TODO: walk them everywhere when Sail models writable UBE/SBE/MBE.
     mstatus_unwalked = [
-        (1 << 6, "!(defined(UDB_U_MODE_ENDIANNESS_LITTLE) || !defined(U_SUPPORTED))"),  # UBE
-        (
-            3 << 32,  # UXL
-            "!(__riscv_xlen == 64 && ((defined(UDB_UXLEN_64) && !defined(UDB_UXLEN_32)) || !defined(U_SUPPORTED)))",
-        ),
-        (
-            3 << 34,  # SXL
-            "!(__riscv_xlen == 64 && ((defined(UDB_SXLEN_64) && !defined(UDB_SXLEN_32)) || !defined(S_SUPPORTED)))",
-        ),
-        (1 << 36, "!(__riscv_xlen == 64 && (defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED)))"),  # SBE
+        (1 << 6, "defined(U_SUPPORTED) && !defined(UDB_U_MODE_ENDIANNESS_LITTLE)"),  # UBE
+        (1 << 36, "__riscv_xlen == 32 || (defined(S_SUPPORTED) && !defined(UDB_S_MODE_ENDIANNESS_LITTLE))"),  # SBE
     ]
-    mstatush_unwalked = [(1 << 4, "!(defined(UDB_S_MODE_ENDIANNESS_LITTLE) || !defined(S_SUPPORTED))")]  # SBE
+    mstatush_unwalked = [(1 << 4, "defined(S_SUPPORTED) && !defined(UDB_S_MODE_ENDIANNESS_LITTLE)")]  # SBE
     mseccfg_mask = (
         (0 << 0)  # Smepmp MML not supported TODO: change these to 1 when Sail implements & boot code sets it up
         | (0 << 1)  # Smepmp MMWP not supported
@@ -614,16 +606,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # so leave them untouched and let their coverage report missing.
     # TODO: access and walk them everywhere when Sail gets an mhpmevent writable-bits parameter.
     mhpmevents = [(f"UDB_HPM_COUNTER_EN_{n}", (f"mhpmevent{n}", None)) for n in range(3, 32)]
-    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED.  Every bit is
-    # written, but only the bits of implemented counters are checked: the spec leaves the inhibit
-    # bits of absent counters unconstrained (they may be writable, read-only zero or read-only one).
-    csr_mcountinhibit = ("mcountinhibit", 0xFFFFFFFD)  # every counter's bit; bit 1 has no counter
-    mcountinhibit_unchecked = [(1 << n, f"!defined(UDB_HPM_COUNTER_EN_{n})") for n in range(3, 32)]
+    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
+    # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
+    csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     # TODO: Walk menvcfg.CDE everywhere (and add it to menvcfg_mask) once Sail implements Smcdeleg.
     # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
     # as read-only zero elsewhere.
-    cde_unwalked = [(MENVCFG_CDE, "SMCDELEG_SUPPORTED")]
+    cde_unwalked = [(MENVCFG_CDE, "defined(SMCDELEG_SUPPORTED)")]
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
@@ -664,9 +654,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(
-        csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
-    )
+    tc.code.extend(csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc = test_data.new_test_chunk(test_chunks)
@@ -732,7 +720,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
-            unwalked_bits=mstatus_unwalked,
+            unchecked_bits=mstatus_unwalked,
         )
     )
 
@@ -790,9 +778,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
-    tc.code.extend(
-        csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint, unchecked_bits=mcountinhibit_unchecked)
-    )
+    tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
@@ -804,7 +790,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             covergroup,
             coverpoint_masked,
             warl_fields=warl_fields,
-            unwalked_bits=cde_unwalked,
+            maskedwrites=True,
+            unchecked_bits=cde_unwalked,
         )
     )
     tc.code.append("#endif")
@@ -827,7 +814,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(
         csr_walk_test(
-            test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True, unwalked_bits=mstatush_unwalked
+            test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True, unchecked_bits=mstatush_unwalked
         )
     )
     tc.code.extend(
@@ -836,7 +823,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             csr_menvcfgh,
             covergroup,
             coverpoint_masked,
-            unwalked_bits=upper_half(cde_unwalked),
+            maskedwrites=True,
+            unchecked_bits=upper_half(cde_unwalked),
         )
     )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")

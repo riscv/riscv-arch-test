@@ -824,13 +824,7 @@ normative_rule_definitions:
 
   # G-stage leaves are checked as for U-mode with the Sv algorithm; the G bit is ignored; any exception is
   # reported for the original access type
-  - names:
-      [
-        H_vm_gpatrans,
-        H_vm_gpapriv,
-        H_vm_gpa_g,
-        Svrsw60t59b_H_g_stage_reserved_bits,
-      ]
+  - names: [H_vm_gpatrans, H_vm_gpapriv, H_vm_gpa_g]
     coverpoint:
       [
         "Sv_H_gstage_cg/cp_hgatp_perm",

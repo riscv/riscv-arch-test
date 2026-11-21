@@ -593,7 +593,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # TODO: Walk menvcfg.CDE everywhere (and add it to menvcfg_mask) once Sail implements Smcdeleg.
     # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
     # as read-only zero elsewhere.
-    cde_unwalked = [(MENVCFG_CDE, "SMCDELEG_SUPPORTED")]
+    cde_unwalked = [(MENVCFG_CDE, "defined(SMCDELEG_SUPPORTED)")]
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
@@ -754,7 +754,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             covergroup,
             coverpoint_masked,
             warl_fields=warl_fields,
-            unwalked_bits=cde_unwalked,
+            maskedwrites=True,
+            unchecked_bits=cde_unwalked,
         )
     )
     tc.code.append("#endif")
@@ -782,7 +783,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             csr_menvcfgh,
             covergroup,
             coverpoint_masked,
-            unwalked_bits=upper_half(cde_unwalked),
+            maskedwrites=True,
+            unchecked_bits=upper_half(cde_unwalked),
         )
     )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")

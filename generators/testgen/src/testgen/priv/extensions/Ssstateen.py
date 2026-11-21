@@ -62,7 +62,7 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     for csr in SSTATEEN_REGS:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(
-            walk_tests(test_data, CG, "cp_walking_ones", csr, modes=["S"], base="S", unwalked_bits=sail_gap_bits(csr))
+            walk_tests(test_data, CG, "cp_walking_ones", csr, modes=["S"], base="S", unchecked_bits=sail_gap_bits(csr))
         )
     # Every combination of the bit in the lower-level CSRs that have it (hstateen0 with H, sstateen0)
     for key, cp in FEATURE_COVERPOINTS + HSTATEEN_FEATURE_COVERPOINTS:

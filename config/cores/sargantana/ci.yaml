@@ -17,9 +17,11 @@ exclude_extensions:
   - InterruptsS_wfi_VS-
   # Not the core: in this tile WRS.NTO never waits, because the reservation-lost input is tied high outside OpenPiton
   # (tile:rtl/top_tile.sv#L411-L416), and time never advances, while Sail models WRS.NTO as a wait that expires after
-  # platform.max_time_to_wait. Tests that wait for that expiry (VU-mode with hstatus.VTW = 1, or a WRS.NTO resumed by
-  # its timeout) spin forever. Modelled as a NOP instead, Sail would miss the immediate illegal-instruction exception
-  # that Sargantana raises under mstatus.TW (csr:csr_bsc.sv#L2917-L2920), which Zawrs allows.
+  # platform.max_time_to_wait. Tests that wait for that expiry (VS-mode or VU-mode with hstatus.VTW = 1, or a WRS.NTO
+  # resumed by its timeout or a timer interrupt) spin forever. Modelled as a NOP instead, Sail would miss the immediate
+  # illegal-instruction exception that Sargantana raises under mstatus.TW (csr:csr_bsc.sv#L2917-L2920), which Zawrs
+  # allows.
+  - Zawrs_H-
   - Zawrs_S-
   - Zawrs_U-
   # minstret counts ecall, ebreak and CSR illegal-instruction traps, which raise csr_xcpt rather than

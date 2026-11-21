@@ -85,12 +85,12 @@ coverpoints:
     goal: Priority of exceptions
     description: Attempt lb, lbu, lh, lhu, lw, (lwu, ld) from memory location causing access fault and misaligned
     expectation: priority may vary.
-    bins: 7 ops * 8 lsbs
+    bins: 5 ops (7 on RV64) * 8 lsbs
   - name: cp_misaligned_priority_store
     goal: Priority of exceptions
     description: Attempt sb, sh, sw, (sd) to memory location causing access fault and misaligned
     expectation: priority may vary.
-    bins: 4 ops * 8 lsbs
+    bins: 3 ops (4 on RV64) * 8 lsbs
   - name: cp_mstatus_ie
     goal: Interrupt Enables
     description: ecall to machine cross mie = {0/1}

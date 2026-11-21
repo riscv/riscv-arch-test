@@ -120,7 +120,7 @@ coverpoints:
       cp_cfg_A_all_even
       cp_cfg_A_all_odd
     goal: Verify that every pmpcfg byte accepts each address-matching mode.
-    description: With L=0 and XWR=000, write A = OFF, TOR, NA4 and NAPOT into every byte of every pmpcfg CSR and read each back. cp_cfg_A_all_odd covers the odd pmpcfg CSRs (RV32 only).
+    description: With L=0 and XWR=000, write A = OFF and NAPOT (cfg_A_all), NA4 (cfg_A_all_na4, PMP_NA4_SUPPORTED only) and TOR (cfg_A_all_tor, PMP_TOR_SUPPORTED only) into every byte of every pmpcfg CSR and read each back. cp_cfg_A_all_odd covers the odd pmpcfg CSRs (RV32 only).
     expectation: Readback matches the reference model. A supported mode reads back as written. NA4 when G ≥ 1, or a mode the hart does not support, reads back as a legal value of the WARL field.
     bins: "4 A (fewer without TOR or NA4) × even pmpcfg CSRs (2, or 8 with 64 entries); odd: 4 A × odd pmpcfg CSRs (RV32)"
     rules:
@@ -356,9 +356,9 @@ coverpoints:
       cp_pmpcfg_walk_odd
       cp_pmpcfg_zero
     goal: Verify the layout and WARL behavior of the pmpcfg CSRs.
-    description: Write zero, then a walking one through each bit of every implemented pmpcfg CSR (pmpcfg0-15 on RV32, the even pmpcfg CSRs on RV64), and read each back. The walk skips bit 1 (W alone is reserved) and bit 4 (A = NA4) of every byte. cp_pmpcfg_walk_odd and cp_pmpcfg_zero cover the odd CSRs on RV32.
+    description: Write zero, then a walking one through each bit of every implemented pmpcfg CSR (pmpcfg0-15 on RV32, the even pmpcfg CSRs on RV64), and read each back. The walk skips bit 1 (W alone is reserved), bit 3 (A = TOR) and bit 4 (A = NA4) of every byte. cp_pmpcfg_walk_odd and cp_pmpcfg_zero cover the odd CSRs on RV32.
     expectation: "Readback matches the reference model: bits 6:5 of each byte read as zero, and a one written to bit 7 locks that entry."
-    bins: Walking-one values (24 on RV32, 48 on RV64) × even pmpcfg CSRs; on RV32 also × odd CSRs, plus zero to each odd CSR
+    bins: Walking-one values (20 on RV32, 40 on RV64) × even pmpcfg CSRs; on RV32 also × odd CSRs, plus zero to each odd CSR
     rules:
       - pmp_entry_structure
       - pmp_cfg_rv32_layout

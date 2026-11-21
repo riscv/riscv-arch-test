@@ -75,10 +75,10 @@ RVTEST_BEGIN
   add x5, x5, x6
   csrw pmpaddr1, x5
 
-  LI(x4, (((PMP_R | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(1)))
+  LI(x12, (((PMP_R | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(1)))
 PMP_Svadu_cg_PMP_pagetable_tor_write_pmpcfg0:
-  # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMP_Svadu_cg_PMP_pagetable_tor_write_pmpcfg0, PMP_Svadu_cg_PMP_pagetable_tor_write_pmpcfg0_str)
+  # Write x12 to pmpcfg0, read back and check against expected.
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x12, PMP_Svadu_cg_PMP_pagetable_tor_write_pmpcfg0, PMP_Svadu_cg_PMP_pagetable_tor_write_pmpcfg0_str)
   sfence.vma
 
 // Test case 1: PTE.A unset; PMP blocks the A/D update

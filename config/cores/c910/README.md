@@ -47,7 +47,7 @@ that `run_tests.py` sets for each test.
 - RAM is a 32 MB AXI SRAM at `0x0000_0000`, and hart 0 resets to address 0, so tests link there.
 - The testbench prints stores to `0x01FF_FFF0` and ends the simulation on a store to
   `0x01FF_FFE0` (pass) or `0x01FF_FFD0` (fail).
-- The CLINT at `0xB400_0000` has no `mtime` register and is beyond the reach of `la`, so
-  `RVMODEL_MTIME_ADDRESS`, `RVMODEL_MTIMECMP_ADDRESS` and `RVMODEL_MSIP_ADDRESS` are undefined.
+- The CLINT at `0xB400_0000` has no `mtime` register, so `RVMODEL_MTIME_ADDRESS` and
+  `RVMODEL_MTIMECMP_ADDRESS` are undefined. `RVMODEL_MSIP_ADDRESS` is the CLINT's `msip`.
 - `RVMODEL_BOOT` clears `mxstatus.THEADISAEE` and `mxstatus.MAEE`, which reset to 1, and enables
   the caches and branch prediction.

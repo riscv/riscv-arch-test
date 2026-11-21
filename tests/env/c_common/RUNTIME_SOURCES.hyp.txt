@@ -1,0 +1,15 @@
+# Hypervisor (H extension) support. Requires -DENABLE_HYP and
+# -I{c_common}/hyp in EXTRA_CFLAGS.
+hyp/hyp_csr.c
+hyp/hyp_priv.c
+hyp/hyp_trap.c
+hyp/hyp_trap_asm.S
+hyp/hyp_fence.c
+hyp/hyp_ldst.c
+hyp/hyp_reset.c
+hyp/gstage_pt.c
+hyp/two_stage.c
+hyp/test_vs_helpers.c
+hyp/hyp_vs_trap.c
+hyp/hyp_vs_trap_asm.S
+hyp/hyp_test_helpers.c

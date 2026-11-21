@@ -1,0 +1,44 @@
+# Directory-level test unit manifest for the Sv48x4 x Sv39 two-stage translation suite.
+#
+# Exercises G-stage (guest physical) Sv48x4 translation combined with VS-stage Sv39
+# translation: hgatp and vsatp field constraints, the granular permission
+# matrix across both stages, hfence.gvma/vvma, hlv/hsv, SUM and MXR under
+# two-stage translation, large pages and page straddling, PPN width, the G and
+# PBMT bits, implicit G-stage faults, MPRV/MPV, PMP interaction, and trap
+# priority.
+#
+# Sv39x4_Sv39 is the master directory: for the other eight combinations
+# kernel.ld and everything under tests/ are symlinks into it, and only main.c
+# and this manifest are real. The two paging modes are selected at compile time
+# by SUITE_VSATP_MODE and SUITE_HGATP_MODE below.
+#
+# The whole directory is one test: every file listed in SOURCES plus the
+# RUNTIME sources are compiled and linked into a single ELF. The unit boots
+# itself through the runtime's entry.S, so the ACT4 C runtime
+# (tests/env/c_test_start.S) is not linked in.
+#
+# Assertion-based self-checking: the runtime prints the RVCP-SUMMARY line the
+# harness parses, so there is no reference-model signature to compare against.
+
+REQUIRED_EXTENSIONS: ["I", "S", "H", "Sv48", "Sv39"]
+FORBIDDEN_EXTENSIONS: []
+MARCH: rv${XLEN}imach_zicsr_zifencei
+NEEDS_SIGNATURE: False
+MIN_HARTS: 1
+
+SOURCES:
+  - main.c
+  # tests/test_register.c textually includes the other tests/test_*.c files.
+  - tests/test_register.c
+
+RUNTIME: [base, vm, hyp, two_stage, pmp]
+LINKER_SCRIPT: kernel.ld
+
+EXTRA_CFLAGS:
+  - -DENABLE_HYP
+  - -I{c_common}/hyp
+  - -I{c_common}/pmp
+  # This suite is mode-intrinsic: pin both paging modes instead of following
+  # the platform default the way the mode-agnostic suites do.
+  - -DSUITE_VSATP_MODE=SATP_MODE_SV39
+  - -DSUITE_HGATP_MODE=HGATP_MODE_SV48X4

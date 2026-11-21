@@ -19,6 +19,11 @@ from ruamel.yaml.error import YAMLError
 
 _TEST_FILE_SUFFIXES = (".S", ".c")
 
+# A directory containing this manifest is a single directory-level test unit:
+# all of its sources are compiled and linked into one ELF, instead of every
+# file being an independent test.
+SUITE_MANIFEST = "suite.yaml"
+
 ExtensionRequirement = str | Annotated[frozenset[str], Field(min_length=1)]
 
 
@@ -52,6 +57,13 @@ class TestMetadata(BaseModel):
     needs_signature: bool = Field(alias="NEEDS_SIGNATURE", default=True)
     min_harts: int = Field(alias="MIN_HARTS", default=1, ge=1)
     params: dict[str, int | bool | str] = Field(default_factory=dict)
+
+    # Directory-level test units only (see SUITE_MANIFEST). Every field has a
+    # default so single-file .S/.c test headers are unaffected.
+    sources: tuple[str, ...] = Field(alias="SOURCES", default_factory=tuple)
+    runtime: tuple[str, ...] = Field(alias="RUNTIME", default_factory=tuple)
+    linker_script: str | None = Field(alias="LINKER_SCRIPT", default=None)
+    extra_cflags: tuple[str, ...] = Field(alias="EXTRA_CFLAGS", default_factory=tuple)
 
     model_config = {"extra": "forbid", "frozen": True}
 
@@ -95,8 +107,18 @@ class TestMetadata(BaseModel):
 
     @property
     def is_c_test(self) -> bool:
-        """Whether the test source is C."""
-        return self.test_path.suffix == ".c"
+        """Whether the test is compiled from C sources."""
+        return self.is_suite or self.test_path.suffix == ".c"
+
+    @property
+    def is_suite(self) -> bool:
+        """Whether this is a directory-level test unit with its own sources."""
+        return bool(self.sources)
+
+    @property
+    def suite_dir(self) -> Path:
+        """Root directory of a directory-level test unit."""
+        return self.test_path.parent
 
 
 def _describe_validation_error(err: ValidationError) -> str:
@@ -176,6 +198,41 @@ def _is_excluded(test_file: Path, exclude_list: list[str]) -> bool:
     )
 
 
+def extract_suite_config(manifest: Path) -> TestMetadata:
+    """Load a directory-level test unit's ``suite.yaml`` manifest.
+
+    Unlike single-file tests, the manifest is plain YAML: the file has a .yaml
+    suffix, so it needs no START_TEST_CONFIG/END_TEST_CONFIG markers.
+    """
+    yaml = YAML(typ="safe", pure=True)
+    try:
+        config_dict = yaml.load(manifest.read_text())
+    except YAMLError as e:
+        raise TestYamlHeaderError(manifest, f"YAML parse error: {e}") from None
+
+    if not isinstance(config_dict, dict):
+        raise TestYamlHeaderError(manifest, "manifest must be a YAML mapping")
+
+    config_dict["test_path"] = str(manifest.absolute())
+
+    try:
+        metadata = TestMetadata.model_validate(config_dict)
+    except ValidationError as e:
+        raise TestYamlHeaderError(manifest, _describe_validation_error(e)) from None
+
+    # Fail at discovery time rather than at compile time when a manifest names
+    # a source or linker script that is not there.
+    suite_dir = manifest.parent
+    declared = list(metadata.sources)
+    if metadata.linker_script is not None:
+        declared.append(metadata.linker_script)
+    missing = sorted(name for name in declared if not (suite_dir / name).is_file())
+    if missing:
+        raise TestYamlHeaderError(manifest, f"missing file(s): {', '.join(missing)}")
+
+    return metadata
+
+
 def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> dict[str, TestMetadata]:
     """Generate a dictionary of tests with their corresponding metadata from the specified directory.
 
@@ -185,7 +242,8 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
         exclude: Comma-separated list of extensions or test groups to exclude (applied after extensions filter).
 
     Returns:
-        Dictionary mapping test file paths to their metadata.
+        Dictionary mapping test file paths to their metadata. A directory-level
+        test unit is keyed by its directory path relative to ``tests_dir``.
     """
 
     extension_list: list[str] = []
@@ -196,6 +254,16 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
     if exclude:
         exclude_list.extend(ext.strip() for ext in exclude.split(",") if ext.strip())
 
+    # Directories holding a manifest are single multi-source test units; the
+    # sources inside them belong to the unit and are not independent tests.
+    suite_dirs = frozenset(manifest.parent for manifest in tests_dir.rglob(SUITE_MANIFEST))
+
+    def _is_runtime_or_suite_source(test_file: Path) -> bool:
+        # Everything under tests/env/ is shared runtime support code, at any depth.
+        if "env" in test_file.relative_to(tests_dir).parts:
+            return True
+        return any(suite_dir in test_file.parents for suite_dir in suite_dirs)
+
     test_list: dict[str, TestMetadata] = {}
 
     if extension_list:
@@ -204,7 +272,7 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
                 continue
             for suffix in _TEST_FILE_SUFFIXES:
                 for test_file in tests_dir.rglob(f"*/{ext}/*{suffix}"):
-                    if _is_excluded(test_file, exclude_list):
+                    if _is_runtime_or_suite_source(test_file) or _is_excluded(test_file, exclude_list):
                         continue
                     config = extract_yaml_config(test_file)
                     test_file_unique_name = str(test_file.relative_to(tests_dir))
@@ -212,10 +280,18 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
     else:
         for suffix in _TEST_FILE_SUFFIXES:
             for test_file in tests_dir.rglob(f"*{suffix}"):
-                if test_file.parent.name == "env" or _is_excluded(test_file, exclude_list):
+                if _is_runtime_or_suite_source(test_file) or _is_excluded(test_file, exclude_list):
                     continue
                 config = extract_yaml_config(test_file)
                 test_file_unique_name = str(test_file.relative_to(tests_dir))
                 test_list[test_file_unique_name] = config
+
+    for suite_dir in sorted(suite_dirs):
+        rel_dir = suite_dir.relative_to(tests_dir)
+        if any(part in exclude_list for part in rel_dir.parts):
+            continue
+        if extension_list and not any(ext in rel_dir.parts for ext in extension_list if ext not in exclude_list):
+            continue
+        test_list[str(rel_dir)] = extract_suite_config(suite_dir / SUITE_MANIFEST)
 
     return test_list

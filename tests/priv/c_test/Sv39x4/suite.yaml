@@ -1,0 +1,37 @@
+# Directory-level test unit manifest for the Sv39x4 G-stage translation suite.
+#
+# Covers the Sv39x4 G-stage (guest physical) translation mode: hgatp fields,
+# root table alignment, 1G/2M/4K mappings, GPA high bits, PTE validity and
+# permission bits, the U and G bits, A/D management, superpage alignment,
+# guest-page-fault reporting, and hgatp MODE=Bare.
+#
+# The whole directory is one test: every file listed in SOURCES plus the
+# RUNTIME sources are compiled and linked into a single ELF. The unit boots
+# itself through the runtime's entry.S, so the ACT4 C runtime
+# (tests/env/c_test_start.S) is not linked in.
+#
+# Assertion-based self-checking: the runtime prints the RVCP-SUMMARY line the
+# harness parses, so there is no reference-model signature to compare against.
+
+REQUIRED_EXTENSIONS: ["I", "S", "H", "Sv39"]
+FORBIDDEN_EXTENSIONS: []
+MARCH: rv${XLEN}imach_zicsr_zifencei
+NEEDS_SIGNATURE: False
+MIN_HARTS: 1
+
+SOURCES:
+  - main.c
+  - tests/test_helpers.c
+  # tests/test_register.c textually includes the other tests/test_*.c files.
+  - tests/test_register.c
+
+RUNTIME: [base, vm, hyp, two_stage, pmp]
+LINKER_SCRIPT: kernel.ld
+
+EXTRA_CFLAGS:
+  - -DENABLE_HYP
+  - -I{c_common}/hyp
+  - -I{c_common}/pmp
+  # This suite is mode-intrinsic: pin the G-stage mode instead of following
+  # the platform default the way the mode-agnostic suites do.
+  - -DSUITE_HGATP_MODE=HGATP_MODE_SV39X4

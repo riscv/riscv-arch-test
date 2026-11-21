@@ -1,0 +1,18 @@
+# Sources linked into every test unit that uses the c_common runtime.
+# Paths are relative to this directory; '#' starts a comment.
+# A suite selects groups with the RUNTIME key of its suite.yaml, which maps a
+# group name to RUNTIME_SOURCES.<group>.txt.
+entry.S
+reg_init.S
+platform_init.S
+trap_asm.S
+trap.c
+privilege.c
+csr_accessors.c
+tsbi/tsbi_proxy.c
+tsbi/tsbi_deleg.c
+uart.c
+test_framework.c
+string.c
+compiler_rt.c
+act4_compat.c

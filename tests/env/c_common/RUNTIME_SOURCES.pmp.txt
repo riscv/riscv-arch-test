@@ -1,0 +1,3 @@
+# PMP configuration helpers. Requires -I{c_common}/pmp in EXTRA_CFLAGS.
+pmp/pmp_cfg.c
+pmp/pmp_init.S

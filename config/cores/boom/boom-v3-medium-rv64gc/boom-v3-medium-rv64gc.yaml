@@ -1,0 +1,517 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+# UDB architecture configuration for the Berkeley Out-of-Order Machine (BOOM v3), built through
+# Chipyard as ACTMediumBoomV3Config (see .github/scripts/install-boom.sh):
+#   WithBroadcastManager ++ WithNoDebug ++ MediumBoomV3Config
+#
+# BOOM instantiates rocket-chip's CSR file, PTW and PMP checker, so most CSR behavior below is
+# rocket-chip's. Citations are pinned to:
+#   Chipyard    ucb-bar/chipyard           @ 0acc1e1de2d3284bcd4d876956932a013ffe1949 (1.14.0)
+#   BOOM        riscv-boom/riscv-boom      @ 5223e44cfeb26f41380057a2eb4d651197475f69
+#   rocket-chip chipsalliance/rocket-chip  @ 55bcad0f59436de98ea510334121de8546b9e9d7
+# BOOM below abbreviates https://github.com/riscv-boom/riscv-boom/blob/5223e44cfeb26f41380057a2eb4d651197475f69
+# RC abbreviates https://github.com/chipsalliance/rocket-chip/blob/55bcad0f59436de98ea510334121de8546b9e9d7
+#
+# BoomCoreParams (BOOM/src/main/scala/v3/common/parameters.scala) sets the defaults cited below;
+# WithNMediumBooms (BOOM/src/main/scala/v3/common/config-mixins.scala#L131-L172) overrides only
+# the microarchitecture and nPerfCounters = 6.
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: boom-v3-medium-rv64gc
+description: BOOM v3 (MediumBoomV3Config, 2-wide) in the Chipyard Verilator harness
+
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  # The LR reservation is the 64-byte data-cache block: the SC compares the block address only.
+  #   BOOM/src/main/scala/v3/lsu/dcache.scala#L665
+  # Za64rs implies Za128rs.
+  - { name: Za64rs, version: "= 1.0.0" }
+  - { name: Za128rs, version: "= 1.0.0" }
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  # cycle and instret are implemented (RC/src/main/scala/rocket/CSR.scala#L731-L732), time is
+  # not, so TIME_CSR_IMPLEMENTED is false and ACT emulates time from the CLINT mtime.
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Zihpm, version: "= 2.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  # useVM = true gives S-mode (BOOM/src/main/scala/v3/common/parameters.scala#L93,
+  # RC/src/main/scala/tile/Core.scala#L62).
+  - { name: S, version: "= 1.12.0" }
+  # Sm 1.12: menvcfg and mconfigptr are implemented (RV64, so no mstatush).
+  #   RC/src/main/scala/rocket/CSR.scala#L743
+  #   RC/src/main/scala/rocket/CSR.scala#L849
+  - { name: Sm, version: "= 1.12.0" }
+  # pgLevels = 3: satp accepts Bare and Sv39.
+  #   BOOM/src/main/scala/v3/common/parameters.scala#L27
+  - { name: Sv39, version: "= 1.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+  # A leaf PTE needs A = 1, and a writable one D = 1; the walker never sets them.
+  #   RC/src/main/scala/rocket/PTW.scala#L141
+  - { name: Svade, version: "= 1.0.0" }
+  - { name: Sstvecd, version: "= 1.0.0" }
+  # stvec accepts mode 1 (Vectored), STVEC_MODES below.
+  - { name: Sstvecv, version: "= 1.0.0" }
+  - { name: Ssu64xl, version: "= 1.0.0" }
+  - { name: Sscounterenw, version: "= 1.0.0" }
+
+params:
+  # misa.X is 0: BOOM has no custom ISA extension and no RoCC accelerator in this configuration.
+  #   RC/src/main/scala/rocket/CSR.scala#L642-L647
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+
+  # misaWritable = false: writes to misa are ignored.
+  #   BOOM/src/main/scala/v3/common/parameters.scala#L77
+  #   RC/src/main/scala/rocket/CSR.scala#L1264
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_U: false
+  MUTABLE_MISA_S: false
+
+  # ---------------------------------------------------------------- A
+  MISALIGNED_AMO: false
+  LRSC_RESERVATION_STRATEGY: "reserve naturally-aligned 64-byte region"
+  # The reservation holds the physical block address, so an SC through a synonym of the LR's VA
+  # can succeed (BOOM/src/main/scala/v3/lsu/dcache.scala#L665-L672). Every other data-cache
+  # access between the LR and the SC clears the reservation (dcache.scala#L667-L676).
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+
+  # ---------------------------------------------------------------- F/D
+  # haveFSDirty = true: mstatus.FS holds all four states, and an FP instruction that writes FP
+  # state or fflags sets it to Dirty.
+  #   BOOM/src/main/scala/v3/common/parameters.scala#L112
+  #   RC/src/main/scala/rocket/CSR.scala#L1670
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+
+  # ---------------------------------------------------------------- Zicntr
+  # rocket-chip has no time CSR ("rdtime[h] is not implemented, and could be provided by
+  # software emulation", RC/src/main/scala/tile/BaseTile.scala#L137).
+  TIME_CSR_IMPLEMENTED: false
+
+  # ---------------------------------------------------------------- U
+  U_MODE_ENDIANNESS: little
+  UXLEN: [64]
+  TRAP_ON_ECALL_FROM_U: true
+  # WFI in U-mode with mstatus.TW = 0 does not trap: allow_wfi is !TW below M-mode.
+  #   RC/src/main/scala/rocket/CSR.scala#L907
+  WFI_U_MODE: true
+
+  # ---------------------------------------------------------------- S
+  # ASIdBits defaults to 0: satp.ASID is read-only zero.
+  #   RC/src/main/scala/rocket/TLB.scala#L26
+  ASID_WIDTH: 0
+  S_MODE_ENDIANNESS: little
+  SXLEN: [64]
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
+  # BOOM writes xtval for breakpoints, misaligned loads and stores, access faults and page
+  # faults, and writes 0 for every other exception, including illegal instructions ("we currently
+  # only write 0x0 for illegal instructions") and fetch-address-misaligned exceptions.
+  #   BOOM/src/main/scala/v3/exu/core.scala#L1026-L1040
+  # Access faults cannot be delegated to S-mode (MEDELEG_DELEGATABLE), so the
+  # REPORT_VA_IN_STVAL_ON_*_ACCESS_FAULT values are never observable; they follow the RTL.
+  # Fetch-address-misaligned exceptions cannot occur either, because C cannot be disabled.
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: false
+  STVAL_WIDTH: 64
+  # scounteren, like mcounteren, keeps bits 0..(3 + nPerfCounters - 1) = 0..8.
+  #   RC/src/main/scala/rocket/CSR.scala#L530-L538
+  SCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # xtvec bit 1 always reads 0; in vectored mode bits 7:1 read 0 (256-byte base alignment).
+  #   RC/src/main/scala/rocket/CSR.scala#L1668
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 256
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+  # There is no vector unit, so mstatus.VS is read-only zero.
+  #   RC/src/main/scala/rocket/CSR.scala#L1671
+  MSTATUS_VS_LEGAL_VALUES: [0]
+
+  # ---------------------------------------------------------------- Sm
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: false
+  MXLEN: 64
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  # marchid = 2 (BoomCustomCSRs); mvendorid and mimpid are 0.
+  #   BOOM/src/main/scala/v3/common/parameters.scala#L153
+  #   RC/src/main/scala/rocket/CSR.scala#L848-L849
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 2
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
+  CONFIG_PTR_ADDRESS: 0
+  # Misaligned loads and stores trap; there is no misaligned-access hardware. The address unit
+  # flags a misaligned load, store, LR, SC or AMO before translation, and the LSU gives that
+  # exception priority over page faults and access faults.
+  #   BOOM/src/main/scala/v3/exu/execution-units/functional-unit.scala#L515-L546
+  #   BOOM/src/main/scala/v3/lsu/lsu.scala#L673-L679
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 64
+  # Every region in the device tree is a multiple of 4 KiB and 4 KiB aligned.
+  PMA_GRANULARITY: 12
+  # paddrBits is 32: the highest address in the memory map is the end of DRAM (0x9000_0000).
+  PHYS_ADDR_WIDTH: 32
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+  # mtvec stores the written value and masks it on read, so a write of mode 2 or 3 reads back
+  # as mode 0 or 1.
+  #   RC/src/main/scala/rocket/CSR.scala#L1286-L1287
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  # medeleg can delegate only the exceptions in delegable_base_exceptions; access faults and
+  # ecalls from S- and M-mode stay in M-mode.
+  #   RC/src/main/scala/rocket/CSR.scala#L434-L455
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # mideleg can delegate SSI, STI and SEI.
+  #   RC/src/main/scala/rocket/CSR.scala#L406-L431
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  # nPMPs = 8 (pmpaddr0..15 and pmpcfg0/2 decode, entries 8..15 read zero) with pmpGranularity = 4,
+  # so NA4 is selectable.
+  #   BOOM/src/main/scala/v3/common/parameters.scala#L57
+  #   BOOM/src/main/scala/v3/common/parameters.scala#L113
+  #   RC/src/main/scala/rocket/CSR.scala#L1490-L1503
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 8
+  PMP_GRANULARITY: 2
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
+  # nPerfCounters = 6 (WithNMediumBooms): mhpmcounter3..8 exist and are 40 bits wide; the rest
+  # read zero.
+  #   BOOM/src/main/scala/v3/common/config-mixins.scala#L155
+  #   RC/src/main/scala/rocket/CSR.scala#L212
+  #   RC/src/main/scala/rocket/CSR.scala#L717-L725
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  HPM_COUNTER3_WIDTH: 40
+  HPM_COUNTER4_WIDTH: 40
+  HPM_COUNTER5_WIDTH: 40
+  HPM_COUNTER6_WIDTH: 40
+  HPM_COUNTER7_WIDTH: 40
+  HPM_COUNTER8_WIDTH: 40
+  # mhpmevent keeps bits 1:0 (event set) and 13:8 (event mask); of the values 0-255, 0-3 read
+  # back (RC/src/main/scala/rocket/Events.scala#L29-L35).
+  HPM_EVENTS: [0, 1, 2, 3]
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  # mcountinhibit has 3 + nPerfCounters bits, and bit 1 is tied to zero.
+  #   RC/src/main/scala/rocket/CSR.scala#L591
+  #   RC/src/main/scala/rocket/CSR.scala#L1308
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

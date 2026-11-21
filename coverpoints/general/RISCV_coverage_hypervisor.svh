@@ -25,6 +25,24 @@
     `endif
 `endif
 
+`ifdef H_SUPPORTED
+// {hgatp.MODE, 2'b00, x4 bits}: the two guest physical address bits that an x4 G-stage mode adds above its Sv mode's
+// virtual address width (33:32 for Sv32x4, 40:39 for Sv39x4, 49:48 for Sv48x4, 58:57 for Sv57x4), from a guest physical
+// address shifted right by shift.  0 when hgatp is Bare, the bits are 00, or a bit above them is set.
+function automatic logic [7:0] x4_gpa_bits(ins_t ins, `XLEN_BITS gpa, int shift);
+    logic [3:0] mode = get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode");
+    `XLEN_BITS bits;
+    case (mode)
+        1:       bits = gpa >> (32 - shift);
+        8:       bits = gpa >> (39 - shift);
+        9:       bits = gpa >> (48 - shift);
+        10:      bits = gpa >> (57 - shift);
+        default: bits = 0;
+    endcase
+    return (bits inside {[1:3]}) ? {mode, 2'b00, bits[1:0]} : 8'h0;
+endfunction
+`endif
+
 // H_VADDR_WALK_MSB: vsepc and vstval hold the same values as sepc and stval, so they must hold every canonical
 // virtual address.  Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
 // (31 for Sv32, where VALEN = XLEN), as VADDR_TIERS in PrivCommon.py.

@@ -12,6 +12,8 @@
 
 `define COVER_SV
 
+`include "general/RISCV_coverage_hypervisor.svh"
+
 `ifdef ZICBOM_SUPPORTED
     `define SV_ZICBO_ANY
 `elsif ZICBOZ_SUPPORTED
@@ -2014,21 +2016,15 @@ covergroup Sv_H_gstage_cg with function sample(ins_t ins);
         }
         // The two guest physical address bits an x4 mode adds above its Sv mode's virtual address width (40:39 for
         // Sv39x4, 49:48 for Sv48x4, 58:57 for Sv57x4), with the bits above them zero (vsatp = Bare)
-        gpa_x4_bits : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
+        gpa_x4_bits : coverpoint x4_gpa_bits(ins, ins.current.rs1_val, 0) {
             `ifdef UDB_SV39X4_TRANSLATION
-                bins sv39x4_01 = {8} iff (ins.current.rs1_val[63:39] == 1);
-                bins sv39x4_10 = {8} iff (ins.current.rs1_val[63:39] == 2);
-                bins sv39x4_11 = {8} iff (ins.current.rs1_val[63:39] == 3);
+                bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
             `endif
             `ifdef UDB_SV48X4_TRANSLATION
-                bins sv48x4_01 = {9} iff (ins.current.rs1_val[63:48] == 1);
-                bins sv48x4_10 = {9} iff (ins.current.rs1_val[63:48] == 2);
-                bins sv48x4_11 = {9} iff (ins.current.rs1_val[63:48] == 3);
+                bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
             `endif
             `ifdef UDB_SV57X4_TRANSLATION
-                bins sv57x4_01 = {10} iff (ins.current.rs1_val[63:57] == 1);
-                bins sv57x4_10 = {10} iff (ins.current.rs1_val[63:57] == 2);
-                bins sv57x4_11 = {10} iff (ins.current.rs1_val[63:57] == 3);
+                bins sv57x4_01 = {8'hA1}; bins sv57x4_10 = {8'hA2}; bins sv57x4_11 = {8'hA3};
             `endif
         }
     `else
@@ -2196,23 +2192,17 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
         // The two guest physical address bits an x4 mode adds above its Sv mode's virtual address width (33:32 for
         // Sv32x4, 40:39 for Sv39x4, 49:48 for Sv48x4), with the bits above them zero, which htval reports shifted right
         // by 2 after a guest-page fault.  A VS-stage PPN cannot reach Sv57x4's bits 58:57.
-        htval_x4_bits : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")
+        htval_x4_bits : coverpoint x4_gpa_bits(ins, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL), 2)
                         iff (ins.current.csr_wb[CSR_HTVAL]) {
             `ifdef UDB_MXLEN_64
                 `ifdef UDB_SV39X4_TRANSLATION
-                    bins sv39x4_01 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:37] == 1);
-                    bins sv39x4_10 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:37] == 2);
-                    bins sv39x4_11 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:37] == 3);
+                    bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
                 `endif
                 `ifdef UDB_SV48X4_TRANSLATION
-                    bins sv48x4_01 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:46] == 1);
-                    bins sv48x4_10 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:46] == 2);
-                    bins sv48x4_11 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:46] == 3);
+                    bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
                 `endif
             `else
-                bins sv32x4_01 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[31:30] == 1);
-                bins sv32x4_10 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[31:30] == 2);
-                bins sv32x4_11 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[31:30] == 3);
+                bins sv32x4_01 = {8'h11}; bins sv32x4_10 = {8'h12}; bins sv32x4_11 = {8'h13};
             `endif
         }
     `endif
@@ -2355,44 +2345,32 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
     `ifdef UDB_MXLEN_64
         // The two guest physical address bits an x4 mode adds (40:39 for Sv39x4, 49:48 for Sv48x4, 58:57 for
         // Sv57x4) in rs1, with the bits above them zero (vsatp = Bare)
-        gpa_x4_bits : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
+        gpa_x4_bits : coverpoint x4_gpa_bits(ins, ins.current.rs1_val, 0) {
             `ifdef UDB_SV39X4_TRANSLATION
-                bins sv39x4_01 = {8} iff (ins.current.rs1_val[63:39] == 1);
-                bins sv39x4_10 = {8} iff (ins.current.rs1_val[63:39] == 2);
-                bins sv39x4_11 = {8} iff (ins.current.rs1_val[63:39] == 3);
+                bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
             `endif
             `ifdef UDB_SV48X4_TRANSLATION
-                bins sv48x4_01 = {9} iff (ins.current.rs1_val[63:48] == 1);
-                bins sv48x4_10 = {9} iff (ins.current.rs1_val[63:48] == 2);
-                bins sv48x4_11 = {9} iff (ins.current.rs1_val[63:48] == 3);
+                bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
             `endif
             `ifdef UDB_SV57X4_TRANSLATION
-                bins sv57x4_01 = {10} iff (ins.current.rs1_val[63:57] == 1);
-                bins sv57x4_10 = {10} iff (ins.current.rs1_val[63:57] == 2);
-                bins sv57x4_11 = {10} iff (ins.current.rs1_val[63:57] == 3);
+                bins sv57x4_01 = {8'hA1}; bins sv57x4_10 = {8'hA2}; bins sv57x4_11 = {8'hA3};
             `endif
         }
     `endif
     `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
         // The two guest physical address bits an x4 mode adds (33:32, 40:39 or 49:48), with the bits above them
         // zero, reported in htval shifted right by 2 after a guest-page fault
-        htval_x4_bits : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")
+        htval_x4_bits : coverpoint x4_gpa_bits(ins, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL), 2)
                         iff (ins.current.csr_wb[CSR_HTVAL]) {
             `ifdef UDB_MXLEN_64
                 `ifdef UDB_SV39X4_TRANSLATION
-                    bins sv39x4_01 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:37] == 1);
-                    bins sv39x4_10 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:37] == 2);
-                    bins sv39x4_11 = {8} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:37] == 3);
+                    bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
                 `endif
                 `ifdef UDB_SV48X4_TRANSLATION
-                    bins sv48x4_01 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:46] == 1);
-                    bins sv48x4_10 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:46] == 2);
-                    bins sv48x4_11 = {9} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[63:46] == 3);
+                    bins sv48x4_01 = {8'h91}; bins sv48x4_10 = {8'h92}; bins sv48x4_11 = {8'h93};
                 `endif
             `else
-                bins sv32x4_01 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[31:30] == 1);
-                bins sv32x4_10 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[31:30] == 2);
-                bins sv32x4_11 = {1} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HTVAL)[31:30] == 3);
+                bins sv32x4_01 = {8'h11}; bins sv32x4_10 = {8'h12}; bins sv32x4_11 = {8'h13};
             `endif
         }
     `endif
@@ -2519,15 +2497,11 @@ covergroup Sv_H_fence_cg with function sample(ins_t ins);
     cp_sfence_vma_vs_asid : cross priv_mode_vs, sfence_vma, vsatp_paged, hgatp_paged, rs2_asid;
 
     // A guest physical address >> 2 in rs1 whose top two bits (33:32 for Sv32x4, 40:39 for Sv39x4) are 01, 10 or 11
-    rs1_gpa_x4 : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") iff (ins.current.insn[19:15] != 0) {
+    rs1_gpa_x4 : coverpoint x4_gpa_bits(ins, ins.current.rs1_val, 2) iff (ins.current.insn[19:15] != 0) {
         `ifdef UDB_MXLEN_64
-            bins sv39x4_01 = {8} iff (ins.current.rs1_val[63:37] == 1);
-            bins sv39x4_10 = {8} iff (ins.current.rs1_val[63:37] == 2);
-            bins sv39x4_11 = {8} iff (ins.current.rs1_val[63:37] == 3);
+            bins sv39x4_01 = {8'h81}; bins sv39x4_10 = {8'h82}; bins sv39x4_11 = {8'h83};
         `else
-            bins sv32x4_01 = {1} iff (ins.current.rs1_val[31:30] == 1);
-            bins sv32x4_10 = {1} iff (ins.current.rs1_val[31:30] == 2);
-            bins sv32x4_11 = {1} iff (ins.current.rs1_val[31:30] == 3);
+            bins sv32x4_01 = {8'h11}; bins sv32x4_10 = {8'h12}; bins sv32x4_11 = {8'h13};
         `endif
     }
     cp_hfence_gvma_x4 : cross priv_mode_hs, hfence_gvma, vsatp_paged, hgatp_paged, rs1_gpa_x4, rs2;

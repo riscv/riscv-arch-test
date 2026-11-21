@@ -278,6 +278,17 @@ def fence_chunk(
     return test_data.end_test_chunk()
 
 
+# Values of the two guest physical address bits that an x4 mode adds above its Sv mode's virtual address width
+X4_BITS = (0b01, 0b10, 0b11)
+
+
+def x4_gpa(g: SvMode, x4_bits: int, low: int, rng: Random) -> int:
+    """A guest physical address with ``x4_bits`` in the top two bits of ``g``'s width, random bits from there down to
+    bit ``low`` and zeros below."""
+    top = g.va_bits - 2
+    return (x4_bits << top) | (rng.getrandbits(top - low) << low)
+
+
 def x4_fence_chunk(
     test_data: TestData,
     g: SvMode,
@@ -290,9 +301,8 @@ def x4_fence_chunk(
     the current VMID in rs2.  Page A has the two guest physical address bits that ``g`` adds = 01, 10 and 11, so a
     hart that drops them from the fence operand keeps the stale translation.  The bits between them and bit 13 are
     random; bit 12 is clear, so page B, the next page, has its G-stage leaf in the same table."""
-    top = g.va_bits - 2
     rng = Random(split_name)
-    gpas = [(f"x4bits{bits:02b}", (bits << top) | (rng.getrandbits(top - 13) << 13)) for bits in (0b01, 0b10, 0b11)]
+    gpas = [(f"x4bits{bits:02b}", x4_gpa(g, bits, 13, rng)) for bits in X4_BITS]
     names = ", ".join(dict.fromkeys(f"{fence.coverpoint}_x4" for fence in fences))
     chunk = test_data.begin_test_chunk(split_name)
     chunk.section_header = comment_banner(

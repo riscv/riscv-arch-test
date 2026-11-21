@@ -1,0 +1,144 @@
+# Mapping of normative rules to coverpoints for the Zvabd test suite
+#
+# Zvabd provides vector integer absolute-difference instructions. vabd and vabdu write an
+# SEW-wide result and are defined for SEW of 8, 16 and 32 (and 64 with Zve64x); vwabda and
+# vwabdau accumulate into a 2*SEW-wide result and are defined only for SEW=8 and SEW=16.
+# Each instruction has both .vv and .vx forms. vabs.v is an assembly pseudoinstruction for
+# vabd.vx vd, vs2, x0 and has no encoding of its own, so it is not covered here.
+
+# Remove once Zvabd's rules are tagged in the ISA manual snapshot
+untagged_upstream: riscv/riscv-isa-manual#3279
+
+normative_rule_definitions:
+  # The Zvabd extension depends upon ext:zve32x[].
+  - name: Zvabd_dependent_Zve32x
+    coverpoint: ["Definition, checked through UDB"]
+
+  # This instruction computes the absolute difference between the signed integer SEW-bit
+  # `Op1` and `Op2` elements, writing the result into the SEW-bit elements in vd.
+  #
+  # cr_vs2_vs1_edges crosses Op2 against Op1 edge values at every supported SEW, and
+  # cr_vs2_rs1_edges does the same for the vector-scalar form. cp_vd covers the SEW-wide
+  # destination register group the result is written into.
+  - name: vabd_op
+    coverpoint:
+      [
+        "Zvabd8_vabd_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd16_vabd_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd32_vabd_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd64_vabd_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd16_vabd_vx_cg/cr_vs2_rs1_edges",
+        "Zvabd16_vabd_vv_cg/cp_vd",
+      ]
+
+  # vabd provides support for SEW of 8, 16, and 32. If ext:zve64x[] is supported, then
+  # vabd also adds support for SEW 64.
+  #
+  # Representative coverpoints; cp_asm_count in every Zvabd8, Zvabd16, Zvabd32 and Zvabd64
+  # covergroup. Zvabd64 is only generated for a DUT that implements Zve64x.
+  - name: vabd_sew_defined
+    coverpoint:
+      [
+        "Zvabd8_vabd_vv_cg/cp_asm_count",
+        "Zvabd16_vabd_vv_cg/cp_asm_count",
+        "Zvabd32_vabd_vv_cg/cp_asm_count",
+        "Zvabd64_vabd_vv_cg/cp_asm_count",
+      ]
+
+  # This instruction computes the absolute difference between the unsigned integer SEW-bit
+  # `Op1` and `Op2` elements, writing the result into the SEW-bit elements in vd.
+  #
+  # Same shape as vabd_op; the unsigned operand range is exercised through the same edge
+  # value crosses.
+  - name: vabdu_op
+    coverpoint:
+      [
+        "Zvabd8_vabdu_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd16_vabdu_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd32_vabdu_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd64_vabdu_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd16_vabdu_vx_cg/cr_vs2_rs1_edges",
+        "Zvabd16_vabdu_vv_cg/cp_vd",
+      ]
+
+  # vabdu provides support for SEW of 8, 16, and 32. If ext:zve64x[] is supported, then
+  # vabdu also adds support for SEW 64.
+  #
+  # Representative coverpoints; cp_asm_count in every Zvabd8, Zvabd16, Zvabd32 and Zvabd64
+  # covergroup.
+  - name: vabdu_sew_defined
+    coverpoint:
+      [
+        "Zvabd8_vabdu_vv_cg/cp_asm_count",
+        "Zvabd16_vabdu_vv_cg/cp_asm_count",
+        "Zvabd32_vabdu_vv_cg/cp_asm_count",
+        "Zvabd64_vabdu_vv_cg/cp_asm_count",
+      ]
+
+  # `SEW` is neither 8 nor 16.
+  - name: vwabda_sew_rsv
+    coverpoint: ["Out-of-Scope: reserved because of CSR state (vtype.sew)"]
+
+  # This instruction computes the absolute difference between the signed integer SEW-bit
+  # `Op1` and `Op2` elements, and accumulates the results into the 2*SEW-bit accumulator
+  # elements in vd.
+  #
+  # cp_vd_emul2 is the doubled-EMUL destination, i.e. the 2*SEW accumulator that is both
+  # read and written; cr_vs2_vs1_edges / cr_vs2_rs1_edges cover the difference operands.
+  - name: vwabda_op
+    coverpoint:
+      [
+        "Zvabd8_vwabda_vv_cg/cp_vd_emul2",
+        "Zvabd16_vwabda_vv_cg/cp_vd_emul2",
+        "Zvabd8_vwabda_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd16_vwabda_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd8_vwabda_vx_cg/cp_vd_emul2",
+        "Zvabd16_vwabda_vx_cg/cr_vs2_rs1_edges",
+      ]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction encoding
+  # is reserved.
+  #
+  # Representative coverpoints; cp_asm_count in the Zvabd8 and Zvabd16 covergroups only.
+  # No Zvabd32 or Zvabd64 covergroup is generated for the widening forms.
+  - name: vwabda_sew_defined
+    coverpoint:
+      [
+        "Zvabd8_vwabda_vv_cg/cp_asm_count",
+        "Zvabd16_vwabda_vv_cg/cp_asm_count",
+        "Zvabd8_vwabda_vx_cg/cp_asm_count",
+        "Zvabd16_vwabda_vx_cg/cp_asm_count",
+      ]
+
+  # `SEW` is neither 8 nor 16.
+  - name: vwabdau_sew_rsv
+    coverpoint: ["Out-of-Scope: reserved because of CSR state (vtype.sew)"]
+
+  # This instruction computes the absolute difference between the unsigned integer SEW-bit
+  # `Op1` and `Op2` elements, and accumulates the results into the 2*SEW-bit accumulator
+  # elements in vd.
+  #
+  # Same shape as vwabda_op over the unsigned instruction's covergroups.
+  - name: vwabdau_op
+    coverpoint:
+      [
+        "Zvabd8_vwabdau_vv_cg/cp_vd_emul2",
+        "Zvabd16_vwabdau_vv_cg/cp_vd_emul2",
+        "Zvabd8_vwabdau_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd16_vwabdau_vv_cg/cr_vs2_vs1_edges",
+        "Zvabd8_vwabdau_vx_cg/cp_vd_emul2",
+        "Zvabd16_vwabdau_vx_cg/cr_vs2_rs1_edges",
+      ]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction encoding
+  # is reserved.
+  #
+  # Representative coverpoints; cp_asm_count in the Zvabd8 and Zvabd16 covergroups only.
+  - name: vwabdau_sew_defined
+    coverpoint:
+      [
+        "Zvabd8_vwabdau_vv_cg/cp_asm_count",
+        "Zvabd16_vwabdau_vv_cg/cp_asm_count",
+        "Zvabd8_vwabdau_vx_cg/cp_asm_count",
+        "Zvabd16_vwabdau_vx_cg/cp_asm_count",
+      ]

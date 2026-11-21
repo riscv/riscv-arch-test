@@ -146,6 +146,14 @@ def format_wvv_acc(
     return setup, test, check
 
 
+@add_instruction_formatter("WVV_ACC_STD", wvv_acc_config)
+def format_wvv_acc_std(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    # Widening accumulate in the standard vd, vs2, vs1 order; WVV_ACC prints vd, vs1, vs2 for vwmacc.
+    return format_vvv_like_type(instr_str, test_data, params, "WVV_ACC_STD", widen={"vd"})
+
+
 @add_instruction_formatter("VVV_SAT", vvv_sat_config)
 def format_vvv_sat(
     instr_str: str, test_data: TestData, params: InstructionParams

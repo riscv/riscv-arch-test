@@ -197,14 +197,14 @@ coverpoints:
     bins: 256 CSRs
   - name: cp_hcsr_virtualinstructionfault
     goal: HS and VS registers cause virtual instruction fault from VU-mode
-    description: csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR, as H_vscsr_cg/cp_hcsr_virtualinstructionfault in VS-mode
-    expectation: Virtual instruction fault, or illegal instruction for an access that HS-mode could not perform (a write to hgeip)
-    bins: 5 * (14-17 + 9-11)
+    description: "Access each {HS/VS} H-Extension CSR, including hgeip, with each of the eight CSR forms: csrrw, csrrs and csrrc with rs1 = x0 and with a zero-valued rs1 != x0, csrrwi, csrrsi with uimm = 0 and csrrci with uimm != 0.  Record rd."
+    expectation: "Virtual instruction fault for every access HS-mode could perform.  csrrs/csrrc with rs1 = x0 and csrrsi with uimm = 0 are reads; every other form is a write, even with a zero value, so it raises illegal instruction for the read-only hgeip.  rd is unchanged"
+    bins: 8 * (14-17 + 9-11)
   - name: cp_scsr_virtualinstructionfault
     goal: S registers cause virtual instruction fault from VU-mode
-    description: csrrw, csrrc, csrrs, csrr each S CSR (sstatus, sie, stvec, sscratch, sepc, scause, stval, sip, satp, scounteren, senvcfg)
-    expectation: Virtual instruction fault
-    bins: 5 * (10-11)
+    description: Access each S CSR (sstatus, sie, stvec, sscratch, sepc, scause, stval, sip, satp, scounteren, senvcfg) with the eight CSR forms of cp_hcsr_virtualinstructionfault.  Record rd.
+    expectation: Virtual instruction fault, and rd is unchanged
+    bins: 8 * (10-11)
   - name: cp_illegalupper
     goal: In RV64, h half of CSRs are illegal from VU-mode
     description: "RV64 ONLY: csrrw, csrrs, csrrc, csrr each h H-extension CSR"

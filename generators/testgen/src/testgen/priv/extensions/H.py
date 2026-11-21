@@ -92,6 +92,41 @@ def _csr_trap_test(test_data: TestData, csr: HCsr, covergroup: str, coverpoint: 
     return gated([*csr.setup, *lines, *csr.restore], csr.gate)
 
 
+# The eight CSR instruction forms: rs1 = x0 and uimm = 0 read only; every other form writes, even with a zero value
+CSR_FORMS = {
+    "csrrw": "csrrw x{rd}, {csr}, x{zero}",
+    "csrrs_x0": "csrrs x{rd}, {csr}, x0",
+    "csrrs_zero": "csrrs x{rd}, {csr}, x{zero}",
+    "csrrc_x0": "csrrc x{rd}, {csr}, x0",
+    "csrrc_zero": "csrrc x{rd}, {csr}, x{zero}",
+    "csrrwi": "csrrwi x{rd}, {csr}, 0",
+    "csrrsi_zero": "csrrsi x{rd}, {csr}, 0",
+    "csrrci_nz": "csrrci x{rd}, {csr}, 1",
+}
+
+
+def _csr_forms_test(test_data: TestData, csr: HCsr, covergroup: str, coverpoint: str) -> list[str]:
+    """Access a CSR that traps in the current mode with each of the eight CSR forms; rd keeps its old value.
+
+    An access raises virtual instruction when the same access is legal in HS-mode, so whether a form reads or
+    writes decides the cause for the read-only hgeip.
+    """
+    rd, zero_reg = test_data.int_regs.get_registers(2)
+    lines = [*csr.setup, f"LI(x{zero_reg}, 0)"]
+    for form, instr in CSR_FORMS.items():
+        lines.extend(
+            [
+                f"LI(x{rd}, 42)",
+                test_data.add_testcase(f"{csr.name}_{form}", coverpoint, covergroup),
+                instr.format(rd=rd, csr=csr.operand, zero=zero_reg),
+                write_sigupd(rd, test_data),
+            ]
+        )
+    lines.extend(csr.restore)
+    test_data.int_regs.return_registers([rd, zero_reg])
+    return gated(lines, csr.gate)
+
+
 def _vgein_tests(test_data: TestData) -> list[str]:
     """hstatus.VGEIN holds each value from 0 through GEILEN; larger values are WLRL, so they are not written."""
     save_reg, val_reg, mask_reg, check_reg = test_data.int_regs.get_registers(4)
@@ -267,14 +302,14 @@ def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     tc = test_data.new_test_chunk(test_chunks)
     tc.section_header = comment_banner(
         "cp_hcsr_virtualinstructionfault, cp_scsr_virtualinstructionfault, cp_illegalupper",
-        "In VU-mode, access each HS and VS H CSR and each S CSR (virtual instruction when the access is legal in\n"
-        "HS-mode), and on RV64 each high-half H CSR (illegal instruction)",
+        "In VU-mode, access each HS and VS H CSR and each S CSR with all eight CSR forms (virtual instruction when\n"
+        "the access is legal in HS-mode), and on RV64 each high-half H CSR (illegal instruction)",
     )
     tc.code.append("RVTEST_TSBI_GOTO_VUMODE")
     for csr in HS_VS_CSRS:
-        tc.code.extend(_csr_trap_test(test_data, csr, VU_CG, "cp_hcsr_virtualinstructionfault"))
+        tc.code.extend(_csr_forms_test(test_data, csr, VU_CG, "cp_hcsr_virtualinstructionfault"))
     for csr in S_CSRS:
-        tc.code.extend(_csr_trap_test(test_data, csr, VU_CG, "cp_scsr_virtualinstructionfault"))
+        tc.code.extend(_csr_forms_test(test_data, csr, VU_CG, "cp_scsr_virtualinstructionfault"))
     for csr in H_UPPER_CSRS:
         tc.code.extend(_csr_trap_test(test_data, csr, VU_CG, "cp_illegalupper"))
     tc.code.append("RVTEST_TSBI_GOTO_SMODE")

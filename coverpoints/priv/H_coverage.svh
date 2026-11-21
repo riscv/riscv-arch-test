@@ -502,6 +502,17 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
         wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
         wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
+    // The eight CSR instruction forms: rs1 = x0 and uimm = 0 read only; every other form writes, even with a zero value
+    csr_forms : coverpoint ins.current.insn {
+        wildcard bins csrrw       = {CSRRW};
+        wildcard bins csrrs_x0    = {CSRRS}  iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrs_zero  = {CSRRS}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_x0    = {CSRRC}  iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrc_zero  = {CSRRC}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrwi      = {CSRRWI};
+        wildcard bins csrrsi_zero = {CSRRSI} iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrci_nz   = {CSRRCI} iff (ins.current.insn[19:15] != 0);
+    }
     csrr: coverpoint ins.current.insn  {
         wildcard bins csrr = {CSRR};
     }
@@ -573,7 +584,7 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
             `endif
         `endif
     }
-    cp_hcsr_virtualinstructionfault: cross priv_mode_vu, hsvscsrname, csraccesses;
+    cp_hcsr_virtualinstructionfault: cross priv_mode_vu, hsvscsrname, csr_forms;
 
     // S CSRs raise virtual instruction in VU-mode when the access is legal in HS-mode
     scsrname : coverpoint ins.current.insn[31:20] {
@@ -591,7 +602,7 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
             bins senvcfg = {CSR_SENVCFG};
         `endif
     }
-    cp_scsr_virtualinstructionfault: cross priv_mode_vu, scsrname, csraccesses;
+    cp_scsr_virtualinstructionfault: cross priv_mode_vu, scsrname, csr_forms;
 
     // The high halves of H CSRs do not exist on RV64, so they raise illegal instruction
     `ifdef UDB_MXLEN_64

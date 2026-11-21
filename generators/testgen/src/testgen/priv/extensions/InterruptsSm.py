@@ -15,12 +15,12 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
     InterruptSuite,
+    csr_raised_ints,
     emit_interrupts,
     flavor,
     generate_cp_enable,
     generate_cp_priority,
     generate_cp_priority_pending,
-    csr_raised_ints,
     generate_cp_trigger_vsti_sstc,
     generate_cp_undeleg,
     generate_cp_wfi,

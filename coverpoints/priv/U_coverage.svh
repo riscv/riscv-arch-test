@@ -666,9 +666,14 @@ covergroup U_Zicntr_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
     `endif
-    wfi: coverpoint ins.current.insn {
-        bins wfi = {WFI};
-    }
+    // Used only by cp_instret_wfi_timeout. The test runs wfi under the same guards.
+    `ifdef UDB_WFI_FINITE
+        `ifdef UDB_WFI_U_MODE
+            wfi: coverpoint ins.current.insn {
+                bins wfi = {WFI};
+            }
+        `endif
+    `endif
 
     insn_add_u: coverpoint ins.current.insn {
         wildcard bins add = {ADD};

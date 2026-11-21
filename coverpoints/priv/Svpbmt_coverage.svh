@@ -226,11 +226,11 @@ covergroup Svpbmt_H_cg with function sample(ins_t ins);
         bins on  = {1};
     }
     // The trap into HS-mode that the access takes, if any, or into M-mode when medeleg cannot delegate it
-    vs_trap : coverpoint hs_trap(ins) {
+    vs_trap : coverpoint s_trap(ins) {
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
     }
-    g_trap : coverpoint hs_trap(ins) {
+    g_trap : coverpoint s_trap(ins) {
         wildcard bins none    = {6'b0?????};
         bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
     }

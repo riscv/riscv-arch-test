@@ -10,44 +10,24 @@
 
 `define COVER_SVVPTC
 
+`include "general/RISCV_coverage_hypervisor.svh"
+
 // Each testcase takes a page fault on a PTE with V=0, sets V=1 with a plain store and no SFENCE.VMA,
 // and retries the access; the signature checks the retry. The coverpoints sample the page fault.
 covergroup Svvptc_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    `ifdef UDB_MEDELEG_DELEGATABLE_13
-        load_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
-        }
-    `else
-        // medeleg[13] is read-only 0, so load page faults are taken in M-mode
-        load_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
-            bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
-        }
-    `endif
-    `ifdef UDB_MEDELEG_DELEGATABLE_15
-        store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
-        }
-    `else
-        // medeleg[15] is read-only 0, so store/AMO page faults are taken in M-mode
-        store_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
-            bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
-        }
-    `endif
-    // A fetch page fault is reported on the jump to the page.
-    `ifdef UDB_MEDELEG_DELEGATABLE_12
-        fetch_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code") {
-            bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? JALR);
-        }
-    `else
-        // medeleg[12] is read-only 0, so instruction page faults are taken in M-mode.  A fetch fault is logged on the
-        // record before it without TRAP, so the mcause write marks it.
-        fetch_page_fault: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code") {
-            bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.csr_wb[CSR_MCAUSE] && ins.current.insn ==? JALR);
-        }
-    `endif
+    load_page_fault: coverpoint s_trap(ins) {
+        bins fault = {6'b101101} iff (ins.current.insn ==? LW);
+    }
+    store_page_fault: coverpoint s_trap(ins) {
+        bins fault = {6'b101111} iff (ins.current.insn ==? SW);
+    }
+    // A fetch page fault is not a trap of the jump to the page, so it is not tied to the jalr record
+    fetch_page_fault: coverpoint s_trap(ins) {
+        bins fault = {6'b101100};
+    }
 
     `ifdef UDB_MXLEN_64
         satp_mode: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SATP, "mode")[3:0] {

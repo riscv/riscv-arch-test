@@ -574,8 +574,8 @@ covergroup H_inst_cg with function sample(ins_t ins);
             bins paged = {[1:15]};
         }
         // The instruction traps to HS-mode (or to M-mode when medeleg cannot delegate it) with a load (21) or store
-        // (23) guest-page fault.  hs_trap counts only a trap this instruction takes, not the scause of an earlier one.
-        guest_page_fault : coverpoint hs_trap(ins) {
+        // (23) guest-page fault.  s_trap counts only a trap this instruction takes, not the scause of an earlier one.
+        guest_page_fault : coverpoint s_trap(ins) {
             bins load_store = {6'b110101, 6'b110111};
         }
         // Guest-page faults on the final translation (vsatp Bare) and on an implicit VS-stage access

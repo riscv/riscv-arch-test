@@ -121,6 +121,12 @@ exclude_extensions:
   # htval of a fault on a VS-stage page-table read (https://github.com/bsc-loca/sargantana/issues/123), and htval drops
   # guest-physical-address bits above bit 41: mmu:ptw/ptw.sv#L421, #L597 (https://github.com/bsc-loca/sargantana/issues/142)
   - Sv_H_sv39x4_gpa_wide
+  # On an instruction guest-page fault, htval drops guest-physical-address bit 40: the instruction cache carries the
+  # guest page number in a 40-bit address
+  # (https://github.com/bsc-loca/vidriol/blob/3895af8c/includes/sargantana_vidriol_pkg.sv#L53), the fetch side of #142.
+  - Sv_H_sv39x4_gpa_x4-
+  - Sv_H_sv39x4_gpa_x4_vs1GB
+  - Sv_H_sv39x4_gpa_x4_vs2MB
   # The GVA bug (#135), #123, and the G-stage leaf of a VS-level page table is not checked for R and A:
   # mmu:ptw/ptw.sv#L576 (https://github.com/bsc-loca/sargantana/issues/141). Sv_H_sv39x4_hlv also hits HLVX ignoring
   # vsstatus.SUM: mmu:tlb/tlb.sv#L478 (https://github.com/bsc-loca/sargantana/issues/139)

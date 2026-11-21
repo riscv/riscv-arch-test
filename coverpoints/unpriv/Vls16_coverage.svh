@@ -3583,6 +3583,19 @@ covergroup Vls16_vloxei16_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_overlap_eew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -4247,6 +4260,19 @@ covergroup Vls16_vloxei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_overlap_eew8////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -4404,6 +4430,19 @@ covergroup Vls16_vloxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -4881,6 +4920,19 @@ covergroup Vls16_vloxseg2ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -5016,6 +5068,19 @@ covergroup Vls16_vloxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -5444,6 +5509,19 @@ covergroup Vls16_vloxseg3ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -5603,6 +5681,19 @@ covergroup Vls16_vloxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -6106,6 +6197,19 @@ covergroup Vls16_vloxseg4ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -6242,6 +6346,19 @@ covergroup Vls16_vloxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -6673,6 +6790,19 @@ covergroup Vls16_vloxseg5ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -6811,6 +6941,19 @@ covergroup Vls16_vloxseg6ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -7245,6 +7388,19 @@ covergroup Vls16_vloxseg6ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -7384,6 +7540,19 @@ covergroup Vls16_vloxseg7ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -7821,6 +7990,19 @@ covergroup Vls16_vloxseg7ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -7985,6 +8167,19 @@ covergroup Vls16_vloxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -8495,6 +8690,19 @@ covergroup Vls16_vloxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -20130,6 +20338,19 @@ covergroup Vls16_vluxei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_overlap_eew16////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20764,6 +20985,19 @@ covergroup Vls16_vluxei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_overlap_eew8////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20912,6 +21146,19 @@ covergroup Vls16_vluxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21358,6 +21605,19 @@ covergroup Vls16_vluxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -21484,6 +21744,19 @@ covergroup Vls16_vluxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21881,6 +22154,19 @@ covergroup Vls16_vluxseg3ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22031,6 +22317,19 @@ covergroup Vls16_vluxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22503,6 +22802,19 @@ covergroup Vls16_vluxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22630,6 +22942,19 @@ covergroup Vls16_vluxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23030,6 +23355,19 @@ covergroup Vls16_vluxseg5ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23159,6 +23497,19 @@ covergroup Vls16_vluxseg6ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23562,6 +23913,19 @@ covergroup Vls16_vluxseg6ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23692,6 +24056,19 @@ covergroup Vls16_vluxseg7ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -24098,6 +24475,19 @@ covergroup Vls16_vluxseg7ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24253,6 +24643,19 @@ covergroup Vls16_vluxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -24733,6 +25136,19 @@ covergroup Vls16_vluxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26007,6 +26423,19 @@ covergroup Vls16_vsoxei16_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -26428,6 +26857,19 @@ covergroup Vls16_vsoxei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -26595,6 +27037,19 @@ covergroup Vls16_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -27072,6 +27527,19 @@ covergroup Vls16_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -27218,6 +27686,19 @@ covergroup Vls16_vsoxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -27646,6 +28127,19 @@ covergroup Vls16_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -27817,6 +28311,19 @@ covergroup Vls16_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -28320,6 +28827,19 @@ covergroup Vls16_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -28469,6 +28989,19 @@ covergroup Vls16_vsoxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -28900,6 +29433,19 @@ covergroup Vls16_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -29052,6 +29598,19 @@ covergroup Vls16_vsoxseg6ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -29486,6 +30045,19 @@ covergroup Vls16_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -29640,6 +30212,19 @@ covergroup Vls16_vsoxseg7ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -30077,6 +30662,19 @@ covergroup Vls16_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -30257,6 +30855,19 @@ covergroup Vls16_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -30767,6 +31378,19 @@ covergroup Vls16_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -37704,6 +38328,19 @@ covergroup Vls16_vsuxei16_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38095,6 +38732,19 @@ covergroup Vls16_vsuxei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38253,6 +38903,19 @@ covergroup Vls16_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38699,6 +39362,19 @@ covergroup Vls16_vsuxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38836,6 +39512,19 @@ covergroup Vls16_vsuxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39233,6 +39922,19 @@ covergroup Vls16_vsuxseg3ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -39395,6 +40097,19 @@ covergroup Vls16_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39867,6 +40582,19 @@ covergroup Vls16_vsuxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -40007,6 +40735,19 @@ covergroup Vls16_vsuxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40407,6 +41148,19 @@ covergroup Vls16_vsuxseg5ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -40550,6 +41304,19 @@ covergroup Vls16_vsuxseg6ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40953,6 +41720,19 @@ covergroup Vls16_vsuxseg6ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -41098,6 +41878,19 @@ covergroup Vls16_vsuxseg7ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41504,6 +42297,19 @@ covergroup Vls16_vsuxseg7ei8_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -41675,6 +42481,19 @@ covergroup Vls16_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 16) {
+        bins msb_set = {[16'h8000:16'hFFFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei16 : cross std_vec, vs2_element_zero_msb_ei16;
+
+    //// end cp_custom_ls_indexed_msb_ei16 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -42155,6 +42974,19 @@ covergroup Vls16_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed_msb_ei8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Index element 0 has its top bit set, so it must be zero-extended to XLEN
+    vs2_element_zero_msb_ei8 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 8) {
+        bins msb_set = {[8'h80:8'hFF]};
+    }
+
+    cp_custom_ls_indexed_msb_ei8 : cross std_vec, vs2_element_zero_msb_ei8;
+
+    //// end cp_custom_ls_indexed_msb_ei8 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)

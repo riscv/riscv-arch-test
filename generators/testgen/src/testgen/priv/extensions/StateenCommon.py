@@ -41,10 +41,10 @@ CSR_GUARDS = {
 # TODO: Remove the unchecked bits once Sail models Smaia/Ssaia, Smctr and Zcmt
 # Bits are only unchecked when the DUT implements the extension.
 STATEEN0_UNCHECKED_BITS = [
-    (1 << 2, "defined(ZCMT_SUPPORTED)"),  # JVT
-    (1 << 54, "defined(SSCTR_SUPPORTED)"),  # CTR
-    (0b11 << 58, "defined(SSAIA_SUPPORTED)"),  # IMSIC, AIA
-    (1 << 60, "defined(SSCSRIND_SUPPORTED)"),  # CSRIND
+    (1 << 2, "ZCMT_SUPPORTED"),  # JVT
+    (1 << 54, "SSCTR_SUPPORTED"),  # CTR
+    (0b11 << 58, "SSAIA_SUPPORTED"),  # IMSIC, AIA
+    (1 << 60, "SSCSRIND_SUPPORTED"),  # CSRIND
 ]
 
 
@@ -181,7 +181,7 @@ def _clear_unchecked(csr: str, reg: int, tmp: int) -> list[str]:
     for bits, define in STATEEN0_UNCHECKED_BITS:
         if bits >> shift:
             mask = ~(bits >> shift) & ((1 << 64) - 1)
-            lines += [f"#if {define}", f"LI(x{tmp}, {mask:#x})", f"and x{reg}, x{reg}, x{tmp}", "#endif"]
+            lines += [f"#ifdef {define}", f"LI(x{tmp}, {mask:#x})", f"and x{reg}, x{reg}, x{tmp}", "#endif"]
     return lines
 
 

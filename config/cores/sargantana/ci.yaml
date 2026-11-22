@@ -75,8 +75,11 @@ exclude_extensions:
   # csr:csr_bsc.sv#L2564-L2567 (https://github.com/bsc-loca/csr/issues/15)
   - H_inst-
   - H_vucsr-
-  # The same virtual-instruction bug on csrrsi to CSR 0xE00 from VS-mode (https://github.com/bsc-loca/csr/issues/15)
+  # The same virtual-instruction bug on writes to read-only CSRs from VS/VU-mode
+  # (https://github.com/bsc-loca/csr/issues/15)
   - H_vscsr_ro-
+  - H_vscsr_ro_variants
+  - H_vucsr_ro_variants
   # htval on a guest-page fault in the VS-stage walk (https://github.com/bsc-loca/sargantana/issues/123)
   - H_trap
   # The H CSR bugs above (#126, #146, #123, https://github.com/bsc-loca/sargantana/issues/113 item 8), and

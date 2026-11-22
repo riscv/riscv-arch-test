@@ -521,6 +521,115 @@ def _in_mode(lines: list[str], mode: str | None) -> list[str]:
     return [f"RVTEST_TSBI_GOTO_{mode}MODE", *lines, "RVTEST_TSBI_GOTO_SMODE"]
 
 
+# Allocation of CSR address ranges, including the separate standard, custom and debug spaces.
+# Reserved addresses within these ranges still obey the privilege and read-only checks.
+CSR_ENCODING_RANGES = (
+    (0x000, 0x100),
+    (0x400, 0x500),
+    (0x800, 0x900),
+    (0xC00, 0xC80),
+    (0xC80, 0xCC0),
+    (0xCC0, 0xD00),
+    (0x100, 0x200),
+    (0x500, 0x580),
+    (0x580, 0x5C0),
+    (0x5C0, 0x600),
+    (0x900, 0x980),
+    (0x980, 0x9C0),
+    (0x9C0, 0xA00),
+    (0xD00, 0xD80),
+    (0xD80, 0xDC0),
+    (0xDC0, 0xE00),
+    (0x200, 0x300),
+    (0x600, 0x680),
+    (0x680, 0x6C0),
+    (0x6C0, 0x700),
+    (0xA00, 0xA80),
+    (0xA80, 0xAC0),
+    (0xAC0, 0xB00),
+    (0xE00, 0xE80),
+    (0xE80, 0xEC0),
+    (0xEC0, 0xF00),
+    (0x300, 0x400),
+    (0x700, 0x780),
+    (0x780, 0x7A0),
+    (0x7A0, 0x7B0),
+    (0x7B0, 0x7C0),
+    (0x7C0, 0x800),
+    (0xB00, 0xB80),
+    (0xB80, 0xBC0),
+    (0xBC0, 0xC00),
+    (0xF00, 0xF80),
+    (0xF80, 0xFC0),
+    (0xFC0, 0x1000),
+)
+
+
+def csr_access_variant_tests(
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    covergroup: str,
+    csr_ranges: list[range],
+    chunk_name: str,
+    coverpoint: str,
+    mode: str | None,
+) -> None:
+    """Probe write encodings at the first, midpoint and last CSR of each applicable allocation range.
+
+    Every operation attempts a write, even the CSRRS/CSRRC cases with a nonzero source register
+    holding zero. The caller supplies only CSR ranges where these accesses must trap.
+    """
+    csrs = sorted(
+        {
+            csr
+            for start, stop in CSR_ENCODING_RANGES
+            for csr in (start, (start + stop) // 2, stop - 1)
+            if any(csr in csr_range for csr_range in csr_ranges)
+        }
+    )
+    for csr in csrs:
+        tc = test_data.new_test_chunk(test_chunks, f"{chunk_name}_variants")
+        tc.section_header = comment_banner(
+            coverpoint, "CSR access must trap for every write encoding, including rd=x0 and zero-valued writes"
+        )
+        src_reg, dest_reg = test_data.int_regs.get_registers(2)
+        # Operand kind distinguishes x0 from an allocated register whose value happens to be zero.
+        for instr, operand_kind, value in (
+            ("csrrw", "x0", 0),
+            ("csrrw", "reg", -1),
+            ("csrrwi", "imm", 0),
+            ("csrrwi", "imm", 31),
+            ("csrrs", "reg", 0),
+            ("csrrs", "reg", -1),
+            ("csrrc", "reg", 0),
+            ("csrrc", "reg", -1),
+            ("csrrsi", "imm", 31),
+            ("csrrci", "imm", 31),
+        ):
+            operand = "x0" if operand_kind == "x0" else str(value) if operand_kind == "imm" else f"x{src_reg}"
+            value_name = "zero" if value == 0 else "ones"
+            for rd_zero in (False, True):
+                # The existing read-only address sweep already uses CSRRW rd!=x0, rs1=all ones.
+                if instr == "csrrw" and operand_kind == "reg" and not rd_zero:
+                    continue
+                rd = "x0" if rd_zero else f"x{dest_reg}"
+                rd_name = "rd0" if rd_zero else "rdnz"
+                tc.code.extend(
+                    [
+                        f"LI(x{src_reg}, {value})",
+                        f"LI(x{dest_reg}, 42)  # a trapping CSR instruction must leave rd unchanged",
+                        test_data.add_testcase(
+                            f"{csr:03x}_{instr}_{operand_kind}_{value_name}_{rd_name}", coverpoint, covergroup
+                        ),
+                        f"{instr} {rd}, 0x{csr:03x}, {operand}  # must trap; trap signature checks the exception",
+                        write_sigupd(dest_reg, test_data),
+                        "",
+                    ]
+                )
+        tc.code[:] = _in_mode(tc.code, mode)
+        test_data.int_regs.return_registers([src_reg, dest_reg])
+
+
 def csr_insufficient_priv_tests(
     test_data: TestData,
     test_chunks: list[TestChunk],
@@ -554,6 +663,8 @@ def csr_insufficient_priv_tests(
         tc.code[:] = _in_mode(tc.code, mode)
         test_data.int_regs.return_register(temp_reg)
 
+    csr_access_variant_tests(test_data, test_chunks, covergroup, csr_ranges, chunk_name, f"{coverpoint}_variants", mode)
+
 
 def csr_ro_write_tests(
     test_data: TestData,
@@ -563,6 +674,7 @@ def csr_ro_write_tests(
     chunk_name: str,
     mode: str | None = None,
     csrs_per_chunk: int = 1,
+    variant_ranges: list[range] | None = None,
 ) -> None:
     """Attempt to write each read-only CSR; every write must raise illegal instruction.
 
@@ -587,6 +699,10 @@ def csr_ro_write_tests(
             )
         tc.code[:] = _in_mode(tc.code, mode)
         test_data.int_regs.return_registers([temp_reg, read_reg])
+
+    csr_access_variant_tests(
+        test_data, test_chunks, covergroup, variant_ranges or csr_ranges, chunk_name, f"{coverpoint}_variants", mode
+    )
 
 
 def priv_inst_trap_tests(

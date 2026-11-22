@@ -182,7 +182,7 @@ normative_rule_definitions:
       [
         "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedelegh",
         "H_vscsr_cg/cp_illegalupper/hedelegh",
-        "H_vucsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
       ]
   # When XLEN=32, henvcfgh is a 32-bit read/write register that aliases bits 63:32 of
   # henvcfg. Register henvcfgh does not exist when XLEN=64.
@@ -191,7 +191,7 @@ normative_rule_definitions:
       [
         "H_hscsr_cg/{cp_hcsr_access_masked, cp_hcsrwalk_masked}/henvcfgh",
         "H_vscsr_cg/cp_illegalupper/henvcfgh",
-        "H_vucsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
       ]
   # When XLEN=32, htimedeltah is a 32-bit read/write register that aliases bits 63:32 of
   # htimedelta. Register htimedeltah does not exist when XLEN=64.
@@ -200,7 +200,7 @@ normative_rule_definitions:
       [
         "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/htimedeltah",
         "H_vscsr_cg/cp_illegalupper/htimedeltah",
-        "H_vucsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
         "H_Zicntr_cg/{cp_delta_hs, cp_delta_vs, cp_delta_u, cp_delta_vu}",
       ]
 
@@ -211,8 +211,8 @@ normative_rule_definitions:
         "H_hscsr_cg/cp_hcsr_access",
         "H_hscsr_cg/cp_hcsr_access_zero/vsatp",
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
-        "H_vucsr_cg/cp_csr_insufficient_priv",
-        "U_ucsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
       ]
   # The vsstatus register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register sstatus, formatted as shown in when VSXLEN=32 and when VSXLEN=64.
@@ -340,10 +340,10 @@ normative_rule_definitions:
   - names: [mtval2_sz_acc_op, mtinst_sz_acc_op]
     coverpoint:
       [
-        "S_scsr_cg/cp_csr_insufficient_priv",
-        "H_vscsr_cg/cp_csr_insufficient_priv",
-        "H_vucsr_cg/cp_csr_insufficient_priv",
-        "U_ucsr_cg/cp_csr_insufficient_priv",
+        "S_scsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+        "H_vscsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
       ]
 
   # hstatus.VGEIN holds 0 through GEILEN
@@ -398,11 +398,17 @@ normative_rule_definitions:
   # For RV64, the addresses of all standard high-half CSRs are reserved (the hypervisor high-half CSRs)
   - names: [Zicsr_high_half_rv64_rsv]
     coverpoint:
-      ["H_vscsr_cg/cp_illegalupper", "H_vucsr_cg/cp_csr_insufficient_priv"]
+      [
+        "H_vscsr_cg/cp_illegalupper",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+      ]
 
   # H and S CSRs are inaccessible from U-mode
   - names: [H_vscsrs_acc_u]
-    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+    coverpoint:
+      [
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+      ]
 
   # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
   # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
@@ -411,12 +417,15 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
-        "H_vucsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
       ]
   # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
   # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;
   - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
-    coverpoint: ["H_vucsr_cg/cp_csr_insufficient_priv"]
+    coverpoint:
+      [
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+      ]
 
   # vsstatus.SD and XS summarize FS, VS and XS as VS-mode sees them
   - names: [vsstatus_sd_xs_op]
@@ -526,7 +535,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
-        "H_vucsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
         "H_Zicntr_cg/cp_hcounteren_access_vs",
         "H_Zicntr_cg/cp_hcounteren_access_vu",
       ]

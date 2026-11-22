@@ -272,7 +272,15 @@ def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         csrs_per_chunk=CSRS_PER_CHUNK,
     )
     csr_ro_write_tests(
-        test_data, test_chunks, VU_CG, USER_RO_CSR_RANGES, "vucsr_ro", mode="VU", csrs_per_chunk=CSRS_PER_CHUNK
+        test_data,
+        test_chunks,
+        VU_CG,
+        USER_RO_CSR_RANGES,
+        "vucsr_ro",
+        mode="VU",
+        csrs_per_chunk=CSRS_PER_CHUNK,
+        # Writes to custom S/H read-only CSRs are illegal even when their reads would be virtual instructions.
+        variant_ranges=[*USER_RO_CSR_RANGES, range(0xDC0, 0xE00), range(0xEC0, 0xF00)],
     )
 
 

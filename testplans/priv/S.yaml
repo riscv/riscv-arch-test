@@ -11,6 +11,16 @@ coverpoints:
     description: "Set and clear each bit of each writable S-mode CSR to exercise bitfields: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip.  Iterations that write a reserved senvcfg.CBIE (0b10) or senvcfg.PMM (0b01) value check the other bits exactly and only check that the field reads back a legal value.  sepc and stval are not tested because it is hard to express what values are legal."
     rules:
       - Illegal Instruction
+  - name: cp_csr_ro_variants
+    description: >-
+      At the first, midpoint (start + size/2), and last CSR of each applicable standard,
+      reserved, custom, or debug allocation range, check trapping write encodings.
+      Exercise CSRRW with rs1=x0, CSRRWI with immediate 0 or 31, CSRRS/CSRRC with
+      a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
+      immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
+      all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
+      Use the same address restrictions as the corresponding sweep.
+    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
   - name: cp_csr_ro
     description: Write read-only CSRs (C00-EFF)
     rules:
@@ -21,6 +31,16 @@ coverpoints:
     expectation: Reads when 0, illegal instruction when 1.  Value is unpredictable because it is not reset and has WARL fields that might not even support Bare.
   - name: cp_ucsr_from_s
     description: In supervisor mode, read/write/set/clear from each U-mode CSR if F/V are supported
+  - name: cp_csr_insufficient_priv_variants
+    description: >-
+      At the first, midpoint (start + size/2), and last CSR of each applicable standard,
+      reserved, custom, or debug allocation range, check trapping write encodings.
+      Exercise CSRRW with rs1=x0, CSRRWI with immediate 0 or 31, CSRRS/CSRRC with
+      a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
+      immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
+      all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
+      Use the same address restrictions as the corresponding sweep.
+    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
   - name: cp_csr_insufficient_priv
     description: Read Machine CSRS 300-3FF, 700-7FF, B00-BFF, F000-FFF, excluding 7AA (mscontext)
   - name: cp_scause_write

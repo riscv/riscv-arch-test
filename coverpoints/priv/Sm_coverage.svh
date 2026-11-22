@@ -818,6 +818,29 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_shadow_deleg_walk :      cross priv_mode_m, csrr, sip_sie, mideleg_s_walking;
     `endif
 
+    // First, midpoint and last CSR in each applicable allocation range.
+    `include "general/RISCV_coverage_csr_access_variants.svh"
+    csr_insufficient_priv_sample: coverpoint ins.current.insn[31:20] {
+        bins space_7b0[] = {12'h7B0, 12'h7B8, 12'h7BF};
+    }
+    cp_csr_insufficient_priv_variants: cross priv_mode_m, csr_insufficient_priv_sample, csr_access_variant;
+
+    csr_ro_sample: coverpoint ins.current.insn[31:20] {
+        bins space_c00[] = {12'hC00, 12'hC40, 12'hC7F};
+        bins space_c80[] = {12'hC80, 12'hCA0, 12'hCBF};
+        bins space_cc0[] = {12'hCC0, 12'hCE0, 12'hCFF};
+        bins space_d00[] = {12'hD00, 12'hD40, 12'hD7F};
+        bins space_d80[] = {12'hD80, 12'hDA0, 12'hDBF};
+        bins space_dc0[] = {12'hDC0, 12'hDE0, 12'hDFF};
+        bins space_e00[] = {12'hE00, 12'hE40, 12'hE7F};
+        bins space_e80[] = {12'hE80, 12'hEA0, 12'hEBF};
+        bins space_ec0[] = {12'hEC0, 12'hEE0, 12'hEFF};
+        bins space_f00[] = {12'hF00, 12'hF40, 12'hF7F};
+        bins space_f80[] = {12'hF80, 12'hFA0, 12'hFBF};
+        bins space_fc0[] = {12'hFC0, 12'hFE0, 12'hFFF};
+    }
+    cp_csr_ro_variants: cross priv_mode_m, csr_ro_sample, csr_access_variant;
+
 endgroup
 
 // Sm_F, Sm_V and Sm_VF tests (Sm_F-NN.S, Sm_V_*-NN.S, Sm_VF-NN.S) are part of the Sm suite

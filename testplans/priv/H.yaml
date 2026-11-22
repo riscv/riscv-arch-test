@@ -128,6 +128,16 @@ coverpoints:
     expectation: Each value reads back as written
     bins: 32 exceptions + 32 interrupts (13 + 6 before Priv 1.12)
   - heading: Tests executed in VS-mode (H_vscsr_cg)
+  - name: cp_csr_insufficient_priv_variants
+    description: >-
+      At the first, midpoint (start + size/2), and last CSR of each applicable standard,
+      reserved, custom, or debug allocation range, check trapping write encodings.
+      Exercise CSRRW with rs1=x0, CSRRWI with immediate 0 or 31, CSRRS/CSRRC with
+      a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
+      immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
+      all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
+      Use the same address restrictions as the corresponding sweep.
+    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
   - name: cp_csr_insufficient_priv
     goal: M-mode CSRs are inaccessible from VS-mode
     description: In VS-mode, attempt to read each CSR number in the M-mode ranges (0x300-0x3FF, 0x700-0x7FF except 0x7AA mscontext, 0xB00-0xBFF, 0xF00-0xFFF) with a nonzero rd, as S_scsr_cg/cp_csr_insufficient_priv in S-mode
@@ -135,6 +145,16 @@ coverpoints:
     bins: 1023 CSRs
     rules:
       - Zicsr_illegal_mode
+  - name: cp_csr_ro_variants
+    description: >-
+      At the first, midpoint (start + size/2), and last CSR of each applicable standard,
+      reserved, custom, or debug allocation range, check trapping write encodings.
+      Exercise CSRRW with rs1=x0, CSRRWI with immediate 0 or 31, CSRRS/CSRRC with
+      a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
+      immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
+      all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
+      Use the same address restrictions as the corresponding sweep.
+    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
   - name: cp_csr_ro
     goal: Read-only CSRs cannot be written from VS-mode
     description: In VS-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xEFF, as S_scsr_cg/cp_csr_ro in S-mode
@@ -183,6 +203,16 @@ coverpoints:
     expectation: vsstatus.SD = 1 if FS, XS or VS is nonzero
     bins: 2 * 4 * 4 * 4
   - heading: Tests executed in VU-mode (H_vucsr_cg)
+  - name: cp_csr_insufficient_priv_variants
+    description: >-
+      At the first, midpoint (start + size/2), and last CSR of each applicable standard,
+      reserved, custom, or debug allocation range, check trapping write encodings.
+      Exercise CSRRW with rs1=x0, CSRRWI with immediate 0 or 31, CSRRS/CSRRC with
+      a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
+      immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
+      all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
+      Use the same address restrictions as the corresponding sweep.
+    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
   - name: cp_csr_insufficient_priv
     goal: CSRs other than user CSRs are inaccessible from VU-mode
     description: In VU-mode, attempt to read each CSR number that is not a user CSR (0x100-0x3FF, 0x500-0x7FF except 0x7AA mscontext, which may be accessible from S-mode, 0x900-0xBFF, 0xD00-0xFFF) with a nonzero rd, as U_ucsr_cg/cp_csr_insufficient_priv in U-mode.  The custom supervisor and hypervisor CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF, 0xDC0-0xDFF, 0xEC0-0xEFF) are left out, because an implemented one raises virtual instruction.  U-mode accesses are covered by the U suite.
@@ -191,6 +221,18 @@ coverpoints:
     rules:
       - H_vscsrs_acc_vs
       - Zicsr_illegal_mode
+  - name: cp_csr_ro_variants
+    description: >-
+      At the first, midpoint (start + size/2), and last CSR of each applicable standard,
+      reserved, custom, or debug allocation range, check trapping write encodings.
+      Exercise CSRRW with rs1=x0, CSRRWI with immediate 0 or 31, CSRRS/CSRRC with
+      a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
+      immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
+      all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
+      In addition to the user read-only ranges, include custom S/H read-only
+      ranges 0xDC0-0xDFF and 0xEC0-0xEFF, whose writes must be illegal regardless
+      of whether they exist.
+    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
   - name: cp_csr_ro
     goal: User read-only CSRs cannot be written from VU-mode
     description: In VU-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xCFF, as U_ucsr_cg/cp_csr_ro in U-mode

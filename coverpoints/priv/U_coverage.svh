@@ -52,6 +52,51 @@ covergroup U_ucsr_cg with function sample(ins_t ins);
 
     cp_csr_insufficient_priv: cross priv_mode_u, csrr, csr_nonuser, nonzerord;
     cp_csr_ro:                cross priv_mode_u, csrw, csr_uro;
+    // First, midpoint and last CSR in each applicable allocation range.
+    `include "general/RISCV_coverage_csr_access_variants.svh"
+    csr_insufficient_priv_sample: coverpoint ins.current.insn[31:20] {
+        bins space_100[] = {12'h100, 12'h180, 12'h1FF};
+        bins space_200[] = {12'h200, 12'h280, 12'h2FF};
+        bins space_300[] = {12'h300, 12'h380, 12'h3FF};
+        bins space_500[] = {12'h500, 12'h540, 12'h57F};
+        bins space_580[] = {12'h580, 12'h5A0, 12'h5BF};
+        bins space_5c0[] = {12'h5C0, 12'h5E0, 12'h5FF};
+        bins space_600[] = {12'h600, 12'h640, 12'h67F};
+        bins space_680[] = {12'h680, 12'h6A0, 12'h6BF};
+        bins space_6c0[] = {12'h6C0, 12'h6E0, 12'h6FF};
+        bins space_700[] = {12'h700, 12'h740, 12'h77F};
+        bins space_780[] = {12'h780, 12'h790, 12'h79F};
+        bins space_7a0[] = {12'h7A0, 12'h7A8, 12'h7AF};
+        bins space_7b0[] = {12'h7B0, 12'h7B8, 12'h7BF};
+        bins space_7c0[] = {12'h7C0, 12'h7E0, 12'h7FF};
+        bins space_900[] = {12'h900, 12'h940, 12'h97F};
+        bins space_980[] = {12'h980, 12'h9A0, 12'h9BF};
+        bins space_9c0[] = {12'h9C0, 12'h9E0, 12'h9FF};
+        bins space_a00[] = {12'hA00, 12'hA40, 12'hA7F};
+        bins space_a80[] = {12'hA80, 12'hAA0, 12'hABF};
+        bins space_ac0[] = {12'hAC0, 12'hAE0, 12'hAFF};
+        bins space_b00[] = {12'hB00, 12'hB40, 12'hB7F};
+        bins space_b80[] = {12'hB80, 12'hBA0, 12'hBBF};
+        bins space_bc0[] = {12'hBC0, 12'hBE0, 12'hBFF};
+        bins space_d00[] = {12'hD00, 12'hD40, 12'hD7F};
+        bins space_d80[] = {12'hD80, 12'hDA0, 12'hDBF};
+        bins space_dc0[] = {12'hDC0, 12'hDE0, 12'hDFF};
+        bins space_e00[] = {12'hE00, 12'hE40, 12'hE7F};
+        bins space_e80[] = {12'hE80, 12'hEA0, 12'hEBF};
+        bins space_ec0[] = {12'hEC0, 12'hEE0, 12'hEFF};
+        bins space_f00[] = {12'hF00, 12'hF40, 12'hF7F};
+        bins space_f80[] = {12'hF80, 12'hFA0, 12'hFBF};
+        bins space_fc0[] = {12'hFC0, 12'hFE0, 12'hFFF};
+    }
+    cp_csr_insufficient_priv_variants: cross priv_mode_u, csr_insufficient_priv_sample, csr_access_variant;
+
+    csr_ro_sample: coverpoint ins.current.insn[31:20] {
+        bins space_c00[] = {12'hC00, 12'hC40, 12'hC7F};
+        bins space_c80[] = {12'hC80, 12'hCA0, 12'hCBF};
+        bins space_cc0[] = {12'hCC0, 12'hCE0, 12'hCFF};
+    }
+    cp_csr_ro_variants: cross priv_mode_u, csr_ro_sample, csr_access_variant;
+
 endgroup
 
 

@@ -108,26 +108,21 @@ def _vgein_tests(test_data: TestData) -> list[str]:
     save_reg, val_reg, mask_reg, check_reg = test_data.int_regs.get_registers(4)
     mask = HSTATUS_MASK | (0x3F << 12)
     lines = [
-        comment_banner("cp_hstatus_vgein", "Write hstatus.VGEIN = 0, 1, GEILEN-1 and GEILEN"),
+        comment_banner("cp_hstatus_vgein", "Write every hstatus.VGEIN value from 0 through GEILEN"),
         f"csrr x{save_reg}, hstatus",
         f"LI(x{mask_reg}, {HSTATUS_MASK:#x} | HSTATUS_VGEIN)",
     ]
-    for name, value in (
-        ("zero", "0"),
-        ("one", "1"),
-        ("geilen_m1", "(UDB_NUM_EXTERNAL_GUEST_INTERRUPTS - 1)"),
-        ("geilen", "UDB_NUM_EXTERNAL_GUEST_INTERRUPTS"),
-    ):
+    for value in range(64):
         body = [
             f"LI(x{val_reg}, HSTATUS_VGEIN)",
             f"csrc hstatus, x{val_reg}",
             f"csrr x{val_reg}, hstatus",
-            *([] if value == "0" else [f"LI(x{check_reg}, {value} << 12)", f"or x{val_reg}, x{val_reg}, x{check_reg}"]),
-            test_data.add_testcase(name, "cp_hstatus_vgein", HS_CG),
+            *([] if value == 0 else [f"LI(x{check_reg}, {value} << 12)", f"or x{val_reg}, x{val_reg}, x{check_reg}"]),
+            test_data.add_testcase(f"b_{value}", "cp_hstatus_vgein", HS_CG),
             f"csrw hstatus, x{val_reg}",
             gen_csr_read_sigupd(check_reg, ("hstatus", mask), test_data, mask_reg),
         ]
-        lines.extend(body if name == "zero" else gated(body, "UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1"))
+        lines.extend(gated(body, f"UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= {value}"))
     lines.append(f"csrw hstatus, x{save_reg}")
     test_data.int_regs.return_registers([save_reg, val_reg, mask_reg, check_reg])
     return lines

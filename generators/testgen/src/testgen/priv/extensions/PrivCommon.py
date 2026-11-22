@@ -389,37 +389,46 @@ def xtval_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> li
 
 H_GATE = "defined(H_SUPPORTED)"
 S1P12_GATE = "defined(S1P12P0_OR_LATER_SUPPORTED)"
+PAGE_FAULT_GATE = "defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)"
 
 # Codes written to each cause CSR, as {kind: {code: #if condition, or None if always written}}.
 # mcause need only hold the codes of supported causes (mcause_exccode_wlrl); exception codes 14 and 17 are reserved.
 MCAUSE_CODES: dict[str, dict[int, str | None]] = {
     "exception": {
-        **dict.fromkeys((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 15)),
+        **dict.fromkeys((0, 1, 2, 3, 4, 5, 6, 7, 11)),
+        8: "defined(U_SUPPORTED)",
+        9: "defined(S_SUPPORTED)",
         10: H_GATE,  # ecall from VS-mode
+        **dict.fromkeys((12, 13, 15), PAGE_FAULT_GATE),
         16: "defined(SSDBLTRP_SUPPORTED)",  # double trap
         18: "defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)",  # software check
         19: "defined(SM1P13P0_OR_LATER_SUPPORTED)",  # hardware error
         **dict.fromkeys((20, 21, 22, 23), H_GATE),  # guest-page faults and virtual instruction
     },
     "interrupt": {
-        **dict.fromkeys((1, 3, 5, 7, 9, 11)),
-        **dict.fromkeys((2, 6, 10, 12), H_GATE),  # VS-level and supervisor guest external interrupts
+        **{code: f"defined(UDB_{name}_INTR_IMPL)" for code, name in ((3, "MSI"), (7, "MTI"), (11, "MEI"))},
+        **{
+            code: f"defined(S_SUPPORTED) && defined(UDB_{name}_INTR_IMPL)"
+            for code, name in ((1, "SSI"), (5, "STI"), (9, "SEI"))
+        },
+        **dict.fromkeys((2, 6, 10), H_GATE),  # VS-level interrupts
+        12: f"{H_GATE} && UDB_NUM_EXTERNAL_GUEST_INTERRUPTS > 0",
         13: "defined(SSCOFPMF_SUPPORTED)",  # local counter overflow
     },
 }
 # scause, and vscause, which must hold the same values (vscause_wlrl), must hold every code 0-31 from Ss1p12
-# (scause_exception_code_sz).  Before that, they need only hold the codes of the causes that every S-mode hart
-# supports, and those of the causes an extension adds: software check (Zicfilp, Zicfiss), local counter overflow
-# (Sscofpmf) and the H causes.
-_SCAUSE_ALWAYS = {"exception": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15), "interrupt": (1, 3, 5, 7, 9, 11)}
-_SCAUSE_EXTENSION = {"exception": (10, 18, 20, 21, 22, 23), "interrupt": (2, 6, 10, 12, 13)}
+# (scause_exception_code_sz). Before that, use the same support gates as mcause, excluding causes
+# that cannot be delegated to S-mode: M-mode ecall, double trap, and machine-level interrupts.
+_SCAUSE_CODES = {
+    "exception": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 15, 18, 20, 21, 22, 23),
+    "interrupt": (1, 2, 5, 6, 9, 10, 12, 13),
+}
 
 
 def _scause_gate(kind: str, code: int) -> str | None:
-    if code in _SCAUSE_ALWAYS[kind]:
-        return None
-    if code in _SCAUSE_EXTENSION[kind]:
-        return f"{S1P12_GATE} || {MCAUSE_CODES[kind][code]}"
+    if code in _SCAUSE_CODES[kind]:
+        gate = MCAUSE_CODES[kind][code]
+        return None if gate is None else f"{S1P12_GATE} || ({gate})"
     return S1P12_GATE
 
 

@@ -45,6 +45,14 @@
     `endif
 `endif
 
+`ifdef S1P12P0_OR_LATER_SUPPORTED
+    `define SCAUSE_HOLDS_PAGE_FAULT
+`elsif SV32_SUPPORTED
+    `define SCAUSE_HOLDS_PAGE_FAULT
+`elsif SV39_SUPPORTED
+    `define SCAUSE_HOLDS_PAGE_FAULT
+`endif
+
 covergroup S_scause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -73,9 +81,15 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins b_7_store_access_fault = {7};
         bins b_8_ecall_u = {8};
         bins b_9_ecall_s = {9};
-        bins b_12_instruction_page_fault = {12};
-        bins b_13_load_page_fault = {13};
-        bins b_15_store_page_fault = {15};
+        `ifdef SCAUSE_HOLDS_PAGE_FAULT
+            bins b_12_instruction_page_fault = {12};
+        `endif
+        `ifdef SCAUSE_HOLDS_PAGE_FAULT
+            bins b_13_load_page_fault = {13};
+        `endif
+        `ifdef SCAUSE_HOLDS_PAGE_FAULT
+            bins b_15_store_page_fault = {15};
+        `endif
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             // Exception code is required to hold the values 0-31 in Ss1p12 or higher.
             bins b_11_ecall_m = {11}; // never delegated to S mode but scause must be able to hold 0-31
@@ -99,32 +113,48 @@ covergroup S_scause_cg with function sample(ins_t ins);
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
-    scause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
-        // values are WLRL. Exclude reserved and custom fields unless SS1P12 or higher is supported
-        bins b_1_supervisor_software = {1};
-        bins b_3_machine_software = {3};
-        bins b_5_supervisor_timer = {5};
-        bins b_7_machine_timer = {7};
-        bins b_9_supervisor_external = {9};
-        bins b_11_machine_external = {11};
+    scause_interrupt_values : coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         `ifdef S1P12P0_OR_LATER_SUPPORTED
-            // scause Exception Code required to hold the values 0-31
+            bins b_1_supervisor_software = {1};
+        `elsif UDB_SSI_INTR_IMPL
+            bins b_1_supervisor_software = {1};
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins b_5_supervisor_timer = {5};
+        `elsif UDB_STI_INTR_IMPL
+            bins b_5_supervisor_timer = {5};
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins b_9_supervisor_external = {9};
+        `elsif UDB_SEI_INTR_IMPL
+            bins b_9_supervisor_external = {9};
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            // All codes 0-31 are legal CSR values, including machine and reserved interrupt codes.
             bins b_0_reserved = {0};
+            bins b_3_machine_software = {3};
             bins b_4_reserved = {4};
+            bins b_7_machine_timer = {7};
             bins b_8_reserved = {8};
+            bins b_11_machine_external = {11};
+            bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
-            bins b_31_16_custom[] = {[16:31]}; // designated for platform use
-        `endif
-        `ifdef SCAUSE_HOLDS_COUNTER_OVERFLOW
-            bins b_13_counter_overflow = {13}; // Sscofpmf, or any code 0-31 in Ss1p12 or higher
+            bins b_31_16_custom[] = {[16:31]};
+        `elsif SSCOFPMF_SUPPORTED
+            bins b_13_counter_overflow = {13};
         `endif
         `ifdef SCAUSE_HOLDS_H_CAUSES
-            // H, or any code 0-31 in Ss1p12 or higher
             bins b_2_vs_software = {2};
             bins b_6_vs_timer = {6};
             bins b_10_vs_external = {10};
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
             bins b_12_supervisor_guest_external = {12};
+        `elsif H_SUPPORTED
+            `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
+                bins b_12_supervisor_guest_external = {12};
+            `endif
         `endif
     }
 

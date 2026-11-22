@@ -20,6 +20,12 @@
     `endif
 `endif
 
+`ifdef SV32_SUPPORTED
+    `define MCAUSE_HOLDS_PAGE_FAULT
+`elsif SV39_SUPPORTED
+    `define MCAUSE_HOLDS_PAGE_FAULT
+`endif
+
 covergroup Sm_mcause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -56,10 +62,16 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
             bins b_10_ecall_vs = {10};
         `endif
         bins b_11_ecall_m = {11};
-        bins b_12_instruction_page_fault = {12};
-        bins b_13_load_page_fault = {13};
+        `ifdef MCAUSE_HOLDS_PAGE_FAULT
+            bins b_12_instruction_page_fault = {12};
+        `endif
+        `ifdef MCAUSE_HOLDS_PAGE_FAULT
+            bins b_13_load_page_fault = {13};
+        `endif
         //bins b_14_reserved = {14};
-        bins b_15_store_page_fault = {15};
+        `ifdef MCAUSE_HOLDS_PAGE_FAULT
+            bins b_15_store_page_fault = {15};
+        `endif
         `ifdef SSDBLTRP_SUPPORTED
             bins b_16_double_trap = {16}; // never delegated to S mode
         `endif
@@ -67,7 +79,9 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         `ifdef SOFTWARE_CHECK_SUPPORTED
             bins b_18_software_check = {18};
         `endif
-        // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations
+        `ifdef SM1P13P0_OR_LATER_SUPPORTED
+            bins b_19_hardware_error = {19};
+        `endif
         `ifdef H_SUPPORTED
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};
@@ -81,25 +95,45 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     mcause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
-        bins b_1_supervisor_software = {1};
+        `ifdef S_SUPPORTED
+            `ifdef UDB_SSI_INTR_IMPL
+                bins b_1_supervisor_software = {1};
+            `endif
+        `endif
         `ifdef H_SUPPORTED
             bins b_2_vs_software = {2};
         `endif
-        bins b_3_machine_software = {3};
+        `ifdef UDB_MSI_INTR_IMPL
+            bins b_3_machine_software = {3};
+        `endif
         //bins b_4_reserved = {4};
-        bins b_5_supervisor_timer = {5};
+        `ifdef S_SUPPORTED
+            `ifdef UDB_STI_INTR_IMPL
+                bins b_5_supervisor_timer = {5};
+            `endif
+        `endif
         `ifdef H_SUPPORTED
             bins b_6_vs_timer = {6};
         `endif
-        bins b_7_machine_timer = {7};
+        `ifdef UDB_MTI_INTR_IMPL
+            bins b_7_machine_timer = {7};
+        `endif
         //bins b_8_reserved = {8};
-        bins b_9_supervisor_external = {9};
+        `ifdef S_SUPPORTED
+            `ifdef UDB_SEI_INTR_IMPL
+                bins b_9_supervisor_external = {9};
+            `endif
+        `endif
         `ifdef H_SUPPORTED
             bins b_10_vs_external = {10};
         `endif
-        bins b_11_machine_external = {11};
+        `ifdef UDB_MEI_INTR_IMPL
+            bins b_11_machine_external = {11};
+        `endif
         `ifdef H_SUPPORTED
-            bins b_12_supervisor_guest_external = {12};
+            `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
+                bins b_12_supervisor_guest_external = {12};
+            `endif
         `endif
         `ifdef SSCOFPMF_SUPPORTED
             bins b_13_counter_overflow = {13};
@@ -752,10 +786,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         }
         // the scause Exception Code is WLRL; Ss1p12 and later must hold the values 0-31, Ss1p11 only the supported codes
         scause_wlrl_values : coverpoint ins.current.rs1_val {
-            bins code[] = {[0:9], 12, 13, 15};
+            bins code[] = {[0:9]};
             `ifdef S1P12P0_OR_LATER_SUPPORTED
-              bins code_ss1p12[] = {10, 11, 14, [16:31]};
+              bins code_ss1p12[] = {[10:31]};
             `else
+              `ifdef MCAUSE_HOLDS_PAGE_FAULT
+                bins code_page_fault[] = {12, 13, 15};
+              `endif
               `ifdef SOFTWARE_CHECK_SUPPORTED
                 bins code_18_software_check = {18};
               `endif

@@ -234,12 +234,7 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
         bins hstatus = {CSR_HSTATUS};
     }
     vgein : coverpoint ins.current.rs1_val[17:12] {
-        bins zero      = {0};
-        `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
-            bins one       = {1};
-            bins geilen_m1 = {`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS - 1};
-            bins geilen    = {`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS};
-        `endif
+        bins legal[] = {[0:`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS]};
     }
     cp_hstatus_vgein:       cross priv_mode_hs, csrrw, hstatus, vgein;
 
@@ -298,20 +293,29 @@ covergroup H_vscause_cg with function sample(ins_t ins);
         `endif
     }
     vscause_interrupt_values : coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
-        bins b_1_supervisor_software = {1};
-        bins b_3_machine_software = {3};
-        bins b_5_supervisor_timer = {5};
-        bins b_7_machine_timer = {7};
-        bins b_9_supervisor_external = {9};
-        bins b_11_machine_external = {11};
-        bins b_2_vs_software = {2};
-        bins b_6_vs_timer = {6};
-        bins b_10_vs_external = {10};
-        bins b_12_supervisor_guest_external = {12};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins b_1_supervisor_software = {1};
+        `elsif UDB_SSI_INTR_IMPL
+            bins b_1_supervisor_software = {1};
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins b_5_supervisor_timer = {5};
+        `elsif UDB_STI_INTR_IMPL
+            bins b_5_supervisor_timer = {5};
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins b_9_supervisor_external = {9};
+        `elsif UDB_SEI_INTR_IMPL
+            bins b_9_supervisor_external = {9};
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            // All codes 0-31 are legal CSR values, including machine and reserved interrupt codes.
             bins b_0_reserved = {0};
+            bins b_3_machine_software = {3};
             bins b_4_reserved = {4};
+            bins b_7_machine_timer = {7};
             bins b_8_reserved = {8};
+            bins b_11_machine_external = {11};
             bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
@@ -319,7 +323,18 @@ covergroup H_vscause_cg with function sample(ins_t ins);
         `elsif SSCOFPMF_SUPPORTED
             bins b_13_counter_overflow = {13};
         `endif
+        bins b_2_vs_software = {2};
+        bins b_6_vs_timer = {6};
+        bins b_10_vs_external = {10};
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            bins b_12_supervisor_guest_external = {12};
+        `elsif H_SUPPORTED
+            `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
+                bins b_12_supervisor_guest_external = {12};
+            `endif
+        `endif
     }
+
     cp_vscause_write_exception: cross priv_mode_hs, csrrw, vscause, vscause_exception_values, vscause_exception;
     cp_vscause_write_interrupt: cross priv_mode_hs, csrrw, vscause, vscause_interrupt_values, vscause_interrupt;
 endgroup

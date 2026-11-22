@@ -75,7 +75,7 @@ coverpoints:
       cp_hcsr_oldvalue_zero
       cp_hcsr_oldvalue_masked
     goal: Register-form read-modify-write instructions return the old CSR value
-    description: In HS-mode, check the returned old value from CSRRW, CSRRS and CSRRC with nonzero rs1, CSRRS/CSRRC with rs1=x0, and CSRRW with rs1=x0, after initializing each HS/VS H CSR to a legal value. Check readback within the corresponding testcase for the zero-source boundary forms. On RV32 with Sm 1.13 or later, classify reserved hedelegh under cp_hcsr_oldvalue; preserve its existing access/walk classification.
+    description: In HS-mode, check the returned old value from CSRRW, CSRRS and CSRRC with nonzero rs1, CSRRS/CSRRC with rs1=x0, and CSRRW with rs1=x0, after initializing each HS/VS H CSR to a legal value. Check readback within the corresponding testcase for the zero-source boundary forms. On RV32 with Sm 1.13 or later, classify reserved hedelegh under cp_hcsr_oldvalue_zero; its access, immediate and walk classifications are unchanged.
     expectation: rd returns the value before the operation. CSRRS/CSRRC with rs1=x0 do not write; CSRRW with rs1=x0 writes zero (it does not suppress writes).
     bins: 6 register forms per eligible H CSR
   - name: |-
@@ -222,7 +222,24 @@ coverpoints:
     description: In VU-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xCFF, as U_ucsr_cg/cp_csr_ro in U-mode
     expectation: Illegal instruction fault, and rd is unchanged
     bins: 256 CSRs
+  - name: cp_csr_write_denied
+    goal: Writes to implemented H and VS CSRs are denied in VU-mode
+    description: Attempt CSRRW with nonzero rd, rs1 and source value on each HS/VS CSR; test unchanged rd after the trap. The normative cross counts only HS-permitted, non-high-half writes; writes to read-only hgeip are tested but excluded. RV32 high-half writes have a separate cross.
+    expectation: Virtual instruction for implemented HS/VS CSRs accessible in HS-mode; illegal instruction for writing read-only hgeip and other accesses that HS-mode could not perform.
+    bins: 21 HS-writable base CSRs plus guarded non-high-half optional CSRs
+  - name: cp_csr_write_denied_high
+    goal: Check VU-mode writes to RV32 high-half H and VS CSRs
+    description: Use CSRRW with nonzero rd, rs1 and source value. The corresponding low-half write must be HS-qualified.
+    expectation: Virtual instruction; rd retains its sentinel value.
+    bins: 1 mandatory RV32 bin (henvcfgh) plus up to 3 optional bins (hedelegh, htimedeltah, vstimecmph)
+    rules:
+      - H_cause_virtual_instruction_high
   - heading: Instructions (H_inst_cg)
+  - name: cp_csr_write_denied
+    goal: Writes to H and VS CSRs are denied in U-mode
+    description: U-mode CSR access-permission coverage hosted in the existing H_inst_cg. Attempt CSRRW with nonzero rd, rs1 and source value on each HS/VS CSR; test unchanged rd after the trap.
+    expectation: Illegal instruction for every tested CSR, including hgeip.
+    bins: 22 base CSRs plus guarded optional CSRs
   - name: cp_hlv
     goal: Basic load
     description: "Set up non-identity G and VS-stage page tables (Sv39x4 and Sv39, or Sv32x4 and Sv32). With hstatus.HU = 1, in {HS, U}: Write a value with the sign bit of every access size set to scratch. hlv.b, hlv.bu, hlv.h,  hlv.hu, hlv.w from scratch.  For rv64, also test hlv.wu, hlv.d.  Random source and destination registers."

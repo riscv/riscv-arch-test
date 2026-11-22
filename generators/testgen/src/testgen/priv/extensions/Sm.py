@@ -2134,7 +2134,6 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
         _H_CSR_CG,
         prefix="H_",
         include_immediate=False,
-        reserved_oldvalue_zero=True,
     )
 
     tc = test_data.new_test_chunk(test_chunks, "H_replica")

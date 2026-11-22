@@ -290,13 +290,11 @@ def hcsr_semantics_tests(
     prefix: str = "",
     *,
     include_immediate: bool = True,
-    reserved_oldvalue_zero: bool = False,
 ) -> None:
     """Check H/VS CSR old-value and operand-zero semantics in HS/M.
 
     Immediate forms run in HS only; Sm_H reuses the register-form checks
     without duplicating the Zicsr immediate-form test matrix in M-mode.
-    reserved_oldvalue_zero follows Sm_H's zero selector for reserved CSRs; HS keeps them in hcsrname.
     """
     if include_immediate:
         first = True
@@ -325,22 +323,16 @@ def hcsr_semantics_tests(
                             lines.append(f"mv x{check}, x{mask}")
                         else:
                             lines.append(f"LI(x{check}, -1)")
-                        lines.extend([f"csrw {csr.operand}, x{check}", f"csrr x{old}, {csr.operand}"])
-                        if csr.nonzero:
-                            if csr.mask is not None:
-                                lines.extend([f"and x{check}, x{old}, x{mask}", f"seqz x{check}, x{check}"])
-                            else:
-                                lines.append(f"seqz x{check}, x{old}")
-                            lines.append(write_sigupd(check, test_data))
-                    lines.extend(
-                        [
-                            f"csrr x{old}, {csr.operand}",
-                            testcase,
-                            f"{op} x{rd}, {csr.operand}, {imm}",
-                            f"xor x{rd}, x{rd}, x{old}",
-                            write_sigupd(rd, test_data),
-                        ]
-                    )
+                        lines.append(f"csrw {csr.operand}, x{check}")
+                    lines.extend([f"csrr x{old}, {csr.operand}", testcase, f"{op} x{rd}, {csr.operand}, {imm}"])
+                    if op == "csrrwi" and imm == 0 and csr.nonzero:
+                        # Check the saved pre-write value, but emit its signature after the target label.
+                        if csr.mask is not None:
+                            lines.extend([f"and x{check}, x{old}, x{mask}", f"seqz x{check}, x{check}"])
+                        else:
+                            lines.append(f"seqz x{check}, x{old}")
+                        lines.append(write_sigupd(check, test_data))
+                    lines.extend([f"xor x{rd}, x{rd}, x{old}", write_sigupd(rd, test_data)])
                     # Keep the state check within the instruction's testcase: the coverage sample
                     # must refer to the CSR immediate instruction, not to the subsequent read.
                     # A zero immediate on CSRRSI/CSRRCI suppresses the write and must preserve state.
@@ -393,14 +385,7 @@ def hcsr_semantics_tests(
             first = False
         orig, expected, rd, zero, check, mask = test_data.int_regs.get_registers(6)
         zero_only = csr.zero or csr.mask == 0
-        zero_coverpoint = csr.zero or (reserved_oldvalue_zero and csr.mask == 0)
-        cp = (
-            "cp_hcsr_oldvalue_zero"
-            if zero_coverpoint
-            else "cp_hcsr_oldvalue_masked"
-            if csr.masked
-            else "cp_hcsr_oldvalue"
-        )
+        cp = "cp_hcsr_oldvalue_zero" if zero_only else "cp_hcsr_oldvalue_masked" if csr.masked else "cp_hcsr_oldvalue"
         value = "0" if zero_only else None
         lines = [f"csrr x{orig}, {csr.operand}", *_hcsr_load_mask(mask, csr.mask), f"LI(x{zero}, 0)"]
         if value is not None:

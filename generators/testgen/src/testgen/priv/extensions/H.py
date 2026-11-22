@@ -270,6 +270,9 @@ def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         "In VU-mode, attempt to read each CSR that is not a user CSR.  Should throw illegal or virtual instruction",
         mode="VU",
         csrs_per_chunk=CSRS_PER_CHUNK,
+        # S/HS/VS read-write addresses can raise illegal or virtual instruction depending on implementation.
+        # M-mode addresses (except mscontext) always raise illegal instruction, even for future extensions.
+        variant_ranges=M_CSR_RANGES,
     )
     csr_ro_write_tests(
         test_data,
@@ -279,8 +282,8 @@ def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         "vucsr_ro",
         mode="VU",
         csrs_per_chunk=CSRS_PER_CHUNK,
-        # Writes to custom S/H read-only CSRs are illegal even when their reads would be virtual instructions.
-        variant_ranges=[*USER_RO_CSR_RANGES, range(0xDC0, 0xE00), range(0xEC0, 0xF00)],
+        # Standard and custom read-only writes are always illegal, even if their reads would be virtual instructions.
+        variant_ranges=S_RO_CSR_RANGES,
     )
 
 

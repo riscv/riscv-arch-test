@@ -211,8 +211,11 @@ coverpoints:
       a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
       immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
       all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
-      Use the same address restrictions as the corresponding sweep.
-    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
+      Restrict the variants to M-mode CSR ranges, excluding mscontext (0x7AA).
+      Do not probe S/HS/VS read-write spaces from VU: an unimplemented CSR can
+      raise illegal instruction while an implemented CSR can raise virtual instruction,
+      and future extensions can change which CSRs are implemented.
+    expectation: Illegal instruction; a nonzero rd remains unchanged.
   - name: cp_csr_insufficient_priv
     goal: CSRs other than user CSRs are inaccessible from VU-mode
     description: In VU-mode, attempt to read each CSR number that is not a user CSR (0x100-0x3FF, 0x500-0x7FF except 0x7AA mscontext, which may be accessible from S-mode, 0x900-0xBFF, 0xD00-0xFFF) with a nonzero rd, as U_ucsr_cg/cp_csr_insufficient_priv in U-mode.  The custom supervisor and hypervisor CSRs (0x5C0-0x5FF, 0x6C0-0x6FF, 0x9C0-0x9FF, 0xAC0-0xAFF, 0xDC0-0xDFF, 0xEC0-0xEFF) are left out, because an implemented one raises virtual instruction.  U-mode accesses are covered by the U suite.
@@ -229,10 +232,11 @@ coverpoints:
       a nonzero source register holding zero or all ones, and CSRRSI/CSRRCI with
       immediate 31, each with rd=x0 and rd!=x0. Also exercise CSRRW rd=x0 with an
       all-ones source. The read-only address sweeps already cover CSRRW rd!=x0 with all ones.
-      In addition to the user read-only ranges, include custom S/H read-only
-      ranges 0xDC0-0xDFF and 0xEC0-0xEFF, whose writes must be illegal regardless
-      of whether they exist.
-    expectation: Trap with the expected exception cause; a nonzero rd remains unchanged.
+      Include all standard and custom U/S/H read-only ranges (0xC00-0xEFF).
+      Every variant attempts a write, so it must raise illegal instruction regardless
+      of whether the addressed CSR exists. M-mode read-only ranges are covered by
+      cp_csr_insufficient_priv_variants.
+    expectation: Illegal instruction; a nonzero rd remains unchanged.
   - name: cp_csr_ro
     goal: User read-only CSRs cannot be written from VU-mode
     description: In VU-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xCFF, as U_ucsr_cg/cp_csr_ro in U-mode

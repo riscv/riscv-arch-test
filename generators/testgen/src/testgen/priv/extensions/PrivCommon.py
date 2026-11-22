@@ -639,6 +639,7 @@ def csr_insufficient_priv_tests(
     description: str,
     mode: str | None = None,
     csrs_per_chunk: int = 1,
+    variant_ranges: list[range] | None = None,
 ) -> None:
     """Attempt to read each higher-privilege CSR; every read must raise illegal instruction.
 
@@ -663,7 +664,9 @@ def csr_insufficient_priv_tests(
         tc.code[:] = _in_mode(tc.code, mode)
         test_data.int_regs.return_register(temp_reg)
 
-    csr_access_variant_tests(test_data, test_chunks, covergroup, csr_ranges, chunk_name, f"{coverpoint}_variants", mode)
+    csr_access_variant_tests(
+        test_data, test_chunks, covergroup, variant_ranges or csr_ranges, chunk_name, f"{coverpoint}_variants", mode
+    )
 
 
 def csr_ro_write_tests(

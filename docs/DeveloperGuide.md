@@ -760,9 +760,9 @@ A suite can also hold tests that need an extension beyond the suite's own, such 
 
 ## Debugging Coverage
 
-After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=ExceptionsZc`. Omit the `--jobs` flag so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. ExceptionsZc), you only run the new suite of interest, saving runtime.
+After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=ExceptionsZc`. Set `JOBS=1` so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. ExceptionsZc), you only run the new suite of interest, saving runtime.
 
-Set `COVERAGE_SIMULATOR=verilator` to collect coverage with Verilator:
+Set `COVERAGE_SIMULATOR` to `questa` (the default), `vcs`, or `verilator` to choose the coverage simulator, for example `COVERAGE_SIMULATOR=verilator make coverage EXTENSIONS=ExceptionsZc`.
 
 You can expect syntax errors in the tests that are easy to locate based on the compiler messages.
 

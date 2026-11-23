@@ -6,6 +6,24 @@
 # and data-independent-timing rules are generally not exercised by any suite.
 
 normative_rule_definitions:
+  # Zvkned provides VAESEF, VAESEM, VAESDF, VAESDM, VAESKF1.VI, VAESKF2.VI, and VAESZ.VS. These AES
+  # instructions use SEW=32 and 128-bit element groups.
+  - name: Zvkned_insns_tbl
+    coverpoint:
+      [
+        "Zvkned_vaesdf_vs_cg/cp_asm_count",
+        "Zvkned_vaesdf_vv_cg/cp_asm_count",
+        "Zvkned_vaesdm_vs_cg/cp_asm_count",
+        "Zvkned_vaesdm_vv_cg/cp_asm_count",
+        "Zvkned_vaesef_vs_cg/cp_asm_count",
+        "Zvkned_vaesef_vv_cg/cp_asm_count",
+        "Zvkned_vaesem_vs_cg/cp_asm_count",
+        "Zvkned_vaesem_vv_cg/cp_asm_count",
+        "Zvkned_vaeskf1_vi_cg/cp_asm_count",
+        "Zvkned_vaeskf2_vi_cg/cp_asm_count",
+        "Zvkned_vaesz_vs_cg/cp_asm_count",
+      ]
+
   # All of these instructions work on 128-bit element groups comprised of four 32-bit
   # elements.
   - name: Zvkned_egw128b_elem32b
@@ -375,21 +393,3 @@ normative_rule_definitions:
   # This extension (Zvkng) is shorthand for the following set of other extensions: Zvkn, Zvkg.
   - name: Zvkng_def
     coverpoint: ["Definition, checked through UDB"]
-
-  # Zvkned provides VAESEF, VAESEM, VAESDF, VAESDM, VAESKF1.VI, VAESKF2.VI, and VAESZ.VS. These AES
-  # instructions use SEW=32 and 128-bit element groups.
-  - name: Zvkned_insns_tbl
-    coverpoint:
-      [
-        "Zvkned_vaesdf_vs_cg/cp_asm_count",
-        "Zvkned_vaesdf_vv_cg/cp_asm_count",
-        "Zvkned_vaesdm_vs_cg/cp_asm_count",
-        "Zvkned_vaesdm_vv_cg/cp_asm_count",
-        "Zvkned_vaesef_vs_cg/cp_asm_count",
-        "Zvkned_vaesef_vv_cg/cp_asm_count",
-        "Zvkned_vaesem_vs_cg/cp_asm_count",
-        "Zvkned_vaesem_vv_cg/cp_asm_count",
-        "Zvkned_vaeskf1_vi_cg/cp_asm_count",
-        "Zvkned_vaeskf2_vi_cg/cp_asm_count",
-        "Zvkned_vaesz_vs_cg/cp_asm_count",
-      ]

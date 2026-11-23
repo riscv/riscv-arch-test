@@ -11,6 +11,28 @@ normative_rule_definitions:
         "Zca_c_j_cg/{cp_imm_edges_c_jal}",
         "Zca_c_beqz_cg/{cp_imm_edges_c_branch}",
       ]
+
+  # === inst[15:13] inst[1:0]|000|001|010|011|100|101|110|111|¶00|ADDI4SPN|FLD FLD|LW|FLW
+  # LD|Reserved|FSD FSD|SW|FSW SD|RV32 RV64¶01|ADDI|JAL ADDIW|LI|LUI/ADDI16SP|MISC-
+  # ALU|J|BEQZ|BNEZ|RV32 RV64¶10|SLLI|FLDSP FLDSP|LWSP|FLWSP LDSP|J[AL]R/MV/ADD|FSDSP
+  # FSDSP|SWSP|FSWSP SDSP|RV32 RV64¶11|&gt;16b ===
+  - name: Zca_opcode_map_tbl
+    coverpoint: ["Zca_c_*_cg/cp_asm_count", "Zcd_c_*_cg/cp_asm_count"]
+
+  # Mapped compressed HINT cases include C.NOP with nonzero immediate, C.ADDI with zero immediate,
+  # and C.LI/C.LUI/C.MV/C.ADD with rd=x0. C.ADD with rd=x0 and rs2=x2 through x5 encodes compressed
+  # NTL hints.
+  - name: Zca_hints_tbl
+    coverpoint:
+      [
+        "Zca_c_add_cg/cp_c_hint_add",
+        "Zca_c_addi_cg/cp_c_hint_addi",
+        "Zca_c_li_cg/cp_c_hint_li",
+        "Zca_c_lui_cg/cp_c_hint_lui",
+        "Zca_c_mv_cg/cp_c_hint_mv",
+        "Zca_c_nop_cg/cp_c_hint_nop",
+      ]
+
   - name: Zca_regs8
     # Use a representative coverpoint; applies to others too
     coverpoint: ["Zca_c_and_cg/{cp_rs1_p, cp_rs2_p}"]
@@ -118,24 +140,3 @@ normative_rule_definitions:
   # The insn:c.srli[] code points with shamt=0 are HINTs.
   - name: c-srli_hint
     coverpoint: ["N/A custom hints not certified"]
-
-  # === inst[15:13] inst[1:0]|000|001|010|011|100|101|110|111|¶00|ADDI4SPN|FLD FLD|LW|FLW
-  # LD|Reserved|FSD FSD|SW|FSW SD|RV32 RV64¶01|ADDI|JAL ADDIW|LI|LUI/ADDI16SP|MISC-
-  # ALU|J|BEQZ|BNEZ|RV32 RV64¶10|SLLI|FLDSP FLDSP|LWSP|FLWSP LDSP|J[AL]R/MV/ADD|FSDSP
-  # FSDSP|SWSP|FSWSP SDSP|RV32 RV64¶11|&gt;16b ===
-  - name: Zca_opcode_map_tbl
-    coverpoint: ["Zca_c_*_cg/cp_asm_count", "Zcd_c_*_cg/cp_asm_count"]
-
-  # Mapped compressed HINT cases include C.NOP with nonzero immediate, C.ADDI with zero immediate,
-  # and C.LI/C.LUI/C.MV/C.ADD with rd=x0. C.ADD with rd=x0 and rs2=x2 through x5 encodes compressed
-  # NTL hints.
-  - name: Zca_hints_tbl
-    coverpoint:
-      [
-        "Zca_c_add_cg/cp_c_hint_add",
-        "Zca_c_addi_cg/cp_c_hint_addi",
-        "Zca_c_li_cg/cp_c_hint_li",
-        "Zca_c_lui_cg/cp_c_hint_lui",
-        "Zca_c_mv_cg/cp_c_hint_mv",
-        "Zca_c_nop_cg/cp_c_hint_nop",
-      ]

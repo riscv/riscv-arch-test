@@ -60,6 +60,8 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Zksed|SM4 Cipher|<<t-Zksed-coverpoints>>|||o||
 |Zksh|SM3 Hashing|<<t-Zksh-coverpoints>>|||o||
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
+|Zicntr|Base Counters and Timers|<<t-Zicntr-coverpoints>>|o|x|x|x|x
+|Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
 |Ziccif|Main Memory Instruction Fetch|<<t-Ziccif-coverpoints>>|||x|x|x
@@ -82,7 +84,6 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
 |Interrupts|Interrupts|<<t-Interrupts-coverpoints>>||x|x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
-|Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
 |EndianSm|Machine Endian|<<t-EndianSm-coverpoints>>|||||
 |EndianS|Supervisor Endian|<<t-EndianS-coverpoints>>|||||
 |EndianU|User Endian|<<t-EndianU-coverpoints>>|||||
@@ -93,6 +94,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |PMP|Physical Memory Protection|<<t-PMP-coverpoints>>|||||
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
+|Ssccptr|Main Memory Page-table Reads|<<t-Ssccptr-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
@@ -236,7 +238,7 @@ TODO: Revisit this list.  ZicsrF moves into Sm, S, U.  DTM may go away as tested
 
 Furthermore, the following features are not supported in this version of the certification test plan:
 
-* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in coherent main memory, cachable if Zicbo* is supported.
+* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in coherent main memory, cacheable if Zicbo* is supported.
 TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each type of access (load/store/execute, misaligned, at start/middle/end/partially wrapping) to each region.
 * Testing privilege modes whose XLEN differs from MXLEN; low ROI
 * Testing extensions that have been disabled with `misa` fields; behavior is unspecified.

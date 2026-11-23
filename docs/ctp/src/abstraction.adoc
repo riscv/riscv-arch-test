@@ -21,7 +21,7 @@ Fundamental design considerations are:
 
 The boot sequence boots to the lowest available privilege mode sufficient to run the tests.  Tests may define the BOOT_TO_MMODE or BOOT_TO_SMODE symbols to force booting to M-mode or S-mode, respectively, if the DUT supports those modes.  If neither symbol is defined, the boot sequence boots to U-mode if supported, and M-mode (possibly custom) otherwise. Note that hypervisor tests should define BOOT_TO_SMODE to boot into S (effectively HS)-mode and then are responsible for setting up and switching to VS/VU mode if desired.
 
-Tests for M, S, or U-Mode features define BOOT_TO_MMODE, _SMODE, or _U_MODE, respectively, to force booting to the appropriate privilege mode.  Unprivileged tests omit these macros and run in U-mode if supported, and in M-mode (possibly custom) otherwise.  Another consequence is that if the DUT defines STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
+Tests for M-mode or S-mode features define BOOT_TO_MMODE or BOOT_TO_SMODE, respectively. Tests for U-mode features omit both symbols and require U-mode support. Unprivileged tests also omit both symbols and run in U-mode if supported, and in M-mode (possibly custom) otherwise. If the DUT defines STANDARD_SM_SUPPORTED, the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions. However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
 
 === Controlling Parameters
 

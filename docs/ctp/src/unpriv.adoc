@@ -20,7 +20,7 @@ Every bin in every coverpoint is associated with a specific test footnote:[cp_as
 The random values are preferably selected in a deterministic way so that regenerating tests use the same random values where possible, minimizing differences between tests.  This can be done by seeding the random number generator with a has of the instruction and coverpoint name.
 ====
 
-Unprivileged tests are designed to never trap. Their results are independent of the privilege mode in which they are run, so they generally are run only in machine mode.  They generally involve no privileged instructions, except that floating-point and vector tests turn on the mstatus.{FS/VS} bits to enable these extensions.
+Unprivileged tests are designed to never trap. They run in U-mode when supported, and in M-mode (possibly custom) otherwise. The boot code enables access to the features under test, including setting mstatus.{FS/VS} for floating-point and vector tests, before entering the test's privilege mode. The unprivileged test instructions themselves do not require M-mode.
 
 === Unprivileged Coverpoints
 

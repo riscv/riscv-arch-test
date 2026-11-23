@@ -127,7 +127,7 @@ include::norm/Zicond_norm_rules.adoc[]
 ==== Zicntr Counters
 
 Zicntr provides unprivileged read access to the `cycle`, `time`, and `instret` counters.
-Note that, like all other unprivileged tests, these tests are performed in M-mode.
+Like other unprivileged tests, these tests run in U-mode when supported, and in M-mode otherwise. They read only counters accessible in the test's mode, as determined by the configured counter-enable capabilities.
 The Zicntr groups of the <<t-S-coverpoints, S>> and <<t-U-coverpoints, U>> privileged tests exercise reading the counters in S-mode and U-mode,
 with control by `mcounteren` and `scounteren` CSRs.
 The <<t-Sm-coverpoints, Sm>> privileged tests exercise `mcycle`, `minstret`, and HPMs from M-mode.

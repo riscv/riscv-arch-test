@@ -7,7 +7,7 @@ The vector extension is huge.  The testplan is partitioned into three unprivileg
 
 The full V extension supports all selected element widths SEW={8, 16, 32, 64}.  The vector coverage files and tests are organized by SEW.  Thus, a DUT could handle any contiguous subset of SEW from SEW~MIN~ to ELEN.  For example, a DUT with SEW~MIN~=16 and ELEN=32 would support SEW={16, 32}.
 
-The tests detect VLMAX and set the vector length accordingly, up to some configurable maximum VLEN (default 4096 bits, although the vector extension theoretically supports up to 65536).  Therefore, there is no need for different test suites for different VLENs.
+The tests adapt to VLMAX up to VLEN_MAX (currently 1024 bits), so the same suites support all VLENs within that limit.
 
 ==== Vector File Organization
 
@@ -177,7 +177,7 @@ Running long vectors is computationally expensive, so only a subset of vectors t
 3+^|Coverpoints acting on multiple elements vl ≠ 1
 |cp_masking_edges|5|Mask edge cases v0=all 1s, all 0s, random, first VLMAX-1 ones, first VLMAX/2+1 ones; vl=VLMAX, vm=0 to mask, vma = random, vta = random
 |cr_vl_lmul|7*3|Cross legal combinations of LMUL={1/2/4/8/f2/f4/f8} and vl={1, random, VLMAX}, while randomizing v0 mask value, vm, vta, vma.
-|cr_vtype_agnostic|4|Cross vta={0/1} and vma={0/1}. Random legal LMUL, random legal vl, vm=1, v0=random mask
+|cr_vtype_agnostic|4|Cross vta={0/1} and vma={0/1}. Random legal LMUL and vl; where masking is supported, vm=0 and v0 has its lowest VLMAX-1 bits set, others clear.
 |cp_vxsat|2|vxsat={0, 1}.  Hit by cr_vs2_vs1_edges so no tests needed.
 |cp_vl_0|1|vl=0.  LMUL=1, no mask, vma=0, vta=1
 |===

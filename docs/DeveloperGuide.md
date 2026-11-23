@@ -596,7 +596,7 @@ Each tab should have the following columns:
 
 ### Adding New Privileged Coverpoints
 
-There should be one coverage file for each tab of a testplan spreadsheet. Create `coverpoints/priv/<suite>_coverage.svh` and `coverpoints/priv/<suite>_coverage_init.svh`. Look at `ExceptionsZc_coverage.svh` and `ExceptionsZc_coverage_init.svh` for reference. Use the same idioms; don't get creative. Names should exactly match, subject to capitalization restrictions.
+There should be one coverage file for each tab of a testplan spreadsheet. Create `coverpoints/priv/<suite>_coverage.svh` and `coverpoints/priv/<suite>_coverage_init.svh`. Look at `Exceptions_coverage.svh` and `Exceptions_coverage_init.svh` for reference. Use the same idioms; don't get creative. Names should exactly match, subject to capitalization restrictions.
 
 Write SystemVerilog coverpoints. Complex coverpoints are normally a cross-product of simpler coverpoints.
 
@@ -760,19 +760,19 @@ A suite can also hold tests that need an extension beyond the suite's own, such 
 
 ## Debugging Coverage
 
-After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=ExceptionsZc`. Set `JOBS=1` so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. ExceptionsZc), you only run the new suite of interest, saving runtime.
+After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=Exceptions`. Set `JOBS=1` so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. Exceptions), you only run the new suite of interest, saving runtime.
 
-Set `COVERAGE_SIMULATOR` to `questa` (the default), `vcs`, or `verilator` to choose the coverage simulator, for example `COVERAGE_SIMULATOR=verilator make coverage EXTENSIONS=ExceptionsZc`.
+Set `COVERAGE_SIMULATOR` to `questa` (the default), `vcs`, or `verilator` to choose the coverage simulator, for example `COVERAGE_SIMULATOR=verilator make coverage EXTENSIONS=Exceptions`.
 
 You can expect syntax errors in the tests that are easy to locate based on the compiler messages.
 
-Once those are resolved, you may have bugs that cause an infinite loop. If the test is taking a long time to run, halt it. Look at the log file in (e.g.) `work/sail-rv64-max/build/priv/ExceptionsZc/ExceptionsZc.sig.trace`. Scroll through until you find the misbehavior that put the system into an infinite loop.
+Once those are resolved, you may have bugs that cause an infinite loop. If the test is taking a long time to run, halt it. Look at the log file in (e.g.) `work/sail-rv64-max/build/priv/Exceptions/Exceptions_Zc-00.sig.trace`. Scroll through until you find the misbehavior that put the system into an infinite loop.
 
-You can expect syntax errors in the coverpoints that are easy to locate based on the filename and line number reported by the HDL simulator. Look in `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` for messages.
+You can expect syntax errors in the coverpoints that are easy to locate based on the filename and line number reported by the HDL simulator. Look in `work/sail-rv64-max/coverage/priv/Exceptions/Exceptions.ucdb.log` for messages.
 
 Once these are resolved, look in a coverage report directory such as `work/sail-rv64-max/reports/_overall_summary.txt`. Expect to have less than 100% coverage on the new coverpoints on the first try. Look in the same directory at `<suite>_report.txt` and `<suite>_uncovered.txt` for details about the coverpoint bins being hit and missed.
 
-Diagnosing missing coverage can be difficult. The bug could be in the coverpoint or the tests. It is helpful to add a statement to display RVVI signals relevant to the coverpoint after each instruction executes, so you can compare them against expectation and localize the problem. In (e.g.) the `exceptionszc_sample` function of `coverpoints/priv/ExceptionsZc_coverage.svh`, add a statement like:
+Diagnosing missing coverage can be difficult. The bug could be in the coverpoint or the tests. It is helpful to add a statement to display RVVI signals relevant to the coverpoint after each instruction executes, so you can compare them against expectation and localize the problem. In (e.g.) the `exceptions_sample` function of `coverpoints/priv/Exceptions_coverage.svh`, add a statement like:
 
 ```SystemVerilog
 $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
@@ -784,7 +784,7 @@ $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
      ins.current.imm[1:0]);
 ```
 
-Then look in the `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` file to see how these RVVI signals change after each instruction. Find the instruction that should have hit a bin, and see which coverpoint input(s) aren't taking on the necessary values. It is often useful to compare the `*.ucdb.log` file with the `*.trace` file in `work/sail-rv64-max/coverage/priv/ExceptionsZc`.
+Then look in the `work/sail-rv64-max/coverage/priv/Exceptions/Exceptions.ucdb.log` file to see how these RVVI signals change after each instruction. Find the instruction that should have hit a bin, and see which coverpoint input(s) aren't taking on the necessary values. It is often useful to compare the `*.ucdb.log` file with the `*.trace` file in `work/sail-rv64-max/coverage/priv/Exceptions`.
 
 ## Adding a New Simulator or DUT Config
 

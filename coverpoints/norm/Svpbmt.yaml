@@ -79,27 +79,27 @@ normative_rule_definitions:
   - name: Svpbmt_obeys_mem_ordering
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: RAM mapped with PBMT=IO or PBMT=NC supplies the effective attributes; concurrent harts or an access monitor are needed to check ordering. I/O-to-memory overrides also need a physical I/O region.",
       ]
   - name: Svpbmt_io_pma_nc_pbmt_obey_rvwmo
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: a physical I/O region mapped with PBMT=NC and concurrent harts or an access monitor; RAM mapped with PBMT=IO does not exercise this underlying-I/O case.",
       ]
   - name: Svpbmt_io_pma_nc_pbmt_treated_as_io_and_memory
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: a physical I/O region mapped with PBMT=NC and observation of FENCE/aq/rl ordering in both domains; PBMT=IO mappings of RAM do not exercise this case.",
       ]
   - name: Svpbmt_memory_pma_io_pbmt_strong_io_ordering
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: PBMT=IO mappings of RAM supply channel 0 I/O attributes; concurrent harts or an access monitor are needed to observe ordering violations.",
       ]
   - name: Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: PBMT=IO mappings of RAM and concurrent harts or an access monitor to check that FENCE/aq/rl treat these accesses as both memory and I/O.",
       ]
   - name: Svpbmt_aliasing_attribute
     coverpoint:
@@ -109,7 +109,7 @@ normative_rule_definitions:
   - name: Svpbmt_noncacheable_aliasing_no_coherence_loss
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: PBMT=NC and PBMT=IO aliases of the same RAM, with concurrent harts or a coherence monitor; no physical I/O device is needed for this case.",
       ]
   - name: Svpbmt_noncacheable_aliasing_may_weaken_ordering
     coverpoint:
@@ -119,7 +119,7 @@ normative_rule_definitions:
   - name: Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: PBMT=NC and PBMT=IO aliases of the same RAM, with concurrent harts or an access monitor to check ordering across the prescribed FENCE sequence.",
       ]
   - name: Svpbmt_cacheable_aliasing_may_cause_coherence_loss
     coverpoint:
@@ -129,7 +129,7 @@ normative_rule_definitions:
   - name: Svpbmt_cacheable_aliasing_fence_flush_fence_required
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: cacheable and non-cacheable PBMT aliases of the same RAM, with concurrent harts or a memory/cache-access monitor to check the FENCE/CBO.FLUSH/FENCE sequence.",
       ]
 
   # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the

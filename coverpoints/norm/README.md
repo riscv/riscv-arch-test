@@ -42,6 +42,15 @@ A parameter's existence, a matching reference-model configuration, or successful
 test execution is not by itself a validation rule. For partial validation, state
 both what UDB checks and what remains unchecked.
 
+For I/O-related gaps, distinguish supplying attributes from observing behavior.
+Svpbmt can give RAM non-cacheable attributes (PBMT=NC/IO), or non-idempotent,
+channel 0 I/O attributes (PBMT=IO). Ordering checks still need concurrent harts or
+an access monitor; speculative or redundant RAM reads may leave no signature
+evidence. PBMT does not portably select other ordering channels, access-width
+restrictions, AMO support levels, or LR/SC reservability. These need suitable
+platform regions. PBMT tests exercise effective attributes; native PMA decoding
+and accesses outside the mapping need separate coverage.
+
 Use the same explanation wherever the same rule appears. Split a `names` record
 when its rules need different explanations. The initial cleanup covers existing
 prose-only entries in the RVA23 mandatory/optional rule audit; entries outside that

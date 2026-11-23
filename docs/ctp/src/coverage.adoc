@@ -49,6 +49,8 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |tinfo[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Info for each debug trigger
 |===
 
+TODO: tdata1-3 and tinfo are not presently used in Sdtrig coverpoints and may not be implemented.
+
 [[t-pagetypes]]
 .Page Types
 [options=header]
@@ -119,10 +121,7 @@ Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disasse
 
 === Writing Coverpoints with riscvISACOV
 
-Move this and the remainder to ACT repo
-
-*** example of coverpoint
-*** organization of files
+See the riscv-arch-test https://github.com/riscv/riscv-arch-test/blob/act4/docs/DeveloperGuide.md[Developer Guide] for instructions to write coverpoints.
 
 === Trace Coverage Flow
 
@@ -139,5 +138,4 @@ The RISC-V Sail model produces the trace file in a standard RVVI-Trace format (s
 
 === RVVI-Trace Format
 
-*** Jordan write
-*** how to handle instructions that change multiple CSRs, such as a write to mstatus.SIE also affecting sstatus.SIE
+TODO: Jordan write *** how to handle instructions that change multiple CSRs, such as a write to mstatus.SIE also affecting sstatus.SIE.  Link to trace format.

@@ -35,8 +35,6 @@ include::abstraction.adoc[]
 
 include::coverage.adoc[]
 
-include::ref.adoc[]
-
 include::unpriv.adoc[]
 
 include::priv.adoc[]

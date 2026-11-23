@@ -7,7 +7,7 @@ Some of these profiles, ratified and unratified, are listed below:
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified)
 ** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).
-* MC100 Microcontroller Profile
+* MC100 Microcontroller Profile (Unratified)
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified)
 ** Application processor without vector, hypervisor, and other newer extensions
@@ -15,22 +15,13 @@ Some of these profiles, ratified and unratified, are listed below:
 ** RVA23 less vector and hypervisor
 * RVA23 Profile (https://riscv.github.io/riscv-arch-test/crd/rva23_crd.html[RVA23 CRD])
 
-Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
-
-This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
-
-* All certificates for profiles that support interrupts require that the platform be able to set and clear via software all implemented interrupt pending bits
-* Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported independent of the Zicntr or F instructions, so there
-is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.
-* Atomics and fences are much more interesting in a multi-core / multi-master environment.  The base test plan just checks that they execute on a single core.
+As of 2026, certification is only in development for the RVA23 profile.  However, tests can run on any DUT, including those implementing other profiles or those with extensions not in any profile.
 
 === Profile Coverage Matrix
 
 <<t-profiles>> summarizes the coverage files applicable to each profile. x indicates a mandatory extension, and o indicates an optional extension.  The certification test plan handles all mandatory and optional extensions.
 
-Coverage files with multiple extensions in the name apply when all the extensions are supported; for example, ZicsrF is used in a system supporting the Zicsr and F extensions.
-
-All privileged suites require at least version 1.12 of the privileged specification.  Features specific to version 1.13 are tested separately in the Sm1p13 and Ss1p13 suites.
+All privileged suites require at least version 1.11 of the privileged specification. Tests are written assuming 1.12 and exclude certain features when running on 1.11. Features specific to version 1.13 are tested separately in the Sm1p13 and Ss1p13 suites.
 
 [[t-profiles]]
 .Profile Coverage Files
@@ -157,9 +148,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
-|InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
-|EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
-|PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
 |Shcounterenw|Counter Enables|<<t-Shcounterenw-coverpoints>>|||o|o|x
 |Shvsatpa|VM Modes Supported|<<t-Shvsatpa-coverpoints>>|||o|o|x
 |Shgatpa|VM x4 Modes Supported|<<t-Shgatpa-coverpoints>>|||o|o|x
@@ -230,9 +218,11 @@ All privileged suites require at least version 1.12 of the privileged specificat
 
 |===
 
+TODO: Revisit this list.  ZicsrF moves into Sm, S, U.  DTM may go away as tested within DM. Make sure H is correct.  Clean up Non-profile extensions with multiple extensions in the names. Add any missing extensions. Rename vector tests suites.
+
 === Out-of-Scope Extensions
 
-<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  Measuring the latency of an instruction with a cycle counter is unreliable because instruction fetch, branch prediction, superscalar issue, and out-of-order execution make the count depend on where the instruction is and what surrounds it, not only on its operand data.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
+<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  Measuring the latency of an instruction with a cycle counter is unreliable because instruction fetch, branch prediction, superscalar issue, and out-of-order execution make the count depend on where the instruction is and what surrounds it, not only on its operand data.  Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
 
 [[t-untested]]
 .Extensions Lacking Architectural Visibility for Certification Testing
@@ -247,16 +237,12 @@ All privileged suites require at least version 1.12 of the privileged specificat
 
 Furthermore, the following features are not supported in this version of the certification test plan:
 
-* sfence.vma, sinval, and hypervisor fences are lightly tested because it is hard to prove they don't work
-* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in main memory with full capabilities.
+* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in coherent main memory, cachable if Zicbo* is supported.
 TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each type of access (load/store/execute, misaligned, at start/middle/end/partially wrapping) to each region.
 * Testing privilege modes whose XLEN differs from MXLEN; low ROI
 * Testing extensions that have been disabled with `misa` fields; behavior is unspecified.
 * Non-Maskable Interrupts (NMI) - no standard way to generate them yet
-* Reset behavior - no way for a program to reset itself
 * Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make these interrupts delegatable from M-mode to S-mode"
-* Multicore or multi-master systems; current tests only run on one core and atomics and memory consistency are only lightly tested. TODO: coming later.
 * Custom extensions
-
 
 A hart with these features can still be certified if it meets all other requirements; these features are simply not tested.

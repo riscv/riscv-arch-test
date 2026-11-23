@@ -11,11 +11,11 @@ The abstraction layer provides a set of macros that allow test programs and cove
 
 Fundamental design considerations are:
 
-* For unprivileged extensions, RISC-V tests cannot assume the existence of any privileged capabilities whatsoever unless a profile explicitly requires them.  For example, RV32I tests should be able to run on a microcontroller that does not implement any CSRs, including `mtvec`, and thus cannot have a trap handler.
+* For unprivileged extensions, RISC-V tests cannot assume the existence of any privileged capabilities whatsoever unless a profile explicitly requires them.  For example, RV32I tests should be able to run on a microcontroller that does not implement any CSRs, including `mtvec`, and thus cannot depend on having a trap handler.  However, the boot code may install a trap handler if the DUT supports it, especially for the purpose of catching problems in the tests.
 
-* Even if machine-mode exists, the tests cannot assume the existence of a _Standard Machine Mode_, i.e. a machine mode that implements all of the features in the ISA specification. A DUT might implement a _Custom Machine Mode_, such as a minimal implementation for a specific application, or additional security features. In particular, the RVA23S64 profile of particular interest for certification does not require standard M-mode, only an execution environment that responds to certain things such as `ecall`.
+* Even if machine-mode exists, the tests cannot assume the existence of a _Standard Machine Mode_, i.e. a machine mode that implements all of the features in Sm1p10 or later ISA specification. A DUT might implement a _Non-Portable Machine Mode_, such as a minimal implementation for a specific application, or additional security features. In particular, the RVA23S64 profile of particular interest for certification does not require standard M-mode, only an execution environment that responds to certain things such as `ecall`.
 
-* Nevertheless, most users will implement standard M-mode on their DUT.  Therefore, the abstraction layer should provide default implementations of boot macros, trap handler, and SBI calls that assume a standard M-mode, and users can override these implementations as needed for their DUT.
+* Nevertheless, most users will implement standard M-mode on their DUT.  Therefore, the abstraction layer provides default implementations of boot macros, trap handler, and SBI calls that assume a standard M-mode, and users can override these implementations as needed for their DUT.
 
 * To reduce the risk of bugs from uninitialized state and the burden on test developers, the boot process places known values in all applicable GPRs and CSRs.
 

@@ -106,3 +106,38 @@ normative_rule_definitions:
         "Vls32_vle32_v_cg/cr_vtype_agnostic_e32",
         "Vls64_vle64_v_cg/cr_vtype_agnostic_e64",
       ]
+
+  # mop [1:0]|Description|Opcodes === 0|0|unit-stride|VLE&lt;EEW&gt;¶0|1|indexed-
+  # unordered|VLUXEI&lt;EEW&gt;¶1|0|constant-stride|VLSE&lt;EEW&gt;¶1|1|indexed-
+  # ordered|VLOXEI&lt;EEW&gt; ===
+  - name: vector_ls_mop_load_enc
+    coverpoint: ["Vls*_v{le*,luxei*,lse*,loxei*}_v_cg/cp_asm_count"]
+
+  # mop [1:0]|Description|Opcodes === 0|0|unit-stride|VSE&lt;EEW&gt;¶0|1|indexed-
+  # unordered|VSUXEI&lt;EEW&gt;¶1|0|constant-stride|VSSE&lt;EEW&gt;¶1|1|indexed-
+  # ordered|VSOXEI&lt;EEW&gt; ===
+  - name: vector_ls_mop_store_enc
+    coverpoint: ["Vls*_v{se*,suxei*,sse*,soxei*}_v_cg/cp_asm_count"]
+
+  # lumop[4:0]|Description === 0|0|0|0|0|unit-stride load¶0|1|0|0|0|unit-stride, whole register
+  # load¶0|1|0|1|1|unit-stride, mask load, EEW=8¶1|0|0|0|0|unit-stride fault-only-
+  # first¶x|x|x|x|x|other encodings reserved ===
+  - name: vector_ls_lumop_enc
+    coverpoint: ["Vls*_v{le*,l{1,2,4,8}re*,lm}_v_cg/cp_asm_count"]
+
+  # sumop[4:0]|Description === 0|0|0|0|0|unit-stride store¶0|1|0|0|0|unit-stride, whole register
+  # store¶0|1|0|1|1|unit-stride, mask store, EEW=8¶x|x|x|x|x|other encodings reserved ===
+  - name: vector_ls_sumop_enc
+    coverpoint: ["Vls*_v{se*,s{1,2,4,8}r*,sm}_v_cg/cp_asm_count"]
+
+  # |mew|width [2:0]|Mem bits|Data Reg bits|Index bits|Opcodes === Standard scalar
+  # FP|x|0|0|1|16|FLEN|-|FLH/FSH¶Standard scalar FP|x|0|1|0|32|FLEN|-|FLW/FSW¶Standard scalar
+  # FP|x|0|1|1|64|FLEN|-|FLD/FSD¶Standard scalar FP|x|1|0|0|128|FLEN|-|FLQ/FSQ¶Vector 8b
+  # element|0|0|0|0|8|8|-|VLxE8/VSxE8¶Vector 16b element|0|1|0|1|16|16|-|VLxE16/VSxE16¶Vector 32b
+  # element|0|1|1|0|32|32|-|VLxE32/VSxE32¶Vector 64b element|0|1|1|1|64|64|-|VLxE64/VSxE64¶Vector
+  # 8b index|0|0|0|0|SEW|SEW|8|VLxEI8/VSxEI8¶Vector 16b
+  # index|0|1|0|1|SEW|SEW|16|VLxEI16/VSxEI16¶Vector 32b
+  # index|0|1|1|0|SEW|SEW|32|VLxEI32/VSxEI32¶Vector 64b
+  # index|0|1|1|1|SEW|SEW|64|VLxEI64/VSxEI64¶Reserved|1|X|X|X|-|-|-| ===
+  - name: vector_ls_width_enc
+    coverpoint: ["Vls*_v*_cg/cp_asm_count"]

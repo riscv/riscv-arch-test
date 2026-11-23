@@ -31,7 +31,13 @@ normative_rule_definitions:
   # Triggers can be configured to take one of several actions when they fire. lists
   # all options.
   - name: Sdtrig_actions
-    coverpoint: ["Only action 0 (breakpoint) supported in this suite"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_priv_mode",
+        "SdtrigSm_icount_cg/cp_icount_instr",
+        "SdtrigSm_itrigger_cg/cp_itrigger_s",
+        "SdtrigSm_etrigger_cg/cp_etrigger_s_deleg",
+      ]
 
   # Raise a breakpoint exception. (Used when software wants to use the trigger
   # module without an external debugger attached.) xepc must contain the virtual
@@ -1723,7 +1729,8 @@ normative_rule_definitions:
   # This trigger may fire on up to XLEN of the Exception Codes defined in mcause
   # (described in the Privileged Spec, with Interrupt=0).
   - name: Sdtrig_etrigger_fire
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      ["SdtrigSm_etrigger_cg/cp_etrigger_{s,s_deleg,s_other,u,u_deleg,u_other}"]
 
   # Those causes are configured by writing the corresponding bit in tdata2.
   - name: Sdtrig_etrigger_config

@@ -30,3 +30,7 @@ normative_rule_definitions:
   # corresponding to the cache block, whose effective address is specified in rs1.
   - name: cbo-zero_specified_block
     coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cbo.zero[base]|&lt;&lt;insns-cbo_zero&gt;&gt; ===
+  - name: Zicboz_insns_tbl
+    coverpoint: ["Zicboz_{cbo_zero}_cg/cp_asm_count"]

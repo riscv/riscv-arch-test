@@ -73,3 +73,15 @@ normative_rule_definitions:
 
   - name: bseti_op
     coverpoint: ["Zbs_bseti_cg/cr_rs1_imm_edges_uimm"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:bclr[rd,rs1,rs2]|&lt;&lt;insns-
+  # bclr&gt;&gt;¶✓|✓|insn:bclri[rd,rs1,imm]|&lt;&lt;insns-
+  # bclri&gt;&gt;¶✓|✓|insn:bext[rd,rs1,rs2]|&lt;&lt;insns-
+  # bext&gt;&gt;¶✓|✓|insn:bexti[rd,rs1,imm]|&lt;&lt;insns-
+  # bexti&gt;&gt;¶✓|✓|insn:binv[rd,rs1,rs2]|&lt;&lt;insns-
+  # binv&gt;&gt;¶✓|✓|insn:binvi[rd,rs1,imm]|&lt;&lt;insns-
+  # binvi&gt;&gt;¶✓|✓|insn:bset[rd,rs1,rs2]|&lt;&lt;insns-
+  # bset&gt;&gt;¶✓|✓|insn:bseti[rd,rs1,imm]|&lt;&lt;insns-bseti&gt;&gt; ===
+  - name: Zbs_insns_tbl
+    coverpoint:
+      ["Zbs_{bclr,bclri,bext,bexti,binv,binvi,bset,bseti}_cg/cp_asm_count"]

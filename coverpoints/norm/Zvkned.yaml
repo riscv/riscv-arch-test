@@ -375,3 +375,26 @@ normative_rule_definitions:
   # This extension (Zvkng) is shorthand for the following set of other extensions: Zvkn, Zvkg.
   - name: Zvkng_def
     coverpoint: ["Definition, checked through UDB"]
+
+  # SEW|EGW|Mnemonic|Instruction === 32|128|insn:vaesef.*[]|&lt;&lt;insns-
+  # vaesef&gt;&gt;¶32|128|insn:vaesem.*[]|&lt;&lt;insns-
+  # vaesem&gt;&gt;¶32|128|insn:vaesdf.*[]|&lt;&lt;insns-
+  # vaesdf&gt;&gt;¶32|128|insn:vaesdm.*[]|&lt;&lt;insns-
+  # vaesdm&gt;&gt;¶32|128|insn:vaeskf1.vi[]|&lt;&lt;insns-
+  # vaeskf1&gt;&gt;¶32|128|insn:vaeskf2.vi[]|&lt;&lt;insns-
+  # vaeskf2&gt;&gt;¶32|128|insn:vaesz.vs[]|&lt;&lt;insns-vaesz&gt;&gt; ===
+  - name: Zvkned_insns_tbl
+    coverpoint:
+      [
+        "Zvkned_vaesdf_vs_cg/cp_asm_count",
+        "Zvkned_vaesdf_vv_cg/cp_asm_count",
+        "Zvkned_vaesdm_vs_cg/cp_asm_count",
+        "Zvkned_vaesdm_vv_cg/cp_asm_count",
+        "Zvkned_vaesef_vs_cg/cp_asm_count",
+        "Zvkned_vaesef_vv_cg/cp_asm_count",
+        "Zvkned_vaesem_vs_cg/cp_asm_count",
+        "Zvkned_vaesem_vv_cg/cp_asm_count",
+        "Zvkned_vaeskf1_vi_cg/cp_asm_count",
+        "Zvkned_vaeskf2_vi_cg/cp_asm_count",
+        "Zvkned_vaesz_vs_cg/cp_asm_count",
+      ]

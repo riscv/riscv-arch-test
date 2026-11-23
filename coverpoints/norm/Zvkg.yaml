@@ -118,3 +118,9 @@ normative_rule_definitions:
   # standard ordering (e.g., 7,6,5,4,3,2,1,0).
   - name: vgmul-vv_op_coeff
     coverpoint: ["Zvkg_vgmul_vv_cg/cr_vs2_vd_edges_egs4"]
+
+  # SEW|EGW|Mnemonic|Instruction === 32|128|insn:vghsh.vv[]|&lt;&lt;insns-
+  # vghsh&gt;&gt;¶32|128|insn:vgmul.vv[]|&lt;&lt;insns-vgmul&gt;&gt; ===
+  - name: Zvkg_insns_tbl
+    coverpoint:
+      ["Zvkg_vghsh_vv_cg/cp_asm_count", "Zvkg_vgmul_vv_cg/cp_asm_count"]

@@ -394,3 +394,9 @@ normative_rule_definitions:
   # AND of yLPE and mnstatus.MNPELP.
   - name: mnret_Zicfilp
     coverpoint: ["Deferred: Smrnmi (RNMI) is not yet tested"]
+
+  # Privilege Mode|xLPE === M|csr:mseccfg[mlpe]¶S or HS|csr:menvcfg[lpe]¶VS|csr:henvcfg[lpe]¶U or
+  # VU|csr:senvcfg[lpe] ===
+  - name: Zicfilp_xlpe_smode_tbl
+    coverpoint:
+      ["Zicfilp_{S,U,H}_cg/cp_disabled_zicfilp", "Zicfilp_H_cg/cp_{vs,vu}_lpe"]

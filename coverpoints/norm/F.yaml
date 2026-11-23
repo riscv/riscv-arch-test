@@ -313,3 +313,28 @@ normative_rule_definitions:
   # not set the floating-point exception flags.
   - name: fclass-s_op
     coverpoint: ["F_fclass_s_cg/{cp_rd, cp_fs1, cp_fs1_edges, cp_fclass}"]
+
+  # rd bit|Meaning === 0|rs1 is −∞.¶1|rs1 is a negative normal number.¶2|rs1 is a negative
+  # subnormal number.¶3|rs1 is −0.¶4|rs1 is +0.¶5|rs1 is a positive subnormal number.¶6|rs1 is a
+  # positive normal number.¶7|rs1 is +∞.¶8|rs1 is a signaling NaN.¶9|rs1 is a quiet NaN. ===
+  - name: fclass_result_enc
+    coverpoint: ["{F_fclass_s,D_fclass_d,Zfh_fclass_h}_cg/cp_fclass"]
+
+  # |insn:fcvt.w.s[]|insn:fcvt.wu.s[]|insn:fcvt.l.s[]|insn:fcvt.lu.s[] === Minimum valid input
+  # (after rounding)|−231|0|−263|0¶Maximum valid input (after
+  # rounding)|231−1|232−1|263−1|264−1¶Output for out-of-range negative input|−231|0|−263|0¶Output
+  # for -∞|−231|0|−263|0¶Output for out-of-range positive input|231−1|232−1|263−1|264−1¶Output for
+  # +∞ or NaN|231−1|232−1|263−1|264−1 ===
+  - name: fcvt_int_domain_tbl
+    coverpoint: ["F_fcvt_{w,wu,l,lu}_s_cg/cr_fs1_edges_frm"]
+
+  # Flag Mnemonic|Flag Meaning === NV|Invalid Operation¶DZ|Divide by
+  # Zero¶OF|Overflow¶UF|Underflow¶NX|Inexact ===
+  - name: fflags_enc
+    coverpoint:
+      ["F_fmadd_s_cg/cp_csr_fflags_voun", "F_fdiv_s_cg/cp_csr_fflags_vdoun"]
+
+  # fmt field|Mnemonic|Meaning === 00|S|32-bit single-precision¶01|D|64-bit double-
+  # precision¶10|H|16-bit half-precision¶11|Q|128-bit quad-precision ===
+  - name: fp_fmt_enc
+    coverpoint: ["{F_fadd_s,D_fadd_d,Zfh_fadd_h}_cg/cp_asm_count"]

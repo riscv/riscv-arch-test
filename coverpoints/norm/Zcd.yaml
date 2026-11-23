@@ -35,3 +35,10 @@ normative_rule_definitions:
   - name: C_dep_Zcd
     coverpoint:
       ["Not tested: extension dependency checked by the UDB configuration"]
+
+  # === === ext:zcf[] Register Number¶Floating-Point Register Number¶Floating-Point Register ABI
+  # Name ===|===
+  # 000|001|010|011|100|101|110|111¶f8|f9|f10|f11|f12|f13|f14|f15¶fs0|fs1|fa0|fa1|fa2|fa3|fa4|fa5
+  # === ===
+  - name: Zcf_Zcd_fp_regs_tbl
+    coverpoint: ["Zcd_c_fld_cg/cp_fd_p", "Zcd_c_fsd_cg/cp_fs2_p"]

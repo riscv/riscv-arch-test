@@ -1577,7 +1577,7 @@ normative_rule_definitions:
 
   # Instruction fetches are always little-endian.
   - name: endianness_inst_fetch_little
-    coverpoint: ["Tested by executing instructions"]
+    coverpoint: ["I_add_cg/cp_asm_count", "Zca_c_nop_cg/cp_c_hint_nop"]
 
   # When a trap is delegated to S-mode The mcause, mepc, and mtval registers and the
   # MPP and MPIE fields of mstatus are not written.

@@ -52,3 +52,24 @@ normative_rule_definitions:
   # The Zce extension depends upon the Zca, Zcb, Zcmp, and Zcmt extensions.
   - name: Zce_dep
     coverpoint: ["Definition, checked through UDB"]
+
+  # RV32|RV64|Mnemonic|Instruction === yes|yes|insn:c.lbu[rd', uimm(rs1')]|&lt;&lt;insns-
+  # c_lbu&gt;&gt;¶yes|yes|insn:c.lhu[rd',uimm(rs1')]|&lt;&lt;insns-
+  # c_lhu&gt;&gt;¶yes|yes|insn:c.lh[rd',uimm(rs1')]|&lt;&lt;insns-
+  # c_lh&gt;&gt;¶yes|yes|insn:c.sb[rs2',uimm(rs1')]|&lt;&lt;insns-
+  # c_sb&gt;&gt;¶yes|yes|insn:c.sh[rs2',uimm(rs1')]|&lt;&lt;insns-
+  # c_sh&gt;&gt;¶yes|yes|insn:c.zext.b[rsd']|&lt;&lt;insns-
+  # c_zext_b&gt;&gt;¶yes|yes|insn:c.sext.b[rsd']|&lt;&lt;insns-
+  # c_sext_b&gt;&gt;¶yes|yes|insn:c.zext.h[rsd']|&lt;&lt;insns-
+  # c_zext_h&gt;&gt;¶yes|yes|insn:c.sext.h[rsd']|&lt;&lt;insns-
+  # c_sext_h&gt;&gt;¶|yes|insn:c.zext.w[rsd']|&lt;&lt;insns-
+  # c_zext_w&gt;&gt;¶yes|yes|insn:c.not[rsd']|&lt;&lt;insns-
+  # c_not&gt;&gt;¶yes|yes|insn:c.mul[rsd',rs2']|&lt;&lt;insns-c_mul&gt;&gt; ===
+  - name: Zcb_insns_tbl
+    coverpoint:
+      [
+        "Zcb_c_{lbu,lhu,lh,sb,sh,zext_b,not}_cg/cp_asm_count",
+        "ZcbZba_c_zext_w_cg/cp_asm_count",
+        "ZcbZbb_c_{sext_b,sext_h,zext_h}_cg/cp_asm_count",
+        "ZcbZmmul_c_mul_cg/cp_asm_count",
+      ]

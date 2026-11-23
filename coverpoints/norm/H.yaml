@@ -744,3 +744,267 @@ normative_rule_definitions:
         "H_Zicntr_cg/cp_delta_u",
         "H_Zicntr_cg/cp_delta_vu",
       ]
+
+  # When Ssnpm extension is implemented, the HUPMM field enables or disables pointer masking (see
+  # &lt;&lt;Zpm&gt;&gt;) for HLV.* and HSV.* instructions in U-mode, according to the values in
+  # &lt;&lt;norm:henvcfg_pmm_enc&gt;&gt;, when their explicit memory access is performed as though
+  # in VU-mode.
+  - name: hstatus_hupmm_u_mode
+    coverpoint: ["Ssnpm_H_cg/cp_hlv_u_spvp{0,1}_pmm"]
+
+  # In HS- and M-modes, pointer masking for these instructions is enabled or disabled by
+  # senvcfg.PMM, when their explicit memory access is performed as though in VU-mode.
+  - name: hstatus_hupmm_vu_mode
+    coverpoint: ["Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm"]
+
+  # Setting henvcfg.PMM enables or disables pointer masking for HLV.* and HSV.* when their explicit
+  # memory access is performed as though in VS-mode.
+  - name: hstatus_hupmm_vs_mode
+    coverpoint: ["Ssnpm_H_cg/cp_hlv_hs_spvp1_pmm"]
+
+  # Value|Description === 00|Pointer masking is disabled (PMLEN = 0)¶01|Reserved¶10|Pointer masking
+  # is enabled with PMLEN = XLEN - 57 (PMLEN = 7 on RV64)¶11|Pointer masking is enabled with PMLEN
+  # = XLEN - 48 (PMLEN = 16 on RV64) ===
+  - name: henvcfg_pmm_enc
+    coverpoint: ["Ssnpm_H_cg/cp_vs_pmm"]
+
+  # A guest-page fault may arise due to an implicit memory access during first-stage (VS-stage)
+  # address translation, in which case a guest physical address written to htval is that of the
+  # implicit memory access that faulted—for example, the address of a VS-level page table entry
+  # that could not be read. (The guest physical address corresponding to the original virtual
+  # address is unknown when VS-stage translation fails to complete.) Additional information is
+  # provided in CSR htinst to disambiguate such situations.
+  - name: htval_trapval_vstrans
+    coverpoint: ["Sv_H_twostage_cg/cp_implicit_gpf"]
+
+  # Otherwise, for misaligned loads and stores that cause guest-page faults, a nonzero guest
+  # physical address in htval corresponds to the faulting portion of the access as indicated by the
+  # virtual address in stval. For instruction guest-page faults on systems with variable-length
+  # instructions, a nonzero htval corresponds to the faulting portion of the instruction as
+  # indicated by the virtual address in stval.
+  - name: htval_trapval_other
+    coverpoint: ["Sv_H_twostage_cg/cp_ldst_straddle"]
+
+  # HSXLEN=32 === Value|Name|Description¶0 1|Bare Sv32x4|No translation or protection. Page-based
+  # 34-bit virtual addressing (2-bit extension of Sv32).¶HSXLEN=64¶Value|Name|Description¶0 1-7 8 9
+  # 10 11-15|Bare — Sv39x4 Sv48x4 Sv57x4 —|No translation or protection. Reserved Page-based 41-bit
+  # virtual addressing (2-bit extension of Sv39). Page-based 50-bit virtual addressing (2-bit
+  # extension of Sv48). Page-based 59-bit virtual addressing (2-bit extension of Sv57). Reserved
+  # ===
+  - name: hgatp_mode_enc
+    coverpoint: ["Sv_H_csr_cg/cp_hgatp_mode_field"]
+
+  # Fields FS and VS in registers sstatus and vsstatus deviate from the usual HS-qualified rule. If
+  # an instruction is prevented from executing because FS or VS is zero in either sstatus or
+  # vsstatus, the exception raised is always an illegal-instruction exception, never a virtual-
+  # instruction exception.
+  - name: H_illegalinst_xstatus_fs_vs
+    coverpoint:
+      [
+        "H_F_cg/cp_vsstatus_FS_transition",
+        "H_V_cg/cp_vsstatus_vs_off_{arithmetic,csr}",
+        "H_VF_cg/cp_vectorfp_vsstatus_fs_off",
+      ]
+
+  # For a standard load instruction that is not a compressed instruction and is one of LB, LBU, LH,
+  # LHU, LW, LWU, LD, FLW, FLD, FLQ, or FLH, the transformed instruction has the format shown in
+  # &lt;&lt;transformedloadinst&gt;&gt;.
+  - name: H_trans_load
+    coverpoint: ["Exceptions_H_cg/cp_xtinst_load_{misaligned,access}"]
+
+  # For a standard store instruction that is not a compressed instruction and is one of SB, SH, SW,
+  # SD, FSW, FSD, FSQ, or FSH, the transformed instruction has the format shown in
+  # &lt;&lt;transformedstoreinst&gt;&gt;.
+  - name: H_trans_store
+    coverpoint: ["Exceptions_H_cg/cp_xtinst_store_{misaligned,access}"]
+
+  # For a standard virtual-machine load/store instruction (HLV, HLVX, or HSV), the transformed
+  # instruction has the format shown in &lt;&lt;transformedvmaccessinst&gt;&gt;.
+  - name: H_trans_vmaccess
+    coverpoint: ["Exceptions_H_cg/cp_hstatus_gva_{hlv,hsv}"]
+
+  # If a synchronous trap occurs for a standard instruction for which no transformation has been
+  # defined, the trap instruction register shall be written with zero (or, under certain
+  # circumstances, with a special pseudoinstruction value).
+  - name: H_trap_xtinst_no_trans_zero
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{illegalinstr,breakpoint,virtinstr,ecall,instr_misaligned}",
+      ]
+
+  # Value|Meaning === 0x00002000 0x00002020|32-bit read for VS-stage address translation (RV32)
+  # 32-bit write for VS-stage address translation (RV32)¶0x00003000 0x00003020|64-bit read for VS-
+  # stage address translation (RV64) 64-bit write for VS-stage address translation (RV64) ===
+  - name: H_trap_xtinst_pseudoinst_tbl
+    coverpoint: ["Sv_H_twostage_cg/cp_implicit_gpf"]
+
+  # As enumerated in the table, a synchronous exception may write to the trap instruction register
+  # a standard transformation of the trapping instruction only for exceptions that arise from
+  # explicit memory accesses (from load, store, AMO, cache-block management, and cache-block zero
+  # instructions).
+  - name: H_trap_xtinst_std_trans_mem
+    coverpoint: ["Exceptions_H_cg/cp_xtinst_{load,store}_{misaligned,access}"]
+
+  # Exception|Zero|Transformed Standard Instruction|Custom Value|Pseudoinstruction Value ===
+  # Instruction address misaligned|Yes|No|Yes|No¶Instruction access fault Illegal instruction
+  # Breakpoint Virtual instruction|Yes Yes Yes Yes|No No No No|No No Yes Yes|No No No No¶Load
+  # address misaligned Load access fault Store/AMO address misaligned Store/AMO access fault|Yes
+  # Yes Yes Yes|Yes Yes Yes Yes|Yes Yes Yes Yes|No No No No¶Environment
+  # call|Yes|No|Yes|No¶Instruction page fault Load page fault Store/AMO page fault|Yes Yes Yes|No
+  # Yes Yes|No Yes Yes|No No No¶Instruction guest-page fault Load guest-page fault Store/AMO guest-
+  # page fault|Yes Yes Yes|No Yes Yes|No Yes Yes|Yes Yes Yes ===
+  - name: H_trap_xtinst_val_tbl
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{illegalinstr,breakpoint,virtinstr,ecall,instr_misaligned,load_misaligned,store_misaligned}",
+      ]
+
+  # Previous Mode|SPV|SPP === U-mode HS-mode|0 0|0 1¶VU-mode VS-mode|1 1|0 1 ===
+  - name: H_trap_hs_spv_spp_tbl
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_hedeleg_{illegal_instruction,hs_u_illegal_instruction}",
+      ]
+
+  # Previous Mode|SPP === VU-mode VS-mode|0 1 ===
+  - name: H_trap_vs_spp_tbl
+    coverpoint: ["Exceptions_H_cg/cp_ecall_to_vs"]
+
+  # === Virtualization Mode (V)|Nominal Privilege|Abbreviation|Name|Two-Stage Translation¶0 0 0|U S
+  # M|U-mode HS-mode M-mode|User mode Hypervisor-extended supervisor mode Machine mode|Off Off
+  # Off¶1 1|U S|VU-mode VS-mode|Virtual user mode Virtual supervisor mode|On On ===
+  - name: H_priv_modes_enc
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_loadstore_priv",
+        "Sv_H_twostage_cg/cp_stage_both_bare",
+      ]
+
+  # Interrupt|Exception Code|Description === 1 1 1 1|0 1 2 3|Reserved Supervisor software interrupt
+  # Virtual supervisor software interrupt Machine software interrupt¶1 1 1 1|4 5 6 7|Reserved
+  # Supervisor timer interrupt Virtual supervisor timer interrupt Machine timer interrupt¶1 1 1 1|8
+  # 9 10 11|Reserved Supervisor external interrupt Virtual supervisor external interrupt Machine
+  # external interrupt¶1 1 1 1|12 13 14-15 ≥16|Supervisor guest external interrupt Counter-overflow
+  # interrupt Reserved Designated for platform use¶0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  # 0 0 0 0|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24-31 32-47 48-63
+  # ≥64|Instruction address misaligned Instruction access fault Illegal instruction Breakpoint Load
+  # address misaligned Load access fault Store/AMO address misaligned Store/AMO access fault
+  # Environment call from U-mode or VU-mode Environment call from HS-mode Environment call from VS-
+  # mode Environment call from M-mode Instruction page fault Load page fault Reserved Store/AMO
+  # page fault Double trap Reserved Software check Hardware error Instruction guest-page fault Load
+  # guest-page fault Virtual instruction Store/AMO guest-page fault Designated for custom use
+  # Reserved Designated for custom use Reserved ===
+  - name: H_cause_enc_tbl
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_hedeleg_{illegal_instruction,breakpoint,load_misaligned,store_misaligned,ecall}",
+        "Sv_H_twostage_cg/cp_hedeleg_{page_fault,guest_page_fault}",
+      ]
+
+  # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶|12, 20, 1|During
+  # instruction address translation: &#160;&#160;&#160;First encountered page fault, guest-page
+  # fault, or access fault¶|1|With physical address for instruction: &#160;&#160;&#160;Instruction
+  # access fault¶|2 22 0 8, 9, 10, 11 3 3|Illegal instruction Virtual instruction Instruction
+  # address misaligned Environment call Environment break &#160;&#160;&#160;Load/store/AMO address
+  # breakpoint¶|4,6|Optionally: &#160;&#160;&#160;Load/store/AMO address misaligned¶|13, 15, 21,
+  # 23, 5, 7|During address translation for an explicit memory access: &#160;&#160;&#160;First
+  # encountered page fault, guest-page fault, or access fault¶|5, 7|With physical address for an
+  # explicit memory access: &#160;&#160;&#160;Load/store/AMO access fault¶Lowest|4, 6|If not higher
+  # priority: &#160;&#160;&#160;Load/store/AMO address misaligned ===
+  - name: H_exc_priority_tbl
+    coverpoint: ["Exceptions_H_cg/cp_priority_{hlv,hsv}"]
+
+  # Number|Privilege|Name|Description === Hypervisor Trap Setup¶0x600|HRW|csr:hstatus[]|Hypervisor
+  # status register¶0x602|HRW|csr:hedeleg[]|Hypervisor exception delegation
+  # register¶0x603|HRW|csr:hideleg[]|Hypervisor interrupt delegation
+  # register¶0x604|HRW|csr:hie[]|Hypervisor interrupt-enable
+  # register¶0x606|HRW|csr:hcounteren[]|Hypervisor counter enable¶0x607|HRW|csr:hgeie[]|Hypervisor
+  # guest external interrupt-enable register¶0x608|HRW|csr:hvien[]|Hypervisor virtual interrupt
+  # enables¶0x609|HRW|csr:hvictl[]|Hypervisor virtual interrupt
+  # control¶0x612|HRW|csr:hedelegh[]|Upper qty:32[bits] of csr:hedeleg[], RV32
+  # only¶0x613|HRW|csr:hidelegh[]|Upper qty:32[bits] of csr:hideleg[], RV32
+  # only¶0x618|HRW|csr:hvienh[]|Upper qty:32[bits] of csr:hvien[], RV32
+  # only¶0x646|HRW|csr:hviprio1[]|Hypervisor VS-level interrupt
+  # priorities¶0x647|HRW|csr:hviprio2[]|Hypervisor VS-level interrupt
+  # priorities¶0x656|HRW|csr:hviprio1h[]|Upper qty:32[bits] of csr:hviprio1[], RV32
+  # only¶0x657|HRW|csr:hviprio2h[]|Upper qty:32[bits] of csr:hviprio2[], RV32 only¶Hypervisor Trap
+  # Handling¶0x643|HRW|csr:htval[]|Hypervisor trap value¶0x644|HRW|csr:hip[]|Hypervisor interrupt
+  # pending¶0x645|HRW|csr:hvip[]|Hypervisor virtual interrupt
+  # pending¶0x64A|HRW|csr:htinst[]|Hypervisor trap instruction
+  # (transformed)¶0x655|HRW|csr:hviph[]|Upper qty:32[bits] of csr:hvip[], RV32
+  # only¶0xE12|HRO|csr:hgeip[]|Hypervisor guest external interrupt pending¶Hypervisor
+  # Configuration¶0x60A|HRW|csr:henvcfg[]|Hypervisor environment configuration
+  # register¶0x61A|HRW|csr:henvcfgh[]|Upper qty:32[bits] of csr:henvcfg[], RV32 only¶Hypervisor
+  # Protection and Translation¶0x680|HRW|csr:hgatp[]|Hypervisor guest address translation and
+  # protection¶Debug/Trace Registers¶0x6A8|HRW|csr:hcontext[]|Hypervisor-mode context
+  # register¶Hypervisor Counter/Timer Virtualization Registers¶0x605|HRW|csr:htimedelta[]|Delta for
+  # VS/VU-mode timer¶0x615|HRW|csr:htimedeltah[]|Upper qty:32[bits] of csr:htimedelta[], RV32
+  # only¶Hypervisor State Enable Registers¶0x60C|HRW|csr:hstateen0[]|Hypervisor State Enable 0
+  # Register¶0x60D|HRW|csr:hstateen1[]|Hypervisor State Enable 1
+  # Register¶0x60E|HRW|csr:hstateen2[]|Hypervisor State Enable 2
+  # Register¶0x60F|HRW|csr:hstateen3[]|Hypervisor State Enable 3
+  # Register¶0x61C|HRW|csr:hstateen0h[]|Upper qty:32[bits] of Hypervisor State Enable 0 Register,
+  # RV32 only¶0x61D|HRW|csr:hstateen1h[]|Upper qty:32[bits] of Hypervisor State Enable 1 Register,
+  # RV32 only¶0x61E|HRW|csr:hstateen2h[]|Upper qty:32[bits] of Hypervisor State Enable 2 Register,
+  # RV32 only¶0x61F|HRW|csr:hstateen3h[]|Upper qty:32[bits] of Hypervisor State Enable 3 Register,
+  # RV32 only¶Virtual Supervisor Registers¶0x200|HRW|csr:vsstatus[]|Virtual supervisor status
+  # register¶0x204|HRW|csr:vsie[]|Virtual supervisor interrupt-enable
+  # register¶0x205|HRW|csr:vstvec[]|Virtual supervisor trap handler base
+  # address¶0x214|HRW|csr:vsieh[]|Upper qty:32[bits] of csr:vsie[], RV32
+  # only¶0x240|HRW|csr:vsscratch[]|Virtual supervisor scratch
+  # register¶0x241|HRW|csr:vsepc[]|Virtual supervisor exception program
+  # counter¶0x242|HRW|csr:vscause[]|Virtual supervisor trap cause¶0x243|HRW|csr:vstval[]|Virtual
+  # supervisor trap value¶0x244|HRW|csr:vsip[]|Virtual supervisor interrupt
+  # pending¶0x254|HRW|csr:vsiph[]|Upper qty:32[bits] of csr:vsip[], RV32
+  # only¶0x25C|HRW|csr:vstopei[]|Virtual supervisor top external
+  # interrupt¶0x280|HRW|csr:vsatp[]|Virtual supervisor address translation and
+  # protection¶0xEB0|HRO|csr:vstopi[]|Virtual supervisor top interrupt¶Virtual Supervisor
+  # Indirect¶0x250|HRW|csr:vsiselect[]|Virtual supervisor indirect register
+  # select¶0x251|HRW|csr:vsireg[]|Virtual supervisor indirect register
+  # alias¶0x252|HRW|csr:vsireg2[]|Virtual supervisor indirect register alias
+  # 2¶0x253|HRW|csr:vsireg3[]|Virtual supervisor indirect register alias
+  # 3¶0x255|HRW|csr:vsireg4[]|Virtual supervisor indirect register alias
+  # 4¶0x256|HRW|csr:vsireg5[]|Virtual supervisor indirect register alias
+  # 5¶0x257|HRW|csr:vsireg6[]|Virtual supervisor indirect register alias 6¶Virtual Supervisor Timer
+  # Compare¶0x24D|HRW|csr:vstimecmp[]|Virtual supervisor timer
+  # compare¶0x25D|HRW|csr:vstimecmph[]|Upper qty:32[bits] of csr:vstimecmp[], RV32 only¶Virtual
+  # Supervisor Control Transfer Records Configuration¶0x24E|HRW|csr:vsctrctl[]|Virtual Supervisor
+  # Control Transfer Records Control Register ===
+  - name: csr_addr_h_tbl
+    coverpoint: ["H_hscsr_cg/cp_hcsrwalk", "H_hscsr_cg/cp_hcsrwalk_masked"]
+
+  # Bit|Attribute|Corresponding Exception === 0 1 2 3 4 5 6 7 8 9 10 11 12 13 15 16 18 19 20 21 22
+  # 23|(See text) Writable Writable Writable Writable Writable Writable Writable Writable Read-only
+  # 0 Read-only 0 Read-only 0 Writable Writable Writable Read-only 0 Writable Writable Read-only 0
+  # Read-only 0 Read-only 0 Read-only 0|Instruction address misaligned Instruction access fault
+  # Illegal instruction Breakpoint Load address misaligned Load access fault Store/AMO address
+  # misaligned Store/AMO access fault Environment call from U-mode or VU-mode Environment call from
+  # HS-mode Environment call from VS-mode Environment call from M-mode Instruction page fault Load
+  # page fault Store/AMO page fault Double trap Software check Hardware error Instruction guest-
+  # page fault Load guest-page fault Virtual instruction Store/AMO guest-page fault ===
+  - name: hedeleg_bits_acc_tbl
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_hcsrwalk",
+        "Exceptions_H_cg/cp_hedeleg_{illegal_instruction,breakpoint,load_misaligned,store_misaligned,ecall}",
+      ]
+
+  # The hgatp register is considered active for the purposes of the address-translation algorithm
+  # unless the effective privilege mode is U and hstatus.HU=0.
+  - name: hgatp_op_active
+    coverpoint:
+      ["H_inst_cg/cp_{hlv,hlvx,hsv}", "Sv_H_twostage_cg/cp_twostage_perm"]
+
+  # The vsatp register is considered active for the purposes of the address-translation algorithm
+  # unless the effective privilege mode is U and hstatus.HU=0.
+  - name: vsatp_op_active
+    coverpoint:
+      ["H_inst_cg/cp_{hlv,hlvx,hsv}", "Sv_H_twostage_cg/cp_twostage_perm"]
+
+  # The hip register indicates pending VS-level and hypervisor-specific interrupts
+  - name: hip_op
+    coverpoint: ["H_hscsr_cg/cp_hcsr_access"]
+
+  # hie contains enable bits for the same interrupts
+  - name: hie_op
+    coverpoint: ["H_hscsr_cg/cp_hcsr_access"]

@@ -17,3 +17,8 @@ normative_rule_definitions:
   # data values in rs1 and rs2.
   - name: czero-nez_Zkt_timing
     coverpoint: ["Not tested: microarchitectural timing"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|czero.eqz rd, rs1, rs2|&lt;&lt;insns-czero-
+  # eqz&gt;&gt;¶✓|✓|czero.nez rd, rs1, rs2|&lt;&lt;insns-czero-nez&gt;&gt; ===
+  - name: Zicond_insns_tbl
+    coverpoint: ["Zicond_{czero_eqz,czero_nez}_cg/cp_asm_count"]

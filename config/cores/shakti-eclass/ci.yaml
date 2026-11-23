@@ -6,7 +6,7 @@ ci_enabled: true
 
 # shaktiproject/cores/e-class e8a0dfd; paths are under
 # https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/src/core/
-# None of these E-class bugs has been reported upstream yet.
+# Most of these bugs are listed in https://gitlab.com/shaktiproject/cores/e-class/-/issues/95.
 exclude_extensions:
   # mtval on an illegal instruction is rs1 + immediate, on ecall the PC, on ebreak PC + 1, and on
   # an interrupt a stale address: every trap writes stage 2's effective address
@@ -72,7 +72,8 @@ exclude_extensions:
   - Exceptions_Zalrsc
   # An sc.w without a reservation skips its PMP check (stage2.bsv#L245-L248).
   - PMP_Zalrsc_cfg_wr
-  # pmpcfg2 reads entries 12..15 and pmpcfg3 reads 0 (csrfile.bsv#L404).
+  # pmpcfg2 reads entries 12..15 and pmpcfg3 reads 0 (csrfile.bsv#L404;
+  # https://gitlab.com/shaktiproject/cores/e-class/-/issues/95#note_4304837200).
   - PMP_Sm_cfg_A_all
   - PMP_Sm_pmpcfg_walk_02
   - PMP_Sm_pmpcfg_walk_03
@@ -89,7 +90,8 @@ exclude_extensions:
   - PMP_U_napot_legal_lxwr-01-
   - PMP_Sm_priority-
   # A write to pmpaddr(i-1) is ignored only when entry i-1 is locked, not also when entry i is
-  # locked with A = TOR (csrfile.bsv#L889-L904).
+  # locked with A = TOR (csrfile.bsv#L889-L904;
+  # https://gitlab.com/shaktiproject/cores/e-class/-/issues/95#note_4304837200).
   - PMP_Sm_cfg_L_modify_tor
   # The PMP check of a load or store ignores mstatus.MPRV (eclass.bsv#L219).
   - PMP_U_mprv_check-01-

@@ -21,7 +21,7 @@ Fundamental design considerations are:
 
 The boot sequence boots to the lowest available privilege mode sufficient to run the tests.  Tests may define the BOOT_TO_MMODE or BOOT_TO_SMODE symbols to force booting to M-mode or S-mode, respectively, if the DUT supports those modes.  If neither symbol is defined, the boot sequence boots to U-mode if supported, and M-mode (possibly custom) otherwise. Note that hypervisor tests should define BOOT_TO_SMODE to boot into S (effectively HS)-mode and then are responsible for setting up and switching to VS/VU mode if desired.
 
-In the ACT framework, BOOT_TO_MMODE is defined when REQUIRED_EXTENSIONS contains Sm.  BOOT_TO_SMODE is defined when REQUIRED_EXTENSIONS contains S. Otherwise, neither symbol is defined.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (possibly custom) otherwise.  Another consequence is that if the DUT defines STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
+Tests for M, S, or U-Mode features define BOOT_TO_MMODE, _SMODE, or _U_MODE, respectively, to force booting to the appropriate privilege mode.  Unprivileged tests omit these macros and run in U-mode if supported, and in M-mode (possibly custom) otherwise.  Another consequence is that if the DUT defines STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
 
 === Controlling Parameters
 
@@ -249,9 +249,9 @@ Alternatively, the DUT might run a separate proprietary bootloader executable fi
 
 ==== RVMODEL Macros for Spike and SAIL
 
-RVMODEL macros for Spike are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts
+RVMODEL macros for Spike are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h]. They use HTIF for termination and a virtual UART at address 0x1000_0000 to print characters. The configuration supplies CLINT addresses for timer and software interrupts and platform-specific macros for external interrupts.
 
-RVMODEL macros for the RISC-V Sail model are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
+RVMODEL macros for running tests on Sail are supplied in each Sail configuration's `rvmodel_macros.h`. During reference-model signature generation, https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_macros.h[tests/env/sail_macros.h] overrides the DUT's I/O, termination, and interrupt macros with Sail implementations. These use HTIF for printing and termination, and Sail's CLINT and simple interrupt generator for interrupts. The build framework obtains their base addresses from `sail.json`.
 
 ==== Host Target Interface
 
@@ -259,7 +259,7 @@ The https://github.com/Timmmm/htif_spec/releases/download/v0.0.1/htif-0.0.1.pdf[
 
 For example, the testbench might implement the [unofficial HTIF semihosting specification] and print the character `A` by writing the doubleword 0x01010000_00000041 to a label called `tohost` in the .data section of the test program.  The most significant byte is the device (console), the next byte is the command (write), and the least significant 4 bytes are the data (the ASCII code for `A`).  Terminating with a failure code is done by writing the doubleword 0x00000000_00000003 to `tohost`, and terminating with a success code is done by writing the doubleword 0x00000000_00000001 to `tohost`.
 
-Note that writing the upper word of the doubleword to `tohost` with `sd` is only properly defined for RV64.  Therefore, RV32 can use HTIF to terminate with a success or failure code but not necessarily to write to the console.
+RV32 has no `sd` instruction. The Sail macros implement HTIF console output on RV32 using two `sw` instructions: first the low word containing the character, then the high word containing the device and command. A DUT using this method must support these word writes to the HTIF mailbox.
 
 ==== RVMODEL Macros for Other DUTs
 
@@ -270,7 +270,9 @@ If you have a complex DUT, you presumably have a team of sophisticated verificat
 [[linker-script]]
 === Linker Script
 
-Each DUT needs a linker script tailored to its memory map. The linker script in `config/<core>/<version>/link.ld` defines where to place the code and data regions in the DUT's memory map.  It must contain `.text.init`, `.text.rvtest`, `.data`, and `.text.rvmodel` sections (in that order), and an `ENTRY` point named `rvtest_entry_point`. The first line of the list of `SECTIONS` in the linker script sets the starting address of the ELF (`. = 0x...`) and is the only part of the sample linker script that most users will need to change. Set it to your reset address for simple DUTs. Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
+Each DUT needs a `link.ld` in its configuration directory, tailored to its memory map. Start from a current sample, such as https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/link.ld[spike-rv64-max/link.ld]. Set `RAM_ORIGIN` and `RAM_LENGTH` to describe the available RAM, `TEST_BASE` to the test entry address, and `NUM_HARTS` to the hart count. Keep the RAM region consistent with `memory.regions` in `sail.json`. For a simple DUT, `TEST_BASE` is its reset address; a separate bootloader can instead load the ELF and jump to `rvtest_entry_point`.
+
+The script declares `ENTRY(rvtest_entry_point)` and places `.text.init` at `TEST_BASE`, followed by `.text.rvtest`, `.rodata`, `.data`, `.bss`, the stack region, and `.text.rvmodel`. C startup requires the symbols `__bss_start`, `__bss_end`, `__stack_top`, `__stack_size`, and `__num_harts`. It clears `.bss` and assigns each hart a stack before calling `main`. The sample scripts reserve `__stack_size * __num_harts` bytes and default to `STACK_SIZE = 0x20000` bytes per hart. They use `PROVIDE(__stack_size = STACK_SIZE)` so the framework can reduce the allocation to 128 bytes for assembly tests. Preserve the sample's section alignment and RAM-bound checks. See https://github.com/riscv/riscv-arch-test/blob/act4/docs/memory_map.md[Test Memory Map] for the complete layout.
 
 The `.text.rvmodel` section contains DUT-specific (`RVMODEL`) code and **must** be placed after the `.data` section.  This ensures that variable-size model-specific macro expansions (which may differ between the DUT build and the reference-model build) do not affect the addresses of test data symbols such as `scratch` and `begin_signature`, preventing signature mismatches.
 
@@ -363,19 +365,3 @@ The following macros are defined for developer convenience to access the T-SBI a
 * RVTEST_TSBI_SW: performs `sw a2, 0(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmp` or `msip`.
 * RVTEST_TSBI_SWP4: performs `sw a2, 4(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmph`.
 * RVTEST_TSBI_SD: performs `sd a2, 0(a1)` with machine-mode privileges.  Used to write memory-mapped I/O such as `mtimecmp` or `msip`. RV64 only.
-
-TODO
-
-testgen/src/testgen/io/templates.py format_params needs to accept STANDARD_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
-
-remove mention of RVTEST_VECTOR  from vector code
-
-Test generator:
-    Any test that lists Sm in REQUIRED_EXTENSIONS adds STANDARD_SM_SUPPORTED as a parameter (outdated; as of 9/16/26 it adds BOOT_TO_MMODE)
-    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)
-
-    Restore this code when fully transitioned to S-SBI
-        if any(ext in ext_components for ext in ["H", "S"]):
-            extra_defines.append("#define BOOT_TO_SMODE")
-        elif any(ext in ext_components for ext in ["Sm"]):
-            extra_defines.append("#define BOOT_TO_MMODE")

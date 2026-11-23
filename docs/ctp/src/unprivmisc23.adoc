@@ -44,7 +44,7 @@ include::norm/Zimop_norm_rules.adoc[]
 
 ==== Zcmop Compressed Maybe-Ops
 
-Should write 0 to rd unless an extension redefines them.
+Does not write to any register.
 
 include::{testplansdir}/Zcmop.adoc[]
 

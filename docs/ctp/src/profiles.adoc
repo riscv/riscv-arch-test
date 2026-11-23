@@ -75,13 +75,12 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Za64rs|Max 64B Reservation Sets|<<t-Za64rs-coverpoints>>|||x|x|x
 |Zic64b|64B Cache Blocks|<<t-Zic64b-coverpoints>>|||x|x|x
 8+^|Privileged
-|Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|x|x|x
+|Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|||
 |S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
 |Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
-|InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
-|InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
+|Interrupts|Interrupts|<<t-Interrupts-coverpoints>>||x|x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
 |EndianSm|Machine Endian|<<t-EndianSm-coverpoints>>|||||
@@ -189,7 +188,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Smepmp|Enhanced PMP|<<t-Smepmp-coverpoints>>|||||
 |Smrnmi|Machine Resumable Interrupts|<<t-Smrnmi-coverpoints>>|||||
 |Ssrnmi|Supervisor Resumable Interrupts|<<t-Ssrnmi-coverpoints>>|||||
-|Sm1p13|Machine 1p13|<<t-Sm1p13-coverpoints>>||||x|x
+|Sm1p13|Machine 1p13|<<t-Sm1p13-coverpoints>>|||||
 |Smstateen|Machine State Enable|<<t-Smstateen-coverpoints>>|||||
 |Smcntrpmf|Cycle and Instret Mode Filtering|<<t-Smcntrpmf-coverpoints>>|||||
 |Smcdeleg|Counter Delegation|<<t-Smcdeleg-coverpoints>>|||||

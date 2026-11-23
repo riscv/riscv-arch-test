@@ -9,7 +9,7 @@ import re
 from random import Random
 from typing import Literal
 
-from testgen.constants import VECTOR_LENGTH_DATA_POOL_BYTES
+from testgen.constants import VECTOR_LENGTH_DATA_POOL_BYTES, VECTOR_LENGTH_DATA_POOL_SLOTS, VLEN_MAX
 from testgen.data.config import TestConfig
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
@@ -59,7 +59,7 @@ class TestData:
         self._vector_labels: dict[str, tuple[VectorData, int]] = {}
         self._length_data_rng = Random(f"{instr_name}-{test_config.sew}-{test_config.xlen}")
         self._length_data_pool: tuple[int, ...] = ()
-        self._length_data_ranges: dict[int, list[tuple[int, int]]] = {}
+        self._length_data_slots: dict[int, list[int]] = {}
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, test_count={self._test_count})"
@@ -274,9 +274,9 @@ class TestData:
     def register_pooled_vector_data(self, label: str, eew: int, element_count: int) -> None:
         """
         Registers a label for element_count random eew-wide elements that point into this instruction's pool of
-        random length-suite data, so its test files hold one pool instead of a copy per label. The offset is random
-        and aligned to the operand size, and does not overlap the other operands of the same testcase. The shared
-        random stream advances as if the elements were drawn individually, so the rest of the test is unchanged.
+        random length-suite data. Each operand gets a distinct slot within a testcase. Assembly selects a random
+        offset within the slot using the configured VLEN, so smaller DUTs sample more of the pool without runtime
+        address calculations. The shared random stream advances as if the elements were drawn individually.
         """
         for _ in range(element_count):
             random_int(eew)
@@ -286,18 +286,16 @@ class TestData:
                 self._length_data_rng.randrange(2**64) for _ in range(VECTOR_LENGTH_DATA_POOL_BYTES // 8)
             )
 
-        size = element_count * eew // 8
-        align = 1 << (size - 1).bit_length()
-        used = self._length_data_ranges.setdefault(self._test_count, [])
-        free = [
-            offset
-            for offset in range(0, VECTOR_LENGTH_DATA_POOL_BYTES - size + 1, align)
-            if all(offset + size <= start or end <= offset for start, end in used)
-        ]
+        # Some setup loads initialize a full register even for fractional LMUL operands.
+        size = max(element_count * eew // 8, VLEN_MAX // 8)
+        assert 0 < size <= VLEN_MAX, f"Operand {label} exceeds a vector data pool slot: {size} bytes"
+        used = self._length_data_slots.setdefault(self._test_count, [])
+        free = [slot for slot in range(VECTOR_LENGTH_DATA_POOL_SLOTS) if slot not in used]
         assert free, f"No room in the length-suite data pool for {label}"
-        offset = self._length_data_rng.choice(free)
-        used.append((offset, offset + size))
-        self._vector_labels[label] = (PooledVectorData(self._length_data_pool, offset), eew)
+        slot = self._length_data_rng.choice(free)
+        used.append(slot)
+        offset_seed = self._length_data_rng.randrange(2**31)
+        self._vector_labels[label] = (PooledVectorData(self._length_data_pool, slot, size, offset_seed), eew)
 
 
 def return_testcase_registers(test_data: TestData, params: InstructionParams) -> None:

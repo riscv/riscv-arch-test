@@ -87,7 +87,7 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, VectorData,
                 lines.extend(
                     [".balign 8", f"{LENGTH_DATA_POOL_LABEL}:", *pack_data_directives(".dword", list(data.pool), 64)]
                 )
-            lines.append(f".set {label}, {LENGTH_DATA_POOL_LABEL} + {data.offset}")
+            lines.append(f".set {label}, {LENGTH_DATA_POOL_LABEL} + {data.assembly_offset()}")
             continue
 
         # Repack into .dword chunks

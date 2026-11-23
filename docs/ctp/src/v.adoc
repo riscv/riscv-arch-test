@@ -7,7 +7,9 @@ The vector extension is huge.  The testplan is partitioned into three unprivileg
 
 The full V extension supports all selected element widths SEW={8, 16, 32, 64}.  The vector coverage files and tests are organized by SEW.  Thus, a DUT could handle any contiguous subset of SEW from SEW~MIN~ to ELEN.  For example, a DUT with SEW~MIN~=16 and ELEN=32 would support SEW={16, 32}.
 
-The tests detect VLMAX and set the vector length accordingly, up to some configurable maximum VLEN (default 4096 bits, although the vector extension theoretically supports up to 65536).  Therefore, there is no need for different test suites for different VLENs.
+The tests adapt to VLMAX up to VLEN_MAX (currently 4096 bits), so the same suites support all VLENs within that limit.
+
+Length-suite random operands share a 16 KiB pool per test file. Each operand gets a separate 4 KiB slot within a testcase; offsets use the configured VLEN to vary the data used by smaller vectors.
 
 ==== Vector File Organization
 

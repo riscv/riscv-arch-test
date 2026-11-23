@@ -526,6 +526,9 @@ def generate_random_vector_params(
             # Register the label
             eew = int(sew * info.get_size_multiplier(register, sew, instr_type_config.vector_data))
             element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
+            if suite == "length" and register in instr_type_config.vector_data.scalar_regs:
+                # Scalar reduction operands occupy one register even when LMUL=8 and EEW=2*SEW.
+                element_count = VLEN_MAX // eew
             if instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)

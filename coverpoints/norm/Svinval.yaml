@@ -29,7 +29,9 @@ normative_rule_definitions:
         Svinval_sequence_reads_writes_after,
       ]
     coverpoint:
-      ["Not tested: ordering is not observable in single-hart signature tests"]
+      [
+        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
+      ]
 
   # In particular, an attempt to execute any of these instructions in U-mode always
   # raises an illegal-instruction exception.

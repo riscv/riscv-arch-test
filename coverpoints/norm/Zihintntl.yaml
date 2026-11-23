@@ -56,17 +56,25 @@ normative_rule_definitions:
   # The NTL instructions affect all memory-access instructions except the
   # cache-management instructions in the Zicbom extension.
   - name: ntl_range
-    coverpoint: ["Not tested: no architecturally visible effect"]
+    coverpoint:
+      [
+        "No independent assertion: describes a microarchitectural hint; adopting the suggested policy is not required.",
+      ]
 
   # When an NTL instruction is applied to a prefetch hint in the Zicbop extension,
   # it indicates that a cache line should be prefetched into a cache that is outer
   # from the level specified by the NTL.
   - name: ntl_Zicbop_prefetch_outer
-    coverpoint: ["Not tested: no architecturally visible effect"]
+    coverpoint:
+      [
+        "No independent assertion: describes a microarchitectural hint; adopting the suggested policy is not required.",
+      ]
 
   # In the event that a trap is taken on the target instruction, implementations are
   # discouraged from applying the NTL to the first instruction in the trap handler.
   # Instead, implementations are recommended to ignore the HINT in this case.
   - name: ntl_trap_behavior
     coverpoint:
-      ["Not tested: recommendation with no architecturally visible effect"]
+      [
+        "No independent assertion: this is a recommendation, not a required architectural outcome.",
+      ]

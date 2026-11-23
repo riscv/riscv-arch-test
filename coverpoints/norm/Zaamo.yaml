@@ -5,27 +5,48 @@ normative_rule_definitions:
     coverpoint: ["Zaamo_amoadd_w_cg/cp_custom_aqrl"]
 
   - name: amo_release_consistency
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
+      ]
 
   - name: A_domain_specific_ordering
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+      ]
 
   - name: A_no_aq_rl
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "No independent assertion: clearing aq and rl adds no ordering constraint; the base memory-model requirements still apply.",
+      ]
 
   - name: A_acquire_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
+      ]
 
   - name: A_release_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
+      ]
 
   - name: A_seq_cst_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
+      ]
 
   # The A extension comprises the Zalrsc and Zaamo extensions, which are
   # defined in the following sections.
   - name: A_comprises
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: A requires Zaamo and Zalrsc; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/A.yaml#L22[A.requirements]).",
+      ]
 
   # Load into rd, operate with rs2, store back; representative: memory and rs2 edge values
   - name: amo_op

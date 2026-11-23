@@ -18,4 +18,7 @@ normative_rule_definitions:
 
   # The ext:za64rs[] extension implies the ext:za128rs[] extension.
   - name: Za64rs_implies_Za128rs
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Za64rs requires Za128rs; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Za64rs.yaml#L24[Za64rs.requirements]).",
+      ]

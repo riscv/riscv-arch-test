@@ -1560,7 +1560,10 @@ normative_rule_definitions:
   # the destination register. Similarly, pc bits above XLEN are ignored, and when
   # the pc is written, it is sign-extended to fill the widest supported XLEN.
   - name: xlen_reduction_op
-    coverpoint: ["NOT TESTED"]
+    coverpoint:
+      [
+        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+      ]
 
   # Some HINT instructions are encoded as integer computational instructions that
   # overwrite their destination register with its current value, e.g., c.addi x8, 0.
@@ -1573,7 +1576,10 @@ normative_rule_definitions:
   # implementation choice is observable only by privilege modes with an XLEN setting
   # greater than the current XLEN; it is invisible to the current privilege mode.
   - name: xlen_reduction_hint_op
-    coverpoint: ["Out of scope"]
+    coverpoint:
+      [
+        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+      ]
 
   # Instruction fetches are always little-endian.
   - name: endianness_inst_fetch_little
@@ -1706,7 +1712,10 @@ normative_rule_definitions:
   # If the Zalrsc extension is supported, the xRET instruction is allowed to clear any outstanding
   # LR address reservation but is not required to.
   - name: xret_clr_lr_resv
-    coverpoint: ["Either behavior is legal; not tested"]
+    coverpoint:
+      [
+        "No independent assertion: xRET may clear an LR reservation or retain it; neither choice is required.",
+      ]
 
   # Upon reset, a hart’s privilege mode is set to M.
   - name: m_mode_priv_at_reset
@@ -1747,7 +1756,9 @@ normative_rule_definitions:
   # If the hypervisor extension is implemented, the hgatp.MODE and vsatp.MODE fields are reset to 0.
   - name: hgatp_vsatp_mode_rst
     coverpoint:
-      ["TODO: record hgatp.MODE and vsatp.MODE after reset, before any write"]
+      [
+        "Needs infrastructure: capture hgatp.MODE and vsatp.MODE after reset, before startup writes.",
+      ]
 
   # No WARL field contains an illegal value.
   - name: warl_rst

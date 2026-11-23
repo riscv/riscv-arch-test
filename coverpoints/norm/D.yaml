@@ -127,7 +127,9 @@ normative_rule_definitions:
   # address is naturally aligned and XLEN≥64.
   - name: fld_fsd_atomic_align
     coverpoint:
-      ["Not tested: atomicity is not observable in single-hart signature tests"]
+      [
+        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
+      ]
   # insn:fld[] and insn:fsd[] do not modify the bits being transferred; in particular,
   # the payloads of non-canonical NaNs are preserved.
   - name: fld_fsd_bits_maintained

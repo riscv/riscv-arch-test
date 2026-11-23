@@ -277,7 +277,7 @@ normative_rule_definitions:
   - name: load_exc_x0
     coverpoint:
       [
-        "TODO: currently have no cp in Exceptions_Sm that tests for load with rd = x0",
+        "Needs test: currently have no cp in Exceptions_Sm that tests for load with rd = x0.",
       ]
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of
@@ -401,14 +401,20 @@ normative_rule_definitions:
   # architecture that uses access failures as part of the discovery mechanism. In this case, error
   # responses from peripheral devices will be reported as imprecise bus-error interrupts.
   - name: pma_imprecise_ok
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: inject peripheral bus errors and observe the platform's imprecise error-interrupt response.",
+      ]
   # The most important characterization of a given memory address range is whether it holds regular
   # main memory or I/O devices. Regular main memory is required to have a number of properties,
   # specified below, whereas I/O devices can have a much broader range of attributes. Memory regions
   # that do not fit into regular main memory, for example, device scratchpad RAMs, are categorized
   # as I/O regions.
   - name: pma_mm_vs_io_def
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      [
+        "No independent assertion: defines terminology or format; it adds no behavior beyond the associated instruction or field rules.",
+      ]
   # Main memory regions always support read and write of all access widths required by the attached
   # devices
   - name: pma_mm_rw
@@ -420,18 +426,21 @@ normative_rule_definitions:
   - name: pma_mm_ifetch
     coverpoint:
       [
-        "Untestable: profile defines no main-memory region without instruction fetch",
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
       ]
   # I/O regions can specify which combinations of read, write, or execute accesses to which data
   # widths are supported.
   - name: pma_io_rwx_per_sz
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # For systems with page-based virtual memory, I/O and memory regions can specify which
   # combinations of hardware page-table reads and hardware page-table writes are supported.
   - name: pma_vm_hw_tbl_acc
     coverpoint:
       [
-        "TODO: walk a page table at RVMODEL_ACCESS_FAULT_ADDRESS_LOAD and check for an access fault",
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
       ]
   # Within AMOs, there are four levels of support: AMONone, AMOSwap, AMOLogical, and AMOArithmetic.
   # AMONone indicates that no AMO operations are supported. AMOSwap indicates that only amoswap
@@ -439,25 +448,40 @@ normative_rule_definitions:
   # plus all the logical AMOs (amoand, amoor, amoxor) are supported. AMOArithmetic indicates that
   # all RISC-V AMOs defined by the A extension are supported.
   - name: pma_amo_levels
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # Main memory and I/O regions may only support a subset or none of the processor-supported atomic
   # operations.
   - name: pma_amo_far_subset_proc
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # The Zacas extension defines three additional levels of support: AMOCASW, AMOCASD, and AMOCASQ.
   - name: pma_amo_Zacas_levels1
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      [
+        "No independent assertion: defines terminology or format; it adds no behavior beyond the associated instruction or field rules.",
+      ]
   # AMOCASW indicates that in addition to instructions indicated by AMOArithmetic-level support, the
   # AMOCAS.W instruction is supported. AMOCASD indicates that in addition to instructions indicated
   # by AMOCASW-level support, the AMOCAS.D instruction is supported. AMOCASQ indicates that in
   # addition to instructions indicated by AMOCASD-level support, the AMOCAS.Q instruction is
   # supported.
   - name: pma_amo_Zacas_levels2
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # The AMOs specified by the Zabha extension require the same level of support as the corresponding
   # instructions in the Zaamo standard extension or the Zacas extension.
   - name: pma_amo_Zabha_req
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # For LR/SC, there are three levels of support indicating combinations of the reservability and
   # eventuality properties: RsrvNone, RsrvNonEventual, and RsrvEventual. RsrvNone indicates that no
   # LR/SC operations are supported (the location is non-reservable). RsrvNonEventual indicates that
@@ -465,7 +489,10 @@ normative_rule_definitions:
   # guarantee described in the unprivileged ISA specification. RsrvEventual indicates that the
   # operations are supported and provide the eventual success guarantee.
   - name: pma_rsrv_levels
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # Implementations may raise access-fault exceptions instead of address-misaligned exceptions for
   # some misaligned accesses, indicating the instruction should not be emulated by a trap handler.
   # Implementations may raise access-fault exceptions instead of address-misaligned
@@ -479,11 +506,17 @@ normative_rule_definitions:
   # Each strongly ordered I/O region specifies a numbered ordering channel, which is a mechanism by
   # which ordering guarantees can be provided between different I/O regions.
   - name: pma_mo_io_chan_def
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # Channel 0 is used to indicate point-to-point strong ordering only, where only accesses by the
   # hart to the single associated I/O region are strongly ordered.
   - name: pma_mo_io_chan_0
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # Channel 1 is used to provide global strong ordering across all I/O regions. Any accesses by a
   # hart to any I/O region associated with channel 1 can only be observed to have occurred in
   # program order by all other harts and I/O devices, including relative to accesses made by that
@@ -491,25 +524,43 @@ normative_rule_definitions:
   # other words, any access to a region in channel 1 is equivalent to executing a fence io,io
   # instruction before and after the instruction.
   - name: pma_mo_io_chan_1
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # Other larger channel numbers provide program ordering to accesses by that hart across any
   # regions with the same channel number
   - name: pma_mo_io_chan_other
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # Systems might support dynamic configuration of ordering properties on each memory region.
   - name: pma_mo_dyn
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      [
+        "No independent assertion: dynamic reconfiguration of memory-ordering properties is permitted, not required.",
+      ]
   # If a PMA indicates non-cacheability, then accesses to that region must be satisfied by the
   # memory itself, not by any caches.
   - name: pma_non_cacheable
-    coverpoint: ["Untestable: no non-cacheable PMA region defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # Main memory regions are assumed to be idempotent.
   - name: pma_idp_mm
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      [
+        "Configuration requirement: regions designated as main memory must be idempotent; not yet checked (requires platform memory-map and device validation).",
+      ]
   # hardware should always be designed to avoid speculative or redundant accesses to memory regions
   # marked as non-idempotent
   - name: pma_idp_no_spec
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # For non-idempotent regions, implicit reads and writes must not be performed early or
   # speculatively, with the following exceptions. When a non-speculative implicit read is performed,
   # an implementation is permitted to additionally read any of the bytes within a naturally aligned
@@ -518,11 +569,17 @@ normative_rule_definitions:
   # read any of the bytes within the next naturally aligned power-of-2 region of the same size (with
   # the address of the region taken modulo 2^XLEN).
   - name: pma_idp_implicit_ok
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # The size of these naturally aligned power-of-2 regions is implementation-defined, but, for
   # systems with page-based virtual memory, must not exceed the smallest supported page size.
   - name: pma_idp_implicit_sz
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint:
+      [
+        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
+      ]
   # When a trap is taken into M-mode, mtval is either set to zero or written with exception-specific
   # information to assist software in handling the trap. Otherwise, mtval is never written by the
   # implementation, though it may be explicitly written by software.
@@ -710,7 +767,10 @@ normative_rule_definitions:
   # The CBIE/CBCFE/CBZE fields in each xenvcfg register do not affect the read and
   # write behavior of the same fields in the other xenvcfg registers.
   - name: cbxe_unaffected
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+      ]
   # A CBO.INVAL instruction executes or raises either an illegal-instruction
   # exception or a virtual-instruction exception based on the state of the
   # xenvcfg.CBIE fields:

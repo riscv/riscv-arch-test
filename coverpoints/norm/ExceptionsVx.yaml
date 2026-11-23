@@ -9,7 +9,7 @@ normative_rule_definitions:
   - name: vstart_unmodified
     coverpoint:
       [
-        "TODO: no coverpoint checks that vstart is unmodified after an illegal-instruction exception; cp_vstart only checks that the exception is raised",
+        "Needs test: no coverpoint checks that vstart is unmodified after an illegal-instruction exception; cp_vstart only checks that the exception is raised;.",
       ]
 
   # The use of vstart values greater than the largest element index for the current vtype
@@ -23,5 +23,5 @@ normative_rule_definitions:
   - name: vstart_vtype_dep
     coverpoint:
       [
-        "Untestable: implementations are permitted, not required, to raise this exception, so no behavior can be asserted",
+        "No independent assertion: an illegal-instruction exception for an implementation-unreachable vstart value is optional; other execution requirements still apply.",
       ]

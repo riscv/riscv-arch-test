@@ -3,7 +3,10 @@
 normative_rule_definitions:
   # The C extension depends upon the Zca extension.
   - name: C_dep_Zca
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: C requires Zca; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/C.yaml#L21[C.requirements]).",
+      ]
   - name: Zca_offsets_mul2
     # Representative: offsets that are multiples of 2 but not 4, for jumps and branches
     coverpoint:
@@ -114,7 +117,13 @@ normative_rule_definitions:
   - name: c-nop_hint
     coverpoint: ["Zca_c_nop_cg/{cp_c_hint_nop}"]
   - name: c-slli_hint
-    coverpoint: ["N/A custom hints not certified"]
+    coverpoint:
+      [
+        "Needs test: exercise these HINT encodings and check that architectural state is unchanged apart from normal PC/counter advancement.",
+      ]
   # The insn:c.srli[] code points with shamt=0 are HINTs.
   - name: c-srli_hint
-    coverpoint: ["N/A custom hints not certified"]
+    coverpoint:
+      [
+        "Needs test: exercise these HINT encodings and check that architectural state is unchanged apart from normal PC/counter advancement.",
+      ]

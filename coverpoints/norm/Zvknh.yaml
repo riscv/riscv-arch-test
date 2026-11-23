@@ -45,49 +45,49 @@ normative_rule_definitions:
   - name: Zvknha_Zvknhb_vstart
     coverpoint:
       [
-        "TODO: no coverpoint samples vstart for this suite and no ExceptionsZvk-style suite exists to exercise a non-multiple-of-EGS vstart value",
+        "Needs test: no coverpoint samples vstart for this suite and no ExceptionsZvk-style suite exists to exercise a non-multiple-of-EGS vstart value.",
       ]
 
   # ext:zvknha[]: SEW is any value other than 32
   - name: vsha2chl-vv_Zvknha_sewn32_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknha and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
       ]
 
   # ext:zvknhb[]: SEW is any value other than 32 or 64
   - name: vsha2chl-vv_Zvknhb_sewn32or64_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknhb and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
       ]
 
   # The vd register group overlaps with either vs1 or vs2
   - name: vsha2chl-vv_vdoverlapvs1vs2_rsv
     coverpoint:
       [
-        "TODO: this is an SsstrictV-style reserved-encoding test; no cmp_vd_vs1/cmp_vd_vs2-style register-aliasing coverpoint exists for this suite and no SsstrictV-equivalent suite exists for vector crypto",
+        "Needs test: add a directed check and coverpoint for this architectural requirement.",
       ]
 
   # ext:zvknha[]: SEW is any value other than 32
   - name: vsha2ms-vv_Zvknha_sewn32_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknha and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
       ]
 
   # ext:zvknhb[]: SEW is any value other than 32 or 64
   - name: vsha2ms-vv_Zvknhb_sewn32or64_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknhb and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
       ]
 
   # The vd register group overlaps with either vs1 or vs2
   - name: vsha2ms-vv_vdoverlapvs1vs2_rsv
     coverpoint:
       [
-        "TODO: this is an SsstrictV-style reserved-encoding test; no cmp_vd_vs1/cmp_vd_vs2-style register-aliasing coverpoint exists for this suite and no SsstrictV-equivalent suite exists for vector crypto",
+        "Needs test: add a directed check and coverpoint for this architectural requirement.",
       ]
 
   # Eleven of the last 16 SEW-sized message-schedule words from vd (oldest), vs2, and vs1
@@ -107,7 +107,10 @@ normative_rule_definitions:
 
   # The Zvknhb, Zvkn, Zvknc, Zvkng, and Zvksc depend on Zve64x.
   - name: Zvknhb_Zvkn_Zvknc_Zvkng_Zvksc_depZve64x
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Zve64x is required directly by Zvknhb and through the Zvkn/Zvbc dependency chains; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvknhb.yaml#L18[Zvknhb.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvkn.yaml#L22[Zvkn.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvknc.yaml#L21[Zvknc.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvkng.yaml#L21[Zvkng.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvksc.yaml#L21[Zvksc.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvbc.yaml#L20[Zvbc.requirements]).",
+      ]
 
   # SHA-256: these instructions work on 128-bit element groups comprised of four 32-bit elements.
   - name: Zvknha_Zvknhb_sha256_egw128b_elem32b
@@ -124,7 +127,10 @@ normative_rule_definitions:
   # To help avoid side-channel timing attacks, these instructions shall be implemented with
   # data-independent timing.
   - name: Zvknha_Zvknhb_dataindeptiming
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint:
+      [
+        "Needs infrastructure: measure data-dependent execution latency or use a timing/security verification method; final-state signatures do not establish constant latency.",
+      ]
 
   # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW
   # elements to be processed and therefore must be a multiple of EGS=4.

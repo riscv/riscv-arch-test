@@ -20,7 +20,10 @@ normative_rule_definitions:
       ]
 
   - name: B_extension_composition
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: B requires Zba, Zbb, and Zbs; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/B.yaml#L26[B.requirements]).",
+      ]
 
   - name: Zbb_sign_zero_extension_function
     coverpoint: ["{Zbb_sext_b_cg, Zbb_sext_h_cg, Zbb_zext_h_cg}/cp_rs1_edges"]

@@ -16,7 +16,10 @@ normative_rule_definitions:
   # To help avoid side-channel timing attacks, these instructions shall be implemented with data-
   # independent timing.
   - name: Zvksh_dataindeptiming
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint:
+      [
+        "Needs infrastructure: measure data-dependent execution latency or use a timing/security verification method; final-state signatures do not establish constant latency.",
+      ]
 
   # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW=32
   # elements to be processed and therefore must be a multiple of EGS=8.
@@ -31,21 +34,21 @@ normative_rule_definitions:
   - name: Zvksh_vstart
     coverpoint:
       [
-        "TODO: no coverpoint samples vstart for this suite yet; nothing wired in coverpoints/unpriv/Zvksh_coverage.svh",
+        "Needs test: no coverpoint samples vstart for this suite yet; nothing wired in coverpoints/unpriv/Zvksh_coverage.svh.",
       ]
 
   # SEW is any value other than 32.
   - name: vsm3c-vi_sewn32_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvksh only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
       ]
 
   # The vd register group overlaps with the vs2 register group (reserved)
   - name: vsm3c-vi_vdoverlapvs2_rsv
     coverpoint:
       [
-        "TODO: this is an SsstrictV-style reserved-encoding test; Zvksh_vsm3c_vi_cg has no vd/vs2 register-aliasing coverpoint and there is no Ssstrict-equivalent suite for vector-crypto",
+        "Needs test: add a directed check and coverpoint for this architectural requirement.",
       ]
 
   # Two rounds of SM3 compression are performed. The current state of eight 32-bit words is read
@@ -67,14 +70,14 @@ normative_rule_definitions:
   - name: vsm3me-vv_sewn32_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvksh only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
       ]
 
   # The vd register group overlaps with the vs2 register group.
   - name: vsm3me-vv_vdoverlapvs2_rsv
     coverpoint:
       [
-        "TODO: this is an SsstrictV-style reserved-encoding test; Zvksh_vsm3me_vv_cg has no vd/vs2 register-aliasing coverpoint (only vd/vs1 and vs1/vs2) and there is no Ssstrict-equivalent suite for vector-crypto",
+        "Needs test: add a directed check and coverpoint for this architectural requirement.",
       ]
 
   # Eight rounds of SM3 message expansion are performed. The sixteen most recent 32-bit message

@@ -3393,12 +3393,9 @@ normative_rule_definitions:
   - name: vtype_vsew_enc
     coverpoint: ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli}"]
 
-  # csr::[vlmul]|LMUL|#groups|VLMAX|Registers grouped with register n ===
-  # 1|0|0|-|-|-|reserved¶1|0|1|1/8|32|VLEN/SEW/8|v n (single register in
-  # group)¶1|1|0|1/4|32|VLEN/SEW/4|v n (single register in group)¶1|1|1|1/2|32|VLEN/SEW/2|v n
-  # (single register in group)¶0|0|0|1|32|VLEN/SEW|v n (single register in
-  # group)¶0|0|1|2|16|2*VLEN/SEW|v n, v n+1¶0|1|0|4|8|4*VLEN/SEW|v n, &#8230;&#8203;, v
-  # n+3¶0|1|1|8|4|8*VLEN/SEW|v n, &#8230;&#8203;, v n+7 ===
+  # vlmul encodings 000/001/010/011 select LMUL=1/2/4/8; 101/110/111 select LMUL=1/8, 1/4, and 1/2.
+  # Encoding 100 is reserved. VLMAX=LMUL*VLEN/SEW; integer LMUL groups contain that many
+  # consecutive registers.
   - name: vtype_vlmul_enc
     coverpoint: ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli}"]
 

@@ -218,71 +218,15 @@ normative_rule_definitions:
   - name: Zicsr_high_half_rv64_rsv
     coverpoint: ["Ssstrict_Sm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
 
-  # Number|Privilege|Name|Description === Unprivileged Floating-Point
-  # CSRs¶0x001|URW|csr:fflags[]|Floating-Point Accrued Exceptions¶0x002|URW|csr:frm[]|Floating-
-  # Point Dynamic Rounding Mode¶0x003|URW|csr:fcsr[]|Floating-Point Control and Status Register
-  # (csr:frm[] + csr:fflags[])¶Unprivileged Vector CSRs¶0x008|URW|csr:vstart[]|Vector start
-  # position¶0x009|URW|csr:vxsat[]|Fixed-point accrued saturation flag¶0x00A|URW|csr:vxrm[]|Fixed-
-  # point rounding mode¶0x00F|URW|csr:vcsr[]|Vector control and status
-  # register¶0xC20|URO|csr:vl[]|Vector length¶0xC21|URO|csr:vtype[]|Vector data type
-  # register¶0xC22|URO|csr:vlenb[]|Vector register length in bytes¶Unprivileged ext:zicfiss[]
-  # Extension CSR¶0x011|URW|csr:ssp[]|Shadow Stack Pointer¶Unprivileged ext:zkr[] Extension
-  # CSR¶0x015|URW|csr:seed[]|Seed for cryptographic random bit generators¶Unprivileged ext:zcmt[]
-  # Extension CSR¶0x017|URW|csr:jvt[]|Table jump base vector and control register¶Unprivileged
-  # Counter/Timers¶0xC00|URO|csr:cycle[]|Cycle counter for insn:rdcycle[]
-  # instruction¶0xC01|URO|csr:time[]|Timer for insn:rdtime[]
-  # instruction¶0xC02|URO|csr:instret[]|Instructions-retired counter for insn:rdinstret[]
-  # instruction¶0xC03|URO|csr:hpmcounter3[]|Performance-monitoring
-  # counter¶0xC04|URO|csr:hpmcounter4[]|Performance-monitoring
-  # counter¶||⋮|¶0xC1F|URO|csr:hpmcounter31[]|Performance-monitoring
-  # counter¶0xC80|URO|csr:cycleh[]|Upper qty:32[bits] of csr:cycle[], RV32
-  # only¶0xC81|URO|csr:timeh[]|Upper qty:32[bits] of csr:time[], RV32
-  # only¶0xC82|URO|csr:instreth[]|Upper qty:32[bits] of csr:instret[], RV32
-  # only¶0xC83|URO|csr:hpmcounter3h[]|Upper qty:32[bits] of csr:hpmcounter3[], RV32
-  # only¶0xC84|URO|csr:hpmcounter4h[]|Upper qty:32[bits] of csr:hpmcounter4[], RV32
-  # only¶||⋮|¶0xC9F|URO|csr:hpmcounter31h[]|Upper qty:32[bits] of csr:hpmcounter31[], RV32 only ===
+  # Mapped floating-point CSRs are fflags/frm/fcsr at 0x001/0x002/0x003 (URW). Vector CSRs are
+  # vstart/vxsat/vxrm/vcsr at 0x008/0x009/0x00A/0x00F (URW), and vl/vtype/vlenb at
+  # 0xC20/0xC21/0xC22 (URO).
   - name: csr_addr_unpriv_tbl
     coverpoint: ["ZicsrF_cg/cp_fcsr_access", "U_V_cg/cp_vcsrrswc"]
 
-  # === CSR Address|Hex|Use and Accessibility¶[11:10]|[9:8]|[7:4]¶Unprivileged and User-Level
-  # CSRs¶00|00|XXXX|0x000&#8205;&#8211;&#8205;0x0FF|Standard
-  # read/write¶01|00|XXXX|0x400&#8205;&#8211;&#8205;0x4FF|Standard
-  # read/write¶10|00|XXXX|0x800&#8205;&#8211;&#8205;0x8FF|Custom
-  # read/write¶11|00|0XXX|0xC00&#8205;&#8211;&#8205;0xC7F|Standard read-
-  # only¶11|00|10XX|0xC80&#8205;&#8211;&#8205;0xCBF|Standard read-
-  # only¶11|00|11XX|0xCC0&#8205;&#8211;&#8205;0xCFF|Custom read-only¶Supervisor-Level
-  # CSRs¶00|01|XXXX|0x100&#8205;&#8211;&#8205;0x1FF|Standard
-  # read/write¶01|01|0XXX|0x500&#8205;&#8211;&#8205;0x57F|Standard
-  # read/write¶01|01|10XX|0x580&#8205;&#8211;&#8205;0x5BF|Standard
-  # read/write¶01|01|11XX|0x5C0&#8205;&#8211;&#8205;0x5FF|Custom
-  # read/write¶10|01|0XXX|0x900&#8205;&#8211;&#8205;0x97F|Standard
-  # read/write¶10|01|10XX|0x980&#8205;&#8211;&#8205;0x9BF|Standard
-  # read/write¶10|01|11XX|0x9C0&#8205;&#8211;&#8205;0x9FF|Custom
-  # read/write¶11|01|0XXX|0xD00&#8205;&#8211;&#8205;0xD7F|Standard read-
-  # only¶11|01|10XX|0xD80&#8205;&#8211;&#8205;0xDBF|Standard read-
-  # only¶11|01|11XX|0xDC0&#8205;&#8211;&#8205;0xDFF|Custom read-only¶Hypervisor and VS
-  # CSRs¶00|10|XXXX|0x200&#8205;&#8211;&#8205;0x2FF|Standard
-  # read/write¶01|10|0XXX|0x600&#8205;&#8211;&#8205;0x67F|Standard
-  # read/write¶01|10|10XX|0x680&#8205;&#8211;&#8205;0x6BF|Standard
-  # read/write¶01|10|11XX|0x6C0&#8205;&#8211;&#8205;0x6FF|Custom
-  # read/write¶10|10|0XXX|0xA00&#8205;&#8211;&#8205;0xA7F|Standard
-  # read/write¶10|10|10XX|0xA80&#8205;&#8211;&#8205;0xABF|Standard
-  # read/write¶10|10|11XX|0xAC0&#8205;&#8211;&#8205;0xAFF|Custom
-  # read/write¶11|10|0XXX|0xE00&#8205;&#8211;&#8205;0xE7F|Standard read-
-  # only¶11|10|10XX|0xE80&#8205;&#8211;&#8205;0xEBF|Standard read-
-  # only¶11|10|11XX|0xEC0&#8205;&#8211;&#8205;0xEFF|Custom read-only¶Machine-Level
-  # CSRs¶00|11|XXXX|0x300&#8205;&#8211;&#8205;0x3FF|Standard
-  # read/write¶01|11|0XXX|0x700&#8205;&#8211;&#8205;0x77F|Standard
-  # read/write¶01|11|100X|0x780&#8205;&#8211;&#8205;0x79F|Standard
-  # read/write¶01|11|1010|0x7A0&#8205;&#8211;&#8205;0x7AF|Standard read/write debug
-  # CSRs¶01|11|1011|0x7B0&#8205;&#8211;&#8205;0x7BF|Debug-mode-only
-  # CSRs¶01|11|11XX|0x7C0&#8205;&#8211;&#8205;0x7FF|Custom
-  # read/write¶10|11|0XXX|0xB00&#8205;&#8211;&#8205;0xB7F|Standard
-  # read/write¶10|11|10XX|0xB80&#8205;&#8211;&#8205;0xBBF|Standard
-  # read/write¶10|11|11XX|0xBC0&#8205;&#8211;&#8205;0xBFF|Custom
-  # read/write¶11|11|0XXX|0xF00&#8205;&#8211;&#8205;0xF7F|Standard read-
-  # only¶11|11|10XX|0xF80&#8205;&#8211;&#8205;0xFBF|Standard read-
-  # only¶11|11|11XX|0xFC0&#8205;&#8211;&#8205;0xFFF|Custom read-only ===
+  # CSR address bits [11:10]=11 designate read-only registers; other values designate read/write
+  # registers. Bits [9:8] encode the minimum privilege: 00=U, 01=S, 10=H/VS, 11=M. The mapped tests
+  # check insufficient-privilege accesses and writes to read-only CSRs.
   - name: csr_addr_alloc_tbl
     coverpoint:
       [

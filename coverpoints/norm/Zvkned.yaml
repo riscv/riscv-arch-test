@@ -376,13 +376,8 @@ normative_rule_definitions:
   - name: Zvkng_def
     coverpoint: ["Definition, checked through UDB"]
 
-  # SEW|EGW|Mnemonic|Instruction === 32|128|insn:vaesef.*[]|&lt;&lt;insns-
-  # vaesef&gt;&gt;¶32|128|insn:vaesem.*[]|&lt;&lt;insns-
-  # vaesem&gt;&gt;¶32|128|insn:vaesdf.*[]|&lt;&lt;insns-
-  # vaesdf&gt;&gt;¶32|128|insn:vaesdm.*[]|&lt;&lt;insns-
-  # vaesdm&gt;&gt;¶32|128|insn:vaeskf1.vi[]|&lt;&lt;insns-
-  # vaeskf1&gt;&gt;¶32|128|insn:vaeskf2.vi[]|&lt;&lt;insns-
-  # vaeskf2&gt;&gt;¶32|128|insn:vaesz.vs[]|&lt;&lt;insns-vaesz&gt;&gt; ===
+  # Zvkned provides VAESEF, VAESEM, VAESDF, VAESDM, VAESKF1.VI, VAESKF2.VI, and VAESZ.VS. These AES
+  # instructions use SEW=32 and 128-bit element groups.
   - name: Zvkned_insns_tbl
     coverpoint:
       [

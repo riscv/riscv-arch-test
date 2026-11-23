@@ -616,47 +616,18 @@ normative_rule_definitions:
   - name: fence_fm_enc
     coverpoint: ["I_fence_cg/cp_custom_fence_reserved"]
 
-  # Instruction|Constraints|Code Points|Purpose === insn:lui[]|rd=x0|220|Designated for future
-  # standard use¶insn:auipc[]|rd=x0|220¶insn:addi[]|rd=x0, and either rs1≠x0 or
-  # imm≠0|217−1¶insn:andi[]|rd=x0|217¶insn:ori[]|rd=x0|217¶insn:xori[]|rd=x0|217¶insn:add[]|rd=x0,
-  # rs1≠x0|210−32¶insn:add[]|rd=x0, rs1=x0, rs2≠x2&#8205;&#8211;&#8205;x5|28¶insn:add[]|rd=x0,
-  # rs1=x0, rs2=x2&#8205;&#8211;&#8205;x5|4|(rs2=x2) NTL.P1 (rs2=x3) NTL.PALL (rs2=x4) NTL.S1
-  # (rs2=x5) NTL.ALL¶insn:slli[]|rd=x0, rs1=x0, shamt=31|1|Semihosting entry
-  # marker¶insn:srai[]|rd=x0, rs1=x0, shamt=7|1|Semihosting exit
-  # marker¶insn:sub[]|rd=x0|210|Designated for future standard use¶insn:and[]|rd=x0|210¶insn:or[]|r
-  # d=x0|210¶insn:xor[]|rd=x0|210¶insn:sll[]|rd=x0|210¶insn:srl[]|rd=x0|210¶insn:sra[]|rd=x0|210¶in
-  # sn:fence[]|rd=x0, rs1≠x0, fm=0, and either pred=0 or succ=0|210−63¶insn:fence[]|rd≠x0, rs1=x0,
-  # fm=0, and either pred=0 or succ=0|210−63¶insn:fence[]|rd=rs1=x0, fm=0, pred=0,
-  # succ≠0|15¶insn:fence[]|rd=rs1=x0, fm=0, pred≠W, succ=0|15¶insn:fence[]|rd=rs1=x0, fm=0, pred=W,
-  # succ=0|1|PAUSE¶¶insn:slti[]|rd=x0|217|Designated for custom
-  # use¶insn:sltiu[]|rd=x0|217¶insn:slli[]|rd=x0, and either rs1≠x0 or
-  # shamt≠31|210−1¶insn:srli[]|rd=x0|210¶insn:srai[]|rd=x0, and either rs1≠x0 or
-  # shamt≠7|210−1¶insn:slt[]|rd=x0|210¶insn:sltu[]|rd=x0|210 ===
+  # Relevant HINT encodings include integer computational instructions with rd=x0. ADD with
+  # rd=rs1=x0 and rs2=x2 through x5 encodes NTL hints; other designated rd=x0 encodings are
+  # reserved for future standard or custom HINTs.
   - name: rv32i_hints_tbl
     coverpoint:
       [
         "I_{add,addi,sub,lui,auipc,xor,xori,or,ori,and,andi,sll,srl,sra}_cg/cp_rd",
       ]
 
-  # Instruction|Constraints|Code Points|Purpose === insn:lui[]|rd=x0|220|Designated for future
-  # standard use¶insn:auipc[]|rd=x0|220¶insn:addi[]|rd=x0, and either rs1≠x0 or imm≠0|217−1¶insn:an
-  # di[]|rd=x0|217¶insn:ori[]|rd=x0|217¶insn:xori[]|rd=x0|217¶insn:addiw[]|rd=x0|217¶insn:add[]|rd=
-  # x0, rs1≠x0|210−32¶insn:add[]|rd=x0, rs1=x0, rs2≠x2&#8205;&#8211;&#8205;x5|28¶insn:add[]|rd=x0,
-  # rs1=x0, rs2=x2&#8205;&#8211;&#8205;x5|4|(rs2=x2) NTL.P1 (rs2=x3) NTL.PALL (rs2=x4) NTL.S1
-  # (rs2=x5) NTL.ALL¶insn:slli[]|rd=x0, rs1=x0, shamt=31|1|Semihosting entry
-  # marker¶insn:srai[]|rd=x0, rs1=x0, shamt=7|1|Semihosting exit
-  # marker¶insn:sub[]|rd=x0|210|Designated for future standard use¶insn:and[]|rd=x0|210¶insn:or[]|r
-  # d=x0|210¶insn:xor[]|rd=x0|210¶insn:sll[]|rd=x0|210¶insn:srl[]|rd=x0|210¶insn:sra[]|rd=x0|210¶in
-  # sn:addw[]|rd=x0|210¶insn:subw[]|rd=x0|210¶insn:sllw[]|rd=x0|210¶insn:srlw[]|rd=x0|210¶insn:sraw
-  # []|rd=x0|210¶insn:fence[]|rd=x0, rs1≠x0, fm=0, and either pred=0 or
-  # succ=0|210−63¶insn:fence[]|rd≠x0, rs1=x0, fm=0, and either pred=0 or
-  # succ=0|210−63¶insn:fence[]|rd=rs1=x0, fm=0, pred=0, succ≠0|15¶insn:fence[]|rd=rs1=x0, fm=0,
-  # pred≠W, succ=0|15¶insn:fence[]|rd=rs1=x0, fm=0, pred=W,
-  # succ=0|1|PAUSE¶insn:slti[]|rd=x0|217|Designated for custom
-  # use¶insn:sltiu[]|rd=x0|217¶insn:slli[]|rd=x0, and either rs1≠x0 or
-  # shamt≠31|211−1¶insn:srli[]|rd=x0|211¶insn:srai[]|rd=x0, and either rs1≠x0 or shamt≠7|211−1¶insn
-  # :slliw[]|rd=x0|210¶insn:srliw[]|rd=x0|210¶insn:sraiw[]|rd=x0|210¶insn:slt[]|rd=x0|210¶insn:sltu
-  # []|rd=x0|210 ===
+  # RV64 HINTs include the common integer rd=x0 cases and the RV64 word operations ADDIW, ADDW,
+  # SUBW, SLLW, SRLW, and SRAW with rd=x0. The mappings select representative destination-register
+  # cases from the table.
   - name: rv64i_hints_tbl
     coverpoint:
       ["I_{add,addi,sub,addw,addiw,subw,lui,auipc,sllw,srlw,sraw}_cg/cp_rd"]

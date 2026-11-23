@@ -36,6 +36,19 @@ non-normative explanatory text is not quoted as a normative rule.
 
 See https://github.com/riscv/riscv-isa-manual/blob/main/tagging_normative_rules.adoc[tagging_normative_rules] for more information about normative rules and IDs and how to tag them in the specification.
 
+=== Normative Rule Explanations
+
+Each extension's normative rule table lists the coverpoints that exercise each rule. A coverpoint reference maps the rule to a test; it does not claim that every clause of the rule is covered. Where a rule has no coverpoint, or its coverpoints leave a gap, the table gives a short explanation beginning with one of these prefixes:
+
+`No independent assertion:`:: The rule is a definition, permission, recommendation, or UNSPECIFIED outcome that adds no independently required behavior.
+`Configuration requirement:`:: The rule is an extension dependency or a platform or configuration constraint. The explanation names the validator that checks it and its scope, or says that it is not yet checked.
+`Software requirement:`:: The rule is an obligation on generated tests, system software, or test setup. The explanation states whether it is checked.
+`Needs test:`:: The rule describes observable architectural behavior that still needs a directed test or coverpoint.
+`Needs infrastructure:`:: Testing the rule needs stimulus, observation, or methodology that the test suite does not yet provide, such as concurrent harts, devices, reset capture, or timing measurement.
+`Out of scope:`:: The rule cannot apply to the named profile or test configuration. Behavior that merely lacks a test is marked `Needs test:` instead.
+
+Implementation-defined choices and optional features can still have testable constraints: the tests check that the result is in the allowed set rather than requiring one implementation's choice. A configuration requirement is marked `checked by UDB` only when a UDB validation rule enforces it, and the explanation links that rule. UDB validates the declared configuration; it does not show that the hardware implements that configuration correctly.
+
 === Coverpoints
 
 Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ```ifdef UDB_MXLEN_32`` or ``UDB_MXLEN_64`` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ```ifdef`` to exclude tests based on the parameter value.

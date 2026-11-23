@@ -74,13 +74,12 @@ exclude_extensions:
   # Virtual instruction instead of illegal instruction for instructions that HS-mode cannot execute either:
   # csr:csr_bsc.sv#L2564-L2567 (https://github.com/bsc-loca/csr/issues/15)
   - H_inst-
-  - H_vucsr-
-  # The same bug on the VU-mode accesses of the HS, VS and S CSRs by name, whose writes to the read-only hgeip must
-  # raise illegal instruction
-  - H_vucsr_ro-
   # The same virtual-instruction bug on csrrsi to CSR 0xE00 from VS-mode (https://github.com/bsc-loca/csr/issues/15),
   # and on the VS-mode accesses of the HS and VS CSRs by name
   - H_vscsr_ro-
+  # The same virtual-instruction bug on csrrw of the read-only hgeip from VU-mode, in the accesses of the HS, VS and S
+  # CSRs by name (https://github.com/bsc-loca/csr/issues/15)
+  - H_vucsr_ro-
   # htval on a guest-page fault in the VS-stage walk (https://github.com/bsc-loca/sargantana/issues/123)
   - H_trap
   # The H CSR bugs above (#126, #146, #123, https://github.com/bsc-loca/sargantana/issues/113 item 8), and

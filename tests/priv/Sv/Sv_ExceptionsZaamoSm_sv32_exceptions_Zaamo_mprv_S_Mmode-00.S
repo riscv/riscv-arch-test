@@ -118,7 +118,7 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd:
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x14, (va_data >> 22) << 22)
@@ -148,7 +148,7 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   LI(x14, (va_data >> 22) << 22)
@@ -234,7 +234,7 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd:
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd, Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
   LI(x14, (va_data >> 22) << 22)
@@ -264,7 +264,7 @@ Sv_ExceptionsZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd:
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS_AMO
-  SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32_FIXED(RVMODEL_ACCESS_FAULT_ADDRESS_AMO, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
   LI(x14, (va_data >> 22) << 22)

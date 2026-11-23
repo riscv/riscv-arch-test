@@ -1457,6 +1457,48 @@ def _vsepc_ialign32_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+# mtime -> time copy (Priv §3.2.1). Seed is a prior time read plus this offset so
+# a stale shadow cannot pass. Window is ticks allowed after the store lands.
+_TIME_COPY_OFFSET = 1 << 24
+_TIME_COPY_WINDOW = 1 << 30
+# After zeroing mtime low on RV32, time must be this far below 2^32 before the
+# mtimeh store so a wrap cannot bump timeh. Stale seed+offset is 2^24, so this
+# must be < 2^24.
+_TIME_NEAR_ZERO_WINDOW = 1 << 16
+
+
+def _poll_csr_in_window(
+    r_seed: int,
+    r_time: int,
+    r_ok: int,
+    r_lim: int,
+    *,
+    csr: str,
+    window: int,
+) -> list[str]:
+    """Unbounded poll of csrr csr until (csr - seed) mod 2^XLEN < window.
+
+    Do not load mtime here. An MMIO load of the timer device can complete the
+    same path the test is trying to observe as delayed (Priv §3.2.1: eventually,
+    not necessarily immediately). A hart that never copies is stopped by the
+    simulator instruction limit, as with the Zicntr wfi_pending MTIP wait.
+    """
+    if window < 2048:
+        cmp = f"sltiu x{r_ok}, x{r_ok}, {window}          # pass if {csr} is in [seed, seed+{window})"
+        prefix: list[str] = []
+    else:
+        cmp = f"sltu x{r_ok}, x{r_ok}, x{r_lim}          # pass if {csr} is in [seed, seed+window)"
+        prefix = [f"LI(x{r_lim}, {window:#x})        # ({csr} - seed) < {window:#x}"]
+    return [
+        *prefix,
+        "1:",
+        f"csrr x{r_time}, {csr}        # read {csr} only; no mtime load",
+        f"sub x{r_ok}, x{r_time}, x{r_seed}          # {csr} - seed",
+        cmp,
+        f"beqz x{r_ok}, 1b",
+    ]
+
+
 def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     """Generate CSR counter tests."""
     covergroup = "Sm_mcsr_cg"
@@ -1606,43 +1648,49 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
+    test_data.int_regs.return_registers([r1, r2])
+    r_addr, r_seed, r_time, r_ok, r_lim = test_data.int_regs.get_registers(5)
+
     ######################################
     coverpoint = "cp_mtime_write"
     ######################################
     lines.append(
         comment_banner(
             coverpoint,
-            "Write mtime and read back time if supported",
+            "Write mtime, then poll time until it enters [seed, seed+window)",
         ),
     )
-    lines.extend(
-        [
-            "#ifdef RVMODEL_MTIME_ADDRESS",
-            f"LI(x{r1}, 42)        # value to write to mtime",
-            f"LI_FIXED_LEN(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
-            f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
-            "fence o, i        # order the mtime write before the time read",
-            test_data.add_testcase("", coverpoint, covergroup),
-            f"csrr x{r2}, time        # read time",
-            f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
-            f"sltiu x{r2}, x{r2}, 100          # signature is 1 only if time is within 100 above the written value",
-            write_sigupd(r2, test_data),
-            "",
-            "#if __riscv_xlen == 32",
-            f"LI(x{r1}, 67)        # value to write to mtimeh",
-            f"LI_FIXED_LEN(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
-            f"SREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",
-            "fence o, i        # order the mtimeh write before the timeh read",
-            test_data.add_testcase("h", coverpoint, covergroup),
-            f"csrr x{r2}, timeh        # read timeh",
-            f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
-            write_sigupd(r2, test_data),
-            "#endif",
-            "#endif",
-        ]
-    )
+    # Seed from a prior time read plus 2^24 so a stale shadow cannot pass.
+    # After the store, poll only csrr time; an MMIO load of mtime can hide the
+    # copy latency. On RV32, zero the low word and wait until time is far from
+    # 2^32 before writing mtimeh, so a wrap cannot make timeh read 68.
+    mtime_write = [
+        f"csrr x{r_time}, time        # current shadow; used only to pick a seed",
+        f"LI(x{r_lim}, {_TIME_COPY_OFFSET:#x})        # seed offset; stale time sits this far below seed",
+        f"add x{r_seed}, x{r_time}, x{r_lim}          # seed = time + 2^24",
+        f"LI_FIXED_LEN(x{r_addr}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
+        f"SREG x{r_seed}, 0(x{r_addr})        # write mtime = seed using memory-mapped I/O",
+        "fence o, i        # order the store; does not wait for the hart time copy",
+        test_data.add_testcase("", coverpoint, covergroup),
+        *_poll_csr_in_window(r_seed, r_time, r_ok, r_lim, csr="time", window=_TIME_COPY_WINDOW),
+        write_sigupd(r_ok, test_data),
+        "",
+        "#if __riscv_xlen == 32",
+        f"LI(x{r_seed}, 0)        # keep the low word away from 2^32 before the mtimeh check",
+        f"SREG x{r_seed}, 0(x{r_addr})        # write mtime = 0",
+        "fence o, i        # order the store; does not wait for the hart time copy",
+        *_poll_csr_in_window(r_seed, r_time, r_ok, r_lim, csr="time", window=_TIME_NEAR_ZERO_WINDOW),
+        f"LI(x{r_seed}, 67)        # seed for mtimeh; upper word must match exactly",
+        f"SREG x{r_seed}, 4(x{r_addr})        # write mtimeh = 67 using memory-mapped I/O",
+        "fence o, i        # order the store; does not wait for the hart timeh copy",
+        test_data.add_testcase("h", coverpoint, covergroup),
+        *_poll_csr_in_window(r_seed, r_time, r_ok, r_lim, csr="timeh", window=1),
+        write_sigupd(r_ok, test_data),
+        "#endif",
+    ]
+    lines.extend(gated(mtime_write, "defined(RVMODEL_MTIME_ADDRESS) && defined(ZICNTR_SUPPORTED)"))
 
-    test_data.int_regs.return_registers([r1, r2])
+    test_data.int_regs.return_registers([r_addr, r_seed, r_time, r_ok, r_lim])
 
     # Counter Wraparound Verification
     r_val, r_val2, r_temp, r_counter = test_data.int_regs.get_registers(4)

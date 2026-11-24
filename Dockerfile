@@ -8,6 +8,11 @@
 #
 # Usage:
 #   docker build -t riscv-act4 .
+#   # If the toolchain step fails with "cannot allocate memory" (common with Docker Desktop's default memory),
+#   # limit parallel jobs:
+#   docker build --build-arg BUILD_JOBS=2 -t riscv-act4 .
+#   # Or skip the build and use the prebuilt image, mounting your clone:
+#   docker run -it --rm -v .:/act4 ghcr.io/riscv/act4-build:latest
 #   # Create work directory for outputs first, otherwise it will not be owned by the current user
 #   mkdir work
 #   # Start container if the user is typical 1000:1000
@@ -32,6 +37,8 @@ FROM ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da0
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_TOOLCHAIN_PREFIX
 ARG RISCV_TOOLCHAIN_VERSION
+# Parallel jobs for the toolchain build. Defaults to every CPU, lower it if the build runs out of memory.
+ARG BUILD_JOBS
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   autoconf \
@@ -87,7 +94,7 @@ RUN git clone --depth 1 --branch "${RISCV_TOOLCHAIN_VERSION}" https://github.com
   --disable-shared" \
   BINUTILS_TARGET_FLAGS_EXTRA="--disable-gprof --disable-gprofng" \
   LDFLAGS="-static -static-libgcc -static-libstdc++" \
-  make -j"$(nproc)" \
+  make -j"${BUILD_JOBS:-$(nproc)}" \
   && rm -rf /tmp/riscv-gnu-toolchain
 
 # Stage 2: install mise, then use it to install uv (Python) and Ruby, and pre-install the riscv-unified-db Bundler gem,

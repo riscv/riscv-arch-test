@@ -4,7 +4,9 @@ normative_rule_definitions:
   # This extension depends upon the Zve32f extension.
   - name: Zvfbfmin_depends_Zve32f
     coverpoint:
-      ["Configuration requirement: Zvfbfmin requires Zve32f; checked by UDB."]
+      [
+        "Configuration requirement: Zvfbfmin requires Zve32f; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfbfmin.yaml[ext/Zvfbfmin.yaml]).",
+      ]
   - name: vfwcvtbf16-f-f-v_op
     # Widening convert from BF16 to FP32. The conversion is exact.
     coverpoint:

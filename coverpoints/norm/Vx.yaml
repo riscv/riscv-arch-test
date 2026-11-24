@@ -7,7 +7,7 @@ normative_rule_definitions:
   - name: elen
     coverpoint:
       [
-        "Configuration requirement: ELEN is a power of two at least 8; checked by UDB.",
+        "Configuration requirement: ELEN is a power of two at least 8; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/param/ELEN.yaml[param/ELEN.yaml]).",
       ]
 
   # The number of bits in a single vector register, VLEN {ge} ELEN, which must be a
@@ -15,7 +15,7 @@ normative_rule_definitions:
   - name: vlen
     coverpoint:
       [
-        "Configuration requirement: VLEN is a power of two no greater than 65536; checked by UDB.",
+        "Configuration requirement: VLEN is a power of two no greater than 65536; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/param/VLEN.yaml[param/VLEN.yaml]).",
       ]
 
   # Implementations may also change mstatus.VS or vsstatus.VS from Initial or Clean
@@ -3017,20 +3017,22 @@ normative_rule_definitions:
   # The Zve32f and Zve64x extensions depend on the Zve32x extension.
   - name: Zve32f_Zve64x_dependent_Zve32x
     coverpoint:
-      ["Configuration requirement: Zve64x requires Zve32x; checked by UDB."]
+      [
+        "Configuration requirement: Zve64x requires Zve32x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64x.yaml[ext/Zve64x.yaml]).",
+      ]
 
   # The Zve64f extension depends on the Zve32f and Zve64x extensions.
   - name: Zve64f_dependent_Zve32f_Zve64x
     coverpoint:
       [
-        "Configuration requirement: Zve64f requires Zve32f and Zve64x; checked by UDB.",
+        "Configuration requirement: Zve64f requires Zve32f and Zve64x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64f.yaml[ext/Zve64f.yaml]).",
       ]
 
   # The Zve64d extension depends on the Zve64f extension.
   - name: Zve64d_dependent_Zve64f
     coverpoint:
       [
-        "Configuration requirement: Zve64d requires Zve64f and D; checked by UDB.",
+        "Configuration requirement: Zve64d requires Zve64f and D; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml]).",
       ]
 
   # All Zve* extensions have precise traps.
@@ -3101,7 +3103,7 @@ normative_rule_definitions:
   - name: Zve32f_Zve64f_dependent_F
     coverpoint:
       [
-        "Configuration requirement: Zve32f requires F and Zve32x; checked by UDB.",
+        "Configuration requirement: Zve32f requires F and Zve32x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve32f.yaml[ext/Zve32f.yaml]).",
       ]
 
   # The misa.v bit is set for implementations providing misa and supporting V.
@@ -3119,7 +3121,7 @@ normative_rule_definitions:
   - name: V_dependent_Zvl128b_Zve64d
     coverpoint:
       [
-        "Configuration requirement: V requires Zvl128b and Zve64d; checked by UDB.",
+        "Configuration requirement: V requires Zvl128b and Zve64d; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/V.yaml[ext/V.yaml]).",
       ]
 
   # The V extension supports EEW of 8, 16, and 32, and 64.
@@ -3190,12 +3192,16 @@ normative_rule_definitions:
   # supported as well as widening reductions from FP32 to FP64.
   - name: V_dependent_F_D
     coverpoint:
-      ["Configuration requirement: V requires F and D; checked by UDB."]
+      [
+        "Configuration requirement: V requires F and D; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/V.yaml[ext/V.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/D.yaml[ext/D.yaml]).",
+      ]
 
   # The Zvfhmin extension depends on the Zve32f extension.
   - name: Zvfhmin_dependent_Zve32f
     coverpoint:
-      ["Configuration requirement: Zvfhmin requires Zve32f; checked by UDB."]
+      [
+        "Configuration requirement: Zvfhmin requires Zve32f; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfhmin.yaml[ext/Zvfhmin.yaml]).",
+      ]
 
   # When the ext:zvfh[] extension is implemented, all instructions in
   # &lt;&lt;sec-vector-float&gt;&gt;, &lt;&lt;sec-vector-float-reduce&gt;&gt;,
@@ -3235,7 +3241,7 @@ normative_rule_definitions:
   - name: Zvfh_dependent_Zve32f_Zfhmin
     coverpoint:
       [
-        "Configuration requirement: Zvfh requires Zve32f and Zfhmin; checked by UDB.",
+        "Configuration requirement: Zvfh requires Zve32f and Zfhmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfh.yaml[ext/Zvfh.yaml]).",
       ]
 
   # Vector instructions with EGS &gt; VLMAX are reserved.
@@ -3314,7 +3320,7 @@ normative_rule_definitions:
   - name: vf_requires_vx
     coverpoint:
       [
-        "Configuration requirement: Zve32f requires F, Zve64d requires D, and Zvfh requires Zfhmin; checked by UDB.",
+        "Configuration requirement: Zve32f requires F, Zve64d requires D, and Zvfh requires Zfhmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve32f.yaml[ext/Zve32f.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfh.yaml[ext/Zvfh.yaml]).",
       ]
 
   # so these instructions all operate on single vector registers regardless of the

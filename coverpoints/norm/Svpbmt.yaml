@@ -13,7 +13,9 @@ normative_rule_definitions:
   # The Svpbmt extension depends on the Sv39 extension
   - name: Svpbmt_depends_Sv39
     coverpoint:
-      ["Configuration requirement: Svpbmt requires Sv39; checked by UDB."]
+      [
+        "Configuration requirement: Svpbmt requires Sv39; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Svpbmt.yaml[ext/Svpbmt.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sv48.yaml[ext/Sv48.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sv57.yaml[ext/Sv57.yaml]).",
+      ]
 
   # Mode|Value|Requested Memory Attributes === PMA NC IO -|0 1 2 3|None Non-cacheable,
   # idempotent, weakly-ordered (RVWMO), main memory Non-cacheable, non-idempotent,

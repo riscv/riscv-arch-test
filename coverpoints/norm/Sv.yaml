@@ -511,7 +511,9 @@ normative_rule_definitions:
   # Implementations that support Sv48 must also support Sv39
   - name: Sv48_requires_Sv39
     coverpoint:
-      ["Configuration requirement: Sv48 requires Sv39; checked by UDB."]
+      [
+        "Configuration requirement: Sv48 requires Sv39; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sv48.yaml[ext/Sv48.yaml]).",
+      ]
 
   # PageType_*, canonical_page_* and misaligned_PPN_* have no Sv57 bins, so the Sv57 tests
   # do not reach the cp_spage, cp_canonical and cp_misaligned crosses. The Sv57 rules use
@@ -584,7 +586,9 @@ normative_rule_definitions:
   # Implementations that support Sv57 must also support Sv48
   - name: Sv57_requires_Sv48
     coverpoint:
-      ["Configuration requirement: Sv57 requires Sv48; checked by UDB."]
+      [
+        "Configuration requirement: Sv57 requires Sv48; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sv57.yaml[ext/Sv57.yaml]).",
+      ]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction

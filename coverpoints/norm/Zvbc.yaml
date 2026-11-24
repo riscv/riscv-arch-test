@@ -7,7 +7,9 @@ normative_rule_definitions:
   # ext:zvbc[] depends upon the ext:zve64x[] extension.
   - name: Zvbc_dependent_Zve64x
     coverpoint:
-      ["Configuration requirement: Zvbc requires Zve64x; checked by UDB."]
+      [
+        "Configuration requirement: Zvbc requires Zve64x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvbc.yaml[ext/Zvbc.yaml]).",
+      ]
 
   # The instructions in ext:zvbc[] are only defined for SEW=64.
   - name: Zvbc_sew64only

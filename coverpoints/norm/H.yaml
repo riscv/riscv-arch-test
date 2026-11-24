@@ -643,7 +643,7 @@ normative_rule_definitions:
   - name: Sha_dep
     coverpoint:
       [
-        "Configuration requirement: Sha requires its listed component extensions; checked by UDB.",
+        "Configuration requirement: Sha requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sha.yaml[ext/Sha.yaml]).",
       ]
 
   # henvcfg.FIOM = 1 makes FENCE and AMO ordering of device I/O with V=1 also order main memory

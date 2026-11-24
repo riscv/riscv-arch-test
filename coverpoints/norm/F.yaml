@@ -21,7 +21,10 @@ normative_rule_definitions:
       ]
   # The ext:f[] extension depends on the ext:zicsr[] extension.
   - name: F_depends_Zicsr
-    coverpoint: ["Configuration requirement: F requires Zicsr; checked by UDB."]
+    coverpoint:
+      [
+        "Configuration requirement: F requires Zicsr; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/F.yaml[ext/F.yaml]).",
+      ]
   # The ext:f[] extension adds 32 floating-point registers,
   # f0&amp;#8205;&amp;#8211;&amp;#8205;f31, each 32 bits wide, i.e., FLEN=32.
   - name: flen

@@ -27,7 +27,9 @@ normative_rule_definitions:
   # The Zihpm extension depends on the Zicsr extension.
   - name: hpm_counter_op_sz_mode_dependency
     coverpoint:
-      ["Configuration requirement: Zihpm requires Zicsr; checked by UDB."]
+      [
+        "Configuration requirement: Zihpm requires Zicsr; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zihpm.yaml[ext/Zihpm.yaml]).",
+      ]
 
   # The implemented number and width of these additional counters, and the set of
   # events they count, are platform-specific.

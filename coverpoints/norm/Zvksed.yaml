@@ -87,21 +87,21 @@ normative_rule_definitions:
   - name: Zvks_def
     coverpoint:
       [
-        "Configuration requirement: Zvks requires its listed component extensions; checked by UDB.",
+        "Configuration requirement: Zvks requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvks.yaml[ext/Zvks.yaml]).",
       ]
 
   # This extension (Zvksc) is shorthand for the following set of other extensions: Zvks, Zvbc.
   - name: Zvksc_def
     coverpoint:
       [
-        "Configuration requirement: Zvksc requires its listed component extensions; checked by UDB.",
+        "Configuration requirement: Zvksc requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvksc.yaml[ext/Zvksc.yaml]).",
       ]
 
   # This extension (Zvksg) is shorthand for the following set of other extensions: Zvks, Zvkg.
   - name: Zvksg_def
     coverpoint:
       [
-        "Configuration requirement: Zvksg requires its listed component extensions; checked by UDB.",
+        "Configuration requirement: Zvksg requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvksg.yaml[ext/Zvksg.yaml]).",
       ]
 
   # Four round keys are read in as a 4-element group from vs2. Each of the next four round keys are

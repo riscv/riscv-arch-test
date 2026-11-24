@@ -133,7 +133,7 @@ See https://github.com/riscv/riscv-isa-manual/blob/main/tagging_normative_rules.
 Each extension's normative rule table lists the coverpoints that test each rule. A rule without a coverpoint, or with a gap in its coverage, has a short explanation beginning with one of these prefixes:
 
 `No independent assertion:`:: The rule is a definition, permission, recommendation, or UNSPECIFIED behavior, so there is nothing to test.
-`Configuration requirement:`:: The rule constrains the configuration, such as an extension dependency. The explanation says whether UDB checks it.
+`Configuration requirement:`:: The rule constrains the configuration, such as an extension dependency. The explanation says whether UDB checks it, and if so links the UDB file that does.
 `Needs test:`:: The behavior can be tested, but no test checks it yet. The explanation says what the test should do.
 `Needs infrastructure:`:: Testing the rule needs something the framework does not have, such as multiple harts, devices, or timing measurement.
 `Out of scope:`:: The rule does not apply to the configurations the tests support.

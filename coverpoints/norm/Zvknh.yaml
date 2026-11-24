@@ -100,7 +100,7 @@ normative_rule_definitions:
   - name: Zvknhb_Zvkn_Zvknc_Zvkng_Zvksc_depZve64x
     coverpoint:
       [
-        "Configuration requirement: these extensions require Zve64x; checked by UDB.",
+        "Configuration requirement: these extensions require Zve64x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvknhb.yaml[ext/Zvknhb.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkn.yaml[ext/Zvkn.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvknc.yaml[ext/Zvknc.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkng.yaml[ext/Zvkng.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvksc.yaml[ext/Zvksc.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvbc.yaml[ext/Zvbc.yaml]).",
       ]
 
   # SHA-256: these instructions work on 128-bit element groups comprised of four 32-bit elements.

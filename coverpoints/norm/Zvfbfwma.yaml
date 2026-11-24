@@ -39,7 +39,7 @@ normative_rule_definitions:
   - name: Zvfbfwma_depends
     coverpoint:
       [
-        "Configuration requirement: Zvfbfwma requires Zvfbfmin and Zfbfmin; checked by UDB.",
+        "Configuration requirement: Zvfbfwma requires Zvfbfmin and Zfbfmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfbfwma.yaml[ext/Zvfbfwma.yaml]).",
       ]
 
   # Encoding (Vector-Vector) (vfwmaccbf16.vv)

@@ -31,7 +31,7 @@ normative_rule_definitions:
   - name: A_comprises
     coverpoint:
       [
-        "Configuration requirement: A requires Zaamo and Zalrsc; checked by UDB.",
+        "Configuration requirement: A requires Zaamo and Zalrsc; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/A.yaml[ext/A.yaml]).",
       ]
 
   # Load into rd, operate with rs2, store back; representative: memory and rs2 edge values

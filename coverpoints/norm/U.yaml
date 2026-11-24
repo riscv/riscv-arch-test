@@ -31,7 +31,7 @@ normative_rule_definitions:
   - name: priv_combs_txt
     coverpoint:
       [
-        "Configuration requirement: UDB checks that S requires Sm and U, but not the other mode combinations.",
+        "Configuration requirement: UDB checks that S requires Sm and U (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/S.yaml[ext/S.yaml]), but not the other mode combinations.",
       ]
 
   # Number of levels|Supported Modes|Intended Usage === 1|M|Simple embedded systems¶2|M,
@@ -39,7 +39,7 @@ normative_rule_definitions:
   - name: priv_combs_tbl
     coverpoint:
       [
-        "Configuration requirement: UDB checks that S requires Sm and U, but not the other mode combinations.",
+        "Configuration requirement: UDB checks that S requires Sm and U (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/S.yaml[ext/S.yaml]), but not the other mode combinations.",
       ]
 
   # All hardware implementations must provide M-mode

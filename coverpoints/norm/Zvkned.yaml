@@ -366,19 +366,19 @@ normative_rule_definitions:
   - name: Zvkn_def
     coverpoint:
       [
-        "Configuration requirement: Zvkn requires its listed component extensions; checked by UDB.",
+        "Configuration requirement: Zvkn requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkn.yaml[ext/Zvkn.yaml]).",
       ]
 
   # This extension (Zvknc) is shorthand for the following set of other extensions: Zvkn, Zvbc.
   - name: Zvknc_def
     coverpoint:
       [
-        "Configuration requirement: Zvknc requires its listed component extensions; checked by UDB.",
+        "Configuration requirement: Zvknc requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvknc.yaml[ext/Zvknc.yaml]).",
       ]
 
   # This extension (Zvkng) is shorthand for the following set of other extensions: Zvkn, Zvkg.
   - name: Zvkng_def
     coverpoint:
       [
-        "Configuration requirement: Zvkng requires its listed component extensions; checked by UDB.",
+        "Configuration requirement: Zvkng requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkng.yaml[ext/Zvkng.yaml]).",
       ]

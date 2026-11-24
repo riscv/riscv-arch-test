@@ -2215,7 +2215,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra64_reset
-    coverpoint: ["Needs test: check that the textra64 fields reset to 0."]
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
 
   # This register is accessible as tdata3 when type is 2, 3, 4, 5, or 6 and XLEN=64.
   - name: Sdtrig_textra64_access

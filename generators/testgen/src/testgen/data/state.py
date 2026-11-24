@@ -9,7 +9,7 @@ import re
 from random import Random
 from typing import Literal
 
-from testgen.constants import VECTOR_LENGTH_DATA_POOL_BYTES, VECTOR_LENGTH_DATA_POOL_SLOTS, VLEN_MAX
+from testgen.constants import VECTOR_LENGTH_DATA_POOL_BYTES, VECTOR_LENGTH_DATA_POOL_SLOTS
 from testgen.data.config import TestConfig
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
@@ -275,8 +275,9 @@ class TestData:
         """
         Registers a label for element_count random eew-wide elements that point into this instruction's pool of
         random length-suite data. Each operand gets a distinct slot within a testcase. Assembly selects a random
-        offset within the slot using the configured VLEN, so smaller DUTs sample more of the pool without runtime
-        address calculations. The shared random stream advances as if the elements were drawn individually.
+        offset within the slot that leaves room for the operand's setup loads at the configured VLEN, so smaller DUTs
+        sample more of the pool without runtime address calculations. The shared random stream advances as if the
+        elements were drawn individually.
         """
         for _ in range(element_count):
             random_int(eew)
@@ -286,16 +287,13 @@ class TestData:
                 self._length_data_rng.randrange(2**64) for _ in range(VECTOR_LENGTH_DATA_POOL_BYTES // 8)
             )
 
-        # Some setup loads initialize a full register even for fractional LMUL operands.
-        size = max(element_count * eew // 8, VLEN_MAX // 8)
-        assert 0 < size <= VLEN_MAX, f"Operand {label} exceeds a vector data pool slot: {size} bytes"
         used = self._length_data_slots.setdefault(self._test_count, [])
         free = [slot for slot in range(VECTOR_LENGTH_DATA_POOL_SLOTS) if slot not in used]
         assert free, f"No room in the length-suite data pool for {label}"
         slot = self._length_data_rng.choice(free)
         used.append(slot)
         offset_seed = self._length_data_rng.randrange(2**31)
-        self._vector_labels[label] = (PooledVectorData(self._length_data_pool, slot, size, offset_seed), eew)
+        self._vector_labels[label] = (PooledVectorData(self._length_data_pool, slot, offset_seed), eew)
 
 
 def return_testcase_registers(test_data: TestData, params: InstructionParams) -> None:

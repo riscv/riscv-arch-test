@@ -184,12 +184,14 @@ def cp_vstart(
                 test_data, instr_name, instr_type, lmul, suite="length", vl="vlmax", sew=sew, **register_data
             )
             prior_sigupd_count = tc.sigupd_count
+            prior_vlen_sigupd_count = tc.vlen_sigupd_count
             setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
 
             if instr_type_config.vector_data.require_zero_vstart:
                 # These instructions always trap, so we should never sigupd
                 check = ""
                 tc.sigupd_count = prior_sigupd_count
+                tc.vlen_sigupd_count = prior_vlen_sigupd_count
 
             pre_vstart = "\n".join(prep_vstart(test_data, params, vstart_val))
             post_vstart = "\n".join(
@@ -254,6 +256,7 @@ def cp_vill(
 
     # This always traps so no SIGUPD
     tc.sigupd_count = 0
+    tc.vlen_sigupd_count = 0
 
     vtype_reg, scratch = test_data.int_regs.get_registers(2, exclude_regs=[0])
     set_vill = "\n".join(

@@ -26,7 +26,7 @@ def load_template(template_name: str) -> str:
 def insert_header_template(
     test_config: TestConfig,
     test_file: Path,
-    sigupd_count: int,
+    sigupd_count: int | str,
     extra_defines: list[str] | None = None,
     instr_name: str | None = None,
 ) -> str:
@@ -35,7 +35,7 @@ def insert_header_template(
     Args:
         test_config: Test configuration containing xlen, testsuite, E_ext, etc.
         test_file: Path to the test file (for header comments).
-        sigupd_count: Number of signature updates in the test.
+        sigupd_count: Number of signature updates in the test, or an assembler expression for it.
         extra_defines: (optional) Additional #define statements for the test.
         instr_name: (optional) Needed for vector tests to canonicalize extension names.
     """

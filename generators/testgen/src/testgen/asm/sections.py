@@ -82,6 +82,9 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, VectorData,
             continue
 
         if isinstance(data, PooledVectorData):
+            if not data.load_bytes:
+                # No setup load reads this operand (for example, vs1 when it is the same register as vs2)
+                continue
             if LENGTH_DATA_POOL_LABEL not in seen_labels:
                 seen_labels.add(LENGTH_DATA_POOL_LABEL)
                 lines.extend(
@@ -134,8 +137,8 @@ def _data_lines(directive: str, values: list[int], eew: int) -> list[str]:
 def generate_vector_random_data() -> str:
     """
     Generates tests/env/vector_random_data.h, the random data shared by the vector load/store tests. It holds
-    8*VLEN_MAX bytes after vector_ls_random_base to cover all lmul and segment combinations and 2*VLEN_MAX bytes
-    before it for negative strides.
+    8*VLEN_MAX bytes after vector_ls_random_base and 2*VLEN_MAX bytes before it. Strided accesses reach at most
+    2*VLEN_MAX bytes on either side of the label, and indexed accesses less than 4*VLEN_MAX bytes after it.
     """
     rng = Random("vector_random_data")
     header = [rng.randrange(2**64) for _ in range(2 * VLEN_MAX // 8)]

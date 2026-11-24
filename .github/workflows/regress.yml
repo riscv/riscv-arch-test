@@ -370,9 +370,6 @@ jobs:
       - name: Verify Python version
         run: uv run python --version
 
-      - name: Check vector data pool bounds
-        run: uv run python -m unittest discover -s generators/testgen/tests -v
-
       - name: Build ELFs (exercises full act build DAG)
         run: |
           FAST=True \

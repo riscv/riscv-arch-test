@@ -16,6 +16,7 @@ from testgen.constants import INDENT, VLEN_MAX
 from testgen.data.params import InstructionParams, PresetMask
 from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
+from testgen.data.vector_data import PooledVectorData
 
 
 def get_lmul_flag(lmul: float) -> str:
@@ -32,6 +33,18 @@ def vector_sigupd_bytes(max_bytes: int, test_data: TestData, vdsew: int) -> int:
     sig_stride = max(test_data.xlen, test_data.flen, vdsew) // 8
     offset_bytes = (max_bytes + 4 + 7) & ~7
     return max(1, (offset_bytes + sig_stride - 1) // sig_stride)
+
+
+def count_vlen_sigupd(test_data: TestData, emul: int, sig_sew: int, count: int = 1) -> None:
+    """
+    Count the signature words of count RVTEST_SIGUPD_V_ADVANCE steps over an EMUL register group. Each step advances
+    by at most VLEN * EMUL / 8 bytes plus 8 bytes of padding. The register group is counted at VLEN_MAX in
+    vlen_sigupd_count, which SIGUPD_COUNT scales to UDB_VLEN, and the padding is counted in sigupd_count.
+    """
+    assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
+    sig_stride = max(test_data.xlen, test_data.flen, sig_sew) // 8
+    test_data.test_chunk.vlen_sigupd_count += count * (VLEN_MAX * emul // 8) // sig_stride
+    test_data.test_chunk.sigupd_count += count * ((8 + sig_stride - 1) // sig_stride)
 
 
 def write_sigupd_v(
@@ -135,13 +148,9 @@ def write_sigupd_v_len(
 
     vdsew = params.sew * (2 if widen_vd else 1) if sew_override is None else sew_override
 
-    # Count the number of bytes the sigupd macro will consume. This is going to be the size of the largest supported
-    # VLEN * EMUL, plus 4 bytes for padding, and then rounded to the nearest multiple of 8 (+7 & ~8 achieves this).
-    # This computation is mirrored in RVTEST_SIGUPD_V_ADVANCE
     emul_for_bytes = int(max(1, lmul)) if not mask_producing else 8
-    max_bytes = VLEN_MAX * emul_for_bytes // 8
     sig_sew = vdsew if not mask_producing else 8
-    test_data.test_chunk.sigupd_count += vector_sigupd_bytes(max_bytes, test_data, sig_sew) * segments
+    count_vlen_sigupd(test_data, emul_for_bytes, sig_sew, segments)
 
     sig_reg = test_data.int_regs.sig_reg
     link_reg = test_data.int_regs.link_reg
@@ -198,11 +207,7 @@ def write_sigupd_v_mask_prod(
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
     # We cannot consider only taking an eew=1 worth of bytes here due to the way RVTEST_SIGUPD_V_ADVANCE works
-    emul_for_bytes = 8
-    worst_bytes = VLEN_MAX * emul_for_bytes // 8
-    sig_stride = max(test_data.xlen, test_data.flen, 8) // 8
-    offset_bytes = (worst_bytes + 4 + 7) & ~7
-    test_data.test_chunk.sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride)
+    count_vlen_sigupd(test_data, 8, 8)
 
     sig_reg = test_data.int_regs.sig_reg
     link_reg = test_data.int_regs.link_reg
@@ -642,6 +647,9 @@ def load_vec_regs(
             lmul = max(lmul, 1)
 
         if not reg.only_setup_tail:
+            data, _ = test_data.vector_labels[val_pointer]
+            if isinstance(data, PooledVectorData):
+                data.record_load(lmul)
             # Load what is required at the right vl
             vtype_code[(vl, sew, lmul)].append(
                 f"LA (x{params.temp_reg}, {val_pointer})",

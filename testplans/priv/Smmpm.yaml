@@ -43,3 +43,17 @@ coverpoints:
     rules:
       - pm_no_csr_sw
       - pm_warl_unaffected
+  - name: cp_mseccfg_pmm_write
+    goal: Verify every mseccfg.PMM transition, including writes of the reserved 01.
+    description: |-
+      In M-mode, from each supported mseccfg.PMM (00, plus 10 and 11 when PMLEN 7 and 16 are supported):
+      csrrw mseccfg with PMM = {00, 01, 10, 11} and its other bits unchanged, then read mseccfg.PMM back.
+      A written value that the configuration supports is recorded as read. For 01, and for 10 or 11 when that PMLEN
+      is not supported, the WARL field may hold any supported value, so the test records only whether it does.
+    expectation: |-
+      A supported value reads back as written. 01 and unsupported values read back as 00 or a supported value; the
+      write does not trap.
+    bins: up to 3 PMM before × 4 PMM written × csrrw
+    rules:
+      - pmlen_future_reserved
+      - pmlen_illegal_warl

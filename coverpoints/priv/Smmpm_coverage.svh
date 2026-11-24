@@ -88,6 +88,18 @@
         cp_hardware_csr_writes_fault_store: cross priv_mode_m, pmm, a_upper_bits, sw_insn, illegal_addr_store;
     `endif
 
+
+    // csrrw mseccfg from each PMM (pmm, before the write) with each PMM written, including the reserved 01
+    pmm_csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.insn[31:20] == CSR_MSECCFG);
+    }
+    pmm_written: coverpoint ins.current.rs1_val[33:32] {
+        bins w00          = {2'b00};
+        bins w01_reserved = {2'b01};
+        bins w10          = {2'b10};
+        bins w11          = {2'b11};
+    }
+    cp_mseccfg_pmm_write: cross priv_mode_m, pmm_csrrw, pmm, pmm_written;
 endgroup
 
 function void smmpm_sample(int hart, int issue, ins_t ins);

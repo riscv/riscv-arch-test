@@ -72,6 +72,7 @@ from testgen.priv.extensions.ZpmCommon import (
     HeldAddress,
     csr_op,
     data_page,
+    generate_pmm_write_tests,
     pmm_ifdef,
     probe_amo,
     probe_cbo,
@@ -1533,6 +1534,23 @@ def _roles(build: Callable[[TestData, _Target, int], list[str]], test_data: Test
     return [line for role in ("bare", "paged") for line in build(test_data, role, pmm)]
 
 
+def _pmm_rsv(test_data: TestData) -> list[str]:
+    """henvcfg.PMM = 01 read back legal, then hlv.d through an untagged pointer with vsatp and hgatp Bare."""
+    val = test_data.int_regs.get_register()
+    lines = [
+        *generate_pmm_write_tests("henvcfg", test_data, _CG, "cp_henvcfg_pmm_rsv", writes=(0b01,)),
+        *set_pmm_field("henvcfg", 0b01, None, test_data),
+        *csr_op("csrs", "hstatus", "HSTATUS_SPVP", test_data),
+        f"LA(x{val}, pm_lo_page)",
+        f"hlv.d x{val}, (x{val})  # untagged, so not affected by PMLEN",
+        write_sigupd(val, test_data),
+        *csr_op("csrc", "hstatus", "HSTATUS_SPVP", test_data),
+        *set_pmm_field("henvcfg", 0b00, 0, test_data),
+    ]
+    test_data.int_regs.return_register(val)
+    return lines
+
+
 def _make_chosen(test_data: TestData, pmm: int) -> list[TestChunk]:
     """The coverpoints on BARE_PAIR and PAGED_PAIR, for PMM value pmm of the field under test."""
     label = f"pmm{pmm:02b}"
@@ -1545,6 +1563,18 @@ def _make_chosen(test_data: TestData, pmm: int) -> list[TestChunk]:
             lambda: _roles(_hlv, test_data, pmm),
         )
     ]
+    if not pmm:
+        chunks.append(
+            _chunk(
+                test_data,
+                None,
+                "cp_henvcfg_pmm_rsv",
+                "Write the reserved henvcfg.PMM = 01 from HS-mode and read it back: it must read 00 or a supported\n"
+                "PMLEN. With henvcfg.PMM = 01 written, hlv.d through an untagged pointer with hstatus.SPVP = 1 must\n"
+                "read the seeded value",
+                lambda: _pmm_rsv(test_data),
+            )
+        )
     if pmm:
         chunks.append(
             _chunk(

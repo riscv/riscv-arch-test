@@ -156,19 +156,19 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     // main coverpoints
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
 
-    `ifdef S1P13P0_OR_LATER_SUPPORTED
-        `ifdef UDB_MXLEN_64
-            uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
-                bins attempt_1 = {2'b01};
-                bins attempt_2 = {2'b10};
-            }
-            csrop: coverpoint ins.current.insn {
-                wildcard bins csrrw = {CSRRW};
-            }
-             // main coverpoints
-            cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
-        `endif // UDB_MXLEN_64
-    `endif // S1P13P0_OR_LATER_SUPPORTED
+    `ifdef UDB_MXLEN_64
+        uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
+            bins attempt_0 = {2'b00};
+            bins attempt_1 = {2'b01};
+            bins attempt_2 = {2'b10};
+            bins attempt_3 = {2'b11};
+        }
+        csrop: coverpoint ins.current.insn {
+            wildcard bins csrrw = {CSRRW};
+        }
+         // main coverpoints
+        cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
+    `endif // UDB_MXLEN_64
 
 endgroup
 

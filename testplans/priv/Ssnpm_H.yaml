@@ -975,3 +975,14 @@ coverpoints:
     rules:
       - pm_uxl_clear
       - pmlen_illegal_warl
+  - name: cp_henvcfg_pmm_rsv
+    goal: Verify that the reserved henvcfg.PMM = 01 is never stored, and that an access under it works.
+    description: |-
+      In HS-mode with vsatp and hgatp Bare: csrrw henvcfg with PMM = 01 and its other bits unchanged, read henvcfg.PMM
+      back and record whether it is 00 or a supported value. Then write henvcfg.PMM = 01 again and, with
+      hstatus.SPVP = 1, hlv.d through an untagged pointer.
+    expectation: henvcfg.PMM reads back 00 or a supported value. hlv.d returns the seeded value.
+    bins: "1"
+    rules:
+      - henvcfg_pmm_op
+      - pmlen_illegal_warl

@@ -10,7 +10,7 @@
 
 """S supervisor privileged extension test generator."""
 
-from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
+from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -23,8 +23,12 @@ from testgen.priv.extensions.PrivCommon import (
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
+    pmm_access_unchecked,
+    pmm_legal_values,
+    pmm_warl_fields,
     priv_inst_trap_tests,
     xcause_write_tests,
+    xl_field_tests,
     xstatus_sd_tests,
     xtval_value_tests,
 )
@@ -52,48 +56,19 @@ S_VADDR_CSRS = {
 
 
 def _sstatus_uxl_tests(test_data: TestData) -> list[str]:
-    """Ss1p13: attempt to set sstatus.UXL = 1 and 2 (cp_sxlen_ge_uxlen)."""
-    ######################################
-    covergroup = "S_sstatus_cg"
-    coverpoint = "cp_sxlen_ge_uxlen"
-    ######################################
-    save_reg, check_reg, mask_reg = test_data.int_regs.get_registers(3)
-    lines = [
+    """RV64: write sstatus.UXL = 0 through 3 from S-mode and check that UXL reads back a legal value
+    (cp_sxlen_ge_uxlen)."""
+    return [
         "",
-        "#ifdef S1P13P0_OR_LATER_SUPPORTED",
         "#if __riscv_xlen == 64",
         comment_banner(
-            coverpoint,
-            "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
-            "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
+            "cp_sxlen_ge_uxlen",
+            "From S-mode write sstatus.UXL = 0, 1, 2 and 3 and read it back.  UXL is WARL and encodes UXLEN, which\n"
+            "cannot exceed SXLEN = 64: it reads 2 where UXLEN is fixed at 64, and 1 or 2 where UXLEN may be 32.",
         ),
-        f"csrr x{save_reg}, sstatus",
-        "",
+        *xl_field_tests(test_data, "sstatus", "uxl", 32, "U_SUPPORTED", "UXLEN", "S_sstatus_cg", "cp_sxlen_ge_uxlen"),
+        "#endif // __riscv_xlen == 64",
     ]
-    for value, label in ((1, "uxlen32"), (2, "uxlen64")):
-        lines.extend(
-            [
-                "",
-                f"# Testcase: Ss1p13 attempt to set sstatus.UXL = {value} ({label})",
-                f"csrr x{check_reg}, sstatus                     # read current sstatus into GPR",
-                f"LI(x{mask_reg}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})  # mask to clear UXL bits [33:32]",
-                f"and x{check_reg}, x{check_reg}, x{mask_reg}         # clear UXL bits [33:32]",
-                f"LI(x{mask_reg}, {value << 32})                        # UXL={value} shifted into position [33:32]",
-                f"or x{check_reg}, x{check_reg}, x{mask_reg}          # OR in desired UXL value",
-                test_data.add_testcase(f"uxl_attempt_{value}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "sstatus", test_data),
-            ]
-        )
-    lines.extend(
-        [
-            "",
-            f"csrw sstatus, x{save_reg}        # restore sstatus after Ss1p13 UXL tests",
-            "#endif // UDB_MXLEN_64",
-            "#endif // S1P13P0_OR_LATER_SUPPORTED",
-        ]
-    )
-    test_data.int_regs.return_registers([save_reg, check_reg, mask_reg])
-    return lines
 
 
 def _generate_srets_tests(test_data: TestData) -> list[str]:
@@ -190,7 +165,9 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
+    tc.code.extend(
+        csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, unchecked_bits=pmm_access_unchecked("SSNPM"))
+    )
     tc.code.extend(["", "#endif"])
 
     ######################################
@@ -233,11 +210,20 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
-    # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
-    # legalize to any legal value, so those iterations check that the field is legal
-    # instead of exact-matching the reference model.
-    warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
-    tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
+    # values 0b10 and 0b01 respectively, and PMM = 10 and 11 are reserved where the PMLEN is
+    # unsupported. Walk iterations that write a reserved value may legalize to any legal value,
+    # so those iterations check that the field is legal instead of exact-matching the reference model.
+    warl_fields = [("cbie", 4, 2, 0b10), *pmm_warl_fields("SSNPM")]
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            S_CSR_SENVCFG,
+            covergroup,
+            coverpoint,
+            warl_fields=warl_fields,
+            legal_values=pmm_legal_values("SSNPM"),
+        )
+    )
     tc.code.extend(["", "#endif"])
 
     tc = test_data.new_test_chunk(test_chunks, "scsr_addr")

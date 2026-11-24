@@ -120,6 +120,27 @@ coverpoints:
       Attempt instruction/load/store access fault, instruction/load/store misaligned fault, illegal instruction, ebreak, ecall, crossed with privilege mode S/U/M crossed with medeleg = [ {1011_0001_1111_1111}, {0}, and 12 different walking 1s]
     expectation: Should delegate from user/supervisor but not machine when a 1 is in the appropriate column.   Note medeleg[11] is hardwired to 0 because ecall from M cannot be delegated, and medeleg[9] is 0 because delegating an ecall from supervisor mode makes it impossible to get back to machine mode.
     bins: 9 ops * 3 modes * 14 medeleg
+  - name: cp_medeleg_msu_softwarecheck
+    goal: Delegation of the software-check exception to supervisor mode
+    description: |-
+      If S_SUPPORTED and Zicfilp:
+      With xLPE = 1 (mseccfg.MLPE in M-mode, menvcfg.LPE in S-mode, senvcfg.LPE in U-mode), jalr through a register other than x1, x5 and x7 to an instruction that is not an lpad, crossed with privilege mode M/S/U and medeleg = {0, bit 18 alone, the cp_medeleg_msu all-ones value plus bit 18}.
+      xRET restores ELP = LP_EXPECTED, so the next instruction raises a second software-check exception before the lpad after it.
+    expectation: A software-check exception (18) with xtval = the landing pad fault code (2), or 0 by the REPORT_CAUSE_IN_xTVAL_ON_LANDING_PAD_SOFTWARE_CHECK parameters.  It is delegated to S-mode from S-mode and U-mode when medeleg[18] = 1, and taken in M-mode otherwise.
+    bins: 3 modes * 3 medeleg
+    notes: |-
+      The cp_medeleg_msu walk never sets bit 18, so the software-check exception walks its own medeleg values.  The Zicfiss shadow-stack fault is the other source of the exception; it needs shadow-stack pages and is never raised in M-mode, so these cases are compiled only with Zicfilp.
+  - name: |-
+      cp_load_x0_access_fault
+      cp_load_x0_misaligned
+    goal: Loads to x0 still raise exceptions
+    description: |-
+      Attempt lb, lbu, lh, lhu, lw, (lwu, ld) with rd = x0 from the access-fault address.
+      When the hart does not perform misaligned loads (UDB MISALIGNED_LDST = false), also attempt lh, lhu, lw, (lwu, ld) with rd = x0 from scratch + 1.
+    expectation: Load access fault, or load address-misaligned or access fault as the reference model raises, although the load value is discarded.
+    bins: 7 ops, + 5 ops when misaligned loads trap
+    rules:
+      - load_exc_x0
   - heading: "Notes: xepc, xcause, xtval, xtvec, mstatus.xpp are inherently tested with exceptions taking place"
   - heading: "Note: load/store misaligned, access fault, page fault for Zaamo, Zalrsc, Zicbo* are exercised in PMA, PMP, VM"
   - heading: menvcfg.STCE = 0 causes access to stimecmp outside of M mode to illegal instruction

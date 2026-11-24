@@ -9,7 +9,7 @@ experimental = true
 prek = "0.5.11"
 ruby = "3.4.12"
 shellcheck = "0.11.0"
-uv = "0.13.8"
+uv = "0.13.9"
 "gem:bundler" = "4.1.0"
 
 [settings.ruby]

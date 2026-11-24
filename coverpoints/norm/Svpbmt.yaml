@@ -13,9 +13,7 @@ normative_rule_definitions:
   # The Svpbmt extension depends on the Sv39 extension
   - name: Svpbmt_depends_Sv39
     coverpoint:
-      [
-        "Configuration requirement: Svpbmt requires Sv39, directly or through Sv48/Sv57; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Svpbmt.yaml#L18[Svpbmt.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Sv48.yaml#L16[Sv48.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Sv57.yaml#L16[Sv57.requirements]).",
-      ]
+      ["Configuration requirement: Svpbmt requires Sv39; checked by UDB."]
 
   # Mode|Value|Requested Memory Attributes === PMA NC IO -|0 1 2 3|None Non-cacheable,
   # idempotent, weakly-ordered (RVWMO), main memory Non-cacheable, non-idempotent,
@@ -71,7 +69,7 @@ normative_rule_definitions:
   - name: Svpbmt_impl_may_override_pmas
     coverpoint:
       [
-        "No independent assertion: permits additional implementation-defined PMA overrides; it does not require an override to occur.",
+        "No independent assertion: permits implementation-defined PMA overrides.",
       ]
 
   # memory accesses to such pages obey the memory ordering rules of the final effective
@@ -79,58 +77,42 @@ normative_rule_definitions:
   - name: Svpbmt_obeys_mem_ordering
     coverpoint:
       [
-        "Needs infrastructure: RAM mapped with PBMT=IO or PBMT=NC supplies the effective attributes; concurrent harts or an access monitor are needed to check ordering. I/O-to-memory overrides also need a physical I/O region.",
+        "Needs infrastructure: multiple harts, and a platform I/O region for PBMT=NC. PBMT=IO mappings of RAM can supply I/O attributes.",
       ]
   - name: Svpbmt_io_pma_nc_pbmt_obey_rvwmo
     coverpoint:
-      [
-        "Needs infrastructure: a physical I/O region mapped with PBMT=NC and concurrent harts or an access monitor; RAM mapped with PBMT=IO does not exercise this underlying-I/O case.",
-      ]
+      ["Needs infrastructure: a platform I/O region and multiple harts."]
   - name: Svpbmt_io_pma_nc_pbmt_treated_as_io_and_memory
     coverpoint:
-      [
-        "Needs infrastructure: a physical I/O region mapped with PBMT=NC and observation of FENCE/aq/rl ordering in both domains; PBMT=IO mappings of RAM do not exercise this case.",
-      ]
+      ["Needs infrastructure: a platform I/O region and multiple harts."]
   - name: Svpbmt_memory_pma_io_pbmt_strong_io_ordering
     coverpoint:
       [
-        "Needs infrastructure: PBMT=IO mappings of RAM supply channel 0 I/O attributes; concurrent harts or an access monitor are needed to observe ordering violations.",
+        "Needs infrastructure: multiple harts. PBMT=IO mappings of RAM can supply channel 0 I/O attributes.",
       ]
   - name: Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory
-    coverpoint:
-      [
-        "Needs infrastructure: PBMT=IO mappings of RAM and concurrent harts or an access monitor to check that FENCE/aq/rl treat these accesses as both memory and I/O.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   - name: Svpbmt_aliasing_attribute
     coverpoint:
       [
-        "No independent assertion: this clause permits loss of ordering or coherence under conflicting aliases; it does not require such loss to occur.",
+        "No independent assertion: permits loss of ordering or coherence through mismatched aliases.",
       ]
   - name: Svpbmt_noncacheable_aliasing_no_coherence_loss
-    coverpoint:
-      [
-        "Needs infrastructure: PBMT=NC and PBMT=IO aliases of the same RAM, with concurrent harts or a coherence monitor; no physical I/O device is needed for this case.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   - name: Svpbmt_noncacheable_aliasing_may_weaken_ordering
     coverpoint:
       [
-        "No independent assertion: this clause permits loss of ordering or coherence under conflicting aliases; it does not require such loss to occur.",
+        "No independent assertion: permits loss of ordering or coherence through mismatched aliases.",
       ]
   - name: Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss
-    coverpoint:
-      [
-        "Needs infrastructure: PBMT=NC and PBMT=IO aliases of the same RAM, with concurrent harts or an access monitor to check ordering across the prescribed FENCE sequence.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   - name: Svpbmt_cacheable_aliasing_may_cause_coherence_loss
     coverpoint:
       [
-        "No independent assertion: this clause permits loss of ordering or coherence under conflicting aliases; it does not require such loss to occur.",
+        "No independent assertion: permits loss of ordering or coherence through mismatched aliases.",
       ]
   - name: Svpbmt_cacheable_aliasing_fence_flush_fence_required
-    coverpoint:
-      [
-        "Needs infrastructure: cacheable and non-cacheable PBMT aliases of the same RAM, with concurrent harts or a memory/cache-access monitor to check the FENCE/CBO.FLUSH/FENCE sequence.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the
   # attributes in the PMA to produce an intermediate set of attributes.

@@ -275,10 +275,7 @@ normative_rule_definitions:
   # Loads with a destination of x0 must still raise any exceptions and cause any
   # other side effects even though the load value is discarded.
   - name: load_exc_x0
-    coverpoint:
-      [
-        "Needs test: currently have no cp in Exceptions_Sm that tests for load with rd = x0.",
-      ]
+    coverpoint: ["Needs test: a load with rd = x0 that takes an exception."]
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of
   # the access in bytes) have behavior dependent on the EEI.
@@ -401,20 +398,14 @@ normative_rule_definitions:
   # architecture that uses access failures as part of the discovery mechanism. In this case, error
   # responses from peripheral devices will be reported as imprecise bus-error interrupts.
   - name: pma_imprecise_ok
-    coverpoint:
-      [
-        "Needs infrastructure: inject peripheral bus errors and observe the platform's imprecise error-interrupt response; PBMT mappings of RAM do not supply this error source.",
-      ]
+    coverpoint: ["Needs infrastructure: a device that returns bus errors."]
   # The most important characterization of a given memory address range is whether it holds regular
   # main memory or I/O devices. Regular main memory is required to have a number of properties,
   # specified below, whereas I/O devices can have a much broader range of attributes. Memory regions
   # that do not fit into regular main memory, for example, device scratchpad RAMs, are categorized
   # as I/O regions.
   - name: pma_mm_vs_io_def
-    coverpoint:
-      [
-        "No independent assertion: defines terminology or format; it adds no behavior beyond the associated instruction or field rules.",
-      ]
+    coverpoint: ["No independent assertion: definition."]
   # Main memory regions always support read and write of all access widths required by the attached
   # devices
   - name: pma_mm_rw
@@ -425,22 +416,20 @@ normative_rule_definitions:
   # can specify whether instruction fetch is supported.
   - name: pma_mm_ifetch
     coverpoint:
-      [
-        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
-      ]
+      ["Needs infrastructure: platform PMA regions with these attributes."]
   # I/O regions can specify which combinations of read, write, or execute accesses to which data
   # widths are supported.
   - name: pma_io_rwx_per_sz
     coverpoint:
       [
-        "Needs infrastructure: regions with known access-type and access-width restrictions; PBMT=IO does not portably select those PMA restrictions.",
+        "Needs infrastructure: platform regions with access-type and access-width restrictions.",
       ]
   # For systems with page-based virtual memory, I/O and memory regions can specify which
   # combinations of hardware page-table reads and hardware page-table writes are supported.
   - name: pma_vm_hw_tbl_acc
     coverpoint:
       [
-        "Needs infrastructure: regions with known restrictions on hardware page-table reads and writes; PBMT=IO does not portably select those PMA restrictions.",
+        "Needs infrastructure: platform regions that do not support hardware page-table accesses.",
       ]
   # Within AMOs, there are four levels of support: AMONone, AMOSwap, AMOLogical, and AMOArithmetic.
   # AMONone indicates that no AMO operations are supported. AMOSwap indicates that only amoswap
@@ -449,22 +438,17 @@ normative_rule_definitions:
   # all RISC-V AMOs defined by the A extension are supported.
   - name: pma_amo_levels
     coverpoint:
-      [
-        "Needs infrastructure: regions with known AMO support levels; PBMT=IO does not portably select AMONone, AMOSwap, AMOLogical, or AMOArithmetic.",
-      ]
+      ["Needs infrastructure: platform regions with each AMO support level."]
   # Main memory and I/O regions may only support a subset or none of the processor-supported atomic
   # operations.
   - name: pma_amo_far_subset_proc
     coverpoint:
       [
-        "Needs infrastructure: regions supporting a known subset of processor-supported atomics; PBMT=IO does not portably select that subset.",
+        "Needs infrastructure: platform regions that support a subset of the processor's AMOs.",
       ]
   # The Zacas extension defines three additional levels of support: AMOCASW, AMOCASD, and AMOCASQ.
   - name: pma_amo_Zacas_levels1
-    coverpoint:
-      [
-        "No independent assertion: defines terminology or format; it adds no behavior beyond the associated instruction or field rules.",
-      ]
+    coverpoint: ["No independent assertion: definition."]
   # AMOCASW indicates that in addition to instructions indicated by AMOArithmetic-level support, the
   # AMOCAS.W instruction is supported. AMOCASD indicates that in addition to instructions indicated
   # by AMOCASW-level support, the AMOCAS.D instruction is supported. AMOCASQ indicates that in
@@ -472,16 +456,12 @@ normative_rule_definitions:
   # supported.
   - name: pma_amo_Zacas_levels2
     coverpoint:
-      [
-        "Needs infrastructure: regions with known AMOCASW/AMOCASD/AMOCASQ support; PBMT=IO does not portably select these PMA levels.",
-      ]
+      ["Needs infrastructure: platform regions with each AMOCAS support level."]
   # The AMOs specified by the Zabha extension require the same level of support as the corresponding
   # instructions in the Zaamo standard extension or the Zacas extension.
   - name: pma_amo_Zabha_req
     coverpoint:
-      [
-        "Needs infrastructure: regions with known AMO support to compare Zabha against Zaamo/Zacas; PBMT=IO does not portably select these PMA levels.",
-      ]
+      ["Needs infrastructure: platform regions with each AMO support level."]
   # For LR/SC, there are three levels of support indicating combinations of the reservability and
   # eventuality properties: RsrvNone, RsrvNonEventual, and RsrvEventual. RsrvNone indicates that no
   # LR/SC operations are supported (the location is non-reservable). RsrvNonEventual indicates that
@@ -490,9 +470,7 @@ normative_rule_definitions:
   # operations are supported and provide the eventual success guarantee.
   - name: pma_rsrv_levels
     coverpoint:
-      [
-        "Needs infrastructure: regions with known LR/SC reservability and eventuality properties; PBMT=IO does not portably select these PMAs.",
-      ]
+      ["Needs infrastructure: platform regions with each reservability level."]
   # Implementations may raise access-fault exceptions instead of address-misaligned exceptions for
   # some misaligned accesses, indicating the instruction should not be emulated by a trap handler.
   # Implementations may raise access-fault exceptions instead of address-misaligned
@@ -508,14 +486,14 @@ normative_rule_definitions:
   - name: pma_mo_io_chan_def
     coverpoint:
       [
-        "Needs infrastructure: PBMT=IO mappings of RAM can exercise channel 0 ordering with concurrent harts or an access monitor; other channels require platform-defined PMAs.",
+        "Needs infrastructure: multiple harts, and platform I/O regions for channels other than 0. PBMT=IO mappings of RAM can supply channel 0.",
       ]
   # Channel 0 is used to indicate point-to-point strong ordering only, where only accesses by the
   # hart to the single associated I/O region are strongly ordered.
   - name: pma_mo_io_chan_0
     coverpoint:
       [
-        "Needs infrastructure: PBMT=IO mappings of RAM supply channel 0 I/O attributes; concurrent harts or an access monitor are needed to observe ordering violations.",
+        "Needs infrastructure: multiple harts. PBMT=IO mappings of RAM can supply channel 0 I/O attributes.",
       ]
   # Channel 1 is used to provide global strong ordering across all I/O regions. Any accesses by a
   # hart to any I/O region associated with channel 1 can only be observed to have occurred in
@@ -525,41 +503,39 @@ normative_rule_definitions:
   # instruction before and after the instruction.
   - name: pma_mo_io_chan_1
     coverpoint:
-      [
-        "Needs infrastructure: platform-defined channel 1 regions and concurrent harts or an access monitor; PBMT=IO on RAM supplies channel 0, not channel 1.",
-      ]
+      ["Needs infrastructure: platform channel 1 regions and multiple harts."]
   # Other larger channel numbers provide program ordering to accesses by that hart across any
   # regions with the same channel number
   - name: pma_mo_io_chan_other
     coverpoint:
       [
-        "Needs infrastructure: platform-defined regions sharing the selected channel and concurrent harts or an access monitor; PBMT=IO on RAM cannot select channels above 0.",
+        "Needs infrastructure: platform I/O regions on channels above 1 and multiple harts.",
       ]
   # Systems might support dynamic configuration of ordering properties on each memory region.
   - name: pma_mo_dyn
     coverpoint:
       [
-        "No independent assertion: dynamic reconfiguration of memory-ordering properties is permitted, not required.",
+        "No independent assertion: permits dynamic reconfiguration of memory-ordering PMAs.",
       ]
   # If a PMA indicates non-cacheability, then accesses to that region must be satisfied by the
   # memory itself, not by any caches.
   - name: pma_non_cacheable
     coverpoint:
       [
-        "Needs infrastructure: PBMT=NC or PBMT=IO mappings of RAM supply non-cacheable attributes; a memory/cache-access monitor is needed to detect improper cache use. Native PMA decoding needs separate coverage.",
+        "Needs infrastructure: a way to observe cache use. PBMT=NC or PBMT=IO mappings of RAM can supply non-cacheable attributes.",
       ]
   # Main memory regions are assumed to be idempotent.
   - name: pma_idp_mm
     coverpoint:
       [
-        "Configuration requirement: regions designated as main memory must be idempotent; not yet checked (requires platform memory-map and device validation).",
+        "Configuration requirement: main memory regions are idempotent; not checked.",
       ]
   # hardware should always be designed to avoid speculative or redundant accesses to memory regions
   # marked as non-idempotent
   - name: pma_idp_no_spec
     coverpoint:
       [
-        "Needs infrastructure: PBMT=IO mappings of RAM supply non-idempotent attributes; an access monitor or side-effecting device is needed to detect speculative or redundant accesses that leave no signature evidence.",
+        "Needs infrastructure: a device with read side effects to detect speculative or repeated accesses. PBMT=IO mappings of RAM can supply non-idempotent attributes.",
       ]
   # For non-idempotent regions, implicit reads and writes must not be performed early or
   # speculatively, with the following exceptions. When a non-speculative implicit read is performed,
@@ -571,14 +547,14 @@ normative_rule_definitions:
   - name: pma_idp_implicit_ok
     coverpoint:
       [
-        "Needs infrastructure: observe implicit accesses and permitted read-ahead ranges. PBMT=IO can supply non-idempotent attributes for accesses subject to that mapping; other implicit accesses need platform PMAs.",
+        "Needs infrastructure: a device with read side effects to observe implicit accesses.",
       ]
   # The size of these naturally aligned power-of-2 regions is implementation-defined, but, for
   # systems with page-based virtual memory, must not exceed the smallest supported page size.
   - name: pma_idp_implicit_sz
     coverpoint:
       [
-        "Needs infrastructure: observe implicit read-ahead bounds in non-idempotent regions. PBMT=IO can supply attributes for accesses subject to that mapping; other implicit accesses need platform PMAs.",
+        "Needs infrastructure: a device with read side effects to observe implicit accesses.",
       ]
   # When a trap is taken into M-mode, mtval is either set to zero or written with exception-specific
   # information to assist software in handling the trap. Otherwise, mtval is never written by the
@@ -769,7 +745,7 @@ normative_rule_definitions:
   - name: cbxe_unaffected
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: write CBIE/CBCFE/CBZE in one xenvcfg and check that the same fields in the other xenvcfg registers are unchanged.",
       ]
   # A CBO.INVAL instruction executes or raises either an illegal-instruction
   # exception or a virtual-instruction exception based on the state of the

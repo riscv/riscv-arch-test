@@ -9,7 +9,7 @@ normative_rule_definitions:
   - name: vstart_unmodified
     coverpoint:
       [
-        "Needs test: no coverpoint checks that vstart is unmodified after an illegal-instruction exception; cp_vstart only checks that the exception is raised;.",
+        "Needs test: no coverpoint checks that vstart is unmodified after an illegal-instruction exception; cp_vstart only checks that the exception is raised.",
       ]
 
   # The use of vstart values greater than the largest element index for the current vtype
@@ -21,7 +21,4 @@ normative_rule_definitions:
   # execute a vector instruction with a value of vstart that the implementation can never
   # produce when executing that same instruction with the same vtype setting.
   - name: vstart_vtype_dep
-    coverpoint:
-      [
-        "No independent assertion: an illegal-instruction exception for an implementation-unreachable vstart value is optional; other execution requirements still apply.",
-      ]
+    coverpoint: ["No independent assertion: the exception is optional."]

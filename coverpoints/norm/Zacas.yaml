@@ -71,12 +71,12 @@ normative_rule_definitions:
     # TODO: amocas with a failing compare to a read-only PMP region or page must raise a store/AMO fault
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: amocas with a failing compare to a read-only PMP region or page raises a store/AMO fault.",
       ]
 
   - name: Zabha_amocas-bh_ignore_bits
     # TODO: a successful amocas.b/h compare whose rd upper bits differ from the sign extension
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: a successful amocas.b/h compare whose rd upper bits differ from the sign extension.",
       ]

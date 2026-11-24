@@ -40,16 +40,14 @@ normative_rule_definitions:
   # EEW=64 are supported as well as widening reductions from FP32 to FP64.
   - name: V_dependent_F_D
     coverpoint:
-      [
-        "Configuration requirement: V requires F and D through Zve64d and D; instruction semantics require separate coverage; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/V.yaml#L17[V.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zve64d.yaml#L31[Zve64d.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/D.yaml#L17[D.requirements]).",
-      ]
+      ["Configuration requirement: V requires F and D; checked by UDB."]
 
   # Vector floating-point instructions require the presence of base scalar floating-point
   # extensions corresponding to the supported vector floating-point element widths.
   - name: vf_requires_vx
     coverpoint:
       [
-        "Configuration requirement: vector FP dependencies require the corresponding scalar F/D/Zfhmin extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zve32f.yaml#L30[Zve32f.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zve64d.yaml#L31[Zve64d.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvfh.yaml#L39[Zvfh.requirements]).",
+        "Configuration requirement: Zve32f requires F, Zve64d requires D, and Zvfh requires Zfhmin; checked by UDB.",
       ]
 
   # Vector single-width floating-point reductions for EEW=32 and EEW=64 are supported as well as

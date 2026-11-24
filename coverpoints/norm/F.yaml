@@ -4,10 +4,7 @@ normative_rule_definitions:
   # FLEN can be 32, 64, or 128 depending on which of the ext:f[], ext:d[], and ext:q[]
   # extensions are supported.
   - name: flen_def
-    coverpoint:
-      [
-        "No independent assertion: defines FLEN from F/D/Q support; floating-point register behavior is specified by the corresponding extensions.",
-      ]
+    coverpoint: ["No independent assertion: definition."]
   # These extensions, intended for lower-cost systems, are incompatible with the ext:f[]
   # and ext:d[] extensions.
   - name: Zfinx_Zdinx_incompatible_F_D
@@ -24,10 +21,7 @@ normative_rule_definitions:
       ]
   # The ext:f[] extension depends on the ext:zicsr[] extension.
   - name: F_depends_Zicsr
-    coverpoint:
-      [
-        "Configuration requirement: F requires Zicsr; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/F.yaml#L17[F.requirements]).",
-      ]
+    coverpoint: ["Configuration requirement: F requires Zicsr; checked by UDB."]
   # The ext:f[] extension adds 32 floating-point registers,
   # f0&amp;#8205;&amp;#8211;&amp;#8205;f31, each 32 bits wide, i.e., FLEN=32.
   - name: flen
@@ -104,10 +98,7 @@ normative_rule_definitions:
   # insn:flw[] and insn:fsw[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned.
   - name: fsw_flw_atomic_align
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # insn:flw[] and insn:fsw[] do not modify the bits being transferred; in particular,
   # the payloads of non-canonical NaNs are preserved.
   - name: fsw_flw_bits_maintained
@@ -209,9 +200,7 @@ normative_rule_definitions:
     # TODO: the FMA crosses multiply inf by zero only with non-NaN addends; needs a directed case
     # with fs1/fs2 = inf/zero and a quiet-NaN fs3 for each FMA instruction and precision
     coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+      ["Needs test: FMA with multiplicands ∞ and zero and a quiet-NaN addend."]
   # insn:fcvt.w.s[] or insn:fcvt.l.s[] converts a floating-point number in
   # floating-point register rs1 to a signed 32-bit or 64-bit integer, respectively, in
   # integer register rd

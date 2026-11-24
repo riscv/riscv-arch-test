@@ -143,10 +143,7 @@ normative_rule_definitions:
   # SFENCE.VMA orders only the local hart’s implicit references to the memory-management
   # data structures.
   - name: sfence_vma_local_only
-    coverpoint:
-      [
-        "No independent assertion: this clause adds no remote-hart ordering guarantee; local ordering and remote synchronization have separate requirements.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # If rs1=x0 and rs2=x0, the fence orders all reads and writes made to any level of the
   # page tables, for all address spaces. The fence also invalidates all address-
@@ -170,7 +167,7 @@ normative_rule_definitions:
   # page table entries corresponding to the virtual address in rs1, for all address
   # spaces.
   - name: sfence_vma_va_all_asid
-    coverpoint: ["Needs test: sFENCE.VMA with rs1!=x0 is not exercised."]
+    coverpoint: ["Needs test: SFENCE.VMA with rs1 ≠ x0."]
 
   # If rs1{ne}x0 and rs2{ne}x0, the fence orders only reads and writes made to leaf page
   # table entries corresponding to the virtual address in rs1, for the address space
@@ -180,15 +177,13 @@ normative_rule_definitions:
   # space identified by integer register rs2, except for entries containing global
   # mappings.
   - name: sfence_vma_va_asid
-    coverpoint: ["Needs test: sFENCE.VMA with rs1!=x0 is not exercised."]
+    coverpoint: ["Needs test: SFENCE.VMA with rs1 ≠ x0."]
 
   # If the value held in rs1 is not a valid virtual address, then the SFENCE.VMA
   # instruction has no effect. No exception is raised in this case.
   - name: sfence_vma_invalid_va
     coverpoint:
-      [
-        "Needs test: sFENCE.VMA with an invalid virtual address in rs1 is not exercised.",
-      ]
+      ["Needs test: SFENCE.VMA with an invalid virtual address in rs1."]
 
   # When rs2≠x0, bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for future
   # standard use. Until their use is defined by a standard extension, they should be
@@ -196,8 +191,7 @@ normative_rule_definitions:
   # ASIDLEN<ASIDMAX, the implementation shall ignore bits ASIDMAX-1:ASIDLEN of the value
   # held in rs2.
   - name: sfence_vma_rs2_bits
-    coverpoint:
-      ["Needs test: sFENCE.VMA with reserved rs2 bits set is not exercised."]
+    coverpoint: ["Needs test: SFENCE.VMA with reserved rs2 bits set."]
 
   # An implicit read of the memory-management data structures may return any translation
   # for an address that was valid at any time since the most recent SFENCE.VMA that
@@ -213,7 +207,7 @@ normative_rule_definitions:
   - name: sfence_vma_ordering_semantics
     coverpoint:
       [
-        "Needs test: accept only translations valid since the most recent subsuming SFENCE.VMA; do not require a particular permitted stale translation.",
+        "Needs test: update a PTE without SFENCE.VMA and check that the access uses either the old or the new translation.",
       ]
 
   # Implementations must only perform implicit reads of the translation data structures
@@ -236,21 +230,22 @@ normative_rule_definitions:
   # immediately, without the need to execute an SFENCE.VMA instruction.
   - name: sfence_vma_mode_effect
     coverpoint:
-      ["Needs test: every test executes SFENCE.VMA after writing satp."]
+      [
+        "Needs test: change satp.MODE without SFENCE.VMA and check that the new mode takes effect.",
+      ]
 
   # Likewise, changes to satp.ASID take effect immediately.
   - name: sfence_vma_asid_effect
     coverpoint:
-      ["Needs test: every test executes SFENCE.VMA after writing satp."]
+      [
+        "Needs test: change satp.ASID without SFENCE.VMA and check that the new ASID takes effect.",
+      ]
 
   # If a hart employs an address-translation cache, that cache must appear to be private
   # to that hart. In particular, the meaning of an ASID is local to a hart; software may
   # choose to use the same ASID to refer to different address spaces on different harts.
   - name: asid_hart_private
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # The 20-bit VPN is translated into a 22-bit physical page number (PPN) for Sv32.
   - name: satp_ppn_Sv32_sz
@@ -339,10 +334,7 @@ normative_rule_definitions:
 
   # All harts in a system must employ the same PTE-update scheme as each other.
   - name: pte_ad_scheme_uniform
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # For implementations with both page-based virtual memory and the A standard extension,
   # the LR/SC reservation set must lie completely within a single base physical page
@@ -519,9 +511,7 @@ normative_rule_definitions:
   # Implementations that support Sv48 must also support Sv39
   - name: Sv48_requires_Sv39
     coverpoint:
-      [
-        "Configuration requirement: Sv48 requires Sv39; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Sv48.yaml#L16[Sv48.requirements]).",
-      ]
+      ["Configuration requirement: Sv48 requires Sv39; checked by UDB."]
 
   # PageType_*, canonical_page_* and misaligned_PPN_* have no Sv57 bins, so the Sv57 tests
   # do not reach the cp_spage, cp_canonical and cp_misaligned crosses. The Sv57 rules use
@@ -580,7 +570,7 @@ normative_rule_definitions:
   - names: [Sv57_leaf_any_level, Sv57_page_sizes]
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run, but no cross records the leaf level.",
       ]
 
   # must be virtually and physically aligned to a boundary equal to its size
@@ -588,15 +578,13 @@ normative_rule_definitions:
   - names: [Sv57_superpage_align, Sv57_superpage_align_fault]
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: Sv57 bins in misaligned_PPN_{i,d}; the Sv57 misaligned-superpage tests run, but no cross records them.",
       ]
 
   # Implementations that support Sv57 must also support Sv48
   - name: Sv57_requires_Sv48
     coverpoint:
-      [
-        "Configuration requirement: Sv57 requires Sv48; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Sv57.yaml#L16[Sv57.requirements]).",
-      ]
+      ["Configuration requirement: Sv57 requires Sv48; checked by UDB."]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
@@ -1047,9 +1035,7 @@ normative_rule_definitions:
   # VS-stage A bits must not be set speculatively
   - name: vs_stage_speculative_a_bit
     coverpoint:
-      [
-        "Needs infrastructure: exercise speculative VS-stage walks outside VS/VU and observe that they do not set PTE A bits.",
-      ]
+      ["Needs infrastructure: a way to cause speculative VS-stage walks."]
 
   # hstatus.SPVP sets the effective privilege of the explicit accesses of HLV, HLVX and HSV
   - name: hstatus_spvp_virtls_op
@@ -1066,9 +1052,7 @@ normative_rule_definitions:
   # Writing hgatp does not order page-table updates before later G-stage translations
   - name: hgatp_op_hfence_gvma
     coverpoint:
-      [
-        "No independent assertion: writing hgatp provides no implicit fence; tests must perform the synchronization required by the separate fence rules.",
-      ]
+      ["No independent assertion: writing hgatp does not imply a fence."]
 
   # With V=0, SFENCE.VMA takes an HS-level address and ASID and orders only HS-level address translation
   - name: sfence_vma_v0
@@ -1194,5 +1178,5 @@ normative_rule_definitions:
   - name: cbo-inval_h_mode_inval_enc
     coverpoint:
       [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
+        "Needs infrastructure: a non-coherent agent such as a DMA device, to tell an invalidate from a flush.",
       ]

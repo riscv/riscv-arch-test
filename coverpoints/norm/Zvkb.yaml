@@ -10,10 +10,7 @@ normative_rule_definitions:
   # All instructions shall be implemented with data-independent timing. That is, the latency
   # of the execution of these instructions shall not vary with different input values.
   - name: zvk_dataindep_timing
-    coverpoint:
-      [
-        "Needs infrastructure: measure data-dependent execution latency or use a timing/security verification method; final-state signatures do not establish constant latency.",
-      ]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # For all of the vector crypto instructions in this specification, EEW=SEW.
   - name: veccrypto_eeweqsew
@@ -35,7 +32,7 @@ normative_rule_definitions:
   - name: veccrypto_vl_vstart_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # For element-group instructions, LMUL*VLEN must always be at least as large as EGW,
@@ -43,7 +40,7 @@ normative_rule_definitions:
   - name: veccrypto_lmul_egwconstr
     coverpoint:
       [
-        "Needs test: no ExceptionsZvk-style suite exists yet to exercise the LMUL*VLEN<EGW illegal-instruction condition; TODO: LMUL×VLEN < EGW, even with vl=0, raises an illegal-instruction exception.",
+        "Needs test: LMUL×VLEN < EGW, even with vl = 0, raises an illegal-instruction exception.",
       ]
 
   # Some Vector Crypto instructions are only defined for a specific SEW. In such a case all
@@ -51,7 +48,7 @@ normative_rule_definitions:
   - name: veccrypto_sew_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # In the case of the *.vs instructions defined in this specification, vs2 holds a 128-bit
@@ -67,9 +64,7 @@ normative_rule_definitions:
   # overlap this vs2 register group.
   - name: veccrypto_vsins_vdvs2overlap
     coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+      ["Needs test: .vs vector crypto instructions with vd overlapping vs2."]
 
   # they return vector results to vd, which is also a source vector operand.
   - name: veccrypto_vsins_vd
@@ -79,14 +74,14 @@ normative_rule_definitions:
   - name: Zvknhb_Zvkn_Zvknc_Zvkng_Zvksc_depZve64x
     coverpoint:
       [
-        "Configuration requirement: Zve64x is required directly by Zvknhb and through the Zvkn/Zvbc dependency chains; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvknhb.yaml#L18[Zvknhb.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvkn.yaml#L22[Zvkn.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvknc.yaml#L21[Zvknc.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvkng.yaml#L21[Zvkng.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvksc.yaml#L21[Zvksc.requirements], https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvbc.yaml#L20[Zvbc.requirements]).",
+        "Configuration requirement: these extensions require Zve64x; checked by UDB.",
       ]
 
   # All of the other Vector Crypto Extensions depend on ext:zve32x[].
   - name: Zvkb_Zvkg_Zvkned_Zvknha_Zvksed_Zvksh_Zvks_Zvksc_Zvksg_Zvkt_depZve32x
     coverpoint:
       [
-        "Configuration requirement: the listed crypto extensions require Zve32x. UDB checks the component dependencies (e.g. https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvkb.yaml#L17[Zvkb.requirements]), but Zvkt only requires Zvl32b; the Zvkt-to-Zve32x dependency is not yet checked by UDB.",
+        "Configuration requirement: these extensions require Zve32x; checked by UDB except for Zvkt.",
       ]
 
   # It is important to note that the Vector Crypto instructions are independent of the
@@ -94,9 +89,7 @@ normative_rule_definitions:
   # implemented.
   - name: veccrypto_indepZkt
     coverpoint:
-      [
-        "No independent assertion: vector crypto does not require Zkt; its own timing obligations still apply.",
-      ]
+      ["No independent assertion: vector crypto does not depend on Zkt."]
 
   # Each bit of Op1 is inverted and logically ANDed with the corresponding bits in vs2.
   - name: vandn_op
@@ -182,20 +175,14 @@ normative_rule_definitions:
   # with data-independent execution latency as defined in the RISC-V Scalar Cryptography Extensions
   # specification.
   - name: Zvkt_req
-    coverpoint:
-      [
-        "Needs infrastructure: measure data-dependent execution latency or use a timing/security verification method; final-state signatures do not establish constant latency.",
-      ]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # Data-independent execution latency (DIEL) applies to all data operands of an instruction, even
   # those that are not a part of the body or that are inactive. However, DIEL does not apply to
   # other values such as vl, vtype, and the mask (when used to control execution of a masked vector
   # instruction).
   - name: Zvkt_diel_def
-    coverpoint:
-      [
-        "Needs infrastructure: measure data-dependent execution latency or use a timing/security verification method; final-state signatures do not establish constant latency.",
-      ]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # Also, DIEL does not apply to constant values specified in the instruction encoding such as the
   # use of the zero register (x0), and, in the case of immediate forms of an instruction, the values
@@ -203,7 +190,7 @@ normative_rule_definitions:
   - name: Zvkt_diel_constants_exempt
     coverpoint:
       [
-        "No independent assertion: excludes these operands from the data-independent-latency requirement; it does not require their latency to vary.",
+        "No independent assertion: exempts these operands from the data-independent-latency requirement.",
       ]
 
   # In some cases—which are explicitly specified in the lists below—operands that are used as
@@ -211,5 +198,5 @@ normative_rule_definitions:
   - name: Zvkt_diel_control_exempt
     coverpoint:
       [
-        "No independent assertion: excludes these operands from the data-independent-latency requirement; it does not require their latency to vary.",
+        "No independent assertion: exempts these operands from the data-independent-latency requirement.",
       ]

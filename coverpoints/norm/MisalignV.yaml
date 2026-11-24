@@ -44,17 +44,14 @@ normative_rule_definitions:
     # configurations with and without scalar misaligned support; the whole suite is the evidence.
     coverpoint:
       [
-        "No independent assertion: scalar and vector misalignment support may differ; each must satisfy its own access and exception rules.",
+        "No independent assertion: permits vector and scalar misaligned-access support to differ.",
       ]
 
   # Vector misaligned memory accesses follow the same rules for atomicity as scalar misaligned memory
   # accesses.
   - name: vector_ls_scalar_misaligned_dependence
     # Atomicity of a misaligned access is not observable from a single-hart self-checking test.
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # If the Zicclsm extension is implemented, then misaligned loads and stores to main memory regions
   # with both the coherence and cacheability PMAs must be supported.

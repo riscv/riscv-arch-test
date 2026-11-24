@@ -27,7 +27,7 @@ normative_rule_definitions:
   - name: vfwmaccbf16_sew_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   # In the vector-vector version, the BF16 elements are read from vs1 and vs2 and FP32
   # accumulate value is read from vd. The FP32 result is written to the destination
@@ -39,7 +39,7 @@ normative_rule_definitions:
   - name: Zvfbfwma_depends
     coverpoint:
       [
-        "Configuration requirement: Zvfbfwma requires Zvfbfmin and Zfbfmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Zvfbfwma.yaml#L19[Zvfbfwma.requirements]).",
+        "Configuration requirement: Zvfbfwma requires Zvfbfmin and Zfbfmin; checked by UDB.",
       ]
 
   # Encoding (Vector-Vector) (vfwmaccbf16.vv)

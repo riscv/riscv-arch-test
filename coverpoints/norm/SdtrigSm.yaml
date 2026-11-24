@@ -75,15 +75,12 @@ normative_rule_definitions:
   - name: Sdtrig_action8_9
     coverpoint:
       [
-        "Needs infrastructure: observe trace or TM external outputs alongside architectural execution.",
+        "Needs infrastructure: a way to observe trace or TM external trigger outputs.",
       ]
 
   # Reserved for future use.
   - name: Sdtrig_action_rsv
-    coverpoint:
-      [
-        "No independent assertion: this clause reserves encodings for future use without defining their execution behavior.",
-      ]
+    coverpoint: ["No independent assertion: reserved encodings."]
 
   # Priorities in the table are separated by horizontal lines, so e.g. etrigger and
   # itrigger have the same priority. If this table contradicts the table in the
@@ -91,7 +88,7 @@ normative_rule_definitions:
   - name: Sdtrig_priority
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: fire triggers together with other exceptions and check which is taken.",
       ]
 
   # This table only applies if triggers are precise. Otherwise triggers will fire
@@ -99,23 +96,20 @@ normative_rule_definitions:
   - name: Sdtrig_non_precise_priority
     coverpoint:
       [
-        "No independent assertion: the priority table does not constrain imprecise triggers; precise-trigger priority still needs separate coverage.",
+        "No independent assertion: the priority table does not apply to imprecise triggers.",
       ]
 
   # When triggers are chained, the priority is the lowest priority of the triggers
   # in the chain.
   - name: Sdtrig_chain_priority
-    coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+    coverpoint: ["Needs test: priority of chained triggers."]
 
   # When multiple triggers in the same priority fire at once, hit (if implemented)
   # is set for all of them.
   - name: Sdtrig_multiple_fires
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: fire several triggers of the same priority at once and check that every implemented hit bit is set.",
       ]
 
   # If more than one of these triggers has action=0 then tval is updated in
@@ -123,7 +117,7 @@ normative_rule_definitions:
   - name: Sdtrig_tval
     coverpoint:
       [
-        "Needs test: when several action=0 triggers fire, require tval to correspond to one of them without requiring a particular winner.",
+        "Needs test: fire several action = 0 triggers at once and check that tval matches one of them.",
       ]
 
   # If one of these triggers has the "enter Debug Mode" action (1) and another
@@ -154,7 +148,7 @@ normative_rule_definitions:
   - name: Sdtrig_independent_trigs
     coverpoint:
       [
-        "Needs infrastructure: observe trace or TM external outputs alongside architectural execution.",
+        "Needs infrastructure: a way to observe trace or TM external trigger outputs.",
       ]
 
   # That breakpoint exception can either be taken in M-mode or it can be delegated
@@ -177,10 +171,7 @@ normative_rule_definitions:
 
   # It is UNSPECIFIED whether failing sc instructions are stores or not.
   - name: Sdtrig_Aext_sc_fail
-    coverpoint:
-      [
-        "No independent assertion: this clause leaves the indicated outcome unspecified.",
-      ]
+    coverpoint: ["No independent assertion: the behavior is UNSPECIFIED."]
 
   # Each AMO instruction is a load for the read portion of the operation.
   - name: Sdtrig_AMO_read
@@ -200,18 +191,12 @@ normative_rule_definitions:
 
   # Whether data store triggers match on AMOs is UNSPECIFIED.
   - name: Sdtrig_AMO_store_match
-    coverpoint:
-      [
-        "No independent assertion: this clause leaves the indicated outcome unspecified.",
-      ]
+    coverpoint: ["No independent assertion: the behavior is UNSPECIFIED."]
 
   # If the destination register of any load or AMO is zero then it is UNSPECIFIED
   # whether a data load trigger will match.
   - name: Sdtrig_load_zero_rd
-    coverpoint:
-      [
-        "No independent assertion: this clause leaves the indicated outcome unspecified.",
-      ]
+    coverpoint: ["No independent assertion: the behavior is UNSPECIFIED."]
 
   # Some instructions lead a hart to perform multiple memory accesses. This includes
   # vector loads and stores, as well as cm.push and cm.pop instructions. The Trigger
@@ -333,10 +318,7 @@ normative_rule_definitions:
   # can not be represented as-is should be converted to a different invalid address
   # that can be represented.
   - name: Sdtrig_csr_tdata2_invalid
-    coverpoint:
-      [
-        "No independent assertion: this is a recommendation, not a required architectural outcome.",
-      ]
+    coverpoint: ["No independent assertion: recommendation."]
 
   # An instruction that performs multiple architectural state changes (e.g.,
   # register updates and/or memory accesses) might cause a trigger to fire at an
@@ -350,7 +332,7 @@ normative_rule_definitions:
   - name: Sdtrig_multistate_change
     coverpoint:
       [
-        "Needs test: check partial execution against the triggering instruction's specified state-update order and restart behavior.",
+        "Needs test: fire a trigger partway through an instruction with several state changes.",
       ]
 
   # All tdata registers follow write-any-read-legal semantics.
@@ -400,33 +382,25 @@ normative_rule_definitions:
   # follows.
   - name: Sdtrig_xlen_handling
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # Fields retain their values regardless of XLEN, which only affects where in the
   # register these fields appear
   - name: Sdtrig_fields
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # Some fields are wider when XLEN is 64 than when it is 32 (e.g. svalue). The high
   # bits in such fields retain their value but are not readable when XLEN is 32.
   - name: Sdtrig_fields_high
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # A modification of a register when XLEN is 32 clears any inaccessible bits in
   # that register.
   - name: Sdtrig_xlen_modification
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # This register determines which trigger is accessible through the other Trigger
   # Module registers.
@@ -441,7 +415,7 @@ normative_rule_definitions:
   - name: Sdtrig_tselect_warl
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: write tselect values past the last trigger and check that the readback is a legal index.",
       ]
 
   # This register provides access to the trigger selected by tselect.
@@ -452,7 +426,7 @@ normative_rule_definitions:
   - name: Sdtrig_tdata1_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # Writing 0 to this register must result in a trigger that is disabled.
@@ -466,10 +440,7 @@ normative_rule_definitions:
   # If this trigger supports multiple types, then the hardware should disable it by
   # changing type to 15.
   - name: Sdtrig_tdata1_multiple_types
-    coverpoint:
-      [
-        "No independent assertion: this is a recommendation, not a required architectural outcome.",
-      ]
+    coverpoint: ["No independent assertion: recommendation."]
 
   # This trigger is disabled. In this state, {csr-tdata2} and {csr-tdata3} can be written
   # with any value that is supported for any of the types this trigger implements. The
@@ -479,10 +450,7 @@ normative_rule_definitions:
 
   # Other values are reserved for future use.
   - name: Sdtrig_tdata1_type_rsv
-    coverpoint:
-      [
-        "No independent assertion: this clause reserves encodings for future use without defining their execution behavior.",
-      ]
+    coverpoint: ["No independent assertion: reserved encodings."]
 
   # If type is 0, then this bit is hard-wired to 0.
   - name: Sdtrig_tdata1_dmode_type_0
@@ -521,7 +489,7 @@ normative_rule_definitions:
   - name: Sdtrig_tdata2_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # If the trigger is disabled, then this register can be written with any value
@@ -536,9 +504,7 @@ normative_rule_definitions:
   # If XLEN is less than DXLEN, writes to this register are sign-extended.
   - name: Sdtrig_tdata2_sign_extend
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tdata3
@@ -548,7 +514,7 @@ normative_rule_definitions:
   - name: Sdtrig_tdata3_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # If the trigger is disabled, then this register can be written with any value
@@ -559,9 +525,7 @@ normative_rule_definitions:
   # If XLEN is less than DXLEN, writes to this register are sign-extended.
   - name: Sdtrig_tdata3_sign_extend
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tinfo
@@ -571,7 +535,7 @@ normative_rule_definitions:
   - name: Sdtrig_tinfo_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is optional if no triggers are implemented, or if type is not
@@ -593,7 +557,7 @@ normative_rule_definitions:
   - name: Sdtrig_tinfo_version_1
     coverpoint:
       [
-        "Configuration requirement: the suite assumes ratified Sdtrig 1.0 behavior; consistency with the trigger version indication is not yet checked by UDB.",
+        "Configuration requirement: the suite assumes Sdtrig 1.0; not yet checked by UDB.",
       ]
 
   # One bit for each possible type enumerated in tdata1. Bit N corresponds to type
@@ -662,26 +626,17 @@ normative_rule_definitions:
 
   # This register is only accessible in HS-Mode, M-mode and Debug Mode.
   - name: Sdtrig_hcontext_access
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # If Smstateen is implemented, then accessibility of in HS-Mode is controlled by
   # mstateenzero[57].
   - name: Sdtrig_hcontext_smstateen
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # This register is an alias of the mcontext register, providing access to the
   # hcontext field from HS-Mode.
   - name: Sdtrig_hcontext
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # This optional register is only accessible in S/HS-mode, VS-mode, M-mode and
   # Debug Mode.
@@ -714,10 +669,7 @@ normative_rule_definitions:
   # This register must be implemented if hcontext is implemented, and is optional
   # otherwise.
   - name: Sdtrig_mcontext_implementation
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # It is only accessible in M-mode and Debug mode.
   - name: Sdtrig_mcontext_access
@@ -751,21 +703,21 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_mcontrol_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is accessible as tdata1 when type is 2.
   - name: Sdtrig_mcontrol_access
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Specifies the largest naturally aligned powers-of-two (NAPOT) range supported by
@@ -775,7 +727,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_maskmax
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # This field only exists when XLEN is at least 64. It contains the 2 high bits of
@@ -783,7 +735,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_sizehi
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # If this bit is implemented then it must become set when this trigger fires and
@@ -793,7 +745,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_hit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # There is at least one compare value and it contains the lowest virtual address
@@ -801,7 +753,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_select_address
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # There is exactly one compare value and it contains the data value loaded or
@@ -810,7 +762,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_select_data
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The action for this trigger will be taken just before the instruction that
@@ -820,7 +772,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_timing_before
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # If an instruction matches this trigger and the instruction performs multiple
@@ -829,7 +781,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_timing_multi
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The action for this trigger will be taken after the instruction that triggered
@@ -840,7 +792,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_timing_after
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # If a trigger with timing of 0 matches, it is implementation-dependent whether
@@ -848,7 +800,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_timing_overlap
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will attempt to match against an access of any size. The behavior is
@@ -856,14 +808,14 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_size_any
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against 8-bit memory accesses.
   - name: Sdtrig_mcontrol_size_8bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against 16-bit memory accesses or execution of
@@ -871,7 +823,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_size_16bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against 32-bit memory accesses or execution of
@@ -879,14 +831,14 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_size_32bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against execution of 48-bit instructions.
   - name: Sdtrig_mcontrol_size_48bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against 64-bit memory accesses or execution of
@@ -894,28 +846,28 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_size_64bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against execution of 80-bit instructions.
   - name: Sdtrig_mcontrol_size_80bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against execution of 96-bit instructions.
   - name: Sdtrig_mcontrol_size_96bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against execution of 112-bit instructions.
   - name: Sdtrig_mcontrol_size_112bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # The trigger will only match against 128-bit memory accesses or execution of
@@ -923,7 +875,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_size_128bit
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # An implementation must support the value of 0, but all other values are
@@ -931,14 +883,14 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_size_support
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # When this trigger matches, the configured action is taken.
   - name: Sdtrig_mcontrol_chain_disabled
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # While this trigger does not match, it prevents the trigger with the next index
@@ -946,7 +898,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_chain_enabled
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # A trigger chain starts on the first trigger with chain=1 after a trigger with
@@ -958,7 +910,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_chain_start
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Because chain affects the next trigger, hardware must zero it in writes to
@@ -966,7 +918,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_chain_next
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # In addition hardware should ignore writes to mcontrol that set dmode to 1 if the
@@ -974,14 +926,14 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_chain_ignore
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when any compare value equals tdata2.
   - name: Sdtrig_mcontrol_match_equal
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when the top M bits of any compare value match the top M bits of tdata2.
@@ -989,21 +941,21 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_match_napot
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when any compare value is greater than (unsigned) or equal to tdata2.
   - name: Sdtrig_mcontrol_match_ge
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when any compare value is less than (unsigned) tdata2.
   - name: Sdtrig_mcontrol_match_lt
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when latexmath:[$\fracXLEN2-{1:0}] of any compare value equals
@@ -1012,7 +964,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_match_mask_low
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when XLEN-1:\fracXLEN2 of any compare value equals
@@ -1021,43 +973,40 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_match_mask_high
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when match=0 would not match.
   - name: Sdtrig_mcontrol_match_not_equal
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when match=1 would not match.
   - name: Sdtrig_mcontrol_match_not_napot
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when match=4 would not match.
   - name: Sdtrig_mcontrol_match_not_mask_low
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Matches when match=5 would not match.
   - name: Sdtrig_mcontrol_match_not_mask_high
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # Other values are reserved for future use.
   - name: Sdtrig_mcontrol_match_rsv
-    coverpoint:
-      [
-        "No independent assertion: this clause reserves encodings for future use without defining their execution behavior.",
-      ]
+    coverpoint: ["No independent assertion: reserved encodings."]
 
   # All comparisons only look at the lower XLEN (in the current mode) bits of the
   # compare values and of tdata2. When select=1 and access size is N, this is
@@ -1066,7 +1015,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_comparisons
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # When set, enable this trigger in M-mode.
@@ -1078,7 +1027,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_s
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # When set, enable this trigger in U-mode. This bit is hard-wired to 0 if the hart
@@ -1086,7 +1035,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_u
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # When set, the trigger fires on the virtual address or opcode of an instruction
@@ -1094,21 +1043,21 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol_execute
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # When set, the trigger fires on the virtual address or data of any store.
   - name: Sdtrig_mcontrol_store
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # When set, the trigger fires on the virtual address or data of any load.
   - name: Sdtrig_mcontrol_load
     coverpoint:
       [
-        "Needs test: add coverage for implementations supporting the deprecated type-2 mcontrol trigger; the current suite exercises mcontrol6.",
+        "Needs test: the suite tests mcontrol6, not the deprecated mcontrol (type 2).",
       ]
 
   # This register provides access to the trigger selected by tselect.
@@ -1119,7 +1068,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is accessible as tdata1 when type is 6.
@@ -1190,7 +1139,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_uncertain
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # The trigger that fired satisfied the configured conditions, or this bit is not
@@ -1198,7 +1147,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_uncertain_0
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # The trigger that fired might not have perfectly satisfied the configured
@@ -1206,7 +1155,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_uncertain_1
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # When set, enable this trigger in VS-mode. This bit is hard-wired to 0 if the
@@ -1232,7 +1181,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_hit0
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # If either of the bits is not implemented, the unimplemented bits will be
@@ -1240,7 +1189,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_hit0_unimplemented
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # xepc or dpc (depending on action) must be set to the virtual address of the
@@ -1272,7 +1221,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_hit0_multiple_accesses
     coverpoint:
       [
-        "Needs test: check that all accesses of the triggering instruction have completed before the breakpoint trap for this hit encoding.",
+        "Needs test: check that all accesses of the triggering instruction complete before the trap.",
       ]
 
   # There is at least one compare value and it contains the lowest virtual address
@@ -1379,7 +1328,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_size_128bit
     coverpoint:
       [
-        "Needs test: size = 6 is never written, so flq/fsq and 128-bit vector accesses are not tested with it, because Sail 0.16 disables a trigger whose size exceeds XLEN (as in sail-riscv#2034).",
+        "Needs test: size = 6 is never written because Sail 0.16 disables a trigger whose size exceeds XLEN (sail-riscv#2034), so flq/fsq and 128-bit vector accesses are not tested with it.",
       ]
 
   # An implementation must support the value of 0, but all other values are
@@ -1540,10 +1489,7 @@ normative_rule_definitions:
 
   # Other values are reserved for future use.
   - name: Sdtrig_mcontrol6_match_rsv
-    coverpoint:
-      [
-        "No independent assertion: this clause reserves encodings for future use without defining their execution behavior.",
-      ]
+    coverpoint: ["No independent assertion: reserved encodings."]
 
   # All comparisons only look at the lower XLEN (in the current mode) bits of the
   # compare values and of tdata2. When select=1 and access size is N, this is
@@ -1567,7 +1513,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_uncertainen_disabled
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # This trigger will match if it's possible that it would match if the Trigger
@@ -1575,7 +1521,7 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_uncertainen_enabled
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # When set, enable this trigger in S/HS-mode. This bit is hard-wired to 0 if the
@@ -1641,7 +1587,7 @@ normative_rule_definitions:
   - name: Sdtrig_icount_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is accessible as tdata1 when type is 3.
@@ -1754,9 +1700,7 @@ normative_rule_definitions:
   # debug trap to be taken before the next U-mode instruction.
   - name: Sdtrig_icount_case
     coverpoint:
-      [
-        "No independent assertion: explains the intended use of pending; its required behavior is specified by the surrounding icount rules.",
-      ]
+      ["No independent assertion: explains the intended use of pending."]
 
   # If textra32 or textra64 are implemented for this trigger, it only matches when
   # the conditions set there are satisfied.
@@ -1772,18 +1716,12 @@ normative_rule_definitions:
   # When set, enable this trigger in VS-mode. This bit is hard-wired to 0 if the
   # hart does not support virtualization mode.
   - name: Sdtrig_icount_vs
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # When set, enable this trigger in VU-mode. This bit is hard-wired to 0 if the
   # hart does not support virtualization mode.
   - name: Sdtrig_icount_vu
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # If this bit is implemented, the hardware sets it when this trigger fires. The
   # trigger's user can set or clear it at any time. It is used to determine which
@@ -1792,7 +1730,7 @@ normative_rule_definitions:
   - name: Sdtrig_icount_hit
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: hit is optional, so the tdata1 readback masks it; whether the trigger fired is checked through rvtest_trap_count.",
       ]
 
   # When set, enable this trigger in M-mode.
@@ -1839,7 +1777,7 @@ normative_rule_definitions:
   - name: Sdtrig_itrigger_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is accessible as tdata1 when type is 4.
@@ -1912,24 +1850,18 @@ normative_rule_definitions:
   - name: Sdtrig_itrigger_hit
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # When set, enable this trigger for interrupts that are taken from VS mode. This
   # bit is hard-wired to 0 if the hart does not support virtualization mode.
   - name: Sdtrig_itrigger_vs
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # When set, enable this trigger for interrupts that are taken from VU mode. This
   # bit is hard-wired to 0 if the hart does not support virtualization mode.
   - name: Sdtrig_itrigger_vu
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # When set, non-maskable interrupts cause this trigger to fire if the trigger is
   # enabled for the current mode.
@@ -1978,7 +1910,7 @@ normative_rule_definitions:
   - name: Sdtrig_etrigger_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is accessible as tdata1 when type is 5.
@@ -2039,24 +1971,18 @@ normative_rule_definitions:
   - name: Sdtrig_etrigger_hit
     coverpoint:
       [
-        "Needs test: check implemented hit/uncertain fields and the required read-only-zero behavior of unimplemented fields.",
+        "Needs test: check the hit and uncertain fields, which are optional (read-only zero if not implemented).",
       ]
 
   # When set, enable this trigger for exceptions that are taken from VS mode. This
   # bit is hard-wired to 0 if the hart does not support virtualization mode.
   - name: Sdtrig_etrigger_vs
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # When set, enable this trigger for exceptions that are taken from VU mode. This
   # bit is hard-wired to 0 if the hart does not support virtualization mode.
   - name: Sdtrig_etrigger_vu
-    coverpoint:
-      [
-        "Needs test: hypervisor trigger behavior; the corresponding SdtrigH coverage is not yet on act4.",
-      ]
+    coverpoint: ["Needs test: Sdtrig tests in VS/VU-mode (needs H)."]
 
   # When set, enable this trigger for exceptions that are taken from M mode.
   - name: Sdtrig_etrigger_m
@@ -2094,86 +2020,66 @@ normative_rule_definitions:
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tmexttrigger
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tmexttrigger_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is accessible as tdata1 when type is 7.
   - name: Sdtrig_tmexttrigger_access
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # This trigger fires when any selected TM external trigger input signals.
   - name: Sdtrig_tmexttrigger_fire
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # Up to 16 TM external trigger inputs coming from other blocks outside the TM,
   # (e.g. signaling an hpmcounter overflow) can be selected.
   - name: Sdtrig_tmexttrigger_inputs
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # Hardware may support none or just a few TM external trigger inputs (starting
   # with TM external trigger input 0 and continuing sequentially).
   - name: Sdtrig_tmexttrigger_subset
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # Unsupported inputs are hardwired to be inactive.
   - name: Sdtrig_tmexttrigger_unsupported
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # If the trigger fires with action=0 then zero is written to the tval CSR on the
   # breakpoint trap.
   - name: Sdtrig_tmexttrigger_action0
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # This trigger fires asynchronously but it is subject to delegation by medeleg[3]
   # like the other triggers.
   - name: Sdtrig_tmexttrigger_async
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # The TM external trigger input can signal when the trigger is prevented from
   # firing due to one of the mechanisms in xref:nativetrigger[].
   - name: Sdtrig_tmexttrigger_prevented
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # An implementation may either ignore the signal altogether when it cannot fire
   # (dropping the trigger event) or it may hold the action as pending and fire the
   # trigger once it is legal to do so.
   - name: Sdtrig_tmexttrigger_pending
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # If this bit is implemented, the hardware sets it when this trigger matches. The
   # trigger's user can set or clear it at any time. It is used to determine which
@@ -2181,25 +2087,19 @@ normative_rule_definitions:
   # has no effect.
   - name: Sdtrig_tmexttrigger_hit
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # This optional bit, when set, causes this trigger to fire whenever an attached
   # interrupt controller signals a trigger.
   - name: Sdtrig_tmexttrigger_intctl
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # Selects any combination of up to 16 TM external trigger inputs that cause this
   # trigger to fire.
   - name: Sdtrig_tmexttrigger_select
     coverpoint:
-      [
-        "Needs infrastructure: drive and observe the platform's TM external trigger inputs, including unsupported inputs and prevented events.",
-      ]
+      ["Needs infrastructure: a way to drive the TM external trigger inputs."]
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_textra32
@@ -2344,7 +2244,7 @@ normative_rule_definitions:
   - name: Sdtrig_textra64_reset
     coverpoint:
       [
-        "Needs infrastructure: capture every implemented trigger's reset state before test setup modifies it.",
+        "Needs infrastructure: read trigger state before the boot code changes it.",
       ]
 
   # This register is accessible as tdata3 when type is 2, 3, 4, 5, or 6 and XLEN=64.
@@ -2358,9 +2258,7 @@ normative_rule_definitions:
   # This register retains its value when XLEN changes.
   - name: Sdtrig_textra64_retain
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # When XLEN=32 some of the bits can be accessed through textra32.
   - name: Sdtrig_textra64_xlen32

@@ -42,10 +42,7 @@ normative_rule_definitions:
   # Each returned seed[15:0] entropy value represents unique randomness when
   # OPST=ES16.
   - name: seed_entropy_unique
-    coverpoint:
-      [
-        "Needs infrastructure: entropy-source and security-strength validation; architectural signature comparisons cannot establish this property.",
-      ]
+    coverpoint: ["Needs infrastructure: entropy-source validation."]
 
   # When OPST is not ES16, entropy must be 0.
   - name: seed_entropy_zero_non_es16
@@ -58,32 +55,20 @@ normative_rule_definitions:
   # changing the state to WAIT (unless there is entropy immediately
   # available for ES16). Other states (BIST, WAIT, and DEAD) may be unaffected by polling.
   - name: seed_wipe_on_read
-    coverpoint:
-      [
-        "Needs infrastructure: control entropy availability to check consumption and WAIT/ES16 transitions; repeated numerical entropy values alone do not establish reuse.",
-      ]
+    coverpoint: ["Needs infrastructure: a way to control the entropy source."]
 
   # A BIST alarm must be latched until polled at least once.
   - name: seed_bist_latch
-    coverpoint:
-      [
-        "Needs infrastructure: inject a BIST alarm and verify it remains latched until polled.",
-      ]
+    coverpoint: ["Needs infrastructure: a way to force a BIST alarm."]
 
   # An implementation that limits security strength shall not reduce it below
   # 256 bits.
   - name: seed_min_security_256
-    coverpoint:
-      [
-        "Needs infrastructure: entropy-source and security-strength validation; architectural signature comparisons cannot establish this property.",
-      ]
+    coverpoint: ["Needs infrastructure: entropy-source validation."]
 
   # If the security level is under 256 bits, the interface must not be available.
   - name: seed_disable_if_weak
-    coverpoint:
-      [
-        "Needs infrastructure: entropy-source and security-strength validation; architectural signature comparisons cannot establish this property.",
-      ]
+    coverpoint: ["Needs infrastructure: entropy-source validation."]
 
   # When USEED is 0, access to the seed CSR in U-mode raises an illegal-instruction exception. When
   # USEED is 1, read-write access to the seed CSR from U-mode is allowed; all other types of

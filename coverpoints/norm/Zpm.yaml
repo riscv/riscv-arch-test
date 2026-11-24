@@ -199,17 +199,14 @@ normative_rule_definitions:
   # Pointer masking is also applied, when applicable, to the memory access address
   # when matching address triggers in debug.
   - name: pm_debug_trigger
-    coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+    coverpoint: ["Needs test: address triggers on masked addresses."]
 
   # on trap delivery (e.g., due to an exception or interrupt), pointer masking will
   # not be applied to the address of the trap handler.
   - name: pm_no_trap_vector_mask
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: set the high bits of xtvec with pointer masking enabled and check that the trap vector is not masked.",
       ]
 
   # A supervisor-level extension that provides pointer masking for the next lower

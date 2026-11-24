@@ -65,17 +65,13 @@ normative_rule_definitions:
   # fill the widest supported XLEN in the destination register.
   - name: sstatus_uxl_behavior
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # If UXLEN < SXLEN, user-mode instruction-fetch addresses and load and store effective
   # addresses are taken modulo 2^UXLEN.
   - name: sstatus_uxl_addr_modulo
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # Some HINT instructions are encoded as integer computational instructions that
   # overwrite their destination register with its current value, e.g., c.addi x8, 0.
@@ -85,9 +81,7 @@ normative_rule_definitions:
   # overwritten with copies of bit XLEN-1.
   - name: hint_sxlen
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # SUM is read-only 0 if satp.MODE is read-only 0.
   - name: sstatus_sum_satp_mode
@@ -158,14 +152,12 @@ normative_rule_definitions:
   # instruction or an explicit write to a CSR on which these interrupt trap
   # conditions expressly depend (including sip, sie and sstatus).
   - name: sie_sip_strap_time_constraint
-    coverpoint:
-      [
-        "Needs infrastructure: control interrupt assertion and observe trap delivery latency and immediate reevaluation after the specified CSR writes or SRET.",
-      ]
+    coverpoint: ["Needs infrastructure: a way to measure interrupt latency."]
 
   # Interrupts to S-mode take priority over any interrupts to lower privilege modes.
   - name: s_interrupt_priority
-    coverpoint: ["Needs test: move to hypervisor VS interrupts."]
+    coverpoint:
+      ["Needs test: priority of S-mode over VS-level interrupts (needs H)."]
 
   # Each individual bit in register sip may be writable or may be read-only.
   - name: sip_acc
@@ -426,7 +418,10 @@ normative_rule_definitions:
   # Prior to writing stval, implementations may convert an invalid address into some
   # other invalid address that stval is capable of holding.
   - name: stval_inv_addr_conv
-    coverpoint: ["Needs test: the tests write only valid addresses to stval."]
+    coverpoint:
+      [
+        "Needs test: trap on an invalid address and check that stval holds an invalid address.",
+      ]
 
   # If the feature to return the faulting instruction bits is implemented, stval must
   # also be able to hold all values less than 2^N, where N is the smaller of SXLEN and
@@ -453,7 +448,7 @@ normative_rule_definitions:
   - name: senvcfg_fiom_op_atomic
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: I/O regions and multiple harts to observe ordering.",
       ]
 
   # If satp.MODE is read-only zero (always Bare), the implementation may make FIOM
@@ -468,7 +463,7 @@ normative_rule_definitions:
   - name: senvcfg_fiom_fence_presuc_op
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: I/O regions and multiple harts to observe ordering.",
       ]
 
   # When the Zicboz extension is not implemented, CBZE is read-only zero.
@@ -549,10 +544,7 @@ normative_rule_definitions:
   # exception if an instruction attempts to write a non-supported value to a WLRL
   # field.
   - name: Zicsr_wlrl_exception
-    coverpoint:
-      [
-        "No independent assertion: an illegal-instruction exception on an unsupported WLRL write is optional; this clause does not require either choice.",
-      ]
+    coverpoint: ["No independent assertion: the exception is optional."]
 
   # Implementations will not raise an exception on writes of unsupported values to a
   # WARL field.

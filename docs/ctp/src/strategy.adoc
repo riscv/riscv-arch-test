@@ -128,6 +128,19 @@ non-normative explanatory text is not quoted as a normative rule.
 
 See https://github.com/riscv/riscv-isa-manual/blob/main/tagging_normative_rules.adoc[tagging_normative_rules] for more information about normative rules and IDs and how to tag them in the specification.
 
+==== Normative Rule Explanations
+
+Each extension's normative rule table lists the coverpoints that test each rule. A rule without a coverpoint, or with a gap in its coverage, has a short explanation beginning with one of these prefixes:
+
+`No independent assertion:`:: The rule is a definition, permission, recommendation, or UNSPECIFIED behavior, so there is nothing to test.
+`Configuration requirement:`:: The rule constrains the configuration, such as an extension dependency. The explanation says whether UDB checks it.
+`Software requirement:`:: The rule constrains software. The explanation says whether the tests are checked to follow it.
+`Needs test:`:: The behavior can be tested, but no test checks it yet.
+`Needs infrastructure:`:: Testing the rule needs something the framework does not have, such as multiple harts, devices, or timing measurement.
+`Out of scope:`:: The rule does not apply to the configurations the tests support.
+
+Where an implementation may choose among several legal results, a test checks that the result is one of them.
+
 === Coverpoints
 
 Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ```ifdef UDB_MXLEN_32`` or ``UDB_MXLEN_64`` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ```ifdef`` to exclude tests based on the parameter value.

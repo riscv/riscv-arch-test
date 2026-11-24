@@ -34,6 +34,4 @@ normative_rule_definitions:
   # the extlink:zcd[] extension.
   - name: C_dep_Zcd
     coverpoint:
-      [
-        "Configuration requirement: C with D requires Zcd; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/C.yaml#L21[C.requirements]).",
-      ]
+      ["Configuration requirement: C with D requires Zcd; checked by UDB."]

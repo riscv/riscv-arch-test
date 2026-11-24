@@ -7,39 +7,28 @@ normative_rule_definitions:
   - name: A_domain_specific_ordering
     coverpoint:
       [
-        "Needs infrastructure: defined I/O/PMA regions and observers for memory ordering and coherence.",
+        "Needs infrastructure: I/O regions and multiple harts to observe ordering.",
       ]
 
   - name: A_no_aq_rl
     coverpoint:
-      [
-        "No independent assertion: clearing aq and rl adds no ordering constraint; the base memory-model requirements still apply.",
-      ]
+      ["No independent assertion: aq = rl = 0 adds no ordering constraint."]
 
   - name: A_acquire_semantics
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: A_release_semantics
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: A_seq_cst_semantics
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # The A extension comprises the Zalrsc and Zaamo extensions, which are
   # defined in the following sections.
   - name: A_comprises
     coverpoint:
       [
-        "Configuration requirement: A requires Zaamo and Zalrsc; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/A.yaml#L22[A.requirements]).",
+        "Configuration requirement: A requires Zaamo and Zalrsc; checked by UDB.",
       ]
 
   - name: lr-w_op
@@ -52,10 +41,7 @@ normative_rule_definitions:
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
 
   - name: sc_failed_side_effects
-    coverpoint:
-      [
-        "No independent assertion: this clause leaves the indicated outcome unspecified.",
-      ]
+    coverpoint: ["No independent assertion: the behavior is UNSPECIFIED."]
 
   - name: sc_reservation_invalidate
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
@@ -84,68 +70,55 @@ normative_rule_definitions:
 
   - name: sc_device_write_failure
     coverpoint:
-      [
-        "Needs infrastructure: controlled device/DMA writes or a non-coherent observer of memory accesses.",
-      ]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
 
   - name: sc_addr_not_in_reservation_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
   - name: sc_other_hart_store_fail
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: sc_other_device_write_fail
     coverpoint:
-      [
-        "Needs infrastructure: controlled device/DMA writes or a non-coherent observer of memory accesses.",
-      ]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
 
   - name: sc_intervening_sc_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
 
   - name: lr_sc_atomicity_axiom
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: sc_not_observable_before_lr
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: constrained_lrsc_loop_size
     coverpoint:
       [
-        "Software requirement: a constrained LR/SC loop has at most 16 sequential instructions, including retry code; generated-loop compliance is not yet checked automatically.",
+        "Software requirement: constrained LR/SC loops in the tests follow this rule; not checked.",
       ]
 
   - name: constrained_lrsc_instruction_set
     coverpoint:
       [
-        "Software requirement: use only the permitted base instructions between LR and SC; generated-sequence compliance is not yet checked automatically.",
+        "Software requirement: constrained LR/SC loops in the tests follow this rule; not checked.",
       ]
 
   - name: constrained_lrsc_compressed_allowed
     coverpoint:
       [
-        "Software requirement: permitted base instructions may use their C/Zca/Zcb compressed forms in a constrained LR/SC loop.",
+        "No independent assertion: permits compressed instructions in constrained LR/SC loops.",
       ]
 
   - name: constrained_lrsc_retry_code
     coverpoint:
       [
-        "Software requirement: retry code obeys the constrained-loop instruction restrictions, except that backward branches and jumps are allowed; not yet checked.",
+        "Software requirement: constrained LR/SC loops in the tests follow this rule; not checked.",
       ]
 
   - name: lrsc_eventuality_region
     coverpoint:
       [
-        "Software requirement: constrained LR/SC loops must use an eventuality region identified by the execution environment; test-region suitability is not yet checked.",
+        "Software requirement: constrained LR/SC loops in the tests access only eventuality regions; not checked.",
       ]
 
   - name: lrsc_same_address_and_size
@@ -154,7 +127,7 @@ normative_rule_definitions:
   - name: unconstrained_lrsc_no_progress
     coverpoint:
       [
-        "No independent assertion: unconstrained LR/SC loops have no eventual-success guarantee.",
+        "No independent assertion: unconstrained LR/SC loops have no forward-progress guarantee.",
       ]
 
   # If a hart H enters a constrained LR/SC loop, the execution environment must
@@ -180,21 +153,18 @@ normative_rule_definitions:
   # LR instruction in H's constrained LR/SC loop, or some other device in the
   # system writes to that reservation set.
   - name: constrained_lrsc_forward_progress_store_amo
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # H executes a branch or jump that exits the constrained LR/SC loop.
   - name: constrained_lrsc_forward_progress_branch
     coverpoint:
       [
-        "No independent assertion: identifies an alternative that ends the forward-progress obligation; it does not require a branch or trap to occur.",
+        "No independent assertion: describes when the forward-progress guarantee ends.",
       ]
 
   # H traps.
   - name: constrained_lrsc_forward_progress_trap
     coverpoint:
       [
-        "No independent assertion: identifies an alternative that ends the forward-progress obligation; it does not require a branch or trap to occur.",
+        "No independent assertion: describes when the forward-progress guarantee ends.",
       ]

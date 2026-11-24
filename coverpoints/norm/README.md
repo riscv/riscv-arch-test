@@ -1,57 +1,42 @@
-# Normative-rule mappings
+# Normative rule mappings
 
-Each YAML record identifies one rule with `name`, or several rules with `names`.
-Its `coverpoint` list contains covergroup/coverpoint references and, where needed,
-short explanations of coverage gaps. Keep comments to the relevant requirement;
-extract the applicable rows or fields instead of copying a large specification table.
+Each file in this directory maps the normative rules of one extension, as tagged in the
+ISA manual, to the coverpoints that test them. The CTP builds each extension's normative
+rule table from these files.
 
-A resolving reference establishes a mapping, not complete coverage of every clause.
-Preserve existing references when explaining a remaining gap. Use these prefixes
-for prose entries:
+An entry names one rule with `name`, or several rules with the same coverage with `names`.
+Its `coverpoint` list gives each coverpoint as `covergroup/coverpoint`:
 
-| Prefix                       | Meaning                                                                                                                                                        |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `No independent assertion:`  | A definition, permission, recommendation, or unspecified outcome adds no independently required behavior. State which clause this applies to.                  |
-| `Configuration requirement:` | An extension dependency or platform/configuration constraint. Identify the validator and its scope, or explicitly say it is not yet checked.                   |
-| `Software requirement:`      | An obligation on generated tests, system software, or test setup. State the obligation and whether it is checked.                                              |
-| `Needs test:`                | Observable architectural behavior needs a directed test or coverpoint. Describe the missing check.                                                             |
-| `Needs infrastructure:`      | Testing needs additional stimulus, observation, or methodology, such as concurrent harts, devices, reset capture, or timing measurement. Name what is missing. |
-| `Out of scope:`              | The rule cannot apply to the named profile or test configuration. Explain the exclusion; do not use this for behavior merely lacking a test.                   |
+```yaml
+- name: fsw_flw_bits_maintained
+  coverpoint: ["F_flw_cg/cp_memval_fp_single", "F_fsw_cg/cp_fs2_edges"]
+```
 
-Avoid bare `TODO`, `Implicit`, `Untested`, and `Untestable`. Implementation-defined
-choices and optional features can still have testable constraints. Check the allowed
-set of results rather than requiring one implementation's choice. An unspecified
-choice among legal values does not remove the requirement that the result be legal.
+When a rule has no coverpoint, or its coverpoints miss part of the rule, the list holds an
+explanation instead, or as well. Each explanation starts with one of these prefixes:
 
-For configuration requirements, write `checked by UDB` only when an actual UDB
-validation rule enforces the stated constraint. Cite the source file, validation
-key, and pinned revision. Use AsciiDoc links inside YAML strings so the CTP renders
-them, for example `https://.../ext/F.yaml#L17[F.requirements]`. Keep the explanation
-to a short paragraph even when a rule has several dependencies.
+| Prefix                       | Use when                                                                                                                       |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `No independent assertion:`  | The rule is a definition, permission, recommendation, or UNSPECIFIED behavior, so there is nothing to test.                    |
+| `Configuration requirement:` | The rule constrains the configuration, such as an extension dependency. Say whether UDB checks it.                             |
+| `Software requirement:`      | The rule constrains software. Say whether the tests are checked to follow it.                                                  |
+| `Needs test:`                | The behavior can be tested, but no test checks it yet. Say what the test should do.                                            |
+| `Needs infrastructure:`      | Testing the rule needs something the framework does not have, such as multiple harts, devices, or timing measurement. Name it. |
+| `Out of scope:`              | The rule does not apply to the configurations the tests support.                                                               |
 
-The current citations use UDB 0.1.18, pinned in the framework Gemfile. Its
-[configuration validator](https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/tools/ruby-gems/udb/lib/udb/cfg_arch.rb#L305)
-checks extension requirements, parameter requirements, and parameter schemas.
-For example, [F.requirements](https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/F.yaml#L17)
-requires Zicsr. This validates the declared configuration; it does not prove that
-the hardware implements that configuration correctly.
+For example:
 
-Use `not yet checked by UDB` when UDB is the appropriate validator but lacks the
-needed check. Use `not yet checked` when another mechanism is needed, and name it.
-A parameter's existence, a matching reference-model configuration, or successful
-test execution is not by itself a validation rule. For partial validation, state
-both what UDB checks and what remains unchecked.
+```yaml
+- name: F_depends_Zicsr
+  coverpoint: ["Configuration requirement: F requires Zicsr; checked by UDB."]
+```
 
-For I/O-related gaps, distinguish supplying attributes from observing behavior.
-Svpbmt can give RAM non-cacheable attributes (PBMT=NC/IO), or non-idempotent,
-channel 0 I/O attributes (PBMT=IO). Ordering checks still need concurrent harts or
-an access monitor; speculative or redundant RAM reads may leave no signature
-evidence. PBMT does not portably select other ordering channels, access-width
-restrictions, AMO support levels, or LR/SC reservability. These need suitable
-platform regions. PBMT tests exercise effective attributes; native PMA decoding
-and accesses outside the mapping need separate coverage.
+Write a short explanation about the specific rule. When the same rule appears in more than
+one file, use the same explanation, and split a `names` entry if its rules need different
+explanations.
 
-Use the same explanation wherever the same rule appears. Split a `names` record
-when its rules need different explanations. The initial cleanup covers existing
-prose-only entries in the RVA23 mandatory/optional rule audit; entries outside that
-scope should follow these conventions when updated.
+An implementation-defined result can usually still be tested: the test checks that the
+result is one of the legal values. Use `No independent assertion:` only when the rule itself
+rules out no behavior.
+
+Write `checked by UDB` only when UDB rejects a configuration that breaks the rule.

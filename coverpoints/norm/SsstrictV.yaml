@@ -7,12 +7,12 @@ normative_rule_definitions:
   - name: emul_offgroup_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: emul_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: V_fp_eew_ieee_nsupported_rsv
     coverpoint: ["ExceptionsVf16_vfmv_f_s_cg/cp_vill"]
@@ -21,17 +21,17 @@ normative_rule_definitions:
   - name: V_inv_frm_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: egs_ge_vlmax_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: egs_vl_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   # Encodings corresponding to the unmasked versions (vm=1) are reserved.
   - name: vadc_vsbc_unmasked_rsv
@@ -99,17 +99,17 @@ normative_rule_definitions:
   - name: vreg_offgroup_lmul2_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vreg_offgroup_lmul4_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vreg_offgroup_lmul8_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vreg_overlap_rsv
     coverpoint: ["SsstrictV_vwadd_wv_cg/cp_ssstrictv_widening_source_overlap"]
@@ -134,108 +134,93 @@ normative_rule_definitions:
   - name: vtype_vset_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # Zvk* reserved rules
   - name: vclmul_sewn64_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vclmulh_sewn64_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: veccrypto_sew_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   # Instructions that violate the csr:vl[] or csr:vstart[] requirements are reserved.
   - name: veccrypto_vl_vstart_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vghsh-vv_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vgmul-vv_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   # ext:zvknha[]: SEW is any value other than 32
   - name: vsha2chl-vv_Zvknha_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   # ext:zvknhb[]: SEW is any value other than 32 or 64
   - name: vsha2chl-vv_Zvknhb_sewn32or64_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   # The vd register group overlaps with either vs1 or vs2
   - name: vsha2chl-vv_vdoverlapvs1vs2_rsv
-    coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+    coverpoint: ["Needs test: vsha2c[hl].vv with vd overlapping vs1 or vs2."]
   - name: vsha2ms-vv_Zvknha_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vsha2ms-vv_Zvknhb_sewn32or64_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vsha2ms-vv_vdoverlapvs1vs2_rsv
-    coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+    coverpoint: ["Needs test: vsha2ms.vv with vd overlapping vs1 or vs2."]
   - name: vsm3c-vi_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vsm3c-vi_vdoverlapvs2_rsv
-    coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+    coverpoint: ["Needs test: vsm3c.vi with vd overlapping vs2."]
   - name: vsm3me-vv_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vsm3me-vv_vdoverlapvs2_rsv
-    coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+    coverpoint: ["Needs test: vsm3me.vv with vd overlapping vs2."]
   - name: vsm4k-vi_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
   - name: vsm4r-vs_vdoverlapvs2_rsv
-    coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+    coverpoint: ["Needs test: vsm4r.vs with vd overlapping vs2."]
   - name: vsm4r_sewn32_rsv
     coverpoint:
       [
-        "No independent assertion: this reserved condition depends on CSR state; Ssstrict does not require an illegal-instruction exception for reserved CSR-dependent behavior.",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # For implementations with VLEN ≥ 128, vs2 refers to a single register. Thus, the vd register
@@ -245,6 +230,4 @@ normative_rule_definitions:
   # group.
   - name: veccrypto_vsins_vdvs2overlap
     coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+      ["Needs test: .vs vector crypto instructions with vd overlapping vs2."]

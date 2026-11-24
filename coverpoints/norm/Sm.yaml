@@ -1561,9 +1561,7 @@ normative_rule_definitions:
   # the pc is written, it is sign-extended to fill the widest supported XLEN.
   - name: xlen_reduction_op
     coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # Some HINT instructions are encoded as integer computational instructions that
   # overwrite their destination register with its current value, e.g., c.addi x8, 0.
@@ -1577,9 +1575,7 @@ normative_rule_definitions:
   # greater than the current XLEN; it is invisible to the current privilege mode.
   - name: xlen_reduction_hint_op
     coverpoint:
-      [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # Instruction fetches are always little-endian.
   - name: endianness_inst_fetch_little
@@ -1713,9 +1709,7 @@ normative_rule_definitions:
   # LR address reservation but is not required to.
   - name: xret_clr_lr_resv
     coverpoint:
-      [
-        "No independent assertion: xRET may clear an LR reservation or retain it; neither choice is required.",
-      ]
+      ["No independent assertion: xRET may clear or keep an LR reservation."]
 
   # Upon reset, a hart’s privilege mode is set to M.
   - name: m_mode_priv_at_reset
@@ -1757,7 +1751,7 @@ normative_rule_definitions:
   - name: hgatp_vsatp_mode_rst
     coverpoint:
       [
-        "Needs infrastructure: capture hgatp.MODE and vsatp.MODE after reset, before startup writes.",
+        "Needs infrastructure: read hgatp.MODE and vsatp.MODE before the boot code writes them.",
       ]
 
   # No WARL field contains an illegal value.

@@ -3,13 +3,7 @@
 
 normative_rule_definitions:
   - name: Zkt_optional_instr
-    coverpoint:
-      [
-        "No independent assertion: Zkt does not require every listed instruction to be implemented; timing requirements apply to those that are implemented.",
-      ]
+    coverpoint: ["No independent assertion: definition."]
 
   - name: Zkt_impl_must_constant_latency
-    coverpoint:
-      [
-        "Needs infrastructure: measure data-dependent execution latency or use a timing/security verification method; final-state signatures do not establish constant latency.",
-      ]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]

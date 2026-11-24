@@ -4,9 +4,7 @@ normative_rule_definitions:
   # The Svnapot extension depends on the Sv39 extension.
   - name: Svnapot_depends_Sv39
     coverpoint:
-      [
-        "Configuration requirement: Svnapot requires Sv39; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/25c483067a6575b7c9592094b13cc0c9d0c75bab/spec/std/isa/ext/Svnapot.yaml#L178[Svnapot.requirements]).",
-      ]
+      ["Configuration requirement: Svnapot requires Sv39; checked by UDB."]
 
   # In Sv39, Sv48, and Sv57, when a PTE has N=1, the PTE represents a translation that is
   # part of a range of contiguous virtual-to-physical translations with the same values for
@@ -52,9 +50,7 @@ normative_rule_definitions:
   # all for the address space identified in satp as loaded by step 1.
   - name: Svnapot_cache_entries
     coverpoint:
-      [
-        "No independent assertion: permits an implementation to cache any or all of these NAPOT translations; the architectural translation results remain constrained by the other rules.",
-      ]
+      ["No independent assertion: permits caching of NAPOT translations."]
 
   # If the hypervisor extension is also implemented, Svnapot is also supported in G-stage translation.
   - name: Svnapot_hyp_gstage

@@ -76,7 +76,7 @@ normative_rule_definitions:
   - name: csr_rs1_uimm_side_effect
     coverpoint:
       [
-        "Needs infrastructure: provide a CSR with defined field-write side effects and observe which fields are affected.",
+        "No independent assertion: no standard CSR has side effects on field writes.",
       ]
   # In particular, unless specified otherwise, a CSR access is performed after the execution
   # of any prior instructions in program order whose behavior modifies or is modified by the
@@ -109,41 +109,29 @@ normative_rule_definitions:
     # next instruction
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: write a CSR whose write has a side effect and check the consequence from the next instruction.",
       ]
   # For the RVWMO memory consistency model, CSR accesses are weakly ordered by default, so
   # other harts or devices may observe CSR accesses in an order different from program order.
   - name: csr_weakly_ordered
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # In addition, CSR accesses are not ordered with respect to explicit memory accesses, unless
   # a CSR access modifies the execution behavior of the instruction that performs the explicit
   # memory access or unless a CSR access and an explicit memory access are ordered by either the
   # syntactic dependencies defined by the memory model or the ordering requirements defined in
   # Memory-Ordering PMAs.
   - name: csr_memory_access_ordering
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # For the purposes of the FENCE instruction, CSR read accesses are classified as
   # device input (I), and CSR write accesses are classified as device output (O).
   - name: csr_fence_ordering
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # The hardware platform may define that accesses to certain CSRs are strongly ordered, as
   # defined in Memory-Ordering PMAs. Accesses to strongly ordered CSRs have stronger ordering
   # constraints with respect to accesses to both weakly ordered CSRs and accesses to
   # memory-mapped I/O regions.
   - name: csr_strongly_ordered
-    coverpoint:
-      [
-        "Needs infrastructure: concurrent harts or a memory-access observer to check ordering, atomicity, or cross-hart consistency.",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # Privileged-architecture CSR conventions (CSR address mapping, field specifications,
   # modulation, implicit reads, and CSRs wider than XLEN)
@@ -153,7 +141,7 @@ normative_rule_definitions:
     # TODO: read each standard CSR repeatedly and check the reads change no state
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: read each standard CSR repeatedly and check that the reads change no state.",
       ]
   # Instructions that access a non-existent CSR address are reserved.
   - name: Zicsr_nonexistent_rsv
@@ -173,10 +161,7 @@ normative_rule_definitions:
   # write was of an illegal value, but the value returned should deterministically depend on
   # the illegal written value and the value of the field prior to the write.
   - name: Zicsr_wlrl_deterministic
-    coverpoint:
-      [
-        "Needs test: repeat the same illegal WLRL write with the same previous field value to check the recommended deterministic readback.",
-      ]
+    coverpoint: ["No independent assertion: recommendation."]
   # Some read/write CSR fields are only defined for a subset of bit encodings, but allow any
   # value to be written while guaranteeing to return a legal value whenever read.
   - name: Zicsr_warl_def
@@ -186,10 +171,7 @@ normative_rule_definitions:
   # was of an illegal value, but the legal value returned should deterministically depend on
   # the illegal written value and the architectural state of the hart.
   - name: Zicsr_warl_deterministic
-    coverpoint:
-      [
-        "Needs test: repeat the same illegal WARL write from identical architectural state to check the recommended deterministic selection of a legal value.",
-      ]
+    coverpoint: ["No independent assertion: recommendation."]
   # If a write to one CSR changes the set of legal values allowed for a field of a second CSR,
   # then unless specified otherwise, the second CSR's field immediately gets an UNSPECIFIED
   # value from among its new legal values. This is true even if the field's value before the
@@ -198,7 +180,7 @@ normative_rule_definitions:
   - name: Zicsr_field_modulation
     coverpoint:
       [
-        "Needs test: after changing the legal-value set, check that the affected field belongs to the new set; the choice within that set is unspecified.",
+        "Needs test: change a CSR that restricts another field's legal values and check that the field reads a legal value.",
       ]
   # A change to the value of a CSR for this reason is not a write to the affected CSR and thus
   # does not trigger any side effects specified for that CSR.
@@ -207,7 +189,7 @@ normative_rule_definitions:
     # write side effects of that CSR occur
     coverpoint:
       [
-        "Needs test: add a directed check and coverpoint for this architectural requirement.",
+        "Needs test: write a CSR that changes a field of another CSR and check that none of that CSR's write side effects occur.",
       ]
   # Unless otherwise specified, the value returned by an implicit read of a CSR is the same
   # value that would have been returned by an explicit read of the CSR, using a CSR-access
@@ -220,16 +202,12 @@ normative_rule_definitions:
   # determined from the previous-width CSR as though by this algorithm:
   - name: Zicsr_width_modulation
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # Changing the width of a CSR is not a read or write of the CSR and thus does not trigger any
   # side effects.
   - name: Zicsr_width_modulation_no_side_effects
     coverpoint:
-      [
-        "Needs test: exercise supported changes or differences in effective XLEN; current tests use equal widths across privilege modes.",
-      ]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # If a standard CSR is wider than XLEN bits, then an explicit read of the CSR returns the
   # register's least-significant XLEN bits, and an explicit write to the CSR modifies only the
   # register's least-significant XLEN bits, leaving the upper bits unchanged.

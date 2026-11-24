@@ -46,7 +46,7 @@ normative_rule_definitions:
   - name: pma_mag_def
     coverpoint:
       [
-        "Configuration requirement: a misaligned atomicity granule must be naturally aligned and a power of two; not yet checked by UDB as a per-region PMA constraint.",
+        "Configuration requirement: misaligned atomicity granules are naturally aligned powers of two; not yet checked by UDB.",
       ]
 
   # The misaligned atomicity granule PMA applies only to AMOs; loads and stores defined in the base
@@ -78,9 +78,7 @@ normative_rule_definitions:
   - name: pma_mag_op_ldst
     # TODO: misaligned loads and stores that cross a 16-byte boundary
     coverpoint:
-      [
-        "Needs infrastructure: platform-defined PMA regions with controlled accesses and observation of the relevant memory or device behavior.",
-      ]
+      ["Needs infrastructure: platform PMA regions with these attributes."]
 
   # Misaligned loads, stores and AMOs to those regions that do not cross a naturally
   # aligned 16-byte boundary are atomic.

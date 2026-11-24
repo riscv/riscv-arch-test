@@ -424,10 +424,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata1_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # Writing 0 to this register must result in a trigger that is disabled.
   - name: Sdtrig_tdata1_write0
@@ -487,10 +484,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata2_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # If the trigger is disabled, then this register can be written with any value
   # supported by any of the trigger types supported by this trigger.
@@ -512,10 +506,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata3_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # If the trigger is disabled, then this register can be written with any value
   # supported by any of the trigger types supported by this trigger.
@@ -533,10 +524,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tinfo_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is optional if no triggers are implemented, or if type is not
   # writable and version would be 0. In this case the debugger can read the only
@@ -708,10 +696,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_mcontrol_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is accessible as tdata1 when type is 2.
   - name: Sdtrig_mcontrol_access
@@ -1066,10 +1051,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_mcontrol6_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is accessible as tdata1 when type is 6.
   - name: Sdtrig_mcontrol6_access
@@ -1585,10 +1567,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_icount_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is accessible as tdata1 when type is 3.
   - name: Sdtrig_icount_access
@@ -1775,10 +1754,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_itrigger_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is accessible as tdata1 when type is 4.
   - name: Sdtrig_itrigger_access
@@ -1908,10 +1884,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_etrigger_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is accessible as tdata1 when type is 5.
   - name: Sdtrig_etrigger_access
@@ -2024,10 +1997,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tmexttrigger_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is accessible as tdata1 when type is 7.
   - name: Sdtrig_tmexttrigger_access
@@ -2242,10 +2212,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra64_reset
-    coverpoint:
-      [
-        "Needs infrastructure: read trigger state before the boot code changes it.",
-      ]
+    coverpoint: ["Needs test: check the reset value."]
 
   # This register is accessible as tdata3 when type is 2, 3, 4, 5, or 6 and XLEN=64.
   - name: Sdtrig_textra64_access

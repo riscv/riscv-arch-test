@@ -46,7 +46,7 @@ normative_rule_definitions:
   - name: pma_same
     coverpoint:
       [
-        "Software requirement: the tests use CBOs only on blocks with uniform PMAs; not checked.",
+        "Configuration requirement: PMAs are uniform within each cache block, and writable regions are readable; not checked.",
       ]
   # If the above constraints are not met, the behavior of a CBO instruction is
   # UNSPECIFIED.

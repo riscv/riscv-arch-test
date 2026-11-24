@@ -3340,7 +3340,7 @@ normative_rule_definitions:
   - name: vector_reset_state
     coverpoint:
       [
-        "Needs infrastructure: read vtype and vl before the boot code changes them.",
+        "Needs test: read vtype and vl after reset and restore them with one vsetvl.",
       ]
 
   # Zve32f supports all vector floating-point permutation instructions for floating-point

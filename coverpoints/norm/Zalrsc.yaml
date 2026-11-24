@@ -94,13 +94,13 @@ normative_rule_definitions:
   - name: constrained_lrsc_loop_size
     coverpoint:
       [
-        "Software requirement: constrained LR/SC loops in the tests follow this rule; not checked.",
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
       ]
 
   - name: constrained_lrsc_instruction_set
     coverpoint:
       [
-        "Software requirement: constrained LR/SC loops in the tests follow this rule; not checked.",
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
       ]
 
   - name: constrained_lrsc_compressed_allowed
@@ -112,13 +112,13 @@ normative_rule_definitions:
   - name: constrained_lrsc_retry_code
     coverpoint:
       [
-        "Software requirement: constrained LR/SC loops in the tests follow this rule; not checked.",
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
       ]
 
   - name: lrsc_eventuality_region
     coverpoint:
       [
-        "Software requirement: constrained LR/SC loops in the tests access only eventuality regions; not checked.",
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
       ]
 
   - name: lrsc_same_address_and_size

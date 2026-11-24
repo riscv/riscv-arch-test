@@ -134,12 +134,11 @@ Each extension's normative rule table lists the coverpoints that test each rule.
 
 `No independent assertion:`:: The rule is a definition, permission, recommendation, or UNSPECIFIED behavior, so there is nothing to test.
 `Configuration requirement:`:: The rule constrains the configuration, such as an extension dependency. The explanation says whether UDB checks it.
-`Software requirement:`:: The rule constrains software. The explanation says whether the tests are checked to follow it.
-`Needs test:`:: The behavior can be tested, but no test checks it yet.
+`Needs test:`:: The behavior can be tested, but no test checks it yet. The explanation says what the test should do.
 `Needs infrastructure:`:: Testing the rule needs something the framework does not have, such as multiple harts, devices, or timing measurement.
 `Out of scope:`:: The rule does not apply to the configurations the tests support.
 
-Where an implementation may choose among several legal results, a test checks that the result is one of them.
+Where an implementation may choose among several legal results, a test checks that the result is one of them, so such a rule is usually `Needs test:` rather than `No independent assertion:`. A rule that appears in several extensions has the same explanation in each.
 
 === Coverpoints
 

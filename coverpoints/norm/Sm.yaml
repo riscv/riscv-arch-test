@@ -1750,9 +1750,7 @@ normative_rule_definitions:
   # If the hypervisor extension is implemented, the hgatp.MODE and vsatp.MODE fields are reset to 0.
   - name: hgatp_vsatp_mode_rst
     coverpoint:
-      [
-        "Needs infrastructure: read hgatp.MODE and vsatp.MODE before the boot code writes them.",
-      ]
+      ["Needs test: check the reset values of hgatp.MODE and vsatp.MODE."]
 
   # No WARL field contains an illegal value.
   - name: warl_rst

@@ -132,7 +132,8 @@ def rule_link(name: str, text: str) -> str:
     # Math is pre-rendered to images in the ISA manual build; those images do not exist here.
     disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
     if not disp:
-        return ""
+        # A rule tagged on a register or encoding diagram has no text in the JSON.
+        disp = "Diagram in the ISA manual"
     # Escape the link text; commas would otherwise separate link attributes and '|' table cells.
     disp = (
         disp.replace("\\", "\\\\").replace('"', '\\"').replace("]", "\\]").replace(",", "&#44;").replace("|", "&#124;")

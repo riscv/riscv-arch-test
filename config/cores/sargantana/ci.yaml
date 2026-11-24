@@ -77,8 +77,7 @@ exclude_extensions:
   - H_vucsr-
   # The same virtual-instruction bug on writes to read-only CSRs from VS/VU-mode
   # (https://github.com/bsc-loca/csr/issues/15)
-  - H_vscsr_ro-
-  - H_vscsr_ro_variants
+  - H_vscsr_ro
   - H_vucsr_ro_variants
   # htval on a guest-page fault in the VS-stage walk (https://github.com/bsc-loca/sargantana/issues/123)
   - H_trap

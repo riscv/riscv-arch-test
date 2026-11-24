@@ -340,10 +340,10 @@ normative_rule_definitions:
   - names: [mtval2_sz_acc_op, mtinst_sz_acc_op]
     coverpoint:
       [
-        "S_scsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
-        "H_vscsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+        "S_scsr_cg/cp_csr_insufficient_priv",
+        "H_vscsr_cg/cp_csr_insufficient_priv",
         "H_vucsr_cg/cp_csr_insufficient_priv",
-        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+        "U_ucsr_cg/cp_csr_insufficient_priv",
       ]
 
   # hstatus.VGEIN holds 0 through GEILEN

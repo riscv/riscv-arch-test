@@ -126,13 +126,17 @@ def plain_xrefs(text: str) -> str:
     return _XREF_RE.sub(lambda m: (m.group(2) or m.group(1)).strip(), text)
 
 
+DIAGRAM_SOURCE = re.compile(r"\{\s*reg\s*:|\(defattrs\b")
+
+
 def rule_link(name: str, text: str) -> str:
     """The rule's text as one AsciiDoc link to its tag in the ISA manual."""
     disp = plain_xrefs(expand_isa_manual_macros(" ".join(text.split())))
     # Math is pre-rendered to images in the ISA manual build; those images do not exist here.
     disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
-    if not disp:
-        # A rule tagged on a register or encoding diagram has no text in the JSON.
+    if not disp or DIAGRAM_SOURCE.match(disp):
+        # A rule tagged on a register or encoding diagram has either no text in the JSON or the
+        # diagram's WaveDrom or bytefield source, which is unreadable in a table cell.
         disp = "Diagram in the ISA manual"
     # Escape the link text; commas would otherwise separate link attributes and '|' table cells.
     disp = (

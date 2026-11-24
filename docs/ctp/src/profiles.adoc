@@ -233,7 +233,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 [cols="1, 4, 1, 1, 1, 1, 1" options=header]
 [%AUTOWIDTH]
 |===
-|Coverage File|Description|RVI20|uController|RVA22S64|RVB23S64|RVA23S64
+|Coverage File|Description|RVI20|MC100|RVA22S64|RVB23S64|RVA23S64
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |===

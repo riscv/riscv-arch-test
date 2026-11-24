@@ -206,7 +206,7 @@ The register edge cases are selected to include extreme values and their immedia
 Hazard tests are applied to every unprivileged _Instruction Under Test_ (IUT) that uses a source or destination.
 The hazard receives the source from a _Secondary Producer Instruction_ (SPI) or sends the destination value to a _Secondary Consumer Instruction_ (SCI).  All relevant
 Read-After-Write (RAW), Write-After-Read (WAR), and Write-After-Write (WAW) hazards are exercised.  They are tested
-with the SI being adjacent to the IUT, and being separated by a small amount.  The SI is selected as a representative
+with the SPI or SCI being adjacent to the IUT, and being separated by a small amount.  The SPI or SCI is selected as a representative
 instruction from each of many categories of instructions to exercise forwarding between different functional units.
 
 The categories of SPI and SCI are given in <<t-secondary-producer-instruction-categories>> and <<t-secondary-consumer-instruction-categories>>, respectively.
@@ -280,9 +280,9 @@ The test cases are as follows:
 
 * If the IUT has {int/pc/fp/vector/memory/CSR} destination operand:
 ** For each hazard_type in {RAW, WAR}
-*** For each supported SCI category that can read the source category (gated by #ifdef EXT_SUPPORTED)
+*** For each supported SCI category that can read the destination category (gated by #ifdef EXT_SUPPORTED)
 **** For each delay in (0, random[1,3])
-***** Pick random unused registers for IUT source(s) and destination from x1-x15, f0-f31, v0-v31.  Ok to duplicate source registers.
+***** Pick random unused registers for IUT source(s) and destination from x1-x31 (-x15 for E), f0-f31, v0-v31.  Ok to duplicate source registers.
 ***** Pick random representative SCI from category, and random unused source registers for SCI.
 ***** Initialize IUT and SCI sources to random values
 ***** If hazard_type = RAW // IUT dest -> SCI source
@@ -290,7 +290,7 @@ The test cases are as follows:
 ****** Perform IUT
 ****** If delay > 0, perform delay dependent instructions
 ****** Perform SCI
-****** SIGUPD SI dest or otherwise test SI result
+****** SIGUPD SCI dest or otherwise test SCI result
 ***** If hazard_type = WAR // SCI source -> IUT dest
 ****** random SCI source = IUT dest
 ****** Perform SCI

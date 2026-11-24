@@ -242,7 +242,7 @@ include::{testplansdir}/priv/Za64rs.adoc[]
 
 include::norm/Za64rs_norm_rules.adoc[]
 
-==== Zic64b 64B Cache Block Zero
+==== Zic64b 64-Byte Cache Blocks
 
 include::{testplansdir}/priv/Zic64b.adoc[]
 

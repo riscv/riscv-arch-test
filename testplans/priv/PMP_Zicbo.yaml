@@ -9,7 +9,7 @@ coverpoints:
       - The region under test is a 4 KiB-aligned NAPOT region much larger than a cache block, so every byte of the block has the same permissions. Misaligned or partially covered cache blocks are not tested: their behavior is unspecified (pmp_same).
   - name: cp_cbo_zero
     goal: Verify that cbo.zero needs W.
-    description: "Entry 0 over the region: L=1, XWR = 000, 001, 011. cbo.zero at the start of the region."
+    description: "PMP_NAPOT_SUPPORTED only. Entry 0 over the region: L=1, XWR = 000, 001, 011. cbo.zero at the start of the region."
     expectation: Store/AMO access fault (mcause = 7, mtval = rs1) when W=0. Otherwise the block is zeroed.
     bins: 3 XWR
     rules:
@@ -17,12 +17,23 @@ coverpoints:
       - cbz_unperm_fault
       - pmp_store_fault
       - fault_excep_csr
+  - name: cp_cbo_zero_tor
+    goal: "Verify that cbo.zero needs W. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cbo_zero: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region; entry 0 is OFF and holds its base."
+    expectation: "Store/AMO access fault (mcause = 7, mtval = rs1) when W=0. Otherwise the block is zeroed."
+    bins: "3 XWR"
+    rules:
+      - cbz_access
+      - cbz_unperm_fault
+      - pmp_store_fault
+      - fault_excep_csr
+      - pmp_a_field_tor
   - name: |-
       cp_cbo_clean
       cp_cbo_flush
       cp_cbo_inval
     goal: Verify that a cache-block management instruction needs R or W.
-    description: Same setup. cbo.clean, cbo.flush and cbo.inval at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Same setup. cbo.clean, cbo.flush and cbo.inval at the start of the region.
     expectation: "XWR=000: store/AMO access fault (mtval = rs1). XWR = 001 or 011: no exception."
     bins: 3 XWR each
     rules:
@@ -31,12 +42,37 @@ coverpoints:
       - pmp_cbm_fault
       - fault_excep_csr
   - name: |-
+      cp_cbo_clean_tor
+      cp_cbo_flush_tor
+      cp_cbo_inval_tor
+    goal: "Verify that a cache-block management instruction needs R or W. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cbo_clean, cp_cbo_flush, cp_cbo_inval: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region; entry 0 is OFF and holds its base."
+    expectation: "XWR=000: store/AMO access fault (mtval = rs1). XWR = 001 or 011: no exception."
+    bins: "3 XWR each"
+    rules:
+      - cbm_access
+      - cbm_unperm_fault
+      - pmp_cbm_fault
+      - fault_excep_csr
+      - pmp_a_field_tor
+  - name: |-
       cp_prefetch_i
       cp_prefetch_r
       cp_prefetch_w
     goal: Verify that prefetches never trap on a PMP violation.
-    description: Six legal XWR with L=1, one entry each. prefetch.i, prefetch.r and prefetch.w at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Six legal XWR with L=1, one entry each. prefetch.i, prefetch.r and prefetch.w at the start of the region.
     expectation: No exception for any XWR.
     bins: 6 XWR each
     rules:
       - cbp_unperm_noexcep
+  - name: |-
+      cp_prefetch_i_tor
+      cp_prefetch_r_tor
+      cp_prefetch_w_tor
+    goal: "Verify that prefetches never trap on a PMP violation. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_prefetch_i, cp_prefetch_r, cp_prefetch_w: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file."
+    expectation: "No exception for any XWR."
+    bins: "6 XWR each"
+    rules:
+      - cbp_unperm_noexcep
+      - pmp_a_field_tor

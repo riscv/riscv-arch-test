@@ -349,8 +349,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Sm_mstatus_mprv_cg/{cp_mprv_load, cp_mprv_store}",
-        "PMP_S_cg/cp_mprv_lw",
-        "PMP_U_cg/cp_mprv_sw",
+        "PMP_S_cg/{cp_mprv_lw, cp_mprv_tor_lw}",
+        "PMP_U_cg/{cp_mprv_sw, cp_mprv_tor_sw}",
       ]
 
   # Instruction address-translation and protection are unaffected by the setting of
@@ -359,8 +359,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Sm_mstatus_mprv_cg/{cp_mprv_ins, cp_mprv_upage_smode_sumset_exec}",
-        "PMP_S_cg/cp_mprv_jalr",
-        "PMP_U_cg/cp_mprv_jalr",
+        "PMP_S_cg/{cp_mprv_jalr, cp_mprv_tor_jalr}",
+        "PMP_U_cg/{cp_mprv_jalr, cp_mprv_tor_jalr}",
       ]
 
   # MPRV is read-only 0 if U-mode is not supported.

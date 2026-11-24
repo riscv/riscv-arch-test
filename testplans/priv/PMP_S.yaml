@@ -11,7 +11,7 @@ coverpoints:
   - heading: Permission bits
   - name: cp_cfg_X
     goal: Verify that X controls S-mode instruction fetch whether or not the entry is locked.
-    description: One standard NAPOT region. Walk the six legal XWR values with L=1, then again with L=0, each in its own entry as in PMP_Sm cp_cfg_X. jalr to the start of the region from S-mode.
+    description: PMP_NAPOT_SUPPORTED only. One standard NAPOT region. Walk the six legal XWR values with L=1, then again with L=0, each in its own entry as in PMP_Sm cp_cfg_X. jalr to the start of the region from S-mode.
     expectation: Instruction access fault when X=0, for both L=0 and L=1.
     bins: 2 L × 6 XWR = 12
     rules:
@@ -21,9 +21,22 @@ coverpoints:
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
       - pmp_access_fault_exception
+  - name: cp_cfg_X_tor
+    goal: "Verify that X controls S-mode instruction fetch whether or not the entry is locked. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_X: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file. L = 1 and L = 0 walks."
+    expectation: "Instruction access fault when X=0, for both L=0 and L=1."
+    bins: "2 L × 6 XWR = 12"
+    rules:
+      - pmp_check_priv_modes
+      - pmp_cfg_permissions
+      - pmp_exec_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_access_fault_exception
+      - pmp_a_field_tor
   - name: cp_cfg_R
     goal: Verify that R controls every S-mode load width whether or not the entry is locked.
-    description: Same walk as cp_cfg_X. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) at the start of the region from S-mode.
+    description: PMP_NAPOT_SUPPORTED only. Same walk as cp_cfg_X. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) at the start of the region from S-mode.
     expectation: Load access fault when R=0, for both L=0 and L=1.
     bins: 2 L × 6 XWR × 5 loads = 60 (84 on RV64)
     rules:
@@ -33,9 +46,22 @@ coverpoints:
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
       - pmp_access_fault_exception
+  - name: cp_cfg_R_tor
+    goal: "Verify that R controls every S-mode load width whether or not the entry is locked. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_R: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file. L = 1 and L = 0 walks."
+    expectation: "Load access fault when R=0, for both L=0 and L=1."
+    bins: "2 L × 6 XWR × 5 loads = 60 (84 on RV64)"
+    rules:
+      - pmp_check_priv_modes
+      - pmp_cfg_permissions
+      - pmp_load_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_access_fault_exception
+      - pmp_a_field_tor
   - name: cp_cfg_W
     goal: Verify that W controls every S-mode store width whether or not the entry is locked.
-    description: Same walk as cp_cfg_X. Every store (sb, sh, sw (+ sd on RV64)) at the start of the region from S-mode.
+    description: PMP_NAPOT_SUPPORTED only. Same walk as cp_cfg_X. Every store (sb, sh, sw (+ sd on RV64)) at the start of the region from S-mode.
     expectation: Store/AMO access fault when W=0, for both L=0 and L=1.
     bins: 2 L × 6 XWR × 3 stores = 36 (48 on RV64)
     rules:
@@ -45,6 +71,19 @@ coverpoints:
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
       - pmp_access_fault_exception
+  - name: cp_cfg_W_tor
+    goal: "Verify that W controls every S-mode store width whether or not the entry is locked. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_W: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file. L = 1 and L = 0 walks."
+    expectation: "Store/AMO access fault when W=0, for both L=0 and L=1."
+    bins: "2 L × 6 XWR × 3 stores = 36 (48 on RV64)"
+    rules:
+      - pmp_check_priv_modes
+      - pmp_cfg_permissions
+      - pmp_store_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_access_fault_exception
+      - pmp_a_field_tor
   - heading: Address-matching modes
   - name: |-
       cp_cfg_A_off_jalr
@@ -109,7 +148,7 @@ coverpoints:
       cp_mprv_lw
       cp_mprv_sw
     goal: Verify that M-mode loads and stores are checked as S-mode when mstatus.MPRV=1 and MPP=S, and that fetches are not.
-    description: "M-mode. Entry 0 over a standard region: L={0,1}, A=NAPOT, XWR={000, 111}. mstatus.MPP = S, MPRV = {0,1}. jalr, lw and sw in the region."
+    description: "PMP_NAPOT_SUPPORTED only. M-mode. Entry 0 over a standard region: L={0,1}, A=NAPOT, XWR={000, 111}. mstatus.MPP = S, MPRV = {0,1}. jalr, lw and sw in the region."
     expectation: "XWR=111: all succeed. XWR=000: lw and sw fault when MPRV=1 (even with L=0) or when L=1, and succeed when MPRV=0 and L=0. jalr ignores MPRV: it faults only when L=1."
     bins: "2 MPRV × 2 L × 2 XWR = 8 each. MPP=M is not binned: with MPRV=1 it behaves as MPRV=0."
     rules:
@@ -119,6 +158,22 @@ coverpoints:
       - pmp_exec_fault
       - pmp_load_fault
       - pmp_store_fault
+  - name: |-
+      cp_mprv_tor_jalr
+      cp_mprv_tor_lw
+      cp_mprv_tor_sw
+    goal: "Verify that M-mode loads and stores are checked as S-mode when mstatus.MPRV=1 and MPP=S, and that fetches are not. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_mprv_jalr, cp_mprv_lw, cp_mprv_sw: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. Entry 1 is the TOR region; entry 0 is OFF and holds its base."
+    expectation: "XWR=111: all succeed. XWR=000: lw and sw fault when MPRV=1 (even with L=0) or when L=1, and succeed when MPRV=0 and L=0. jalr ignores MPRV: it faults only when L=1."
+    bins: "2 MPRV × 2 L × 2 XWR = 8 each. MPP=M is not binned: with MPRV=1 it behaves as MPRV=0."
+    rules:
+      - pmp_check_priv_modes
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+      - pmp_a_field_tor
   - heading: PMP CSR access
   - name: cp_pmpaddr_access_s
     goal: Verify that the pmpaddr CSRs are not accessible from S-mode.

@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'U', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -32,7 +33,7 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // PMPU cp_mprv_jalr, cp_mprv_lw and cp_mprv_sw
-//   {jalr, sw, lw} from M mode with mstatus.MPRV = {0, 1} and MPP = U, region L = {0, 1}, XWR = 111.
+//   {jalr, sw, lw} from M mode with mstatus.MPRV = {0, 1} and MPP = U, NAPOT region on entry 0, L = {0, 1}, XWR = 111.
 /////////////////////////////////
 
 // Clear every pmpcfg and pmpaddr CSR
@@ -259,18 +260,18 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_U_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 162; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
-PMP_U_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 163; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
-PMP_U_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 164; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
-PMP_U_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 165; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
-PMP_U_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 166; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
-PMP_U_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 167; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
-PMP_U_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 168; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
-PMP_U_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 169; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
-PMP_U_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 170; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
-PMP_U_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 171; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
-PMP_U_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 172; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
-PMP_U_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 173; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 301; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 302; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 303; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 304; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 305; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 306; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 307; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 308; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 309; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
+PMP_U_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 310; cg: PMP_U_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
+PMP_U_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 311; cg: PMP_U_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
+PMP_U_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 312; cg: PMP_U_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

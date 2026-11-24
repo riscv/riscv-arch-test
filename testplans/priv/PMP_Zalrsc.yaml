@@ -9,7 +9,7 @@ coverpoints:
       - Standard region and L=1 XWR walk as in PMP_Sm cp_cfg_X/R/W.
   - name: cp_cfg_RW
     goal: Verify that LR needs R and SC needs W.
-    description: Six legal XWR with L=1, one entry each. lr then sc at the start of the region. When R=0 the lr faults, so the sc runs without a reservation.
+    description: PMP_NAPOT_SUPPORTED only. Six legal XWR with L=1, one entry each. lr then sc at the start of the region. When R=0 the lr faults, so the sc runs without a reservation.
     expectation: "lr: load access fault (mcause = 5) when R=0. sc: store/AMO access fault (mcause = 7) when W=0, with or without a reservation; otherwise the sc stores."
     bins: 6 XWR × 2 instructions = 12 (24 on RV64)
     rules:
@@ -20,3 +20,17 @@ coverpoints:
       - mcause_exccode_st_sc_amo
       - pmp_cfg_permissions
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_RW_tor
+    goal: "Verify that LR needs R and SC needs W. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_RW: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file."
+    expectation: "lr: load access fault (mcause = 5) when R=0. sc: store/AMO access fault (mcause = 7) when W=0, with or without a reservation; otherwise the sc stores."
+    bins: "6 XWR × 2 instructions = 12 (24 on RV64)"
+    rules:
+      - pmp_load_fault
+      - pmp_store_fault
+      - sc_retire_permission
+      - mcause_exccode_ld_ldrsv
+      - mcause_exccode_st_sc_amo
+      - pmp_cfg_permissions
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_a_field_tor

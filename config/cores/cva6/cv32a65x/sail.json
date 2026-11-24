@@ -127,11 +127,11 @@
     "asidlen": 9,
     "vmidlen": 7,
     "pmp": {
-      "grain": 0,
-      // Keep in sync with UDB NUM_PMP_ENTRIES: 0 until #2904; then TOR-only as in cv32a65x.yaml TODO.
-      "count": 0,
-      "usable_count": 0,
-      "tor_supported": false,
+      // G=1 (8-byte grain); TOR only. Keep in sync with the UDB PMP parameters in cv32a65x.yaml.
+      "grain": 1,
+      "count": 64,
+      "usable_count": 8,
+      "tor_supported": true,
       "na4_supported": false,
       "napot_supported": false
     },

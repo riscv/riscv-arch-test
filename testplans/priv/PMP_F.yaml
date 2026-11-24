@@ -9,7 +9,7 @@ coverpoints:
       - Standard region and L=1 XWR walk as in PMP_Sm cp_cfg_X/R/W.
   - name: cp_cfg_R
     goal: Verify that R controls floating-point loads when the entry is locked.
-    description: Six legal XWR with L=1, one entry each (as in PMP_Sm cp_cfg_R). flh, flw and fld at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Six legal XWR with L=1, one entry each (as in PMP_Sm cp_cfg_R). flh, flw and fld at the start of the region.
     expectation: Load access fault when R=0.
     bins: 6 XWR × 3 loads = 18
     rules:
@@ -17,9 +17,20 @@ coverpoints:
       - pmp_cfg_permissions
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_R_tor
+    goal: "Verify that R controls floating-point loads when the entry is locked. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_R: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file."
+    expectation: "Load access fault when R=0."
+    bins: "6 XWR × 3 loads = 18"
+    rules:
+      - pmp_load_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_a_field_tor
   - name: cp_cfg_W
     goal: Verify that W controls floating-point stores when the entry is locked.
-    description: Same walk. fsh, fsw and fsd at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Same walk. fsh, fsw and fsd at the start of the region.
     expectation: Store/AMO access fault when W=0.
     bins: 6 XWR × 3 stores = 18
     rules:
@@ -27,3 +38,14 @@ coverpoints:
       - pmp_cfg_permissions
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_W_tor
+    goal: "Verify that W controls floating-point stores when the entry is locked. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_W: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file."
+    expectation: "Store/AMO access fault when W=0."
+    bins: "6 XWR × 3 stores = 18"
+    rules:
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_a_field_tor

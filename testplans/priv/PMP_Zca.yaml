@@ -12,7 +12,7 @@ coverpoints:
   - heading: Compressed loads and stores
   - name: cp_cfg_R
     goal: Verify that R controls every compressed load when the entry is locked.
-    description: Six legal XWR with L=1, one entry each. Every compressed load at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Six legal XWR with L=1, one entry each. Every compressed load at the start of the region.
     expectation: Load access fault when R=0.
     bins: 6 XWR × compressed loads. c.lwsp and c.ldsp are ignored in the cross.
     rules:
@@ -20,9 +20,20 @@ coverpoints:
       - pmp_cfg_permissions
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_R_tor
+    goal: "Verify that R controls every compressed load when the entry is locked. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_R: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file. c.lwsp and c.ldsp are not binned, as in cp_cfg_R."
+    expectation: "Load access fault when R=0."
+    bins: "6 XWR × compressed loads. c.lwsp and c.ldsp are ignored in the cross."
+    rules:
+      - pmp_load_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_a_field_tor
   - name: cp_cfg_W
     goal: Verify that W controls every compressed store when the entry is locked.
-    description: Same walk. Every compressed store at the start of the region.
+    description: PMP_NAPOT_SUPPORTED only. Same walk. Every compressed store at the start of the region.
     expectation: Store/AMO access fault when W=0.
     bins: 6 XWR × compressed stores
     rules:
@@ -30,6 +41,17 @@ coverpoints:
       - pmp_cfg_permissions
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_W_tor
+    goal: "Verify that W controls every compressed store when the entry is locked. (TOR region)"
+    description: "PMP_TOR_SUPPORTED only. TOR twin of cp_cfg_W: the same probes over the same bytes, bounded by a TOR entry i (pmpaddr[i-1] = base, pmpaddr[i] = top) instead of a NAPOT entry. The six cases stack on entries 5, 3 and 1 (bottoms in pmpaddr4, 2 and 0), three per file."
+    expectation: "Store/AMO access fault when W=0."
+    bins: "6 XWR × compressed stores"
+    rules:
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_a_field_tor
   - heading: 32-bit fetch across a region boundary (IALIGN = 16)
   - name: cp_misaligned_napot
     goal: Verify that a 32-bit instruction straddling two NAPOT regions must be fully matched.

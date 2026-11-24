@@ -84,7 +84,7 @@ The available fields are given in framework/src/act/fcov/coverage/RISCV_coverage
 [%AUTOWIDTH]
 |===
 |Signal|Width|Description|Example
-|insn|ILEN|Instruction bit pattern|*** add x10, x11, x12
+|insn|ILEN|Instruction bit pattern|add x10, x11, x12
 |inst_name|string|Instruction name|add
 |disass|string|Disassembled instruction|`add x10, x11, x12`
 |trap|1|Instruction trapped rather than retiring|0

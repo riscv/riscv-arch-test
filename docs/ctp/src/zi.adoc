@@ -222,7 +222,7 @@ include::norm/Zicboz_norm_rules.adoc[]
 
 ==== Zicbom Cache Block Flush/Invalidate
 
-Zicbom runs the same tests as Zicboz.  `cbo.flush` and `cbo.clean` should have no architecturally visible effect.  `cbo.inval` could discard the cache block, leaving the initial value of 0s.  This may be difficult to match against a reference model, so perhaps this test needs to accept both the original data and 0s as correct answers.  TODO - adjust if any machines need this.
+Zicbom runs the same tests as Zicboz.  `cbo.flush` and `cbo.clean` should have no architecturally visible effect.  `cbo.inval` could discard the cache block.  The test writes known data, cleans it to memory, overwrites it, and then accepts either value after `cbo.inval`.
 
 include::{testplansdir}/Zicbom.adoc[]
 

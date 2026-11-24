@@ -287,7 +287,7 @@ For some systems, this may involve configuring a non-default physical address an
 
 Standard macros are defined in `tests/env`.  DUT-specific macros are defined in `rvmodel_macros.h`, which is in a DUT-specific config directory (e.g. `config/<dut>/<version>/rvmodel_macros.h` for predefined simulators, or out-of-tree for custom DUTs).
 
-Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros, `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in ***util.h, ... describe further
+Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros, `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in `utils.h`.
 
 DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for DUTs with custom M-mode, when defined.
 

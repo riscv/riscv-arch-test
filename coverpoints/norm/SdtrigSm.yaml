@@ -33,7 +33,7 @@ normative_rule_definitions:
   - name: Sdtrig_actions
     coverpoint:
       [
-        "Needs infrastructure: only action 0 (breakpoint exception) is tested, see Sdtrig_action0; actions 1 to 5 need Sdext or trace, and actions 8 and 9 an observable TM external trigger output.",
+        "No independent assertion: introduces the action table; each action has its own rule.",
       ]
 
   # Raise a breakpoint exception. (Used when software wants to use the trigger

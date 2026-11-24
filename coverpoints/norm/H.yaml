@@ -827,7 +827,7 @@ normative_rule_definitions:
   # For a standard virtual-machine load/store instruction (HLV, HLVX, or HSV), the transformed
   # instruction has the format shown in <<transformedvmaccessinst>>.
   - name: H_trans_vmaccess
-    # The trap handler records htinst, which must be zero or the transformed HLV/HSV
+    # The trap handler checks htinst against the transformed HLV/HSV from Sail; zero is also legal
     coverpoint: ["Exceptions_H_cg/cp_hstatus_gva_{hlv,hsv}"]
 
   # If a synchronous trap occurs for a standard instruction for which no transformation has been

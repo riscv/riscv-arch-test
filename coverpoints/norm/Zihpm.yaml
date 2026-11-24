@@ -27,22 +27,21 @@ normative_rule_definitions:
   # The Zihpm extension depends on the Zicsr extension.
   - name: hpm_counter_op_sz_mode_dependency
     coverpoint:
-      ["Not tested: extension dependency checked by the UDB configuration"]
+      [
+        "Configuration requirement: Zihpm requires Zicsr; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zihpm.yaml[ext/Zihpm.yaml]).",
+      ]
 
   # The implemented number and width of these additional counters, and the set of
   # events they count, are platform-specific.
   - name: hpm_platform_specific_impl
-    coverpoint:
-      [
-        "Not tested: platform-specific. The implemented counters come from HPM_COUNTER_EN, and events are not tested.",
-      ]
+    coverpoint: ["Needs infrastructure: platform-specific event definitions."]
 
   # If the configuration used to select the events counted by a counter is
   # misconfigured, the counter may return a constant value.
   - name: hpm_misconfigured_event_behavior
     coverpoint:
       [
-        "Not tested: event selection is platform-specific, so there is no portable misconfiguration to test.",
+        "No independent assertion: permits a misconfigured counter to return a constant.",
       ]
 
   # Not tested: accessing an unimplemented counter is implementation-defined behavior, and the
@@ -52,5 +51,5 @@ normative_rule_definitions:
   - name: hpm_unimplemented_counter_access
     coverpoint:
       [
-        "Not tested: implementation-defined behavior; an unimplemented counter may trap or return a constant value, so neither response can be required. cp_cntr_hpm reads only the counters HPM_COUNTER_EN implements.",
+        "Needs test: read an unimplemented counter and check that it traps or returns a constant.",
       ]

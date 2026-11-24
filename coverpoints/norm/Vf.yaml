@@ -41,7 +41,7 @@ normative_rule_definitions:
   - name: V_dependent_F_D
     coverpoint:
       [
-        "Implicit: the F and D dependency is satisfied by the configuration under test; the vector floating-point tests cannot run without it",
+        "Configuration requirement: V requires F and D; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/V.yaml[ext/V.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/D.yaml[ext/D.yaml]).",
       ]
 
   # Vector floating-point instructions require the presence of base scalar floating-point
@@ -49,7 +49,7 @@ normative_rule_definitions:
   - name: vf_requires_vx
     coverpoint:
       [
-        "Implicit: the vector floating-point tests cannot run unless the scalar floating-point extensions are present",
+        "Configuration requirement: Zve32f requires F, Zve64d requires D, and Zvfh requires Zfhmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve32f.yaml[ext/Zve32f.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfh.yaml[ext/Zvfh.yaml]).",
       ]
 
   # Vector single-width floating-point reductions for EEW=32 and EEW=64 are supported as well as

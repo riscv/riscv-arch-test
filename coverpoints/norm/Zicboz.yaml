@@ -9,12 +9,18 @@ normative_rule_definitions:
   # the execution environment provides software a means to discover information about
   # the caches and cache blocks in a system.
   - name: cache_block_discovery
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: the execution environment provides a way to discover the cache-block size; not checked.",
+      ]
 
   # In the initial set of CMO extensions, the size of a cache block shall be uniform
   # throughout the system.
   - name: cache_block_size_uniform
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: all caches use the same block size; not checked.",
+      ]
 
   # A cbo.zero instruction performs stores of zeros to the full set of bytes
   # corresponding to the cache block that contains the address specified in rs1.

@@ -126,8 +126,7 @@ normative_rule_definitions:
   # insn:fld[] and insn:fsd[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned and XLEN≥64.
   - name: fld_fsd_atomic_align
-    coverpoint:
-      ["Not tested: atomicity is not observable in single-hart signature tests"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # insn:fld[] and insn:fsd[] do not modify the bits being transferred; in particular,
   # the payloads of non-canonical NaNs are preserved.
   - name: fld_fsd_bits_maintained

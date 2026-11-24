@@ -544,30 +544,26 @@ normative_rule_definitions:
   # An implementation that supports only the defined paged schemes and Bare may make hgatp.PPN[1:0] read-only zero
   - names: [hgatp_ppn_acc]
     coverpoint:
-      [
-        "Not tested: PPN[1:0] may be read-only zero or writable, and no UDB parameter records the choice",
-      ]
+      ["No independent assertion: permits PPN[1:0] to be read-only zero."]
 
   # GEILEN may be zero, in which case VGEIN may be read-only zero
   - names: [hstatus_vgein_acc]
     coverpoint:
       [
-        "Not tested: with GEILEN = 0 the only legal VGEIN value is 0, so a read-only-zero VGEIN cannot be distinguished from a writable one",
+        "No independent assertion: permits VGEIN to be read-only zero when GEILEN = 0.",
       ]
 
   # we use the term HSXLEN to refer to the effective XLEN when executing in HS-mode
   - name: hsxlen
-    coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+    coverpoint: ["No independent assertion: definition."]
   # VSXLEN to refer to the effective XLEN when executing in VS-mode.
   - name: vsxlen
-    coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+    coverpoint: ["No independent assertion: definition."]
   # The VSXL field controls the effective XLEN for VS-mode (known as VSXLEN), which may
   # differ from the XLEN for HS-mode (HSXLEN).
   - name: hstatus_vsxl_op
     coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # When HSXLEN=32, the VSXL field does not exist, and VSXLEN=32.
   - name: hstatus_vsxl_32
     coverpoint:
@@ -576,18 +572,17 @@ normative_rule_definitions:
   # misa, shown in &lt;&lt;norm:misa_mxl_enc&gt;&gt;.
   - name: hstatus_vsxl_64
     coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # In particular, an implementation may make VSXL be a read-only field whose value always
   # ensures that VSXLEN=HSXLEN.
   - name: vsxl_ro
-    coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+    coverpoint: ["No independent assertion: permits VSXL to be read-only."]
   # If HSXLEN is changed from 32 to a wider width, and if field VSXL is not restricted to
   # a single value, it gets the value corresponding to the widest supported width not
   # wider than the new HSXLEN.
   - name: hstatus_vsxl_change
     coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # The UXL field controls the effective XLEN for VU-mode, which may differ from the XLEN
   # for VS-mode (VSXLEN). When VSXLEN=32, the UXL field does not exist, and VU-mode
   # XLEN=32. When VSXLEN=64, UXL is a WARL field that is encoded the same as the MXL field
@@ -595,13 +590,13 @@ normative_rule_definitions:
   # of field VSXL of hstatus, forcing VU-mode XLEN=VSXLEN.
   - name: vsstatus_uxl_op
     coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # If VSXLEN is changed from 32 to a wider width, and if field UXL is not restricted to a
   # single value, it gets the value corresponding to the widest supported width not wider
   # than the new VSXLEN.
   - name: vsstatus_uxl_change
     coverpoint:
-      ["Out of scope: tests run with VSXLEN = VUXLEN = HSXLEN = MXLEN"]
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # When V=1, both vsstatus.FS and the HS-level sstatus.FS are in effect. Attempts to execute a
   # floating-point instruction when either field is 0 (Off) raise an illegal-instruction exception.
@@ -616,35 +611,46 @@ normative_rule_definitions:
 
   # hstatus.VSBE sets the endianness of VS-mode explicit accesses and of VS-level page-table accesses; it may be
   # read-only, and vsstatus.UBE may be a read-only copy of it
-  - names:
-      [
-        hstatus_vsbe_warl,
-        hstatus_vsbe_op,
-        hstatus_vsbe_implicit,
-        hstatus_vsbe_acc,
-        vsstatus_ube,
-      ]
+  - name: hstatus_vsbe_warl
     coverpoint:
       [
-        "Not tested: big-endian VS-mode and VU-mode accesses; the reference model has no big-endian support",
+        "Needs infrastructure: a reference model that supports big-endian VS/VU accesses.",
       ]
+  - name: hstatus_vsbe_op
+    coverpoint:
+      [
+        "Needs infrastructure: a reference model that supports big-endian VS/VU accesses.",
+      ]
+  - name: hstatus_vsbe_implicit
+    coverpoint:
+      [
+        "Needs infrastructure: a reference model that supports big-endian VS/VU accesses.",
+      ]
+  - name: hstatus_vsbe_acc
+    coverpoint: ["No independent assertion: permits VSBE to be read-only."]
+  - name: vsstatus_ube
+    coverpoint:
+      ["No independent assertion: permits vsstatus.UBE to be read-only."]
 
   # The hypervisor extension depends on RV32I or RV64I, not RV32E or RV64E
   - names: [H_requires_i]
     coverpoint:
       [
-        "Not tested: configuration requirement; the I suite tests registers x16 through x31",
+        "Configuration requirement: H requires RV32I or RV64I, not E; not yet checked by UDB.",
       ]
 
   # Sha depends on: H, Ssstateen, Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa
   - name: Sha_dep
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Sha requires its listed component extensions; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sha.yaml[ext/Sha.yaml]).",
+      ]
 
   # henvcfg.FIOM = 1 makes FENCE and AMO ordering of device I/O with V=1 also order main memory
   - names: [henvcfg_fiom_op, henvcfg_fiom_order]
     coverpoint:
       [
-        "Not tested: ordering of I/O and memory accesses is not observable in single-hart signature tests",
+        "Needs infrastructure: I/O regions and multiple harts to observe ordering.",
       ]
 
   # henvcfg.SSE activates Zicfiss in VS-mode

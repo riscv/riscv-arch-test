@@ -3,7 +3,10 @@
 normative_rule_definitions:
   # This extension depends upon the Zve32f extension.
   - name: Zvfbfmin_depends_Zve32f
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Zvfbfmin requires Zve32f; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfbfmin.yaml[ext/Zvfbfmin.yaml]).",
+      ]
   - name: vfwcvtbf16-f-f-v_op
     # Widening convert from BF16 to FP32. The conversion is exact.
     coverpoint:
@@ -15,7 +18,10 @@ normative_rule_definitions:
     coverpoint: ["Zvfbfmin_vfwcvtbf16_f_f_v_cg/cp_asm_count"]
   # SEW is any value other than 16
   - name: vfwcvtbf16-f-f-v_sew_rsv
-    coverpoint: ["TODO: SsstrictV test with SEW other than 16"]
+    coverpoint:
+      [
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
+      ]
   - name: vfncvtbf16-f-f-w_op
     # Narrowing convert from FP32 to BF16. Round according to the frm register.
     coverpoint:
@@ -27,4 +33,7 @@ normative_rule_definitions:
     coverpoint: ["Zvfbfmin_vfncvtbf16_f_f_w_cg/cp_asm_count"]
   # SEW is any value other than 16
   - name: vfncvtbf16-f-f-w_sew_rsv
-    coverpoint: ["TODO: SsstrictV test with SEW other than 16"]
+    coverpoint:
+      [
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
+      ]

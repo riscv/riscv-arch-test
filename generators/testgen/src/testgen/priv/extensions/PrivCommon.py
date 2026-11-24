@@ -521,6 +521,77 @@ def _in_mode(lines: list[str], mode: str | None) -> list[str]:
     return [f"RVTEST_TSBI_GOTO_{mode}MODE", *lines, "RVTEST_TSBI_GOTO_SMODE"]
 
 
+# CSR instruction forms as (instruction, source operand).  "reg" is a nonzero rs1 holding 0, which still makes
+# CSRRS/CSRRC write; uimm 0 makes CSRRSI/CSRRCI read only.
+CSR_WRITE_FORMS = (
+    ("csrrw", "x0"),
+    ("csrrw", "reg"),
+    ("csrrwi", "0"),
+    ("csrrwi", "31"),
+    ("csrrs", "reg"),
+    ("csrrc", "reg"),
+    ("csrrsi", "31"),
+    ("csrrci", "31"),
+)
+CSR_READ_FORMS = (("csrrs", "x0"), ("csrrc", "x0"), ("csrrsi", "0"), ("csrrci", "0"))
+
+
+def _variant_csrs(csr_ranges: list[range]) -> list[int]:
+    """The lowest and highest CSR in csr_ranges of each lowest privilege level (csr[9:8]) and read-only class.
+
+    These two fields of the CSR number decide whether an access traps.
+    """
+    classes: dict[tuple[int, bool], list[int]] = {}
+    for csr in sorted({csr for csr_range in csr_ranges for csr in csr_range}):
+        classes.setdefault((csr >> 8 & 3, csr >> 10 == 3), []).append(csr)
+    return sorted({csr for group in classes.values() for csr in (group[0], group[-1])})
+
+
+def _csr_access_variant_tests(
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    covergroup: str,
+    chunk_name: str,
+    coverpoint: str,
+    description: str,
+    csr_ranges: list[range],
+    forms: tuple[tuple[str, str], ...],
+    swept: tuple[str, str, list[range]],
+    mode: str | None,
+) -> None:
+    """Try each form with rd=x0 and rd!=x0 on representative CSRs in csr_ranges; every access must trap.
+
+    swept is the (instruction, source, ranges) of the address sweep, whose rd!=x0 accesses are not repeated.
+    """
+    tc = test_data.new_test_chunk(test_chunks, f"{chunk_name}_variants")
+    tc.section_header = comment_banner(coverpoint, description)
+    for csr in _variant_csrs(csr_ranges):
+        tc = test_data.new_test_chunk(test_chunks, f"{chunk_name}_variants")
+        src_reg, rd_reg = test_data.int_regs.get_registers(2)
+        tc.code.append(f"LI(x{src_reg}, 0)  # CSRRS/CSRRC with a nonzero rs1 write even when it holds 0")
+        for instr, src in forms:
+            operand = f"x{src_reg}" if src == "reg" else src
+            if (instr, src) != swept[:2] or not any(csr in csr_range for csr_range in swept[2]):
+                tc.code.extend(
+                    [
+                        f"LI(x{rd_reg}, 42)  # the trapping instruction must leave rd unchanged",
+                        test_data.add_testcase(f"{csr:03x}_{instr}_{src}_rdnz", coverpoint, covergroup),
+                        f"{instr} x{rd_reg}, 0x{csr:03x}, {operand}",
+                        write_sigupd(rd_reg, test_data),
+                        "",
+                    ]
+                )
+            tc.code.extend(
+                [
+                    test_data.add_testcase(f"{csr:03x}_{instr}_{src}_rd0", coverpoint, covergroup),
+                    f"{instr} x0, 0x{csr:03x}, {operand}",
+                    "",
+                ]
+            )
+        tc.code[:] = _in_mode(tc.code, mode)
+        test_data.int_regs.return_registers([src_reg, rd_reg])
+
+
 def csr_insufficient_priv_tests(
     test_data: TestData,
     test_chunks: list[TestChunk],
@@ -530,6 +601,7 @@ def csr_insufficient_priv_tests(
     description: str,
     mode: str | None = None,
     csrs_per_chunk: int = 1,
+    variant_ranges: list[range] | None = None,
 ) -> None:
     """Attempt to read each higher-privilege CSR; every read must raise illegal instruction.
 
@@ -554,6 +626,19 @@ def csr_insufficient_priv_tests(
         tc.code[:] = _in_mode(tc.code, mode)
         test_data.int_regs.return_register(temp_reg)
 
+    _csr_access_variant_tests(
+        test_data,
+        test_chunks,
+        covergroup,
+        chunk_name,
+        f"{coverpoint}_variants",
+        "Access each CSR class with every CSR instruction form.  Should throw illegal instruction",
+        variant_ranges or csr_ranges,
+        CSR_WRITE_FORMS + CSR_READ_FORMS,
+        ("csrrs", "x0", csr_ranges),
+        mode,
+    )
+
 
 def csr_ro_write_tests(
     test_data: TestData,
@@ -563,6 +648,7 @@ def csr_ro_write_tests(
     chunk_name: str,
     mode: str | None = None,
     csrs_per_chunk: int = 1,
+    variant_ranges: list[range] | None = None,
 ) -> None:
     """Attempt to write each read-only CSR; every write must raise illegal instruction.
 
@@ -587,6 +673,19 @@ def csr_ro_write_tests(
             )
         tc.code[:] = _in_mode(tc.code, mode)
         test_data.int_regs.return_registers([temp_reg, read_reg])
+
+    _csr_access_variant_tests(
+        test_data,
+        test_chunks,
+        covergroup,
+        chunk_name,
+        f"{coverpoint}_variants",
+        "Write read-only CSRs with every CSR instruction form that writes.  Should throw illegal instruction",
+        variant_ranges or csr_ranges,
+        CSR_WRITE_FORMS,
+        ("csrrw", "reg", csr_ranges),
+        mode,
+    )
 
 
 def priv_inst_trap_tests(

@@ -52,6 +52,17 @@ covergroup U_ucsr_cg with function sample(ins_t ins);
 
     cp_csr_insufficient_priv: cross priv_mode_u, csrr, csr_nonuser, nonzerord;
     cp_csr_ro:                cross priv_mode_u, csrw, csr_uro;
+    // The lowest and highest CSR number of each privilege level and read-only class
+    `include "general/RISCV_coverage_csr_access_variants.svh"
+    csr_insufficient_priv_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'h100, 12'h9FF, 12'h200, 12'hAFF, 12'h300, 12'hBFF, 12'hD00, 12'hDFF, 12'hE00, 12'hEFF, 12'hF00, 12'hFFF};
+    }
+    cp_csr_insufficient_priv_variants: cross priv_mode_u, csr_insufficient_priv_sample, csr_access_op, csr_access_src, csr_access_rd;
+    csr_ro_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'hC00, 12'hCFF};
+    }
+    cp_csr_ro_variants: cross priv_mode_u, csr_ro_sample, csr_write_form, csr_access_rd;
+
 endgroup
 
 

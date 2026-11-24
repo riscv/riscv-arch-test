@@ -378,6 +378,17 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         cp_stval_ilen_walk1:  cross priv_mode_s, csrw, stval, stval_ilen_walk1;
         cp_stval_ilen_ones:   cross priv_mode_s, csrw, stval, stval_ilen_ones;
     `endif
+    // The lowest and highest CSR number of each privilege level and read-only class
+    `include "general/RISCV_coverage_csr_access_variants.svh"
+    csr_insufficient_priv_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'h300, 12'hBFF, 12'hF00, 12'hFFF};
+    }
+    cp_csr_insufficient_priv_variants: cross priv_mode_s, csr_insufficient_priv_sample, csr_access_op, csr_access_src, csr_access_rd;
+    csr_ro_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'hC00, 12'hCFF, 12'hD00, 12'hDFF, 12'hE00, 12'hEFF};
+    }
+    cp_csr_ro_variants: cross priv_mode_s, csr_ro_sample, csr_write_form, csr_access_rd;
+
 endgroup
 
 // S_F, S_V and S_VF tests (S_F-NN.S, S_V_*-NN.S, S_VF-NN.S) are part of the S suite and run only

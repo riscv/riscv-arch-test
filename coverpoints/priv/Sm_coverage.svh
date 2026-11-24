@@ -818,6 +818,17 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_shadow_deleg_walk :      cross priv_mode_m, csrr, sip_sie, mideleg_s_walking;
     `endif
 
+    // The lowest and highest CSR number of each privilege level and read-only class
+    `include "general/RISCV_coverage_csr_access_variants.svh"
+    csr_insufficient_priv_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'h7B0, 12'h7BF};
+    }
+    cp_csr_insufficient_priv_variants: cross priv_mode_m, csr_insufficient_priv_sample, csr_access_op, csr_access_src, csr_access_rd;
+    csr_ro_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'hC00, 12'hCFF, 12'hD00, 12'hDFF, 12'hE00, 12'hEFF, 12'hF00, 12'hFFF};
+    }
+    cp_csr_ro_variants: cross priv_mode_m, csr_ro_sample, csr_write_form, csr_access_rd;
+
 endgroup
 
 // Sm_F, Sm_V and Sm_VF tests (Sm_F-NN.S, Sm_V_*-NN.S, Sm_VF-NN.S) are part of the Sm suite

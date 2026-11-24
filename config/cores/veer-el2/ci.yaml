@@ -20,6 +20,7 @@ exclude_extensions:
   # but Sail has one xtval_nonzero.illegal_instruction flag for all of them: design/dec/el2_dec_tlu_ctl.sv#L1889
   - U-
   - U_ucsr-
+  - U_ucsr_variants
   - PMP_U_csr
   # PMP checks only a fetch's start, missing a non-executable second half: design/el2_veer.sv#L1097
   - PMP_Zca_misaligned_na4

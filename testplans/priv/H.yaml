@@ -135,11 +135,25 @@ coverpoints:
     bins: 1023 CSRs
     rules:
       - Zicsr_illegal_mode
+  - name: cp_csr_insufficient_priv_variants
+    goal: M-mode CSRs are inaccessible from VS-mode with every CSR instruction form
+    description: "In VS-mode, at the lowest and highest CSR number of each privilege level and read-only class in the ranges above (0x300, 0xBFF, 0xF00, 0xFFF), execute CSRRW, CSRRS, CSRRC, CSRRWI, CSRRSI and CSRRCI with rs1/uimm zero and nonzero and with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 4 CSRs * 6 instructions * 2 rs1/uimm * 2 rd
+    rules:
+      - Zicsr_illegal_mode
   - name: cp_csr_ro
     goal: Read-only CSRs cannot be written from VS-mode
     description: In VS-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xEFF, as S_scsr_cg/cp_csr_ro in S-mode
     expectation: Illegal instruction fault, and rd is unchanged
     bins: 768 CSRs
+  - name: cp_csr_ro_variants
+    goal: Read-only CSRs cannot be written from VS-mode with any CSR instruction form
+    description: "In VS-mode, at the lowest and highest CSR number of each read-only privilege class (0xC00, 0xCFF, 0xD00, 0xDFF, 0xE00, 0xEFF), execute each CSR instruction form that writes (CSRRW, CSRRWI, and CSRRS/CSRRC/CSRRSI/CSRRCI with nonzero rs1/uimm) with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 6 CSRs * 8 forms * 2 rd
+    rules:
+      - Zicsr_illegal_acc
   - name: cp_hcsr_virtualinstructionfault
     goal: HS and VS registers cause virtual instruction fault from VS-mode
     description: csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR
@@ -191,11 +205,25 @@ coverpoints:
     rules:
       - H_vscsrs_acc_vs
       - Zicsr_illegal_mode
+  - name: cp_csr_insufficient_priv_variants
+    goal: M-mode CSRs are inaccessible from VU-mode with every CSR instruction form
+    description: "In VU-mode, at the lowest and highest CSR number of each privilege level and read-only class in the M-mode ranges (0x300, 0xBFF, 0xF00, 0xFFF), execute CSRRW, CSRRS, CSRRC, CSRRWI, CSRRSI and CSRRCI with rs1/uimm zero and nonzero and with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0.  S, HS and VS CSRs are left out because VU-mode access to an implemented one raises virtual instruction."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 4 CSRs * 6 instructions * 2 rs1/uimm * 2 rd
+    rules:
+      - Zicsr_illegal_mode
   - name: cp_csr_ro
     goal: User read-only CSRs cannot be written from VU-mode
     description: In VU-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xCFF, as U_ucsr_cg/cp_csr_ro in U-mode
     expectation: Illegal instruction fault, and rd is unchanged
     bins: 256 CSRs
+  - name: cp_csr_ro_variants
+    goal: Read-only CSRs cannot be written from VU-mode with any CSR instruction form
+    description: "In VU-mode, at the lowest and highest CSR number of each read-only privilege class below M (0xC00, 0xCFF, 0xD00, 0xDFF, 0xE00, 0xEFF), execute each CSR instruction form that writes (CSRRW, CSRRWI, and CSRRS/CSRRC/CSRRSI/CSRRCI with nonzero rs1/uimm) with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0.  A write is illegal even where a VU-mode read raises virtual instruction."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 6 CSRs * 8 forms * 2 rd
+    rules:
+      - Zicsr_illegal_acc
   - heading: Instructions (H_inst_cg)
   - name: cp_hlv
     goal: Basic load

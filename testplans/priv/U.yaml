@@ -8,8 +8,18 @@ coverpoints:
       - ecall throws environment call.  ebreak throws breakpoint.  mret and sret throw illegal instructions.
   - name: cp_csr_insufficient_priv
     description: Read Machine, Hypervisor, Supervisor CSRS100-3FF, 500-7FF, 900-BFF, D000-FFF
+  - name: cp_csr_insufficient_priv_variants
+    goal: Non-user CSRs are inaccessible from U-mode with every CSR instruction form
+    description: "At the lowest and highest CSR number of each privilege level and read-only class in the ranges above (0x100, 0x9FF, 0x200, 0xAFF, 0x300, 0xBFF, 0xD00, 0xDFF, 0xE00, 0xEFF, 0xF00, 0xFFF), execute CSRRW, CSRRS, CSRRC, CSRRWI, CSRRSI and CSRRCI with rs1/uimm zero and nonzero and with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 12 CSRs * 6 instructions * 2 rs1/uimm * 2 rd
   - name: cp_csr_ro
     description: Write User read-only CSRs C00-CFF
+  - name: cp_csr_ro_variants
+    goal: User read-only CSRs trap when written from U-mode with any CSR instruction form
+    description: "At 0xC00 and 0xCFF, execute each CSR instruction form that writes (CSRRW, CSRRWI, and CSRRS/CSRRC/CSRRSI/CSRRCI with nonzero rs1/uimm) with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 2 CSRs * 8 forms * 2 rd
   - heading: User-mode access to the F and V CSRs is tested in the U_F and U_V rows below, and to the counters in Zicntr and Zihpm.
   # The U_F, U_V and U_VF rows mirror the Sm_F, Sm_V and Sm_VF rows in Sm.yaml; keep them in step.
   - heading: "U_F tests (U_F-NN.S): the floating-point CSRs and xstatus.FS from U-mode, run when F is also supported. xstatus.FS is written and read through T-SBI, in sstatus when S-mode is supported and otherwise in mstatus."

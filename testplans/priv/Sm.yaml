@@ -55,11 +55,21 @@ coverpoints:
     description: Read Debug CSRS 7B0-7BF
     expectation: Illegal Instruction
     bins: "16"
+  - name: cp_csr_insufficient_priv_variants
+    goal: Debug registers are inaccessible from M-mode with every CSR instruction form
+    description: "At 0x7B0 and 0x7BF, execute CSRRW, CSRRS, CSRRC, CSRRWI, CSRRSI and CSRRCI with rs1/uimm zero and nonzero and with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 2 CSRs * 6 instructions * 2 rs1/uimm * 2 rd
   - name: cp_csr_ro
     goal: Read-only registers should trap when written
     description: Write read-only CSRs (C00-FFF)
     expectation: Illegal Instruction
     bins: 1024 CSRs
+  - name: cp_csr_ro_variants
+    goal: Read-only registers trap when written with any CSR instruction form
+    description: "At the lowest and highest CSR number of each read-only privilege class (0xC00, 0xCFF, 0xD00, 0xDFF, 0xE00, 0xEFF, 0xF00, 0xFFF), execute each CSR instruction form that writes (CSRRW, CSRRWI, and CSRRS/CSRRC/CSRRSI/CSRRCI with nonzero rs1/uimm) with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 8 CSRs * 8 forms * 2 rd
   - name: cp_cntr_access
     goal: Access to all 32 counters
     description: csr_read, write nonzero, write 0, set nonzero, clear all for each of for mcycle, minstret, mhpmcounter31...3. If RV32 is supported, also do mcycleh, minstreth, mhpmcounterh31...3.  Read back value and check if it is within some threshold of the written value (because counters will continue to increment).

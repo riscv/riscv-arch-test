@@ -20,7 +20,10 @@ normative_rule_definitions:
   # exception to be raised.
   - name: non_priv_exc
     coverpoint:
-      ["U_ucsr_cg/cp_csr_insufficient_priv", "U_uprivinst_cg/cp_uprivinst"]
+      [
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+        "U_uprivinst_cg/cp_uprivinst",
+      ]
 
   # The machine level has the highest privileges and is the only mandatory privilege level for
   # a RISC-V hardware platform.
@@ -43,22 +46,28 @@ normative_rule_definitions:
   # The top two bits (csr[11:10]) indicate whether the register is read/write
   # (00,01, or 10) or read-only (11).
   - name: Zicsr_rw
-    coverpoint: ["U_ucsr_cg/cp_csr_ro"]
+    coverpoint: ["U_ucsr_cg/{cp_csr_ro, cp_csr_ro_variants}"]
 
   # The next two bits (csr[9:8]) encode the lowest privilege level that can access
   # the CSR.
   - name: Zicsr_access
-    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+    coverpoint:
+      [
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+      ]
 
   # Attempts to access a CSR without appropriate privilege level raise
   # illegal-instruction exceptions or, as described in &lt;&lt;sec:hcauses&gt;&gt;,
   # virtual-instruction exceptions.
   - name: Zicsr_illegal_mode
-    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+    coverpoint:
+      [
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+      ]
 
   # Attempts to write a read-only register raise illegal-instruction exceptions.
   - name: Zicsr_illegal_acc
-    coverpoint: ["U_ucsr_cg/cp_csr_ro"]
+    coverpoint: ["U_ucsr_cg/{cp_csr_ro, cp_csr_ro_variants}"]
 
   # The insn:ecall[] instruction is used to make a service request to the execution
   # environment.

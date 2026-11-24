@@ -465,6 +465,17 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
         `endif
         cp_scountinhibit_vs:    cross priv_mode_vs, scountinhibit, csraccesses, menvcfg_cde;
     `endif
+    // The lowest and highest CSR number of each privilege level and read-only class
+    `include "general/RISCV_coverage_csr_access_variants.svh"
+    csr_insufficient_priv_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'h300, 12'hBFF, 12'hF00, 12'hFFF};
+    }
+    cp_csr_insufficient_priv_variants: cross priv_mode_vs, csr_insufficient_priv_sample, csr_access_op, csr_access_src, csr_access_rd;
+    csr_ro_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'hC00, 12'hCFF, 12'hD00, 12'hDFF, 12'hE00, 12'hEFF};
+    }
+    cp_csr_ro_variants: cross priv_mode_vs, csr_ro_sample, csr_write_form, csr_access_rd;
+
 endgroup
 
 // vsstatus.SD is read-only and summarizes FS, VS and XS.  VS-mode writes it through sstatus, as S_sstatus_cg.
@@ -527,6 +538,19 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
 
     cp_csr_insufficient_priv: cross priv_mode_vu, csrr, csr_nonuser, nonzerord;
     cp_csr_ro:                cross priv_mode_vu, csrw, csr_uro;
+    // The lowest and highest CSR number of each privilege level and read-only class
+    `include "general/RISCV_coverage_csr_access_variants.svh"
+    // Only M-mode addresses have an implementation-independent privilege exception from VU.
+    csr_insufficient_priv_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'h300, 12'hBFF, 12'hF00, 12'hFFF};
+    }
+    cp_csr_insufficient_priv_variants: cross priv_mode_vu, csr_insufficient_priv_sample, csr_access_op, csr_access_src, csr_access_rd;
+    // Every form writes, so S/H read-only spaces also require illegal instruction.
+    csr_ro_sample: coverpoint ins.current.insn[31:20] {
+        bins csr[] = {12'hC00, 12'hCFF, 12'hD00, 12'hDFF, 12'hE00, 12'hEFF};
+    }
+    cp_csr_ro_variants: cross priv_mode_vu, csr_ro_sample, csr_write_form, csr_access_rd;
+
 endgroup
 
 covergroup H_inst_cg with function sample(ins_t ins);

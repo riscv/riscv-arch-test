@@ -212,7 +212,7 @@ normative_rule_definitions:
         "H_hscsr_cg/cp_hcsr_access_zero/vsatp",
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
         "H_vucsr_cg/cp_csr_insufficient_priv",
-        "U_ucsr_cg/cp_csr_insufficient_priv",
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
       ]
   # The vsstatus register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register sstatus, formatted as shown in when VSXLEN=32 and when VSXLEN=64.
@@ -402,7 +402,10 @@ normative_rule_definitions:
 
   # H and S CSRs are inaccessible from U-mode
   - names: [H_vscsrs_acc_u]
-    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+    coverpoint:
+      [
+        "U_ucsr_cg/{cp_csr_insufficient_priv, cp_csr_insufficient_priv_variants}",
+      ]
 
   # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
   # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
@@ -744,3 +747,16 @@ normative_rule_definitions:
         "H_Zicntr_cg/cp_delta_u",
         "H_Zicntr_cg/cp_delta_vu",
       ]
+
+  # M-mode CSR addresses are inaccessible from VS/VU irrespective of implementation.
+  - name: Zicsr_illegal_mode
+    coverpoint:
+      [
+        "H_vscsr_cg/cp_csr_insufficient_priv_variants",
+        "H_vucsr_cg/cp_csr_insufficient_priv_variants",
+      ]
+
+  # Writes to read-only CSR addresses are illegal, including custom S/H CSRs from VU.
+  - name: Zicsr_illegal_acc
+    coverpoint:
+      ["H_vscsr_cg/cp_csr_ro_variants", "H_vucsr_cg/cp_csr_ro_variants"]

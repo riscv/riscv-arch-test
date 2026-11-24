@@ -15,6 +15,11 @@ coverpoints:
     description: Write read-only CSRs (C00-EFF)
     rules:
       - Turning on satp.mode without having page tables will hang the system
+  - name: cp_csr_ro_variants
+    goal: Read-only CSRs trap when written from S-mode with any CSR instruction form
+    description: "At the lowest and highest CSR number of each read-only privilege class (0xC00, 0xCFF, 0xD00, 0xDFF, 0xE00, 0xEFF), execute each CSR instruction form that writes (CSRRW, CSRRWI, and CSRRS/CSRRC/CSRRSI/CSRRCI with nonzero rs1/uimm) with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 6 CSRs * 8 forms * 2 rd
   - name: cp_satp
     goal: Read satp
     description: Read satp
@@ -23,6 +28,11 @@ coverpoints:
     description: In supervisor mode, read/write/set/clear from each U-mode CSR if F/V are supported
   - name: cp_csr_insufficient_priv
     description: Read Machine CSRS 300-3FF, 700-7FF, B00-BFF, F000-FFF, excluding 7AA (mscontext)
+  - name: cp_csr_insufficient_priv_variants
+    goal: M-mode CSRs are inaccessible from S-mode with every CSR instruction form
+    description: "At the lowest and highest CSR number of each privilege level and read-only class in the ranges above (0x300, 0xBFF, 0xF00, 0xFFF), execute CSRRW, CSRRS, CSRRC, CSRRWI, CSRRSI and CSRRCI with rs1/uimm zero and nonzero and with rd zero and nonzero. CSRRS/CSRRC use a nonzero rs1 holding 0."
+    expectation: Illegal instruction, and a nonzero rd is unchanged
+    bins: 4 CSRs * 6 instructions * 2 rs1/uimm * 2 rd
   - name: cp_scause_write
     goal: |-
       Write scause values

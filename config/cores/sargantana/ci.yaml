@@ -138,6 +138,14 @@ exclude_extensions:
   - Sv_HZicbo_sv39x4_zicbom_vs
   - Sv_HZicbo_sv39x4_zicboz_g
   - Sv_HZicbo_sv39x4_zicboz_vs
+  # CBOs at an offset inside the block under two-stage translation: the store page fault has a wrong trap signature,
+  # the same paths as the _g and _vs tests above (#113 item 3, #135, #140)
+  - Sv_HZicbo_sv39x4_zicbom_offset
+  - Sv_HZicbo_sv39x4_zicboz_offset
+  # M-mode CBOs with MPRV = 1 and MPV = 1 take a store guest-page fault the test does not expect (mcause 23):
+  # https://github.com/bsc-loca/csr/issues/17 and https://github.com/bsc-loca/sargantana/issues/140
+  - Sv_HSm_sv39x4_mprv_zicbom
+  - Sv_HSm_sv39x4_mprv_zicboz
   # Virtual-instruction exceptions set GVA = 1 (https://github.com/bsc-loca/sargantana/issues/128)
   - Sv_HZicbo_zicbom_henvcfg
   - Sv_HZicbo_zicboz_henvcfg

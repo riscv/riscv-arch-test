@@ -53,9 +53,15 @@ normative_rule_definitions:
   - name: Zce_dep
     coverpoint: ["Definition, checked through UDB"]
 
-  # Zcb adds C.LBU, C.LHU, C.LH, C.SB, C.SH, C.ZEXT.B, C.SEXT.B, C.ZEXT.H, C.SEXT.H, C.NOT, and
-  # C.MUL on RV32/RV64, plus C.ZEXT.W on RV64. The dependent instruction groups have their own
-  # covergroups.
+  # RV32|RV64|Mnemonic|Instruction === yes|yes|insn:c.lbu[rd', uimm(rs1')]|<<insns-c_lbu>>¶
+  # yes|yes|insn:c.lhu[rd',uimm(rs1')]|<<insns-c_lhu>>¶
+  # yes|yes|insn:c.lh[rd',uimm(rs1')]|<<insns-c_lh>>¶
+  # yes|yes|insn:c.sb[rs2',uimm(rs1')]|<<insns-c_sb>>¶
+  # yes|yes|insn:c.sh[rs2',uimm(rs1')]|<<insns-c_sh>>¶
+  # yes|yes|insn:c.zext.b[rsd']|<<insns-c_zext_b>>¶ yes|yes|insn:c.sext.b[rsd']|<<insns-c_sext_b>>¶
+  # yes|yes|insn:c.zext.h[rsd']|<<insns-c_zext_h>>¶ yes|yes|insn:c.sext.h[rsd']|<<insns-c_sext_h>>¶
+  # |yes|insn:c.zext.w[rsd']|<<insns-c_zext_w>>¶ yes|yes|insn:c.not[rsd']|<<insns-c_not>>¶
+  # yes|yes|insn:c.mul[rsd',rs2']|<<insns-c_mul>> ===
   - name: Zcb_insns_tbl
     coverpoint:
       [

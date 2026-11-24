@@ -1,8 +1,8 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|czero.eqz rd, rs1, rs2|&lt;&lt;insns-czero-
-  # eqz&gt;&gt;¶✓|✓|czero.nez rd, rs1, rs2|&lt;&lt;insns-czero-nez&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|czero.eqz rd, rs1, rs2|<<insns-czero-eqz>>¶ ✓|✓|czero.nez
+  # rd, rs1, rs2|<<insns-czero-nez>> ===
   - name: Zicond_insns_tbl
     coverpoint: ["Zicond_{czero_eqz,czero_nez}_cg/cp_asm_count"]
 

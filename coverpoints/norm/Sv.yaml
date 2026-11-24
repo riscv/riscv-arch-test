@@ -154,10 +154,12 @@ normative_rule_definitions:
   # Accesses to global mappings (see <<translation>>) are not ordered. The fence also
   # invalidates all address-translation cache entries matching the address space
   # identified by integer register rs2, except for entries containing global mappings.
-  # Needs a PTE change between the accesses: the global_pte test runs SFENCE.VMA x0, ASID but
-  # leaves the PTE unchanged, so the access succeeds whatever the fence does.
   - name: sfence_vma_asid_only
-    coverpoint: ["Sv_H_fence_cg/cp_sfence_vma_vs_asid"]
+    coverpoint:
+      [
+        "Sv_H_fence_cg/cp_sfence_vma_vs_asid",
+        "Needs test: SFENCE.VMA x0, rs2 in S-mode (V=0) after a PTE change; the global_pte test leaves the PTE unchanged, so its access succeeds whatever the fence does.",
+      ]
 
   # If rs1{ne}x0 and rs2=x0, the fence orders only reads and writes made to leaf page
   # table entries corresponding to the virtual address in rs1, for all address spaces.
@@ -1094,7 +1096,7 @@ normative_rule_definitions:
       [
         "Sv_HZicbo_cg/{cp_cbie_vs,cp_cbie_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "Sm_H_mcsr_cg/cp_hcsrwalk_masked",
       ]
 
   # When V=1, if the CBO.INVAL instruction is not HS-qualified, it raises an
@@ -1121,7 +1123,7 @@ normative_rule_definitions:
       [
         "Sv_HZicbo_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "Sm_H_mcsr_cg/cp_hcsrwalk_masked",
       ]
 
   # A insn:cbo.clean[] or insn:cbo.flush[] instruction executes or raises an
@@ -1143,7 +1145,7 @@ normative_rule_definitions:
       [
         "Sv_HZicbo_cg/{cp_cbze_vs,cp_cbze_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
-        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "Sm_H_mcsr_cg/cp_hcsrwalk_masked",
       ]
 
   # Finally, a insn:cbo.zero[] instruction executes or raises an illegal-instruction or
@@ -1174,10 +1176,12 @@ normative_rule_definitions:
       ]
 
   # X|W|R|Meaning === 0 0 0 0 1 1 1 1|0 0 1 1 0 0 1 1|0 1 0 1 0 1 0 1|Pointer to next level of page
-  # table. Read-only page. Reserved for future use. Read-write page. Execute-only page. Read-
-  # execute page. Reserved for future use. Read-write-execute page. ===
+  # table. Read-only page. Reserved for future use. Read-write page. Execute-only page. Read-execute
+  # page. Reserved for future use. Read-write-execute page. ===
   - name: pte_xwr_enc
     coverpoint:
       [
         "Sv_vm_permissions_cg/cp_spage_{exec_s_i,noexec_s_i,read_s_d,noread_s_d,write_s_d,nowrite_s_d,rwx_s_i_noexec,rwx_s_d_noread,rwx_s_d_nowrite}",
+        "Sv_vm_permissions_cg/cp_PTE_res_rwx_s_{i_exec,d_read,d_write}",
+        "Sv_vm_permissions_cg/cp_PTE_nonleaf_lvl0_s_{i_exec,d_read,d_write}",
       ]

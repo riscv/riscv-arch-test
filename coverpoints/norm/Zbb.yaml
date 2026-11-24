@@ -192,45 +192,40 @@ normative_rule_definitions:
   - name: zext-h_op
     coverpoint: ["Zbb_zext_h_cg/cp_rs1_edges"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:andn[rd,rs1,rs2]|&lt;&lt;insns-
-  # andn&gt;&gt;¶✓|✓|insn:orn[rd,rs1,rs2]|&lt;&lt;insns-
-  # orn&gt;&gt;¶✓|✓|insn:xnor[rd,rs1,rs2]|&lt;&lt;insns-xnor&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:andn[rd,rs1,rs2]|<<insns-andn>>¶
+  # ✓|✓|insn:orn[rd,rs1,rs2]|<<insns-orn>>¶ ✓|✓|insn:xnor[rd,rs1,rs2]|<<insns-xnor>> ===
   - name: Zbb_logical_insns_tbl
     coverpoint: ["Zbb_{andn,orn,xnor}_cg/cp_asm_count"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:clz[rd,rs]|&lt;&lt;insns-
-  # clz&gt;&gt;¶|✓|insn:clzw[rd,rs]|&lt;&lt;insns-clzw&gt;&gt;¶✓|✓|insn:ctz[rd,rs]|&lt;&lt;insns-
-  # ctz&gt;&gt;¶|✓|insn:ctzw[rd,rs]|&lt;&lt;insns-ctzw&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:clz[rd,rs]|<<insns-clz>>¶
+  # |✓|insn:clzw[rd,rs]|<<insns-clzw>>¶ ✓|✓|insn:ctz[rd,rs]|<<insns-ctz>>¶
+  # |✓|insn:ctzw[rd,rs]|<<insns-ctzw>> ===
   - name: Zbb_count_zeros_insns_tbl
     coverpoint: ["Zbb_{clz,clzw,ctz,ctzw}_cg/cp_asm_count"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cpop[rd,rs]|&lt;&lt;insns-
-  # cpop&gt;&gt;¶|✓|insn:cpopw[rd,rs]|&lt;&lt;insns-cpopw&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cpop[rd,rs]|<<insns-cpop>>¶
+  # |✓|insn:cpopw[rd,rs]|<<insns-cpopw>> ===
   - name: Zbb_cpop_insns_tbl
     coverpoint: ["Zbb_{cpop,cpopw}_cg/cp_asm_count"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:max[rd,rs1,rs2]|&lt;&lt;insns-
-  # max&gt;&gt;¶✓|✓|insn:maxu[rd,rs1,rs2]|&lt;&lt;insns-
-  # maxu&gt;&gt;¶✓|✓|insn:min[rd,rs1,rs2]|&lt;&lt;insns-
-  # min&gt;&gt;¶✓|✓|insn:minu[rd,rs1,rs2]|&lt;&lt;insns-minu&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:max[rd,rs1,rs2]|<<insns-max>>¶
+  # ✓|✓|insn:maxu[rd,rs1,rs2]|<<insns-maxu>>¶ ✓|✓|insn:min[rd,rs1,rs2]|<<insns-min>>¶
+  # ✓|✓|insn:minu[rd,rs1,rs2]|<<insns-minu>> ===
   - name: Zbb_min_max_insns_tbl
     coverpoint: ["Zbb_{min,minu,max,maxu}_cg/cp_asm_count"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:sext.b[rd,rs]|&lt;&lt;insns-
-  # sext_b&gt;&gt;¶✓|✓|insn:sext.h[rd,rs]|&lt;&lt;insns-
-  # sext_h&gt;&gt;¶✓|✓|insn:zext.h[rd,rs]|&lt;&lt;insns-zext_h&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:sext.b[rd,rs]|<<insns-sext_b>>¶
+  # ✓|✓|insn:sext.h[rd,rs]|<<insns-sext_h>>¶ ✓|✓|insn:zext.h[rd,rs]|<<insns-zext_h>> ===
   - name: Zbb_sext_zext_insns_tbl
     coverpoint: ["Zbb_{sext_b,sext_h,zext_h}_cg/cp_asm_count"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:rol[rd,rs1,rs2]|&lt;&lt;insns-
-  # rol&gt;&gt;¶|✓|insn:rolw[rd,rs1,rs2]|&lt;&lt;insns-
-  # rolw&gt;&gt;¶✓|✓|insn:ror[rd,rs1,rs2]|&lt;&lt;insns-
-  # ror&gt;&gt;¶✓|✓|insn:rori[rd,rs1,shamt]|&lt;&lt;insns-
-  # rori&gt;&gt;¶|✓|insn:roriw[rd,rs1,shamt]|&lt;&lt;insns-
-  # roriw&gt;&gt;¶|✓|insn:rorw[rd,rs1,rs2]|&lt;&lt;insns-rorw&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:rol[rd,rs1,rs2]|<<insns-rol>>¶
+  # |✓|insn:rolw[rd,rs1,rs2]|<<insns-rolw>>¶ ✓|✓|insn:ror[rd,rs1,rs2]|<<insns-ror>>¶
+  # ✓|✓|insn:rori[rd,rs1,shamt]|<<insns-rori>>¶ |✓|insn:roriw[rd,rs1,shamt]|<<insns-roriw>>¶
+  # |✓|insn:rorw[rd,rs1,rs2]|<<insns-rorw>> ===
   - name: Zbb_rotate_insns_tbl
     coverpoint: ["Zbb_{rol,rolw,ror,rorw,rori,roriw}_cg/cp_asm_count"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:orc.b[rd,rs]|&lt;&lt;insns-orc_b&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:orc.b[rd,rs]|<<insns-orc_b>> ===
   - name: Zbb_orc-b_insns_tbl
-    coverpoint: ["Zbb_{orc_b}_cg/cp_asm_count"]
+    coverpoint: ["Zbb_orc_b_cg/cp_asm_count"]

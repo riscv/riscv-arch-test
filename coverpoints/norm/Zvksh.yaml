@@ -118,8 +118,8 @@ normative_rule_definitions:
         "Zvksh_vsm3me_vv_cg/{cp_vs1_edges_egs8, cp_vs2_edges_egs8, cr_vs2_vs1_edges_egs8}",
       ]
 
-  # SEW|EGW|Mnemonic|Instruction === 32|256|insn:vsm3me.vv[]|&lt;&lt;insns-
-  # vsm3me&gt;&gt;¶32|256|insn:vsm3c.vi[]|&lt;&lt;insns-vsm3c&gt;&gt; ===
+  # SEW|EGW|Mnemonic|Instruction === 32|256|insn:vsm3me.vv[]|<<insns-vsm3me>>¶
+  # 32|256|insn:vsm3c.vi[]|<<insns-vsm3c>> ===
   - name: Zvksh_insns_tbl
     coverpoint:
       ["Zvksh_vsm3c_vi_cg/cp_asm_count", "Zvksh_vsm3me_vv_cg/cp_asm_count"]

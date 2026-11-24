@@ -47,8 +47,8 @@ normative_rule_definitions:
     # PMPZicbo prefetches blocks that PMP denies
     coverpoint: ["PMP_Zicbo_cg/{cp_prefetch_i, cp_prefetch_r, cp_prefetch_w}"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:prefetch.i[offset(base)]|&lt;&lt;insns-
-  # prefetch_i&gt;&gt;¶✓|✓|insn:prefetch.r[offset(base)]|&lt;&lt;insns-
-  # prefetch_r&gt;&gt;¶✓|✓|insn:prefetch.w[offset(base)]|&lt;&lt;insns-prefetch_w&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:prefetch.i[offset(base)]|<<insns-prefetch_i>>¶
+  # ✓|✓|insn:prefetch.r[offset(base)]|<<insns-prefetch_r>>¶
+  # ✓|✓|insn:prefetch.w[offset(base)]|<<insns-prefetch_w>> ===
   - name: Zicbop_insns_tbl
     coverpoint: ["Zicbop_{prefetch_i,prefetch_r,prefetch_w}_cg/cp_asm_count"]

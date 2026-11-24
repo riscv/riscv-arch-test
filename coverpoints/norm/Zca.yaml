@@ -12,16 +12,25 @@ normative_rule_definitions:
         "Zca_c_beqz_cg/{cp_imm_edges_c_branch}",
       ]
 
-  # === inst[15:13] inst[1:0]|000|001|010|011|100|101|110|111|¶00|ADDI4SPN|FLD FLD|LW|FLW
-  # LD|Reserved|FSD FSD|SW|FSW SD|RV32 RV64¶01|ADDI|JAL ADDIW|LI|LUI/ADDI16SP|MISC-
-  # ALU|J|BEQZ|BNEZ|RV32 RV64¶10|SLLI|FLDSP FLDSP|LWSP|FLWSP LDSP|J[AL]R/MV/ADD|FSDSP
-  # FSDSP|SWSP|FSWSP SDSP|RV32 RV64¶11|&gt;16b ===
+  # === inst[15:13] inst[1:0]|000|001|010|011|100|101|110|111|¶ 00|ADDI4SPN|FLD FLD|LW|FLW
+  # LD|Reserved|FSD FSD|SW|FSW SD|RV32 RV64¶ 01|ADDI|JAL
+  # ADDIW|LI|LUI/ADDI16SP|MISC-ALU|J|BEQZ|BNEZ|RV32 RV64¶ 10|SLLI|FLDSP FLDSP|LWSP|FLWSP
+  # LDSP|J[AL]R/MV/ADD|FSDSP FSDSP|SWSP|FSWSP SDSP|RV32 RV64¶ 11|>16b ===
   - name: Zca_opcode_map_tbl
-    coverpoint: ["Zca_c_*_cg/cp_asm_count", "Zcd_c_*_cg/cp_asm_count"]
+    # cp_compressed00 executes the reserved encodings in quadrant 0
+    coverpoint:
+      [
+        "Zca_c_*_cg/cp_asm_count",
+        "Zc{d,f}_c_*_cg/cp_asm_count",
+        "Ssstrict_S_comp_instr_cg/cp_compressed00",
+      ]
 
-  # Mapped compressed HINT cases include C.NOP with nonzero immediate, C.ADDI with zero immediate,
-  # and C.LI/C.LUI/C.MV/C.ADD with rd=x0. C.ADD with rd=x0 and rs2=x2 through x5 encodes compressed
-  # NTL hints.
+  # Instruction|Constraints|Code Points|Purpose === insn:c.nop[]|imm≠0|63|Designated for future
+  # standard use¶ insn:c.addi[]|rd≠x0, imm=0|31¶ insn:c.li[]|rd=x0|64¶ insn:c.lui[]|rd=x0, imm≠0|63¶
+  # insn:c.mv[]|rd=x0, rs2≠x0|31¶ insn:c.add[]|rd=x0, rs2≠x0, rs2≠x2-x5|27¶ insn:c.add[]|rd=x0,
+  # rs2=x2-x5|4|(rs2=x2) insn:c.ntl.p1[] (rs2=x3) insn:c.ntl.pall[] (rs2=x4) insn:c.ntl.s1[]
+  # (rs2=x5) insn:c.ntl.all[]¶ insn:c.slli[]|rd=x0 or shamt=0|63 (RV32), 95 (RV64)|Designated for
+  # custom use¶ insn:c.srli[]|shamt=0|8¶ insn:c.srai[]|shamt=0|8 ===
   - name: Zca_hints_tbl
     coverpoint:
       [
@@ -31,6 +40,7 @@ normative_rule_definitions:
         "Zca_c_lui_cg/cp_c_hint_lui",
         "Zca_c_mv_cg/cp_c_hint_mv",
         "Zca_c_nop_cg/cp_c_hint_nop",
+        "Needs test: the custom-use HINTs C.SLLI with rd=x0 or shamt=0, and C.SRLI and C.SRAI with shamt=0.",
       ]
 
   - name: Zca_regs8

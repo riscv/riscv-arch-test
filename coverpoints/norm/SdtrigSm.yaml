@@ -33,10 +33,7 @@ normative_rule_definitions:
   - name: Sdtrig_actions
     coverpoint:
       [
-        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_priv_mode",
-        "SdtrigSm_icount_cg/cp_icount_instr",
-        "SdtrigSm_itrigger_cg/cp_itrigger_s",
-        "SdtrigSm_etrigger_cg/cp_etrigger_s_deleg",
+        "Needs infrastructure: only action 0 (breakpoint exception) is tested, see Sdtrig_action0; actions 1 to 5 need Sdext or trace, and actions 8 and 9 an observable TM external trigger output.",
       ]
 
   # Raise a breakpoint exception. (Used when software wants to use the trigger
@@ -1729,8 +1726,7 @@ normative_rule_definitions:
   # This trigger may fire on up to XLEN of the Exception Codes defined in mcause
   # (described in the Privileged Spec, with Interrupt=0).
   - name: Sdtrig_etrigger_fire
-    coverpoint:
-      ["SdtrigSm_etrigger_cg/cp_etrigger_{s,s_deleg,s_other,u,u_deleg,u_other}"]
+    coverpoint: ["SdtrigSm_etrigger_cg/cp_etrigger_{m,s,s_deleg,u,u_deleg}"]
 
   # Those causes are configured by writing the corresponding bit in tdata2.
   - name: Sdtrig_etrigger_config

@@ -184,18 +184,10 @@ normative_rule_definitions:
         "Zvknhb64_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4, cr_vs2_vd_edges_egs4}",
       ]
 
-  # Mnemonic|Instruction === insn:vsha2ms.vv[]|&lt;&lt;insns-
-  # vsha2ms&gt;&gt;¶insn:vsha2c*.vv[]|&lt;&lt;insns-vsha2c&gt;&gt; ===
+  # Mnemonic|Instruction === insn:vsha2ms.vv[]|<<insns-vsha2ms>>¶ insn:vsha2c*.vv[]|<<insns-vsha2c>>
+  # ===
   - name: Zvknha_Zvknhb_insns_tbl
     coverpoint:
       [
-        "Zvknhb32_vsha2ch_vv_cg/cp_asm_count",
-        "Zvknhb32_vsha2cl_vv_cg/cp_asm_count",
-        "Zvknhb32_vsha2ms_vv_cg/cp_asm_count",
-        "Zvknhb64_vsha2ch_vv_cg/cp_asm_count",
-        "Zvknhb64_vsha2cl_vv_cg/cp_asm_count",
-        "Zvknhb64_vsha2ms_vv_cg/cp_asm_count",
-        "Zvknha_vsha2ch_vv_cg/cp_asm_count",
-        "Zvknha_vsha2cl_vv_cg/cp_asm_count",
-        "Zvknha_vsha2ms_vv_cg/cp_asm_count",
+        "{Zvknha,Zvknhb32,Zvknhb64}_{vsha2ms,vsha2ch,vsha2cl}_vv_cg/cp_asm_count",
       ]

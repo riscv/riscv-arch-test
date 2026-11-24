@@ -132,8 +132,8 @@ normative_rule_definitions:
         "Zvksed_vsm4r_vs_cg/{cp_vd_edges_egs4_sm_byte_0, cr_vs2_vd_edges_egs4_subbytes_sm_0}",
       ]
 
-  # SEW|EGW|Mnemonic|Instruction === 32|128|insn:vsm4k.vi[]|&lt;&lt;insns-
-  # vsm4k&gt;&gt;¶32|128|insn:vsm4r.*[]|&lt;&lt;insns-vsm4r&gt;&gt; ===
+  # SEW|EGW|Mnemonic|Instruction === 32|128|insn:vsm4k.vi[]|<<insns-vsm4k>>¶
+  # 32|128|insn:vsm4r.*[]|<<insns-vsm4r>> ===
   - name: Zvksed_insns_tbl
     coverpoint:
       [

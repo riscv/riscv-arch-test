@@ -6,22 +6,14 @@
 # and data-independent-timing rules are generally not exercised by any suite.
 
 normative_rule_definitions:
-  # Zvkned provides VAESEF, VAESEM, VAESDF, VAESDM, VAESKF1.VI, VAESKF2.VI, and VAESZ.VS. These AES
-  # instructions use SEW=32 and 128-bit element groups.
+  # SEW|EGW|Mnemonic|Instruction === 32|128|insn:vaesef.*[]|<<insns-vaesef>>¶
+  # 32|128|insn:vaesem.*[]|<<insns-vaesem>>¶ 32|128|insn:vaesdf.*[]|<<insns-vaesdf>>¶
+  # 32|128|insn:vaesdm.*[]|<<insns-vaesdm>>¶ 32|128|insn:vaeskf1.vi[]|<<insns-vaeskf1>>¶
+  # 32|128|insn:vaeskf2.vi[]|<<insns-vaeskf2>>¶ 32|128|insn:vaesz.vs[]|<<insns-vaesz>> ===
   - name: Zvkned_insns_tbl
     coverpoint:
       [
-        "Zvkned_vaesdf_vs_cg/cp_asm_count",
-        "Zvkned_vaesdf_vv_cg/cp_asm_count",
-        "Zvkned_vaesdm_vs_cg/cp_asm_count",
-        "Zvkned_vaesdm_vv_cg/cp_asm_count",
-        "Zvkned_vaesef_vs_cg/cp_asm_count",
-        "Zvkned_vaesef_vv_cg/cp_asm_count",
-        "Zvkned_vaesem_vs_cg/cp_asm_count",
-        "Zvkned_vaesem_vv_cg/cp_asm_count",
-        "Zvkned_vaeskf1_vi_cg/cp_asm_count",
-        "Zvkned_vaeskf2_vi_cg/cp_asm_count",
-        "Zvkned_vaesz_vs_cg/cp_asm_count",
+        "Zvkned_{vaesef_vv,vaesef_vs,vaesem_vv,vaesem_vs,vaesdf_vv,vaesdf_vs,vaesdm_vv,vaesdm_vs,vaeskf1_vi,vaeskf2_vi,vaesz_vs}_cg/cp_asm_count",
       ]
 
   # All of these instructions work on 128-bit element groups comprised of four 32-bit

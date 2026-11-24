@@ -81,8 +81,7 @@ normative_rule_definitions:
     # cp_custom_cbo testcases use rs1 at offsets 0 and 255; the coverpoint does not sample the offset
     coverpoint: ["Zicbom_cbo_inval_cg/cp_custom_cbo"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cbo.clean[base]|&lt;&lt;insns-
-  # cbo_clean&gt;&gt;¶✓|✓|insn:cbo.flush[base]|&lt;&lt;insns-
-  # cbo_flush&gt;&gt;¶✓|✓|insn:cbo.inval[base]|&lt;&lt;insns-cbo_inval&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cbo.clean[base]|<<insns-cbo_clean>>¶
+  # ✓|✓|insn:cbo.flush[base]|<<insns-cbo_flush>>¶ ✓|✓|insn:cbo.inval[base]|<<insns-cbo_inval>> ===
   - name: Zicbom_insns_tbl
     coverpoint: ["Zicbom_{cbo_clean,cbo_flush,cbo_inval}_cg/cp_asm_count"]

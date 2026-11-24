@@ -31,6 +31,6 @@ normative_rule_definitions:
   - name: cbo-zero_specified_block
     coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
 
-  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cbo.zero[base]|&lt;&lt;insns-cbo_zero&gt;&gt; ===
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cbo.zero[base]|<<insns-cbo_zero>> ===
   - name: Zicboz_insns_tbl
-    coverpoint: ["Zicboz_{cbo_zero}_cg/cp_asm_count"]
+    coverpoint: ["Zicboz_cbo_zero_cg/cp_asm_count"]

@@ -1869,7 +1869,10 @@ normative_rule_definitions:
   # If any destination element is saturated, the vxsat bit is set in the vxsat
   # register.
   - name: vxsat_op_vnclip_u
-    coverpoint: ["Vx{8,16,32}_vnclip{,u}_wi_cg/cr_vxrm_vs2_imm_edges_wi"]
+    coverpoint:
+      [
+        "Needs test: check vxsat after VNCLIP and VNCLIPU saturate; their tests neither clear nor record vxsat.",
+      ]
 
   # If the EEW of a vector floating-point operand does not correspond to a supported
   # IEEE floating-point type, the instruction encoding is reserved.
@@ -3061,16 +3064,21 @@ normative_rule_definitions:
         "Untestable: trap precision is a cross-cutting property of every exception test, not something one coverpoint can isolate",
       ]
 
-  # All Zve* extensions provide support for EEW of 8, 16, and 32, and Zve64*
-  # extensions also support EEW of 64.
+  # ext:zve32x[] provides support for EEW of 8, 16, and 32.
   - name: Zve_eew
     coverpoint: ["Vx{8,16,32}_vadd_vv_cg/cp_vs2_edges"]
 
-  # All Zve* extensions support all vector load and store instructions
-  # (&lt;&lt;sec-vector-memory&gt;&gt;), except Zve64* extensions do not support
-  # EEW=64 for index values when XLEN=32.
+  # ext:zve64x[] supports all vector load and store instructions (<<sec-vector-memory>>), except
+  # EEW=64 for index values is not supported when XLEN=32.
   - name: Zve_nsupport_eew64_xlen32
-    coverpoint: ["Vls*_v*_cg/cp_asm_count"]
+    # Representative coverpoints; cp_exceptionsv_index_eew64 checks that indexed accesses with
+    # EEW=64 trap when XLEN=32
+    coverpoint:
+      [
+        "Vls32_{vle32,vlse32,vluxei32,vloxei32,vlseg2e32,vle32ff,vl1re32,vlm}_v_cg/cp_asm_count",
+        "Vls32_{vse32,vsse32,vsuxei32,vsoxei32,vsseg2e32,vs1r,vsm}_v_cg/cp_asm_count",
+        "ExceptionsVls_v{l,s}{ux,ox}ei64_v_cg/cp_exceptionsv_index_eew64",
+      ]
 
   # All Zve* extensions support all vector integer instructions
   # (&lt;&lt;sec-vector-integer&gt;&gt;), except that the vmulh integer multiply
@@ -3092,12 +3100,15 @@ normative_rule_definitions:
         "Implicit: config-driven instruction exclusion exercised implicitly by test generation filtering",
       ]
 
-  # All Zve* extensions support all vector permutation instructions
-  # (&lt;&lt;sec-vector-permute&gt;&gt;), except that Zve32x and Zve64x do not
-  # include those with floating-point operands, and Zve64f does not include those
-  # with EEW=64 floating-point operands.
+  # ext:zve32x[] supports all vector integer permutation instructions
+  # (<<sec-vector-integer-permute>>).
   - name: Zve32x_Zve64x_nsupport_freg
-    coverpoint: ["Vx*_v{mv,slide*,rgather*,compress}_*_cg/cp_asm_count"]
+    # Representative coverpoints; also the other SEWs
+    coverpoint:
+      [
+        "Vx32_{vmv_x_s,vmv_s_x,vslideup_vx,vslidedown_vx,vslide1up_vx,vslide1down_vx,vrgather_vv,vrgatherei16_vv,vcompress_vm}_cg/cp_asm_count",
+        "Vx32_vmv{1,2,4,8}r_v_cg/cp_asm_count",
+      ]
 
   # The Zve32x extension depends on the Zicsr extension.
   - name: Zve32x_dependent_Zicsr
@@ -3149,34 +3160,59 @@ normative_rule_definitions:
   # (&lt;&lt;sec-vector-memory&gt;&gt;), except the V extension does not support EEW=64
   # for index values when XLEN=32.
   - name: V_instr_ls_eew64_nsupported_xlen32
-    coverpoint: ["Vls*_v*_cg/cp_asm_count"]
+    # Representative coverpoints; cp_exceptionsv_index_eew64 checks that indexed accesses with
+    # EEW=64 trap when XLEN=32
+    coverpoint:
+      [
+        "Vls32_{vle32,vlse32,vluxei32,vloxei32,vlseg2e32,vle32ff,vl1re32,vlm}_v_cg/cp_asm_count",
+        "Vls32_{vse32,vsse32,vsuxei32,vsoxei32,vsseg2e32,vs1r,vsm}_v_cg/cp_asm_count",
+        "ExceptionsVls_v{l,s}{ux,ox}ei64_v_cg/cp_exceptionsv_index_eew64",
+      ]
   # The V extension supports all vector integer instructions
   # (&lt;&lt;sec-vector-integer&gt;&gt;).
   - name: V_instr_int
-    coverpoint: ["Vx*_v*_cg/cp_asm_count"]
+    # Representative coverpoints: one instruction from each kind of integer instruction
+    coverpoint:
+      [
+        "Vx32_{vadd_vv,vwadd_vv,vzext_vf2,vadc_vvm,vand_vv,vsll_vv,vnsrl_wv,vmseq_vv,vmin_vv,vmul_vv,vdiv_vv,vwmul_vv,vmacc_vv,vwmacc_vv,vmerge_vvm,vmv_v_v}_cg/cp_asm_count",
+      ]
   # The V extension supports all vector fixed-point arithmetic instructions
   # (&lt;&lt;sec-vector-fixed-point&gt;&gt;).
   - name: V_instr_fixedpt
+    # Representative coverpoints; also the other SEWs and forms
     coverpoint:
-      ["Vx*_v{sadd*,ssub*,aadd*,asub*,smul*,ssr*,nclip*}_cg/cp_asm_count"]
+      [
+        "Vx32_{vsaddu_vv,vsadd_vv,vssubu_vv,vssub_vv,vaaddu_vv,vaadd_vv,vasubu_vv,vasub_vv,vsmul_vv,vssrl_vv,vssra_vv,vnclipu_wv,vnclip_wv}_cg/cp_asm_count",
+      ]
   # The V extension supports all vector integer single-width and widening reduction
   # operations (&lt;&lt;sec-vector-integer-reduce&gt;&gt;,
   # &lt;&lt;sec-vector-integer-reduce-widen&gt;&gt;).
   - name: V_instr_red
-    coverpoint: ["Vx*_vred*_cg/cp_asm_count", "Vx*_vwred*_cg/cp_asm_count"]
+    # Representative coverpoints; also the other SEWs
+    coverpoint:
+      [
+        "Vx32_{vredsum,vredmaxu,vredmax,vredminu,vredmin,vredand,vredor,vredxor,vwredsumu,vwredsum}_vs_cg/cp_asm_count",
+      ]
   # The V extension supports all vector mask instructions
   # (&lt;&lt;sec-vector-mask&gt;&gt;).
   - name: V_instr_mask
+    # Representative coverpoints; also the other SEWs
     coverpoint:
-      ["Vx*_vm*_cg/cp_asm_count", "Vx*_v{cpop,first,iota,id}_*_cg/cp_asm_count"]
+      [
+        "Vx32_{vmand,vmnand,vmandn,vmxor,vmor,vmnor,vmorn,vmxnor}_mm_cg/cp_asm_count",
+        "Vx32_{vcpop,vfirst,vmsbf,vmsif,vmsof,viota}_m_cg/cp_asm_count",
+        "Vx32_vid_v_cg/cp_asm_count",
+      ]
   # The V extension supports all vector permutation instructions
   # (&lt;&lt;sec-vector-integer-permute&gt;&gt;,
   # &lt;&lt;sec-vector-float-permute&gt;&gt;).
   - name: V_instr_perm
+    # Representative coverpoints; also the other SEWs
     coverpoint:
       [
-        "Vx*_v{mv,slide*,rgather*,compress}_*_cg/cp_asm_count",
-        "Vf*_vf{mv,slide*}_*_cg/cp_asm_count",
+        "Vx32_{vmv_x_s,vmv_s_x,vslideup_vx,vslidedown_vx,vslide1up_vx,vslide1down_vx,vrgather_vv,vrgatherei16_vv,vcompress_vm}_cg/cp_asm_count",
+        "Vx32_vmv{1,2,4,8}r_v_cg/cp_asm_count",
+        "Vf32_{vfmv_f_s,vfmv_s_f,vfslide1up_vf,vfslide1down_vf}_cg/cp_asm_count",
       ]
 
   # The V extension depends upon the F and D extensions, and implements all vector
@@ -3204,7 +3240,12 @@ normative_rule_definitions:
   # &lt;&lt;sec-vfslide1up&gt;&gt;, and &lt;&lt;sec-vfslide1down&gt;&gt; become defined
   # when SEW=16.
   - name: Zvfh_instr
-    coverpoint: ["Vf16_*_cg/cp_asm_count"]
+    # Representative coverpoints; also cp_asm_count of the other Vf16 covergroups
+    coverpoint:
+      [
+        "Vf16_{vfadd_vv,vfwadd_vv,vfmul_vv,vfdiv_vv,vfmacc_vv,vfwmacc_vv,vfsqrt_v,vfrsqrt7_v,vfrec7_v,vfmin_vv,vfsgnj_vv,vmfeq_vv,vfclass_v,vfmerge_vfm,vfcvt_x_f_v,vfwcvt_f_f_v,vfncvt_rod_f_f_w}_cg/cp_asm_count",
+        "Vf16_{vfredusum_vs,vfwredusum_vs,vfmv_v_f,vfslide1up_vf,vfslide1down_vf}_cg/cp_asm_count",
+      ]
   # Additionally, conversions between 8-bit integers and binary16 values are provided. The
   # floating-point-to-integer narrowing conversions (insn:vfncvt.x.f.w[],
   # insn:vfncvt.xu.f.w[], insn:vfncvt.rtz.x.f.w[], and insn:vfncvt.rtz.xu.f.w[]) and
@@ -3368,50 +3409,51 @@ normative_rule_definitions:
   - name: vec_store_nonidempotent_no_update
     coverpoint: ["Untestable: no I/O devices defined in profile"]
 
-  # Address|Privilege|Name|Description === 0x008|URW|csr:vstart[]|Vector start element
-  # index¶0x009|URW|csr:vxsat[]|Fixed-Point Saturate Flag¶0x00A|URW|csr:vxrm[]|Fixed-Point Rounding
-  # Mode¶0x00F|URW|csr:vcsr[]|Vector control and status register¶0xC20|URO|csr:vl[]|Vector
-  # length¶0xC21|URO|csr:vtype[]|Vector data type register¶0xC22|URO|csr:vlenb[]|VLEN/8 (vector
-  # register length in bytes) ===
+  # Address|Privilege|Name|Description === 0x008|URW|csr:vstart[]|Vector start element index¶
+  # 0x009|URW|csr:vxsat[]|Fixed-Point Saturate Flag¶ 0x00A|URW|csr:vxrm[]|Fixed-Point Rounding Mode¶
+  # 0x00F|URW|csr:vcsr[]|Vector control and status register¶ 0xC20|URO|csr:vl[]|Vector length¶
+  # 0xC21|URO|csr:vtype[]|Vector data type register¶ 0xC22|URO|csr:vlenb[]|VLEN/8 (vector register
+  # length in bytes) ===
   - name: vector_csrs_tbl
     coverpoint: ["{U,S,H}_V_cg/cp_vcsrrswc"]
 
-  # Bits|Name|Description === XLEN-1:3||Reserved¶2:1|csr:vxrm[][1:0]|Fixed-point rounding
-  # mode¶0|csr:vxsat[][0]|Fixed-point accrued saturation flag ===
+  # Bits|Name|Description === XLEN-1:3||Reserved¶ 2:1|csr:vxrm[][1:0]|Fixed-point rounding mode¶
+  # 0|csr:vxsat[][0]|Fixed-point accrued saturation flag ===
   - name: vcsr_fields_enc
     coverpoint: ["U_V_cg/cp_vcsrs_walking1s"]
 
-  # Bits|Name|Description === XLEN-1|csr::[vill]|Illegal value if
-  # set¶XLEN-2:8|&#8201;&#8212;&#8201;|Reserved if non-zero¶7|csr::[vma]|Vector mask
-  # agnostic¶6|csr::[vta]|Vector tail agnostic¶5:3|csr::[vsew]|Selected element width (SEW)
-  # setting¶2:0|csr::[vlmul]|Vector register group multiplier (LMUL) setting ===
+  # Bits|Name|Description === XLEN-1|csr::[vill]|Illegal value if set¶ XLEN-2:8| — |Reserved if
+  # non-zero¶ 7|csr::[vma]|Vector mask agnostic¶ 6|csr::[vta]|Vector tail agnostic¶
+  # 5:3|csr::[vsew]|Selected element width (SEW) setting¶ 2:0|csr::[vlmul]|Vector register group
+  # multiplier (LMUL) setting ===
   - name: vtype_fields_enc
     coverpoint:
       ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli,cp_vill_vsetvl}"]
 
-  # csr::[vsew]|SEW === 0|0|0|8¶0|0|1|16¶0|1|0|32¶0|1|1|64¶1|X|X|Reserved ===
+  # csr::[vsew]|SEW === 0|0|0|8¶ 0|0|1|16¶ 0|1|0|32¶ 0|1|1|64¶ 1|X|X|Reserved ===
   - name: vtype_vsew_enc
     coverpoint: ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli}"]
 
-  # vlmul encodings 000/001/010/011 select LMUL=1/2/4/8; 101/110/111 select LMUL=1/8, 1/4, and 1/2.
-  # Encoding 100 is reserved. VLMAX=LMUL*VLEN/SEW; integer LMUL groups contain that many
-  # consecutive registers.
+  # csr::[vlmul]|LMUL|#groups|VLMAX|Registers grouped with register n === 1|0|0|-|-|-|reserved¶
+  # 1|0|1|1/8|32|VLEN/SEW/8|v n (single register in group)¶ 1|1|0|1/4|32|VLEN/SEW/4|v n (single
+  # register in group)¶ 1|1|1|1/2|32|VLEN/SEW/2|v n (single register in group)¶
+  # 0|0|0|1|32|VLEN/SEW|v n (single register in group)¶ 0|0|1|2|16|2*VLEN/SEW|v n, v n+1¶
+  # 0|1|0|4|8|4*VLEN/SEW|v n, …, v n+3¶ 0|1|1|8|4|8*VLEN/SEW|v n, …, v n+7 ===
   - name: vtype_vlmul_enc
     coverpoint: ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli}"]
 
-  # csr::[vta]|csr::[vma]|Tail Elements|Inactive Elements === 0|0|undisturbed|undisturbed¶0|1|undis
-  # turbed|agnostic¶1|0|agnostic|undisturbed¶1|1|agnostic|agnostic ===
+  # csr::[vta]|csr::[vma]|Tail Elements|Inactive Elements === 0|0|undisturbed|undisturbed¶
+  # 0|1|undisturbed|agnostic¶ 1|0|agnostic|undisturbed¶ 1|1|agnostic|agnostic ===
   - name: vtype_vta_vma_enc
     coverpoint: ["Vx{8,16,32,64}_vadd_vv_cg/cr_vtype_agnostic"]
 
-  # csr:vxrm[][1:0]|Abbreviation|Rounding Mode|Rounding increment, r === 0|0|rnu|round-to-nearest-
-  # up (add +0.5 LSB)|v[d-1]¶0|1|rne|round-to-nearest-even|v[d-1] &amp; (v[d-2:0]≠0 |
-  # v[d])¶1|0|rdn|round-down|0¶1|1|rod|round-to-odd (OR bits into LSB, aka jam)|!v[d] &amp;
-  # v[d-1:0]≠0 ===
+  # csr:vxrm[][1:0]|Abbreviation|Rounding Mode|Rounding increment, r === 0|0|rnu|round-to-nearest-up
+  # (add +0.5 LSB)|v[d-1]¶ 0|1|rne|round-to-nearest-even|v[d-1] & (v[d-2:0]≠0 | v[d])¶
+  # 1|0|rdn|round-down|0¶ 1|1|rod|round-to-odd (OR bits into LSB, aka jam)|!v[d] & v[d-1:0]≠0 ===
   - name: vxrm_enc
     coverpoint: ["Vx{8,16,32,64}_vaadd_vv_cg/cr_vxrm_vs2_vs1_edges"]
 
-  # vm|Description === 0|vector result, only where v0.mask[i] = 1¶1|unmasked ===
+  # vm|Description === 0|vector result, only where v0.mask[i] = 1¶ 1|unmasked ===
   - name: vmask_vm_val_enc
     coverpoint: ["Vx{8,16,32,64}_vadd_vv_cg/cp_masking_edges"]
 
@@ -3431,16 +3473,16 @@ normative_rule_definitions:
   - name: vsstatus_vs_mstatus_vs_op_off
     coverpoint: ["H_V_cg/cp_vsstatus_vs_off_{arithmetic,csr}"]
 
-  # funct3[2:0]|Category|Operands|Type of scalar operand === 0|0|0|OPIVV|vector-
-  # vector|N/A¶0|0|1|OPFVV|vector-vector|N/A¶0|1|0|OPMVV|vector-vector|N/A¶0|1|1|OPIVI|vector-
-  # immediate|imm[4:0]¶1|0|0|OPIVX|vector-scalar|GPR x register rs1¶1|0|1|OPFVF|vector-scalar|FP f
-  # register rs1¶1|1|0|OPMVX|vector-scalar|GPR x register rs1¶1|1|1|OPCFG|scalars-imms|GPR x
-  # register rs1 &amp; rs2/imm ===
+  # funct3[2:0]|Category|Operands|Type of scalar operand === 0|0|0|OPIVV|vector-vector|N/A¶
+  # 0|0|1|OPFVV|vector-vector|N/A¶ 0|1|0|OPMVV|vector-vector|N/A¶
+  # 0|1|1|OPIVI|vector-immediate|imm[4:0]¶ 1|0|0|OPIVX|vector-scalar|GPR x register rs1¶
+  # 1|0|1|OPFVF|vector-scalar|FP f register rs1¶ 1|1|0|OPMVX|vector-scalar|GPR x register rs1¶
+  # 1|1|1|OPCFG|scalars-imms|GPR x register rs1 & rs2/imm ===
   - name: vector_funct3_enc
     coverpoint:
       [
         "Vx16_vadd_{vv,vx,vi}_cg/cp_asm_count",
         "Vx16_vmul_{vv,vx}_cg/cp_asm_count",
-        "Vf16_vfadd_{vv,vf}_cg/cp_asm_count",
+        "Vf32_vfadd_{vv,vf}_cg/cp_asm_count",
         "U_V_cg/cp_sew_lmul_vset{vl,_i_vli}",
       ]

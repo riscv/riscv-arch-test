@@ -65,6 +65,7 @@ class riscvTraceData
   logic [4095:0]             csr_wb;   // CSR writeback (change) flag
   logic [4095:0]       csr_accessed;   // CSRs read or written by earlier instructions of this trace
   logic [63:0]      tdata1_accessed;   // Triggers, by tselect, whose tdata1 earlier instructions of this trace accessed
+  logic [63:0]      tdata3_accessed;   // Triggers, by tselect, whose tdata3 earlier instructions of this trace accessed
 
   logic                      lrsc_cancel;   // Implementation defined cancel
 

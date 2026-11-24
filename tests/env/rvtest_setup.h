@@ -1074,10 +1074,11 @@
 #define RESET_TSELECT_OFFSET    (16*REGWIDTH)
 #define RESET_MCONTEXT_OFFSET   (17*REGWIDTH)
 #define RESET_SCONTEXT_OFFSET   (18*REGWIDTH)
-// tdata1 of each trigger, from trigger 0
+// tdata1 of each trigger, from trigger 0, then tdata3 of each trigger
 #define RESET_TDATA1_OFFSET     (19*REGWIDTH)
 #ifdef UDB_SDTRIG_NUM_TRIGGERS
-  #define RESET_CSR_COUNT       (19 + UDB_SDTRIG_NUM_TRIGGERS)
+  #define RESET_TDATA3_OFFSET   ((19 + UDB_SDTRIG_NUM_TRIGGERS)*REGWIDTH)
+  #define RESET_CSR_COUNT       (19 + 2*UDB_SDTRIG_NUM_TRIGGERS)
 #else
   #define RESET_CSR_COUNT       19
 #endif
@@ -1345,16 +1346,21 @@
             SREG T2, RESET_SCONTEXT_OFFSET(T1)
           #endif
           #ifdef UDB_SDTRIG_NUM_TRIGGERS
-            // tdata1 of each trigger; tselect is restored to its reset value afterwards
+            // tdata1 and tdata3 of each trigger; tselect is restored to its reset value afterwards
             LI(T3, 0)
             LI(T4, UDB_SDTRIG_NUM_TRIGGERS)
-          rvtest_reset_tdata1_loop:
+          rvtest_reset_trigger_loop:
             csrw CSR_TSELECT, T3
             csrr T2, CSR_TDATA1
             SREG T2, RESET_TDATA1_OFFSET(T1)
+            // tdata3 is optional, and accessing it traps if it is not implemented
+            #ifdef UDB_TDATA3_IMPLEMENTED
+              csrr T2, CSR_TDATA3
+              SREG T2, RESET_TDATA3_OFFSET(T1)
+            #endif
             addi T1, T1, REGWIDTH
             addi T3, T3, 1
-            bltu T3, T4, rvtest_reset_tdata1_loop
+            bltu T3, T4, rvtest_reset_trigger_loop
             LA(T1, rvtest_reset_csrs)
             LREG T2, RESET_TSELECT_OFFSET(T1)
             csrw CSR_TSELECT, T2

@@ -649,7 +649,12 @@ coverpoints:
   - name: cp_tdata1_reset
     goal: Each trigger's tdata1 resets to the fixed values of its reset type
     description: Only with Sdtrig.  At reset, read tdata1 of each of the SDTRIG_NUM_TRIGGERS triggers (writing tselect), and restore tselect.  tdata1.type resets to an implementation-chosen value, so the check depends on it.
-    expectation: "type 2 (mcontrol): every field below type is 0 except maskmax.  Type 3 (icount): every field is 0 except count = 1.  Types 4-7 (itrigger, etrigger, mcontrol6, tmexttrigger): every field is 0.  Any other type: dmode is 0.  tdata2 and tdata3 (Preset) are not checked."
+    expectation: "type 2 (mcontrol): every field below type is 0 except maskmax.  Type 3 (icount): every field is 0 except count = 1.  Types 4-7 (itrigger, etrigger, mcontrol6, tmexttrigger): every field is 0.  Any other type: dmode is 0.  tdata2 (Preset) is not checked."
+    bins: 1 per trigger
+  - name: cp_tdata3_reset
+    goal: For a trigger whose tdata1.type resets to 2-6, tdata3 (textra32/textra64) resets to 0
+    description: Only with Sdtrig and an implemented tdata3 (TDATA3_IMPLEMENTED).  At reset, read tdata3 of each of the SDTRIG_NUM_TRIGGERS triggers along with its tdata1.
+    expectation: Types 2-6 access textra32/textra64 as tdata3, and every textra field resets to 0, so tdata3 reads 0.  For any other type tdata3 resets to Preset and is not checked.  Match reference model.
     bins: 1 per trigger
   - name: cp_mnstatus_reset
     goal: mnstatus.NMIE resets to 0

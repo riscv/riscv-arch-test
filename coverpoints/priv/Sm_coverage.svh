@@ -2508,7 +2508,8 @@ endgroup
 
 // A CSR read returns the reset value if it is the first access to that CSR in the trace.  RVVI csr_wb flags
 // every CSR an instruction reads or writes, including the implicit writes of traps and xRETs, and the trace data
-// accumulates them per trace in csr_accessed (and tdata1 accesses per trigger in tdata1_accessed).
+// accumulates them per trace in csr_accessed (and tdata1 and tdata3 accesses per trigger in tdata1_accessed
+// and tdata3_accessed).
 
 covergroup Sm_reset_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -2612,6 +2613,15 @@ covergroup Sm_reset_cg with function sample(ins_t ins);
                 bins trigger[] = {[0:`UDB_SDTRIG_NUM_TRIGGERS-1]};
             }
             cp_tdata1_reset: cross priv_mode_m, csrr, tdata1_first;
+            `ifdef UDB_TDATA3_IMPLEMENTED
+                // The first read of each trigger's tdata3
+                tdata3_first: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TSELECT)
+                              iff (ins.current.insn[31:20] == CSR_TDATA3 &&
+                                   !ins.current.tdata3_accessed[6'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TSELECT))]) {
+                    bins trigger[] = {[0:`UDB_SDTRIG_NUM_TRIGGERS-1]};
+                }
+                cp_tdata3_reset: cross priv_mode_m, csrr, tdata3_first;
+            `endif
         `endif
     `endif
 

@@ -1906,7 +1906,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra32_reset
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["Sm_reset_cg/cp_tdata3_reset"]
 
   # This register is accessible as tdata3 when type is 2, 3, 4, 5, or 6 and XLEN=32.
   - name: Sdtrig_textra32_access
@@ -2041,7 +2041,7 @@ normative_rule_definitions:
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra64_reset
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["Sm_reset_cg/cp_tdata3_reset"]
 
   # This register is accessible as tdata3 when type is 2, 3, 4, 5, or 6 and XLEN=64.
   - name: Sdtrig_textra64_access

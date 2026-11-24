@@ -64,6 +64,7 @@ function void save_rvvi_data(bit trap, int hart, int issue, string disass);
     rvviData.csr_wb = 0;
     rvviData.csr_accessed = 0;
     rvviData.tdata1_accessed = 0;
+    rvviData.tdata3_accessed = 0;
     rvviData.lrsc_cancel = 0;
     rvviData.virt_adr_i = 0;
     rvviData.virt_adr_d = 0;
@@ -147,12 +148,16 @@ function void save_rvvi_data(bit trap, int hart, int issue, string disass);
   if (rvviData.order == 0) begin
     rvviData.csr_accessed = 0;
     rvviData.tdata1_accessed = 0;
+    rvviData.tdata3_accessed = 0;
   end else begin
     rvviData.csr_accessed = traceDataQ[hart][issue][0].csr_accessed | traceDataQ[hart][issue][0].csr_wb;
     rvviData.tdata1_accessed = traceDataQ[hart][issue][0].tdata1_accessed;
+    rvviData.tdata3_accessed = traceDataQ[hart][issue][0].tdata3_accessed;
     // tselect before the previous instruction
     if (traceDataQ[hart][issue][0].csr_wb[CSR_TDATA1])
       rvviData.tdata1_accessed[traceDataQ[hart][issue][1].csr[CSR_TSELECT][5:0]] = 1'b1;
+    if (traceDataQ[hart][issue][0].csr_wb[CSR_TDATA3])
+      rvviData.tdata3_accessed[traceDataQ[hart][issue][1].csr[CSR_TSELECT][5:0]] = 1'b1;
   end
 
   // Store virtual memory signals from the current trace

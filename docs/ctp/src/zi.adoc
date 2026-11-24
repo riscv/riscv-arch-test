@@ -37,9 +37,9 @@ include::{testplansdir}/Zicsr.adoc[]
 include::norm/Zicsr_norm_rules.adoc[]
 
 [NOTE]
-===
+====
 TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-Ssstrict_S-coverpoints>>).  It does not affect Zicsr because this is an unprivileged test that should never perform operations that trap.
-===
+====
 
 ==== Zifencei Instruction-Fetch Fence
 
@@ -66,7 +66,7 @@ Each case calls the patch target once before the store and once after `fence.i`,
 
 Zicclsm requires misaligned loads and stores to main memory regions with both the coherence and cacheability PMAs to be supported. This applies to both scalar and vector accesses. It does not apply to Za* atomic extensions. It can be handled in hardware or with invisible software emulation.
 
-The misaligned family of tests exercises integer, compressed, and single/double-precision floating-point loads/stores.  It uses the cp_misalign and cp_misalign_cross64_{hword/word/double} coverpoints defined in <<t-Zicclsm-coverpoint-definitions>>. Each instruction is tested at byte offsets 0-8 in two 16-byte windows of the scratch area: one at the start of the 256-byte-aligned scratch area, and one starting 56 bytes in, so that misaligned accesses straddle the 64-byte boundary (and hence any 16-, 32- or 64-byte cache line or bus beat) at scratch+64. Each window is filled with 16 distinct bytes before the accesses. Loads are repeated with the bitwise complement of the pattern so that every width and offset is loaded with both a clear and a set sign bit, checking sign and zero extension. Stores check all 16 bytes of the window. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
+The misaligned family of tests exercises integer, compressed, and single/double-precision floating-point loads/stores.  It uses the cp_misalign and cp_misalign_cross64_{hword/word/double} coverpoints defined in <<t-Zicclsm-coverpoint-definitions>>. Each instruction is tested at byte offsets 0-8 in two 16-byte windows of the scratch area: one at the start of the 256-byte-aligned scratch area, and one starting 56 bytes in, so that misaligned accesses straddle the 64-byte boundary (and hence any 16-, 32- or 64-byte cache line or bus beat) at scratch+64. Each window is filled with 16 distinct bytes before the accesses. Loads are repeated with the bitwise complement of the pattern so that every width and offset is loaded with both a clear and a set sign bit, checking sign and zero extension. Stores check all 16 bytes of the window. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {Exceptions_Zaamo, Exceptions_Zalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
 
 The rows with Zca, F or D in the ExtraExtensions column apply only when that extension is also supported.
 
@@ -139,11 +139,11 @@ include::norm/Zicntr_norm_rules.adoc[]
 TODO: add normative rule for TIME_CSR_IMPLEMENTED UDB parameter
 referencing the following text from the priv spec:
 
-````
+----
 emulate this
 functionality on behalf of less-privileged modes in M-mode software.
-````
-This rule is checked by the time bin of cp_cntr coverpoint.
+----
+This rule is checked by the time bin of the cp_cntr coverpoint.
 
 
 [[t-Zicntr-coverpoint-definition]]
@@ -212,7 +212,7 @@ The `cbo.zero` instruction zeros a cache line.  The cache line size may vary fro
 [%autowidth]
 |===
 |Coverpoint|Bins|Definition
-|cp_custom_cbo|65*2|Writes 65 words (260 bytes) of arbitrary data to scratch memory, executes `cbo` instruction at the aligned start of scratch, and then reads back all 260 bytes and stores them to the signature.  The first cache line (often 64 bytes) of data should be zeroed and the rest unchanged.  It repeats this operation with an offset of 255 bytes.  The instruction ignores the offset within a cache line, so for 64-byte lines, this would zero bytes 192-255 and leave the others unchanged.
+|cp_custom_cbo|65*2|Writes 65 words (260 bytes) of arbitrary data to scratch memory, executes a `cbo` instruction at the aligned start of scratch, and then reads back all 260 bytes and stores them to the signature.  The first cache line (often 64 bytes) of data should be zeroed and the rest unchanged.  It repeats this operation with an offset of 255 bytes.  The instruction ignores the offset within a cache line, so for 64-byte lines, this would zero bytes 192-255 and leave the others unchanged.
 |===
 
 include::{testplansdir}/Zicboz.adoc[]

@@ -57,7 +57,7 @@ A single LR/SC pair may fail spuriously, and only a constrained LR/SC loop is gu
 
 include::norm/Zalrsc_norm_rules.adoc[]
 
-The spec imposes no requirements on reservation set form, including alignment, NAPOT, or even being contiguous.  Therefore, it is not practical to build reference models that reliably predict whether a `sc` would succeed or fail on every DUT.  Current profiles require Za64rs or Za128rs, which can be supported by reference models. However, unusual DUTs that do not match any reasonable reference model may not be able to pass this test suite. The expected outcome of an `sc` to an address other than that of the latest `lr` but within its reservation set follows the LRSC_RESERVATION_STRATEGY and LRSC_FAIL_ON_NON_EXACT_LRSC parameters.
+The spec imposes no requirements on reservation set form, including alignment, NAPOT, or even being contiguous.  Therefore, it is not practical to build reference models that reliably predict whether an `sc` would succeed or fail on every DUT.  Current profiles require Za64rs or Za128rs, which can be supported by reference models. However, unusual DUTs that do not match any reasonable reference model may not be able to pass this test suite. The expected outcome of an `sc` to an address other than that of the latest `lr` but within its reservation set follows the LRSC_RESERVATION_STRATEGY and LRSC_FAIL_ON_NON_EXACT_LRSC parameters.
 
 The `sc` tests follow these conventions:
 

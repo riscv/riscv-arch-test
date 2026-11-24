@@ -20,7 +20,7 @@ The normative rule specific to the E base ISA is given in <<t-E-normative-rules>
 
 include::norm/E_norm_rules.adoc[]
 
-The E base ISA and other extensions based on it use the same coverpoints as the I base ISA.  However, the register coverpoints such as cp_rd, cpr_rs1, cp_rs2, cmp_rd_rs1, etc. only exercise the 16 registers x0 through x15
+The E base ISA and other extensions based on it use the same coverpoints as the I base ISA.  However, the register coverpoints such as cp_rd, cp_rs1, cp_rs2, cmp_rd_rs1, etc. only exercise the 16 registers x0 through x15
 when E is enabled. (See the get_gpr_reg function in framework/src/act/fcov/coverage/RISCV_instruction_base.svh, which is controlled by the E_SUPPORTED symbol).
 
-Privileged tests are written using only x0-x15, so they work for both E and I base ISAs.  One exception is that Ssstrict tests using the upper registers, which should be reserved and trap in E.
+Privileged tests are written using only x0-x15, so they work for both E and I base ISAs.  One exception is that Ssstrict tests use the upper registers, which should be reserved and trap in E.

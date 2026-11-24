@@ -92,7 +92,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
 |EndianF|Float Endian|<<t-EndianF-coverpoints>>|||||
 |EndianZca|Compressed Endian|<<t-EndianZca-coverpoints>>|||||
-|PMP|Physical Memory Protection|<<t-PMP-coverpoints>>|||||
+|PMP|Physical Memory Protection|<<PMP>>|||||
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
 |Ssccptr|Main Memory Page-table Reads|<<t-Ssccptr-coverpoints>>|||x|x|x
@@ -135,7 +135,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Zvkb16|Vector Crypto Bit Manip 16-bit|<<t-Zvkb-coverpoints>>||||o|o
 |Zvkb32|Vector Crypto Bit Manip 32-bit|<<t-Zvkb-coverpoints>>||||o|o
 |Zvkb64|Vector Crypto Bit Manip 64-bit|<<t-Zvkb-coverpoints>>||||o|o
-|Zvbc64|Vector Carryless Mult|<<t-Zvbc64-coverpoints>>||||o|o
+|Zvbc64|Vector Carryless Mult|<<t-Zvbc-coverpoints>>||||o|o
 |Zvkg32|Vector GCM|<<t-Zvkg-coverpoints>>||||o|o
 |Zvkned32|Vector Crypt|<<t-Zvkned-coverpoints>>||||o|o
 |Zvknha32|Vector Hash 32-bit|<<t-Zvknha-coverpoints>>|||||

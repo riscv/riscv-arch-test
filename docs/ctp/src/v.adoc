@@ -13,7 +13,7 @@ The tests adapt to VLMAX up to VLEN_MAX (currently 1024 bits), so the same suite
 
 <<f-vector-organization>> summarizes the structure of the coverpoint and test files for the vector extension.  The unprivileged vector tests are organized by integer (Vx), load/store (Vls), and floating-point (Vf) types of instructions. Each applies to SEW=8, 16, 32, and/or 64. The vector privileged tests are described in <<Vector Privileged Test Suites>>.
 
-The vector tests are organized by XLEN=32 and XLEN=64 because the scalar registers behavior differs by XLEN.  For example, vadd.vx with SEW=64 sign-extends XLEN=32 scalar registers but does not modify XLEN=64 scalar registers.  For a given XLEN, the vector tests are organized by type (Vx/Vls/Vf) and SEW (8/16/32/64).  Each directory contains one or more numbered `.S` files for every vector instruction of that type footnote:[Certain instructions are omitted if not supported for a given SEW.  For example, widening add vwadd.vv is not supported for SEW=64, and vrgatherei16.v is not supported for SEW=8.].  Vector load/store instructions run with any SEW but also specify EEW as part of the instruction name.  For example, vle8.v and vle16.v can both be executed in either SEW=8 or SEW=16, and the EMUL behavior is different between these modes.  Therefore, all the load/store variants are included in all of Vls{8/16/32/64}.
+The vector tests are organized by XLEN=32 and XLEN=64 because the scalar registers' behavior differs by XLEN.  For example, vadd.vx with SEW=64 sign-extends XLEN=32 scalar registers but does not modify XLEN=64 scalar registers.  For a given XLEN, the vector tests are organized by type (Vx/Vls/Vf) and SEW (8/16/32/64).  Each directory contains one or more numbered `.S` files for every vector instruction of that type footnote:[Certain instructions are omitted if not supported for a given SEW.  For example, widening add vwadd.vv is not supported for SEW=64, and vrgatherei16.v is not supported for SEW=8.].  Vector load/store instructions run with any SEW but also specify EEW as part of the instruction name.  For example, vle8.v and vle16.v can both be executed in either SEW=8 or SEW=16, and the EMUL behavior is different between these modes.  Therefore, all the load/store variants are included in all of Vls{8/16/32/64}.
 
 [NOTE]
 ====
@@ -136,7 +136,7 @@ The coverpoints and tests are parameterized by the minimum supported element wid
 
 ==== Vector Coverpoints
 
-Running long vectors is computationally expensive, so only a subset of vectors tests run on multi-element vectors.  Coverpoints for source and destination registers, edge values, etc. run on a vector length of vl = 1.
+Running long vectors is computationally expensive, so only a subset of vector tests run on multi-element vectors.  Coverpoints for source and destination registers, edge values, etc. run on a vector length of vl = 1.
 
 <<t-vector-coverpoints>> defines the coverpoints used in vector instructions.  Unless otherwise specified, each coverpoint uses vector length vl=1 and length multiplier LMUL=1, no mask (vm=1), and vstart=0. Hence, they act on exactly one vector element. For such coverpoints, instructions that require a mask use v0=0.
 
@@ -162,7 +162,7 @@ Running long vectors is computationally expensive, so only a subset of vectors t
 |cmp_vd_vs1_vs2|32|vd and vs1 and vs2 are same register ID
 |cp_rs1_edges|9|0, 1, 2, -1, -2, most negative, most negative+1, most positive, most positive-1
 |cp_rs2_edges|5|0, 1, 2, -1, -2 (for strided vector load/store)
-|cp_fs1_edges|20|0, -1, -smallest subnorm, -inf, 1, 1+ulp, 0.5, 1.5, 2, 4, pi, 2^emax, largest normal, smallest normal, largest subnormal, subnormal with leading 1 in fraction, infinity, canonical quite NaN, noncanonical quiet NaN, signaling NaN with payload of 1
+|cp_fs1_edges|20|0, -1, -smallest subnorm, -inf, 1, 1+ulp, 0.5, 1.5, 2, 4, pi, 2^emax, largest normal, smallest normal, largest subnormal, subnormal with leading 1 in fraction, infinity, canonical quiet NaN, noncanonical quiet NaN, signaling NaN with payload of 1
 |cp_vs2_edges|9 or 20|see cp_rs1_edges or cp_fs1_edges
 |cp_vs1_edges|9 or 20|see cp_rs1_edges
 |cr_vs2_vs1_edges|9^2 or 20^2|Cross-product of edges of vs2 and vs1
@@ -200,7 +200,7 @@ As with other unprivileged testplans, an x in the spreadsheet indicates to use t
 * ls_e{8/16/32/64}: load/store edges with EEW=8,...,64.  Used to convert strided loads from elements to bytes.
 * ls: load/store edges instead of integer edges: vs2={0, random < 2*VLMAX}.  rs2= {1, 2, -1, -2, 0}
 * f: floating-point edges instead of integer edges: ***
-* cp_custom_*: custom coverpoint defined in the coverage file.  See definitions for link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=389766666#gid=389766666]["Vx_custom_definitions],
+* cp_custom_*: custom coverpoint defined in the coverage file.  See definitions for link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=389766666#gid=389766666]["Vx_custom_definitions"],
 link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1604082660#gid=1604082660]["VxCustom"],
 link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158]["Vf_custom_definitions"], link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158]["Vls_custom_definitions"].
 

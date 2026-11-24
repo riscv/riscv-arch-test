@@ -44,7 +44,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 ** All coverpoints must use the RVVI interface
 
 * All testing collateral (tests, test generators, coverpoints, frameworks, documentation, etc.) is distributed under an open-source license
-** Hosted in the RISC-V architectural test repository under the stewardship of Architectural Certification Test (ACT) SIG
+** Hosted in the RISC-V architectural test repository under the stewardship of the Architectural Certification Test (ACT) SIG
 ** Repository contains tests for ratified and in-development features, not just features in certificates
 ** Generators necessary to recreate the tests for a DUT are included in the repository, but, when tests are not unique to a DUT, the generated tests themselves are also included to reduce requiring users to run generators and to make the tests easier to view and understand
 

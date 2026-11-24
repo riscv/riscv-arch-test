@@ -3,6 +3,10 @@
 
 The test suite aims to test all required behaviors and accept all legal behaviors of a DUT.
 
+=== Configuration
+
+Each DUT is described by a configuration directory holding a fully configured https://github.com/riscv/riscv-unified-db[UDB] description of its extensions and parameter values, the <<rvmodel-macros, RVMODEL macros>>, a <<linker-script, linker script>>, and a `sail.json` that configures the Sail reference model to match the DUT. The https://github.com/riscv/riscv-arch-test/blob/act4/README.md#configuration[README] lists the files.
+
 === Unspecified and Reserved Behaviors
 
 Some RISC-V behaviors are UNSPECIFIED, which means an implementation can do anything. These behaviors are not tested because there is no wrong answer. <<t-behavior-normative-rules>> summarizes the normative rules regarding reserved behaviors.

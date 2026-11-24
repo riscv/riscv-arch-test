@@ -25,6 +25,7 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
     ]
 
     # scounteren is 32 bits. Readbacks stay full XLEN, so bits 63:32 must still be zero.
+    # The walk stops at bit 31. On RV64, bits 63:32 are redundant.
     lines.extend(csr_walk_test(test_data, ("scounteren", None), _COVERGROUP, coverpoint, end_bit=31))
     lines.extend(csr_access_test(test_data, ("scounteren", None), _COVERGROUP, coverpoint))
     return lines

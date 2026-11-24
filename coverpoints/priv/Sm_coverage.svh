@@ -20,12 +20,6 @@
     `endif
 `endif
 
-`ifdef SV32_SUPPORTED
-    `define MCAUSE_HOLDS_PAGE_FAULT
-`elsif SV39_SUPPORTED
-    `define MCAUSE_HOLDS_PAGE_FAULT
-`endif
-
 covergroup Sm_mcause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -62,16 +56,16 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
             bins b_10_ecall_vs = {10};
         `endif
         bins b_11_ecall_m = {11};
-        `ifdef MCAUSE_HOLDS_PAGE_FAULT
+        `ifdef SV32_SUPPORTED
             bins b_12_instruction_page_fault = {12};
-        `endif
-        `ifdef MCAUSE_HOLDS_PAGE_FAULT
             bins b_13_load_page_fault = {13};
-        `endif
-        //bins b_14_reserved = {14};
-        `ifdef MCAUSE_HOLDS_PAGE_FAULT
+            bins b_15_store_page_fault = {15};
+        `elsif SV39_SUPPORTED
+            bins b_12_instruction_page_fault = {12};
+            bins b_13_load_page_fault = {13};
             bins b_15_store_page_fault = {15};
         `endif
+        //bins b_14_reserved = {14};
         `ifdef SSDBLTRP_SUPPORTED
             bins b_16_double_trap = {16}; // never delegated to S mode
         `endif
@@ -79,9 +73,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         `ifdef SOFTWARE_CHECK_SUPPORTED
             bins b_18_software_check = {18};
         `endif
-        `ifdef SM1P13P0_OR_LATER_SUPPORTED
-            bins b_19_hardware_error = {19};
-        `endif
+        //bins b_19_hardware_error = {19}; // a hart need not raise hardware errors, so mcause need not hold 19
         `ifdef H_SUPPORTED
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};
@@ -790,7 +782,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `ifdef S1P12P0_OR_LATER_SUPPORTED
               bins code_ss1p12[] = {[10:31]};
             `else
-              `ifdef MCAUSE_HOLDS_PAGE_FAULT
+              `ifdef SV32_SUPPORTED
+                bins code_page_fault[] = {12, 13, 15};
+              `elsif SV39_SUPPORTED
                 bins code_page_fault[] = {12, 13, 15};
               `endif
               `ifdef SOFTWARE_CHECK_SUPPORTED

@@ -84,8 +84,8 @@ coverpoints:
       Write and read back each supported standard exception and interrupt code. Gate U/S ecalls on U/S,
       page faults on Sv32 or Sv39, machine interrupts on their UDB *_INTR_IMPL parameters, and supervisor
       interrupts on S and their UDB *_INTR_IMPL parameters. Gate VS interrupts on H and supervisor guest
-      external interrupts on H with GEILEN > 0. Gate double trap, software check, hardware error, and
-      counter overflow on their extension/version requirements. Do not write reserved or custom codes.
+      external interrupts on H with GEILEN > 0. Gate double trap, software check, and counter overflow on
+      their extensions. Do not write hardware error (19), which a hart need not raise, or reserved or custom codes.
     expectation: Each value reads back as written
     bins: One per selected exception or interrupt code
   - name: cp_mstatus_sd_write

@@ -294,34 +294,33 @@ covergroup H_vscause_cg with function sample(ins_t ins);
     }
     vscause_interrupt_values : coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         `ifdef S1P12P0_OR_LATER_SUPPORTED
-            bins b_1_supervisor_software = {1};
-        `elsif UDB_SSI_INTR_IMPL
-            bins b_1_supervisor_software = {1};
-        `endif
-        `ifdef S1P12P0_OR_LATER_SUPPORTED
-            bins b_5_supervisor_timer = {5};
-        `elsif UDB_STI_INTR_IMPL
-            bins b_5_supervisor_timer = {5};
-        `endif
-        `ifdef S1P12P0_OR_LATER_SUPPORTED
-            bins b_9_supervisor_external = {9};
-        `elsif UDB_SEI_INTR_IMPL
-            bins b_9_supervisor_external = {9};
-        `endif
-        `ifdef S1P12P0_OR_LATER_SUPPORTED
             // All codes 0-31 are legal CSR values, including machine and reserved interrupt codes.
             bins b_0_reserved = {0};
+            bins b_1_supervisor_software = {1};
             bins b_3_machine_software = {3};
             bins b_4_reserved = {4};
+            bins b_5_supervisor_timer = {5};
             bins b_7_machine_timer = {7};
             bins b_8_reserved = {8};
+            bins b_9_supervisor_external = {9};
             bins b_11_machine_external = {11};
             bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
             bins b_31_16_custom[] = {[16:31]};
-        `elsif SSCOFPMF_SUPPORTED
-            bins b_13_counter_overflow = {13};
+        `else
+            `ifdef UDB_SSI_INTR_IMPL
+                bins b_1_supervisor_software = {1};
+            `endif
+            `ifdef UDB_STI_INTR_IMPL
+                bins b_5_supervisor_timer = {5};
+            `endif
+            `ifdef UDB_SEI_INTR_IMPL
+                bins b_9_supervisor_external = {9};
+            `endif
+            `ifdef SSCOFPMF_SUPPORTED
+                bins b_13_counter_overflow = {13};
+            `endif
         `endif
         bins b_2_vs_software = {2};
         bins b_6_vs_timer = {6};

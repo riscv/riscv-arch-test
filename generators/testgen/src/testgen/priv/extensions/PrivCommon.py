@@ -389,30 +389,30 @@ def xtval_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> li
 
 H_GATE = "defined(H_SUPPORTED)"
 S1P12_GATE = "defined(S1P12P0_OR_LATER_SUPPORTED)"
-PAGE_FAULT_GATE = "defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)"
 
 # Codes written to each cause CSR, as {kind: {code: #if condition, or None if always written}}.
-# mcause need only hold the codes of supported causes (mcause_exccode_wlrl); exception codes 14 and 17 are reserved.
+# mcause need only hold the codes of supported causes (mcause_exccode_wlrl); exception codes 14 and 17 are reserved,
+# and 19 (hardware error) is not written because a hart need not raise it.
 MCAUSE_CODES: dict[str, dict[int, str | None]] = {
     "exception": {
         **dict.fromkeys((0, 1, 2, 3, 4, 5, 6, 7, 11)),
         8: "defined(U_SUPPORTED)",
         9: "defined(S_SUPPORTED)",
         10: H_GATE,  # ecall from VS-mode
-        **dict.fromkeys((12, 13, 15), PAGE_FAULT_GATE),
+        **dict.fromkeys((12, 13, 15), "defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)"),  # page faults
         16: "defined(SSDBLTRP_SUPPORTED)",  # double trap
         18: "defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)",  # software check
-        19: "defined(SM1P13P0_OR_LATER_SUPPORTED)",  # hardware error
         **dict.fromkeys((20, 21, 22, 23), H_GATE),  # guest-page faults and virtual instruction
     },
     "interrupt": {
-        **{code: f"defined(UDB_{name}_INTR_IMPL)" for code, name in ((3, "MSI"), (7, "MTI"), (11, "MEI"))},
-        **{
-            code: f"defined(S_SUPPORTED) && defined(UDB_{name}_INTR_IMPL)"
-            for code, name in ((1, "SSI"), (5, "STI"), (9, "SEI"))
-        },
+        1: "defined(S_SUPPORTED) && defined(UDB_SSI_INTR_IMPL)",
+        3: "defined(UDB_MSI_INTR_IMPL)",
+        5: "defined(S_SUPPORTED) && defined(UDB_STI_INTR_IMPL)",
+        7: "defined(UDB_MTI_INTR_IMPL)",
+        9: "defined(S_SUPPORTED) && defined(UDB_SEI_INTR_IMPL)",
+        11: "defined(UDB_MEI_INTR_IMPL)",
         **dict.fromkeys((2, 6, 10), H_GATE),  # VS-level interrupts
-        12: f"{H_GATE} && UDB_NUM_EXTERNAL_GUEST_INTERRUPTS > 0",
+        12: f"{H_GATE} && UDB_NUM_EXTERNAL_GUEST_INTERRUPTS > 0",  # supervisor guest external interrupt
         13: "defined(SSCOFPMF_SUPPORTED)",  # local counter overflow
     },
 }

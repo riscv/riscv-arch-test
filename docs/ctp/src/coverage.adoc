@@ -128,7 +128,7 @@ The framework groups traces by test suite and measures each group with its appli
 
 Run `make coverage EXTENSIONS=I` from the repository root for a focused run. Without `CONFIG_FILES`, this uses the Sail RV32 and RV64 max configurations. Set `CONFIG_FILES` to select other configurations and `COVERAGE_SIMULATOR` to select `questa` (the default), `vcs`, or `verilator`.
 
-The automated trace-generation path requires Sail as the reference model. Another simulator could supply traces compatible with the RVVI agent, but producing and integrating those traces requires a separate flow; selecting another reference model does not enable it automatically.
+Coverage traces come from Sail. Another simulator can be used if it produces traces in the format described in <<RVVI-Trace Format>>.
 
 === RVVI-Trace Format
 

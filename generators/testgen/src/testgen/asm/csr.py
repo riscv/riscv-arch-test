@@ -240,7 +240,7 @@ def csr_walk_test(
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
     bin_prefix: str = "",
-    unchecked_bits: list[tuple[int, str]] | None = None,
+    unwalked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -267,13 +267,19 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unchecked_bits: Optional (bits, define) pairs. The bits are walked but removed from the readback
-            mask only when `define` is defined for the config. Starts from the csr mask, or all ones if None.
+        unwalked_bits: Optional (bits, cond) pairs for state the reference model cannot model. `cond` is a
+            define name, or an #if expression. Where it holds, the bits are neither written nor checked,
+            so their coverage reports missing; elsewhere they are walked and checked (read-only). Implies
+            maskedwrites, with the bits added to the csr mask, or all ones if None.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
-    if unchecked_bits and mask is None:
-        mask = (1 << 64) - 1
+    if unwalked_bits:
+        maskedwrites = True
+        if mask is None:
+            mask = (1 << 64) - 1
+        for bits, _cond in unwalked_bits:
+            mask |= bits
         csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
@@ -359,12 +365,12 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, define in unchecked_bits or []:
+        for bits, cond in unwalked_bits or []:
             lines += [
-                f"#ifdef {define}",
-                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not check bits {bits:#x}",
+                f"#ifdef {cond}" if cond.isidentifier() else f"#if {cond}",
+                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not walk bits {bits:#x}",
                 f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {define}",
+                f"#endif // {cond}",
             ]
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")

@@ -177,14 +177,11 @@ def _generate_cp_write_stip_sstc(
     ]
     for stimecmp, stimecmp_macro in [("zeros", "SET"), ("ones", "CLR")]:
         for stip, stip_macro in [(0, "CLR"), (1, "SET")]:
-            tc.code += [
-                f"RVTEST_{stimecmp_macro}_SSTC_INT_{priv} # stimecmp = {stimecmp}",
+            tc.code.append(f"RVTEST_{stimecmp_macro}_SSTC_INT_{priv} # stimecmp = {stimecmp}")
+            if stimecmp_macro == "SET":
                 # STIP follows the comparison only eventually; the CLR macro already waits for it to fall
-                *(
-                    [f"RVTEST_WAIT_MIP_PENDING_M(x{wait_reg}, x{tmp_reg}, 5) # until mip.STIP is pending"]
-                    if stimecmp_macro == "SET"
-                    else []
-                ),
+                tc.code.append(f"RVTEST_WAIT_MIP_PENDING_M(x{wait_reg}, x{tmp_reg}, 5) # until mip.STIP is pending")
+            tc.code += [
                 # RVTEST_SET_STIME_INT writes mip.STIP with csrs, RVTEST_CLR_STIME_INT with csrc
                 test_data.add_testcase(
                     f"priv_{priv}_stimecmp_{stimecmp}_STIP_{stip}",

@@ -40,7 +40,7 @@ Coverpoints are organized into .svh SystemVerilog coverage files, each of which 
 
 Tests are written in assembly language or C. Tests are organized into directories for each extension, and into a privileged directory.  The coverpoints are hit by running all of the applicable tests in a directory.  For example, RV32I coverage involves running `I-add-00.S`, `I-addi-00.S`, `I-sub-00.S`, and any subsequent numbered chunks under `tests/rv32i/I/`.  RV64I coverage also involves running `I-addw-00.S` under `tests/rv64i/I/`, which is unique to RV64.  Each file begins with a TEST_CONFIG block that specifies the required extensions and parameters for the tests in that file. When compiling tests for a particular DUT, only those applicable to the DUTs extensions and parameters are built.
 
-The test suite is too large to hand-code in assembly.  Instead, the assembly is produced by Python generators.  Unprivileged generators automatically produce tests and coverpoints based on a comma-separated value (CSV) test plan specifying which coverpoints apply to which instructions.  Privileged test generators and coverpoints are written by hand from human-readable YAML test plans.
+The test suite is too large to hand-code in assembly.  Instead, the assembly is produced by Python generators.  Unprivileged generators automatically produce tests and coverpoints based on a comma-separated value (CSV) test plan specifying which coverpoints apply to which instructions.  Privileged test generators and coverpoints are written based on human-readable YAML test plans.
 
 === Glossary
 

@@ -62,6 +62,16 @@ def gated(lines: list[str], gate: str | None) -> list[str]:
     return [f"#if {gate}", *lines, f"#endif // {gate}"]
 
 
+def unless_required(test_data: TestData, symbol: str) -> str | None:
+    """Gate ``defined(symbol)`` for gated(), or None if the test file requires the extension that ``symbol``
+    (``<EXT>_SUPPORTED``) stands for. H requires S, so a file that requires H also has S_SUPPORTED.
+    """
+    required = [ext.upper() for ext in test_data.config.required_extensions or [] if isinstance(ext, str)]
+    if "H" in required:
+        required.append("S")
+    return None if symbol in [f"{ext}_SUPPORTED" for ext in required] else f"defined({symbol})"
+
+
 def write64_csr(csr: str, value: int, reg: int) -> list[str]:
     """Write a 64-bit value to a CSR, and to its upper-half CSR first on RV32."""
     value &= (1 << 64) - 1

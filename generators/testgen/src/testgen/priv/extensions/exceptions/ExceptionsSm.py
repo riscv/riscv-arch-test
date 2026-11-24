@@ -312,14 +312,23 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_u", priv_mode=0))
     tc.code.append("#endif // S_SUPPORTED")
     test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
 
-    # medeleg only exists with S-mode; walk it from M-, S- and U-mode.  One file per mode: each walk
-    # repeats the misaligned load and store sweeps for every medeleg value, so a DUT that traps on
-    # every misaligned access records ~700 traps.
+
+@add_priv_test_generator(
+    "Exceptions",
+    required_extensions=["Sm", "S"],
+    extra_defines=[
+        "#define BOOT_TO_MMODE",
+    ],
+)
+def make_exceptionssm_medeleg(test_data: TestData) -> list[TestChunk]:
+    """Sm exception tests that walk medeleg, which exists only with S-mode."""
+    test_chunks: list[TestChunk] = []
+    # Walk medeleg from M-, S- and U-mode.  One file per mode: each walk repeats the misaligned load and store
+    # sweeps for every medeleg value, so a DUT that traps on every misaligned access records ~700 traps.
     for mode_tag, priv_mode in (("mode_m", 3), ("mode_s", 1), ("mode_u", 0)):
         tc = test_data.begin_test_chunk(f"Sm_medeleg_{mode_tag[-1]}")
-        tc.code.append("#ifdef S_SUPPORTED")
         tc.code.extend(_generate_medeleg_msu_tests(test_data, mode_tag, priv_mode))
-        tc.code.append("#endif // S_SUPPORTED")
         test_chunks.append(test_data.end_test_chunk())
     return test_chunks

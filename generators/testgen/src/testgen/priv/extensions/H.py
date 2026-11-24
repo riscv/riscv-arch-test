@@ -26,6 +26,7 @@ from testgen.priv.extensions.HCommon import (
     HCsr,
     guest_page_fault_tests,
     hcsr_tests,
+    hcsr_walk_tests,
     hlv_tests,
     replica_read,
     replica_rw_tests,
@@ -468,6 +469,20 @@ _ZICNTR_WALKS: list[tuple[str, Mode, str, Counteren | None, Counteren | None, Co
     ("cp_hcounteren_access_vu", "VU", "hcounteren", "ones", None, "ones"),
     ("cp_scounteren_access_vu", "VU", "scounteren", "ones", "ones", None),
 ]
+
+
+@add_priv_test_generator(
+    "H",
+    required_extensions=["H", "Sstc"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_h_sstc(test_data: TestData) -> list[TestChunk]:
+    """Generate H walks of the VS CSRs that Sstc adds."""
+    test_chunks: list[TestChunk] = []
+    sstc_csrs = [csr for csr in [*H_HS_CSRS, *H_VS_CSRS] if csr.extension == "Sstc"]
+    hcsr_walk_tests(test_data, test_chunks, sstc_csrs, HS_CG, "hcsr_walk_sstc")
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
 
 
 @add_priv_test_generator(

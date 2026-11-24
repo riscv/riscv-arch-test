@@ -9,7 +9,7 @@
     "suite": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_]+$",
-      "description": "Suite name, e.g. InterruptsSm; must match the covergroup <suite>_cg and coverpoints/norm/<suite>.yaml."
+      "description": "Suite name, e.g. Interrupts_Sm; must match the covergroup <suite>_cg and coverpoints/norm/<suite>.yaml."
     },
     "title": {
       "type": "string",

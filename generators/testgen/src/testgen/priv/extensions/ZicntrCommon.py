@@ -11,7 +11,7 @@
 from typing import Literal
 
 from testgen.asm.csr import write_stce
-from testgen.asm.helpers import comment_banner, write64_csr, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, unless_required, write64_csr, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.priv.extensions.PrivCommon import HTIMEDELTAS, read_time
@@ -98,11 +98,9 @@ def counteren_walk_tests(
     read_reg, ones_reg, walk_reg, inv_reg = test_data.int_regs.get_registers(4)
     lines = [comment_banner(coverpoint, description), ""]
     if scounteren is not None:
-        lines += [
-            "#ifdef S_SUPPORTED",
-            *_preset_counteren("scounteren", scounteren, mode, ones_reg),
-            "#endif // S_SUPPORTED",
-        ]
+        lines += gated(
+            _preset_counteren("scounteren", scounteren, mode, ones_reg), unless_required(test_data, "S_SUPPORTED")
+        )
     presets: tuple[tuple[str, Counteren | None], ...] = (("mcounteren", mcounteren), ("hcounteren", hcounteren))
     for csr, setting in presets:
         if setting is not None:

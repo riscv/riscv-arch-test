@@ -16,11 +16,6 @@ normative_rule_definitions:
     coverpoint:
       ["Svbare_cg/{cp_satp_bare_load, cp_satp_bare_store, cp_satp_bare_exec}"]
 
-  # To select MODE=Bare, software must write zero to the remaining fields of satp (bits
-  # 30–0 when SXLEN=32, or bits 59–0 when SXLEN=64).
-  - name: satp_mode_bare_zero_fields
-    coverpoint: ["No independent assertion: a requirement on software."]
-
   # Attempting to select MODE=Bare with a nonzero pattern in the remaining fields has an
   # UNSPECIFIED effect on the value that the remaining fields assume and an UNSPECIFIED
   # effect on address translation and protection behavior.

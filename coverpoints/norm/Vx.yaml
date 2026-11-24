@@ -3340,7 +3340,7 @@ normative_rule_definitions:
   - name: vector_reset_state
     coverpoint:
       [
-        "Needs test: read vtype and vl after reset and restore them with one vsetvl.",
+        "Untestable: reset-time CSR state is not observable via a coverpoint in a self-checking test that boots past reset",
       ]
 
   # Zve32f supports all vector floating-point permutation instructions for floating-point

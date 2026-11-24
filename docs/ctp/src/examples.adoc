@@ -93,95 +93,84 @@ covergroup I_add_cg with function sample(ins_t ins);
 endgroup
 ----
 
-Corresponding RV32 tests are in tests/rv32/I/I-add.S.  Observe how the directed tests align with the coverpoints and bins.  Register numbers and values are randomized unless they are swept by the coverpoint. The RVTEST_SIGUPD macro compares the result against an expected signature produced by a reference model. When register 0 is used, it is loaded with a random value, but hardwired to 0, so the reference model will show that it behaves as 0.
+Corresponding RV32 tests are in `tests/rv32i/I/I-add-00.S` and any subsequent numbered chunks. Observe how the directed tests align with the coverpoints and bins. Register numbers and values are randomized unless they are swept by the coverpoint. The following excerpt uses `RVTEST_TESTDATA_LOAD_INT` to load operands from the generated data table and `RVTEST_SIGUPD` to check each result. The surrounding test initializes the data and signature pointers and supplies the diagnostic strings.
 
 [[f-add-tests]]
 .`add` Tests
 [source,asm]
 ----
 # Testcase cp_rs1 (Test source rs1 = x0)
-li x0, 0xb4e96718 # initialize rs1
-li x24, 0xeaa512b3 # initialize rs2
-add x25, x0, x24 # perform operation
-RVTEST_SIGUPD(x3, x25)
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0xed199c2a
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x3d120729
+I_add_cg_cp_rs1_b0:
+  add x28, x0, x29 # perform operation
+  RVTEST_SIGUPD(x2, x5, x4, x28, I_add_cg_cp_rs1_b0, I_add_cg_cp_rs1_b0_str)
 
 # Testcase cp_rs1 (Test source rs1 = x1)
-li x1, 0x81c4ef2a # initialize rs1
-li x6, 0x917cfa69 # initialize rs2
-add x7, x1, x6 # perform operation
-RVTEST_SIGUPD(x3, x7)
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xf95ba545
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x1f8b4c83
+I_add_cg_cp_rs1_b1:
+  add x25, x1, x10 # perform operation
+  RVTEST_SIGUPD(x2, x5, x4, x25, I_add_cg_cp_rs1_b1, I_add_cg_cp_rs1_b1_str)
 
-...
-
-# Testcase cp_rs1 (Test source rs1 = x31)
-mv x21, x31 # switch signature pointer register to avoid conflict with test
-li x31, 0x1508dd4e # initialize rs1
-li x14, 0x830d07b0 # initialize rs2
-add x11, x31, x14 # perform operation
-RVTEST_SIGUPD(x21, x11)
-
-
-# Testcase cp_rd (Test destination rd = x0)
-li x19, 0x1d01c852 # initialize rs1
-li x9, 0x1bfbf146 # initialize rs2
-add x0, x19, x9 # perform operation
-RVTEST_SIGUPD(x20, x0)
-
-# Testcase cp_rd (Test destination rd = x1)
-li x26, 0x1e3aafcf # initialize rs1
-li x19, 0x986da37b # initialize rs2
-add x1, x26, x19 # perform operation
-RVTEST_SIGUPD(x20, x1)
-
-...
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0 rs2 = 0x0)
-li x15, 0x00000000 # initialize rs1
-li x5, 0x00000000 # initialize rs2
-add x11, x15, x5 # perform operation
-RVTEST_SIGUPD(x10, x11)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0 rs2 = 0x1)
-li x1, 0x00000000 # initialize rs1
-li x31, 0x00000001 # initialize rs2
-add x20, x1, x31 # perform operation
-RVTEST_SIGUPD(x10, x20)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0 rs2 = 0x2)
-li x27, 0x00000000 # initialize rs1
-li x3, 0x00000002 # initialize rs2
-add x11, x27, x3 # perform operation
-RVTEST_SIGUPD(x10, x11)
-
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0 rs2 = 0x80000000)
-li x8, 0x00000000 # initialize rs1
-li x5, 0x80000000 # initialize rs2
-add x16, x8, x5 # perform operation
-RVTEST_SIGUPD(x10, x16)
+  mv x30, x2 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs1 (Test source rs1 = x2)
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x117cfa69
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0x6b5ec0b1
+I_add_cg_cp_rs1_b2:
+  add x26, x2, x9 # perform operation
+  RVTEST_SIGUPD(x30, x5, x4, x26, I_add_cg_cp_rs1_b2, I_add_cg_cp_rs1_b2_str)
 ----
 
-=== Test case example: cr_rs1_rs2_edges bin with rs1 = 0x0, rs2 = 0x80000000
+Loading `x0` has no effect, so the first `add` must produce `0x3d120729`. Before testing `x2`, the generator moves the signature pointer to `x30` so that loading the test operand does not destroy it.
+
+=== Signature Checking
+
+`RVTEST_SIGUPD` is defined in `tests/env/signature.h` and takes six arguments:
+
+[cols="1,3" options=header]
+|===
+|Argument|Purpose
+|sigptr|Register pointing to the current signature entry
+|linkreg|Link register for the failure handler
+|tempreg|Temporary register for the expected value
+|sigreg|Register containing the result to check or record
+|instptr|Label on the instruction under test, used to report its PC
+|strptr|Label on the diagnostic string naming the testcase
+|===
+
+With `RVTEST_SELFCHECK` defined, the first call above expands as follows:
 
 [source,asm]
 ----
-# Testcase cr_rs1_rs2_edges (Test source rs1 = 0x0 rs2 = 0x80000000)
-li x8, 0x00000000 # initialize rs1 in randomly selected register
-li x5, 0x80000000 # initialize rs2 in randomly selected register
-add x16, x8, x5 # perform operation, write randomly selected destination register
-# load expected value of 0x800000000 into x20 from table pointed to by x10. Check x20 against x16 and report mismatch
-RVTEST_SIGUPD(x10, x16, x20)
+  .option push
+  .option norvc
+  LREG x4, 0(x2)
+  beq x4, x28, 1f
+  jal x5, failedtest_x5_x4
+  RVTEST_WORD_PTR I_add_cg_cp_rs1_b0
+  RVTEST_WORD_PTR I_add_cg_cp_rs1_b0_str
+1:
+  addi x2, x2, SIG_STRIDE
+  .option pop
 ----
 
-`RVTEST_SIGUPD` macro:
+The failure handler uses the two embedded pointers to identify the failing instruction and testcase. On a match, the signature pointer advances by `SIG_STRIDE`.
+
+During reference-model signature generation, the same macro stores the result and skips the failure-reporting metadata:
+
 [source,asm]
 ----
-if (RVTEST_SELFCHECK) # check result against signature
-    LREG x20, 0(x10)
-    beq x16, x20, 1f
-    ecall
-    1f:
-else # generate signature
-    SREG x16, 0(x10)
-    addi x10, x10, WORDSIZE
-    nop
+  .option push
+  .option norvc
+  SREG x28, 0(x2)
+  beq x0, x0, 1f
+  jal x5, failedtest_x5_x4
+  RVTEST_WORD_PTR I_add_cg_cp_rs1_b0
+  RVTEST_WORD_PTR I_add_cg_cp_rs1_b0_str
+1:
+  addi x2, x2, SIG_STRIDE
+  .option pop
 ----
+
+Both forms have the same layout and advance the signature pointer. This keeps test instruction addresses consistent between signature generation and self-checking execution.

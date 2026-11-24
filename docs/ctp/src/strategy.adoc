@@ -22,12 +22,6 @@ TODO: not always implemented correctly.  See Issue 3040.
 
 Similarly, *WARL* fields are tested with legal values. The legalization of illegal values is implementation-specific and can be difficult to convey to a reference model for multibit fields, so *WARL* fields are not tested with illegal values unless it is easy to determine their legality (e.g. 1-bit fields). TODO: testing of illegal values is inconsistent and does not anticipate how to support future extensions that might make some values legal.
 
-=== Ratified Extensions not yet in Reference Model
-
-There is a testing challenge for ratified extensions that modify legal WARL field values but are not yet implemented in the reference model.  For example, when Smcdeleg is supported, `menvcfg.CDE` can be written to 1 to enable counter delegation.  During test development, some DUTs support Smcdeleg but Sail did not yet.  A WARL field is generally tested by writing a 0 and writing a 1 and checking that the value read back matches the reference model.  However, in this situation, the DUT can read back a 1, while the reference model does not, leading to a test failure.
-
-To avoid this problem, the WARL field is only tested when the extension is not supported (e.g. gate with `#ifndef SMCDELEG_SUPPORTED`). When the extension is unsupported, the field is tested with a 0 and 1 to check that 0 is always read back.  When the extension is supported, the field is not tested.  The coverpoint checks that both 0 and 1 are tested.  Thus, there is no test failure, but the missing test shows up as a coverage hole when the extension is supported, reminding the test developer to drop the `#ifndef` when the reference model adds support.
-
 === Normative Rules
 
 The testplan for each extension contains a list of normative rules applicable to that extension.

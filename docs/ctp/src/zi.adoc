@@ -152,8 +152,8 @@ This rule is checked by the time bin of cp_cntr coverpoint.
 [%autowidth]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr|3|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret`, or at least 1 for `cycle`, small for `time`.
-For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
+|cp_cntr|3|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret` and at least 1 for `cycle` and `time`. The test reads `time` up to 2000 times waiting for it to change.
+For RV32, also read `cycleh`, `timeh`, and `instreth` twice and check that they do not change.
 |===
 
 ==== Zihpm Hardware Performance Monitors

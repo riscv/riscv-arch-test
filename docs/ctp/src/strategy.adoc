@@ -138,8 +138,6 @@ Each extension's normative rule table lists the coverpoints that test each rule.
 `Needs infrastructure:`:: Testing the rule needs something the framework does not have, such as multiple harts, devices, or timing measurement.
 `Out of scope:`:: The rule does not apply to the configurations the tests support.
 
-Where an implementation may choose among several legal results, a test checks that the result is one of them, so such a rule is usually `Needs test:` rather than `No independent assertion:`. A rule that appears in several extensions has the same explanation in each.
-
 === Coverpoints
 
 Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ```ifdef UDB_MXLEN_32`` or ``UDB_MXLEN_64`` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ```ifdef`` to exclude tests based on the parameter value.

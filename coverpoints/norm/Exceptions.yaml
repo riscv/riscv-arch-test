@@ -120,7 +120,7 @@ normative_rule_definitions:
       [
         "Exceptions_S_cg/cp_instr_access_fault",
         "Exceptions_Sm_cg/cp_instr_access_fault",
-        "ExceptionsSv_cg/cp_instr_page_fault_s",
+        "Sv_Exceptions_cg/cp_instr_page_fault_s",
         "Exceptions_U_cg/cp_instr_access_fault",
       ]
   # The EBREAK instruction is used by debuggers to cause control to be transferred back to

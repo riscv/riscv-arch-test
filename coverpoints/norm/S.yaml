@@ -380,9 +380,11 @@ normative_rule_definitions:
   # instructions, then stval will contain the virtual address of the portion of the
   # instruction that caused the fault, while sepc will point to the beginning of the
   # instruction.
-  # Needs a 32-bit instruction on a Zca hart whose upper half lies in a page that faults.
   - name: stval_faulting_address_variable_instr
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: on a Zca hart, a 32-bit instruction at page offset 0xFFE whose second page faults, checking that stval is the second page's address and sepc the instruction's; cp_misaligned_inst_page_fault_s in Sv_Exceptions_cg describes it, but no test reaches its first bin.",
+      ]
 
   # The stval register can optionally also be used to return the faulting
   # instruction bits on an illegal-instruction exception (sepc points to the
@@ -612,3 +614,40 @@ normative_rule_definitions:
   # retire, and should not increment the minstret CSR.
   - name: ecall_ebreak_no_minstret_inc
     coverpoint: ["S_Zicntr_cg/{cp_instret_ecall, cp_instret_ebreak}"]
+
+  # Number|Privilege|Name|Description === Supervisor Trap Setup¶ 0x100|SRW|csr:sstatus[]|Supervisor
+  # status register¶ 0x104|SRW|csr:sie[]|Supervisor interrupt-enable register¶
+  # 0x105|SRW|csr:stvec[]|Supervisor trap handler base address¶
+  # 0x106|SRW|csr:scounteren[]|Supervisor counter enable¶ 0x114|SRW|csr:sieh[]|Upper qty:32[bits] of
+  # csr:sie[], RV32 only¶ Supervisor Configuration¶ 0x10A|SRW|csr:senvcfg[]|Supervisor environment
+  # configuration register¶ Supervisor Counter Setup¶ 0x120|SRW|csr:scountinhibit[]|Supervisor
+  # counter-inhibit register¶ Supervisor Trap Handling¶ 0x140|SRW|csr:sscratch[]|Supervisor scratch
+  # register¶ 0x141|SRW|csr:sepc[]|Supervisor exception program counter¶
+  # 0x142|SRW|csr:scause[]|Supervisor trap cause¶ 0x143|SRW|csr:stval[]|Supervisor trap value¶
+  # 0x144|SRW|csr:sip[]|Supervisor interrupt pending¶ 0x154|SRW|csr:siph[]|Upper qty:32[bits] of
+  # csr:sip[], RV32 only¶ 0x15C|SRW|csr:stopei[]|Supervisor top external interrupt¶
+  # 0xDA0|SRO|csr:scountovf[]|Supervisor count overflow¶ 0xDB0|SRO|csr:stopi[]|Supervisor top
+  # interrupt¶ Supervisor Indirect¶ 0x150|SRW|csr:siselect[]|Supervisor indirect register select¶
+  # 0x151|SRW|csr:sireg[]|Supervisor indirect register alias¶ 0x152|SRW|csr:sireg2[]|Supervisor
+  # indirect register alias 2¶ 0x153|SRW|csr:sireg3[]|Supervisor indirect register alias 3¶
+  # 0x155|SRW|csr:sireg4[]|Supervisor indirect register alias 4¶ 0x156|SRW|csr:sireg5[]|Supervisor
+  # indirect register alias 5¶ 0x157|SRW|csr:sireg6[]|Supervisor indirect register alias 6¶
+  # Supervisor Protection and Translation¶ 0x180|SRW|csr:satp[]|Supervisor address translation and
+  # protection¶ Supervisor Timer Compare¶ 0x14D|SRW|csr:stimecmp[]|Supervisor timer compare¶
+  # 0x15D|SRW|csr:stimecmph[]|Upper qty:32[bits] of csr:stimecmp[], RV32 only¶ Debug/Trace
+  # Registers¶ 0x5A8|SRW|csr:scontext[]|Supervisor-mode context register¶ Supervisor Resource
+  # Management Configuration¶ 0x181|SRW|csr:srmcfg[]|Supervisor Resource Management Configuration¶
+  # Supervisor State Enable Registers¶ 0x10C|SRW|csr:sstateen0[]|Supervisor State Enable 0 Register¶
+  # 0x10D|SRW|csr:sstateen1[]|Supervisor State Enable 1 Register¶
+  # 0x10E|SRW|csr:sstateen2[]|Supervisor State Enable 2 Register¶
+  # 0x10F|SRW|csr:sstateen3[]|Supervisor State Enable 3 Register¶ Supervisor Control Transfer
+  # Records Configuration¶ 0x14E|SRW|csr:sctrctl[]|Supervisor Control Transfer Records Control
+  # Register¶ 0x14F|SRW|csr:sctrstatus[]|Supervisor Control Transfer Records Status Register¶
+  # 0x15F|SRW|csr:sctrdepth[]|Supervisor Control Transfer Records Depth Register ===
+  - name: csr_addr_s_tbl
+    # Representative coverpoints; also the cp_{stvec,sepc,stval}_vaddr_* coverpoints of S_scsr_cg
+    coverpoint:
+      [
+        "S_scsr_cg/{cp_scsr_access, cp_scsrwalk}",
+        "U_ucsr_cg/cp_csr_insufficient_priv",
+      ]

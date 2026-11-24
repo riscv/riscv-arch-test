@@ -19,6 +19,45 @@ normative_rule_definitions:
         "TODO: EEW=SEW is inherent in every vector-crypto instruction's encoding; no dedicated coverpoint isolates it",
       ]
 
+  # Mnemonic|Instruction === insn:vandn.*[]|<<insns-vandn>>¶ insn:vbrev8.v*[]|<<insns-vbrev8>>¶
+  # insn:vrev8.v*[]|<<insns-vrev8>>¶ insn:vrol.*[]|<<insns-vrol>>¶ insn:vror.*[]|<<insns-vror>> ===
+  - name: Zvkb_insns_tbl
+    # Representative coverpoints; also the Zvkb8, Zvkb16 and Zvkb64 covergroups
+    coverpoint:
+      [
+        "Zvkb32_{vandn_vv,vandn_vx,vbrev8_v,vrev8_v,vrol_vv,vrol_vx,vror_vv,vror_vx,vror_vi}_cg/cp_asm_count",
+      ]
+
+  # Instruction Group|Extension|EGW|EEW|EGS === AES|extzvkned|128|32|4¶ SHA256|extzvknha|128|32|4¶
+  # SHA512|extzvknhb|256|64|4¶ GCM|extzvkg|128|32|4¶ SM4|extzvksed|128|32|4¶ SM3|extzvksh|256|32|8
+  # ===
+  - name: veccrypto_eg_params_tbl
+    # Representative coverpoints: one instruction of each group; also cr_vl_lmul_egs* of the others
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+      ]
+
+  # Instructions|Required SEW === insn:vaes*[]|32¶ Zvknha: insn:vsha2*[]|32¶ Zvknhb:
+  # insn:vsha2*[]|32 or 64¶ insn:vg*[]|32¶ insn:vsm3*[]|32¶ insn:vsm4*[]|32 ===
+  - name: veccrypto_sew_tbl
+    # Representative coverpoints: one instruction of each group; also cr_vl_lmul_egs* of the others
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+      ]
+
   # Since vl and vstart refer to elements, Vector Crypto instructions that use element
   # groups require that these values are an integer multiple of the Element Group Size
   # (EGS).

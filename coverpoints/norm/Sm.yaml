@@ -1579,7 +1579,8 @@ normative_rule_definitions:
 
   # Instruction fetches are always little-endian.
   - name: endianness_inst_fetch_little
-    coverpoint: ["Tested by executing instructions"]
+    # M-mode keeps fetching and executing correctly while mstatus.MBE = 1
+    coverpoint: ["EndianSm_cg/cp_mstatus_mbe_endianness_lw"]
 
   # When a trap is delegated to S-mode The mcause, mepc, and mtval registers and the
   # MPP and MPIE fields of mstatus are not written.

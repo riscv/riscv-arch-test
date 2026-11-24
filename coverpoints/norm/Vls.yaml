@@ -106,3 +106,54 @@ normative_rule_definitions:
         "Vls32_vle32_v_cg/cr_vtype_agnostic_e32",
         "Vls64_vle64_v_cg/cr_vtype_agnostic_e64",
       ]
+
+  # mop [1:0]|Description|Opcodes === 0|0|unit-stride|VLE<EEW>¶ 0|1|indexed-unordered|VLUXEI<EEW>¶
+  # 1|0|constant-stride|VLSE<EEW>¶ 1|1|indexed-ordered|VLOXEI<EEW> ===
+  - name: vector_ls_mop_load_enc
+    # Representative coverpoints; also the other EEWs and the segment forms
+    coverpoint: ["Vls32_{vle32,vluxei32,vlse32,vloxei32}_v_cg/cp_asm_count"]
+
+  # mop [1:0]|Description|Opcodes === 0|0|unit-stride|VSE<EEW>¶ 0|1|indexed-unordered|VSUXEI<EEW>¶
+  # 1|0|constant-stride|VSSE<EEW>¶ 1|1|indexed-ordered|VSOXEI<EEW> ===
+  - name: vector_ls_mop_store_enc
+    # Representative coverpoints; also the other EEWs and the segment forms
+    coverpoint: ["Vls32_{vse32,vsuxei32,vsse32,vsoxei32}_v_cg/cp_asm_count"]
+
+  # lumop[4:0]|Description === 0|0|0|0|0|unit-stride load¶ 0|1|0|0|0|unit-stride, whole register
+  # load¶ 0|1|0|1|1|unit-stride, mask load, EEW=8¶ 1|0|0|0|0|unit-stride fault-only-first¶
+  # x|x|x|x|x|other encodings reserved ===
+  - name: vector_ls_lumop_enc
+    # Representative coverpoints; cp_vl_lumop executes the reserved encodings
+    coverpoint:
+      [
+        "Vls32_{vle32,vl1re32,vlm,vle32ff}_v_cg/cp_asm_count",
+        "Ssstrict_S_instr_cg/cp_vl_lumop",
+      ]
+
+  # sumop[4:0]|Description === 0|0|0|0|0|unit-stride store¶ 0|1|0|0|0|unit-stride, whole register
+  # store¶ 0|1|0|1|1|unit-stride, mask store, EEW=8¶ x|x|x|x|x|other encodings reserved ===
+  - name: vector_ls_sumop_enc
+    # Representative coverpoints; cp_vs_sumop executes the reserved encodings
+    coverpoint:
+      [
+        "Vls32_{vse32,vs1r,vsm}_v_cg/cp_asm_count",
+        "Ssstrict_S_instr_cg/cp_vs_sumop",
+      ]
+
+  # |mew|width [2:0]|Mem bits|Data Reg bits|Index bits|Opcodes === Standard scalar
+  # FP|x|0|0|1|16|FLEN|-|FLH/FSH¶ Standard scalar FP|x|0|1|0|32|FLEN|-|FLW/FSW¶ Standard scalar
+  # FP|x|0|1|1|64|FLEN|-|FLD/FSD¶ Standard scalar FP|x|1|0|0|128|FLEN|-|FLQ/FSQ¶ Vector 8b
+  # element|0|0|0|0|8|8|-|VLxE8/VSxE8¶ Vector 16b element|0|1|0|1|16|16|-|VLxE16/VSxE16¶ Vector 32b
+  # element|0|1|1|0|32|32|-|VLxE32/VSxE32¶ Vector 64b element|0|1|1|1|64|64|-|VLxE64/VSxE64¶ Vector
+  # 8b index|0|0|0|0|SEW|SEW|8|VLxEI8/VSxEI8¶ Vector 16b index|0|1|0|1|SEW|SEW|16|VLxEI16/VSxEI16¶
+  # Vector 32b index|0|1|1|0|SEW|SEW|32|VLxEI32/VSxEI32¶ Vector 64b
+  # index|0|1|1|1|SEW|SEW|64|VLxEI64/VSxEI64¶ Reserved|1|X|X|X|-|-|-| ===
+  - name: vector_ls_width_enc
+    # Representative coverpoints; cp_vl_width and cp_vs_width execute the reserved encodings
+    coverpoint:
+      [
+        "Vls32_{vle8,vle16,vle32,vle64,vluxei8,vluxei16,vluxei32,vluxei64}_v_cg/cp_asm_count",
+        "{Zfh_flh,F_flw,D_fld}_cg/cp_asm_count",
+        "Ssstrict_S_instr_cg/{cp_vl_width, cp_vs_width}",
+        "Needs test: FLQ and FSQ (width=100); no Q suite exists.",
+      ]

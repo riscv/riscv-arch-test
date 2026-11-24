@@ -16,11 +16,10 @@ Custom instruction and CSR encoding spaces are not tested, except that custom CS
 CSR fields can be Write Preserves, Read Ignores (*WPRI*), Write Legal, Read Legal (*WLRL*), or Write Any, Read Legal (*WARL*). Examples of WPRI fields include undefined fields of `xstatus`, `xenvcfg`, `mseccfg`, and `xstateen*` that could have unintended side effects if they are subsequently defined and unwittingly set to nonzero values. Examples of *WLRL* fields include `xcause.ExceptionCode` and `hstatus.VGEIN`.  Other CSR fields are generally *WARL*.
 
 *WPRI* fields should be read-only zero if not furnished by the implementation, but are not tested because the test suite may be unaware of subsequently ratified extensions that furnish them.  WPRI fields are never modified by the tests, and their values are never checked by the tests.  In particular, the tests do not check that they are read-only zero because an unknown future extension could redefine their behavior.
-TODO: not always implemented correctly.  See Issue 3040.
 
 *WLRL* fields are tested by writing and reading back all legal values, but are not tested for illegal values.
 
-Similarly, *WARL* fields are tested with legal values. The legalization of illegal values is implementation-specific and can be difficult to convey to a reference model for multibit fields, so *WARL* fields are not tested with illegal values unless it is easy to determine their legality (e.g. 1-bit fields). TODO: testing of illegal values is inconsistent and does not anticipate how to support future extensions that might make some values legal.
+Similarly, *WARL* fields are tested with legal values. The legalization of illegal values is implementation-specific and can be difficult to convey to a reference model for multibit fields, so *WARL* fields are not tested with illegal values unless it is easy to determine their legality (e.g. 1-bit fields).
 
 === Normative Rules
 

@@ -15,7 +15,7 @@ Certification assumes the ratified specification is read and interpreted with kn
 
 When in doubt, it is better to test slightly more than strictly necessary for normative rules, rather than slightly less. Over-testing is acceptable, as long as it does not cause false failures or excessive test time. It is often easier to test cross-products of all relevant inputs, even if not all combinations are explicitly named by normative rules. It also reduces the risk of human error missing a required combination.
 
-The certification process involves more than just passing tests, and is described in TODO CSC page.
+The certification process involves more than just passing tests.
 
 === Test Supervisor Execution Environment (T-SEE) and Test Supervisor Binary Interface (T-SBI)
 

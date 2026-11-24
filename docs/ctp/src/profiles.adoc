@@ -223,8 +223,6 @@ All privileged suites require at least version 1.11 of the privileged specificat
 
 |===
 
-TODO: Revisit this list.  ZicsrF moves into Sm, S, U.  DTM may go away as tested within DM. Make sure H is correct.  Clean up Non-profile extensions with multiple extensions in the names. Add any missing extensions. Rename vector tests suites.
-
 === Out-of-Scope Extensions
 
 <<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  Measuring the latency of an instruction with a cycle counter is unreliable because instruction fetch, branch prediction, superscalar issue, and out-of-order execution make the count depend on where the instruction is and what surrounds it, not only on its operand data.  Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
@@ -243,7 +241,6 @@ TODO: Revisit this list.  ZicsrF moves into Sm, S, U.  DTM may go away as tested
 Furthermore, the following features are not supported in this version of the certification test plan:
 
 * Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in coherent main memory, cacheable if Zicbo* is supported.
-TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each type of access (load/store/execute, misaligned, at start/middle/end/partially wrapping) to each region.
 * Testing privilege modes whose XLEN differs from MXLEN; low ROI
 * Testing extensions that have been disabled with `misa` fields; behavior is unspecified.
 * Non-Maskable Interrupts (NMI) - no standard way to generate them yet

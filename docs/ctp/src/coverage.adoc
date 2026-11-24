@@ -43,13 +43,7 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |page_type_d|3|Data page type (VS-stage when hypervisor is active))
 |g_page_type_i|3|Instruction page type (G-stage when hypervisor is inactive, 0 when inactive)
 |g_page_type_d|3|Data page type (G-stage when hypervisor is inactive, 0 when inactive)
-|tdata1[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 1 for each debug trigger
-|tdata2[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 2 for each debug trigger
-|tdata3[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 3 for each debug trigger
-|tinfo[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Info for each debug trigger
 |===
-
-TODO: tdata1-3 and tinfo are not presently used in Sdtrig coverpoints and may not be implemented.
 
 [[t-pagetypes]]
 .Page Types

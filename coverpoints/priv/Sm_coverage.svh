@@ -73,7 +73,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         `ifdef SOFTWARE_CHECK_SUPPORTED
             bins b_18_software_check = {18};
         `endif
-        //bins b_19_hardware_error = {19}; // a hart need not raise hardware errors, so mcause need not hold 19
+        // No bin for 19 (hardware error): a hart need not raise it, so mcause need not hold 19
         `ifdef H_SUPPORTED
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};

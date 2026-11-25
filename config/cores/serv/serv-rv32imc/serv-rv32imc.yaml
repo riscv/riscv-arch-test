@@ -176,7 +176,10 @@ params:
 
   # No counters at all.  mcycle, minstret, mhpmcounter* and mcountinhibit are not decoded:
   # 0xB00/0xB02 and 0x320 all collapse onto mstatus or mtvec.
-  # MCOUNTINHIBIT_IMPLEMENTED: false keeps the tests from writing mcountinhibit onto mstatus.
+  # MCOUNTINHIBIT_IMPLEMENTED: false keeps the tests from writing mcountinhibit onto mstatus, and
+  # HPM_COUNTER_EN all false keeps the boot from writing mhpmevent3..31, which decode as mtvec,
+  # mstatus, mie and mcause.
+  #   https://github.com/olofk/serv/blob/f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8/rtl/serv_decode.v#L168-L202
   HPM_COUNTER_EN:
     [
       false,

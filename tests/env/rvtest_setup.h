@@ -846,70 +846,187 @@
       csrw mcountinhibit, zero
     #endif
 
-    // Initialize counter event selectors to 0.  All counters should be implemented, but a legal
-    // implementation is to make both the counter and its corresponding event selector be read-only 0.
-    csrw mhpmevent3, zero
-    csrw mhpmevent4, zero
-    csrw mhpmevent5, zero
-    csrw mhpmevent6, zero
-    csrw mhpmevent7, zero
-    csrw mhpmevent8, zero
-    csrw mhpmevent9, zero
-    csrw mhpmevent10, zero
-    csrw mhpmevent11, zero
-    csrw mhpmevent12, zero
-    csrw mhpmevent13, zero
-    csrw mhpmevent14, zero
-    csrw mhpmevent15, zero
-    csrw mhpmevent16, zero
-    csrw mhpmevent17, zero
-    csrw mhpmevent18, zero
-    csrw mhpmevent19, zero
-    csrw mhpmevent20, zero
-    csrw mhpmevent21, zero
-    csrw mhpmevent22, zero
-    csrw mhpmevent23, zero
-    csrw mhpmevent24, zero
-    csrw mhpmevent25, zero
-    csrw mhpmevent26, zero
-    csrw mhpmevent27, zero
-    csrw mhpmevent28, zero
-    csrw mhpmevent29, zero
-    csrw mhpmevent30, zero
-    csrw mhpmevent31, zero
+    // Initialize the event selectors of the counters the config implements (HPM_COUNTER_EN) to 0.
+    // The selector of an unimplemented counter is read-only 0, so it needs no write, and on a
+    // hart that decodes only some CSR address bits (SERV) the write would land on another CSR.
+    #ifdef UDB_HPM_COUNTER_EN_3
+      csrw mhpmevent3, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_4
+      csrw mhpmevent4, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_5
+      csrw mhpmevent5, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_6
+      csrw mhpmevent6, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_7
+      csrw mhpmevent7, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_8
+      csrw mhpmevent8, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_9
+      csrw mhpmevent9, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_10
+      csrw mhpmevent10, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_11
+      csrw mhpmevent11, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_12
+      csrw mhpmevent12, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_13
+      csrw mhpmevent13, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_14
+      csrw mhpmevent14, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_15
+      csrw mhpmevent15, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_16
+      csrw mhpmevent16, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_17
+      csrw mhpmevent17, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_18
+      csrw mhpmevent18, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_19
+      csrw mhpmevent19, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_20
+      csrw mhpmevent20, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_21
+      csrw mhpmevent21, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_22
+      csrw mhpmevent22, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_23
+      csrw mhpmevent23, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_24
+      csrw mhpmevent24, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_25
+      csrw mhpmevent25, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_26
+      csrw mhpmevent26, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_27
+      csrw mhpmevent27, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_28
+      csrw mhpmevent28, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_29
+      csrw mhpmevent29, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_30
+      csrw mhpmevent30, zero
+    #endif
+    #ifdef UDB_HPM_COUNTER_EN_31
+      csrw mhpmevent31, zero
+    #endif
     // mhpmevent*h high-half CSRs only exist on RV32 with Sscofpmf; otherwise
     // accessing them is reserved.
     #if __riscv_xlen == 32
       #ifdef SSCOFPMF_SUPPORTED
-      csrw mhpmevent3h, zero
-      csrw mhpmevent4h, zero
-      csrw mhpmevent5h, zero
-      csrw mhpmevent6h, zero
-      csrw mhpmevent7h, zero
-      csrw mhpmevent8h, zero
-      csrw mhpmevent9h, zero
-      csrw mhpmevent10h, zero
-      csrw mhpmevent11h, zero
-      csrw mhpmevent12h, zero
-      csrw mhpmevent13h, zero
-      csrw mhpmevent14h, zero
-      csrw mhpmevent15h, zero
-      csrw mhpmevent16h, zero
-      csrw mhpmevent17h, zero
-      csrw mhpmevent18h, zero
-      csrw mhpmevent19h, zero
-      csrw mhpmevent20h, zero
-      csrw mhpmevent21h, zero
-      csrw mhpmevent22h, zero
-      csrw mhpmevent23h, zero
-      csrw mhpmevent24h, zero
-      csrw mhpmevent25h, zero
-      csrw mhpmevent26h, zero
-      csrw mhpmevent27h, zero
-      csrw mhpmevent28h, zero
-      csrw mhpmevent29h, zero
-      csrw mhpmevent30h, zero
-      csrw mhpmevent31h, zero
+        #ifdef UDB_HPM_COUNTER_EN_3
+          csrw mhpmevent3h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_4
+          csrw mhpmevent4h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_5
+          csrw mhpmevent5h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_6
+          csrw mhpmevent6h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_7
+          csrw mhpmevent7h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_8
+          csrw mhpmevent8h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_9
+          csrw mhpmevent9h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_10
+          csrw mhpmevent10h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_11
+          csrw mhpmevent11h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_12
+          csrw mhpmevent12h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_13
+          csrw mhpmevent13h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_14
+          csrw mhpmevent14h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_15
+          csrw mhpmevent15h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_16
+          csrw mhpmevent16h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_17
+          csrw mhpmevent17h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_18
+          csrw mhpmevent18h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_19
+          csrw mhpmevent19h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_20
+          csrw mhpmevent20h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_21
+          csrw mhpmevent21h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_22
+          csrw mhpmevent22h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_23
+          csrw mhpmevent23h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_24
+          csrw mhpmevent24h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_25
+          csrw mhpmevent25h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_26
+          csrw mhpmevent26h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_27
+          csrw mhpmevent27h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_28
+          csrw mhpmevent28h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_29
+          csrw mhpmevent29h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_30
+          csrw mhpmevent30h, zero
+        #endif
+        #ifdef UDB_HPM_COUNTER_EN_31
+          csrw mhpmevent31h, zero
+        #endif
       #endif
     #endif
 

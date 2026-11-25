@@ -20,8 +20,13 @@
   #error "SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS is not defined, should have been passed by the ACT compilation framework."
 #endif
 
-#define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x0)
-#define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000)
+#ifndef SAIL_HARTID
+  #error "SAIL_HARTID is not defined, should have been passed by the ACT compilation framework."
+#endif
+
+// Sail's CLINT has one msip (4 bytes) and one mtimecmp (8 bytes) per hart, indexed by mhartid.
+#define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 4 * (SAIL_HARTID))
+#define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000 + 8 * (SAIL_HARTID))
 #define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
 #define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
 #define SAIL_SIG_GUEST_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x8)

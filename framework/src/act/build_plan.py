@@ -72,9 +72,13 @@ def _sail_platform_defines(sail_config_path: Path) -> tuple[str, ...]:
 
     clint_base = _sail_platform_base(config_data, "clint", sail_config_path)
     sig_base = _sail_platform_base(config_data, "simple_interrupt_generator", sail_config_path)
+    hartid = config_data["platform"].get("hartid", 0)
+    if isinstance(hartid, bool) or not isinstance(hartid, int) or hartid < 0:
+        raise ValueError(f"Sail config {sail_config_path} must set `platform.hartid` to a non-negative integer.")
     return (
         f"-DSAIL_CLINT_BASE_ADDRESS=0x{clint_base:x}",
         f"-DSAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS=0x{sig_base:x}",
+        f"-DSAIL_HARTID={hartid}",
     )
 
 

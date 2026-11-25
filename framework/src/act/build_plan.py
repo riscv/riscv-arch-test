@@ -73,8 +73,8 @@ def _sail_platform_defines(sail_config_path: Path) -> tuple[str, ...]:
     clint_base = _sail_platform_base(config_data, "clint", sail_config_path)
     sig_base = _sail_platform_base(config_data, "simple_interrupt_generator", sail_config_path)
     hartid = config_data["platform"].get("hartid", 0)
-    if isinstance(hartid, bool) or not isinstance(hartid, int) or hartid < 0:
-        raise ValueError(f"Sail config {sail_config_path} must set `platform.hartid` to a non-negative integer.")
+    if isinstance(hartid, bool) or not isinstance(hartid, int) or not 0 <= hartid < 4095:
+        raise ValueError(f"Sail config {sail_config_path} must set `platform.hartid` to an integer from 0 to 4094.")
     return (
         f"-DSAIL_CLINT_BASE_ADDRESS=0x{clint_base:x}",
         f"-DSAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS=0x{sig_base:x}",
@@ -619,14 +619,14 @@ def generate_build_plan(
     c_runtime_sources = tuple((env_dir / name).absolute() for name in ("c_test_start.S", "c_test_support.c"))
     dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
     udb_headers = tuple(sorted(p.absolute() for p in (config_wkdir / "env").iterdir() if p.suffix == ".h"))
-    compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute())
+    # sail_macros.h is included by every test, so the platform defines from the Sail config are needed
+    # whatever the reference model is, and a change to the Sail config must recompile every test.
+    sail_config = config.dut_include_dir / "sail.json"
+    signature_compile_flags = _sail_platform_defines(sail_config)
+    compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute(), sail_config.absolute())
 
     # Sail config affects reference model output.
     ref_model_inputs: tuple[Path, ...] = ()
-    # sail_macros.h is included by every test, so the platform defines are needed
-    # whatever the reference model is; only the model's own inputs are Sail-specific.
-    sail_config = config.dut_include_dir / "sail.json"
-    signature_compile_flags = _sail_platform_defines(sail_config)
     if config.ref_model_type == RefModelType.SAIL:
         ref_model_inputs = (sail_config.absolute(),)
 

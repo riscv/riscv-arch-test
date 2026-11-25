@@ -64,7 +64,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (rs1 = x1, x5, x7 bins)",
-        "Zicfilp_Sm_cg/{cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c}",
+        "Zicfilp_Sm_cg/cp_pelp_trap_entry_guarded_zicfilp",
       ]
 
   # To support labeled landing pads, the indirect call/jump sites establish an expected landing pad label
@@ -208,12 +208,12 @@ normative_rule_definitions:
   - name: Zicfilp_pelp_trap
     coverpoint:
       [
-        "Zicfilp_Sm_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_state_preservation_zicfilp}",
-        "Zicfilp_S_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_state_preservation_zicfilp}",
+        "Zicfilp_Sm_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_elp_state_preservation_zicfilp}",
+        "Zicfilp_S_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_elp_state_preservation_zicfilp}",
         "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
         "Zicfilp_H_cg/cp_trap_entry_spelp (traps into VS-mode and HS-mode from VS-mode and VU-mode)",
         "Zicfilp_SmH_cg/cp_trap_mpelp_virt (traps into M-mode from VS-mode and VU-mode)",
-        "Zicfilp_H_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_async_interrupt,cp_vs_trap_delivery}",
+        "Zicfilp_H_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_elp_async_interrupt,cp_vs_trap_delivery}",
       ]
 
   # An mret or sret instruction is used to return from a trap in M-mode or S-mode, respectively. When executing
@@ -394,3 +394,12 @@ normative_rule_definitions:
   # AND of yLPE and mnstatus.MNPELP.
   - name: mnret_Zicfilp
     coverpoint: ["Deferred: Smrnmi (RNMI) is not yet tested"]
+
+  # Privilege Mode|xLPE === M|csr:mseccfg[mlpe]¶ S or HS|csr:menvcfg[lpe]¶ VS|csr:henvcfg[lpe]¶ U or
+  # VU|csr:senvcfg[lpe] ===
+  - name: Zicfilp_xlpe_smode_tbl
+    coverpoint:
+      [
+        "Zicfilp_{Sm,S,U,H}_cg/cp_disabled_zicfilp",
+        "Zicfilp_H_cg/cp_{vs,vu}_lpe",
+      ]

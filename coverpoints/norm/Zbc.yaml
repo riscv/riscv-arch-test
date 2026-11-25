@@ -26,3 +26,8 @@ normative_rule_definitions:
 
   - name: clmulr_op
     coverpoint: ["Zbc_clmulr_cg/cr_rs1_rs2_edges"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:clmul[rd,rs1,rs2]|<<insns-clmul>>¶
+  # ✓|✓|insn:clmulh[rd,rs1,rs2]|<<insns-clmulh>>¶ ✓|✓|insn:clmulr[rd,rs1,rs2]|<<insns-clmulr>> ===
+  - name: Zbc_insns_tbl
+    coverpoint: ["Zbc_{clmul,clmulh,clmulr}_cg/cp_asm_count"]

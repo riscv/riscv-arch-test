@@ -74,7 +74,10 @@ normative_rule_definitions:
   # fields for which the rs1 or uimm argument has at least one bit set corresponding to that
   # field.
   - name: csr_rs1_uimm_side_effect
-    coverpoint: ["Not tested: no standard CSR has side effects on field writes"]
+    coverpoint:
+      [
+        "No independent assertion: no standard CSR has side effects on field writes.",
+      ]
   # In particular, unless specified otherwise, a CSR access is performed after the execution
   # of any prior instructions in program order whose behavior modifies or is modified by the
   # CSR state and before the execution of any subsequent instructions in program order whose
@@ -104,28 +107,31 @@ normative_rule_definitions:
   - name: csr_side_effects_synchronous
     # TODO: write a CSR whose write has a side effect and check the consequence from the very
     # next instruction
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: write a CSR whose write has a side effect and check the consequence from the next instruction.",
+      ]
   # For the RVWMO memory consistency model, CSR accesses are weakly ordered by default, so
   # other harts or devices may observe CSR accesses in an order different from program order.
   - name: csr_weakly_ordered
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # In addition, CSR accesses are not ordered with respect to explicit memory accesses, unless
   # a CSR access modifies the execution behavior of the instruction that performs the explicit
   # memory access or unless a CSR access and an explicit memory access are ordered by either the
   # syntactic dependencies defined by the memory model or the ordering requirements defined in
   # Memory-Ordering PMAs.
   - name: csr_memory_access_ordering
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # For the purposes of the FENCE instruction, CSR read accesses are classified as
   # device input (I), and CSR write accesses are classified as device output (O).
   - name: csr_fence_ordering
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # The hardware platform may define that accesses to certain CSRs are strongly ordered, as
   # defined in Memory-Ordering PMAs. Accesses to strongly ordered CSRs have stronger ordering
   # constraints with respect to accesses to both weakly ordered CSRs and accesses to
   # memory-mapped I/O regions.
   - name: csr_strongly_ordered
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # Privileged-architecture CSR conventions (CSR address mapping, field specifications,
   # modulation, implicit reads, and CSRs wider than XLEN)
@@ -133,7 +139,10 @@ normative_rule_definitions:
   # Standard CSRs do not have side effects on reads but may have side effects on writes.
   - name: Zicsr_no_read_side_effects
     # TODO: read each standard CSR repeatedly and check the reads change no state
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: read each standard CSR repeatedly and check that the reads change no state.",
+      ]
   # Instructions that access a non-existent CSR address are reserved.
   - name: Zicsr_nonexistent_rsv
     # Representative coverpoints; also Ssstrict_S_scsr_cg and other Ssstrict_U_ucsr_cg crosses
@@ -142,9 +151,8 @@ normative_rule_definitions:
         "Ssstrict_Sm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}",
         "Ssstrict_U_ucsr_cg/cp_csrr",
       ]
-  # Machine-mode standard read-write CSRs 0x7A0–0x7BF are reserved for use by the debug
-  # system. Of these CSRs, 0x7A0–0x7AF are accessible to machine mode, whereas
-  - name: Zicsr_debug_range
+  # Of these CSRs, 0x7A0–0x7AF are accessible to machine mode
+  - name: Zicsr_debug_m_accessible
     coverpoint:
       [
         "SdtrigSm_trig_module_reg_cg/{cp_csr_access_global, cp_csr_access_local}",
@@ -153,10 +161,7 @@ normative_rule_definitions:
   # write was of an illegal value, but the value returned should deterministically depend on
   # the illegal written value and the value of the field prior to the write.
   - name: Zicsr_wlrl_deterministic
-    coverpoint:
-      [
-        "Not tested: the value read after an illegal WLRL write is implementation-specific",
-      ]
+    coverpoint: ["No independent assertion: recommendation."]
   # Some read/write CSR fields are only defined for a subset of bit encodings, but allow any
   # value to be written while guaranteeing to return a legal value whenever read.
   - name: Zicsr_warl_def
@@ -166,23 +171,26 @@ normative_rule_definitions:
   # was of an illegal value, but the legal value returned should deterministically depend on
   # the illegal written value and the architectural state of the hart.
   - name: Zicsr_warl_deterministic
-    coverpoint:
-      [
-        "Not tested: the legal value returned after an illegal WARL write is implementation-specific; CSR walks check only that it is legal",
-      ]
+    coverpoint: ["No independent assertion: recommendation."]
   # If a write to one CSR changes the set of legal values allowed for a field of a second CSR,
   # then unless specified otherwise, the second CSR's field immediately gets an UNSPECIFIED
   # value from among its new legal values. This is true even if the field's value before the
   # write remains legal after the write; the value of the field may be changed in consequence
   # of the write to the controlling CSR.
   - name: Zicsr_field_modulation
-    coverpoint: ["Not tested: behavior is UNSPECIFIED"]
+    coverpoint:
+      [
+        "Needs test: change a CSR that restricts another field's legal values and check that the field reads a legal value.",
+      ]
   # A change to the value of a CSR for this reason is not a write to the affected CSR and thus
   # does not trigger any side effects specified for that CSR.
   - name: Zicsr_field_modulation_no_side_effects
     # TODO: write a controlling CSR so that a field of another CSR changes, and check that no
     # write side effects of that CSR occur
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: write a CSR that changes a field of another CSR and check that none of that CSR's write side effects occur.",
+      ]
   # Unless otherwise specified, the value returned by an implicit read of a CSR is the same
   # value that would have been returned by an explicit read of the CSR, using a CSR-access
   # instruction in a sufficient privilege mode.
@@ -193,11 +201,13 @@ normative_rule_definitions:
   # the writable fields and bits of the new-width CSR are, unless specified otherwise,
   # determined from the previous-width CSR as though by this algorithm:
   - name: Zicsr_width_modulation
-    coverpoint: ["Not tested: changing SXLEN or UXLEN is not tested"]
+    coverpoint:
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # Changing the width of a CSR is not a read or write of the CSR and thus does not trigger any
   # side effects.
   - name: Zicsr_width_modulation_no_side_effects
-    coverpoint: ["Not tested: changing SXLEN or UXLEN is not tested"]
+    coverpoint:
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
   # If a standard CSR is wider than XLEN bits, then an explicit read of the CSR returns the
   # register's least-significant XLEN bits, and an explicit write to the CSR modifies only the
   # register's least-significant XLEN bits, leaving the upper bits unchanged.
@@ -218,3 +228,67 @@ normative_rule_definitions:
   # exception.
   - name: Zicsr_high_half_rv64_rsv
     coverpoint: ["Ssstrict_Sm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
+
+  # Number|Privilege|Name|Description === Unprivileged Floating-Point CSRs¶
+  # 0x001|URW|csr:fflags[]|Floating-Point Accrued Exceptions¶ 0x002|URW|csr:frm[]|Floating-Point
+  # Dynamic Rounding Mode¶ 0x003|URW|csr:fcsr[]|Floating-Point Control and Status Register
+  # (csr:frm[] + csr:fflags[])¶ Unprivileged Vector CSRs¶ 0x008|URW|csr:vstart[]|Vector start
+  # position¶ 0x009|URW|csr:vxsat[]|Fixed-point accrued saturation flag¶
+  # 0x00A|URW|csr:vxrm[]|Fixed-point rounding mode¶ 0x00F|URW|csr:vcsr[]|Vector control and status
+  # register¶ 0xC20|URO|csr:vl[]|Vector length¶ 0xC21|URO|csr:vtype[]|Vector data type register¶
+  # 0xC22|URO|csr:vlenb[]|Vector register length in bytes¶ Unprivileged ext:zicfiss[] Extension CSR¶
+  # 0x011|URW|csr:ssp[]|Shadow Stack Pointer¶ Unprivileged ext:zkr[] Extension CSR¶
+  # 0x015|URW|csr:seed[]|Seed for cryptographic random bit generators¶ Unprivileged ext:zcmt[]
+  # Extension CSR¶ 0x017|URW|csr:jvt[]|Table jump base vector and control register¶ Unprivileged
+  # Counter/Timers¶ 0xC00|URO|csr:cycle[]|Cycle counter for insn:rdcycle[] instruction¶
+  # 0xC01|URO|csr:time[]|Timer for insn:rdtime[] instruction¶
+  # 0xC02|URO|csr:instret[]|Instructions-retired counter for insn:rdinstret[] instruction¶
+  # 0xC03|URO|csr:hpmcounter3[]|Performance-monitoring counter¶
+  # 0xC04|URO|csr:hpmcounter4[]|Performance-monitoring counter¶ ||⋮|¶
+  # 0xC1F|URO|csr:hpmcounter31[]|Performance-monitoring counter¶ 0xC80|URO|csr:cycleh[]|Upper
+  # qty:32[bits] of csr:cycle[], RV32 only¶ 0xC81|URO|csr:timeh[]|Upper qty:32[bits] of csr:time[],
+  # RV32 only¶ 0xC82|URO|csr:instreth[]|Upper qty:32[bits] of csr:instret[], RV32 only¶
+  # 0xC83|URO|csr:hpmcounter3h[]|Upper qty:32[bits] of csr:hpmcounter3[], RV32 only¶
+  # 0xC84|URO|csr:hpmcounter4h[]|Upper qty:32[bits] of csr:hpmcounter4[], RV32 only¶ ||⋮|¶
+  # 0xC9F|URO|csr:hpmcounter31h[]|Upper qty:32[bits] of csr:hpmcounter31[], RV32 only ===
+  - name: csr_addr_unpriv_tbl
+    coverpoint:
+      [
+        "ZicsrF_cg/cp_fcsr_access",
+        "U_V_cg/cp_vcsrrswc",
+        "Zicfiss_U_cg/cp_ssp_access",
+        "Zkr_U_cg/cp_zkr_seed_csrrw",
+        "Zicntr_csrrs_cg/cp_cntr",
+        "Zihpm_csrrs_cg/cp_cntr_hpm",
+        "Needs test: jvt (0x017); no Zcmt suite exists.",
+      ]
+
+  # === CSR Address|Hex|Use and Accessibility¶ [11:10]|[9:8]|[7:4]¶ Unprivileged and User-Level
+  # CSRs¶ 00|00|XXXX|0x000–0x0FF|Standard read/write¶ 01|00|XXXX|0x400–0x4FF|Standard read/write¶
+  # 10|00|XXXX|0x800–0x8FF|Custom read/write¶ 11|00|0XXX|0xC00–0xC7F|Standard read-only¶
+  # 11|00|10XX|0xC80–0xCBF|Standard read-only¶ 11|00|11XX|0xCC0–0xCFF|Custom read-only¶
+  # Supervisor-Level CSRs¶ 00|01|XXXX|0x100–0x1FF|Standard read/write¶
+  # 01|01|0XXX|0x500–0x57F|Standard read/write¶ 01|01|10XX|0x580–0x5BF|Standard read/write¶
+  # 01|01|11XX|0x5C0–0x5FF|Custom read/write¶ 10|01|0XXX|0x900–0x97F|Standard read/write¶
+  # 10|01|10XX|0x980–0x9BF|Standard read/write¶ 10|01|11XX|0x9C0–0x9FF|Custom read/write¶
+  # 11|01|0XXX|0xD00–0xD7F|Standard read-only¶ 11|01|10XX|0xD80–0xDBF|Standard read-only¶
+  # 11|01|11XX|0xDC0–0xDFF|Custom read-only¶ Hypervisor and VS CSRs¶ 00|10|XXXX|0x200–0x2FF|Standard
+  # read/write¶ 01|10|0XXX|0x600–0x67F|Standard read/write¶ 01|10|10XX|0x680–0x6BF|Standard
+  # read/write¶ 01|10|11XX|0x6C0–0x6FF|Custom read/write¶ 10|10|0XXX|0xA00–0xA7F|Standard
+  # read/write¶ 10|10|10XX|0xA80–0xABF|Standard read/write¶ 10|10|11XX|0xAC0–0xAFF|Custom
+  # read/write¶ 11|10|0XXX|0xE00–0xE7F|Standard read-only¶ 11|10|10XX|0xE80–0xEBF|Standard
+  # read-only¶ 11|10|11XX|0xEC0–0xEFF|Custom read-only¶ Machine-Level CSRs¶
+  # 00|11|XXXX|0x300–0x3FF|Standard read/write¶ 01|11|0XXX|0x700–0x77F|Standard read/write¶
+  # 01|11|100X|0x780–0x79F|Standard read/write¶ 01|11|1010|0x7A0–0x7AF|Standard read/write debug
+  # CSRs¶ 01|11|1011|0x7B0–0x7BF|Debug-mode-only CSRs¶ 01|11|11XX|0x7C0–0x7FF|Custom read/write¶
+  # 10|11|0XXX|0xB00–0xB7F|Standard read/write¶ 10|11|10XX|0xB80–0xBBF|Standard read/write¶
+  # 10|11|11XX|0xBC0–0xBFF|Custom read/write¶ 11|11|0XXX|0xF00–0xF7F|Standard read-only¶
+  # 11|11|10XX|0xF80–0xFBF|Standard read-only¶ 11|11|11XX|0xFC0–0xFFF|Custom read-only ===
+  - name: csr_addr_alloc_tbl
+    coverpoint:
+      [
+        "Ssstrict_Sm_mcsr_cg/cp_csrr",
+        "Sm_mcsr_cg/cp_csr_ro",
+        "{S_scsr_cg,U_ucsr_cg,H_vscsr_cg}/{cp_csr_insufficient_priv, cp_csr_ro}",
+        "No independent assertion: the custom ranges are designated for custom use.",
+      ]

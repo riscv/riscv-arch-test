@@ -21,11 +21,11 @@ inputs:
   riscv-toolchain-version:
     description: RISC-V GCC toolchain version
     required: false
-    default: "2026.08.27"
+    default: "2026.10.29"
   llvm-version:
     description: LLVM version
     required: false
-    default: "23"
+    default: "23.1.6"
 
 runs:
   using: composite
@@ -101,54 +101,32 @@ runs:
         tar xJf "$archive" --directory="$tool_dir" --strip-components=1
         rm -f "$archive"
 
-    - name: Install Clang
+    - name: Install LLVM
       if: inputs.install-architecture-tools == 'true' && steps.llvm-cache.outputs.cache-hit != 'true'
       shell: bash
       env:
         LLVM_VERSION: ${{ inputs.llvm-version }}
       run: |
-        llvm_cache="/opt/act4-tools/llvm"
-        mkdir -p "$llvm_cache/partial"
-        if ! compgen -G "$llvm_cache/*.deb" >/dev/null; then
-          retry() {
-            local max_attempts="$1"
-            shift
-            local attempt=1
-            while ! "$@"; do
-              if [ "$attempt" -ge "$max_attempts" ]; then
-                echo "Command failed after ${attempt} attempts: $*"
-                return 1
-              fi
-              local backoff=$((attempt * 10))
-              echo "Attempt ${attempt} failed: $*"
-              echo "Retrying in ${backoff}s..."
-              sleep "$backoff"
-              attempt=$((attempt + 1))
-            done
-          }
-
-          curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
-            https://apt.llvm.org/llvm.sh \
-            --output /tmp/llvm.sh
-          chmod +x /tmp/llvm.sh
-          retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
-          mapfile -t llvm_packages < <(
-            dpkg-query -W -f='${binary:Package}=${Version}\n' | awk -F= '$2 ~ /~\+\+/ { print }'
-          )
-          (
-            cd "$llvm_cache"
-            retry 3 apt-get download "${llvm_packages[@]}"
-          )
-        fi
-        llvm_root="$llvm_cache/root"
-        mkdir -p "$llvm_root"
-        for package in "$llvm_cache"/*.deb; do
-          dpkg-deb -x "$package" "$llvm_root"
+        tool_dir="/opt/act4-tools/llvm"
+        case "$(arch)" in
+          x86_64) llvm_arch=X64 ;;
+          aarch64) llvm_arch=ARM64 ;;
+          *) echo "No LLVM release for $(arch)"; exit 1 ;;
+        esac
+        release="LLVM-${LLVM_VERSION}-Linux-${llvm_arch}"
+        archive="$tool_dir/${release}.tar.zst"
+        curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
+          "https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_VERSION}/${release}.tar.zst" \
+          --output "$archive"
+        major="${LLVM_VERSION%%.*}"
+        members=(lib/clang)
+        for tool in clang "clang-${major}" clang++ ld.lld lld llvm-objdump llvm-objcopy llvm-ar llvm-nm llvm-readelf llvm-readobj; do
+          members+=("bin/${tool}")
         done
-        for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
-          ln -sf "${tool}-${LLVM_VERSION}" "$llvm_root/usr/bin/${tool}"
-        done
-        rm -f "$llvm_cache"/*.deb
+        tar --use-compress-program="zstd -d --long=31" -xf "$archive" --directory="$tool_dir" --strip-components=1 \
+          --exclude="${release}/lib/clang/*/lib" "${members[@]/#/${release}/}"
+        rm -f "$archive"
+        "$tool_dir/bin/clang" --version
 
     - name: Add architecture tools to PATH
       if: inputs.install-architecture-tools == 'true'
@@ -157,7 +135,7 @@ runs:
         {
           echo /opt/act4-tools/sail/bin
           echo /opt/act4-tools/gcc/bin
-          echo /opt/act4-tools/llvm/root/usr/bin
+          echo /opt/act4-tools/llvm/bin
         } >> "$GITHUB_PATH"
 
     - name: Cache uv packages

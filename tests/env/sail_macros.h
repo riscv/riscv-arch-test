@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 // The reference model's rvmodel_macros.h. It is included in place of the DUT's
-// for signature builds (no RVTEST_SELFCHECK): the reference driver assembled
-// from rvmodel_driver.S, and the signature-generation test objects. It supplies
-// Sail-compatible IO, termination and interrupts, and overrides the device
-// addresses and timings that dut_environment.h set from the config. Values the
-// reference model must share with the DUT (e.g. RVMODEL_ACCESS_FAULT_ADDRESS_*,
-// RVMODEL_HPM_COUNTER) are NOT redefined here.
+// for Sail builds (RVTEST_SAIL_MACROS): the reference driver assembled from
+// rvmodel_driver.S, the signature-generation test objects, and the coverage
+// objects. It supplies Sail-compatible IO, termination and interrupts, and
+// overrides the device addresses and timings that dut_environment.h set from the
+// config. Values the reference model must share with the DUT (e.g.
+// RVMODEL_ACCESS_FAULT_ADDRESS_*, RVMODEL_HPM_COUNTER) are NOT redefined here.
 
 #ifndef _SAIL_MACROS_H
 #define _SAIL_MACROS_H

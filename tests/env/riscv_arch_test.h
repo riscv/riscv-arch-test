@@ -11,16 +11,20 @@
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"
+// Signature builds and coverage builds run on Sail, so they take Sail's macros.
+#if !defined(RVTEST_SELFCHECK) && !defined(RVTEST_SAIL_MACROS)
+  #define RVTEST_SAIL_MACROS
+#endif
 // Only the DUT driver (rvmodel_driver.S with RVTEST_SELFCHECK) sees the DUT's
 // rvmodel_macros.h. Test objects call into the driver instead, and take device
 // addresses and timings from dut_environment.h, which act generates from the
-// config. The reference build (no RVTEST_SELFCHECK) gets the reference model's
-// values and macros from sail_macros.h.
-#if defined(RVTEST_DRIVER) && defined(RVTEST_SELFCHECK)
+// config. Sail builds (RVTEST_SAIL_MACROS) get the reference model's values and
+// macros from sail_macros.h.
+#if defined(RVTEST_DRIVER) && !defined(RVTEST_SAIL_MACROS)
   #include "rvmodel_macros.h"
 #endif
 #include "dut_environment.h"
-#ifndef RVTEST_SELFCHECK
+#ifdef RVTEST_SAIL_MACROS
   #include "sail_macros.h"
 #endif
 #include "check_defines.h"

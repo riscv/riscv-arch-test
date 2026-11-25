@@ -5,14 +5,17 @@ normative_rule_definitions:
   # The maximum size in bits of a vector element that any operation can produce or
   # consume, ELEN {ge} 8, which must be a power of 2.
   - name: elen
-    coverpoint: ["Implicit"]
+    coverpoint:
+      [
+        "Configuration requirement: ELEN is a power of two at least 8; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/param/ELEN.yaml[param/ELEN.yaml]).",
+      ]
 
   # The number of bits in a single vector register, VLEN {ge} ELEN, which must be a
   # power of 2, and must be no greater than 2^16^.
   - name: vlen
     coverpoint:
       [
-        "Implicit: a fixed implementation parameter - every other coverpoint's vl/lmul arithmetic implicitly depends on it being correct",
+        "Configuration requirement: VLEN is a power of two no greater than 65536; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/param/VLEN.yaml[param/VLEN.yaml]).",
       ]
 
   # Implementations may also change mstatus.VS or vsstatus.VS from Initial or Clean
@@ -20,15 +23,12 @@ normative_rule_definitions:
   - name: hw_mstatus_vs_dirty_update
     coverpoint:
       [
-        "Untestable: whether an implementation opportunistically marks mstatus.VS/vsstatus.VS Dirty is a permissive implementation choice with no single correct answer to assert",
+        "No independent assertion: permits VS to become Dirty without a vector-state change.",
       ]
 
   # Implementations may set vill in either case.
   - name: reserved_vill_set
-    coverpoint:
-      [
-        "Untestable: Implementation Specific, Theoretically Implicit with Correct Sail Config",
-      ]
+    coverpoint: ["No independent assertion: setting vill is optional."]
 
   # The vector extension adds 32 architectural vector registers, v0-v31 to the base
   # scalar RISC-V ISA.
@@ -93,8 +93,8 @@ normative_rule_definitions:
   - name: vsstatus_vs_mstatus_vs_op_active
     coverpoint:
       [
-        "Sm_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
-        "Sm_V_cg/cp_mstatus_vs_set_dirty_csr",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_arithmetic",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_csr",
       ]
 
   # Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect.
@@ -104,16 +104,14 @@ normative_rule_definitions:
   - name: vsstatus_vs_op
     coverpoint:
       [
-        "Untestable: requires the H extension configured; see mstatus_vs_op_off for the non-hypervisor form",
+        "H_V_cg/cp_vsstatus_vs_off_{arithmetic,csr}",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_{arithmetic,csr,vcsr}",
       ]
 
   # If vsstatus.VS is Dirty, vsstatus.SD is 1; otherwise, vsstatus.SD is set in
   # accordance with existing specifications.
   - name: vsstatus_sd_op_vs
-    coverpoint:
-      [
-        "Untestable: vsstatus.SD is a CSR-layout consequence of VS state, not independently observable via a coverpoint",
-      ]
+    coverpoint: ["H_vsstatus_cg/cp_vsstatus_sd_write"]
 
   # summarizes whether either the csr::[fs], csr::[vs], or csr::[xs] fields signal the
   # presence of some dirty state that will require saving extended user context to memory.
@@ -128,10 +126,7 @@ normative_rule_definitions:
   # If mstatus.VS is Dirty, mstatus.SD is 1; otherwise, mstatus.SD is set in
   # accordance with existing specifications.
   - name: mstatus_sd_op_vs
-    coverpoint:
-      [
-        "Untestable: mstatus.SD is a CSR-layout consequence of VS state, not independently observable via a coverpoint",
-      ]
+    coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
 
   # Implementations may have a writable misa.V field.
   - name: mutable_misa_v
@@ -150,7 +145,7 @@ normative_rule_definitions:
   - name: vsstatus_vs_exists
     coverpoint:
       [
-        "Untestable: field-existence-independent-of-misa.V is an implementation/config fact, not a runtime coverpoint",
+        "No independent assertion: permits vsstatus.VS to exist when misa.V is clear.",
       ]
 
   # The read-only XLEN-wide vector type CSR, csr:vtype[] provides the default type used to
@@ -264,7 +259,7 @@ normative_rule_definitions:
   - name: vreg_offgroup_lmul2_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # instructions specifying an LMUL=4 vector register group using vector register
@@ -272,7 +267,7 @@ normative_rule_definitions:
   - name: vreg_offgroup_lmul4_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # instructions specifying an LMUL=8 vector register group using register numbers
@@ -280,7 +275,7 @@ normative_rule_definitions:
   - name: vreg_offgroup_lmul8_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # Mask registers are always contained in a single vector register, regardless of
@@ -394,12 +389,18 @@ normative_rule_definitions:
 
   # reset the vstart CSR to zero at the end of execution.
   - name: vstart_update
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: check that vstart is zero after vector instructions that start with a nonzero vstart.",
+      ]
 
   # vstart is not modified by vector instructions that raise illegal-instruction
   # exceptions.
   - name: vstart_unmodified
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: no coverpoint checks that vstart is unmodified after an illegal-instruction exception; cp_vstart only checks that the exception is raised.",
+      ]
 
   # The vstart CSR is defined to have only enough writable bits to hold the largest
   # element index (one less than the maximum VLMAX).
@@ -422,10 +423,7 @@ normative_rule_definitions:
   # implementation can never produce when executing that same instruction with the
   # same vtype setting.
   - name: vstart_vtype_dep
-    coverpoint:
-      [
-        "Untestable: implementations are permitted, not required, to raise this exception, so no behavior can be asserted",
-      ]
+    coverpoint: ["No independent assertion: the exception is optional."]
 
   # The vector fixed-point rounding-mode register holds a two-bit read-write rounding-mode
   # field in the least-significant bits (csr:vxrm[][1:0]). The upper bits,
@@ -592,7 +590,7 @@ normative_rule_definitions:
   - name: emul_offgroup_rsv
     coverpoint:
       [
-        "Out-of-Scope: this behavior is unspecified even under Ssstrict, which does not cover CSR-state-dependent reserved conditions",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # A vector register cannot be used to provide source operands with more than one
@@ -647,7 +645,9 @@ normative_rule_definitions:
   # EMUL=16.
   - name: emul_rsv
     coverpoint:
-      ["Out-of-Scope: reserved behavior that is not covered by Ssstrict"]
+      [
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
+      ]
 
   # Widened scalar values, e.g., input and output to a widening reduction operation,
   # are held in the first element of a vector register and have EMUL=1.
@@ -673,10 +673,7 @@ normative_rule_definitions:
   # Where available, masking is encoded in a single-bit vm field in the instruction
   # (inst[25]).
   - name: vmask_vm_enc
-    coverpoint:
-      [
-        "Implicit: the vm field encoding is exercised by every masked and unmasked vector instruction the suite runs",
-      ]
+    coverpoint: ["Vx{8,16,32,64}_vadd_vv_cg/cp_masking_edges"]
 
   # The mask value used to control execution of a masked vector instruction is
   # always supplied by vector register v0.
@@ -884,7 +881,7 @@ normative_rule_definitions:
   - name: vtype_vset_rsv
     coverpoint:
       [
-        "Out-of-Scope: we cannot test reserved behavior that depends on prior vill state; outside Ssstrict's encoding-only methodology",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # For the vsetivli instruction, the AVL is encoded as a 5-bit zero-extended
@@ -991,23 +988,20 @@ normative_rule_definitions:
   - name: vector_ls_scalar_misaligned_independence
     coverpoint:
       [
-        "Untestable: independence from the scalar misaligned-access implementation cannot be observed from a self-checking test",
+        "No independent assertion: permits vector and scalar misaligned-access support to differ.",
       ]
 
   # Vector misaligned memory accesses follow the same rules for atomicity as scalar
   # misaligned memory accesses.
   - name: vector_ls_scalar_misaligned_dependence
-    coverpoint:
-      [
-        "Not Tested: atomicity of misaligned vector accesses is not exercised by this suite",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # However, even for the ordered form, accesses to the fields within an individual
   # segment are not ordered with respect to each other.
   - name: vector_ls_seg_indexed_unordered
     coverpoint:
       [
-        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
+        "No independent assertion: imposes no order among the fields of a segment.",
       ]
 
   # If element 0 raises an exception, vl is not modified, and the trap is taken. If
@@ -1074,9 +1068,7 @@ normative_rule_definitions:
   # accesses can be initiated in any order.
   - name: vector_ls_stride_unordered_op
     coverpoint:
-      [
-        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
-      ]
+      ["No independent assertion: imposes no order among the element accesses."]
 
   # For implementations with precise vector traps, exceptions on indexed-unordered
   # stores must also be precise.
@@ -1147,9 +1139,7 @@ normative_rule_definitions:
   # to each other.
   - name: vector_ls_constant_stride_unordered
     coverpoint:
-      [
-        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
-      ]
+      ["No independent assertion: imposes no order among the element accesses."]
 
   # When rs2=x0, then an implementation is allowed, but not required, to perform
   # fewer memory operations than the number of active elements, and may perform
@@ -1192,7 +1182,7 @@ normative_rule_definitions:
   # When the fault-only-first instruction takes a trap due to an interrupt,
   # implementations should not reduce vl and should instead set a vstart value.
   - name: vector_ff_interrupt_behavior
-    coverpoint: [""]
+    coverpoint: ["No independent assertion: recommendation."]
 
   # The three-bit nf field in the vector instruction encoding is an unsigned integer that
   # contains one less than the number of fields per segment, NFIELDS.
@@ -1234,9 +1224,7 @@ normative_rule_definitions:
   # ordered indexed segment loads and stores.
   - name: vector_ls_seg_unordered
     coverpoint:
-      [
-        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
-      ]
+      ["No independent assertion: imposes no order among the element accesses."]
 
   # The vstart value is in units of whole segments.
   - name: vector_ls_seg_vstart_dep
@@ -1291,9 +1279,7 @@ normative_rule_definitions:
   # case where the byte stride is such that segments overlap in memory.
   - name: vector_ls_seg_constant_stride_unordered
     coverpoint:
-      [
-        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
-      ]
+      ["No independent assertion: imposes no order among the element accesses."]
 
   # Vector indexed segment loads and stores move contiguous segments where each
   # segment is located at an address given by adding the scalar base address in the
@@ -1433,49 +1419,32 @@ normative_rule_definitions:
 
   # Vector memory instructions appear to execute in program order on the local hart.
   - name: vector_ls_program_order
-    coverpoint:
-      [
-        "Not Tested: RVWMO program-order guarantees would require a concurrent/multi-hart checking methodology this repo doesn't have yet",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # Vector memory instructions follow RVWMO at the instruction level.
   - name: vector_ls_rvwmo
-    coverpoint:
-      [
-        "Not Tested: RVWMO memory-ordering guarantees would require a concurrent/multi-hart checking methodology this repo doesn't have yet",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # Except for vector indexed-ordered loads and stores, element operations are
   # unordered within the instruction.
   - name: vector_ls_indexed_ordered_ordered
     coverpoint:
-      [
-        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
-      ]
+      ["No independent assertion: imposes no order among the element accesses."]
 
   # Vector indexed-ordered loads and stores read and write elements from/to memory
   # in element order respectively, obeying RVWMO at the element level.
   - name: vector_ls_indexed_ordered_rvwmo
-    coverpoint:
-      [
-        "Not Tested: RVWMO memory-ordering guarantees would require a concurrent/multi-hart checking methodology this repo doesn't have yet",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # Instructions affected by the vector length register vl have a control dependency
   # on vl, rather than a data dependency.
   - name: vl_control_dependency
-    coverpoint:
-      [
-        "Not Tested: control-dependency timing is not exercised by any suite yet",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # Similarly, masked vector instructions have a control dependency on the source
   # mask register, rather than a data dependency.
   - name: vmask_control_dependency
-    coverpoint:
-      [
-        "Not Tested: control-dependency timing is not exercised by any suite yet",
-      ]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # All vector floating-point operations use the dynamic rounding mode in the frm
   # register.
@@ -1486,7 +1455,10 @@ normative_rule_definitions:
   # floating-point instruction--even those that do not depend on the rounding mode,
   # or when vl=0, or when vstart {ge} vl--is reserved.
   - name: V_inv_frm_rsv
-    coverpoint: ["Out-of-Scope: Ssstrict does not apply to CSR values"]
+    coverpoint:
+      [
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
+      ]
 
   # Vector-vector operations take two vectors of operands from vector register
   # groups specified by vs2 and vs1 respectively.
@@ -1525,7 +1497,10 @@ normative_rule_definitions:
   # value, in which case the least-significant SEW bits of the f register are used,
   # else the canonical NaN value is used.
   - name: vfop_freg_nanbox_lsb_sewbits
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: vector-scalar FP instructions with FLEN > SEW and an improperly NaN-boxed f register.",
+      ]
 
   # Vector instructions where any floating-point vector operand's EEW is not a
   # supported floating-point type width (which includes when FLEN &lt; SEW) are
@@ -1877,7 +1852,10 @@ normative_rule_definitions:
   # If any destination element is saturated, the vxsat bit is set in the vxsat
   # register.
   - name: vxsat_op_vnclip_u
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: check vxsat after VNCLIP and VNCLIPU saturate; their tests neither clear nor record vxsat.",
+      ]
 
   # If the EEW of a vector floating-point operand does not correspond to a supported
   # IEEE floating-point type, the instruction encoding is reserved.
@@ -1906,13 +1884,14 @@ normative_rule_definitions:
   # csr:mstatus[fs] is Off then any attempt to execute a vector floating-point instruction
   # will raise an illegal-instruction exception.
   - name: vsstatus_mstatus_fs_off_hypervisor_V_fp_ill
-    coverpoint: [""]
+    coverpoint: ["H_VF_cg/cp_vectorfp_vsstatus_fs_off"]
 
   # Any vector floating-point instruction that modifies any floating-point extension state
   # (i.e., floating-point CSRs or f registers) must set both csr:mstatus[fs] and
   # csr:vsstatus[fs] to Dirty.
   - name: vsstatus_mstatus_fs_dirty_hypervisor_V_fp
-    coverpoint: [""]
+    coverpoint:
+      ["H_VF_cg/cp_vectorfp_vsstatus_fs_state_affecting_{register,csr}"]
 
   # A vector floating-point exception at any active floating-point element sets the
   # standard FP exception flags in the fflags register. Inactive elements do not set
@@ -1994,7 +1973,11 @@ normative_rule_definitions:
   # This is a unary vector-vector instruction that returns an estimate of 1/x accurate to
   # 7 bits.
   - name: vfrec7_op
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_flag_edges",
+      ]
   # For the non-exceptional cases, the seven high bits of significand (after the leading
   # one) are used to address the following table. The output of the table becomes the
   # seven high bits of the result significand (after the leading one); the remainder of
@@ -2011,7 +1994,11 @@ normative_rule_definitions:
   # range [-1, 2*B], the result corresponds to one of the exceptional cases in the table
   # above.
   - name: vfrec7_op_precise
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_flag_edges",
+      ]
   # If the input is subnormal, the normalized input significand is given by shifting the
   # input significand left by 1 minus the normalized input exponent, discarding the
   # leading 1 bit. Otherwise, the normalized input significand equals the input
@@ -2019,7 +2006,11 @@ normative_rule_definitions:
   # significand as a function of the seven MSBs of the normalized input significand; the
   # other bits of the normalized output significand are zero.
   - name: vfrec7_op_subnorm
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_flag_edges",
+      ]
   # If the normalized output exponent is 0 or -1, the result is subnormal: the output
   # exponent is 0, and the output significand is given by concatenating a 1 bit to the
   # left of the normalized output significand, then shifting that quantity right by 1
@@ -2027,7 +2018,11 @@ normative_rule_definitions:
   # normalized output exponent, and the output significand equals the normalized output
   # significand. The output sign equals the input sign.
   - name: vfrec7_op_output
-    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
+    coverpoint:
+      [
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges",
+        "Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_flag_edges",
+      ]
 
   # The vector floating-point insn:vfmin[] and insn:vfmax[] instructions have the same
   # behavior as the corresponding scalar floating-point instructions in the ext:f[],
@@ -2190,7 +2185,8 @@ normative_rule_definitions:
 
   # Traps on vector reduction instructions are always reported with a vstart of 0.
   - name: vreduction_trap
-    coverpoint: [""]
+    coverpoint:
+      ["Needs test: check vstart = 0 after a trap on a vector reduction."]
 
   # Vector reduction operations raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2349,7 +2345,7 @@ normative_rule_definitions:
   - name: vfredusum_additive_impl
     coverpoint:
       [
-        "Implicit: the additive-identity sign is whatever the reference model produces and is checked by the ordinary signature comparison, just not isolated by a dedicated coverpoint",
+        "Needs test: a vfredusum that could use the additive identity, accepting a result with or without it.",
       ]
 
   # The reduction tree structure must be deterministic for a given value in vtype
@@ -2357,7 +2353,7 @@ normative_rule_definitions:
   - name: vfredusum_redtree
     coverpoint:
       [
-        "Untestable: reduction-tree determinism across runs is not observable from a single self-checking execution",
+        "Needs test: repeat a reduction with the same inputs, vtype, and vl and check that the results match.",
       ]
 
   # The insn:vfredmin[] and insn:vfredmax[] instructions reduce the scalar argument in
@@ -2454,7 +2450,7 @@ normative_rule_definitions:
 
   # Traps on vcpop.m are always reported with a vstart of 0.
   - name: vcpop_trap
-    coverpoint: [""]
+    coverpoint: ["Needs test: check vstart = 0 after a trap on vcpop.m."]
 
   # The vcpop.m instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2478,7 +2474,7 @@ normative_rule_definitions:
 
   # Traps on vfirst are always reported with a vstart of 0.
   - name: vfirst_trap
-    coverpoint: [""]
+    coverpoint: ["Needs test: check vstart = 0 after a trap on vfirst.m."]
 
   # The vfirst instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2504,7 +2500,7 @@ normative_rule_definitions:
 
   # Traps on vmsbf.m are always reported with a vstart of 0.
   - name: vmsbf_trap
-    coverpoint: [""]
+    coverpoint: ["Needs test: check vstart = 0 after a trap on vmsbf.m."]
 
   # The vmsbf instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2532,7 +2528,7 @@ normative_rule_definitions:
 
   # Traps on vmsif.m are always reported with a vstart of 0.
   - name: vmsif_trap
-    coverpoint: [""]
+    coverpoint: ["Needs test: check vstart = 0 after a trap on vmsif.m."]
 
   # The vmsif instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2560,7 +2556,7 @@ normative_rule_definitions:
 
   # Traps on vmsof.m are always reported with a vstart of 0.
   - name: vmsof_trap
-    coverpoint: [""]
+    coverpoint: ["Needs test: check vstart = 0 after a trap on vmsof.m."]
 
   # The vmsof instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
@@ -2602,7 +2598,7 @@ normative_rule_definitions:
 
   # Traps on viota.m are always reported with a vstart of 0,
   - name: viota_trap
-    coverpoint: [""]
+    coverpoint: ["Needs test: check vstart = 0 after a trap on viota.m."]
 
   # An illegal-instruction exception is raised if vstart is non-zero.
   - name: viota_vstart_n0_ill
@@ -2842,7 +2838,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Vx16_vrgather_vv_cg/cp_vs1_edges",
-        "Vx16_vrgatherei16_vv_cg/cp_vs1_edges",
+        "Vx16_vrgatherei16_vv_cg/cp_vs1_edges_eew16",
       ]
 
   # The source vector can be read at any index &lt; VLMAX regardless of csr:vl[].
@@ -2859,7 +2855,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Vx16_vrgather_vv_cg/cr_vl_lmul_sew16",
-        "Vx16_vrgatherei16_vv_cg/cr_vl_lmul_sew16",
+        "Vx16_vrgatherei16_vv_cg/cr_vl_lmul_e16_sew16",
       ]
 
   # and the remaining elements past csr:vl[] are handled according to the current tail
@@ -2868,7 +2864,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Vx16_vrgather_vv_cg/cr_vtype_agnostic",
-        "Vx16_vrgatherei16_vv_cg/cr_vtype_agnostic",
+        "Vx16_vrgatherei16_vv_cg/cr_vtype_agnostic_e16",
       ]
 
   # The operation can be masked, and the mask undisturbed/agnostic policy is followed for
@@ -2887,7 +2883,14 @@ normative_rule_definitions:
   # The vrgatherei16.vv form uses SEW/LMUL for the data in vs2 but EEW=16 and EMUL =
   # (16/SEW)*LMUL for the indices in vs1.
   - name: vrgatherei16-vv_sew_lmul
-    coverpoint: ["Vx32_vrgatherei16_vv_cg/cp_vs1_edges"]
+    coverpoint:
+      [
+        "Vx{8,16,32,64}_vrgatherei16_vv_cg/cp_vs1_edges_eew16",
+        "Vx8_vrgatherei16_vv_cg/cr_vl_lmul_e16_sew8",
+        "Vx16_vrgatherei16_vv_cg/cr_vl_lmul_e16_sew16",
+        "Vx32_vrgatherei16_vv_cg/cr_vl_lmul_e16_sew32",
+        "Vx64_vrgatherei16_vv_cg/cr_vl_lmul_e16_sew64",
+      ]
 
   # If an element index is out of range ( vs1[i] ≥ VLMAX ) then zero is returned for the
   # element value.
@@ -2951,7 +2954,7 @@ normative_rule_definitions:
 
   # A trap on a vcompress instruction is always reported with a vstart of 0.
   - name: vcompress_trap
-    coverpoint: [""]
+    coverpoint: ["Needs test: check vstart = 0 after a trap on vcompress."]
 
   # Executing a vcompress instruction with a non-zero vstart raises an
   # illegal-instruction exception.
@@ -3012,54 +3015,50 @@ normative_rule_definitions:
 
   # Any of these extensions can be added to base ISAs with XLEN=32 or XLEN=64.
   - name: Zve_xlen
-    coverpoint:
-      [
-        "Implicit: extension-support requirement exercised by the config simply running under that XLEN",
-      ]
+    coverpoint: ["No independent assertion: permits either XLEN."]
 
   # The Zve32f and Zve64x extensions depend on the Zve32x extension.
   - name: Zve32f_Zve64x_dependent_Zve32x
     coverpoint:
       [
-        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+        "Configuration requirement: Zve64x requires Zve32x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64x.yaml[ext/Zve64x.yaml]).",
       ]
 
   # The Zve64f extension depends on the Zve32f and Zve64x extensions.
   - name: Zve64f_dependent_Zve32f_Zve64x
     coverpoint:
       [
-        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+        "Configuration requirement: Zve64f requires Zve32f and Zve64x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64f.yaml[ext/Zve64f.yaml]).",
       ]
 
   # The Zve64d extension depends on the Zve64f extension.
   - name: Zve64d_dependent_Zve64f
     coverpoint:
       [
-        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+        "Configuration requirement: Zve64d requires Zve64f and D; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml]).",
       ]
 
   # All Zve* extensions have precise traps.
   - name: Zve_precise_traps
     coverpoint:
       [
-        "Untestable: trap precision is a cross-cutting property of every exception test, not something one coverpoint can isolate",
+        "Needs test: check vstart and register state after traps on vector instructions.",
       ]
 
-  # All Zve* extensions provide support for EEW of 8, 16, and 32, and Zve64*
-  # extensions also support EEW of 64.
+  # ext:zve32x[] provides support for EEW of 8, 16, and 32.
   - name: Zve_eew
-    coverpoint:
-      [
-        "Implicit: extension-support requirement exercised implicitly by which EEWs the generated suite runs at all",
-      ]
+    coverpoint: ["Vx{8,16,32}_vadd_vv_cg/cp_vs2_edges"]
 
-  # All Zve* extensions support all vector load and store instructions
-  # (&lt;&lt;sec-vector-memory&gt;&gt;), except Zve64* extensions do not support
-  # EEW=64 for index values when XLEN=32.
+  # ext:zve64x[] supports all vector load and store instructions (<<sec-vector-memory>>), except
+  # EEW=64 for index values is not supported when XLEN=32.
   - name: Zve_nsupport_eew64_xlen32
+    # Representative coverpoints; cp_exceptionsv_index_eew64 checks that indexed accesses with
+    # EEW=64 trap when XLEN=32
     coverpoint:
       [
-        "Implicit: extension-support exclusion exercised implicitly by config-driven test generation filtering",
+        "Vls32_{vle32,vlse32,vluxei32,vloxei32,vlseg2e32,vle32ff,vl1re32,vlm}_v_cg/cp_asm_count",
+        "Vls32_{vse32,vsse32,vsuxei32,vsoxei32,vsseg2e32,vs1r,vsm}_v_cg/cp_asm_count",
+        "ExceptionsVls_v{l,s}{ux,ox}ei64_v_cg/cp_exceptionsv_index_eew64",
       ]
 
   # All Zve* extensions support all vector integer instructions
@@ -3082,14 +3081,14 @@ normative_rule_definitions:
         "Implicit: config-driven instruction exclusion exercised implicitly by test generation filtering",
       ]
 
-  # All Zve* extensions support all vector permutation instructions
-  # (&lt;&lt;sec-vector-permute&gt;&gt;), except that Zve32x and Zve64x do not
-  # include those with floating-point operands, and Zve64f does not include those
-  # with EEW=64 floating-point operands.
+  # ext:zve32x[] supports all vector integer permutation instructions
+  # (<<sec-vector-integer-permute>>).
   - name: Zve32x_Zve64x_nsupport_freg
+    # Representative coverpoints; also the other SEWs
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by config-driven test generation filtering",
+        "Vx32_{vmv_x_s,vmv_s_x,vslideup_vx,vslidedown_vx,vslide1up_vx,vslide1down_vx,vrgather_vv,vrgatherei16_vv,vcompress_vm}_cg/cp_asm_count",
+        "Vx32_vmv{1,2,4,8}r_v_cg/cp_asm_count",
       ]
 
   # The Zve32x extension depends on the Zicsr extension.
@@ -3106,7 +3105,7 @@ normative_rule_definitions:
   - name: Zve32f_Zve64f_dependent_F
     coverpoint:
       [
-        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+        "Configuration requirement: Zve32f requires F and Zve32x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve32f.yaml[ext/Zve32f.yaml]).",
       ]
 
   # The misa.v bit is set for implementations providing misa and supporting V.
@@ -3117,14 +3116,14 @@ normative_rule_definitions:
   - name: V_precise_traps
     coverpoint:
       [
-        "Untestable: trap precision is a cross-cutting property of every exception test, not something one coverpoint can isolate",
+        "Needs test: check vstart and register state after traps on vector instructions.",
       ]
 
   # The V vector extension depends upon the Zvl128b and Zve64d extensions.
   - name: V_dependent_Zvl128b_Zve64d
     coverpoint:
       [
-        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+        "Configuration requirement: V requires Zvl128b and Zve64d; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/V.yaml[ext/V.yaml]).",
       ]
 
   # The V extension supports EEW of 8, 16, and 32, and 64.
@@ -3137,54 +3136,64 @@ normative_rule_definitions:
   # The V extension supports the vector configuration instructions
   # (&lt;&lt;sec-vector-config&gt;&gt;).
   - name: V_instr_config
-    coverpoint:
-      [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
-      ]
+    coverpoint: ["U_V_cg/cp_sew_lmul_vset{vl,_i_vli}"]
   # The V extension supports all vector load and store instructions
   # (&lt;&lt;sec-vector-memory&gt;&gt;), except the V extension does not support EEW=64
   # for index values when XLEN=32.
   - name: V_instr_ls_eew64_nsupported_xlen32
+    # Representative coverpoints; cp_exceptionsv_index_eew64 checks that indexed accesses with
+    # EEW=64 trap when XLEN=32
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+        "Vls32_{vle32,vlse32,vluxei32,vloxei32,vlseg2e32,vle32ff,vl1re32,vlm}_v_cg/cp_asm_count",
+        "Vls32_{vse32,vsse32,vsuxei32,vsoxei32,vsseg2e32,vs1r,vsm}_v_cg/cp_asm_count",
+        "ExceptionsVls_v{l,s}{ux,ox}ei64_v_cg/cp_exceptionsv_index_eew64",
       ]
   # The V extension supports all vector integer instructions
   # (&lt;&lt;sec-vector-integer&gt;&gt;).
   - name: V_instr_int
+    # Representative coverpoints: one instruction from each kind of integer instruction
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+        "Vx32_{vadd_vv,vwadd_vv,vzext_vf2,vadc_vvm,vand_vv,vsll_vv,vnsrl_wv,vmseq_vv,vmin_vv,vmul_vv,vdiv_vv,vwmul_vv,vmacc_vv,vwmacc_vv,vmerge_vvm,vmv_v_v}_cg/cp_asm_count",
       ]
   # The V extension supports all vector fixed-point arithmetic instructions
   # (&lt;&lt;sec-vector-fixed-point&gt;&gt;).
   - name: V_instr_fixedpt
+    # Representative coverpoints; also the other SEWs and forms
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+        "Vx32_{vsaddu_vv,vsadd_vv,vssubu_vv,vssub_vv,vaaddu_vv,vaadd_vv,vasubu_vv,vasub_vv,vsmul_vv,vssrl_vv,vssra_vv,vnclipu_wv,vnclip_wv}_cg/cp_asm_count",
       ]
   # The V extension supports all vector integer single-width and widening reduction
   # operations (&lt;&lt;sec-vector-integer-reduce&gt;&gt;,
   # &lt;&lt;sec-vector-integer-reduce-widen&gt;&gt;).
   - name: V_instr_red
+    # Representative coverpoints; also the other SEWs
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+        "Vx32_{vredsum,vredmaxu,vredmax,vredminu,vredmin,vredand,vredor,vredxor,vwredsumu,vwredsum}_vs_cg/cp_asm_count",
       ]
   # The V extension supports all vector mask instructions
   # (&lt;&lt;sec-vector-mask&gt;&gt;).
   - name: V_instr_mask
+    # Representative coverpoints; also the other SEWs
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+        "Vx32_{vmand,vmnand,vmandn,vmxor,vmor,vmnor,vmorn,vmxnor}_mm_cg/cp_asm_count",
+        "Vx32_{vcpop,vfirst,vmsbf,vmsif,vmsof,viota}_m_cg/cp_asm_count",
+        "Vx32_vid_v_cg/cp_asm_count",
       ]
   # The V extension supports all vector permutation instructions
   # (&lt;&lt;sec-vector-integer-permute&gt;&gt;,
   # &lt;&lt;sec-vector-float-permute&gt;&gt;).
   - name: V_instr_perm
+    # Representative coverpoints; also the other SEWs
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+        "Vx32_{vmv_x_s,vmv_s_x,vslideup_vx,vslidedown_vx,vslide1up_vx,vslide1down_vx,vrgather_vv,vrgatherei16_vv,vcompress_vm}_cg/cp_asm_count",
+        "Vx32_vmv{1,2,4,8}r_v_cg/cp_asm_count",
+        "Vf32_{vfmv_f_s,vfmv_s_f,vfslide1up_vf,vfslide1down_vf}_cg/cp_asm_count",
       ]
 
   # The V extension depends upon the F and D extensions, and implements all vector
@@ -3196,14 +3205,14 @@ normative_rule_definitions:
   - name: V_dependent_F_D
     coverpoint:
       [
-        "Implicit: the F and D dependency is satisfied by the configuration under test; the vector floating-point tests cannot run without it",
+        "Configuration requirement: V requires F and D; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/V.yaml[ext/V.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/D.yaml[ext/D.yaml]).",
       ]
 
   # The Zvfhmin extension depends on the Zve32f extension.
   - name: Zvfhmin_dependent_Zve32f
     coverpoint:
       [
-        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+        "Configuration requirement: Zvfhmin requires Zve32f; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfhmin.yaml[ext/Zvfhmin.yaml]).",
       ]
 
   # When the ext:zvfh[] extension is implemented, all instructions in
@@ -3212,9 +3221,11 @@ normative_rule_definitions:
   # &lt;&lt;sec-vfslide1up&gt;&gt;, and &lt;&lt;sec-vfslide1down&gt;&gt; become defined
   # when SEW=16.
   - name: Zvfh_instr
+    # Representative coverpoints; also cp_asm_count of the other Vf16 covergroups
     coverpoint:
       [
-        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+        "Vf16_{vfadd_vv,vfwadd_vv,vfmul_vv,vfdiv_vv,vfmacc_vv,vfwmacc_vv,vfsqrt_v,vfrsqrt7_v,vfrec7_v,vfmin_vv,vfsgnj_vv,vmfeq_vv,vfclass_v,vfmerge_vfm,vfcvt_x_f_v,vfwcvt_f_f_v,vfncvt_rod_f_f_w}_cg/cp_asm_count",
+        "Vf16_{vfredusum_vs,vfwredusum_vs,vfmv_v_f,vfslide1up_vf,vfslide1down_vf}_cg/cp_asm_count",
       ]
   # Additionally, conversions between 8-bit integers and binary16 values are provided. The
   # floating-point-to-integer narrowing conversions (insn:vfncvt.x.f.w[],
@@ -3235,23 +3246,20 @@ normative_rule_definitions:
   # The EEW=16 floating-point operands of these instructions use the binary16
   # format.
   - name: Zvfh_eew16
-    coverpoint:
-      [
-        "Implicit: extension-support requirement exercised implicitly by which EEWs the generated suite runs at all",
-      ]
+    coverpoint: ["Vf16_vfadd_vv_cg/cr_vs2_vs1_edges_f_sew16"]
 
   # The Zvfh extension depends on the Zve32f and Zfhmin extensions.
   - name: Zvfh_dependent_Zve32f_Zfhmin
     coverpoint:
       [
-        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+        "Configuration requirement: Zvfh requires Zve32f and Zfhmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfh.yaml[ext/Zvfh.yaml]).",
       ]
 
   # Vector instructions with EGS &gt; VLMAX are reserved.
   - name: egs_ge_vlmax_rsv
     coverpoint:
       [
-        "Out-of-Scope: no Ssstrict-equivalent suite exists for the vector-crypto (Zvk*) extensions, and this reserved condition depends on CSR state, matching Ssstrict's own encoding-only scope boundary",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # When an operand is a vector of element groups, the vl setting must correspond to
@@ -3259,7 +3267,7 @@ normative_rule_definitions:
   - name: egs_vl_rsv
     coverpoint:
       [
-        "Out-of-Scope: no Ssstrict-equivalent suite exists for the vector-crypto (Zvk*) extensions, and this reserved condition depends on CSR state, matching Ssstrict's own encoding-only scope boundary",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # When element group instructions are present, an additional constraint is placed
@@ -3270,7 +3278,7 @@ normative_rule_definitions:
   - name: egs_vl_avl
     coverpoint:
       [
-        "Untestable: AVL-to-vl rounding under EGSMAX is not exercised by any suite and depends on an implementation-chosen EGSMAX",
+        "Needs test: set AVL > VLMAX and check that vl is VLMAX or a positive multiple of EGSMAX.",
       ]
 
   # The vtype SEW can be used to indicate or calculate the effective element size
@@ -3323,7 +3331,7 @@ normative_rule_definitions:
   - name: vf_requires_vx
     coverpoint:
       [
-        "Implicit: the vector floating-point tests cannot run unless the scalar floating-point extensions are present",
+        "Configuration requirement: Zve32f requires F, Zve64d requires D, and Zvfh requires Zfhmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve32f.yaml[ext/Zve32f.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfh.yaml[ext/Zvfh.yaml]).",
       ]
 
   # so these instructions all operate on single vector registers regardless of the
@@ -3335,9 +3343,7 @@ normative_rule_definitions:
   # handler.
   - name: viota_restart
     coverpoint:
-      [
-        "Not Tested: restart-from-vstart-after-trap sequencing is not generated by this suite yet",
-      ]
+      ["Needs test: restart viota from a nonzero vstart after a trap."]
 
   # vrgather.vv vd, vs2, vs1, vm # vd[i] = (vs1[i] &gt;= VLMAX) ? 0 : vs2[vs1[i]];
   # vrgatherei16.vv vd, vs2, vs1, vm # vd[i] = (vs1[i] &gt;= VLMAX) ? 0 :
@@ -3374,10 +3380,88 @@ normative_rule_definitions:
   - name: vset_vstart
     coverpoint:
       [
-        "TODO: vset* with nonzero vstart; result unaffected and vstart reset to 0",
+        "Needs test: vset* with nonzero vstart, checking that the result is unaffected and vstart becomes 0.",
       ]
 
   # Non-idempotent memory regions must not have been updated for indices equal to or greater than
   # the element that caused a synchronous trap during a vector store instruction.
   - name: vec_store_nonidempotent_no_update
     coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Address|Privilege|Name|Description === 0x008|URW|csr:vstart[]|Vector start element index¶
+  # 0x009|URW|csr:vxsat[]|Fixed-Point Saturate Flag¶ 0x00A|URW|csr:vxrm[]|Fixed-Point Rounding Mode¶
+  # 0x00F|URW|csr:vcsr[]|Vector control and status register¶ 0xC20|URO|csr:vl[]|Vector length¶
+  # 0xC21|URO|csr:vtype[]|Vector data type register¶ 0xC22|URO|csr:vlenb[]|VLEN/8 (vector register
+  # length in bytes) ===
+  - name: vector_csrs_tbl
+    coverpoint: ["{U,S,H}_V_cg/cp_vcsrrswc"]
+
+  # Bits|Name|Description === XLEN-1:3||Reserved¶ 2:1|csr:vxrm[][1:0]|Fixed-point rounding mode¶
+  # 0|csr:vxsat[][0]|Fixed-point accrued saturation flag ===
+  - name: vcsr_fields_enc
+    coverpoint: ["U_V_cg/cp_vcsrs_walking1s"]
+
+  # Bits|Name|Description === XLEN-1|csr::[vill]|Illegal value if set¶ XLEN-2:8| — |Reserved if
+  # non-zero¶ 7|csr::[vma]|Vector mask agnostic¶ 6|csr::[vta]|Vector tail agnostic¶
+  # 5:3|csr::[vsew]|Selected element width (SEW) setting¶ 2:0|csr::[vlmul]|Vector register group
+  # multiplier (LMUL) setting ===
+  - name: vtype_fields_enc
+    coverpoint:
+      ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli,cp_vill_vsetvl}"]
+
+  # csr::[vsew]|SEW === 0|0|0|8¶ 0|0|1|16¶ 0|1|0|32¶ 0|1|1|64¶ 1|X|X|Reserved ===
+  - name: vtype_vsew_enc
+    coverpoint: ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli}"]
+
+  # csr::[vlmul]|LMUL|#groups|VLMAX|Registers grouped with register n === 1|0|0|-|-|-|reserved¶
+  # 1|0|1|1/8|32|VLEN/SEW/8|v n (single register in group)¶ 1|1|0|1/4|32|VLEN/SEW/4|v n (single
+  # register in group)¶ 1|1|1|1/2|32|VLEN/SEW/2|v n (single register in group)¶
+  # 0|0|0|1|32|VLEN/SEW|v n (single register in group)¶ 0|0|1|2|16|2*VLEN/SEW|v n, v n+1¶
+  # 0|1|0|4|8|4*VLEN/SEW|v n, …, v n+3¶ 0|1|1|8|4|8*VLEN/SEW|v n, …, v n+7 ===
+  - name: vtype_vlmul_enc
+    coverpoint: ["U_V_cg/{cp_sew_lmul_vsetvl,cp_sew_lmul_vset_i_vli}"]
+
+  # csr::[vta]|csr::[vma]|Tail Elements|Inactive Elements === 0|0|undisturbed|undisturbed¶
+  # 0|1|undisturbed|agnostic¶ 1|0|agnostic|undisturbed¶ 1|1|agnostic|agnostic ===
+  - name: vtype_vta_vma_enc
+    coverpoint: ["Vx{8,16,32,64}_vadd_vv_cg/cr_vtype_agnostic"]
+
+  # csr:vxrm[][1:0]|Abbreviation|Rounding Mode|Rounding increment, r === 0|0|rnu|round-to-nearest-up
+  # (add +0.5 LSB)|v[d-1]¶ 0|1|rne|round-to-nearest-even|v[d-1] & (v[d-2:0]≠0 | v[d])¶
+  # 1|0|rdn|round-down|0¶ 1|1|rod|round-to-odd (OR bits into LSB, aka jam)|!v[d] & v[d-1:0]≠0 ===
+  - name: vxrm_enc
+    coverpoint: ["Vx{8,16,32,64}_vaadd_vv_cg/cr_vxrm_vs2_vs1_edges"]
+
+  # vm|Description === 0|vector result, only where v0.mask[i] = 1¶ 1|unmasked ===
+  - name: vmask_vm_val_enc
+    coverpoint: ["Vx{8,16,32,64}_vadd_vv_cg/cp_masking_edges"]
+
+  # When the hypervisor extension is present, a vector context status field, csr::[vs], is added to
+  # csr:vsstatus[][10:9]. It is defined analogously to the floating-point context status field,
+  # csr::[fs].
+  - name: vsstatus_vs_sz_acc
+    coverpoint:
+      [
+        "H_V_cg/cp_vsstatus_vs_set_dirty_{arithmetic,csr,vcsr}",
+        "H_vsstatus_cg/cp_vsstatus_sd_write",
+      ]
+
+  # When V=1, both csr:vsstatus[vs] and csr:mstatus[vs] are in effect: attempts to execute any
+  # vector instruction, or to access the vector CSRs, raise an illegal-instruction exception when
+  # either field is set to Off.
+  - name: vsstatus_vs_mstatus_vs_op_off
+    coverpoint: ["H_V_cg/cp_vsstatus_vs_off_{arithmetic,csr}"]
+
+  # funct3[2:0]|Category|Operands|Type of scalar operand === 0|0|0|OPIVV|vector-vector|N/A¶
+  # 0|0|1|OPFVV|vector-vector|N/A¶ 0|1|0|OPMVV|vector-vector|N/A¶
+  # 0|1|1|OPIVI|vector-immediate|imm[4:0]¶ 1|0|0|OPIVX|vector-scalar|GPR x register rs1¶
+  # 1|0|1|OPFVF|vector-scalar|FP f register rs1¶ 1|1|0|OPMVX|vector-scalar|GPR x register rs1¶
+  # 1|1|1|OPCFG|scalars-imms|GPR x register rs1 & rs2/imm ===
+  - name: vector_funct3_enc
+    coverpoint:
+      [
+        "Vx16_vadd_{vv,vx,vi}_cg/cp_asm_count",
+        "Vx16_vmul_{vv,vx}_cg/cp_asm_count",
+        "Vf32_vfadd_{vv,vf}_cg/cp_asm_count",
+        "U_V_cg/cp_sew_lmul_vset{vl,_i_vli}",
+      ]

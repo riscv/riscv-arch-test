@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pyjson5
 
-from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
+from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction
 from act.config import Config, CoverageSimulator, RefModelType
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
@@ -231,6 +231,7 @@ def gen_compile_tasks(
     kit_stamp: Path | None = None,
     debug: bool = False,
     enable_experimental_extensions: bool = False,
+    coverage: bool = False,
 ) -> tuple[list[BuildTask], TestOutputs]:
     """Generate BuildTasks for the compilation pipeline of a single test.
 
@@ -240,6 +241,8 @@ def gen_compile_tasks(
     and, when the DUT driver exists, linked into the ELF that runs on the DUT:
         add.o + DUT driver -> add.elf
     Tests with NEEDS_SIGNATURE: false skip the reference-model steps.
+    With coverage, the self-checking test is built with Sail macros and linked against the
+    reference driver as coverage/add.elf instead of add.elf.
 
     Args:
         test_name: Name of the test.
@@ -256,11 +259,14 @@ def gen_compile_tasks(
         ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
         kit_stamp: Header force-included into the certified object (act-package only).
         debug: Whether to generate debug output (objdumps, trace files, and trap reports).
+        enable_experimental_extensions: Whether to enable experimental extensions.
+        coverage: Whether to build the coverage ELF that Sail runs for coverage traces instead of the final ELF.
     """
     tasks: list[BuildTask] = []
 
     # Paths
     build_dir = out_dir / "build"
+    coverage_dir = out_dir / "coverage"
     sig_obj = build_dir / test_name.with_suffix(".sig.o")
     sig_elf = build_dir / test_name.with_suffix(".sig.elf")
     sig_file = build_dir / test_name.with_suffix(".sig")
@@ -270,6 +276,8 @@ def gen_compile_tasks(
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     obj = out_dir / "objects" / test_name.with_suffix(".o")
     final_elf = out_dir / "elfs" / test_name.with_suffix(".elf")
+    coverage_obj = coverage_dir / test_name.with_suffix(".o")
+    coverage_elf = coverage_dir / test_name.with_suffix(".elf")
 
     # Metadata
     march_flags = toolchain.march_flags(
@@ -416,14 +424,16 @@ def gen_compile_tasks(
 
     # 5. certified object - expected signature baked in, no rvmodel_macros.h.
     # Non-signature tests start here.
+    expected_flags = (
+        [f'-DSIGNATURE_FILE="{result_file}"', "-include", str(digest_file)]
+        if test_metadata.needs_signature
+        else ["-DRVTEST_NOSIG"]
+    )
+    expected_deps = (result_file, digest_file) if test_metadata.needs_signature else ()
     obj_cmd = [
         *object_prefix,
         "-DRVTEST_SELFCHECK",
-        *(
-            [f'-DSIGNATURE_FILE="{result_file}"', "-include", str(digest_file)]
-            if test_metadata.needs_signature
-            else ["-DRVTEST_NOSIG"]
-        ),
+        *expected_flags,
         *(["-include", str(kit_stamp)] if kit_stamp is not None else []),
         "-o",
         str(obj),
@@ -433,14 +443,50 @@ def gen_compile_tasks(
         BuildTask(
             outputs=(obj,),
             extra_inputs=(*test_inputs, *((kit_stamp,) if kit_stamp is not None else ())),
-            deps=(result_file, digest_file) if test_metadata.needs_signature else (),
+            deps=expected_deps,
             action=SubprocessAction(cmd=obj_cmd),
         )
     )
 
-    # 6. final.elf - the certified object linked against the DUT's driver
+    # 6. ELF - the certified object linked against the DUT's driver. Coverage instead builds
+    # the self-checking test with Sail macros and links it against the reference driver, so
+    # Sail can run it for any DUT.
     dut_driver = drivers.dut.get(mabi)
-    if dut_driver is not None:
+    elf: Path | None = None
+    if coverage:
+        elf = coverage_elf
+        coverage_obj_cmd = [
+            *object_prefix,
+            "-DRVTEST_SELFCHECK",
+            "-DRVTEST_SAIL_MACROS",
+            *signature_compile_flags,
+            *expected_flags,
+            "-o",
+            str(coverage_obj),
+            *test_sources,
+        ]
+        tasks.append(
+            BuildTask(
+                outputs=(coverage_obj,),
+                extra_inputs=test_inputs,
+                deps=expected_deps,
+                action=SubprocessAction(cmd=coverage_obj_cmd),
+                intermediate=True,
+            )
+        )
+        ref_driver = drivers.ref[mabi]
+        tasks.append(
+            BuildTask(
+                outputs=(coverage_elf,),
+                deps=(coverage_obj, ref_driver),
+                extra_inputs=link_inputs,
+                action=SubprocessAction(
+                    cmd=[*link_prefix, "-o", str(coverage_elf), str(coverage_obj), str(ref_driver)]
+                ),
+            )
+        )
+    elif dut_driver is not None:
+        elf = final_elf
         tasks.append(
             BuildTask(
                 outputs=(final_elf,),
@@ -450,25 +496,25 @@ def gen_compile_tasks(
             )
         )
 
-        # 6a. final.elf.objdump (optional, debug only)
-        if debug and config.objdump_exe is not None:
-            objdump_file = Path(f"{final_elf}.objdump")
-            tasks.append(
-                BuildTask(
-                    outputs=(objdump_file,),
-                    deps=(final_elf,),
-                    action=SubprocessAction(
-                        cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS, str(final_elf)],
-                        stdout_file=objdump_file,
-                    ),
-                )
+    # 6a. objdump (optional, debug only)
+    if elf is not None and debug and config.objdump_exe is not None:
+        objdump_file = Path(f"{elf}.objdump")
+        tasks.append(
+            BuildTask(
+                outputs=(objdump_file,),
+                deps=(elf,),
+                action=SubprocessAction(
+                    cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS, str(elf)],
+                    stdout_file=objdump_file,
+                ),
             )
+        )
 
     outputs = TestOutputs(
         name=test_name.with_suffix(""),
         obj=obj,
         results=result_file if test_metadata.needs_signature else None,
-        elf=final_elf if dut_driver is not None else None,
+        elf=final_elf if elf == final_elf else None,
         march=test_metadata.march.replace("${XLEN}", str(xlen)),
         mabi=mabi,
         flen=test_flen,
@@ -482,7 +528,6 @@ def gen_rvvi_tasks(
     base_dir: Path,
     config: Config,
     ref_model_inputs: tuple[Path, ...] = (),
-    debug: bool = False,
     enable_experimental_extensions: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for RVVI trace generation (coverage pipeline).
@@ -499,23 +544,10 @@ def gen_rvvi_tasks(
 
     # Paths
     coverage_dir = base_dir / "coverage"
-    elf_dir = base_dir / "elfs"
-    elf = elf_dir / test_name.with_suffix(".elf")
-    objdump_link = coverage_dir / test_name.with_suffix(".elf.objdump")
+    elf = coverage_dir / test_name.with_suffix(".elf")
     sail_trace = coverage_dir / test_name.with_suffix(".trace")
     sail_log = coverage_dir / test_name.with_suffix(".log")
     rvvi_trace = coverage_dir / test_name.with_suffix(".rvvi")
-
-    # Symlink objdump into coverage dir
-    if debug and config.objdump_exe is not None:
-        objdump_orig_file = Path(f"{elf}.objdump")
-        tasks.append(
-            BuildTask(
-                outputs=(objdump_link,),
-                deps=(objdump_orig_file,),
-                action=SymlinkAction(src=objdump_orig_file, dst=objdump_link),
-            )
-        )
 
     # Run Sail with trace
     sail_cmd = [str(config.ref_model_exe)]
@@ -778,11 +810,6 @@ def generate_build_plan(
             f"but ref_model_type={config.ref_model_type.value} was selected for "
             f"config '{config.name}'. Switch back to Sail or drop --coverage."
         )
-    if coverage_enabled and rvmodel_dir is None:
-        raise ValueError(
-            f"Coverage runs the linked ELFs, but config '{config.name}' has no rvmodel_macros.h "
-            f"in {config.dut_include_dir}, so the build stops at the certified objects."
-        )
 
     tasks: list[BuildTask] = []
     outputs: list[TestOutputs] = []
@@ -849,6 +876,7 @@ def generate_build_plan(
             kit_stamp,
             debug,
             enable_experimental_extensions,
+            coverage_enabled,
         )
         tasks.extend(test_tasks)
         outputs.append(test_outputs)
@@ -882,7 +910,6 @@ def generate_build_plan(
                     config_wkdir,
                     config,
                     ref_model_inputs,
-                    debug,
                     enable_experimental_extensions,
                 )
             )

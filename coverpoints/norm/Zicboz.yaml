@@ -9,12 +9,18 @@ normative_rule_definitions:
   # the execution environment provides software a means to discover information about
   # the caches and cache blocks in a system.
   - name: cache_block_discovery
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: the execution environment provides a way to discover the cache-block size; not checked.",
+      ]
 
   # In the initial set of CMO extensions, the size of a cache block shall be uniform
   # throughout the system.
   - name: cache_block_size_uniform
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: all caches use the same block size; not checked.",
+      ]
 
   # A cbo.zero instruction performs stores of zeros to the full set of bytes
   # corresponding to the cache block that contains the address specified in rs1.
@@ -23,10 +29,14 @@ normative_rule_definitions:
 
   # It is not required that rs1 is aligned to the size of a cache block.
   - name: cbo-zero_unaligned
-    # cp_custom_cbo testcases use rs1 at offsets 0 and 255; cp_zic64b samples rs1 offsets 0 to 64
+    # cp_custom_cbo testcases use rs1 at offsets 0 and 255; cp_zic64b samples rs1 offsets 0, 1, and multiples of 4 up to 64
     coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo", "Zic64b_cg/cp_zic64b"]
 
   # These instructions operate on the cache block, or the memory locations
   # corresponding to the cache block, whose effective address is specified in rs1.
   - name: cbo-zero_specified_block
     coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cbo.zero[base]|<<insns-cbo_zero>> ===
+  - name: Zicboz_insns_tbl
+    coverpoint: ["Zicboz_cbo_zero_cg/cp_asm_count"]

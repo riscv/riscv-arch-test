@@ -3,7 +3,10 @@
 normative_rule_definitions:
   # The C extension depends upon the Zca extension.
   - name: C_dep_Zca
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: C requires Zca; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/C.yaml[ext/C.yaml]).",
+      ]
   - name: Zca_offsets_mul2
     # Representative: offsets that are multiples of 2 but not 4, for jumps and branches
     coverpoint:
@@ -11,6 +14,38 @@ normative_rule_definitions:
         "Zca_c_j_cg/{cp_imm_edges_c_jal}",
         "Zca_c_beqz_cg/{cp_imm_edges_c_branch}",
       ]
+
+  # === inst[15:13] inst[1:0]|000|001|010|011|100|101|110|111|¶ 00|ADDI4SPN|FLD FLD|LW|FLW
+  # LD|Reserved|FSD FSD|SW|FSW SD|RV32 RV64¶ 01|ADDI|JAL
+  # ADDIW|LI|LUI/ADDI16SP|MISC-ALU|J|BEQZ|BNEZ|RV32 RV64¶ 10|SLLI|FLDSP FLDSP|LWSP|FLWSP
+  # LDSP|J[AL]R/MV/ADD|FSDSP FSDSP|SWSP|FSWSP SDSP|RV32 RV64¶ 11|>16b ===
+  - name: Zca_opcode_map_tbl
+    # cp_compressed00 executes the reserved encodings in quadrant 0
+    coverpoint:
+      [
+        "Zca_c_*_cg/cp_asm_count",
+        "Zc{d,f}_c_*_cg/cp_asm_count",
+        "Ssstrict_S_comp_instr_cg/cp_compressed00",
+      ]
+
+  # Instruction|Constraints|Code Points|Purpose === insn:c.nop[]|imm≠0|63|Designated for future
+  # standard use¶ insn:c.addi[]|rd≠x0, imm=0|31¶ insn:c.li[]|rd=x0|64¶ insn:c.lui[]|rd=x0, imm≠0|63¶
+  # insn:c.mv[]|rd=x0, rs2≠x0|31¶ insn:c.add[]|rd=x0, rs2≠x0, rs2≠x2-x5|27¶ insn:c.add[]|rd=x0,
+  # rs2=x2-x5|4|(rs2=x2) insn:c.ntl.p1[] (rs2=x3) insn:c.ntl.pall[] (rs2=x4) insn:c.ntl.s1[]
+  # (rs2=x5) insn:c.ntl.all[]¶ insn:c.slli[]|rd=x0 or shamt=0|63 (RV32), 95 (RV64)|Designated for
+  # custom use¶ insn:c.srli[]|shamt=0|8¶ insn:c.srai[]|shamt=0|8 ===
+  - name: Zca_hints_tbl
+    coverpoint:
+      [
+        "Zca_c_add_cg/cp_c_hint_add",
+        "Zca_c_addi_cg/cp_c_hint_addi",
+        "Zca_c_li_cg/cp_c_hint_li",
+        "Zca_c_lui_cg/cp_c_hint_lui",
+        "Zca_c_mv_cg/cp_c_hint_mv",
+        "Zca_c_nop_cg/cp_c_hint_nop",
+        "Needs test: the custom-use HINTs C.SLLI with rd=x0 or shamt=0, and C.SRLI and C.SRAI with shamt=0.",
+      ]
+
   - name: Zca_regs8
     # Use a representative coverpoint; applies to others too
     coverpoint: ["Zca_c_and_cg/{cp_rs1_p, cp_rs2_p}"]
@@ -114,7 +149,13 @@ normative_rule_definitions:
   - name: c-nop_hint
     coverpoint: ["Zca_c_nop_cg/{cp_c_hint_nop}"]
   - name: c-slli_hint
-    coverpoint: ["N/A custom hints not certified"]
+    coverpoint:
+      [
+        "Needs test: execute these HINT encodings and check that they change no register or memory state.",
+      ]
   # The insn:c.srli[] code points with shamt=0 are HINTs.
   - name: c-srli_hint
-    coverpoint: ["N/A custom hints not certified"]
+    coverpoint:
+      [
+        "Needs test: execute these HINT encodings and check that they change no register or memory state.",
+      ]

@@ -108,7 +108,7 @@ def run_act(
         raise typer.BadParameter("--debug and --clean-intermediates cannot be used together")
 
     if objects_only and coverage:
-        raise typer.BadParameter("--coverage runs the linked ELFs, so it cannot be used with --objects-only")
+        raise typer.BadParameter("--objects-only stops at the certified objects, so it cannot be used with --coverage")
 
     if workdir is None:
         workdir = Path.cwd() / "work"

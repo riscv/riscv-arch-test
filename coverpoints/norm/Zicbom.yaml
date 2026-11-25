@@ -4,24 +4,24 @@ normative_rule_definitions:
   # if a precedes b in program order, then a will precede b in the global memory order if:
   - name: ppo_overlap_1
     coverpoint:
-      ["Not testable on a single core without DMA or other non-coherent agents"]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
   # a is an invalidate, clean, or flush, b is a load, and a and b access overlapping
   # memory addresses
   - name: ppo_overlap_2
     coverpoint:
-      ["Not testable on a single core without DMA or other non-coherent agents"]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
 
   # If no clean or flush operations on x precede i in the global memory order, either the
   # initial value of x or the value of any store to x that precedes i
   - name: invalidate_load_val_no_preceding_cmo
     coverpoint:
-      ["Not testable on a single core without DMA or other non-coherent agents"]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
   # If no store to x precedes a clean or flush operation on x in the global memory order
   # and if the clean or flush operation on x precedes i in the global memory order, either
   # the initial value of x or the value of any store to x that precedes i
   - name: invalidate_load_val_no_store_before_cmo
     coverpoint:
-      ["Not testable on a single core without DMA or other non-coherent agents"]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
   # If a store to x precedes a clean or flush operation on x in the global memory order
   # and if the clean or flush operation on x precedes i in the global memory order, either
   # the value of the latest store to x that precedes the latest clean or flush operation
@@ -29,11 +29,11 @@ normative_rule_definitions:
   # or flush operation on x that precedes i
   - name: invalidate_load_val_store_before_cmo
     coverpoint:
-      ["Not testable on a single core without DMA or other non-coherent agents"]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
   # The value of any store to x by a non-coherent agent regardless of the above conditions
   - name: invalidate_load_val_noncoherent_store
     coverpoint:
-      ["Not testable on a single core without DMA or other non-coherent agents"]
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
 
   # The PMP access control bits shall be the same for all physical addresses in the cache
   # block, and if write permission is granted by the PMP access control bits, read
@@ -44,17 +44,21 @@ normative_rule_definitions:
   # permission is granted by the supported access type PMAs, read permission shall also be
   # granted
   - name: pma_same
-    coverpoint: ["Not tested: behavior is UNSPECIFIED"]
+    coverpoint:
+      [
+        "Configuration requirement: PMAs are uniform within each cache block, and writable regions are readable; not checked.",
+      ]
   # If the above constraints are not met, the behavior of a CBO instruction is
   # UNSPECIFIED.
   - name: cbo_rsv
-    coverpoint: ["Not tested: behavior is UNSPECIFIED"]
+    coverpoint: ["No independent assertion: the behavior is UNSPECIFIED."]
 
   # For the purposes of writing the mtinst or htinst register on a trap, the
   # following standard transformation is defined for cache-block management
   # instructions and cache-block zero instructions:
   - name: H_trans_cache
-    coverpoint: ["TODO: Hypervisor tests"]
+    coverpoint:
+      ["Needs test: check mtinst/htinst after CBO traps from VS/VU-mode."]
 
   # A cbo.clean instruction performs a clean operation on the cache block whose
   # effective address is the base address specified in rs1.
@@ -80,3 +84,8 @@ normative_rule_definitions:
   - name: cbo-inval_unaligned
     # cp_custom_cbo testcases use rs1 at offsets 0 and 255; the coverpoint does not sample the offset
     coverpoint: ["Zicbom_cbo_inval_cg/cp_custom_cbo"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cbo.clean[base]|<<insns-cbo_clean>>¶
+  # ✓|✓|insn:cbo.flush[base]|<<insns-cbo_flush>>¶ ✓|✓|insn:cbo.inval[base]|<<insns-cbo_inval>> ===
+  - name: Zicbom_insns_tbl
+    coverpoint: ["Zicbom_{cbo_clean,cbo_flush,cbo_inval}_cg/cp_asm_count"]

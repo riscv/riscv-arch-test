@@ -271,8 +271,9 @@ params:
   # Only bits 3..6 are marked writable here. The core also makes CY (0) and IR (2)
   # writable, but UDB requires MCOUNTENABLE_EN[0:2] to be false unless Zicntr is
   # implemented, and EL2 cannot claim Zicntr: it has the cycle and instret shadows but no
-  # time CSR at all. sail.json carries the core's full mask (0x7D) so the reference model
-  # matches the hardware.
+  # time CSR at all. (Zicntr with TIME_CSR_IMPLEMENTED false would make the tests emulate time
+  # from RVMODEL_MTIME_ADDRESS, and EL2 has no mtime.) sail.json carries the core's full mask
+  # (0x7D) so the reference model matches the hardware.
   MCOUNTENABLE_EN:
     [
       false,

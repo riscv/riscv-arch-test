@@ -6,15 +6,21 @@ normative_rule_definitions:
   # instructions in the ext:zalrsc[] extension be contiguous, naturally aligned, and
   # at most 128 bytes in size.
   - name: Za128rs_res_set_req
-    # TODO: a Za128rs variant of the Za64rs test (LR at a 128-byte-aligned base, SC at offsets 0 to 128)
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: a Za128rs variant of the Za64rs test, with LR at a 128-byte-aligned base and SC at offsets 0 to 128.",
+      ]
 
   # The ext:za64rs[] extension requires that the reservation sets used by the
   # instructions in the ext:zalrsc[] extension be contiguous, naturally aligned, and
   # at most 64 bytes in size.
   - name: Za64rs_res_set_req
-    coverpoint: ["Za64rs_cg/cp_za64rs"]
+    # cp_za64rs_d exists only on RV64.
+    coverpoint: ["Za64rs_cg/cp_za64rs", "Za64rs_cg/cp_za64rs_d"]
 
   # The ext:za64rs[] extension implies the ext:za128rs[] extension.
   - name: Za64rs_implies_Za128rs
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Za64rs requires Za128rs; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Za64rs.yaml[ext/Za64rs.yaml]).",
+      ]

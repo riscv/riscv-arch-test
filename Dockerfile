@@ -8,6 +8,11 @@
 #
 # Usage:
 #   docker build -t riscv-act4 .
+#   # If the toolchain step fails with "cannot allocate memory" (common with Docker Desktop's default memory),
+#   # limit parallel jobs:
+#   docker build --build-arg BUILD_JOBS=2 -t riscv-act4 .
+#   # Or skip the build and use the prebuilt image, mounting your clone:
+#   docker run -it --rm -v .:/act4 ghcr.io/riscv/act4-build:latest
 #   # Create work directory for outputs first, otherwise it will not be owned by the current user
 #   mkdir work
 #   # Start container if the user is typical 1000:1000
@@ -27,11 +32,13 @@ ARG RISCV_TOOLCHAIN_VERSION=2026.10.29
 # Stage 1: build riscv-gnu-toolchain
 #
 # LDFLAGS=-static ensures no shared-lib dependencies survive into the final image.
-FROM ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c AS toolchain-builder
+FROM ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db AS toolchain-builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_TOOLCHAIN_PREFIX
 ARG RISCV_TOOLCHAIN_VERSION
+# Parallel jobs for the toolchain build. Defaults to every CPU, lower it if the build runs out of memory.
+ARG BUILD_JOBS
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   autoconf \
@@ -87,7 +94,7 @@ RUN git clone --depth 1 --branch "${RISCV_TOOLCHAIN_VERSION}" https://github.com
   --disable-shared" \
   BINUTILS_TARGET_FLAGS_EXTRA="--disable-gprof --disable-gprofng" \
   LDFLAGS="-static -static-libgcc -static-libstdc++" \
-  make -j"$(nproc)" \
+  make -j"${BUILD_JOBS:-$(nproc)}" \
   && rm -rf /tmp/riscv-gnu-toolchain
 
 # Stage 2: install mise, then use it to install uv (Python) and Ruby, and pre-install the riscv-unified-db Bundler gem,
@@ -99,7 +106,7 @@ RUN git clone --depth 1 --branch "${RISCV_TOOLCHAIN_VERSION}" https://github.com
 #
 # HOME=/home/shared is used so all caches (mise, uv, udb, etc.) land in a single directory that is copied to the final
 # image.
-FROM ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c AS mise-fetcher
+FROM ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db AS mise-fetcher
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -145,7 +152,7 @@ RUN cd /act4 \
 RUN chmod -R 777 /act4 /home/shared
 
 # Stage 3: final runtime image
-FROM ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c AS act4-build
+FROM ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db AS act4-build
 
 LABEL description="RISC-V Architectural Certification Tests (ACT4) build env"
 LABEL org.opencontainers.image.source="https://github.com/riscv/riscv-arch-test"

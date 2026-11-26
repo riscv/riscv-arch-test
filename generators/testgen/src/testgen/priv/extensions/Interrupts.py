@@ -87,16 +87,32 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
         cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type)
-        for hideleg, mode, enable in [
-            (hideleg, mode, enable)
+        # In VS-mode and VU-mode, the SIE of the level that does not take a VS-level interrupt (sstatus.SIE when
+        # hideleg delegates it, vsstatus.SIE when it does not) must not matter, so it gets its own loop
+        others = [0, 1] if priv in ("VS", "VU") and int_type in vs_ints else [None]
+        for hideleg, mode, enable, other in [
+            (hideleg, mode, enable, other)
             for hideleg in ([0, 1] if int_type in vs_ints else [0])
             for mode in [0, 1]
             for enable in [0, 1]
+            for other in others
         ]:
             # stvec.MODE, or vstvec.MODE (set and gated by hideleg_vs_target) for a case delegated to VS-mode
             modecmd = "csrs" if mode == 1 else "csrc"
-            enablecmd = "csrs" if enable == 1 else "csrc"
+            # sstatus.SIE: the other SIE when hideleg delegates the interrupt to VS-mode
+            sstatus_sie = other if hideleg and other is not None else enable
+            enablecmd = "csrs" if sstatus_sie == 1 else "csrc"
             vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, enable, tmp_reg)
+            # vsstatus.SIE: the other SIE when the interrupt stays at HS-level
+            vs_sie = [] if hideleg or other is None else [f"LI(x{tmp_reg}, 0x22) # SIE, SPIE"]
+            vs_sie_open = vs_sie + (
+                [f"{'csrs' if other else 'csrc'} vsstatus, x{tmp_reg} # vsstatus.SIE = {other}"] if vs_sie else []
+            )
+            vs_sie_close = vs_sie + ([f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0"] if vs_sie else [])
+            # Cases whose other SIE differs from the one the other cases leave are recorded in cp_trigger_tsbi_hs_vs_sie
+            default_other = enable if hideleg else 0
+            case_cp = cp if other is None or other == default_other else "cp_trigger_tsbi_hs_vs_sie"
+            other_name = "" if other is None else f"_other_sie_{other}"
             stvec_open = [] if hideleg else [f"#ifdef UDB_STVEC_MODES_{mode}"]
             stvec_close = [] if hideleg else [f"#endif // UDB_STVEC_MODES_{mode}"]
             stvec_write = (
@@ -106,11 +122,12 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 f"#ifdef {guard}",
                 *stvec_open,
                 *vs_open,
+                *vs_sie_open,
                 f"LI(x{tmp_reg}, -1)",
                 *write_ie(suite, tmp_reg, "1s"),
                 *stvec_write,
                 f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
-                f"{enablecmd} sstatus, x{tmp_reg} # sstatus.SIE = {enable}",
+                f"{enablecmd} sstatus, x{tmp_reg} # sstatus.SIE = {sstatus_sie}",
                 # Leave a nonzero stval so the trap handler's stval == 0 check sees the interrupt write it
                 f"auipc x{tmp_reg}, 0 # nonzero valid address",
                 f"csrw stval, x{tmp_reg} # stval = nonzero",
@@ -124,8 +141,8 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 f"csrs hstatus, x{tmp_reg} # hstatus.GVA = 1",
                 "#endif // H_SUPPORTED",
                 test_data.add_testcase(
-                    f"priv_{priv}_{int_type}_mode_{mode}_enable_{enable}{'_hideleg' if hideleg else ''}",
-                    cp,
+                    f"priv_{priv}_{int_type}_mode_{mode}_enable_{enable}{'_hideleg' if hideleg else ''}{other_name}",
+                    case_cp,
                     COVERGROUP,
                 ),
                 *mode_enter(suite, priv),
@@ -133,6 +150,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                 f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                 *mode_exit(suite, priv),
+                *vs_sie_close,
                 *vs_close,
                 *stvec_close,
                 f"#endif // {guard}",

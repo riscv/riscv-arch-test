@@ -523,6 +523,24 @@ covergroup Interrupts_cg with function sample(ins_t ins);
                                          binsof(sip_walking_deleg.vseip_vs) || binsof(sip_walking_deleg.vstip_vs) || binsof(sip_walking_deleg.vssip_vs));
         `endif
     }
+    // In VS-mode and VU-mode, sstatus.SIE does not gate a VS-level interrupt that hideleg delegates to VS-mode,
+    // and vsstatus.SIE does not gate one taken in HS-mode: each pair of the two SIE bits for each VS-level interrupt,
+    // delegated or not, recorded on the sret into the mode. The sret sets sstatus.SIE to SPIE.
+    `ifdef H_SUPPORTED
+        tsbi_return_virt: coverpoint `S_SRET_TO {
+            bins VS_mode = {3'b111};
+            bins VU_mode = {3'b110};
+        }
+        vs_walking_deleg: coverpoint {`INT_TO_VS, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & `INTR_BELOW_M} {
+            bins vseip = {17'h00400};
+            bins vstip = {17'h00040};
+            bins vssip = {17'h00004};
+            bins vseip_vs = {17'h10400};
+            bins vstip_vs = {17'h10040};
+            bins vssip_vs = {17'h10004};
+        }
+        cp_trigger_tsbi_hs_vs_sie:  cross tsbi_return_virt, vs_walking_deleg, sstatus_sie_on_return, vsstatus_sie;
+    `endif
     // Every interrupt taken into HS-mode from HS-mode writes htinst = 0. The trigger cases preload htinst
     // with a nonzero value, and the trap record checks it afterwards. Below HS-mode the T-SBI calls that
     // enter the mode or raise the interrupt write htinst themselves, so only HS-mode is crossed. Without
@@ -1266,6 +1284,27 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
                                         binsof(mip_walking_deleg.vseip_vs) || binsof(mip_walking_deleg.vstip_vs) || binsof(mip_walking_deleg.vssip_vs));
         `endif
     }
+    // In VS-mode and VU-mode, mstatus.SIE does not gate a VS-level interrupt that hideleg delegates to VS-mode,
+    // and vsstatus.SIE does not gate one taken in HS-mode: each pair of the two SIE bits for each VS-level interrupt,
+    // delegated or not, recorded on the mret into the mode, which leaves both alone.
+    `ifdef H_SUPPORTED
+        mstatus_mpv_mpp_virt: coverpoint {`INT_MPV, get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+            bins VS_mode = {3'b101};
+            bins VU_mode = {3'b100};
+        }
+        mip_walking_vs: coverpoint {`INT_TO_VS, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0]} {
+            wildcard bins vseip = {17'b0_??0?010?000?000?};
+            wildcard bins vstip = {17'b0_??0?000?010?000?};
+            wildcard bins vssip = {17'b0_??0?000?000?010?};
+            wildcard bins vseip_vs = {17'b1_??0?010?000?000?};
+            wildcard bins vstip_vs = {17'b1_??0?000?010?000?};
+            wildcard bins vssip_vs = {17'b1_??0?000?000?010?};
+        }
+        vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] {
+            // autofill 0/1
+        }
+        cp_trigger_tsbi_hs_vs_sie: cross priv_mode_m, mret_insn, mstatus_mpv_mpp_virt, mip_walking_vs, mstatus_sie, vsstatus_sie;
+    `endif
     // Every interrupt taken into M-mode from M-mode writes mtinst = 0. The trigger cases preload mtinst with a
     // nonzero value, and the trap record checks it afterwards. Below M-mode the T-SBI ecall that enters the
     // mode writes mtinst itself, so only M-mode is crossed.

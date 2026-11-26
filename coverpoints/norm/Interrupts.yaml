@@ -346,8 +346,8 @@ normative_rule_definitions:
   - name: hideleg_hs
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip}",
-        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_levels}",
+        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip, cp_trigger_tsbi_hs_vs_sie}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_levels, cp_trigger_tsbi_hs_vs_sie}",
       ]
 
     # Representative coverpoints; raised in HS-mode with sstatus.SIE, hideleg and hie = 0/1, and

@@ -112,9 +112,29 @@ def _trigger_sm_cases(
         for mode in [0, 1]:
             for sie in [0, 1]:
                 for mie in [0, 1]:
+                    # In VS-mode and VU-mode, the SIE of the level that does not take a VS-level interrupt
+                    # (mstatus.SIE when hideleg delegates it, vsstatus.SIE when it does not) must not matter. H makes
+                    # the VS-level bits of mideleg read-only one, so mideleg does not affect these interrupts: the
+                    # other SIE keeps its usual value with mideleg = ones and is flipped with mideleg = zeros, so the
+                    # two SIE bits vary independently without more cases.
+                    other = None
+                    default_other = sie if hideleg else 0
+                    if priv in ("VS", "VU") and int_type in vs_ints:
+                        other = default_other if mideleg == -1 else 1 - default_other
+                    mstatus_sie = other if hideleg and other is not None else sie
                     modecmd = "csrs" if mode == 1 else "csrc"
-                    siecmd = "csrs" if sie == 1 else "csrc"
+                    siecmd = "csrs" if mstatus_sie == 1 else "csrc"
                     miecmd = "csrs" if mie == 1 else "csrc"
+                    vs_sie = [] if hideleg or other is None else [f"LI(x{tmp_reg}, 0x22) # SIE, SPIE"]
+                    vs_sie_open = vs_sie + (
+                        [f"{'csrs' if other else 'csrc'} vsstatus, x{tmp_reg} # vsstatus.SIE = {other}"]
+                        if vs_sie
+                        else []
+                    )
+                    vs_sie_close = vs_sie + ([f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0"] if vs_sie else [])
+                    # Cases whose other SIE differs from the usual one are recorded in cp_trigger_tsbi_hs_vs_sie
+                    case_cp = cp if other is None or other == default_other else "cp_trigger_tsbi_hs_vs_sie"
+                    other_name = "" if other is None else f"_other_sie_{other}"
                     # mtvec.MODE, or vstvec.MODE (set and gated by hideleg_vs_target) for a case delegated to VS-mode
                     vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, sie, tmp_reg)
                     mtvec_open = [] if hideleg else [f"#ifdef UDB_MTVEC_MODES_{mode}"]
@@ -127,6 +147,7 @@ def _trigger_sm_cases(
                         *case_open,
                         *mtvec_open,
                         *vs_open,
+                        *vs_sie_open,
                         *write_open,
                         f"LI(x{tmp_reg}, {mideleg})",
                         f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}",
@@ -138,7 +159,7 @@ def _trigger_sm_cases(
                         f"LI(x{tmp_reg}, 0x88) # MIE, MPIE",
                         f"{miecmd} mstatus, x{tmp_reg} # mstatus.MIE = {mie}",
                         f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
-                        f"{siecmd} mstatus, x{tmp_reg} # mstatus.SIE = {sie}",
+                        f"{siecmd} mstatus, x{tmp_reg} # mstatus.SIE = {mstatus_sie}",
                         # Leave a nonzero xtval so the trap handler's xtval == 0 check sees the interrupt write it.
                         # The T-SBI ecall into S or U zeroes mtval again; it does not touch stval.
                         f"auipc x{tmp_reg}, 0 # nonzero valid address",
@@ -159,8 +180,9 @@ def _trigger_sm_cases(
                         "#endif // H_SUPPORTED",
                         test_data.add_testcase(
                             f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}"
-                            + ("_hideleg" if hideleg else ""),
-                            cp,
+                            + ("_hideleg" if hideleg else "")
+                            + other_name,
+                            case_cp,
                             COVERGROUP,
                         ),
                         *mode_enter(suite, priv),
@@ -168,6 +190,7 @@ def _trigger_sm_cases(
                         f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                         f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                         *mode_exit(suite, priv),
+                        *vs_sie_close,
                         *vs_close,
                         *mtvec_close,
                         *case_close,

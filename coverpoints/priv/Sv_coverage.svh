@@ -1949,6 +1949,8 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     }
     vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
     vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
+    // HS-level MXR: mret into the guest logs mstatus
+    mstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
             bins off = {0};
@@ -1965,10 +1967,11 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         }
     `endif
 
-    // VS-stage leaf permissions and formats (hgatp = Bare), with vsstatus.SUM and vsstatus.MXR
+    // VS-stage leaf permissions and formats (hgatp = Bare), with vsstatus.SUM and with vsstatus.MXR and the
+    // HS-level MXR, either of which makes VS-stage execute-only pages readable
     cp_vsatp_perm   : cross priv_mode_vs_vu, access, vsatp_mode, hgatp_bare, trap;
     cp_vsatp_sum    : cross priv_mode_vs_vu, access, vsatp_mode, hgatp_bare, vsstatus_sum;
-    cp_vsstatus_mxr : cross priv_mode_vs_vu, lw, vsatp_mode, hgatp_bare, vsstatus_sum, vsstatus_mxr;
+    cp_vsstatus_mxr : cross priv_mode_vs_vu, lw, vsatp_mode, hgatp_bare, vsstatus_sum, vsstatus_mxr, mstatus_mxr;
     // VS-stage A/D bits: Svade faults with menvcfg.ADUE = henvcfg.ADUE = 0.  Svadu_H_cg has the ADUE = 1 cases.
     cp_vsatp_svade  : cross priv_mode_vs, access, vsatp_mode, hgatp_bare, menvcfg_adue, henvcfg_adue;
 endgroup

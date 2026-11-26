@@ -40,357 +40,357 @@ RVTEST_BEGIN
 
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) || defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) || defined(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
 // Identity map the test image in both stages
-  LA(x6, rvtest_code_begin)
-  srli x6, x6, 22
-  slli x6, x6, 20
-  srli x6, x6, 18
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x6, x6, x13
-  LA(x14, rvtest_code_begin)
-  srli x14, x14, 22
-  slli x14, x14, 20
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x13
-  SREG x14, 0(x6)
-  LA(x6, rvtest_code_begin)
-  srli x6, x6, 22
-  slli x6, x6, 22
-  srli x6, x6, 20
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x6, x6, x13
-  LA(x14, rvtest_code_begin)
-  srli x14, x14, 22
-  slli x14, x14, 20
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x13
-  SREG x14, 0(x6)
-  LA(x6, rvtest_data_begin)
-  srli x6, x6, 22
-  slli x6, x6, 20
-  srli x6, x6, 18
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x6, x6, x13
-  LA(x14, rvtest_data_begin)
-  srli x14, x14, 22
-  slli x14, x14, 20
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x13
-  SREG x14, 0(x6)
-  LA(x6, rvtest_data_begin)
-  srli x6, x6, 22
-  slli x6, x6, 22
-  srli x6, x6, 20
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x6, x6, x13
-  LA(x14, rvtest_data_begin)
-  srli x14, x14, 22
-  slli x14, x14, 20
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x13
-  SREG x14, 0(x6)
-  LA(x6, rvtest_sig_end)
-  srli x6, x6, 22
-  slli x6, x6, 20
-  srli x6, x6, 18
-  LA(x13, rvtest_Hroot_pg_tbl)
-  add x6, x6, x13
-  LA(x14, rvtest_sig_end)
-  srli x14, x14, 22
-  slli x14, x14, 20
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x13
-  SREG x14, 0(x6)
-  LA(x6, rvtest_sig_end)
-  srli x6, x6, 22
-  slli x6, x6, 22
-  srli x6, x6, 20
-  LA(x13, rvtest_Vroot_pg_tbl)
-  add x6, x6, x13
-  LA(x14, rvtest_sig_end)
-  srli x14, x14, 22
-  slli x14, x14, 20
-  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x13
-  SREG x14, 0(x6)
+  LA(x8, rvtest_code_begin)
+  srli x8, x8, 22
+  slli x8, x8, 20
+  srli x8, x8, 18
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x8, x8, x14
+  LA(x9, rvtest_code_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x8)
+  LA(x8, rvtest_code_begin)
+  srli x8, x8, 22
+  slli x8, x8, 22
+  srli x8, x8, 20
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x8, x8, x14
+  LA(x9, rvtest_code_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x8)
+  LA(x8, rvtest_data_begin)
+  srli x8, x8, 22
+  slli x8, x8, 20
+  srli x8, x8, 18
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x8, x8, x14
+  LA(x9, rvtest_data_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x8)
+  LA(x8, rvtest_data_begin)
+  srli x8, x8, 22
+  slli x8, x8, 22
+  srli x8, x8, 20
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x8, x8, x14
+  LA(x9, rvtest_data_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x8)
+  LA(x8, rvtest_sig_end)
+  srli x8, x8, 22
+  slli x8, x8, 20
+  srli x8, x8, 18
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x8, x8, x14
+  LA(x9, rvtest_sig_end)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x8)
+  LA(x8, rvtest_sig_end)
+  srli x8, x8, 22
+  slli x8, x8, 22
+  srli x8, x8, 20
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x8, x8, x14
+  LA(x9, rvtest_sig_end)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x8)
 // Map the code region again at the guest alias
-  LA(x6, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_code_begin)
-  srli x14, x14, 22
-  slli x14, x14, 20
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x13
-  SREG x14, 0(x6)
-  LA(x6, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
-  LI(x14, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x14, 0(x6)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
+  LA(x9, rvtest_code_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x8)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
+  LI(x9, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x8)
 // Register the alias of rvtest_code_begin
-  LI(x14, ((0x30000000) >> 22) << 22)
-  LA(x6, rvtest_code_begin)
-  slli x6, x6, 10
-  srli x6, x6, 10
-  or x14, x14, x6
-  LA(x6, Vtramptbl_sv)
-  SREG x14, code_bgn_off(x6)
+  LI(x9, ((0x30000000) >> 22) << 22)
+  LA(x8, rvtest_code_begin)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  or x9, x9, x8
+  LA(x8, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x8)
 
-  LI(x14, 0x80000000)
-  LA(x6, rvtest_Hroot_pg_tbl)
-  srli x6, x6, 12
-  or x6, x6, x14
-  csrw hgatp, x6
-  LI(x14, 0x80000000)
-  LA(x6, rvtest_Vroot_pg_tbl)
-  srli x6, x6, 12
-  or x6, x6, x14
-  csrw vsatp, x6
+  LI(x9, 0x80000000)
+  LA(x8, rvtest_Hroot_pg_tbl)
+  srli x8, x8, 12
+  or x8, x8, x9
+  csrw hgatp, x8
+  LI(x9, 0x80000000)
+  LA(x8, rvtest_Vroot_pg_tbl)
+  srli x8, x8, 12
+  or x8, x8, x9
+  csrw vsatp, x8
   hfence.gvma
   hfence.vvma
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x9
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x9
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x15
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x15
   csrw hedeleg, zero
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, (((RVMODEL_ACCESS_FAULT_ADDRESS_STORE) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI_FIXED_LEN(x6, 0x90407000 + (RVMODEL_ACCESS_FAULT_ADDRESS_STORE & 0xFFF))
-  LI(x9, 0x27b)
+  LI_FIXED_LEN(x14, 0x90407000 + (RVMODEL_ACCESS_FAULT_ADDRESS_STORE & 0xFFF))
+  LI(x9, 0x2ab)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_access_fault_store_leaf_store:
-  sw x9, 8(x6)
+  sw x9, 8(x14)
   RVTEST_TSBI_GOTO_SMODE
 
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LI(x6, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + ((((0xD0407000 + 0x1000)) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + ((((0xD0407000 + 0x1000)) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI_FIXED_LEN(x9, (((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12)))
-  LI(x13, 0x27c)
+  LI_FIXED_LEN(x8, (((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12)))
+  LI(x15, 0x2ac)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_access_fault_store_vs_table_store:
-  sw x13, 8(x9)
+  sw x15, 8(x8)
   RVTEST_TSBI_GOTO_SMODE
 
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 22) & 0xfff) * 4)
-  LI_FIXED_LEN(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3)) >> 12) << 10) | (PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 22) & 0xfff) * 4)
+  LI_FIXED_LEN(x13, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3)) >> 12) << 10) | (PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x90407000)
-  LI(x13, 0x27d)
+  LI(x13, 0x90407000)
+  LI(x15, 0x2ad)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_access_fault_store_g_table_store:
-  sw x13, 8(x8)
+  sw x15, 8(x13)
   RVTEST_TSBI_GOTO_SMODE
 
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE)
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI_FIXED_LEN(x15, 0x90407000 + (RVMODEL_ACCESS_FAULT_ADDRESS_LOAD & 0xFFF))
-  LI(x8, 0x27e)
+  LI_FIXED_LEN(x13, 0x90407000 + (RVMODEL_ACCESS_FAULT_ADDRESS_LOAD & 0xFFF))
+  LI(x6, 0x2ae)
   RVTEST_TSBI_GOTO_VSMODE
-  LI(x8, -1)
+  LI(x6, -1)
 Sv_H_twostage_cg_cp_twostage_access_fault_load_leaf_load:
-  lw x8, 8(x15)
+  lw x6, 8(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_twostage_access_fault_load_leaf_load, Sv_H_twostage_cg_cp_twostage_access_fault_load_leaf_load_str)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_twostage_access_fault_load_leaf_load, Sv_H_twostage_cg_cp_twostage_access_fault_load_leaf_load_str)
 
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LI(x6, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + ((((0xD0407000 + 0x1000)) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + ((((0xD0407000 + 0x1000)) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
   LI_FIXED_LEN(x13, (((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12)))
-  LI(x8, 0x27f)
+  LI(x6, 0x2af)
   RVTEST_TSBI_GOTO_VSMODE
-  LI(x8, -1)
+  LI(x6, -1)
 Sv_H_twostage_cg_cp_twostage_access_fault_load_vs_table_load:
-  lw x8, 8(x13)
+  lw x6, 8(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_twostage_access_fault_load_vs_table_load, Sv_H_twostage_cg_cp_twostage_access_fault_load_vs_table_load_str)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_twostage_access_fault_load_vs_table_load, Sv_H_twostage_cg_cp_twostage_access_fault_load_vs_table_load_str)
 
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 22) & 0xfff) * 4)
-  LI_FIXED_LEN(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3)) >> 12) << 10) | (PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 22) & 0xfff) * 4)
+  LI_FIXED_LEN(x13, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3)) >> 12) << 10) | (PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x9, 0x90407000)
-  LI(x6, 0x280)
+  LI(x8, 0x90407000)
+  LI(x9, 0x2b0)
   RVTEST_TSBI_GOTO_VSMODE
-  LI(x6, -1)
+  LI(x9, -1)
 Sv_H_twostage_cg_cp_twostage_access_fault_load_g_table_load:
-  lw x6, 8(x9)
+  lw x9, 8(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_twostage_cg_cp_twostage_access_fault_load_g_table_load, Sv_H_twostage_cg_cp_twostage_access_fault_load_g_table_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_twostage_cg_cp_twostage_access_fault_load_g_table_load, Sv_H_twostage_cg_cp_twostage_access_fault_load_g_table_load_str)
 
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, (((RVMODEL_ACCESS_FAULT_ADDRESS_FETCH) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI_FIXED_LEN(x9, 0x90407000 + (RVMODEL_ACCESS_FAULT_ADDRESS_FETCH & 0xFFF))
-  LI(x13, 0x281)
+  LI_FIXED_LEN(x13, 0x90407000 + (RVMODEL_ACCESS_FAULT_ADDRESS_FETCH & 0xFFF))
+  LI(x15, 0x2b1)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_access_fault_fetch_leaf_exec:
-  jalr ra, 0(x9)
+  jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
 
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LI(x6, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + ((((0xD0407000 + 0x1000)) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + ((((0xD0407000 + 0x1000)) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, (((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) >> 12) << 10) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI_FIXED_LEN(x13, (((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12)))
-  LI(x14, 0x282)
+  LI_FIXED_LEN(x15, (((0x90407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12)))
+  LI(x6, 0x2b2)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_access_fault_fetch_vs_table_exec:
-  jalr ra, 0(x13)
+  jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
 
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
 #if defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x13, PTE_V)
-  or x6, x6, x13
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI_FIXED_LEN(x6, ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 22) & 0xfff) * 4)
-  LI_FIXED_LEN(x6, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3)) >> 12) << 10) | (PTE_V))
-  SREG x6, 0(x9)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI_FIXED_LEN(x13, ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + ((((((0xD0407000) & ~0x3ff000) | (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3) & 0xFFF) / 4) << 12))) >> 22) & 0xfff) * 4)
+  LI_FIXED_LEN(x13, (((((RVMODEL_ACCESS_FAULT_ADDRESS_LOAD + 3) & ~3)) >> 12) << 10) | (PTE_V))
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x15, 0x90407000)
-  LI(x9, 0x283)
+  LI(x9, 0x90407000)
+  LI(x13, 0x2b3)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_twostage_access_fault_fetch_g_table_exec:
-  jalr ra, 0(x15)
+  jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
 
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)
@@ -399,15 +399,15 @@ Sv_H_twostage_cg_cp_twostage_access_fault_fetch_g_table_exec:
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x14, rvtest_code_begin)
-  LA(x13, Vtramptbl_sv)
-  SREG x14, code_bgn_off(x13)
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x9
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x9
-  LI(x9, HENVCFGH_ADUE)
-  csrc henvcfgh, x9
+  LA(x9, rvtest_code_begin)
+  LA(x14, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x14)
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x6
+  LI(x6, HENVCFGH_ADUE)
+  csrc henvcfgh, x6
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 #endif // defined(RVMODEL_ACCESS_FAULT_ADDRESS_STORE) || defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD) || defined(RVMODEL_ACCESS_FAULT_ADDRESS_FETCH)
@@ -475,15 +475,15 @@ rvtest_vlvl0_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_twostage_cg_cp_twostage_access_fault_store_leaf_store_str: .string "\"test: 380; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_store; bin: leaf_store\""
-Sv_H_twostage_cg_cp_twostage_access_fault_store_vs_table_store_str: .string "\"test: 381; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_store; bin: vs_table_store\""
-Sv_H_twostage_cg_cp_twostage_access_fault_store_g_table_store_str: .string "\"test: 382; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_store; bin: g_table_store\""
-Sv_H_twostage_cg_cp_twostage_access_fault_load_leaf_load_str: .string "\"test: 383; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_load; bin: leaf_load\""
-Sv_H_twostage_cg_cp_twostage_access_fault_load_vs_table_load_str: .string "\"test: 384; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_load; bin: vs_table_load\""
-Sv_H_twostage_cg_cp_twostage_access_fault_load_g_table_load_str: .string "\"test: 385; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_load; bin: g_table_load\""
-Sv_H_twostage_cg_cp_twostage_access_fault_fetch_leaf_exec_str: .string "\"test: 386; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_fetch; bin: leaf_exec\""
-Sv_H_twostage_cg_cp_twostage_access_fault_fetch_vs_table_exec_str: .string "\"test: 387; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_fetch; bin: vs_table_exec\""
-Sv_H_twostage_cg_cp_twostage_access_fault_fetch_g_table_exec_str: .string "\"test: 388; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_fetch; bin: g_table_exec\""
+Sv_H_twostage_cg_cp_twostage_access_fault_store_leaf_store_str: .string "\"test: 428; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_store; bin: leaf_store\""
+Sv_H_twostage_cg_cp_twostage_access_fault_store_vs_table_store_str: .string "\"test: 429; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_store; bin: vs_table_store\""
+Sv_H_twostage_cg_cp_twostage_access_fault_store_g_table_store_str: .string "\"test: 430; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_store; bin: g_table_store\""
+Sv_H_twostage_cg_cp_twostage_access_fault_load_leaf_load_str: .string "\"test: 431; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_load; bin: leaf_load\""
+Sv_H_twostage_cg_cp_twostage_access_fault_load_vs_table_load_str: .string "\"test: 432; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_load; bin: vs_table_load\""
+Sv_H_twostage_cg_cp_twostage_access_fault_load_g_table_load_str: .string "\"test: 433; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_load; bin: g_table_load\""
+Sv_H_twostage_cg_cp_twostage_access_fault_fetch_leaf_exec_str: .string "\"test: 434; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_fetch; bin: leaf_exec\""
+Sv_H_twostage_cg_cp_twostage_access_fault_fetch_vs_table_exec_str: .string "\"test: 435; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_fetch; bin: vs_table_exec\""
+Sv_H_twostage_cg_cp_twostage_access_fault_fetch_g_table_exec_str: .string "\"test: 436; cg: Sv_H_twostage_cg; cp: cp_twostage_access_fault_fetch; bin: g_table_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

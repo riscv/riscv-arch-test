@@ -105,54 +105,54 @@ RVTEST_BEGIN
   LI(x9, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x9
   csrw hedeleg, zero
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x8, rvtest_hlvl0_pg_tbl)
   srli x8, x8, 12
   slli x8, x8, 10
   LI(x9, PTE_V)
   or x8, x8, x9
-  SREG x8, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  SREG x8, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x8, svh_page)
   srli x8, x8, 12
   slli x8, x8, 10
   LI(x9, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x8, x8, x9
-  SREG x8, 0(x15)
+  SREG x8, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x9, 0xD0407000)
-  LI(x6, 0x189)
+  LI(x6, 0xD0407000)
+  LI(x15, 0x1b9)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_store:
-  sw x6, 8(x9)
-  LI(x6, -1)
+  sw x15, 8(x6)
+  LI(x15, -1)
 Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_load:
-  lw x6, 8(x9)
+  lw x15, 8(x6)
 Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_exec:
-  jalr ra, 0(x9)
+  jalr ra, 0(x6)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_load_str)
 
   LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x14, rvtest_hlvl0_pg_tbl)
   srli x14, x14, 12
   slli x14, x14, 10
-  LI(x15, PTE_V)
-  or x14, x14, x15
+  LI(x6, PTE_V)
+  or x14, x14, x6
   SREG x14, 0(x9)
   LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x14, svh_page)
   srli x14, x14, 12
   slli x14, x14, 10
-  LI(x15, PTE_D | PTE_A | PTE_X | PTE_V)
-  or x14, x14, x15
+  LI(x6, PTE_D | PTE_A | PTE_X | PTE_V)
+  or x14, x14, x6
   SREG x14, 0(x9)
   hfence.vvma
   hfence.gvma
   LI(x15, 0xD0407000)
-  LI(x9, 0x18c)
+  LI(x9, 0x1bc)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_store:
   sw x9, 8(x15)
@@ -165,84 +165,84 @@ Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_exec:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_load_str)
 
-  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_D | PTE_A | PTE_X | PTE_R | PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x6)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x14, PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x15, svh_page)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_R | PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x9)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0xD0407000)
-  LI(x15, 0x18f)
+  LI(x9, 0xD0407000)
+  LI(x8, 0x1bf)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_store:
-  sw x15, 8(x8)
-  LI(x15, -1)
+  sw x8, 8(x9)
+  LI(x8, -1)
 Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_load:
-  lw x15, 8(x8)
+  lw x8, 8(x9)
 Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_exec:
-  jalr ra, 0(x8)
+  jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_load_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_load_str)
 
-  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x14, svh_page)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_D | PTE_A | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x6)
-  hfence.vvma
-  hfence.gvma
-  LI(x14, 0xD0407000)
-  LI(x15, 0x192)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_store:
-  sw x15, 8(x14)
-  LI(x15, -1)
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load:
-  lw x15, 8(x14)
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_exec:
-  jalr ra, 0(x14)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load_str)
-
-  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x8)
-  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x14, svh_page)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_D | PTE_A | PTE_R | PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x8)
+  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x8, rvtest_hlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x6, PTE_V)
+  or x8, x8, x6
+  SREG x8, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x8, svh_page)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x6, PTE_D | PTE_A | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x6
+  SREG x8, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x8, 0xD0407000)
-  LI(x9, 0x195)
+  LI(x14, 0x1c2)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_store:
+  sw x14, 8(x8)
+  LI(x14, -1)
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load:
+  lw x14, 8(x8)
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_exec:
+  jalr ra, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load_str)
+
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_D | PTE_A | PTE_R | PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x9)
+  hfence.vvma
+  hfence.gvma
+  LI(x8, 0xD0407000)
+  LI(x9, 0x1c5)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_store:
   sw x9, 8(x8)
@@ -255,236 +255,236 @@ Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_exec:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_load, Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_load_str)
 
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x15, rvtest_hlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x15, svh_page)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x14, 0xD0407000)
-  LI(x6, 0x198)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_store:
-  sw x6, 8(x14)
-  LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load:
-  lw x6, 8(x14)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_exec:
-  jalr ra, 0(x14)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load_str)
-
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x15, rvtest_hlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x15, svh_page)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  hfence.vvma
-  hfence.gvma
-  LI(x9, 0xD0407000)
-  LI(x14, 0x19b)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_store:
-  sw x14, 8(x9)
-  LI(x14, -1)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load:
-  lw x14, 8(x9)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_exec:
-  jalr ra, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load_str)
-
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x6, PTE_V)
-  or x14, x14, x6
-  SREG x14, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x14, svh_page)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V)
-  or x14, x14, x6
-  SREG x14, 0(x9)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, 0xD0407000)
-  LI(x15, 0x19e)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_store:
-  sw x15, 8(x6)
-  LI(x15, -1)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load:
-  lw x15, 8(x6)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_exec:
-  jalr ra, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load_str)
-
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x15, PTE_V)
-  or x8, x8, x15
-  SREG x8, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, svh_page)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x15
-  SREG x8, 0(x9)
-  hfence.vvma
-  hfence.gvma
-  LI(x15, 0xD0407000)
-  LI(x14, 0x1a1)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_store:
-  sw x14, 8(x15)
-  LI(x14, -1)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load:
-  lw x14, 8(x15)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_exec:
-  jalr ra, 0(x15)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load_str)
-
   LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x14, rvtest_hlvl0_pg_tbl)
   srli x14, x14, 12
   slli x14, x14, 10
-  LI(x6, PTE_V)
-  or x14, x14, x6
+  LI(x9, PTE_V)
+  or x14, x14, x9
   SREG x14, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x14, svh_page)
   srli x14, x14, 12
   slli x14, x14, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
-  or x14, x14, x6
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x9
   SREG x14, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x15, 0xD0407000)
-  LI(x9, 0x1a4)
+  LI(x6, 0xD0407000)
+  LI(x14, 0x1c8)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_store:
-  sw x9, 8(x15)
-  LI(x9, -1)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load:
-  lw x9, 8(x15)
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_exec:
-  jalr ra, 0(x15)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load_str)
-
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, svh_page)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x13
-  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x13
-  LI(x8, 0xD0407000)
-  LI(x6, 0x1a7)
-  RVTEST_TSBI_GOTO_VSMODE
-  LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load:
-  lw x6, 8(x8)
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_exec:
-  jalr ra, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load_str)
-
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x13
-  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x13
-  LI(x13, SSTATUS_MXR)
-  csrs vsstatus, x13
-  LI(x8, 0xD0407000)
-  LI(x14, 0x1a9)
-  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_store:
+  sw x14, 8(x6)
   LI(x14, -1)
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load:
-  lw x14, 8(x8)
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_exec:
-  jalr ra, 0(x8)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load:
+  lw x14, 8(x6)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_exec:
+  jalr ra, 0(x6)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load_str)
 
-  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
   LA(x6, rvtest_hlvl0_pg_tbl)
   srli x6, x6, 12
   slli x6, x6, 10
   LI(x9, PTE_V)
   or x6, x6, x9
-  SREG x6, 0(x8)
-  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  SREG x6, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x6, svh_page)
   srli x6, x6, 12
   slli x6, x6, 10
   LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
   or x6, x6, x9
-  SREG x6, 0(x8)
+  SREG x6, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x9, 0xD0407000)
+  LI(x6, 0x1cb)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_store:
+  sw x6, 8(x9)
+  LI(x6, -1)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load:
+  lw x6, 8(x9)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_exec:
+  jalr ra, 0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load_str)
+
+  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x9, svh_page)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x15)
+  hfence.vvma
+  hfence.gvma
+  LI(x14, 0xD0407000)
+  LI(x8, 0x1ce)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_store:
+  sw x8, 8(x14)
+  LI(x8, -1)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load:
+  lw x8, 8(x14)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_exec:
+  jalr ra, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load_str)
+
+  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x8, rvtest_hlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x6, PTE_V)
+  or x8, x8, x6
+  SREG x8, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x8, svh_page)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x6
+  SREG x8, 0(x15)
+  hfence.vvma
+  hfence.gvma
+  LI(x15, 0xD0407000)
+  LI(x8, 0x1d1)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_store:
+  sw x8, 8(x15)
+  LI(x8, -1)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load:
+  lw x8, 8(x15)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_exec:
+  jalr ra, 0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load_str)
+
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x14, rvtest_hlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x14, svh_page)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_R | PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
+  hfence.vvma
+  hfence.gvma
+  LI(x14, 0xD0407000)
+  LI(x15, 0x1d4)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_store:
+  sw x15, 8(x14)
+  LI(x15, -1)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load:
+  lw x15, 8(x14)
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_exec:
+  jalr ra, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load, Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load_str)
+
+  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x15)
+  hfence.vvma
+  hfence.gvma
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x14, 0xD0407000)
+  LI(x9, 0x1d7)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, -1)
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load:
+  lw x9, 8(x14)
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_exec:
+  jalr ra, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load_str)
+
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x8, rvtest_hlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x8, svh_page)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x9)
+  hfence.vvma
+  hfence.gvma
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x13, SSTATUS_MXR)
+  csrs vsstatus, x13
+  LI(x9, 0xD0407000)
+  LI(x14, 0x1d9)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x14, -1)
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load:
+  lw x14, 8(x9)
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_exec:
+  jalr ra, 0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load_str)
+
+  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x13, SSTATUS_SUM | SSTATUS_MXR)
@@ -493,32 +493,32 @@ Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_exec:
   csrs sstatus, x13
   LI(x13, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x13
-  LI(x9, 0xD0407000)
-  LI(x8, 0x1ab)
+  LI(x8, 0xD0407000)
+  LI(x14, 0x1db)
   RVTEST_TSBI_GOTO_VSMODE
-  LI(x8, -1)
+  LI(x14, -1)
 Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_load:
-  lw x8, 8(x9)
+  lw x14, 8(x8)
 Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_exec:
-  jalr ra, 0(x9)
+  jalr ra, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_load_str)
 
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, svh_page)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x14)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x6, PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x9, svh_page)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x9, x9, x6
+  SREG x9, 0(x8)
   hfence.vvma
   hfence.gvma
   LI(x13, SSTATUS_SUM | SSTATUS_MXR)
@@ -529,25 +529,25 @@ Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_exec:
   csrc vsstatus, x13
   LI(x13, SSTATUS_MXR)
   csrs vsstatus, x13
-  LI(x14, 0xD0407000)
-  LI(x9, 0x1ad)
+  LI(x15, 0xD0407000)
+  LI(x6, 0x1dd)
   RVTEST_TSBI_GOTO_VSMODE
-  LI(x9, -1)
+  LI(x6, -1)
 Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_load:
-  lw x9, 8(x14)
+  lw x6, 8(x15)
 Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_exec:
-  jalr ra, 0(x14)
+  jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_load_str)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_load, Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_load_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x14, rvtest_code_begin)
-  LA(x8, Vtramptbl_sv)
-  SREG x14, code_bgn_off(x8)
+  LA(x15, rvtest_code_begin)
+  LA(x6, Vtramptbl_sv)
+  SREG x15, code_bgn_off(x6)
   LI(x9, SSTATUS_SUM | SSTATUS_MXR)
   csrc sstatus, x9
   LI(x9, SSTATUS_SUM | SSTATUS_MXR)
@@ -615,44 +615,44 @@ rvtest_hlvl0_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_store_str: .string "\"test: 138; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RWX_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_load_str: .string "\"test: 139; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RWX_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_exec_str: .string "\"test: 140; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RWX_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_store_str: .string "\"test: 141; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_X-only_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_load_str: .string "\"test: 142; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_X-only_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_exec_str: .string "\"test: 143; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_X-only_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_store_str: .string "\"test: 144; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RX_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_load_str: .string "\"test: 145; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RX_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_exec_str: .string "\"test: 146; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RX_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_store_str: .string "\"test: 147; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RW_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load_str: .string "\"test: 148; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RW_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_exec_str: .string "\"test: 149; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RW_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_store_str: .string "\"test: 150; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_R-only_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_load_str: .string "\"test: 151; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_R-only_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_exec_str: .string "\"test: 152; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_R-only_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_store_str: .string "\"test: 153; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RWX_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load_str: .string "\"test: 154; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RWX_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_exec_str: .string "\"test: 155; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RWX_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_store_str: .string "\"test: 156; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_X-only_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load_str: .string "\"test: 157; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_X-only_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_exec_str: .string "\"test: 158; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_X-only_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_store_str: .string "\"test: 159; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RX_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load_str: .string "\"test: 160; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RX_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_exec_str: .string "\"test: 161; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RX_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_store_str: .string "\"test: 162; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RW_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load_str: .string "\"test: 163; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RW_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_exec_str: .string "\"test: 164; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RW_exec\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_store_str: .string "\"test: 165; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_R-only_store\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load_str: .string "\"test: 166; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_R-only_load\""
-Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_exec_str: .string "\"test: 167; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_R-only_exec\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load_str: .string "\"test: 168; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr0_load\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_exec_str: .string "\"test: 169; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr0_exec\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load_str: .string "\"test: 170; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr1_load\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_exec_str: .string "\"test: 171; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr1_exec\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_load_str: .string "\"test: 172; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr0_load\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_exec_str: .string "\"test: 173; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr0_exec\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_load_str: .string "\"test: 174; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr1_load\""
-Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_exec_str: .string "\"test: 175; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr1_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_store_str: .string "\"test: 186; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RWX_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_load_str: .string "\"test: 187; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RWX_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RWX_exec_str: .string "\"test: 188; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RWX_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_store_str: .string "\"test: 189; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_X-only_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_load_str: .string "\"test: 190; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_X-only_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_Xmonly_exec_str: .string "\"test: 191; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_X-only_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_store_str: .string "\"test: 192; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RX_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_load_str: .string "\"test: 193; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RX_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RX_exec_str: .string "\"test: 194; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RX_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_store_str: .string "\"test: 195; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RW_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_load_str: .string "\"test: 196; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RW_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_RW_exec_str: .string "\"test: 197; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_RW_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_store_str: .string "\"test: 198; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_R-only_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_load_str: .string "\"test: 199; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_R-only_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u0_Rmonly_exec_str: .string "\"test: 200; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u0_R-only_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_store_str: .string "\"test: 201; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RWX_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_load_str: .string "\"test: 202; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RWX_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RWX_exec_str: .string "\"test: 203; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RWX_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_store_str: .string "\"test: 204; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_X-only_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_load_str: .string "\"test: 205; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_X-only_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Xmonly_exec_str: .string "\"test: 206; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_X-only_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_store_str: .string "\"test: 207; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RX_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_load_str: .string "\"test: 208; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RX_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RX_exec_str: .string "\"test: 209; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RX_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_store_str: .string "\"test: 210; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RW_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_load_str: .string "\"test: 211; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RW_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_RW_exec_str: .string "\"test: 212; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_RW_exec\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_store_str: .string "\"test: 213; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_R-only_store\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_load_str: .string "\"test: 214; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_R-only_load\""
+Sv_H_gstage_cg_cp_hgatp_perm_u1_Rmonly_exec_str: .string "\"test: 215; cg: Sv_H_gstage_cg; cp: cp_hgatp_perm; bin: u1_R-only_exec\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_load_str: .string "\"test: 216; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr0_load\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr0_exec_str: .string "\"test: 217; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr0_exec\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_load_str: .string "\"test: 218; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr1_load\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr0_vsmxr1_exec_str: .string "\"test: 219; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr0_vsmxr1_exec\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_load_str: .string "\"test: 220; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr0_load\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr0_exec_str: .string "\"test: 221; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr0_exec\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_load_str: .string "\"test: 222; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr1_load\""
+Sv_H_gstage_cg_cp_hgatp_mxr_smxr1_vsmxr1_exec_str: .string "\"test: 223; cg: Sv_H_gstage_cg; cp: cp_hgatp_mxr; bin: smxr1_vsmxr1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

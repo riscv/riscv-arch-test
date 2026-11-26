@@ -371,28 +371,34 @@ def _t_vs_perm(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode, mo
         f"H_{vs.name}_vs_perm_{mode.lower()}",
         "cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr",
         f"In {mode}-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with U = 0, 1 and each\n"
-        "legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR = 0, 1",
+        "legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR and sstatus.MXR = 0, 1",
         stages=(vs,),
     )
     va = vs.data_va
     reg = test_data.int_regs.get_register()
     code = guest_chunk_setup(test_data, None, vs, mode)
-    cases: list[tuple[str, PteFlags, int, int]] = []
+    cases: list[tuple[str, PteFlags, int, int, int]] = []
     for user in (False, True):
         cases.extend(
-            (f"u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 0, 0)
+            (f"u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 0, 0, 0)
             for r, w, x, desc in PAGE_PERMS
         )
     # SUM = 1 lets VS-mode load and store, but not fetch, on user pages; it does not affect VU-mode
     user_perms = PAGE_PERMS if mode == "VS" else PAGE_PERMS[:1]
     for user, (r, w, x, desc) in ((False, PAGE_PERMS[0]), *((True, perm) for perm in user_perms)):
-        cases.append((f"sum_u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 1, 0))
+        cases.append((f"sum_u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 1, 0, 0))
+    # The HS-level MXR (sstatus.MXR) also makes VS-stage execute-only pages readable.  The last case of each group
+    # writes sstatus.MXR = 0 again.
     for user in (False, True):
         for sum_ in (0, 1):
-            cases.append((f"mxr_sum{sum_}_u{int(user)}", perm_flags("x", user), sum_, 1))
-    for name, flags, sum_, mxr in cases:
-        coverpoint = "cp_vsstatus_mxr" if mxr else "cp_vsatp_sum" if sum_ else "cp_vsatp_perm"
+            for s_mxr, vs_mxr in ((1, 0), (1, 1), (0, 1)):
+                name = f"smxr{s_mxr}_vsmxr{vs_mxr}_sum{sum_}_u{int(user)}"
+                cases.append((name, perm_flags("x", user), sum_, vs_mxr, s_mxr))
+    for name, flags, sum_, mxr, s_mxr in cases:
+        coverpoint = "cp_vsstatus_mxr" if mxr or s_mxr else "cp_vsatp_sum" if sum_ else "cp_vsatp_perm"
         setup = [*map_test_page(test_data, None, vs, vs_flags=flags), *status_bits("vsstatus", reg, sum_=sum_, mxr=mxr)]
+        if coverpoint == "cp_vsstatus_mxr":
+            setup.extend(status_bits("sstatus", reg, mxr=s_mxr))
         code.extend(guest_access(test_data, VS_CG, coverpoint, name, mode, va, setup=setup))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])

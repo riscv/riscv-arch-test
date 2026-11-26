@@ -25,10 +25,10 @@ coverpoints:
     expectation: In VS-mode with SUM = 1, loads and stores to U = 1 pages succeed when RWX permits them, and fetches from U = 1 pages raise instruction page faults.  SUM does not affect VU-mode, so U = 0 pages still fault there.
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp_mode x hgatp Bare x vsstatus.SUM {0, 1}"
   - name: cp_vsstatus_mxr
-    goal: vsstatus.MXR makes VS-stage execute-only pages readable
-    description: In VS-mode and VU-mode with hgatp = Bare and vsstatus.MXR = 1, store, load and fetch through an execute-only VS-stage leaf with U = 0 and 1 and vsstatus.SUM = 0 and 1.  The MXR = 0 bins come from cp_vsatp_perm and cp_vsatp_sum.
-    expectation: With MXR = 1, the load succeeds when U and SUM permit the access; with MXR = 0 it raises a load page fault.  Stores fault, and fetches follow X, U and SUM as in cp_vsatp_sum.
-    bins: "{VS, VU} x lw x vsatp_mode x hgatp Bare x vsstatus.SUM {0, 1} x vsstatus.MXR {0, 1}"
+    goal: vsstatus.MXR and the HS-level sstatus.MXR each make VS-stage execute-only pages readable
+    description: In VS-mode and VU-mode with hgatp = Bare, store, load and fetch through an execute-only VS-stage leaf with U = 0 and 1, vsstatus.SUM = 0 and 1, and vsstatus.MXR and sstatus.MXR not both 0.  The bins with both MXR bits 0 come from cp_vsatp_perm and cp_vsatp_sum.
+    expectation: With either MXR = 1, the load succeeds when U and SUM permit the access; with both MXR = 0 it raises a load page fault.  Stores fault, and fetches follow X, U and SUM as in cp_vsatp_sum.
+    bins: "{VS, VU} x lw x vsatp_mode x hgatp Bare x vsstatus.SUM {0, 1} x vsstatus.MXR {0, 1} x mstatus.MXR {0, 1}"
   - name: cp_vsatp_svade
     goal: Svade in the VS-stage
     description: In VS-mode with hgatp = Bare and menvcfg.ADUE = henvcfg.ADUE = 0, store, load and fetch through VS-stage leaves with A = D = 0 and with D = 0.  The leaf is read back after the accesses.

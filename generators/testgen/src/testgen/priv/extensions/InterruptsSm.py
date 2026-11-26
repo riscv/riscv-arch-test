@@ -132,8 +132,10 @@ def _trigger_sm_cases(
                         else []
                     )
                     vs_sie_close = vs_sie + ([f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0"] if vs_sie else [])
-                    # Cases whose other SIE differs from the usual one are recorded in cp_trigger_tsbi_hs_vs_sie
-                    case_cp = cp if other is None or other == default_other else "cp_trigger_tsbi_hs_vs_sie"
+                    # Cases whose other SIE differs from the usual one are recorded in cp_trigger_tsbi_other_sie,
+                    # or cp_trigger_tsbi_vs_other_sie when delegated
+                    other_cp = "cp_trigger_tsbi_vs_other_sie" if hideleg else "cp_trigger_tsbi_other_sie"
+                    case_cp = cp if other is None or other == default_other else other_cp
                     other_name = "" if other is None else f"_other_sie_{other}"
                     # mtvec.MODE, or vstvec.MODE (set and gated by hideleg_vs_target) for a case delegated to VS-mode
                     vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, sie, tmp_reg)

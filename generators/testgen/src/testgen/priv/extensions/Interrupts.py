@@ -109,9 +109,11 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 [f"{'csrs' if other else 'csrc'} vsstatus, x{tmp_reg} # vsstatus.SIE = {other}"] if vs_sie else []
             )
             vs_sie_close = vs_sie + ([f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0"] if vs_sie else [])
-            # Cases whose other SIE differs from the one the other cases leave are recorded in cp_trigger_tsbi_hs_vs_sie
+            # Cases whose other SIE differs from the one the other cases leave are recorded in
+            # cp_trigger_tsbi_other_sie, or cp_trigger_tsbi_vs_other_sie when delegated
             default_other = enable if hideleg else 0
-            case_cp = cp if other is None or other == default_other else "cp_trigger_tsbi_hs_vs_sie"
+            other_cp = "cp_trigger_tsbi_vs_other_sie" if hideleg else "cp_trigger_tsbi_other_sie"
+            case_cp = cp if other is None or other == default_other else other_cp
             other_name = "" if other is None else f"_other_sie_{other}"
             stvec_open = [] if hideleg else [f"#ifdef UDB_STVEC_MODES_{mode}"]
             stvec_close = [] if hideleg else [f"#endif // UDB_STVEC_MODES_{mode}"]

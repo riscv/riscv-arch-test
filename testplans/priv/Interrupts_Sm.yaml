@@ -52,12 +52,14 @@ coverpoints:
   - name: |-
       cp_trigger
       cp_trigger_tsbi
+      cp_trigger_vs
+      cp_trigger_tsbi_vs
     goal: Assert each interrupt
     description: |-
       For <type> = {LCOFI, MTI, MSI, MEI, STI, SSI, SEI, VSTI, VSEI, VSSI}
       setup_interrupts_sm
       trigger_interrupts_<type>
-      With H, each VS-level interrupt is also raised with hideleg delegating it to VS-mode, which the cross records with vsstatus.SIE in place of mstatus.SIE.
+      With H, each VS-level interrupt is also raised with hideleg delegating it to VS-mode.  cp_trigger_vs and cp_trigger_tsbi_vs record those cases with vsstatus.SIE and vstvec.MODE in place of mstatus.SIE and mtvec.MODE.
     expectation: |-
       supported interrupts will fire if
       - not delegted to a lower priv mode than the current mode
@@ -72,14 +74,17 @@ coverpoints:
       - mstatus_xpp_op
       - mstatus_xpie_trap_op
       - mstatus_xie_trap_op
-  - name: cp_trigger_tsbi_hs_vs_sie
+  - name: |-
+      cp_trigger_tsbi_other_sie
+      cp_trigger_tsbi_vs_other_sie
     goal: The other level's SIE does not gate a VS-level interrupt
     description: |-
       As cp_trigger for VSEI, VSTI and VSSI in {VS, VU} mode with hideleg = {0, 1 in type}, with the SIE of the level that does not take the interrupt also = {0/1}: mstatus.SIE when hideleg delegates it to VS-mode, vsstatus.SIE when it does not.  mideleg does not affect the VS-level interrupts, so the other SIE is flipped in the mideleg = 0 cases
-    expectation: As cp_trigger.  mstatus.SIE does not affect a delegated VS-level interrupt, and vsstatus.SIE does not affect one taken in HS-mode.
-    bins: 2 priv * 3 int * 2 hideleg * 2 mstatus.SIE * 2 vsstatus.SIE
+    expectation: As cp_trigger.  vsstatus.SIE does not affect a VS-level interrupt taken in HS-mode (cp_trigger_tsbi_other_sie), and mstatus.SIE does not affect one delegated to VS-mode (cp_trigger_tsbi_vs_other_sie).
+    bins: 2 priv * 3 int * 2 mstatus.SIE * 2 vsstatus.SIE in each cross
     rules:
       - hideleg_hs
+      - hideleg_op
   - name: cp_trigger_reg
     description: Same as cp_trigger, but use mip.SEIP, mip.SSIP, and sip.SSIP rather than macros.
     expectation: same as above

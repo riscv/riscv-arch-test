@@ -411,9 +411,9 @@ normative_rule_definitions:
   # stval’s setting for other traps.
   # ecall from S traps to M, so it does not show this; a delegated ecall from U is not recorded.
   # Interrupt entries record stval; cp_trigger leaves it nonzero before each interrupt, and vstval nonzero
-  # before each interrupt delegated to VS-mode (cp_trigger_tsbi).
+  # before each interrupt delegated to VS-mode (cp_trigger_tsbi_vs).
   - name: stval_op_other_traps
-    coverpoint: ["Interrupts_cg/{cp_trigger, cp_trigger_tsbi}"]
+    coverpoint: ["Interrupts_cg/{cp_trigger, cp_trigger_tsbi_vs}"]
 
   # stval is a WARL register that must be able to hold all valid virtual addresses
   # and the value 0. It need not be capable of holding all possible invalid

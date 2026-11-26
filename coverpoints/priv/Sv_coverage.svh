@@ -2699,8 +2699,8 @@ endgroup
 `endif // EXCLUDE_SM
 
 `ifdef SV_HZICBO_ANY
-// HZicbo group: cache-block operations from VS-mode and VU-mode, the henvcfg enables, and each VS-stage and G-stage
-// PTE under two-stage translation
+// HZicbo group: cache-block operations from VS-mode and VU-mode, the henvcfg enables, each VS-stage and G-stage
+// PTE under two-stage translation, and VS-stage PTEs with hgatp = Bare
 covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   option.per_instance = 0;
   `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -2720,6 +2720,9 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   }
   hgatp_paged: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
     bins paged = {[1:15]};
+  }
+  hgatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
+    bins bare = {0};
   }
   // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
   // SV39X4/SV32X4 data_va through a VS-stage identity superpage
@@ -2780,6 +2783,9 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
     cp_g_pa:          cross priv_mode_vs_vu, cbo, g_stage, store_access_fault;
   `endif
+  // VS-stage leaves with hgatp = Bare
+  cp_vsatp_cbo_pte:   cross priv_mode_vs, cbo, vs_stage, vs_pte_outcome, vsatp_paged, hgatp_bare;
+  cp_vsatp_cbo_sum:   cross priv_mode_vs, cbo, vs_stage, vsstatus_sum, no_fault, hgatp_bare;
 
   // A prefetch is a HINT, so it raises no exception even where a load or store would fault in either stage
   `ifdef ZICBOP_SUPPORTED

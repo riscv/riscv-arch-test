@@ -23,7 +23,7 @@ normative_rule_definitions:
       [
         "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noread_s, cp_upage_smode_sumunset_noexec_s}",
         "Sv_vm_permissions_cg/{cp_upage_smode_sumset_read_s, cp_upage_smode_sumset_noexec_s}",
-        "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte}",
+        "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte,cp_vsatp_cbo_sum}",
       ]
 
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for SXLEN=32
@@ -680,6 +680,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_spage_rwx_cbo_u,cp_upage_sumunset_cbo_s}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # The permissions required for a cache-block management instruction are defined in the
@@ -691,6 +692,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_PTE_inv_cbo_s, cp_spage_rwx_cbo_u}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # During address translation, the instruction also checks the accessed bit and may
@@ -710,6 +712,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_PTE_w_unset_zicboz_s,cp_PTE_w_unset_zicboz_u}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # During address translation, the instruction also checks the accessed and dirty bits
@@ -743,6 +746,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_PTE_r_set_w_unset_zicbom_s,cp_PTE_r_set_w_unset_zicbom_u}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # PMAs are checked for any access to physical memory, including accesses that have
@@ -1185,7 +1189,7 @@ normative_rule_definitions:
 
   # CBO permission and faults under two-stage translation
   - name: cbz_access
-    coverpoint: ["Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}"]
+    coverpoint: ["Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte,cp_vsatp_cbo_pte}"]
 
   # With ADUE = 0, a clear A bit, or a clear D bit for cbo.zero, raises a fault in either stage
   - name: Svadu_disabled_hw_update_falls_back_to_Svade

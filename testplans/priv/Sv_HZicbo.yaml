@@ -7,6 +7,7 @@ notes: |-
   - VS-stage cases use a guest virtual address in a VS-stage mapping over the G-stage identity map. G-stage cases use a G-stage mapping reached through a VS-stage identity superpage. Every level of each stage holds the leaf in turn.
   - A CBO faults like a store: a store/AMO page fault, guest-page fault or access fault. A cache-block management instruction needs read or write permission and never checks D. cbo.zero needs write permission and checks D (cmo.adoc cbm_access, cbz_access). Boot leaves menvcfg.ADUE = 0, which makes henvcfg.ADUE read-only zero, so a clear A bit, or a clear D bit for cbo.zero, raises a fault (Svade behavior).
   - The henvcfg files run with vsatp and hgatp Bare and change menvcfg through T-SBI.
+  - The cp_vsatp_* files need only VS-stage Sv39 (RV64) or Sv32 (RV32), and run with hgatp = Bare in VS-mode.
 coverpoints:
   - heading: VS-stage PTEs
   - name: cp_vs_pte
@@ -31,6 +32,17 @@ coverpoints:
     expectation: |-
       Unmapped final address: store/AMO guest-page fault. Unmapped table: store/AMO guest-page fault, with htinst holding the pseudoinstruction for an implicit VS-stage read (0x2000 on RV32, 0x3000 on RV64, cp_vs_gpa_implicit). Table at a faulting supervisor physical address: store/AMO access fault.
     bins: "{VS, VU} × CBO × {store/AMO guest-page fault, store/AMO access fault}; cp_vs_gpa_implicit: {VS, VU} × CBO × pseudoinstruction"
+  - name: |-
+      cp_vsatp_cbo_pte
+      cp_vsatp_cbo_sum
+    goal: Verify the fault that a VS-stage PTE gives a CBO from VS-mode with hgatp = Bare.
+    description: In VS-mode with hgatp = Bare, the CBOs at a VS-stage kilopage leaf that is invalid (V = 0), read-only, and a user page (U = 1) with vsstatus.SUM = 0 and 1.
+    expectation: |-
+      Store/AMO page fault for the invalid leaf and for the user page with SUM = 0; for the read-only leaf only cbo.zero faults (a cache-block management instruction needs read or write permission, cbo.zero write permission).
+      No fault for the user page with SUM = 1.
+    bins: |-
+      cp_vsatp_cbo_pte: VS × CBO × {no fault, store/AMO page fault}, with vsatp paged and hgatp Bare
+      cp_vsatp_cbo_sum: VS × CBO × SUM = 1 × no fault, with vsatp paged and hgatp Bare
   - heading: G-stage PTEs
   - name: cp_g_pte
     goal: Verify the fault that each G-stage PTE gives a CBO from VS-mode and VU-mode.

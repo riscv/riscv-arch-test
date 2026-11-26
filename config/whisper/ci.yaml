@@ -13,6 +13,10 @@ exclude_extensions:
   - Sdtrig_Sm_csr_access_global
   - Sdtrig_Sm_tcontrol
   - Sdtrig_S_csr_access_global
+  # Sail 0.16 sets GVA on an icount breakpoint from VS-mode or VU-mode, whose tval is 0; Whisper correctly clears it
+  # (fixed by https://github.com/riscv/sail-riscv/pull/2111; remove when CI moves past Sail 0.16).
+  - Sdtrig_H_delegate
+  - Sdtrig_HSm_delegate
   # Sail 0.16 lacks Smaia and Smrnmi, whose CSRs Whisper implements
   - Ssstrict_Sm_CSR
   # Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.

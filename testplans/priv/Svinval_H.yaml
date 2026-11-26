@@ -25,3 +25,12 @@ coverpoints:
       cp_hinval_vvma: HS x hinval.vvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
       cp_hinval_gvma: HS x hinval.gvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
       cp_sinval_vma_vs: VS x sinval.vma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
+  - name: |-
+      cp_vsatp_hinval_vvma
+      cp_vsatp_sinval_vma_vs
+    goal: Svinval sequences remove stale VS-stage translations with hgatp = Bare
+    description: VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  Map a guest virtual address through the VS-stage to physical page A and load from it in VS-mode.  HS-mode then points the VS-stage leaf at physical page B and runs sfence.w.inval, hinval.vvma and sfence.inval.ir in HS-mode, or sfence.w.inval, sinval.vma and sfence.inval.ir in VS-mode, with rs1 = x0 or the guest virtual address and rs2 = x0 or the current ASID, and with the address and all ASIDMAX bits set.  hgatp.VMID stays zero.
+    expectation: The VS-mode load after the sequence reads page B.  Both loads are recorded.  A hart that caches no translation passes.
+    bins: |-
+      cp_vsatp_hinval_vvma: HS x hinval.vvma x vsatp Sv39 or Sv32 with hgatp Bare x rs1 {x0, register} x rs2 {x0, register}
+      cp_vsatp_sinval_vma_vs: VS x sinval.vma x vsatp Sv39 or Sv32 with hgatp Bare x rs1 {x0, register} x rs2 {x0, register}

@@ -19,6 +19,9 @@ current ASID or VMID, and all ASIDMAX or VMIDMAX bits set, which a hart with few
 The cases run with every implemented vsatp.ASID and hgatp.VMID bit set.  The isolation cases load under ASID or
 VMID 0, switch to the other ID, change the leaf, and fence only the new ID: the load under the new ID must not use
 the translation cached for the old one.
+
+With hgatp = Bare, only the VS-stage fences run: the VS-stage leaf maps the guest virtual address to physical page
+A or B directly, and hgatp.VMID stays zero, because nonzero hgatp fields have an UNSPECIFIED effect with Bare.
 """
 
 from typing import Literal, NamedTuple
@@ -54,6 +57,11 @@ SFENCE_VMA_VS = Fence("sfence_vma", "vs", "VS", ("sfence.vma {rs1}, {rs2}",), "v
 HINVAL_VVMA = Fence("hinval_vvma", "vs", "HS", _svinval("hinval.vvma {rs1}, {rs2}"), "va", "asid", "cp_hinval_vvma")
 HINVAL_GVMA = Fence("hinval_gvma", "g", "HS", _svinval("hinval.gvma {rs1}, {rs2}"), "gpa", "vmid", "cp_hinval_gvma")
 SINVAL_VMA_VS = Fence("sinval_vma", "vs", "VS", _svinval("sinval.vma {rs1}, {rs2}"), "va", "asid", "cp_sinval_vma_vs")
+# The VS-stage fences with hgatp = Bare
+HFENCE_VVMA_BARE = HFENCE_VVMA._replace(coverpoint="cp_vsatp_hfence_vvma")
+SFENCE_VMA_VS_BARE = SFENCE_VMA_VS._replace(coverpoint="cp_vsatp_sfence_vma_vs")
+HINVAL_VVMA_BARE = HINVAL_VVMA._replace(coverpoint="cp_vsatp_hinval_vvma")
+SINVAL_VMA_VS_BARE = SINVAL_VMA_VS._replace(coverpoint="cp_vsatp_sinval_vma_vs")
 
 
 class FenceCase(NamedTuple):
@@ -87,16 +95,17 @@ def _id_bits(xlen: int, identifier: Literal["vmid", "asid"], on: bool, reg: int)
     return [f"LI(x{reg}, {mask.format(xlen=xlen)})", f"{'csrs' if on else 'csrc'} {csr}, x{reg}"]
 
 
-def _operand(operand: Operand, g: SvMode, reg: int, tmp: int) -> list[str]:
-    """Load a guest physical address or ID operand into x{reg}.  The current ASID or VMID is read from vsatp or
+def _operand(operand: Operand, mode: SvMode, reg: int, tmp: int) -> list[str]:
+    """Load a guest physical address or ID operand into x{reg}.  ``mode`` is the G-stage mode, or the VS-stage mode
+    with hgatp = Bare, which has no guest physical address operand.  The current ASID or VMID is read from vsatp or
     hgatp, using x{tmp}."""
-    shift = 44 if g.xlen == 64 else 22
+    shift = 44 if mode.xlen == 64 else 22
     if operand == "x0":
         return []
     if operand == "gpa":
-        return [f"LI(x{reg}, ({g.data_va}) >> 2)"]
+        return [f"LI(x{reg}, ({mode.data_va}) >> 2)"]
     csr, mask = _ID_FIELDS[operand.removesuffix("max")]
-    mask = mask.format(xlen=g.xlen)
+    mask = mask.format(xlen=mode.xlen)
     if operand.endswith("max"):
         return [f"LI(x{reg}, ({mask}) >> {shift})"]
     return [
@@ -107,10 +116,22 @@ def _operand(operand: Operand, g: SvMode, reg: int, tmp: int) -> list[str]:
     ]
 
 
-def _map_page_a(test_data: TestData, g: SvMode, vs: SvMode) -> list[str]:
-    """Map vs.data_va to guest physical page A (g.data_va), page A to fence_page_a and page B to fence_page_b."""
+def _map_page_a(test_data: TestData, g: SvMode | None, vs: SvMode) -> list[str]:
+    """Map vs.data_va to guest physical page A (g.data_va), page A to fence_page_a and page B to fence_page_b.  With
+    hgatp = Bare, map vs.data_va to fence_page_a."""
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     regs = (pte, addr, tmp)
+    if g is None:
+        lines = create_page_mapping(
+            vs,
+            leaf_level=0,
+            leaf_flags=PteFlags(),
+            virtual_address=vs.data_va,
+            physical_address="fence_page_a",
+            regs=regs,
+        )
+        test_data.int_regs.return_registers(list(regs))
+        return lines
     lines = [
         *create_page_mapping(
             vs,
@@ -142,11 +163,16 @@ def _map_page_a(test_data: TestData, g: SvMode, vs: SvMode) -> list[str]:
     return lines
 
 
-def _move_to_page_b(test_data: TestData, g: SvMode, vs: SvMode, stage: str) -> list[str]:
-    """Point the VS-stage leaf at guest physical page B, or the G-stage leaf of page A at fence_page_b."""
+def _move_to_page_b(test_data: TestData, g: SvMode | None, vs: SvMode, stage: str) -> list[str]:
+    """Point the VS-stage leaf at guest physical page B, or the G-stage leaf of page A at fence_page_b.  With
+    hgatp = Bare, point the VS-stage leaf at fence_page_b."""
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     regs = (pte, addr, tmp)
-    if stage == "vs":
+    if g is None:
+        lines = write_pte(
+            vs, level=0, flags=PteFlags(), virtual_address=vs.data_va, physical_address="fence_page_b", regs=regs
+        )
+    elif stage == "vs":
         lines = write_pte(
             vs,
             level=0,
@@ -164,15 +190,15 @@ def _move_to_page_b(test_data: TestData, g: SvMode, vs: SvMode, stage: str) -> l
     return lines
 
 
-def _fence_case(test_data: TestData, g: SvMode, vs: SvMode, case: FenceCase, covergroup: str) -> list[str]:
+def _fence_case(test_data: TestData, g: SvMode | None, vs: SvMode, case: FenceCase, covergroup: str) -> list[str]:
     """Load through page A, move the leaf to page B, fence, and load again.  Both loads are checked."""
     fence = case.fence
     label = test_data.add_testcase(case.name, fence.coverpoint, covergroup)
     sig_label = label.removesuffix(":")
     tmp = test_data.int_regs.get_register()
     lines = [f"\n// Testcase: {fence.name} with {case.name}"]
-    for identifier in ("vmid", "asid"):
-        lines.extend(_id_bits(g.xlen, identifier, identifier != case.switch, tmp))
+    for identifier in ("asid",) if g is None else ("vmid", "asid"):
+        lines.extend(_id_bits(vs.xlen, identifier, identifier != case.switch, tmp))
     test_data.int_regs.return_register(tmp)
     lines.extend([*_map_page_a(test_data, g, vs), "hfence.gvma", "hfence.vvma"])
     va, data = test_data.int_regs.get_registers(2)
@@ -189,15 +215,15 @@ def _fence_case(test_data: TestData, g: SvMode, vs: SvMode, case: FenceCase, cov
     lines.extend(_move_to_page_b(test_data, g, vs, fence.stage))
     rs1, rs2, tmp = test_data.int_regs.get_registers(3)
     if case.switch is not None:
-        lines.extend(_id_bits(g.xlen, case.switch, True, tmp))
+        lines.extend(_id_bits(vs.xlen, case.switch, True, tmp))
     operands = {
         "rs1": {"x0": "x0", "va": f"x{va}"}.get(case.rs1, f"x{rs1}"),
         "rs2": "x0" if case.rs2 == "x0" else f"x{rs2}",
     }
     lines.extend(
         [
-            *(_operand(case.rs1, g, rs1, tmp) if case.rs1 == "gpa" else []),
-            *_operand(case.rs2, g, rs2, tmp),
+            *(_operand(case.rs1, g or vs, rs1, tmp) if case.rs1 == "gpa" else []),
+            *_operand(case.rs2, g or vs, rs2, tmp),
             *(["RVTEST_TSBI_GOTO_VSMODE"] if fence.mode == "VS" else []),
             label,
             *(instruction.format(**operands) for instruction in fence.instructions),
@@ -225,11 +251,16 @@ ISOLATION_CASES = (
     FenceCase("asid_switch", HFENCE_VVMA, "x0", "asid", "asid"),
     FenceCase("vmid_switch", SFENCE_VMA_VS, "x0", "x0", "vmid"),
 )
+# ASID isolation with hgatp = Bare
+BARE_ISOLATION_CASES = (
+    FenceCase("asid_switch", HFENCE_VVMA_BARE, "x0", "asid", "asid"),
+    FenceCase("asid_switch", SFENCE_VMA_VS_BARE, "x0", "asid", "asid"),
+)
 
 
 def fence_chunk(
     test_data: TestData,
-    g: SvMode,
+    g: SvMode | None,
     vs: SvMode,
     split_name: str,
     fences: tuple[Fence, ...],
@@ -238,7 +269,8 @@ def fence_chunk(
 ) -> TestChunk:
     """Return a chunk that runs every operand case of each fence in ``fences``, then the ``isolation`` cases.
 
-    ``split_name`` names the chunk, and its testcases are in ``covergroup``.
+    ``split_name`` names the chunk, and its testcases are in ``covergroup``.  With g = None, hgatp is Bare and
+    ``fences`` are VS-stage fences.
     """
     names = ", ".join(dict.fromkeys(fence.coverpoint for fence in fences))
     chunk = test_data.begin_test_chunk(split_name)

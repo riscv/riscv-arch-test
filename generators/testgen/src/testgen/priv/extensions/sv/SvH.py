@@ -52,10 +52,13 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.extensions.sv.Sv import PAGE_PERMS, PTE_RESERVED_BITS, PTE_RSW
 from testgen.priv.extensions.sv.SvHFenceCommon import (
+    BARE_ISOLATION_CASES,
     HFENCE_GVMA,
     HFENCE_VVMA,
+    HFENCE_VVMA_BARE,
     ISOLATION_CASES,
     SFENCE_VMA_VS,
+    SFENCE_VMA_VS_BARE,
     fence_chunk,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -1628,6 +1631,10 @@ def _make_svh_vs(test_data: TestData, vs: SvMode) -> list[TestChunk]:
     _t_hlv_vs(test_data, test_chunks, vs)
     for mode in ("VS", "VU"):
         _t_hedeleg(test_data, test_chunks, None, vs, mode)
+    fences = (HFENCE_VVMA_BARE, SFENCE_VMA_VS_BARE)
+    test_chunks.append(
+        fence_chunk(test_data, None, vs, f"H_{vs.name}_fence", fences, "Sv_H_fence_cg", BARE_ISOLATION_CASES)
+    )
     if vs.xlen == 64:
         _t_atp_mode(test_data, test_chunks)
     return test_chunks

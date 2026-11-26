@@ -2447,8 +2447,8 @@ covergroup Sv_H_csr_cg with function sample(ins_t ins);
 endgroup
 `endif // UDB_MXLEN_64
 
-// A fence after a VS-stage or G-stage leaf change, with x0 or a register in rs1 and rs2.  The test checks that the
-// next guest access uses the new leaf.
+// A fence after a VS-stage or G-stage leaf change, with x0 or a register in rs1 and rs2, with both stages paged or
+// with hgatp = Bare.  The test checks that the next guest access uses the new leaf.
 covergroup Sv_H_fence_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -2493,6 +2493,16 @@ covergroup Sv_H_fence_cg with function sample(ins_t ins);
     hgatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins paged = {[1:15]};
     }
+    // VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare
+    vs_only : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            bins sv39_bare = {8'h80};
+        `endif
+        `ifdef UDB_SV32_VSMODE_TRANSLATION
+            bins sv32_bare = {8'h10};
+        `endif
+    }
 
     cp_hfence_vvma   : cross priv_mode_hs, hfence_vvma, vsatp_paged, hgatp_paged, rs1, rs2;
     cp_hfence_gvma   : cross priv_mode_hs, hfence_gvma, vsatp_paged, hgatp_paged, rs1, rs2;
@@ -2500,6 +2510,11 @@ covergroup Sv_H_fence_cg with function sample(ins_t ins);
     cp_hfence_vvma_asid   : cross priv_mode_hs, hfence_vvma, vsatp_paged, hgatp_paged, rs2_asid;
     cp_hfence_gvma_vmid   : cross priv_mode_hs, hfence_gvma, vsatp_paged, hgatp_paged, rs2_vmid;
     cp_sfence_vma_vs_asid : cross priv_mode_vs, sfence_vma, vsatp_paged, hgatp_paged, rs2_asid;
+    // The VS-stage fences with hgatp = Bare
+    cp_vsatp_hfence_vvma        : cross priv_mode_hs, hfence_vvma, vs_only, rs1, rs2;
+    cp_vsatp_sfence_vma_vs      : cross priv_mode_vs, sfence_vma, vs_only, rs1, rs2;
+    cp_vsatp_hfence_vvma_asid   : cross priv_mode_hs, hfence_vvma, vs_only, rs2_asid;
+    cp_vsatp_sfence_vma_vs_asid : cross priv_mode_vs, sfence_vma, vs_only, rs2_asid;
 endgroup
 
 // HSm group: two-stage address translation seen from M-mode through MPRV and MPV, and guest traps taken in M-mode

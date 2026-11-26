@@ -54,6 +54,8 @@ The hypervisor virtual memory tests are the <<t-Sv_H-coverpoints,Sv_H>>, <<t-Sv_
 
 include::{testplansdir}/priv/Shcounterenw.adoc[]
 
+include::{testplansdir}/priv/Shcounterenw_Sm.adoc[]
+
 include::norm/Shcounterenw_norm_rules.adoc[]
 
 ==== Shvsatpa Virtual Memory Modes Supported

@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Shcounterenw_Sm
+notes: |
+  The group boots to M-mode, so it can find the hpmcounters the hart implements instead of relying on the configuration.
+coverpoints:
+  - name: cp_hpmcounter_hcounteren
+    goal: An implemented hpmcounter has a writable hcounteren bit
+    description: |-
+      For each n in 3-31, write all ones to mhpmcounter<n> in M-mode and read it back (on RV32, both halves, ORed).  The boot clears mhpmevent<n>, so an implemented counter does not count.
+      If the value is nonzero, enter HS-mode, write all ones to hcounteren, and check bit n.  Then clear hcounteren and mhpmcounter<n>.
+    expectation: |-
+      Bit n reads 1 for every counter that is not read-only zero.  A legal hart signs 0 for every n, whatever the configuration says it implements; a stuck bit signs n.
+      A counter that is read-only zero does not constrain its bit, and its bin is unreachable.
+    bins: "29"
+    rules:
+      - Shcounterenw_hpmcounter_hcounteren

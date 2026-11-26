@@ -1,6 +1,13 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # === === ext:zcf[] Register Number¶ Floating-Point Register Number¶ Floating-Point Register ABI
+  # Name ===|=== 000|001|010|011|100|101|110|111¶ f8|f9|f10|f11|f12|f13|f14|f15¶
+  # fs0|fs1|fa0|fa1|fa2|fa3|fa4|fa5 === ===
+  - name: Zcf_Zcd_fp_regs_tbl
+    coverpoint:
+      ["Zcd_c_fld_cg/cp_fd_p", "Zcd_c_fsd_cg/cp_fs2_p", "Zcf_c_flw_cg/cp_fd_p"]
+
   # Compressed register-based floating-point loads and stores use the CL and CS formats,
   # respectively, with the eight registers mapping to f8 to f15.
   - name: Zc_fp_regs
@@ -34,4 +41,6 @@ normative_rule_definitions:
   # the extlink:zcd[] extension.
   - name: C_dep_Zcd
     coverpoint:
-      ["Not tested: extension dependency checked by the UDB configuration"]
+      [
+        "Configuration requirement: C with D requires Zcd; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/C.yaml[ext/C.yaml]).",
+      ]

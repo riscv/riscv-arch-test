@@ -25,7 +25,10 @@ normative_rule_definitions:
       ]
   # SEW is any value other than 16
   - name: vfwmaccbf16_sew_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
+      ]
   # In the vector-vector version, the BF16 elements are read from vs1 and vs2 and FP32
   # accumulate value is read from vd. The FP32 result is written to the destination
   # register vd.
@@ -34,7 +37,10 @@ normative_rule_definitions:
 
   # This extension depends upon the Zvfbfmin and Zfbfmin extensions.
   - name: Zvfbfwma_depends
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Zvfbfwma requires Zvfbfmin and Zfbfmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfbfwma.yaml[ext/Zvfbfwma.yaml]).",
+      ]
 
   # Encoding (Vector-Vector) (vfwmaccbf16.vv)
   - name: vfwmaccbf16_encoding_vv

@@ -1,15 +1,4 @@
 
-== Certification Process
+== Testing
 
-Certifying a RISC-V Device-Under-Test (DUT) involves the following steps:
-
-* Selecting a profile for the DUT
-* Providing a Unified Database (UDB) configuration for the DUT, such as optional extensions, peripheral addresses, and PMP granularity
-* Generating self-checking tests based on the selected profile and UDB
-* Running the tests and reporting pass/fail
-
-Test developers also need to
-
-* Generate a coverage report confirming that the tests hit all the coverpoints based on a trace from the RISC-V Sail model
-
-TODO: Update to point to CSC page when ready.
+The riscv-arch-test https://github.com/riscv/riscv-arch-test[README] contains instructions to set up the toolchain (particularly GCC and Sail), to create configuration files for a DUT, and to build and run tests on a DUT.

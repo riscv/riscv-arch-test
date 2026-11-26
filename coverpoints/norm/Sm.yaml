@@ -1561,7 +1561,8 @@ normative_rule_definitions:
   # the destination register. Similarly, pc bits above XLEN are ignored, and when
   # the pc is written, it is sign-extended to fill the widest supported XLEN.
   - name: xlen_reduction_op
-    coverpoint: ["NOT TESTED"]
+    coverpoint:
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # Some HINT instructions are encoded as integer computational instructions that
   # overwrite their destination register with its current value, e.g., c.addi x8, 0.
@@ -1574,11 +1575,13 @@ normative_rule_definitions:
   # implementation choice is observable only by privilege modes with an XLEN setting
   # greater than the current XLEN; it is invisible to the current privilege mode.
   - name: xlen_reduction_hint_op
-    coverpoint: ["Out of scope"]
+    coverpoint:
+      ["Out of scope: the tests use the same XLEN in every privilege mode."]
 
   # Instruction fetches are always little-endian.
   - name: endianness_inst_fetch_little
-    coverpoint: ["Tested by executing instructions"]
+    # M-mode keeps fetching and executing correctly while mstatus.MBE = 1
+    coverpoint: ["EndianSm_cg/cp_mstatus_mbe_endianness_lw"]
 
   # When a trap is delegated to S-mode The mcause, mepc, and mtval registers and the
   # MPP and MPIE fields of mstatus are not written.
@@ -1707,7 +1710,8 @@ normative_rule_definitions:
   # If the Zalrsc extension is supported, the xRET instruction is allowed to clear any outstanding
   # LR address reservation but is not required to.
   - name: xret_clr_lr_resv
-    coverpoint: ["Either behavior is legal; not tested"]
+    coverpoint:
+      ["No independent assertion: xRET may clear or keep an LR reservation."]
 
   # Upon reset, a hart’s privilege mode is set to M.
   - name: m_mode_priv_at_reset

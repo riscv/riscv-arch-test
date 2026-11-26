@@ -22,11 +22,7 @@ The Sm_Zicntr_H tests of the hypervisor counter enables are described with the H
 
 include::{testplansdir}/priv/Sm.adoc[]
 
-TODO: Plan how to check WARL, WPRI, WLRL fields.  It seems every CSR needs parameters, either to tell the reference model how they should behave (to generate expected values), or to tell the tests and coverpoints which values are legal to test.
-
 include::norm/Sm_norm_rules.adoc[]
-
-TODO: Many new normative rules have been added since this was written.  Update Sm.yaml.
 
 ==== S Supervisor-Mode CSRs and Instructions
 

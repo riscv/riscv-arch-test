@@ -3,7 +3,7 @@
 
   "address_translation_pmms": ["off", "pm57", "pm48"],
 
-  "isa": "rv64imafdcbvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_sdtrig_smaia_smcntrpmf_smstateen_ssaia_sscofpmf_sstc_svadu_svinval_svnapot_svpbmt_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_zicfiss_smmpm_smnpm_ssnpm_ssqosid_smdbltrp_ssdbltrp_smrnmi",
+  "isa": "rv64imafdcbvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_sdtrig_smaia_smcntrpmf_smcsrind_smctr_smstateen_ssaia_sscsrind_ssctr_sscofpmf_sstc_svadu_svinval_svnapot_svpbmt_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_zicfiss_smmpm_smnpm_ssnpm_ssqosid_smdbltrp_ssdbltrp_smrnmi",
 
   "all_inst_addr_trigger": "false",
   "cancel_lr_on_trap": false,
@@ -144,9 +144,6 @@
     "always_mark_dirty": true,
     "bytes_per_vec": 32,
     "fp_usum_nan_canonicalize": ["e16", "e32", "e64"],
-    "legalize_for_egs": false,
-    "legalize_vsetvl_avl": true,
-    "legalize_vsetvli_avl": true,
     "mask_agnostic_policy": "ones",
     "max_bytes_per_elem": 8,
     "max_bytes_per_lmul": {

@@ -30,10 +30,6 @@
 #undef RVTEST_EMULATE_TIME_CSR
 #undef RVMODEL_INVISIBLE_TRAP_HANDLER
 
-// Sail does not model Smrnmi yet, so the signature build must not write mnstatus at boot.
-// The self-checking build for a DUT with Smrnmi still sets mnstatus.NMIE.
-#undef SMRNMI_SUPPORTED
-
 #undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \

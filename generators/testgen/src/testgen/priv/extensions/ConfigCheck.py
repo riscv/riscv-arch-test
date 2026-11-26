@@ -637,21 +637,33 @@ def _deleg(test_data: TestData) -> list[str]:
     Writing all ones and reading back gives the delegatable bits plus any read-only-one
     bits (VS-level interrupts with H), which is what the UDB masks list. Only the standard
     cause codes are compared: a hart may make the custom-use bits (medeleg 24-31,
-    mideleg 16 and up) writable, and the config has no way to say so.
+    mideleg 16 and up) writable, and the config has no way to say so. With H, mideleg.SGEIP
+    must be read-only one only when GEILEN > 0; without guest external interrupts it may also
+    read one (norm:mideleg_rd1_lower_level), which Sail cannot model, so it is not compared.
     """
     save, obs, cfg = test_data.int_regs.get_registers(3)
     lines = [comment_banner("ConfigCheck: trap delegation", "Writable medeleg and mideleg bits")]
-    for csr, param, standard in (
-        ("CSR_MEDELEG", "MEDELEG_DELEGATABLE", 0x00FFFFFF),
-        ("CSR_MIDELEG", "MIDELEG_DELEGATABLE", 0x0000FFFF),
+    for csr, param, standard, unspecified in (
+        ("CSR_MEDELEG", "MEDELEG_DELEGATABLE", 0x00FFFFFF, 0),
+        ("CSR_MIDELEG", "MIDELEG_DELEGATABLE", 0x0000FFFF, 1 << 12),
     ):
+        compared = (
+            _li_cfg(
+                save,
+                [("defined(H_SUPPORTED) && !defined(RVTEST_SGEI_INTR_IMPL)", hex(standard & ~unspecified))],
+                hex(standard),
+            )
+            if unspecified
+            else [f"LI(x{save}, {hex(standard)})"]
+        )
         lines += [
             test_data.add_testcase(param, "cp_deleg", _CG),
             f"#if defined(S_SUPPORTED) && defined(UDB_{param}_MASK)",
             *_write_ones_read(test_data, csr, save, obs),
-            f"LI(x{cfg}, {hex(standard)})",
-            f"and x{obs}, x{obs}, x{cfg}",
-            f"LI(x{cfg}, (UDB_{param}_MASK) & {hex(standard)})",
+            *compared,
+            f"and x{obs}, x{obs}, x{save}",
+            f"LI(x{cfg}, UDB_{param}_MASK)",
+            f"and x{cfg}, x{cfg}, x{save}",
             _check(test_data, obs, cfg),
             "#endif",
         ]

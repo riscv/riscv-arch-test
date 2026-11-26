@@ -28,6 +28,7 @@ normative_rule_definitions:
       [
         "{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}",
         "Smstateen_cg/{cp_mstateen_se_controls_sstateen, cp_mstateen_se_controls_hstateen}",
+        "Smstateen_cg/{cp_mstateen_se0_hstateen_virtual, cp_mstateen_se0_sstateen_vu}",
       ]
 
   - name: stateen_implicit_state_update
@@ -82,6 +83,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Smstateen_cg/{cp_mstateen_se_controls_sstateen, cp_mstateen_se_controls_hstateen}",
+        "Smstateen_cg/{cp_mstateen_se0_hstateen_virtual, cp_mstateen_se0_sstateen_vu}",
       ]
 
   - name: hstateen_bit_63_op
@@ -119,7 +121,11 @@ normative_rule_definitions:
     coverpoint: ["Smstateen_cg/cp_jvt_access", "Ssstateen_cg/cp_jvt"]
 
   - name: mstateen0_se0_op
-    coverpoint: ["Smstateen_cg/cp_mstateen_se_controls_sstateen"]
+    coverpoint:
+      [
+        "Smstateen_cg/cp_mstateen_se_controls_sstateen",
+        "Smstateen_cg/{cp_mstateen_se0_hstateen_virtual, cp_mstateen_se0_sstateen_vu}",
+      ]
 
   - name: hstateen0_se0_op
     coverpoint: ["Ssstateen_cg/cp_hstateen_se_controls_sstateen"]

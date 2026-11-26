@@ -921,7 +921,8 @@ normative_rule_definitions:
         "Exceptions_H_cg/cp_virtual_instr_vs_sret",
         "Sv_H_twostage_cg/cp_hedeleg_{page_fault,guest_page_fault}",
         "Interrupts_cg/cp_trigger",
-        "Needs infrastructure: the supervisor guest external interrupt (code 12) needs a guest external interrupt source.",
+        "Interrupts_Sgei_cg/{cp_trigger_sgei, cp_trigger_sgei_lower}",
+        "Interrupts_SgeiSm_cg/cp_trigger_sgei",
       ]
 
   # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶ |12, 20, 1|During

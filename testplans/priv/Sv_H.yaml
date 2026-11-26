@@ -222,7 +222,7 @@ coverpoints:
     description: |-
       RV64 with Sv39 VS-stage translation.
       Test Case: For x = {0...15} In HS-mode: First write vsatp with {Bare, Sv39}.  Then write vsatp.MODE field = {x} and read back.  The other fields are zero.
-    expectation: A supported MODE is retained.  A write with an unsupported MODE value is either ignored as it is for satp, or the fields of vsatp are treated as WARL in the normal way, so the test checks only that vsatp holds a supported MODE.
+    expectation: A supported MODE is retained.  A write with an unsupported MODE value is either ignored as it is for satp, or the fields of vsatp are treated as WARL in the normal way.  The UDB parameter IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO says which.  When the write is ignored, the test checks that vsatp keeps its old value; otherwise it checks only that vsatp holds a supported MODE.
     bins: "{16 x} * 2 starting modes"
   - name: cp_satp_mode_field
     goal: supported/unsupported MODE encodings

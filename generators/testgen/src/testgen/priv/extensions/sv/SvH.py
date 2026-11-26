@@ -1541,6 +1541,17 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
                         f"csrw {csr}, x{val}",
                     ]
                 )
+                unsupported = _supported_mode_check(test_data, csr, gates)
+                if csr == "vsatp":
+                    # At V=0, a write of an unsupported MODE to vsatp is ignored or WARL; the UDB parameter says
+                    # which, and an ignored write keeps the whole old value
+                    unsupported = [
+                        "#ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO",
+                        gen_csr_read_sigupd(check, (csr, None), test_data),
+                        "#else",
+                        *unsupported,
+                        "#endif",
+                    ]
                 if mode == 0:
                     start_code.append(gen_csr_read_sigupd(check, (csr, None), test_data))
                 elif mode in ATP_MODES:
@@ -1549,12 +1560,12 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
                             f"#ifdef {ATP_MODES[mode][stage]}",
                             gen_csr_read_sigupd(check, (csr, None), test_data),
                             "#else",
-                            *_supported_mode_check(test_data, csr, gates),
+                            *unsupported,
                             "#endif",
                         ]
                     )
                 else:
-                    start_code.extend(_supported_mode_check(test_data, csr, gates))
+                    start_code.extend(unsupported)
             code.extend(gated(start_code, f"defined({ATP_MODES[8][stage]})") if start else start_code)
         code.append(f"csrw {csr}, x{save}")
 

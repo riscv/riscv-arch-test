@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Vector load/store building blocks of the SdtrigSm/S/U combined_accesses covergroups
+//   Vector load/store building blocks of the Sdtrig_Sm/S/U combined_accesses covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////

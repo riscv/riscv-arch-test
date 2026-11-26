@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Breakpoint building blocks of the SdtrigS/SdtrigU breakpoint covergroups: the trigger breakpoint taken from the
+//   Breakpoint building blocks of the Sdtrig_S/Sdtrig_U breakpoint covergroups: the trigger breakpoint taken from the
 //   mode the tests run in.
 //   Weight 0: only the crosses count.
 //

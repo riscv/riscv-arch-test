@@ -172,7 +172,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Zimop|Maybe-Ops|<<t-Zimop-coverpoints>>||||x|x
 |Zcmop|Compressed Maybe-Ops|<<t-Zcmop-coverpoints>>||||x|x
 |Zawrs|Wait on Reservation Set|<<t-Zawrs_common-coverpoints>>||||x|x
-|SdtrigSm|Debug Triggers|<<t-SdtrigSm-coverpoints>>||||o|o
+|Sdtrig|Debug Triggers|<<t-Sdtrig_Sm-coverpoints>>||||o|o
 8+^|Non-Profile Extensions
 |E|Embedded 16 Regs|<<t-E-normative-rules>>|||||
 |Zfinx|Float in Int Regs|<<t-Zfinx-coverpoints>>|||||

@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Cache-operation building blocks of the SdtrigSm/S/U cache_operations covergroups
+//   Cache-operation building blocks of the Sdtrig_Sm/S/U cache_operations covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////

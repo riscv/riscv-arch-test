@@ -52,7 +52,7 @@ trap_result_other: coverpoint sdtrig_trap_result(ins) {
     bins priv_clear_suppressed = {4'b11_0_0, 4'b01_0_0};
     bins priv_set_suppressed   = {4'b11_1_0, 4'b01_1_0};
 }
-// SdtrigS/U (medeleg[3] = 1): handled in S, the origin mode's tdata1 bit clear or set. Whether the trigger fires then
+// Sdtrig_S/U (medeleg[3] = 1): handled in S, the origin mode's tdata1 bit clear or set. Whether the trigger fires then
 // depends on the hart's re-entrancy option (suppressed with SIE = 0, or into M with tcontrol), so it is not a bin.
 trap_handled_s: coverpoint sdtrig_trap_result(ins)[3:1] {
     type_option.weight = 0;
@@ -90,7 +90,7 @@ etrigger_exception: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE
     bins etrigger = {4'd5};
 }
 `ifndef SDTRIG_SUITE_SM
-// SdtrigS/U: {handler, fired, cause} of an exception raised in the mode the tests run in. The causes the suite
+// Sdtrig_S/U: {handler, fired, cause} of an exception raised in the mode the tests run in. The causes the suite
 // delegates (medeleg) are handled in S, where whether the trigger fires depends on the hart's re-entrancy option.
 // ecall from S is not delegated (the T-SBI uses it), so it is handled in M and never fires; ecall from U is delegated
 // to S. An illegal instruction is handled in S, or in M on a DUT that emulates the time CSR and forwards it.

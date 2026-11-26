@@ -140,23 +140,26 @@ def rule_map(
 
 
 COVERPOINT_DECL = re.compile(r"^\s*(\w+)\s*:\s*(?:coverpoint|cross)\b", re.MULTILINE)
+COVERGROUP_BLOCK = re.compile(r"^\s*covergroup\s+(\w+)\b.*?^\s*endgroup\b", re.MULTILINE | re.DOTALL)
 
 
-def coverage_names(coverage_dir: Path | None, suite: str) -> set[str] | None:
+def coverage_names(coverage_dir: Path | None, suite: str, plan_names: set[str]) -> set[str] | None:
     """Coverpoint names declared in the suite's coverage file, or, for a test plan named after one
-    covergroup <suite>_<group>_cg of a merged suite, in that covergroup. None if neither exists."""
+    covergroup <suite>_<group>_cg of a merged suite, in that covergroup and in the group's other
+    covergroups <suite>_<group>_<x>_cg that no plan with a longer name claims. None if neither exists."""
     if coverage_dir is None:
         return None
     files = list(coverage_dir.glob(f"{suite}_coverage.svh"))
     if files:
         return {n for f in files for n in COVERPOINT_DECL.findall(f.read_text(encoding="utf-8"))}
+    names: set[str] = set()
+    found = False
     for f in sorted(coverage_dir.glob("*_coverage.svh")):
-        m = re.search(
-            rf"^\s*covergroup\s+{suite}_cg\b.*?^\s*endgroup\b", f.read_text(encoding="utf-8"), re.MULTILINE | re.DOTALL
-        )
-        if m:
-            return set(COVERPOINT_DECL.findall(m.group(0)))
-    return None
+        for m in COVERGROUP_BLOCK.finditer(f.read_text(encoding="utf-8")):
+            if m.group(1) == f"{suite}_cg" or plan_of(m.group(1), plan_names) == suite:
+                found |= m.group(1) == f"{suite}_cg"
+                names |= set(COVERPOINT_DECL.findall(m.group(0)))
+    return names if found else None
 
 
 def widths(header: list[str], rows: list[list[str]]) -> str:
@@ -288,7 +291,7 @@ def main() -> None:
     grouped: dict[tuple[str, str], list[str]] = defaultdict(list)
     for f, plan in loaded:
         suite = plan["suite"]
-        text, warnings = render(plan, rules.get(suite, {}), known, coverage_names(a.coverage, suite), f)
+        text, warnings = render(plan, rules.get(suite, {}), known, coverage_names(a.coverage, suite, plan_names), f)
         (a.out / f"{suite}.adoc").write_text(text, encoding="utf-8")
         for kind, item in warnings:
             grouped[(suite, kind)].append(item)

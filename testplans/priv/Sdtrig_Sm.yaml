@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: SdtrigSm
+suite: Sdtrig_Sm
 source: https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1209377334#gid=1209377334
 notes: |
   Assumptions: tests run in M-mode unless otherwise specified, udb configuration file describes supported triggers and features
@@ -45,7 +45,7 @@ coverpoints:
       - Sdtrig_num_trigs_ge1
     notes: "comments on test results: No exceptions. Tcontrol and mscontext not implemented on spike"
   - heading: "Note: Use CSRW/CSRR to access registers in all modes"
-  - heading: "Native Triggers: breakpoint delegation from S/U-mode is tested in SdtrigS and SdtrigU (cp_breakpoint_delegate_s/u)"
+  - heading: "Native Triggers: breakpoint delegation from S/U-mode is tested in Sdtrig_S and Sdtrig_U (cp_breakpoint_delegate_s/u)"
   - name: A Extension
     description: |-
       Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS[i]:
@@ -664,7 +664,7 @@ coverpoints:
       for match = {1/9} (each value in UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES):
       CSRW tdata1 = 0, CSRW tdata2 = 0, CSRW tdata1 = mcontrol6 with that match, XSL = 000 (never fires)
       CSRW tdata2 = all ones, CSRR tdata2
-      Runs in SdtrigSm only (the legalization does not depend on the mode the CSRs are written from)
+      Runs in Sdtrig_Sm only (the legalization does not depend on the mode the CSRs are written from)
     expectation: |-
       Bit maskmax6-1 of tdata2 reads 0; only that bit is signed (bits maskmax6-2:0 are UNSPECIFIED)
     bins: NTRIG * legal matches (up to 2)
@@ -1278,7 +1278,7 @@ coverpoints:
       only run tests if S is supported, SDTRIG_TEXTRA_SSELECT_ASID_MATCH, ASID_WIDTH >= 2,
       SDTRIG_TEXTRA_SVALUE_LEN >= ASID_WIDTH, and Sv39 (RV64) or Sv32 (RV32) is supported.
       M-mode is not translated, so satp can select Sv39/Sv32 with ASID X and the root page table without a
-      mapping (satp.MODE=Bare with a nonzero ASID is UNSPECIFIED). SdtrigS repeats it in S-mode.
+      mapping (satp.MODE=Bare with a nonzero ASID is UNSPECIFIED). Sdtrig_S repeats it in S-mode.
       X = 2^UDB_ASID_WIDTH-2; ASIDMAX = 9 (RV32) or 16 (RV64)
       CSRW satp = {MODE=Sv39/Sv32, ASID=X, PPN=root page table}
       repeat for each trigger type supported:
@@ -1315,7 +1315,7 @@ coverpoints:
   - name: cp_textra_mhselect_no_h
     goal: Without H, mhselect holds only 0 or 4
     description: |-
-      only run tests if H is not supported and TDATA3_IMPLEMENTED; the tdata3 accesses run in M-mode (through T-SBI in SdtrigS).
+      only run tests if H is not supported and TDATA3_IMPLEMENTED; the tdata3 accesses run in M-mode (through T-SBI in Sdtrig_S).
       repeat for each trigger type supported:
       arm the trigger so it never fires (icount: count = 1, m = 0; mcontrol6: select = 1, XSL = 000)
       CSRW tdata3.mhselect = {1/2/3/5/6/7}

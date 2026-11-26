@@ -500,6 +500,41 @@ covergroup Sscofpmf_H_cg with function sample(ins_t ins);
         }
     `endif
     cp_virt_xinh_filter : cross priv_mode_vs_vu, virt_inh_pattern;
+
+    // VS-mode reads scountovf as OF & mcounteren & hcounteren, whatever scounteren holds.  Every implemented OF bit
+    // is set (`OF_VEC is defined by general/RISCV_coverage_sscofpmf.svh, which the S covergroup includes).
+    scountovf_read : coverpoint ins.current.insn {
+        wildcard bins read = {CSRR} iff (ins.current.insn[31:20] == CSR_SCOUNTOVF);
+    }
+    of_all_ones : coverpoint (`OF_VEC == (29'h1FFFFFFF & (`UDB_HPM_COUNTER_EN_MASK >> 3))) {
+        bins yes = {1};
+    }
+    // {mcounteren[31:3], hcounteren[31:3], scounteren[31:3] == 0}: all implemented counters, none, or the odd
+    // counters 3, 5, ..., 31
+    vs_counteren : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCOUNTEREN)[31:3],
+                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HCOUNTEREN)[31:3],
+                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SCOUNTEREN)[31:3] == 29'h0} {
+        bins m_ones_h_zero        = {{29'(`UDB_MCOUNTENABLE_EN_MASK >> 3), 29'h0, 1'b0}};
+        bins m_zero_h_ones        = {{29'h0, 29'(`UDB_HCOUNTENABLE_EN_MASK >> 3), 1'b0}};
+        bins m_ones_h_odd         = {{29'(`UDB_MCOUNTENABLE_EN_MASK >> 3), 29'h15555555 & 29'(`UDB_HCOUNTENABLE_EN_MASK >> 3), 1'b0}};
+        bins m_odd_h_ones         = {{29'h15555555 & 29'(`UDB_MCOUNTENABLE_EN_MASK >> 3), 29'(`UDB_HCOUNTENABLE_EN_MASK >> 3), 1'b0}};
+        bins m_ones_h_ones        = {{29'(`UDB_MCOUNTENABLE_EN_MASK >> 3), 29'(`UDB_HCOUNTENABLE_EN_MASK >> 3), 1'b0}};
+        bins m_ones_h_ones_s_zero = {{29'(`UDB_MCOUNTENABLE_EN_MASK >> 3), 29'(`UDB_HCOUNTENABLE_EN_MASK >> 3), 1'b1}};
+    }
+    cp_scountovf_vs : cross priv_mode_vs, scountovf_read, of_all_ones, vs_counteren;
+
+    // VS-mode reads scountovf, and its writes raise illegal instruction because it is read-only
+    csr_access_pattern: coverpoint ins.current.insn {
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0);
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1);
+        wildcard bins csrrs1    = {CSRRS} iff (ins.current.rs1_val == '1);
+        wildcard bins csrrc1    = {CSRRC} iff (ins.current.rs1_val == '1);
+        wildcard bins read_only = {CSRRS} iff (ins.current.rs1_val ==  0);
+    }
+    scountovf_csr : coverpoint ins.current.insn[31:20] {
+        bins scountovf = {CSR_SCOUNTOVF};
+    }
+    cp_scountovf_access_vs : cross priv_mode_vs, csr_access_pattern, scountovf_csr;
 endgroup
 `endif
 

@@ -209,9 +209,9 @@ coverpoints:
     bins: 8 * (14-17 + 9-11)
   - name: cp_scsr_virtualinstructionfault
     goal: S registers cause virtual instruction fault from VU-mode
-    description: Access each S CSR (sstatus, sie, stvec, sscratch, sepc, scause, stval, sip, satp, scounteren, senvcfg) with the eight CSR forms of cp_hcsr_virtualinstructionfault.  Record rd.
-    expectation: Virtual instruction fault, and rd is unchanged
-    bins: 8 * (10-11)
+    description: Access each S CSR (sstatus, sie, stvec, sscratch, sepc, scause, stval, sip, satp, scounteren, senvcfg, scountovf) with the eight CSR forms of cp_hcsr_virtualinstructionfault.  Record rd.  menvcfg.CDE = 0, as boot leaves it.
+    expectation: Virtual instruction fault for every access HS-mode could perform.  scountovf is read-only, so its write forms raise illegal instruction.  rd is unchanged
+    bins: 8 * (10-12)
   - name: cp_illegalupper
     goal: In RV64, h half of CSRs are illegal from VU-mode
     description: "RV64 ONLY: csrrw, csrrs, csrrc, csrr each h H-extension CSR"

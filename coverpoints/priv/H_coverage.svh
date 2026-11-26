@@ -612,7 +612,8 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
     }
     cp_hcsr_virtualinstructionfault: cross priv_mode_vu, hsvscsrname, csr_forms;
 
-    // S CSRs raise virtual instruction in VU-mode when the access is legal in HS-mode
+    // S CSRs raise virtual instruction in VU-mode when the access is legal in HS-mode (only reads for the read-only
+    // scountovf)
     scsrname : coverpoint ins.current.insn[31:20] {
         bins sstatus    = {CSR_SSTATUS};
         bins sie        = {CSR_SIE};
@@ -626,6 +627,9 @@ covergroup H_vucsr_cg with function sample(ins_t ins);
         bins scounteren = {CSR_SCOUNTEREN};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             bins senvcfg = {CSR_SENVCFG};
+        `endif
+        `ifdef SSCOFPMF_SUPPORTED
+            bins scountovf = {CSR_SCOUNTOVF};
         `endif
     }
     cp_scsr_virtualinstructionfault: cross priv_mode_vu, scsrname, csr_forms;

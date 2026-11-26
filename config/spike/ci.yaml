@@ -28,6 +28,10 @@ exclude_extensions:
   - Sscofpmf_S_shadow
   - Sscofpmf_U_inhibit
   - Sscofpmf_U_overflow
+  # VS-mode reads of scountovf see the OF bits Spike keeps writable, while the Sail reference config, which
+  # makes no HPM counter writable for the same reason, predicts 0
+  # (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370).
+  - Sscofpmf_H_scountovf
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

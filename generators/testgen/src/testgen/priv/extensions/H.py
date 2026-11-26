@@ -79,8 +79,13 @@ S_UNREPLICATED_CSRS = [
     HCsr("scounteren"),
     HCsr("senvcfg", gate="defined(S1P12P0_OR_LATER_SUPPORTED)"),
 ]
-# S CSRs that VU-mode cannot access, which raise virtual instruction because HS-mode can access them
-S_CSRS = [*(HCsr(rep.s) for rep in REPLICAS), *S_UNREPLICATED_CSRS]
+# S CSRs that VU-mode cannot access, which raise virtual instruction because HS-mode can access them.  scountovf is
+# read-only, so its writes raise illegal instruction; its reads are virtual with menvcfg.CDE = 0, as boot leaves it.
+S_CSRS = [
+    *(HCsr(rep.s) for rep in REPLICAS),
+    *S_UNREPLICATED_CSRS,
+    HCsr("scountovf", gate="defined(SSCOFPMF_SUPPORTED)", asm="CSR_SCOUNTOVF"),
+]
 # scountinhibit raises illegal instruction with menvcfg.CDE = 0, as boot leaves it, and virtual instruction in
 # VS-mode and VU-mode with CDE = 1
 SCOUNTINHIBIT = HCsr("scountinhibit", gate="defined(SSCCFG_SUPPORTED)")

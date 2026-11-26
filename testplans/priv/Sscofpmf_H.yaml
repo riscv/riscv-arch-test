@@ -10,3 +10,15 @@ coverpoints:
       For each pattern, in VS-mode and then in VU-mode: mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, and read mhpmcounter in HS-mode
     expectation: mhpmcounter is nonzero iff the inhibit bit of the mode that ran the event code is 0
     bins: 3 patterns * {VS, VU} = 6
+  - name: cp_scountovf_vs
+    goal: In VS-mode, scountovf reads OF & mcounteren & hcounteren
+    description: |-
+      Set OF in mhpmevent3..31 through T-SBI.  For (mcounteren, hcounteren) = (all 1s, 0), (0, all 1s), (all 1s, odd counters 3, 5, ..., 31), (odd counters, all 1s) and (all 1s, all 1s) with scounteren = all 1s, and (all 1s, all 1s) with scounteren = 0, read scountovf in VS-mode
+      menvcfg.CDE = 0, as boot leaves it.  With Smcdeleg and menvcfg.CDE = 1, reads from VS-mode raise virtual instruction; that waits for Sail to model Smcdeleg.
+    expectation: scountovf = OF & mcounteren & hcounteren, and scountovf[2:0] = 0.  scounteren does not mask it.
+    bins: 6 counter-enable patterns
+  - name: cp_scountovf_access_vs
+    goal: In VS-mode, scountovf is read-only
+    description: In VS-mode, read, write 0s, write 1s, set 1s and clear 1s scountovf
+    expectation: Reading scountovf succeeds.  The writes raise illegal instruction, not virtual instruction, because the write would be illegal in HS-mode too.
+    bins: 5 accesses

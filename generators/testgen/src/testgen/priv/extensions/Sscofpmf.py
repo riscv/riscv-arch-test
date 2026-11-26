@@ -1297,6 +1297,69 @@ def _generate_virt_xinh_filter_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+# Counters 3, 5, ..., 31 as a counter-enable value
+_ODD_COUNTERS = 0xAAAAAAA8
+
+# (bin, mcounteren, hcounteren, scounteren) for the VS-mode reads of scountovf
+_VS_SCOUNTOVF_CASES = (
+    ("m_ones_h_zero", -1, 0, -1),
+    ("m_zero_h_ones", 0, -1, -1),
+    ("m_ones_h_odd", -1, _ODD_COUNTERS, -1),
+    ("m_odd_h_ones", _ODD_COUNTERS, -1, -1),
+    ("m_ones_h_ones", -1, -1, -1),
+    ("m_ones_h_ones_s_zero", -1, -1, 0),
+)
+
+
+def _generate_vs_scountovf_tests(test_data: TestData) -> list[str]:
+    """With every OF bit set, VS-mode reads scountovf as OF & mcounteren & hcounteren, whatever scounteren holds,
+    and cannot write it.  menvcfg.CDE stays 0 (Smcdeleg makes VS-mode reads raise virtual instruction with CDE = 1)."""
+    r_of_bit, r_val, r_scountovf = test_data.int_regs.get_registers(3)
+    # rvtest_setup.h clears mhpmevent3..31 and the RV32 high halves at boot, so OF starts at 0.
+    of_state = [0] * NUM_OF_BITS
+    lines = [
+        comment_banner(
+            "cp_scountovf_vs, cp_scountovf_access_vs",
+            "Set OF in mhpmevent3..31.  For each (mcounteren, hcounteren, scounteren), read scountovf in VS-mode: it\n"
+            "reads OF & mcounteren & hcounteren, and scounteren does not mask it.  Then read, write and set and clear\n"
+            "scountovf in VS-mode: the writes raise illegal instruction because scountovf is read-only",
+        ),
+        *write_of_pattern(r_of_bit, "all_ones", lambda _: 1, "S", of_state),
+    ]
+    for name, mcounteren, hcounteren, scounteren in _VS_SCOUNTOVF_CASES:
+        lines.extend(
+            [
+                f"LI(x{r_val}, {mcounteren})",
+                tsbi_call_or_direct(f"csrw mcounteren, x{r_val}", "S"),
+                f"LI(x{r_val}, {hcounteren})",
+                f"csrw hcounteren, x{r_val}",
+                f"LI(x{r_val}, {scounteren})",
+                f"csrw scounteren, x{r_val}",
+                "RVTEST_TSBI_GOTO_VSMODE",
+                test_data.add_testcase(name, "cp_scountovf_vs", "Sscofpmf_H_cg"),
+                f"csrr x{r_scountovf}, scountovf",
+                write_sigupd(r_scountovf, test_data),
+                "RVTEST_TSBI_GOTO_SMODE",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "# Boot values: every counter enabled for the next lower mode",
+            f"LI(x{r_val}, -1)",
+            tsbi_call_or_direct(f"csrw mcounteren, x{r_val}", "S"),
+            f"csrw hcounteren, x{r_val}",
+            f"csrw scounteren, x{r_val}",
+            "RVTEST_TSBI_GOTO_VSMODE",
+        ]
+    )
+    test_data.int_regs.return_registers([r_val, r_scountovf])
+    lines.extend(csr_access_test(test_data, ("scountovf", None), "Sscofpmf_H_cg", "cp_scountovf_access_vs"))
+    lines.extend(["RVTEST_TSBI_GOTO_SMODE", *write_of_pattern(r_of_bit, "all_zeros", lambda _: 0, "S", of_state)])
+    test_data.int_regs.return_registers([r_of_bit])
+    return lines
+
+
 @add_priv_test_generator(
     "Sscofpmf",
     required_extensions=["Sscofpmf", "H"],
@@ -1304,7 +1367,12 @@ def _generate_virt_xinh_filter_tests(test_data: TestData) -> list[str]:
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_sscofpmfh(test_data: TestData) -> list[TestChunk]:
-    """Generate the Sscofpmf_H tests: VSINH and VUINH filtering of events in VS-mode and VU-mode."""
+    """Generate the Sscofpmf_H tests: VSINH and VUINH filtering of events in VS-mode and VU-mode, and scountovf
+    in VS-mode."""
     tc = test_data.begin_test_chunk("H_inhibit")
     tc.code.extend(_generate_virt_xinh_filter_tests(test_data))
-    return [test_data.end_test_chunk()]
+    test_chunks = [test_data.end_test_chunk()]
+    tc = test_data.begin_test_chunk("H_scountovf")
+    tc.code.extend(_generate_vs_scountovf_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

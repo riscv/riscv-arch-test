@@ -3,7 +3,7 @@ suite: Sv_H
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884
 notes: |-
   Sv_H verifies two-stage (VS-stage and G-stage) address translation for guest accesses in VS-mode and VU-mode and for HLV, HLVX and HSV in HS-mode.  The group boots to HS-mode with hedeleg = 0, so guest traps are taken in HS-mode, whose trap handler records scause, stval, htval, htinst and hstatus.GVA; only the cp_hedeleg tests delegate page faults to VS-mode.  Tests that need M-mode (mstatus.MPRV with MPV = 1, and guest traps taken in M-mode) are in Sv_HSm.
-  Guest code runs at a guest virtual address that the test maps through both stages.  A guest access is a store (sw) and a load (lw) of the word at offset 8 of a 4 KiB test page, and a fetch (jalr) of the ret at its start.  Loads are checked in the signature after the guest returns to HS-mode, because VU-mode cannot write the signature.  VS-stage tests (Sv_H_vsstage_cg) run with hgatp = Bare, G-stage tests (Sv_H_gstage_cg) with vsatp = Bare, and two-stage tests (Sv_H_twostage_cg, Sv_H_hlv_cg) with both paged.  After changing a PTE, vsatp or hgatp, the test executes hfence.vvma and hfence.gvma.  Leaves are kilopages with V = R = W = X = A = D = 1 unless a row says otherwise.  VS-stage leaves have U = 0 for VS-mode and U = 1 for VU-mode; G-stage leaves have U = 1, because every G-stage access is a user-level access.
+  Guest code runs at a guest virtual address that the test maps through both stages.  A guest access is a store (sw) and a load (lw) of the word at offset 8 of a 4 KiB test page, and a fetch (jalr) of the ret at its start.  Loads are checked in the signature after the guest returns to HS-mode, because VU-mode cannot write the signature.  VS-stage tests (Sv_H_vsstage_cg) run with hgatp = Bare, G-stage tests (Sv_H_gstage_cg) with vsatp = Bare, and two-stage tests (Sv_H_twostage_cg, Sv_H_hlv_cg) with both paged; the cp_vsatp_* crosses of the other covergroups also run with hgatp = Bare.  After changing a PTE, vsatp or hgatp, the test executes hfence.vvma and hfence.gvma.  Leaves are kilopages with V = R = W = X = A = D = 1 unless a row says otherwise.  VS-stage leaves have U = 0 for VS-mode and U = 1 for VU-mode; G-stage leaves have U = 1, because every G-stage access is a user-level access.
   The crosses have a bin for each supported mode: vsatp_mode (Sv32, or Sv39, Sv48 and Sv57), hgatp_mode (Sv32x4, or Sv39x4, Sv48x4 and Sv57x4) and stage_modes (the pairs Sv32/Sv32x4, Sv39/Sv39x4, Sv48/Sv48x4 and Sv57/Sv57x4).  The VS-stage, G-stage and two-stage tests run in each mode the hart supports, in separate test files, so the VS-stage tests (hgatp = Bare) need only the VS-stage mode and run on a hart whose hgatp supports only Bare; the G-stage tests need only the G-stage mode.  The MODE-field tests run with VS-stage Sv39, the hedeleg, straddle and fence tests with Sv32/Sv32x4 or Sv39/Sv39x4, and the Bare tests on every hart.  The fetch straddle test (cp_straddle) needs Zca and the load/store straddle test (cp_ldst_straddle) needs a hart that performs misaligned accesses byte by byte; they are separate test files.  The GPA-width and non-canonical tests are RV64 only.
   Sv_H tests Svade (menvcfg.ADUE = henvcfg.ADUE = 0).  Svadu_H, Svpbmt_H and Svnapot_H test hardware A/D updates, PBMT and NAPOT in the VS-stage and G-stage.
   The reference model trace records instructions, registers and CSRs but not PTEs or page-table walks.  The coverpoints therefore record each access with its privilege mode, the translation modes, the controls that affect it (SUM, MXR, ADUE, SPVP, hedeleg) and the trap it takes (cause, htinst, htval).  The PTE that a testcase uses (permissions, U, A/D, RSW and reserved bits, leaf level, superpage alignment) is set by the test, and its effect is checked by the signature: the loaded word, the trap record, and the PTE read back after an A/D case.  The coverage cannot tell apart testcases that differ only in PTE bits with the same outcome, such as RSW = 01 and 11, or reserved bits 60:59 that Svrsw60t59b makes ignored; a hart that mishandles such a bit fails the signature check instead.
@@ -186,6 +186,26 @@ coverpoints:
     expectation: Each raises a load or store guest-page fault with htval = the guest physical address of the root PTE >> 2 and htinst = the read pseudoinstruction.
     bins: HS x {hlv.w, hlvx.wu, hsv.w} x stage_modes x htinst read pseudoinstruction x htval in the root table
     notes: Needs htval to report the guest physical address.
+  - name: |-
+      cp_vsatp_hlv_priv
+      cp_vsatp_hlv_sum
+      cp_vsatp_hlv_mxr
+      cp_vsatp_hlvx_perm
+    goal: HLV, HLVX and HSV through the VS-stage with hgatp = Bare
+    description: |-
+      VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  In HS-mode:
+      cp_vsatp_hlv_priv: execute hlv.w, hlvx.wu and hsv.w on VS-stage leaves with U = 0 and 1, with hstatus.SPVP = 0 and 1 and vsstatus.SUM = sstatus.SUM = 0.
+      cp_vsatp_hlv_sum: with SPVP = 1, execute them on a U = 1 leaf with (vsstatus.SUM, sstatus.SUM) = (1, 0), (0, 1) and (1, 1).
+      cp_vsatp_hlv_mxr: with SPVP = 1, execute hlv.w and hlvx.wu on an execute-only leaf with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1.
+      cp_vsatp_hlvx_perm: with SPVP = 1, execute hlvx.wu on a read-only leaf with each vsstatus.MXR and sstatus.MXR.
+    expectation: |-
+      With SPVP = 0 the accesses are VU-level, so the U = 0 page raises load or store/AMO page faults.  With SPVP = 1 they are VS-level, so the U = 1 page faults unless vsstatus.SUM = 1; sstatus.SUM is ignored.
+      hlvx.wu reads the execute-only page; hlv.w reads it when either MXR is 1 and otherwise raises a load page fault.  hlvx.wu raises a load page fault on the read-only page, whatever the MXR bits.
+    bins: |-
+      cp_vsatp_hlv_priv: HS x {hlv.w, hlvx.wu, hsv.w} x vsatp Sv39 or Sv32 with hgatp Bare x hstatus.SPVP {0, 1}
+      cp_vsatp_hlv_sum: HS x {hlv.w, hlvx.wu, hsv.w} x vsatp Sv39 or Sv32 with hgatp Bare x hstatus.SPVP = 1 x vsstatus.SUM {0, 1} x sstatus.SUM {0, 1}
+      cp_vsatp_hlv_mxr: HS x {hlv.w, hlvx.wu} x vsatp Sv39 or Sv32 with hgatp Bare x vsstatus.MXR {0, 1} x sstatus.MXR {0, 1}
+      cp_vsatp_hlvx_perm: HS x hlvx.wu x vsatp Sv39 or Sv32 with hgatp Bare x vsstatus.MXR {0, 1} x sstatus.MXR {0, 1} x load page fault
   - heading: vsatp, satp and hgatp MODE (Sv_H_csr_cg)
   - name: cp_vsatp_mode_field
     goal: supported/unsupported MODE encodings

@@ -1304,6 +1304,50 @@ def hlv_implicit_accesses(
     return code
 
 
+def _t_hlv_vs(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> None:
+    """HLV, HLVX and HSV with hgatp = Bare: hstatus.SPVP against the VS-stage U bit, vsstatus.SUM and not
+    sstatus.SUM, MXR in each status register, and the execute permission that HLVX needs."""
+    chunk = begin_chunk(
+        test_data,
+        f"H_{vs.name}_hlv",
+        "cp_vsatp_hlv_priv, cp_vsatp_hlv_sum, cp_vsatp_hlv_mxr, cp_vsatp_hlvx_perm",
+        "In HS-mode with hgatp = Bare, execute hlv.w, hlvx.wu and hsv.w on VS-stage pages with U = 0, 1 and\n"
+        "hstatus.SPVP = 0, 1, and with SPVP = 1 on a U = 1 page with vsstatus.SUM and sstatus.SUM (ignored) = 0, 1.\n"
+        "With SPVP = 1, execute hlv.w and hlvx.wu on an execute-only page, and hlvx.wu on a read-only page (a load\n"
+        "page fault, because HLVX needs execute permission), with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1",
+        stages=(vs,),
+    )
+    va = f"{vs.data_va} + 8"
+    reg = test_data.int_regs.get_register()
+    hlv = ("hlv", "hlvx", "hsv")
+    # (name, coverpoint, VS-stage leaf, SPVP, vsstatus.SUM, sstatus.SUM, vsstatus.MXR, sstatus.MXR, accesses)
+    cases: list[tuple[str, str, PteFlags, int, int, int, int, int, Sequence[str]]] = []
+    for spvp in (0, 1):
+        for user in (False, True):
+            cases.append((f"spvp{spvp}_u{int(user)}", "cp_vsatp_hlv_priv", PteFlags(user=user), spvp, 0, 0, 0, 0, hlv))
+    for vs_sum, s_sum in ((1, 0), (0, 1), (1, 1)):
+        name = f"vssum{vs_sum}_ssum{s_sum}_u1"
+        cases.append((name, "cp_vsatp_hlv_sum", PteFlags(user=True), 1, vs_sum, s_sum, 0, 0, hlv))
+    for perm, coverpoint, ops in (("x", "cp_vsatp_hlv_mxr", ("hlv", "hlvx")), ("r", "cp_vsatp_hlvx_perm", ("hlvx",))):
+        for vs_mxr in (0, 1):
+            for s_mxr in (0, 1):
+                name = f"{perm}only_vsmxr{vs_mxr}_smxr{s_mxr}"
+                cases.append((name, coverpoint, perm_flags(perm, False), 1, 0, 0, vs_mxr, s_mxr, ops))
+    code = guest_chunk_setup(test_data, None, vs, "VS")
+    for name, coverpoint, flags, spvp, vs_sum, s_sum, vs_mxr, s_mxr, ops in cases:
+        setup = [
+            *map_test_page(test_data, None, vs, vs_flags=flags),
+            *set_csr_bits("hstatus", "HSTATUS_SPVP", "HSTATUS_SPVP" if spvp else "0", reg),
+            *status_bits("vsstatus", reg, sum_=vs_sum, mxr=vs_mxr),
+            *status_bits("sstatus", reg, sum_=s_sum, mxr=s_mxr),
+        ]
+        code.extend(guest_access(test_data, HLV_CG, coverpoint, name, None, va, setup=setup, ops=ops))
+    code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
+    test_data.int_regs.return_register(reg)
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
 def _hlv_root_gpf(test_data: TestData, g: SvMode, vs: SvMode, va: str) -> list[str]:
     """HLV, HLVX and HSV with vsatp.PPN at a guest physical page whose G-stage leaf is invalid, so the read of the
     VS-stage root table takes a guest-page fault."""
@@ -1571,6 +1615,7 @@ def _fence_chunk(test_data: TestData, g: SvMode, vs: SvMode) -> TestChunk:
 def _make_svh_vs(test_data: TestData, vs: SvMode) -> list[TestChunk]:
     """The tests with hgatp = Bare, for the smallest VS-stage mode of each XLEN."""
     test_chunks = _vs_stage_tests(test_data, vs)
+    _t_hlv_vs(test_data, test_chunks, vs)
     if vs.xlen == 64:
         _t_atp_mode(test_data, test_chunks)
     return test_chunks

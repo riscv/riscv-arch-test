@@ -2314,12 +2314,28 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
             `endif
         `endif
     }
+    // VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare, the one VS-stage mode of the hgatp = Bare HLV tests
+    vs_only : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            bins sv39_bare = {8'h80};
+        `endif
+        `ifdef UDB_SV32_VSMODE_TRANSLATION
+            bins sv32_bare = {8'h10};
+        `endif
+    }
     // The load page fault (VS-stage) or load guest-page fault (G-stage) that HLVX takes on a non-executable page
     load_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins page_fault       = {6'b101101};
         bins guest_page_fault = {6'b110101};
     }
+    load_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+        bins page_fault = {6'b101101};
+    }
     hstatus_spvp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0] {}
+    spvp_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp") {
+        bins on = {1};
+    }
     vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
     sstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum")[0] {}
     vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
@@ -2356,6 +2372,12 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         // A guest-page fault on the read of the VS-stage root table
         cp_hlv_root_gpf : cross priv_mode_hs, hlv, stage_modes, htinst_read, htval_root;
     `endif
+    // With hgatp = Bare: hstatus.SPVP selects VU-level or VS-level access, and with SPVP = 1 vsstatus.SUM applies and
+    // sstatus.SUM does not; both MXRs make execute-only VS-stage pages readable; HLVX needs execute permission
+    cp_vsatp_hlv_priv  : cross priv_mode_hs, hlv, vs_only, hstatus_spvp;
+    cp_vsatp_hlv_sum   : cross priv_mode_hs, hlv, vs_only, spvp_on, vsstatus_sum, sstatus_sum;
+    cp_vsatp_hlv_mxr   : cross priv_mode_hs, hlv_load, vs_only, vsstatus_mxr, sstatus_mxr;
+    cp_vsatp_hlvx_perm : cross priv_mode_hs, hlvx, vs_only, vsstatus_mxr, sstatus_mxr, load_page_fault;
 endgroup
 
 // vsatp, hgatp and satp MODE writes (RV64)

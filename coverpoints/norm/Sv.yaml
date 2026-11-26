@@ -985,6 +985,7 @@ normative_rule_definitions:
         "Sv_H_hlv_cg/cp_hlv_priv",
         "Sv_H_hlv_cg/cp_hlv_mxr",
         "Sv_H_hlv_cg/cp_hlv_root_gpf",
+        "Sv_H_hlv_cg/{cp_vsatp_hlv_priv,cp_vsatp_hlv_sum,cp_vsatp_hlv_mxr}",
         "Sv_HSm_mprv_cg/cp_vsatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_mprv_sum",
@@ -999,6 +1000,7 @@ normative_rule_definitions:
         "Sv_H_hlv_cg/cp_hlv_mxr",
         "Sv_H_hlv_cg/cp_hlvx_perm",
         "Sv_H_hlv_cg/cp_hlv_implicit",
+        "Sv_H_hlv_cg/{cp_vsatp_hlv_mxr,cp_vsatp_hlvx_perm}",
       ]
 
   # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
@@ -1049,7 +1051,7 @@ normative_rule_definitions:
 
   # hstatus.SPVP sets the effective privilege of the explicit accesses of HLV, HLVX and HSV
   - name: hstatus_spvp_virtls_op
-    coverpoint: ["Sv_H_hlv_cg/cp_hlv_priv"]
+    coverpoint: ["Sv_H_hlv_cg/{cp_hlv_priv,cp_vsatp_hlv_priv}"]
 
   # For Sv32x4, Sv39x4, Sv48x4 and Sv57x4, the root page table is 16 KiB and aligned to 16 KiB
   - name: hgatp_root_pt_sz_align

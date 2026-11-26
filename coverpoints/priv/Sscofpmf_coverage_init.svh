@@ -12,3 +12,6 @@
 `endif
     Sscofpmf_S_cg = new();      Sscofpmf_S_cg.set_inst_name("obj_Sscofpmf_S");
     Sscofpmf_U_cg = new();      Sscofpmf_U_cg.set_inst_name("obj_Sscofpmf_U");
+`ifdef H_SUPPORTED
+    Sscofpmf_H_cg = new();      Sscofpmf_H_cg.set_inst_name("obj_Sscofpmf_H");
+`endif

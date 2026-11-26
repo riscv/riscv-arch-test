@@ -57,7 +57,7 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
 
-  LI(x15, 0x800) // Test signature initialization
+  LI(x8, 0x800) // Test signature initialization
 
 
 // 4KB page at level 0
@@ -68,33 +68,33 @@ RVTEST_BEGIN
   PTE_SETUP_SV39(rvtest_data_1, (PTE_U | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x9, va_data)
+  LI(x14, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi x15, x15, 16
+  addi x8, x8, 16
 
 // Store
 Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store:
-  sw x15, 20(x9)
+  sw x8, 20(x14)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load:
-  lw x14, 20(x9)
+  lw x9, 20(x14)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec:
-  jalr ra, x9, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load_str)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec, Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -110,7 +110,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi x8, x15, 4
+  addi x13, x8, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -127,9 +127,9 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store_str: .string "\"test: 160; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_write; bin: test1_store\""
-Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load_str: .string "\"test: 161; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_read; bin: test1_load\""
-Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec_str: .string "\"test: 162; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_i_exec; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_write_test1_store_str: .string "\"test: 161; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_write; bin: test1_store\""
+Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_d_read_test1_load_str: .string "\"test: 162; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_d_read; bin: test1_load\""
+Sv_vm_permissions_cg_cp_PTE_nonleaf_lvl0_u_i_exec_test1_exec_str: .string "\"test: 163; cg: Sv_vm_permissions_cg; cp: cp_PTE_nonleaf_lvl0_u_i_exec; bin: test1_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

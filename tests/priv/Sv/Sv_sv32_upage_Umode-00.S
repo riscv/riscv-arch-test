@@ -57,7 +57,7 @@ RVTEST_BEGIN
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  LI(x13, 0x800) // Test signature initialization
+  LI(x9, 0x800) // Test signature initialization
 
 
 // 4MB page at level 1
@@ -66,37 +66,37 @@ RVTEST_BEGIN
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x14, (va_data >> 22) << 22)
+  LI(x8, (va_data >> 22) << 22)
   LA(x6, rvtest_data_1)
   slli x6, x6, 10
   srli x6, x6, 10
-  add x14, x14, x6
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_write_u_test1_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test1_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_write_u_test1_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test1_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_write_u_test1_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test1_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test1_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test1_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec_str)
 
 
 // 4MB page at level 1
@@ -105,37 +105,37 @@ Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x14, (va_data >> 22) << 22)
+  LI(x8, (va_data >> 22) << 22)
   LA(x6, rvtest_data_1)
   slli x6, x6, 10
   srli x6, x6, 10
-  add x14, x14, x6
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test2_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_noread_u_test2_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test2_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test2_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test2_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test2_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_noread_u_test2_load, Sv_vm_permissions_cg_cp_upage_umode_noread_u_test2_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec_str)
 
 
 // 4MB page at level 1
@@ -144,37 +144,37 @@ Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x14, (va_data >> 22) << 22)
+  LI(x8, (va_data >> 22) << 22)
   LA(x6, rvtest_data_1)
   slli x6, x6, 10
   srli x6, x6, 10
-  add x14, x14, x6
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test3_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test3_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test3_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test3_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test3_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test3_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test3_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test3_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec_str)
 
 
 // 4MB page at level 1
@@ -183,37 +183,37 @@ Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x14, (va_data >> 22) << 22)
+  LI(x8, (va_data >> 22) << 22)
   LA(x6, rvtest_data_1)
   slli x6, x6, 10
   srli x6, x6, 10
-  add x14, x14, x6
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_write_u_test4_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test4_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_write_u_test4_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test4_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_write_u_test4_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test4_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test4_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test4_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec_str)
 
 
 // 4MB page at level 1
@@ -222,37 +222,37 @@ Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x14, (va_data >> 22) << 22)
+  LI(x8, (va_data >> 22) << 22)
   LA(x6, rvtest_data_1)
   slli x6, x6, 10
   srli x6, x6, 10
-  add x14, x14, x6
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test5_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test5_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test5_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test5_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test5_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test5_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test5_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test5_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec_str)
 
 
 // 4KB page at level 0
@@ -262,33 +262,33 @@ Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x14, va_data)
+  LI(x8, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_write_u_test6_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test6_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_write_u_test6_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test6_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_write_u_test6_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test6_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test6_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test6_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec_str)
 
 
 // 4KB page at level 0
@@ -298,33 +298,33 @@ Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x14, va_data)
+  LI(x8, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test7_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_noread_u_test7_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test7_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test7_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test7_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test7_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_noread_u_test7_load, Sv_vm_permissions_cg_cp_upage_umode_noread_u_test7_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec_str)
 
 
 // 4KB page at level 0
@@ -334,33 +334,33 @@ Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x14, va_data)
+  LI(x8, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test8_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test8_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test8_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test8_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test8_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test8_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test8_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test8_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec, Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec_str)
 
 
 // 4KB page at level 0
@@ -370,33 +370,33 @@ Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x14, va_data)
+  LI(x8, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_write_u_test9_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test9_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_write_u_test9_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test9_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_write_u_test9_store, Sv_vm_permissions_cg_cp_upage_umode_write_u_test9_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test9_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test9_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec_str)
 
 
 // 4KB page at level 0
@@ -406,33 +406,33 @@ Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x14, va_data)
+  LI(x8, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi x13, x13, 16
+  addi x9, x9, 16
 
 // Store
 Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test10_store:
-  sw x13, 20(x14)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_vm_permissions_cg_cp_upage_umode_read_u_test10_load:
-  lw x15, 20(x14)
+  lw x15, 20(x8)
   nop
 
 // Execute
 Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test10_exec:
-  jalr ra, x14, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test10_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test10_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test10_store, Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test10_store_str)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_upage_umode_read_u_test10_load, Sv_vm_permissions_cg_cp_upage_umode_read_u_test10_load_str)
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test10_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test10_exec_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test10_exec, Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test10_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -448,7 +448,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi x9, x13, 4
+  addi x14, x9, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -462,36 +462,36 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_upage_umode_write_u_test1_store_str: .string "\"test: 193; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test1_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test1_load_str: .string "\"test: 194; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test1_load\""
-Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec_str: .string "\"test: 195; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test1_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test2_store_str: .string "\"test: 196; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test2_store\""
-Sv_vm_permissions_cg_cp_upage_umode_noread_u_test2_load_str: .string "\"test: 197; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noread_u; bin: test2_load\""
-Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec_str: .string "\"test: 198; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test2_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test3_store_str: .string "\"test: 199; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test3_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test3_load_str: .string "\"test: 200; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test3_load\""
-Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec_str: .string "\"test: 201; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test3_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_write_u_test4_store_str: .string "\"test: 202; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test4_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test4_load_str: .string "\"test: 203; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test4_load\""
-Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec_str: .string "\"test: 204; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test4_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test5_store_str: .string "\"test: 205; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test5_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test5_load_str: .string "\"test: 206; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test5_load\""
-Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec_str: .string "\"test: 207; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test5_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_write_u_test6_store_str: .string "\"test: 208; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test6_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test6_load_str: .string "\"test: 209; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test6_load\""
-Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec_str: .string "\"test: 210; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test6_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test7_store_str: .string "\"test: 211; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test7_store\""
-Sv_vm_permissions_cg_cp_upage_umode_noread_u_test7_load_str: .string "\"test: 212; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noread_u; bin: test7_load\""
-Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec_str: .string "\"test: 213; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test7_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test8_store_str: .string "\"test: 214; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test8_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test8_load_str: .string "\"test: 215; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test8_load\""
-Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec_str: .string "\"test: 216; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test8_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_write_u_test9_store_str: .string "\"test: 217; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test9_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test9_load_str: .string "\"test: 218; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test9_load\""
-Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec_str: .string "\"test: 219; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test9_exec\""
-Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test10_store_str: .string "\"test: 220; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test10_store\""
-Sv_vm_permissions_cg_cp_upage_umode_read_u_test10_load_str: .string "\"test: 221; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test10_load\""
-Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test10_exec_str: .string "\"test: 222; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test10_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_write_u_test1_store_str: .string "\"test: 194; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test1_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test1_load_str: .string "\"test: 195; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test1_load\""
+Sv_vm_permissions_cg_cp_upage_umode_exec_u_test1_exec_str: .string "\"test: 196; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test2_store_str: .string "\"test: 197; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test2_store\""
+Sv_vm_permissions_cg_cp_upage_umode_noread_u_test2_load_str: .string "\"test: 198; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noread_u; bin: test2_load\""
+Sv_vm_permissions_cg_cp_upage_umode_exec_u_test2_exec_str: .string "\"test: 199; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test2_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test3_store_str: .string "\"test: 200; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test3_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test3_load_str: .string "\"test: 201; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test3_load\""
+Sv_vm_permissions_cg_cp_upage_umode_exec_u_test3_exec_str: .string "\"test: 202; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test3_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_write_u_test4_store_str: .string "\"test: 203; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test4_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test4_load_str: .string "\"test: 204; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test4_load\""
+Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test4_exec_str: .string "\"test: 205; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test4_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test5_store_str: .string "\"test: 206; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test5_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test5_load_str: .string "\"test: 207; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test5_load\""
+Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test5_exec_str: .string "\"test: 208; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test5_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_write_u_test6_store_str: .string "\"test: 209; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test6_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test6_load_str: .string "\"test: 210; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test6_load\""
+Sv_vm_permissions_cg_cp_upage_umode_exec_u_test6_exec_str: .string "\"test: 211; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test6_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test7_store_str: .string "\"test: 212; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test7_store\""
+Sv_vm_permissions_cg_cp_upage_umode_noread_u_test7_load_str: .string "\"test: 213; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noread_u; bin: test7_load\""
+Sv_vm_permissions_cg_cp_upage_umode_exec_u_test7_exec_str: .string "\"test: 214; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test7_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test8_store_str: .string "\"test: 215; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test8_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test8_load_str: .string "\"test: 216; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test8_load\""
+Sv_vm_permissions_cg_cp_upage_umode_exec_u_test8_exec_str: .string "\"test: 217; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_exec_u; bin: test8_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_write_u_test9_store_str: .string "\"test: 218; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_write_u; bin: test9_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test9_load_str: .string "\"test: 219; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test9_load\""
+Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test9_exec_str: .string "\"test: 220; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test9_exec\""
+Sv_vm_permissions_cg_cp_upage_umode_nowrite_u_test10_store_str: .string "\"test: 221; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_nowrite_u; bin: test10_store\""
+Sv_vm_permissions_cg_cp_upage_umode_read_u_test10_load_str: .string "\"test: 222; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_read_u; bin: test10_load\""
+Sv_vm_permissions_cg_cp_upage_umode_noexec_u_test10_exec_str: .string "\"test: 223; cg: Sv_vm_permissions_cg; cp: cp_upage_umode_noexec_u; bin: test10_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

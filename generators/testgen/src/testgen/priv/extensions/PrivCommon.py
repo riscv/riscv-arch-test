@@ -508,6 +508,62 @@ def xstatus_sd_tests(test_data: TestData, csr: str, covergroup: str, coverpoint:
     return lines
 
 
+def _sail_gap_table() -> dict[int, str]:
+    """Build SAIL_GAP_CSRS (see there)."""
+    aia = "defined(SSAIA_SUPPORTED)"
+    csrind = "defined(SSCSRIND_SUPPORTED)"
+    maia = "defined(SMAIA_SUPPORTED)"
+    mcsrind = "defined(SMCSRIND_SUPPORTED)"
+    h = "defined(H_SUPPORTED)"
+    rv32 = "__riscv_xlen == 32"
+    groups: list[tuple[str, list[int]]] = [
+        # Smaia: mtopi, mtopei, mvien, mvip; RV32 midelegh, mieh, mvienh, mviph, miph
+        (maia, [0xFB0, 0x35C, 0x308, 0x309]),
+        (f"{maia} && {rv32}", [0x313, 0x314, 0x318, 0x319, 0x354]),
+        # Smcsrind (and Smaia, which defines miselect and mireg): miselect, mireg, mireg2-6
+        (f"({maia} || {mcsrind})", [0x350, 0x351]),
+        (mcsrind, [0x352, 0x353, 0x355, 0x356, 0x357]),
+        # Ssaia: stopi, stopei; RV32 sieh, siph
+        (aia, [0xDB0, 0x15C]),
+        (f"{aia} && {rv32}", [0x114, 0x154]),
+        # Ssaia with H: vstopi, vstopei, hvien, hvictl, hviprio1, hviprio2;
+        # RV32 hidelegh, hvienh, hviph, hviprio1h, hviprio2h, vsieh, vsiph
+        (f"{aia} && {h}", [0xEB0, 0x25C, 0x608, 0x609, 0x646, 0x647]),
+        (f"{aia} && {h} && {rv32}", [0x613, 0x618, 0x655, 0x656, 0x657, 0x214, 0x254]),
+        # Sscsrind (and Ssaia, which defines siselect and sireg): siselect, sireg, sireg2-6, and the VS copies
+        (f"({aia} || {csrind})", [0x150, 0x151]),
+        (csrind, [0x152, 0x153, 0x155, 0x156, 0x157]),
+        (f"({aia} || {csrind}) && {h}", [0x250, 0x251]),
+        (f"{csrind} && {h}", [0x252, 0x253, 0x255, 0x256, 0x257]),
+        # Smrnmi: mnscratch, mnepc, mncause, mnstatus
+        ("defined(SMRNMI_SUPPORTED)", [0x740, 0x741, 0x742, 0x744]),
+        # Smctr: mctrctl; Ssctr: sctrctl, sctrstatus, sctrdepth; with H, vsctrctl
+        ("defined(SMCTR_SUPPORTED)", [0x34E]),
+        ("defined(SSCTR_SUPPORTED)", [0x14E, 0x14F, 0x15F]),
+        (f"defined(SSCTR_SUPPORTED) && {h}", [0x24E]),
+        # Zcmt: jvt
+        ("defined(ZCMT_SUPPORTED)", [0x017]),
+        # Ssccfg's scountinhibit is not listed: with menvcfg.CDE = 0, as boot leaves it, every access raises
+        # illegal instruction, as Sail predicts for a CSR it lacks.
+    ]
+    return {csr: cond for cond, csrs in groups for csr in csrs}
+
+
+# CSRs of extensions that Sail does not implement yet, each with the preprocessor condition under which the hart
+# has it.  Sail treats them as nonexistent, so where the hart has one, Sail cannot predict an access that the hart
+# allows (or that raises virtual rather than illegal instruction).  The CSR sweeps leave such a CSR out where its
+# condition holds, so its per-CSR coverage bin reports missing until Sail implements the extension; elsewhere the
+# CSR does not exist and the access is checked against Sail as usual.
+# TODO: remove each entry once Sail implements its extension.
+SAIL_GAP_CSRS: dict[int, str] = _sail_gap_table()
+
+
+def unless_sail_gap(csr: int, lines: list[str]) -> list[str]:
+    """Wrap the lines that access csr so they are assembled only where Sail models the CSR (see SAIL_GAP_CSRS)."""
+    cond = SAIL_GAP_CSRS.get(csr)
+    return gated(lines, f"!({cond})") if cond else lines
+
+
 def _csr_chunks(csr_ranges: list[range], csrs_per_chunk: int) -> list[list[int]]:
     """Split the CSR numbers in csr_ranges into lists of csrs_per_chunk."""
     csrs = [csr for csr_range in csr_ranges for csr in csr_range]

@@ -274,6 +274,30 @@ covergroup Svadu_H_cg with function sample(ins_t ins);
     cp_hlv_implicit  : cross priv_mode_hs, hlv, stage_modes, htinst_write;
     // henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0
     cp_henvcfg_menvcfg : cross priv_mode_hs, csrrs, henvcfg, menvcfg_adue;
+
+    // HLV.W and HSV.W from HS-mode through a VS-stage leaf with A = D = 0 (hgatp = Bare): henvcfg.ADUE selects
+    // Svade (page fault) or Svadu (A and D set) for the VS-stage, as for VS-mode accesses
+    hlv_hsv_w : coverpoint ins.current.insn {
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hsv_w = {HSV_W};
+    }
+    // henvcfg.ADUE is read-only zero while menvcfg.ADUE = 0, so (0, 1) is not a bin
+    `ifdef UDB_MXLEN_64
+        adue_pair : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue")[0],
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "adue")[0]} {
+            bins svade_both = {2'b00};
+            bins vs_svade   = {2'b10};
+            bins vs_svadu   = {2'b11};
+        }
+    `else
+        adue_pair : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue")[0],
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFGH, "adue")[0]} {
+            bins svade_both = {2'b00};
+            bins vs_svade   = {2'b10};
+            bins vs_svadu   = {2'b11};
+        }
+    `endif
+    cp_hlv_adue : cross priv_mode_hs, hlv_hsv_w, vsatp_mode, hgatp_bare, adue_pair;
 endgroup
 `endif // H_SUPPORTED
 

@@ -57,7 +57,7 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
 
-  LI(x9, 0x800) // Test signature initialization
+  LI(x13, 0x800) // Test signature initialization
 
 
 // 512GB page at level 3
@@ -66,32 +66,32 @@ RVTEST_BEGIN
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test1_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test1_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test1_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test1_store, Sv_res_global_pte_cg_cp_rsw_pte_test1_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test1_store, Sv_res_global_pte_cg_cp_rsw_pte_test1_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test1_load, Sv_res_global_pte_cg_cp_rsw_pte_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test1_load, Sv_res_global_pte_cg_cp_rsw_pte_test1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test1_exec, Sv_res_global_pte_cg_cp_rsw_pte_test1_exec_str)
   LA(x14, rvtest_Sroot_pg_tbl)
@@ -107,32 +107,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test1_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test2_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test2_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test2_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test2_store, Sv_res_global_pte_cg_cp_rsw_pte_test2_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test2_store, Sv_res_global_pte_cg_cp_rsw_pte_test2_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test2_load, Sv_res_global_pte_cg_cp_rsw_pte_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test2_load, Sv_res_global_pte_cg_cp_rsw_pte_test2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test2_exec, Sv_res_global_pte_cg_cp_rsw_pte_test2_exec_str)
   LA(x14, rvtest_Sroot_pg_tbl)
@@ -148,32 +148,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test2_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | (1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(x13, (va_data >> 39) << 39)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 25
-  srli x8, x8, 25
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test3_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test3_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test3_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test3_store, Sv_res_global_pte_cg_cp_rsw_pte_test3_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test3_store, Sv_res_global_pte_cg_cp_rsw_pte_test3_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test3_load, Sv_res_global_pte_cg_cp_rsw_pte_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test3_load, Sv_res_global_pte_cg_cp_rsw_pte_test3_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test3_exec, Sv_res_global_pte_cg_cp_rsw_pte_test3_exec_str)
   LA(x14, rvtest_Sroot_pg_tbl)
@@ -190,32 +190,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test3_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(x13, (va_data >> 30) << 30)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 34
-  srli x8, x8, 34
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test4_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test4_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test4_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test4_store, Sv_res_global_pte_cg_cp_rsw_pte_test4_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test4_store, Sv_res_global_pte_cg_cp_rsw_pte_test4_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test4_load, Sv_res_global_pte_cg_cp_rsw_pte_test4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test4_load, Sv_res_global_pte_cg_cp_rsw_pte_test4_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test4_exec, Sv_res_global_pte_cg_cp_rsw_pte_test4_exec_str)
   LA(x14, rvtest_slvl2_pg_tbl)
@@ -232,32 +232,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test4_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(x13, (va_data >> 30) << 30)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 34
-  srli x8, x8, 34
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test5_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test5_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test5_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test5_store, Sv_res_global_pte_cg_cp_rsw_pte_test5_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test5_store, Sv_res_global_pte_cg_cp_rsw_pte_test5_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test5_load, Sv_res_global_pte_cg_cp_rsw_pte_test5_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test5_load, Sv_res_global_pte_cg_cp_rsw_pte_test5_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test5_exec, Sv_res_global_pte_cg_cp_rsw_pte_test5_exec_str)
   LA(x14, rvtest_slvl2_pg_tbl)
@@ -274,32 +274,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test5_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | (1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(x13, (va_data >> 30) << 30)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 34
-  srli x8, x8, 34
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test6_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test6_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test6_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test6_store, Sv_res_global_pte_cg_cp_rsw_pte_test6_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test6_store, Sv_res_global_pte_cg_cp_rsw_pte_test6_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test6_load, Sv_res_global_pte_cg_cp_rsw_pte_test6_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test6_load, Sv_res_global_pte_cg_cp_rsw_pte_test6_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test6_exec, Sv_res_global_pte_cg_cp_rsw_pte_test6_exec_str)
   LA(x14, rvtest_slvl2_pg_tbl)
@@ -317,32 +317,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test6_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x13, (va_data >> 21) << 21)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 43
-  srli x8, x8, 43
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test7_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test7_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test7_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test7_store, Sv_res_global_pte_cg_cp_rsw_pte_test7_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test7_store, Sv_res_global_pte_cg_cp_rsw_pte_test7_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test7_load, Sv_res_global_pte_cg_cp_rsw_pte_test7_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test7_load, Sv_res_global_pte_cg_cp_rsw_pte_test7_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test7_exec, Sv_res_global_pte_cg_cp_rsw_pte_test7_exec_str)
   LA(x14, rvtest_slvl1_pg_tbl)
@@ -360,32 +360,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test7_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x13, (va_data >> 21) << 21)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 43
-  srli x8, x8, 43
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test8_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test8_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test8_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test8_store, Sv_res_global_pte_cg_cp_rsw_pte_test8_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test8_store, Sv_res_global_pte_cg_cp_rsw_pte_test8_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test8_load, Sv_res_global_pte_cg_cp_rsw_pte_test8_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test8_load, Sv_res_global_pte_cg_cp_rsw_pte_test8_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test8_exec, Sv_res_global_pte_cg_cp_rsw_pte_test8_exec_str)
   LA(x14, rvtest_slvl1_pg_tbl)
@@ -403,32 +403,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test8_read_pte:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | (1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(x13, (va_data >> 21) << 21)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 43
-  srli x8, x8, 43
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test9_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test9_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test9_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test9_store, Sv_res_global_pte_cg_cp_rsw_pte_test9_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test9_store, Sv_res_global_pte_cg_cp_rsw_pte_test9_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test9_load, Sv_res_global_pte_cg_cp_rsw_pte_test9_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test9_load, Sv_res_global_pte_cg_cp_rsw_pte_test9_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test9_exec, Sv_res_global_pte_cg_cp_rsw_pte_test9_exec_str)
   LA(x14, rvtest_slvl1_pg_tbl)
@@ -447,32 +447,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test9_read_pte:
   PTE_SETUP_SV48(rvtest_data_1, ((1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x13, (va_data >> 12) << 12)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test10_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test10_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test10_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test10_store, Sv_res_global_pte_cg_cp_rsw_pte_test10_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test10_store, Sv_res_global_pte_cg_cp_rsw_pte_test10_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test10_load, Sv_res_global_pte_cg_cp_rsw_pte_test10_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test10_load, Sv_res_global_pte_cg_cp_rsw_pte_test10_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test10_exec, Sv_res_global_pte_cg_cp_rsw_pte_test10_exec_str)
   LA(x14, rvtest_slvl0_pg_tbl)
@@ -491,32 +491,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test10_read_pte:
   PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x13, (va_data >> 12) << 12)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test11_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test11_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test11_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test11_store, Sv_res_global_pte_cg_cp_rsw_pte_test11_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test11_store, Sv_res_global_pte_cg_cp_rsw_pte_test11_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test11_load, Sv_res_global_pte_cg_cp_rsw_pte_test11_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test11_load, Sv_res_global_pte_cg_cp_rsw_pte_test11_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test11_exec, Sv_res_global_pte_cg_cp_rsw_pte_test11_exec_str)
   LA(x14, rvtest_slvl0_pg_tbl)
@@ -535,32 +535,32 @@ Sv_res_global_pte_cg_cp_rsw_pte_test11_read_pte:
   PTE_SETUP_SV48(rvtest_data_1, ((1 << 9) | (1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(x13, (va_data >> 12) << 12)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x13, x13, x8
-  addi x9, x9, 16
+  LI(x15, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x15, x15, x6
+  addi x13, x13, 16
 
 // Store
 Sv_res_global_pte_cg_cp_rsw_pte_test12_store:
-  sw x9, 20(x13)
+  sw x13, 20(x15)
   nop
 
 // Load
 Sv_res_global_pte_cg_cp_rsw_pte_test12_load:
-  lw x15, 20(x13)
+  lw x9, 20(x15)
   nop
 
 // Execute
 Sv_res_global_pte_cg_cp_rsw_pte_test12_exec:
-  jalr ra, x13, 0
+  jalr ra, x15, 0
   nop
 
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_res_global_pte_cg_cp_rsw_pte_test12_store, Sv_res_global_pte_cg_cp_rsw_pte_test12_store_str)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test12_store, Sv_res_global_pte_cg_cp_rsw_pte_test12_store_str)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_res_global_pte_cg_cp_rsw_pte_test12_load, Sv_res_global_pte_cg_cp_rsw_pte_test12_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_res_global_pte_cg_cp_rsw_pte_test12_load, Sv_res_global_pte_cg_cp_rsw_pte_test12_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_res_global_pte_cg_cp_rsw_pte_test12_exec, Sv_res_global_pte_cg_cp_rsw_pte_test12_exec_str)
   LA(x14, rvtest_slvl0_pg_tbl)
@@ -583,7 +583,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi x14, x9, 4
+  addi x14, x13, 4
   jr ra
   nop
   .word 0xbeefcaf1
@@ -603,54 +603,54 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_res_global_pte_cg_cp_rsw_pte_test1_store_str: .string "\"test: 271; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test1_load_str: .string "\"test: 272; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test1_exec_str: .string "\"test: 273; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test1_read_pte_str: .string "\"test: 274; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test2_store_str: .string "\"test: 275; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test2_load_str: .string "\"test: 276; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test2_exec_str: .string "\"test: 277; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test2_read_pte_str: .string "\"test: 278; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test3_store_str: .string "\"test: 279; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test3_load_str: .string "\"test: 280; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test3_exec_str: .string "\"test: 281; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test3_read_pte_str: .string "\"test: 282; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test4_store_str: .string "\"test: 283; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test4_load_str: .string "\"test: 284; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test4_exec_str: .string "\"test: 285; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test4_read_pte_str: .string "\"test: 286; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test5_store_str: .string "\"test: 287; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test5_load_str: .string "\"test: 288; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test5_exec_str: .string "\"test: 289; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test5_read_pte_str: .string "\"test: 290; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test6_store_str: .string "\"test: 291; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test6_load_str: .string "\"test: 292; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test6_exec_str: .string "\"test: 293; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test6_read_pte_str: .string "\"test: 294; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test7_store_str: .string "\"test: 295; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test7_load_str: .string "\"test: 296; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test7_exec_str: .string "\"test: 297; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test7_read_pte_str: .string "\"test: 298; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test8_store_str: .string "\"test: 299; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test8_load_str: .string "\"test: 300; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test8_exec_str: .string "\"test: 301; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test8_read_pte_str: .string "\"test: 302; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test9_store_str: .string "\"test: 303; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test9_load_str: .string "\"test: 304; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test9_exec_str: .string "\"test: 305; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test9_read_pte_str: .string "\"test: 306; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test10_store_str: .string "\"test: 307; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test10_load_str: .string "\"test: 308; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test10_exec_str: .string "\"test: 309; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test10_read_pte_str: .string "\"test: 310; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test11_store_str: .string "\"test: 311; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test11_load_str: .string "\"test: 312; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test11_exec_str: .string "\"test: 313; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test11_read_pte_str: .string "\"test: 314; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_read_pte\""
-Sv_res_global_pte_cg_cp_rsw_pte_test12_store_str: .string "\"test: 315; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_store\""
-Sv_res_global_pte_cg_cp_rsw_pte_test12_load_str: .string "\"test: 316; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_load\""
-Sv_res_global_pte_cg_cp_rsw_pte_test12_exec_str: .string "\"test: 317; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_exec\""
-Sv_res_global_pte_cg_cp_rsw_pte_test12_read_pte_str: .string "\"test: 318; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_store_str: .string "\"test: 272; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_load_str: .string "\"test: 273; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_exec_str: .string "\"test: 274; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test1_read_pte_str: .string "\"test: 275; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test1_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_store_str: .string "\"test: 276; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_load_str: .string "\"test: 277; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_exec_str: .string "\"test: 278; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test2_read_pte_str: .string "\"test: 279; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test2_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_store_str: .string "\"test: 280; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_load_str: .string "\"test: 281; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_exec_str: .string "\"test: 282; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test3_read_pte_str: .string "\"test: 283; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test3_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_store_str: .string "\"test: 284; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_load_str: .string "\"test: 285; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_exec_str: .string "\"test: 286; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test4_read_pte_str: .string "\"test: 287; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test4_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_store_str: .string "\"test: 288; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_load_str: .string "\"test: 289; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_exec_str: .string "\"test: 290; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test5_read_pte_str: .string "\"test: 291; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test5_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_store_str: .string "\"test: 292; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_load_str: .string "\"test: 293; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_exec_str: .string "\"test: 294; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test6_read_pte_str: .string "\"test: 295; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test6_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test7_store_str: .string "\"test: 296; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test7_load_str: .string "\"test: 297; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test7_exec_str: .string "\"test: 298; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test7_read_pte_str: .string "\"test: 299; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test7_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test8_store_str: .string "\"test: 300; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test8_load_str: .string "\"test: 301; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test8_exec_str: .string "\"test: 302; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test8_read_pte_str: .string "\"test: 303; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test8_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test9_store_str: .string "\"test: 304; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test9_load_str: .string "\"test: 305; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test9_exec_str: .string "\"test: 306; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test9_read_pte_str: .string "\"test: 307; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test9_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test10_store_str: .string "\"test: 308; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test10_load_str: .string "\"test: 309; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test10_exec_str: .string "\"test: 310; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test10_read_pte_str: .string "\"test: 311; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test10_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test11_store_str: .string "\"test: 312; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test11_load_str: .string "\"test: 313; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test11_exec_str: .string "\"test: 314; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test11_read_pte_str: .string "\"test: 315; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test11_read_pte\""
+Sv_res_global_pte_cg_cp_rsw_pte_test12_store_str: .string "\"test: 316; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_store\""
+Sv_res_global_pte_cg_cp_rsw_pte_test12_load_str: .string "\"test: 317; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_load\""
+Sv_res_global_pte_cg_cp_rsw_pte_test12_exec_str: .string "\"test: 318; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_exec\""
+Sv_res_global_pte_cg_cp_rsw_pte_test12_read_pte_str: .string "\"test: 319; cg: Sv_res_global_pte_cg; cp: cp_rsw_pte; bin: test12_read_pte\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

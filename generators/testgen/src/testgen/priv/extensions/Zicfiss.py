@@ -1572,6 +1572,7 @@ def make_zicfisss(test_data: TestData) -> list[TestChunk]:
         _generate_non_idempotent_s,
         _generate_perm_priority_s,
         _generate_senvcfg_rdonly0_s,
+        lambda test_data: _generate_page_access_ad(test_data, "S"),
     ):
         tc = test_data.begin_test_chunk("S")
         tc.code.extend(page_table_data_section())
@@ -1904,12 +1905,14 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
                     write_sigupd(rd_reg, test_data),
                 ]
             )
-        # cp_ssamoswap_reg_edges: all distinct, rd=x0, rs2=x0, rd==rs1. rd records the value the
-        # previous swap stored; a load of the location records what this one stored.
+        # cp_ssamoswap_reg_edges: all distinct, rd=x0, rs2=x0, rd==rs2, rd==rs1. rd records the value the
+        # previous swap stored; a load of the location records what this one stored. rd==rs2 follows the
+        # rs2=x0 swap, so the location holds 0 and the store of the original rs2 is told apart from the old value.
         for name, form, rd in (
             ("distinct", f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})", rd_reg),
             ("rd_x0", f"ssamoswap.{width} x0, x{rs2_reg}, (x{addr_reg})", None),
             ("rs2_x0", f"ssamoswap.{width} x{rd_reg}, x0, (x{addr_reg})", rd_reg),
+            ("rd_eq_rs2", f"ssamoswap.{width} x{rs2_reg}, x{rs2_reg}, (x{addr_reg})", rs2_reg),
             ("rd_eq_rs1", f"ssamoswap.{width} x{addr_reg}, x{rs2_reg}, (x{addr_reg})", addr_reg),
         ):
             block.extend(
@@ -2078,6 +2081,77 @@ def _generate_page_ad_bits(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# cp_ss_page_access_store_ad / cp_ss_page_access_amo_ad
+# ---------------------------------------------------------------------------
+
+
+def _ss_page_stores(
+    test_data: TestData, cg: str, coverpoint: str, addr_reg: int, data_reg: int, tag: str = "", read_back: bool = False
+) -> list[str]:
+    """Ordinary stores to the SS page at x{addr_reg}, each a store/AMO access fault. Each records the data
+    register, after reading the location back when read_back is set."""
+    lines = []
+    for mnemonic in ("sb", "sh", "sw", "sd"):
+        store = [
+            f"LI(x{data_reg}, 0xDEADBEEF)",
+            test_data.add_testcase(f"{mnemonic}_on_ss_page{tag}", coverpoint, cg),
+            f"{mnemonic} x{data_reg}, 0(x{addr_reg})",
+            *([f"LREG x{data_reg}, 0(x{addr_reg})   # unchanged"] if read_back else []),
+            write_sigupd(data_reg, test_data),
+        ]
+        lines.extend(rv64_only(store) if mnemonic == "sd" else store)
+    return lines
+
+
+def _ss_page_amos(
+    test_data: TestData, cg: str, coverpoint: str, addr_reg: int, data_reg: int, tag: str = ""
+) -> list[str]:
+    """Ordinary AMOs to the SS page at x{addr_reg}, each a store/AMO access fault that leaves rd unchanged."""
+    lines = []
+    # Zicfiss requires Zaamo, so the ordinary AMOs are always present.
+    for mnemonic in ("amoswap.w", "amoadd.w", "amoor.w", "amoswap.d", "amoadd.d"):
+        amo = [
+            f"LI(x{data_reg}, 0x1)",
+            test_data.add_testcase(f"{mnemonic.replace('.', '_')}_on_ss_page{tag}", coverpoint, cg),
+            f"{mnemonic} x{data_reg}, x{data_reg}, (x{addr_reg})",
+            write_sigupd(data_reg, test_data),
+        ]
+        lines.extend(rv64_only(amo) if mnemonic.endswith(".d") else amo)
+    return lines
+
+
+def _generate_page_access_ad(test_data: TestData, mode: str) -> list[str]:
+    """Ordinary stores and AMOs to an SS page from S-mode or U-mode for each pte.A/D.
+
+    The shadow-stack access fault comes before A and D are examined, so each access raises a store/AMO access
+    fault, never a store/AMO page fault. The location is not read back, because a load with pte.A = 0 would fault.
+    """
+    prologue, satp_off, cg, suffix = (
+        (_smode_prologue, SATP_OFF, _CG_S, "_s") if mode == "S" else (_umode_prologue, _SATP_OFF, _CG_U, "")
+    )
+    lines: list[str] = []
+    for a_bit, d_bit in ((0, 0), (1, 0), (0, 1), (1, 1)):
+        perms = " | ".join(["PTE_W", "PTE_V"] + (["PTE_A"] if a_bit else []) + (["PTE_D"] if d_bit else []))
+        tag = f"_a{a_bit}_d{d_bit}"
+        lines.extend([f"# --- pte.A={a_bit}, pte.D={d_bit} ---", *prologue(test_data, ss_perms=perms)])
+        addr_reg, data_reg = test_data.int_regs.get_registers(2)
+        lines.extend(
+            [
+                f"LI(x{addr_reg}, ZICFISS_VA_SS)",
+                *_ss_page_stores(test_data, cg, f"cp_ss_page_access_store_ad{suffix}", addr_reg, data_reg, tag),
+                *_ss_page_amos(test_data, cg, f"cp_ss_page_access_amo_ad{suffix}", addr_reg, data_reg, tag),
+                *satp_off,
+            ]
+        )
+        test_data.int_regs.return_registers([addr_reg, data_reg])
+    return vm_section(
+        f"cp_ss_page_access_store_ad{suffix} and cp_ss_page_access_amo_ad{suffix}",
+        "Ordinary stores and AMOs to an SS page with each pte.A/D: a store/AMO access fault, never a page fault",
+        lines,
+    )
+
+
+# ---------------------------------------------------------------------------
 # cp_ss_non_idempotent
 # ---------------------------------------------------------------------------
 
@@ -2148,12 +2222,7 @@ def _generate_page_access(test_data: TestData) -> list[str]:
         ]
 
     lines.append(f"LI(x{addr_reg}, ZICFISS_VA_SS)")
-    for mnemonic in ("sb", "sh", "sw", "sd"):
-        store = [
-            f"LI(x{data_reg}, 0xDEADBEEF)",
-            *access(mnemonic, f"{mnemonic} x{data_reg}, 0(x{addr_reg})", "cp_ss_page_access_store", read_back=True),
-        ]
-        lines.extend(rv64_only(store) if mnemonic == "sd" else store)
+    lines.extend(_ss_page_stores(test_data, _CG_U, "cp_ss_page_access_store", addr_reg, data_reg, read_back=True))
 
     for mxr in (0, 1):
         lines.extend([f"LI(x{mxr_reg}, SSTATUS_MXR)", tsbi_call(f"{'csrs' if mxr else 'csrc'} sstatus, x{mxr_reg}")])
@@ -2161,13 +2230,7 @@ def _generate_page_access(test_data: TestData) -> list[str]:
             load = access(mnemonic, f"{mnemonic} x{data_reg}, 0(x{addr_reg})", "cp_ss_page_access_load", f"_mxr{mxr}")
             lines.extend(rv64_only(load) if mnemonic in ("ld", "lwu") else load)
 
-    # Zicfiss requires Zaamo, so the ordinary AMOs are always present.
-    for mnemonic in ("amoswap.w", "amoadd.w", "amoor.w", "amoswap.d", "amoadd.d"):
-        amo = [
-            f"LI(x{data_reg}, 0x1)",
-            *access(mnemonic, f"{mnemonic} x{data_reg}, x{data_reg}, (x{addr_reg})", "cp_ss_page_access_amo"),
-        ]
-        lines.extend(rv64_only(amo) if mnemonic.endswith(".d") else amo)
+    lines.extend(_ss_page_amos(test_data, _CG_U, "cp_ss_page_access_amo", addr_reg, data_reg))
 
     # The CBOs are gated by the CBIE, CBCFE and CBZE fields of menvcfg and senvcfg; enable them so
     # that a CBO traps on the SS page rather than on its own gating. The boot code enables them
@@ -2513,6 +2576,7 @@ def make_zicfissu(test_data: TestData) -> list[TestChunk]:
         (_generate_page_access, None),
         (_generate_vector, None),
         (_generate_page_ad_bits, "U_page_ad_bits"),
+        (lambda test_data: _generate_page_access_ad(test_data, "U"), None),
     ):
         tc = test_data.begin_test_chunk(split_name)
         tc.code.extend(page_table_data_section())

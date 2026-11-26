@@ -19,3 +19,8 @@ coverpoints:
     description: In HS-mode with menvcfg.PBMTE = 0, then 1, set henvcfg.PBMTE and read it back.
     expectation: henvcfg.PBMTE reads as zero while menvcfg.PBMTE = 0, and reads back as written while menvcfg.PBMTE = 1.
     bins: HS x csrrs henvcfg x menvcfg.PBMTE {0, 1}
+  - name: cp_hlv_pbmt
+    goal: henvcfg.PBMTE enables PBMT in the VS-stage for HLV and HSV
+    description: In HS-mode with hstatus.SPVP = 1, vsatp paged, hgatp = Bare and menvcfg.PBMTE = 1, execute hlv.w and hsv.w through a VS-stage leaf with PBMT = 1 (NC), 2 (IO) and 3 (reserved), with henvcfg.PBMTE = 0 and 1.
+    expectation: With henvcfg.PBMTE = 0, every PBMT is reserved and raises a load or store page fault.  With henvcfg.PBMTE = 1, NC and IO access the page, and PBMT = 3 still faults.
+    bins: HS x {hlv.w, hsv.w} x vsatp_mode x hgatp Bare x henvcfg.PBMTE {0, 1} x VS leaf PBMT {1, 2, 3}

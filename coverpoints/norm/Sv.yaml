@@ -972,6 +972,10 @@ normative_rule_definitions:
   - name: vsstatus_sz_acc_op
     coverpoint: ["Sv_H_vsstage_cg/{cp_vsatp_sum,cp_vsatp_hs_sum}"]
 
+  # vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses
+  - name: vsstatus_v0
+    coverpoint: ["Sv_H_vsstage_cg/{cp_v0_vsstatus_sum,cp_v0_vsstatus_mxr}"]
+
   # HLV, HLVX and HSV: hstatus.SPVP selects the privilege, vsstatus.SUM applies and sstatus.SUM does not,
   # sstatus.MXR affects both stages and vsstatus.MXR the VS-stage, and HLVX needs execute permission
   - names:

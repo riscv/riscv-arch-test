@@ -1946,6 +1946,9 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     hgatp_bare : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare = {0};
     }
+    satp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
+        bins paged = {[1:15]};
+    }
     // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
     trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         wildcard bins none = {6'b0?????};
@@ -1964,6 +1967,19 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         bins on = {1};
     }
     mstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
+    // At V=0: the trace logs sstatus in HS-mode, and mirrors mstatus into sstatus at the mret into U-mode
+    sstatus_sum_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sum") {
+        bins off = {0};
+    }
+    sstatus_mxr_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "mxr") {
+        bins off = {0};
+    }
+    vsstatus_sum_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum") {
+        bins on = {1};
+    }
+    vsstatus_mxr_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr") {
+        bins on = {1};
+    }
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
             bins off = {0};
@@ -1989,6 +2005,9 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     cp_vsatp_hs_sum : cross priv_mode_vs, ldst, vsatp_mode, hgatp_bare, vsstatus_sum_off, mstatus_sum_on, page_fault;
     // VS-stage A/D bits: Svade faults with menvcfg.ADUE = henvcfg.ADUE = 0.  Svadu_H_cg has the ADUE = 1 cases.
     cp_vsatp_svade  : cross priv_mode_vs, access, vsatp_mode, hgatp_bare, menvcfg_adue, henvcfg_adue;
+    // When V=0, vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses through satp
+    cp_v0_vsstatus_sum : cross priv_mode_hs, ldst, satp_paged, sstatus_sum_off, vsstatus_sum_on, page_fault;
+    cp_v0_vsstatus_mxr : cross priv_mode_s_u, lw, satp_paged, sstatus_mxr_off, vsstatus_mxr_on, page_fault;
 endgroup
 
 covergroup Sv_H_gstage_cg with function sample(ins_t ins);

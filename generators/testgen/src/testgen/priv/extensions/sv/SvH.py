@@ -20,14 +20,20 @@ from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, load_constant, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import virtual_address
+from testgen.priv.extensions.sv.access import add_rwx_test, virtual_address
 from testgen.priv.extensions.sv.generate import (
+    SvRegs,
+    begin_sv_test,
+    end_sv_test,
     guest_translation_setup,
     guest_translation_teardown,
     identity_map_image,
+    sv_data,
 )
 from testgen.priv.extensions.sv.page_tables import (
+    SV32,
     SV32X4,
+    SV39,
     SV39X4,
     SV48X4,
     SV57X4,
@@ -452,6 +458,51 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
     code.extend(vs_ad_accesses(test_data, vs, SVADE_CASES, VS_CG, "cp_vsatp_svade"))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
+
+
+###########################
+# vsstatus at V=0
+###########################
+
+
+def _t_v0_vsstatus(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    """vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses (V=0) through satp."""
+    regs = SvRegs.allocate(test_data)
+    chunk = begin_sv_test(
+        test_data, regs, sv, "Umode", f"H_{sv.name}_v0_vsstatus", coverpoint="cp_v0_vsstatus_sum, cp_v0_vsstatus_mxr"
+    )
+    # (name, mode, satp leaf, vsstatus bit, accesses, coverpoint); sstatus.SUM = MXR = 0, so each access faults
+    cases = (
+        ("vssum1_u1", "Smode", PteFlags(user=True), "SSTATUS_SUM", ("store", "load"), "cp_v0_vsstatus_sum"),
+        ("vsmxr1_xonly", "Smode", perm_flags("x", False), "SSTATUS_MXR", ("load",), "cp_v0_vsstatus_mxr"),
+        ("vsmxr1_xonly_u1", "Umode", perm_flags("x", True), "SSTATUS_MXR", ("load",), "cp_v0_vsstatus_mxr"),
+    )
+    chunk.code.extend(status_bits("sstatus", regs.scratch))
+    for name, mode, flags, bit, ops, coverpoint in cases:
+        chunk.code.extend(
+            [
+                f"// {mode[0]}-mode access with {bit.replace('SSTATUS_', 'vsstatus.')} = 1: page fault",
+                *create_page_mapping(sv, leaf_level=0, leaf_flags=flags),
+                "sfence.vma",
+                *set_csr_bits("vsstatus", "SSTATUS_SUM | SSTATUS_MXR", bit, regs.scratch),
+                *add_rwx_test(
+                    test_data,
+                    sv,
+                    regs,
+                    mode,
+                    "va_data",
+                    0,
+                    name,
+                    driver_mode="Smode",
+                    operations=ops,
+                    coverpoints=dict.fromkeys(ops, coverpoint),
+                    covergroup=VS_CG,
+                ),
+            ]
+        )
+    chunk.code.extend(status_bits("vsstatus", regs.scratch))
+    chunk.raw_data.extend(sv_data(sv, regs, levels=(0,)))
+    test_chunks.append(end_sv_test(test_data, regs))
 
 
 ###########################
@@ -1557,6 +1608,21 @@ BOOT = ["#define BOOT_TO_SMODE"]
 def make_svh_bare(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     _t_bare(test_data, test_chunks)
+    return test_chunks
+
+
+# vsstatus at V=0, with HS-mode and U-mode translation through satp
+@add_priv_test_generator("Sv", required_extensions=["H", "Sv32"], march_extensions=["H"], extra_defines=BOOT)
+def make_svh_v0_sv32(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_v0_vsstatus(test_data, test_chunks, SV32)
+    return test_chunks
+
+
+@add_priv_test_generator("Sv", required_extensions=["H", "Sv39"], march_extensions=["H"], extra_defines=BOOT)
+def make_svh_v0_sv39(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_v0_vsstatus(test_data, test_chunks, SV39)
     return test_chunks
 
 

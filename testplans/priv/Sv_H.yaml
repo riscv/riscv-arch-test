@@ -40,6 +40,18 @@ coverpoints:
     expectation: An access with A = 0, or a store with D = 0, raises a page fault and the PTE is unchanged.
     bins: VS x {sw, lw, jalr} x vsatp_mode x hgatp Bare x menvcfg.ADUE = henvcfg.ADUE = 0
     notes: Svadu_H cp_vsatp_adue has the ADUE = 1 cases.
+  - name: |-
+      cp_v0_vsstatus_sum
+      cp_v0_vsstatus_mxr
+    goal: vsstatus.SUM and vsstatus.MXR do not affect accesses at V=0
+    description: |-
+      Needs satp Sv39 (RV64) or Sv32 (RV32).  With satp paged and sstatus.SUM = MXR = 0:
+      cp_v0_vsstatus_sum: in HS-mode with vsstatus.SUM = 1, store and load through a satp leaf with U = 1.
+      cp_v0_vsstatus_mxr: in HS-mode and U-mode with vsstatus.MXR = 1, load through an execute-only satp leaf (U = 0 for HS-mode, U = 1 for U-mode).
+    expectation: When V=0, vsstatus does not affect the machine except through HLV, HLVX, HSV or MPRV, so every access raises a page fault.
+    bins: |-
+      cp_v0_vsstatus_sum: HS x {sw, lw} x satp paged x sstatus.SUM = 0 x vsstatus.SUM = 1 x page fault
+      cp_v0_vsstatus_mxr: {HS, U} x lw x satp paged x sstatus.MXR = 0 x vsstatus.MXR = 1 x page fault
   - heading: G-stage translation, vsatp = Bare (Sv_H_gstage_cg)
   - name: cp_hgatp_perm
     goal: G-stage leaf permissions and PTE formats

@@ -16,7 +16,7 @@ normative_rule_definitions:
   # To help avoid side-channel timing attacks, these instructions shall be implemented with data-
   # independent timing.
   - name: Zvkg_dataindeptiming
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW=32
   # elements to be processed and therefore must be a multiple of EGS=4.
@@ -29,16 +29,13 @@ normative_rule_definitions:
 
   # Likewise, vstart must be a multiple of EGS=4.
   - name: Zvkg_vstart
-    coverpoint:
-      [
-        "TODO: no coverpoint samples vstart for this suite yet; nothing wired in coverpoints/unpriv/Zvkg_coverage.svh",
-      ]
+    coverpoint: ["Needs test: no Zvkg coverpoint samples vstart."]
 
   # SEW is any value other than 32.
   - name: vghsh-vv_sewn32_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvkg only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # This instruction treats all of the inputs and outputs as 128-bit polynomials and performs
@@ -59,13 +56,13 @@ normative_rule_definitions:
   # This instruction must always be implemented such that its execution latency does not depend on
   # the data being operated upon.
   - name: vghsh-vv_exeindepdata
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # SEW is any value other than 32.
   - name: vgmul-vv_sewn32_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvkg only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # This instruction treats all of the inputs and outputs as 128-bit polynomials and performs
@@ -83,7 +80,7 @@ normative_rule_definitions:
   # This instruction must always be implemented such that its execution latency does not depend on
   # the data being operated upon.
   - name: vgmul-vv_exeindepdata
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # The multiplication over GF(2^128) is a carry-less multiply of two 128-bit polynomials modulo
   # GHASH's irreducible polynomial (x^128 + x^7 + x^2 + x + 1).
@@ -118,3 +115,9 @@ normative_rule_definitions:
   # standard ordering (e.g., 7,6,5,4,3,2,1,0).
   - name: vgmul-vv_op_coeff
     coverpoint: ["Zvkg_vgmul_vv_cg/cr_vs2_vd_edges_egs4"]
+
+  # SEW|EGW|Mnemonic|Instruction === 32|128|insn:vghsh.vv[]|<<insns-vghsh>>¶
+  # 32|128|insn:vgmul.vv[]|<<insns-vgmul>> ===
+  - name: Zvkg_insns_tbl
+    coverpoint:
+      ["Zvkg_vghsh_vv_cg/cp_asm_count", "Zvkg_vgmul_vv_cg/cp_asm_count"]

@@ -19,7 +19,7 @@ normative_rule_definitions:
   - name: senvcfg_pmm_immediate
     coverpoint:
       [
-        "TODO: change senvcfg.PMM, then access memory from U-mode with no intervening SFENCE.VMA",
+        "Needs test: change senvcfg.PMM, then access memory from U-mode with no intervening SFENCE.VMA.",
       ]
 
   # Value|Description === 00|Pointer masking is disabled (PMLEN = 0)¶01|Reserved¶10|Pointer

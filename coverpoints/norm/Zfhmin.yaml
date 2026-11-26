@@ -63,8 +63,7 @@ normative_rule_definitions:
   # insn:flh[] and insn:fsh[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned.
   - name: fsh_flh_atomic_align
-    coverpoint:
-      ["Not tested: atomicity is not observable in single-hart signature tests"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # insn:flh[] and insn:fsh[] do not modify the bits being transferred; in particular,
   # the payloads of non-canonical NaNs are preserved. insn:flh[] NaN-boxes the result
   # written to rd, whereas insn:fsh[] ignores all but the lower 16 bits in rs2.

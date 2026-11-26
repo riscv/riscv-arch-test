@@ -44,7 +44,10 @@ normative_rule_definitions:
   # number of bytes. Specific supported values for this PMA are represented by MAGNN, e.g., MAG16
   # indicates the misaligned atomicity granule is at least 16 bytes.
   - name: pma_mag_def
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      [
+        "Configuration requirement: misaligned atomicity granules are naturally aligned powers of two; not yet checked by UDB.",
+      ]
 
   # The misaligned atomicity granule PMA applies only to AMOs; loads and stores defined in the base
   # ISAs; loads and stores of no more than XLEN bits defined in the F, D, and Q
@@ -74,7 +77,8 @@ normative_rule_definitions:
   # is not guaranteed to be atomic.
   - name: pma_mag_op_ldst
     # TODO: misaligned loads and stores that cross a 16-byte boundary
-    coverpoint: [""]
+    coverpoint:
+      ["Needs infrastructure: platform PMA regions with these attributes."]
 
   # Misaligned loads, stores and AMOs to those regions that do not cross a naturally
   # aligned 16-byte boundary are atomic.

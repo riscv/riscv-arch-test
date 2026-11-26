@@ -39,14 +39,10 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |pte_d|XLEN|Data page table entry (VS-stage when Hypervisor is active)
 |g_pte_i|XLEN|Instruction page table entry (G-stage when Hypervisor is active, 0 when inactive)
 |g_pte_d|XLEN|Data page table entry (G-stage when Hypervisor is active, 0 when inactive)
-|page_type_i|3|Instruction page type (VS-stage when hypervisor is active))
-|page_type_d|3|Data page type (VS-stage when hypervisor is active))
-|g_page_type_i|3|Instruction page type (G-stage when hypervisor is inactive, 0 when inactive)
-|g_page_type_d|3|Data page type (G-stage when hypervisor is inactive, 0 when inactive)
-|tdata1[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 1 for each debug trigger
-|tdata2[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 2 for each debug trigger
-|tdata3[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 3 for each debug trigger
-|tinfo[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Info for each debug trigger
+|page_type_i|3|Instruction page type (VS-stage when hypervisor is active)
+|page_type_d|3|Data page type (VS-stage when hypervisor is active)
+|g_page_type_i|3|Instruction page type (G-stage when hypervisor is active, 0 when inactive)
+|g_page_type_d|3|Data page type (G-stage when hypervisor is active, 0 when inactive)
 |===
 
 [[t-pagetypes]]
@@ -88,7 +84,7 @@ The available fields are given in framework/src/act/fcov/coverage/RISCV_coverage
 [%AUTOWIDTH]
 |===
 |Signal|Width|Description|Example
-|insn|ILEN|Instruction bit pattern|*** add x10, x11, x12
+|insn|ILEN|Instruction bit pattern|add x10, x11, x12
 |inst_name|string|Instruction name|add
 |disass|string|Disassembled instruction|`add x10, x11, x12`
 |trap|1|Instruction trapped rather than retiring|0
@@ -119,25 +115,21 @@ Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disasse
 
 === Writing Coverpoints with riscvISACOV
 
-Move this and the remainder to ACT repo
-
-*** example of coverpoint
-*** organization of files
+See the riscv-arch-test https://github.com/riscv/riscv-arch-test/blob/act4/docs/DeveloperGuide.md[Developer Guide] for instructions to write coverpoints.
 
 === Trace Coverage Flow
 
-Coverage is measured by running tests on the RISC-V Sail model and generating a RVVI-Trace file, then passing this  file to an RVVI agent in a SystemVerilog testbench that checks coverage.
+The automated coverage flow runs each self-checking ELF on the RISC-V Sail model to produce a Sail `.trace` file. The `sailLog2Trace` converter in `framework/src/act/sail_to_rvvi.py` converts that file to an `.rvvi` trace. The RVVI agent in `framework/src/act/fcov/rvviTrace.sv` reads the converted trace into the SystemVerilog coverage testbench.
 
 [NOTE]
 ====
-The number of coverpoints and the number of tests both grow with the number of extensions, so the runtime to measure coverage can grow quadratically with the number of extensions, and becomes problematic.  To avoid this, it is recommended to only enable coverpoints for one extension (or small group of extensions) at a time and to only run tests for that extension, and generate a Unified Coverage Database (UDCB) file and report for that extension.  A script will kick off such tests in parallel for all extensions, and merge the coverage reports.
+The framework groups traces by test suite and measures each group with its applicable coverpoints, avoiding the cost of running every trace against every coverpoint. It produces a coverage database and report for each group, then merges the report summaries. The database format depends on `COVERAGE_SIMULATOR`: Questa uses `.ucdb`, VCS uses `.vdb`, and Verilator uses `.dat`.
 ====
 
-The RISC-V Sail model produces the trace file in a standard RVVI-Trace format (see Section <<RVVI-Trace Format>>).  Any other simulator that implements the same trace format can also be used to cross-check coverage.
+Run `make coverage EXTENSIONS=I` from the repository root for a focused run. Without `CONFIG_FILES`, this uses the Sail RV32 and RV64 max configurations. Set `CONFIG_FILES` to select other configurations and `COVERAGE_SIMULATOR` to select `questa` (the default), `vcs`, or `verilator`.
 
-*** Jordan add instructions on how to run this
+Coverage traces come from Sail. Another simulator can be used if it produces traces in the format described in <<RVVI-Trace Format>>.
 
 === RVVI-Trace Format
 
-*** Jordan write
-*** how to handle instructions that change multiple CSRs, such as a write to mstatus.SIE also affecting sstatus.SIE
+The text format consumed by the coverage testbench is defined by https://github.com/riscv/riscv-arch-test/blob/act4/framework/src/act/fcov/rvviTrace.sv[rvviTrace.sv]. The https://github.com/riscv/riscv-arch-test/blob/act4/framework/src/act/sail_to_rvvi.py[Sail-to-RVVI converter] shows how instruction records, register updates, and CSR updates are encoded for that reader. An adapter for another simulator must supply the same architectural state updates.

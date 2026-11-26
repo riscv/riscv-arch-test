@@ -360,6 +360,7 @@ normative_rule_definitions:
       [
         "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}",
         "Interrupts_Sgei_cg/{cp_trigger_vsei_hgeip, cp_vgein_switch_csrrw, cp_vgein_switch_csrrs, cp_vgein_switch_csrrc}",
+        "Interrupts_Sgei_cg/{cp_trigger_vsei_hgeip_taken, cp_trigger_vsei_hgeip_taken_lower, cp_trigger_vsei_hgeip_taken_vs}",
       ]
 
   # Bits csr:hip[vstip] and csr:hie[vstie] are the interrupt-pending and interrupt-enable
@@ -497,6 +498,7 @@ normative_rule_definitions:
       [
         "Interrupts_cg/{cp_trigger_tsbi, cp_priority_sip_tsbi}",
         "Interrupts_Sm_cg/cp_trigger_tsbi",
+        "Interrupts_Sgei_cg/cp_trigger_vsei_hgeip_taken_vs",
       ]
 
     # Representative coverpoints; delegated VS-level interrupts taken in VS and VU, and through a
@@ -554,7 +556,7 @@ normative_rule_definitions:
   - name: hgeie_op
     coverpoint:
       [
-        "Interrupts_Sgei_cg/cp_{trigger_sgei, trigger_sgei_lower, hgeie, trigger_vsei_hgeip}",
+        "Interrupts_Sgei_cg/cp_{trigger_sgei, trigger_sgei_lower, hgeie, trigger_vsei_hgeip, trigger_vsei_hgeip_taken}",
       ]
 
   # Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.

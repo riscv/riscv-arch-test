@@ -1613,6 +1613,47 @@ covergroup Interrupts_Sgei_cg with function sample(ins_t ins);
         `endif
     }
 
+    // VSEI raised by hgeip[VGEIN] alone, with hvip.VSEIP = 0, is taken like any VS-level interrupt. HS-mode
+    // takes it when hideleg[10] = 0 (in HS-mode on the csrw hie that enables it, with sstatus.SIE = 1), and
+    // VS-mode and VU-mode take it through vstvec when hideleg[10] = 1. Sampled at the csrw hie in HS-mode, or at
+    // the mret into U, VS or VU mode. hgeie does not affect it.
+    vseip_from_hgeip : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12] != 0 &&
+                                   ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGEIP) >> get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS)[17:12]) & 1) != 0 &&
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HVIP)[10] == 0) {
+        bins pending = {1};
+    }
+    hie_write_vseie_one : coverpoint ins.current.rs1_val[10] {
+        bins one = {1};
+    }
+    hie_vseie_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIE)[10] {
+        bins one = {1};
+    }
+    sstatus_sie_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS)[1] {
+        bins one = {1};
+    }
+    hideleg_vsei : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIDELEG)[10];
+    hideleg_vsei_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIDELEG)[10] {
+        bins one = {1};
+    }
+    mstatus_mpv_mpp_virt : coverpoint {`INT_MPV, get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+        bins VS_mode = {3'b101};
+        bins VU_mode = {3'b100};
+    }
+    vsstatus_sie_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] {
+        bins one = {1};
+    }
+    vstvec_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTVEC)[1:0] {
+        `ifdef UDB_VSTVEC_MODES_0
+            bins direct = {2'b00};
+        `endif
+        `ifdef UDB_VSTVEC_MODES_1
+            bins vector = {2'b01};
+        `endif
+    }
+    cp_trigger_vsei_hgeip_taken:       cross priv_mode_hs, csrrw, hie, hie_write_vseie_one, sstatus_sie_one, vseip_from_hgeip, hideleg_vsei, hgeie_vgein;
+    cp_trigger_vsei_hgeip_taken_lower: cross priv_mode_m, mret_insn, mstatus_mpv_mpp_lower, hie_vseie_one, vseip_from_hgeip, hideleg_vsei;
+    cp_trigger_vsei_hgeip_taken_vs:    cross priv_mode_m, mret_insn, mstatus_mpv_mpp_virt, hie_vseie_one, vseip_from_hgeip, hideleg_vsei_one, vsstatus_sie_one, vstvec_mode;
+
     // A csrrw, csrrs or csrrc of hstatus that moves VGEIN, after which the test reads hip.VSEIP:
     // {old VGEIN == 0, hgeip[old VGEIN], new VGEIN == 0, hgeip[new VGEIN]}, where hgeip bit 0 reads 0.
     // csrrs cannot reach VGEIN = 0 and csrrc cannot leave it, so each form has the transitions it can make.

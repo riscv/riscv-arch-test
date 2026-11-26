@@ -33,6 +33,20 @@ coverpoints:
     expectation: hip.VSEIP = hgeip[i] independent of hgeie.  With VGEIN = 0, hip.VSEIP = 0 and hip.SGEIP = 1.
     bins: GEILEN * 3 * 2 + 1
   - name: |-
+      cp_trigger_vsei_hgeip_taken
+      cp_trigger_vsei_hgeip_taken_lower
+      cp_trigger_vsei_hgeip_taken_vs
+    goal: VSEI raised through hgeip[VGEIN] is taken like any VS-level interrupt
+    description: |-
+      With hstatus.VGEIN = 1, guest external interrupt 1 pending, hvip = 0 and hie.SGEIE = 0:
+      In HS-mode with sstatus.SIE = 1, hideleg[10] = {0/1} and hgeie[1] = {0/1}, write hie.VSEIE = 1
+      With sstatus.SIE = 0, hie.VSEIE = 1 and hideleg[10] = {0/1}, change to {U, VS, VU} mode, with vstvec.MODE = {DIRECT/VECTORED} and vsstatus.SIE = 1 when VS-mode or VU-mode takes it
+    expectation: |-
+      hideleg[10] = 0: interrupt to HS-mode with cause 10, in HS-mode on the write of hie, and on entering U, VS or VU mode.
+      hideleg[10] = 1: interrupt to VS-mode with cause 9 through vstvec on entering VS or VU mode; HS-mode and U-mode do not take it.
+      hgeie does not change the outcome.
+    bins: "HS: 2 hideleg * 2 hgeie; lower: 3 priv * 2 hideleg; delegated: 2 priv * 2 vstvec.MODE"
+  - name: |-
       cp_vgein_switch_csrrw
       cp_vgein_switch_csrrs
       cp_vgein_switch_csrrc

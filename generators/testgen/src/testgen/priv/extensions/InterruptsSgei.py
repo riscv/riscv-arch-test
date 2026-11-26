@@ -13,7 +13,8 @@ hooks that a DUT with H and GEILEN > 0 (RVTEST_SGEI_INTR_IMPL) must define; the 
 RVTEST_SET/CLR_GUEST_EXT_INT_M/_S.  Every test here uses those hooks, so they are kept in their own groups and
 produce no testcases when GEILEN = 0.
 
-Interrupts_Sgei boots to HS-mode.  Its trigger file takes SGEI from HS, U, VS and VU modes; its hs file covers hgeip
+Interrupts_Sgei boots to HS-mode.  Its trigger file takes SGEI, and VSEI raised through hgeip[VGEIN], from HS, U, VS
+and VU modes; its hs file covers hgeip
 and hgeie, hip.SGEIP, hstatus.VGEIN and the SGEI priority.  Interrupts_SgeiSm boots to M-mode with mideleg = 0 and
 takes SGEI from every mode: SGEI still goes to HS-mode because mideleg[12] is read-only one.  The hooks may reach
 IMSIC state below M-mode (vstopei, vsiselect and vsireg); boot sets mstateen0.IMSIC, AIA and CSRIND for them.
@@ -22,7 +23,7 @@ IMSIC state below M-mode (vstopei, vsiselect and vsireg); boot sets mstateen0.IM
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.InterruptsCommon import int_macro, lower_modes
+from testgen.priv.extensions.InterruptsCommon import hideleg_vs_target, int_macro, lower_modes
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_Sgei_cg"
@@ -96,6 +97,95 @@ def _trigger_tests(test_data: TestData) -> list[str]:
                 ]
             )
     lines.extend(["csrw hgeie, zero", "#endif // RVTEST_SGEI_INTR_IMPL"])
+    test_data.int_regs.return_register(tmp_reg)
+    return lines
+
+
+def _vsei_hgeip_tests(test_data: TestData) -> list[str]:
+    """A VS external interrupt from hgeip[VGEIN] alone, with hvip = 0, is taken like any VS-level interrupt.  With
+    hideleg[10] = 0, HS-mode takes it as cause 10, in HS-mode only with sstatus.SIE = 1.  With hideleg[10] = 1,
+    VS-mode (with vsstatus.SIE = 1) and VU-mode take it as cause 9 through vstvec, and HS-mode and U-mode never take
+    it.  hgeie does not affect it."""
+    tmp_reg = test_data.int_regs.get_register()
+    lines = [
+        "#ifdef RVTEST_SGEI_INTR_IMPL",
+        comment_banner(
+            "cp_trigger_vsei_hgeip_taken",
+            "With hstatus.VGEIN = 1, guest external interrupt 1 pending, hvip = 0 and hie.SGEIE = 0, write\n"
+            "hie.VSEIE = 1 in HS-mode with sstatus.SIE = 1 and hideleg[10] = 0/1 and hgeie[1] = 0/1, or then enter\n"
+            "U, VS or VU mode with hideleg[10] = 0/1, vstvec.MODE = DIRECT/VECTORED and vsstatus.SIE = 1.\n"
+            "HS-mode takes cause 10 when hideleg[10] = 0; VS and VU modes take cause 9 when hideleg[10] = 1",
+        ),
+        "csrw hideleg, zero",
+        "csrw hie, zero",
+        "csrw hgeie, zero",
+        f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
+        f"csrc hstatus, x{tmp_reg}",
+        f"LI(x{tmp_reg}, {1 << 12:#x})",
+        f"csrs hstatus, x{tmp_reg} # hstatus.VGEIN = 1",
+        *_gei("SET", 1, tmp_reg),
+    ]
+    for mode in lower_modes:
+        for hideleg in (0, 1):
+            # vstvec matters only where VS-mode or VU-mode takes the interrupt
+            tvecs = (0, 1) if hideleg and mode in ("VS", "VU") else (None,)
+            hgeies = (0, 1) if mode == "S" else (0,)
+            for tvec in tvecs:
+                for hgeie in hgeies:
+                    if tvec is not None:
+                        deleg_open, deleg_close = hideleg_vs_target(hideleg, "VSEI", tvec, 1, tmp_reg)
+                    elif hideleg:
+                        deleg_open = [f"LI(x{tmp_reg}, MIP_VSEIP)", f"csrw hideleg, x{tmp_reg} # hideleg[10] = 1"]
+                        deleg_close = ["csrw hideleg, zero"]
+                    else:
+                        deleg_open, deleg_close = [], []
+                    bin_name = f"{'hs' if mode == 'S' else mode.lower()}_hideleg{hideleg}"
+                    bin_name += "" if tvec is None else f"_tvec{tvec}"
+                    bin_name += f"_hgeie{hgeie}" if mode == "S" else ""
+                    if mode == "S":
+                        # Writing hie.VSEIE makes the interrupt takeable in HS-mode
+                        body = [
+                            f"LI(x{tmp_reg}, {hgeie << 1})",
+                            f"csrw hgeie, x{tmp_reg} # hgeie[1] = {hgeie}",
+                            "csrsi sstatus, SSTATUS_SIE",
+                            f"LI(x{tmp_reg}, MIP_VSEIP)",
+                            test_data.add_testcase(bin_name, "cp_trigger_vsei_hgeip_taken", _CG),
+                            f"csrw hie, x{tmp_reg} # hie.VSEIE = 1",
+                            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                            "csrci sstatus, SSTATUS_SIE",
+                            "csrw hgeie, zero",
+                        ]
+                    else:
+                        # With sstatus.SIE = 0 HS-mode does not take it, so it is taken on the mret into the mode
+                        coverpoint = (
+                            "cp_trigger_vsei_hgeip_taken_lower" if tvec is None else "cp_trigger_vsei_hgeip_taken_vs"
+                        )
+                        body = [
+                            f"LI(x{tmp_reg}, MIP_VSEIP)",
+                            f"csrw hie, x{tmp_reg} # hie.VSEIE = 1",
+                            test_data.add_testcase(bin_name, coverpoint, _CG),
+                            f"RVTEST_TSBI_GOTO_{mode}MODE",
+                            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                            "RVTEST_TSBI_GOTO_SMODE",
+                        ]
+                    lines.extend(
+                        [
+                            *deleg_open,
+                            *body,
+                            f"csrr x{tmp_reg}, hie # VSEIE is cleared only if a trap handler took VSEI",
+                            write_sigupd(tmp_reg, test_data),
+                            "csrw hie, zero",
+                            *deleg_close,
+                        ]
+                    )
+    lines.extend(
+        [
+            *_gei("CLR", 1, tmp_reg),
+            f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
+            f"csrc hstatus, x{tmp_reg} # hstatus.VGEIN = 0",
+            "#endif // RVTEST_SGEI_INTR_IMPL",
+        ]
+    )
     test_data.int_regs.return_register(tmp_reg)
     return lines
 
@@ -373,7 +463,7 @@ def make_interrupts_sgei(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "Sgei_trigger")
-    tc.code.extend(_trigger_tests(test_data))
+    tc.code.extend([*_trigger_tests(test_data), *_vsei_hgeip_tests(test_data)])
 
     tc = test_data.new_test_chunk(test_chunks, "Sgei_hs")
     tc.code.extend([*_sgei_tests(test_data), *_vgein_switch_tests(test_data)])

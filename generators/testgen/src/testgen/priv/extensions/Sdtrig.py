@@ -1,16 +1,18 @@
 ##################################
 # Sdtrig.py
 #
-# Sdtrig groups H and HSm: triggers in VS-mode and VU-mode, guest breakpoint delegation, the H-only textra selects and
-# hcontext.
-# David_Harris@hmc.edu 19 October 2026
+# Sdtrig test generators. Groups Sm, S and U run the SdtrigCommon sections in M-mode, S-mode and U-mode. Groups H and
+# HSm: triggers in VS-mode and VU-mode, guest breakpoint delegation, the H-only textra selects and hcontext.
+# pclark@hmc.edu Jul 2026 (groups Sm, S, U), David_Harris@hmc.edu 19 October 2026 (groups H, HSm)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Sdtrig group H and HSm test generators.
+"""Sdtrig test generators.
 
-Group H boots to HS-mode and enters VS-mode and VU-mode from HS-mode, arming triggers through T-SBI as SdtrigS and
-SdtrigU do.  Unless a case says otherwise, guest breakpoints are taken into VS-mode (medeleg[3] = hedeleg[3] = 1) with
+Groups Sm, S and U run every SdtrigCommon section in M-mode, S-mode and U-mode (register_sdtrig_group).
+
+Group H boots to HS-mode and enters VS-mode and VU-mode from HS-mode, arming triggers through T-SBI as groups S and
+U do.  Unless a case says otherwise, guest breakpoints are taken into VS-mode (medeleg[3] = hedeleg[3] = 1) with
 vsstatus.SIE = 1: with that delegation the Sdtrig re-entrancy rule suppresses VS-mode triggers while vsstatus.SIE is 0,
 and never suppresses VU-mode triggers.  The delegation cases also take guest breakpoints into HS-mode.
 
@@ -59,6 +61,7 @@ from testgen.priv.extensions.SdtrigCommon import (
     _with_trap_counts,
     _xlen_li_expr,
     _xsl_ifdefs,
+    register_sdtrig_group,
 )
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown, per_xlen
 from testgen.priv.registry import add_priv_test_generator
@@ -629,7 +632,12 @@ def _hcontext_tests(test_data: TestData, group: str) -> list[TestChunk]:
 
 
 # ── Registration ───────────────────────────────────────────────────────────
-# Each section is its own generator, as in SdtrigCommon. The sections that fire mcontrol6 triggers skip xEPC on
+
+register_sdtrig_group("Sm", ["Sm", "Sdtrig"], [*SDTRIG_DEFINES, "#define BOOT_TO_MMODE"])
+register_sdtrig_group("S", ["S", "Sdtrig"], [*SDTRIG_DEFINES, "#define BOOT_TO_SMODE"])
+register_sdtrig_group("U", ["U", "Sdtrig"], [*SDTRIG_DEFINES])
+
+# Groups H and HSm: each section is its own generator, as in SdtrigCommon. The sections that fire mcontrol6 triggers skip xEPC on
 # breakpoints (SDTRIG_IMPRECISE_XEPC), because where an address match fires is the implementation's choice.
 
 _H_REQUIRED: list[str | list[str]] = ["S", "H", "Sdtrig"]

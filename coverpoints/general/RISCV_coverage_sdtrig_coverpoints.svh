@@ -9,7 +9,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Debug Trigger coverpoints common to SdtrigSm, SdtrigS, SdtrigU
+//   Debug Trigger coverpoints common to Sdtrig_Sm, Sdtrig_S, Sdtrig_U
 //
 ///////////////////////////////////////////
 // the selected trigger, among those the tests exercise (SDTRIG_TESTED_TRIGGERS, derived_config.svh)
@@ -106,7 +106,7 @@ triggernum_etrigger: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, 
 }
 `endif
 // the mode the instruction on this record runs in and a trap on it is taken from or, on an xRET, the mode it returns
-// to. A trigger that fires on the first instruction after the T-SBI return (SdtrigS/U) is logged on the xRET record.
+// to. A trigger that fires on the first instruction after the T-SBI return (Sdtrig_S/U) is logged on the xRET record.
 exec_mode_m: coverpoint sdtrig_trap_origin(ins) {
     type_option.weight = 0;
     bins M_mode = {2'd3};

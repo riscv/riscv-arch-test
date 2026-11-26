@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Debug Trigger helper functions for the SdtrigSm, SdtrigS and SdtrigU covergroups. Included once, before them.
+//   Debug Trigger helper functions for the Sdtrig_Sm, Sdtrig_S and Sdtrig_U covergroups. Included once, before them.
 //
 ///////////////////////////////////////////
 `ifndef RISCV_COVERAGE_SDTRIG_FUNCTIONS_SVH
@@ -184,7 +184,7 @@ function automatic logic sdtrig_illegal_taken(ins_t ins);
     return ins.current.csr_wb[cause] && ins.current.csr[cause] == 2;
 endfunction
 
-// SdtrigS/U cp_mcontrol6_priv_bits: outcome of the sw that an mcontrol6 store trigger watches. mode_bit is the
+// Sdtrig_S/U cp_mcontrol6_priv_bits: outcome of the sw that an mcontrol6 store trigger watches. mode_bit is the
 // mcontrol6 tdata1 bit of the mode the tests run in (s 4, u 3).
 //   1: that bit is set and the breakpoint was taken (into S, or into M on harts that use tcontrol)
 //   2: it is clear, another of m (6), s (4), u (3) is set, and no breakpoint was taken    0: anything else
@@ -198,7 +198,7 @@ endfunction
 // An execute trigger that fires takes the breakpoint instead of executing the instruction it matches, which never
 // retires. The trace logs that breakpoint (xcause = 3, xepc = the matched instruction's PC) on the record before it,
 // so an execute fire is sampled there: 1 when a trigger breakpoint was taken on the instruction after this record.
-// After an xRET (the T-SBI return in SdtrigS/U) that instruction is the xRET's target.
+// After an xRET (the T-SBI return in Sdtrig_S/U) that instruction is the xRET's target.
 function automatic logic sdtrig_exec_fired(ins_t ins);
     return sdtrig_bp_taken(ins) && sdtrig_bp_epc(ins) == sdtrig_next_pc(ins);
 endfunction
@@ -327,7 +327,7 @@ function automatic logic sdtrig_textra_asid_match(logic [XLEN-1:0] t3, logic [XL
                         : (((t3 >> 2) & 'h1ff) == ((satp >> 22) & 'h1ff));
 endfunction
 
-// SdtrigS/U textra cases: the type of the trigger the instruction on this record acts on, an icount trigger armed
+// Sdtrig_S/U textra cases: the type of the trigger the instruction on this record acts on, an icount trigger armed
 // with count = 1 (a nop) or an mcontrol6 XLEN-wide data-store trigger (the store); 0 for any other instruction
 function automatic logic [3:0] sdtrig_textra_action(ins_t ins);
     logic [3:0] trig_type = get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0];

@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   textra (tdata3) building blocks of the SdtrigSm/S/U textra covergroups
+//   textra (tdata3) building blocks of the Sdtrig_Sm/S/U textra covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
@@ -94,7 +94,7 @@ scontext_match_only: coverpoint sdtrig_textra_scontext_match(ins.current.csr[CSR
     type_option.weight = 0;
     bins match = {1'b1};
 }
-// SdtrigS/U: an instruction that the armed icount or mcontrol6 trigger acts on (sdtrig_textra_action)
+// Sdtrig_S/U: an instruction that the armed icount or mcontrol6 trigger acts on (sdtrig_textra_action)
 textra_action: coverpoint sdtrig_textra_action(ins) {
     type_option.weight = 0;
     bins icount    = {4'd3};

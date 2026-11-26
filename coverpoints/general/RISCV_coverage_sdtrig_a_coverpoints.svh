@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   lr/sc and AMO building blocks of the SdtrigSm/S/U a covergroups
+//   lr/sc and AMO building blocks of the Sdtrig_Sm/S/U a covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////

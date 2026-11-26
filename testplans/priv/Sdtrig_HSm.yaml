@@ -4,7 +4,7 @@ notes: |-
   The group boots to M-mode, where medeleg = mideleg = 0, and enters VS-mode and VU-mode from M-mode.
   The guest arms its triggers through T-SBI, with tdata1.vs or tdata1.vu = 1 for the guest mode under test.
   itrigger and etrigger fire before the first instruction of the handler of the trap they match, so their tests take the trap from the guest into HS-mode and the breakpoint into M-mode, where no re-entrancy option suppresses it.
-  All other assumptions are inherited from SdtrigSm and Sdtrig_H.
+  All other assumptions are inherited from Sdtrig_Sm and Sdtrig_H.
 coverpoints:
   - heading: Breakpoint delegation
   - name: |-

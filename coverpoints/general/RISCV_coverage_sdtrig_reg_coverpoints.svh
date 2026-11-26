@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Trigger-module register building blocks of the SdtrigSm/SdtrigS trig_module_reg covergroups
+//   Trigger-module register building blocks of the Sdtrig_Sm/Sdtrig_S trig_module_reg covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////

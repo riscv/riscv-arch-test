@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Defines derived from the Sdtrig UDB parameters, included by the Sdtrig*_coverage.svh files
+//   Defines derived from the Sdtrig UDB parameters, included by Sdtrig_coverage.svh
 //
 ///////////////////////////////////////////
 `ifndef RISCV_COVERAGE_SDTRIG_DERIVED_SVH

@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   mcontrol6 building blocks of the SdtrigSm/S/U mcontrol6 covergroups
+//   mcontrol6 building blocks of the Sdtrig_Sm/S/U mcontrol6 covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
@@ -403,7 +403,7 @@ chain_fired: coverpoint sdtrig_bp_taken(ins) {
     type_option.weight = 0;
 }
 `ifndef SDTRIG_SUITE_SM
-// SdtrigS/U cp_mcontrol6_priv_bits: a sw to the address watched by an mcontrol6 store trigger (select = 0, store = 1)
+// Sdtrig_S/U cp_mcontrol6_priv_bits: a sw to the address watched by an mcontrol6 store trigger (select = 0, store = 1)
 // and whether it fired as the trigger's m/s/u bits require (sdtrig_priv_bits_outcome)
 priv_bits_sw: coverpoint ins.current.insn iff (
         get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] == 4'd6 &&

@@ -48,7 +48,7 @@ coverpoints:
   - name: cp_vsatp_hedeleg
     goal: hedeleg delegates VS-stage page faults to VS-mode with hgatp = Bare
     description: VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  In VS-mode and VU-mode with hedeleg bits 12, 13, 15, 20, 21 and 23 written with 1, store, load and fetch through an invalid VS-stage leaf and a read-only VS-stage leaf.
-    expectation: The page faults are taken in VS-mode (vscause = 12, 13 or 15, vstval = the guest virtual address), with hstatus and htval unchanged.  The read-only leaf permits the load.
+    expectation: The page faults are taken in VS-mode (vscause = 12, 13 or 15, vstval = the guest virtual address).  The read-only leaf permits the load.
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp Sv39 or Sv32 with hgatp Bare x hedeleg[15:12] = 1011 x page fault in VS-mode"
   - name: |-
       cp_v0_vsstatus_sum

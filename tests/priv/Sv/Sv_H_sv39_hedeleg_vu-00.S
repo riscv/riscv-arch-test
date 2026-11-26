@@ -129,7 +129,7 @@ RVTEST_BEGIN
   hfence.vvma
   hfence.gvma
   LI(x8, 0x140802000)
-  LI(x15, 0x203)
+  LI(x15, 0x206)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_store:
   sw x15, 8(x8)
@@ -166,7 +166,7 @@ Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_exec:
   hfence.vvma
   hfence.gvma
   LI(x8, 0x140802000)
-  LI(x15, 0x206)
+  LI(x15, 0x209)
   RVTEST_TSBI_GOTO_VUMODE
 Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_r_store:
   sw x15, 8(x8)
@@ -258,12 +258,12 @@ rvtest_vlvl1_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_store_str: .string "\"test: 260; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_inv_store\""
-Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_load_str: .string "\"test: 261; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_inv_load\""
-Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_exec_str: .string "\"test: 262; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_inv_exec\""
-Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_r_store_str: .string "\"test: 263; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_r_store\""
-Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_r_load_str: .string "\"test: 264; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_r_load\""
-Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_r_exec_str: .string "\"test: 265; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_r_exec\""
+Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_store_str: .string "\"test: 263; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_inv_store\""
+Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_load_str: .string "\"test: 264; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_inv_load\""
+Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_inv_exec_str: .string "\"test: 265; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_inv_exec\""
+Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_r_store_str: .string "\"test: 266; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_r_store\""
+Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_r_load_str: .string "\"test: 267; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_r_load\""
+Sv_H_vsstage_cg_cp_vsatp_hedeleg_vs_r_exec_str: .string "\"test: 268; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hedeleg; bin: vs_r_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

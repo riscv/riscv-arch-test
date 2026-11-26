@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 34
+#define SIGUPD_COUNT 35
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -31,11 +31,11 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_vsatp_perm, cp_vsatp_svade
+// cp_vsatp_perm, cp_vsatp_svade, cp_vsatp_canonical
 //   In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, have W without R, are a
 //   level-0 pointer, have RSW or reserved bits, or are misaligned superpages, under a non-leaf PTE with D, A
 //   or U set, and through leaves with A or D clear with menvcfg.ADUE = henvcfg.ADUE = 0 (page fault, PTE
-//   unchanged)
+//   unchanged).  Access a non-canonical guest virtual address (page fault)
 /////////////////////////////////
 
 // Identity map the test image in both stages
@@ -897,19 +897,56 @@ Sv_H_vsstage_cg_cp_vsatp_svade_madue0_hadue0_a1_d0_store_pte:
   LREG x8, 0(x8)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_svade_madue0_hadue0_a1_d0_store_pte, Sv_H_vsstage_cg_cp_vsatp_svade_madue0_hadue0_a1_d0_store_pte_str)
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x9, rvtest_vlvl1_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x13)
+  LA(x13, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x9, svh_page)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x13)
+  hfence.vvma
+  hfence.gvma
+  LI(x8, 0x8140802000)
+  LI(x15, 0x1dc)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_store:
+  sw x15, 8(x8)
+  LI(x15, -1)
+Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_load:
+  lw x15, 8(x8)
+Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_exec:
+  jalr ra, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_load, Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_load_str)
+
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
   LA(x14, rvtest_code_begin)
-  LA(x15, Vtramptbl_sv)
-  SREG x14, code_bgn_off(x15)
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x9
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x9
-  LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x9
+  LA(x8, Vtramptbl_sv)
+  SREG x14, code_bgn_off(x8)
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x15
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x15
+  LI(x15, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x15
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
 
@@ -1038,6 +1075,9 @@ Sv_H_vsstage_cg_cp_vsatp_svade_madue0_hadue0_a1_d0_store_store_str: .string "\"t
 Sv_H_vsstage_cg_cp_vsatp_svade_madue0_hadue0_a1_d0_store_load_str: .string "\"test: 218; cg: Sv_H_vsstage_cg; cp: cp_vsatp_svade; bin: madue0_hadue0_a1_d0_store_load\""
 Sv_H_vsstage_cg_cp_vsatp_svade_madue0_hadue0_a1_d0_store_exec_str: .string "\"test: 219; cg: Sv_H_vsstage_cg; cp: cp_vsatp_svade; bin: madue0_hadue0_a1_d0_store_exec\""
 Sv_H_vsstage_cg_cp_vsatp_svade_madue0_hadue0_a1_d0_store_pte_str: .string "\"test: 220; cg: Sv_H_vsstage_cg; cp: cp_vsatp_svade; bin: madue0_hadue0_a1_d0_store_pte\""
+Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_store_str: .string "\"test: 221; cg: Sv_H_vsstage_cg; cp: cp_vsatp_canonical; bin: bit39_store\""
+Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_load_str: .string "\"test: 222; cg: Sv_H_vsstage_cg; cp: cp_vsatp_canonical; bin: bit39_load\""
+Sv_H_vsstage_cg_cp_vsatp_canonical_bit39_exec_str: .string "\"test: 223; cg: Sv_H_vsstage_cg; cp: cp_vsatp_canonical; bin: bit39_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

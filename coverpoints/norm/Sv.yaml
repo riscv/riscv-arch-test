@@ -392,6 +392,7 @@ normative_rule_definitions:
       [
         "Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s",
         "Sv_H_twostage_cg/cp_twostage_canonical",
+        "Sv_H_vsstage_cg/cp_vsatp_canonical",
       ]
 
   # Any level of PTE may be a leaf PTE
@@ -495,6 +496,7 @@ normative_rule_definitions:
       [
         "Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s",
         "Sv_H_twostage_cg/cp_twostage_canonical",
+        "Sv_H_vsstage_cg/cp_vsatp_canonical",
       ]
 
   # Any level of PTE may be a leaf PTE
@@ -567,7 +569,7 @@ normative_rule_definitions:
   # must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur
   # Needs Sv57 bins in canonical_page_{i,d}; the Sv57 canonical tests run but no cross records them.
   - name: Sv57_va_signext
-    coverpoint: ["Sv_H_twostage_cg/cp_twostage_canonical"]
+    coverpoint: ["Sv_H_twostage_cg/cp_twostage_canonical", "Sv_H_vsstage_cg/cp_vsatp_canonical"]
 
   # Any level of PTE may be a leaf PTE
   # Needs Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run but no cross records the leaf level.

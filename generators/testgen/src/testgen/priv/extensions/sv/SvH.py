@@ -491,11 +491,11 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_pte",
-        "cp_vsatp_perm, cp_vsatp_svade",
+        "cp_vsatp_perm, cp_vsatp_svade" + (", cp_vsatp_canonical" if vs.xlen == 64 else ""),
         "In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, have W without R, are a\n"
         "level-0 pointer, have RSW or reserved bits, or are misaligned superpages, under a non-leaf PTE with D, A\n"
         "or U set, and through leaves with A or D clear with menvcfg.ADUE = henvcfg.ADUE = 0 (page fault, PTE\n"
-        "unchanged)",
+        "unchanged)" + (".  Access a non-canonical guest virtual address (page fault)" if vs.xlen == 64 else ""),
         stages=(vs,),
     )
     va = vs.data_va
@@ -514,6 +514,11 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
         )
     code.extend(_walk_format_accesses(test_data, vs, VS_CG, "cp_vsatp_perm"))
     code.extend(vs_ad_accesses(test_data, vs, SVADE_CASES, VS_CG, "cp_vsatp_svade"))
+    if vs.xlen == 64:
+        # The mapped guest virtual address with the bit above the VS-stage width set is not sign-extended
+        va = hex(int(vs.data_va, 16) | 1 << vs.va_bits)
+        setup = map_test_page(test_data, None, vs)
+        code.extend(guest_access(test_data, VS_CG, "cp_vsatp_canonical", f"bit{vs.va_bits}", "VS", va, setup=setup))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 

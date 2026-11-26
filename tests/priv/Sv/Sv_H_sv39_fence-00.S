@@ -762,18 +762,18 @@ rvtest_vlvl1_pg_tbl:
 #endif
 
 // Testcase strings
-Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_x0_rs2_x0_str: .string "\"test: 266; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_x0_rs2_x0\""
-Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_x0_rs2_asid_str: .string "\"test: 267; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_x0_rs2_asid\""
-Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_va_rs2_x0_str: .string "\"test: 268; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_va_rs2_x0\""
-Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_va_rs2_asid_str: .string "\"test: 269; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_va_rs2_asid\""
-Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_va_rs2_asidmax_str: .string "\"test: 270; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_va_rs2_asidmax\""
-Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_x0_rs2_x0_str: .string "\"test: 271; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_x0_rs2_x0\""
-Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_x0_rs2_asid_str: .string "\"test: 272; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_x0_rs2_asid\""
-Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_va_rs2_x0_str: .string "\"test: 273; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_va_rs2_x0\""
-Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_va_rs2_asid_str: .string "\"test: 274; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_va_rs2_asid\""
-Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_va_rs2_asidmax_str: .string "\"test: 275; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_va_rs2_asidmax\""
-Sv_H_fence_cg_cp_vsatp_hfence_vvma_asid_switch_str: .string "\"test: 276; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: asid_switch\""
-Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_asid_switch_str: .string "\"test: 277; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: asid_switch\""
+Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_x0_rs2_x0_str: .string "\"test: 269; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_x0_rs2_x0\""
+Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_x0_rs2_asid_str: .string "\"test: 270; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_x0_rs2_asid\""
+Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_va_rs2_x0_str: .string "\"test: 271; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_va_rs2_x0\""
+Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_va_rs2_asid_str: .string "\"test: 272; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_va_rs2_asid\""
+Sv_H_fence_cg_cp_vsatp_hfence_vvma_rs1_va_rs2_asidmax_str: .string "\"test: 273; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: rs1_va_rs2_asidmax\""
+Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_x0_rs2_x0_str: .string "\"test: 274; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_x0_rs2_x0\""
+Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_x0_rs2_asid_str: .string "\"test: 275; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_x0_rs2_asid\""
+Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_va_rs2_x0_str: .string "\"test: 276; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_va_rs2_x0\""
+Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_va_rs2_asid_str: .string "\"test: 277; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_va_rs2_asid\""
+Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_rs1_va_rs2_asidmax_str: .string "\"test: 278; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: rs1_va_rs2_asidmax\""
+Sv_H_fence_cg_cp_vsatp_hfence_vvma_asid_switch_str: .string "\"test: 279; cg: Sv_H_fence_cg; cp: cp_vsatp_hfence_vvma; bin: asid_switch\""
+Sv_H_fence_cg_cp_vsatp_sfence_vma_vs_asid_switch_str: .string "\"test: 280; cg: Sv_H_fence_cg; cp: cp_vsatp_sfence_vma_vs; bin: asid_switch\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -2005,6 +2005,18 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         henvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "adue") {
             bins off = {0};
         }
+        // A guest virtual address whose bits 63 down to the VS-stage mode's top address bit are not all equal
+        va_noncanonical : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins sv39 = {8} iff (ins.current.rs1_val[63:38] != 0 && ins.current.rs1_val[63:38] != '1);
+            `endif
+            `ifdef UDB_SV48_VSMODE_TRANSLATION
+                bins sv48 = {9} iff (ins.current.rs1_val[63:47] != 0 && ins.current.rs1_val[63:47] != '1);
+            `endif
+            `ifdef UDB_SV57_VSMODE_TRANSLATION
+                bins sv57 = {10} iff (ins.current.rs1_val[63:56] != 0 && ins.current.rs1_val[63:56] != '1);
+            `endif
+        }
     `else
         menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "adue") {
             bins off = {0};
@@ -2023,6 +2035,10 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     cp_vsatp_hs_sum : cross priv_mode_vs, ldst, vsatp_mode, hgatp_bare, vsstatus_sum_off, mstatus_sum_on, page_fault;
     // VS-stage A/D bits: Svade faults with menvcfg.ADUE = henvcfg.ADUE = 0.  Svadu_H_cg has the ADUE = 1 cases.
     cp_vsatp_svade  : cross priv_mode_vs, access, vsatp_mode, hgatp_bare, menvcfg_adue, henvcfg_adue;
+    `ifdef UDB_MXLEN_64
+        // A non-canonical guest virtual address raises a page fault
+        cp_vsatp_canonical : cross priv_mode_vs, access, hgatp_bare, va_noncanonical, page_fault;
+    `endif
     // hedeleg delegates VS-stage page faults to VS-mode
     cp_vsatp_hedeleg : cross priv_mode_vs_vu, access, vs_only, hedeleg_page_faults, vs_page_fault;
     // When V=0, vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses through satp

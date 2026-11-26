@@ -40,6 +40,11 @@ coverpoints:
     expectation: An access with A = 0, or a store with D = 0, raises a page fault and the PTE is unchanged.
     bins: VS x {sw, lw, jalr} x vsatp_mode x hgatp Bare x menvcfg.ADUE = henvcfg.ADUE = 0
     notes: Svadu_H cp_vsatp_adue has the ADUE = 1 cases.
+  - name: cp_vsatp_canonical
+    goal: Non-canonical guest virtual addresses with hgatp = Bare
+    description: RV64 only.  For each supported VS-stage mode (Sv39, Sv48, Sv57), in VS-mode with hgatp = Bare, store, load and fetch at the mapped guest virtual address with the bit just above the VS-stage VA width set.  The top VA bit is clear, so the address is non-canonical.
+    expectation: Store/AMO, load or instruction page fault.  stval, and sepc for the fetch, may hold any invalid address.
+    bins: VS x {lw, sw, jalr} x hgatp Bare x {Sv39, Sv48, Sv57 that the hart supports} x page fault
   - name: cp_vsatp_hedeleg
     goal: hedeleg delegates VS-stage page faults to VS-mode with hgatp = Bare
     description: VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  In VS-mode and VU-mode with hedeleg bits 12, 13, 15, 20, 21 and 23 written with 1, store, load and fetch through an invalid VS-stage leaf and a read-only VS-stage leaf.

@@ -10,7 +10,10 @@
 normative_rule_definitions:
   # ext:zvbb[] depends upon the ext:zve32x[] extension.
   - name: Zvbb_dependent_Zve32x
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Zvbb requires Zve32x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvbb.yaml[ext/Zvbb.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkb.yaml[ext/Zvkb.yaml]).",
+      ]
 
   # ext:zvbb[] provides support for EEW of 8, 16, and 32. If ext:zve64x[] is supported then
   # ext:zvbb[] also adds support for EEW=64.

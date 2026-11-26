@@ -144,7 +144,7 @@ normative_rule_definitions:
   # SFENCE.VMA orders only the local hart’s implicit references to the memory-management
   # data structures.
   - name: sfence_vma_local_only
-    coverpoint: ["Not tested: needs more than one hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # If rs1=x0 and rs2=x0, the fence orders all reads and writes made to any level of the
   # page tables, for all address spaces. The fence also invalidates all address-
@@ -157,10 +157,12 @@ normative_rule_definitions:
   # Accesses to global mappings (see <<translation>>) are not ordered. The fence also
   # invalidates all address-translation cache entries matching the address space
   # identified by integer register rs2, except for entries containing global mappings.
-  # Needs a PTE change between the accesses: the global_pte test runs SFENCE.VMA x0, ASID but
-  # leaves the PTE unchanged, so the access succeeds whatever the fence does.
   - name: sfence_vma_asid_only
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_H_fence_cg/cp_sfence_vma_vs_asid",
+        "Needs test: SFENCE.VMA x0, rs2 in S-mode (V=0) after a PTE change; the global_pte test leaves the PTE unchanged, so its access succeeds whatever the fence does.",
+      ]
 
   # If rs1{ne}x0 and rs2=x0, the fence orders only reads and writes made to leaf page
   # table entries corresponding to the virtual address in rs1, for all address spaces.
@@ -168,7 +170,7 @@ normative_rule_definitions:
   # page table entries corresponding to the virtual address in rs1, for all address
   # spaces.
   - name: sfence_vma_va_all_asid
-    coverpoint: ["TODO: SFENCE.VMA with rs1!=x0 is not exercised"]
+    coverpoint: ["Needs test: SFENCE.VMA with rs1 ≠ x0."]
 
   # If rs1{ne}x0 and rs2{ne}x0, the fence orders only reads and writes made to leaf page
   # table entries corresponding to the virtual address in rs1, for the address space
@@ -178,15 +180,13 @@ normative_rule_definitions:
   # space identified by integer register rs2, except for entries containing global
   # mappings.
   - name: sfence_vma_va_asid
-    coverpoint: ["TODO: SFENCE.VMA with rs1!=x0 is not exercised"]
+    coverpoint: ["Needs test: SFENCE.VMA with rs1 ≠ x0."]
 
   # If the value held in rs1 is not a valid virtual address, then the SFENCE.VMA
   # instruction has no effect. No exception is raised in this case.
   - name: sfence_vma_invalid_va
     coverpoint:
-      [
-        "TODO: SFENCE.VMA with an invalid virtual address in rs1 is not exercised",
-      ]
+      ["Needs test: SFENCE.VMA with an invalid virtual address in rs1."]
 
   # When rs2≠x0, bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for future
   # standard use. Until their use is defined by a standard extension, they should be
@@ -214,7 +214,7 @@ normative_rule_definitions:
   - name: sfence_vma_ordering_semantics
     coverpoint:
       [
-        "Not tested: which stale translation an implicit read returns is implementation-dependent",
+        "Needs test: update a PTE without SFENCE.VMA and check that the access uses either the old or the new translation.",
       ]
 
   # Implementations must only perform implicit reads of the translation data structures
@@ -237,18 +237,22 @@ normative_rule_definitions:
   # immediately, without the need to execute an SFENCE.VMA instruction.
   - name: sfence_vma_mode_effect
     coverpoint:
-      ["Not tested: every test executes SFENCE.VMA after writing satp"]
+      [
+        "Needs test: change satp.MODE without SFENCE.VMA and check that the new mode takes effect.",
+      ]
 
   # Likewise, changes to satp.ASID take effect immediately.
   - name: sfence_vma_asid_effect
     coverpoint:
-      ["Not tested: every test executes SFENCE.VMA after writing satp"]
+      [
+        "Needs test: change satp.ASID without SFENCE.VMA and check that the new ASID takes effect.",
+      ]
 
   # If a hart employs an address-translation cache, that cache must appear to be private
   # to that hart. In particular, the meaning of an ASID is local to a hart; software may
   # choose to use the same ASID to refer to different address spaces on different harts.
   - name: asid_hart_private
-    coverpoint: ["Not tested: needs more than one hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # The 20-bit VPN is translated into a 22-bit physical page number (PPN) for Sv32.
   - name: satp_ppn_Sv32_sz
@@ -337,7 +341,7 @@ normative_rule_definitions:
 
   # All harts in a system must employ the same PTE-update scheme as each other.
   - name: pte_ad_scheme_uniform
-    coverpoint: ["Not tested: needs more than one hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # For implementations with both page-based virtual memory and the A standard extension,
   # the LR/SC reservation set must lie completely within a single base physical page
@@ -345,7 +349,7 @@ normative_rule_definitions:
   - name: lr_sc_rsrv_set_page
     coverpoint:
       [
-        "TODO: an LR to one 4 KiB page followed by an SC to a different page must fail",
+        "Needs test: an LR to one 4 KiB page followed by an SC to a different page must fail.",
       ]
 
   # This section describes a simple paged virtual-memory system for SXLEN=64, which
@@ -514,7 +518,9 @@ normative_rule_definitions:
   # Implementations that support Sv48 must also support Sv39
   - name: Sv48_requires_Sv39
     coverpoint:
-      ["Not tested: extension dependency checked by the UDB configuration"]
+      [
+        "Configuration requirement: Sv48 requires Sv39; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sv48.yaml[ext/Sv48.yaml]).",
+      ]
 
   # PageType_*, canonical_page_* and misaligned_PPN_* have no Sv57 bins, so the Sv57 tests
   # do not reach the cp_spage, cp_canonical and cp_misaligned crosses. The Sv57 rules use
@@ -571,17 +577,25 @@ normative_rule_definitions:
   # Any level of PTE may be a leaf PTE
   # Needs Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run but no cross records the leaf level.
   - names: [Sv57_leaf_any_level, Sv57_page_sizes]
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run, but no cross records the leaf level.",
+      ]
 
   # must be virtually and physically aligned to a boundary equal to its size
   # Needs Sv57 bins in misaligned_PPN_{i,d}; the Sv57 misaligned-superpage tests run but no cross records them.
   - names: [Sv57_superpage_align, Sv57_superpage_align_fault]
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Needs test: Sv57 bins in misaligned_PPN_{i,d}; the Sv57 misaligned-superpage tests run, but no cross records them.",
+      ]
 
   # Implementations that support Sv57 must also support Sv48
   - name: Sv57_requires_Sv48
     coverpoint:
-      ["Not tested: extension dependency checked by the UDB configuration"]
+      [
+        "Configuration requirement: Sv57 requires Sv48; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Sv57.yaml[ext/Sv57.yaml]).",
+      ]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
@@ -1032,7 +1046,7 @@ normative_rule_definitions:
   # VS-stage A bits must not be set speculatively
   - name: vs_stage_speculative_a_bit
     coverpoint:
-      ["Not tested: speculative execution is not architecturally observable"]
+      ["Needs infrastructure: a way to cause speculative VS-stage walks."]
 
   # hstatus.SPVP sets the effective privilege of the explicit accesses of HLV, HLVX and HSV
   - name: hstatus_spvp_virtls_op
@@ -1049,9 +1063,7 @@ normative_rule_definitions:
   # Writing hgatp does not order page-table updates before later G-stage translations
   - name: hgatp_op_hfence_gvma
     coverpoint:
-      [
-        "Not tested: no behavior is required; tests execute hfence.gvma after writing hgatp",
-      ]
+      ["No independent assertion: writing hgatp does not imply a fence."]
 
   # With V=0, SFENCE.VMA takes an HS-level address and ASID and orders only HS-level address translation
   - name: sfence_vma_v0
@@ -1101,7 +1113,7 @@ normative_rule_definitions:
       [
         "Sv_HZicbo_cg/{cp_cbie_vs,cp_cbie_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
-        "HSm_mcsr_cg/cp_hcsrwalk_masked",
+        "Sm_H_mcsr_cg/cp_hcsrwalk_masked",
       ]
 
   # When V=1, if the CBO.INVAL instruction is not HS-qualified, it raises an
@@ -1128,7 +1140,7 @@ normative_rule_definitions:
       [
         "Sv_HZicbo_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
-        "HSm_mcsr_cg/cp_hcsrwalk_masked",
+        "Sm_H_mcsr_cg/cp_hcsrwalk_masked",
       ]
 
   # A insn:cbo.clean[] or insn:cbo.flush[] instruction executes or raises an
@@ -1150,7 +1162,7 @@ normative_rule_definitions:
       [
         "Sv_HZicbo_cg/{cp_cbze_vs,cp_cbze_vu}",
         "H_hscsr_cg/cp_hcsrwalk_masked",
-        "HSm_mcsr_cg/cp_hcsrwalk_masked",
+        "Sm_H_mcsr_cg/cp_hcsrwalk_masked",
       ]
 
   # Finally, a insn:cbo.zero[] instruction executes or raises an illegal-instruction or
@@ -1177,5 +1189,16 @@ normative_rule_definitions:
   - name: cbo-inval_h_mode_inval_enc
     coverpoint:
       [
-        "Not tested: whether an invalidate discards stored data depends on the cache hierarchy, so a test cannot tell it from a flush",
+        "Needs infrastructure: a non-coherent agent such as a DMA device, to tell an invalidate from a flush.",
+      ]
+
+  # X|W|R|Meaning === 0 0 0 0 1 1 1 1|0 0 1 1 0 0 1 1|0 1 0 1 0 1 0 1|Pointer to next level of page
+  # table. Read-only page. Reserved for future use. Read-write page. Execute-only page. Read-execute
+  # page. Reserved for future use. Read-write-execute page. ===
+  - name: pte_xwr_enc
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/cp_spage_{exec_s_i,noexec_s_i,read_s_d,noread_s_d,write_s_d,nowrite_s_d,rwx_s_i_noexec,rwx_s_d_noread,rwx_s_d_nowrite}",
+        "Sv_vm_permissions_cg/cp_PTE_res_rwx_s_{i_exec,d_read,d_write}",
+        "Sv_vm_permissions_cg/cp_PTE_nonleaf_lvl0_s_{i_exec,d_read,d_write}",
       ]

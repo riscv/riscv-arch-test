@@ -252,6 +252,9 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
         gate = f"defined(RVMODEL_ACCESS_FAULT_ADDRESS_{kind})"
         return f"defined({extension}_SUPPORTED) && {gate}" if extension else gate
 
+    def rv64(gate: str) -> str:
+        return f"{gate} && __riscv_xlen == 64"
+
     def check_reg(reg: int) -> list[str]:
         return [write_sigupd(reg, test_data)]
 
@@ -267,6 +270,9 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
     # Misaligned fetches trap only when IALIGN = 32, and misaligned loads and stores only when the hart does not
     # perform them
     misaligned_ldst_gate = "!defined(UDB_MISALIGNED_LDST)"
+    amo_gate = fault_gate("AMO", "ZAAMO")
+    lrsc_gate = fault_gate("LRSC", "ZALRSC")
+    zacas_gate = fault_gate("AMO", "ZACAS")
     cases = [
         XtinstCase(
             "instr_misaligned",
@@ -313,15 +319,18 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
             no_check,
         ),
         XtinstCase("ecall", "vs", None, [], ["RVTEST_TSBI_ECALL_TEST"], no_check),
-        # AMOs, LR and SC: H_trans_atomic
-        XtinstCase(
-            "amo_access",
-            "vs_amoswap.w",
-            fault_gate("AMO", "ZAAMO"),
-            [fault("AMO"), f"LI(x{data_reg}, 0xC0FFEE33)", f"LI(x{rd}, 42)"],
-            [f"amoswap.w x{rd}, x{data_reg}, (x{addr_reg})"],
-            lambda: check_reg(rd),
-            ("zaamo",),
+        # AMOs, LR and SC: H_trans_atomic.  The transformation keeps aq and rl.
+        *(
+            XtinstCase(
+                "amo_access",
+                f"vs_{instr}",
+                rv64(amo_gate) if instr == "amoswap.d" else amo_gate,
+                [fault("AMO"), f"LI(x{data_reg}, 0xC0FFEE33)", f"LI(x{rd}, 42)"],
+                [f"{instr} x{rd}, x{data_reg}, (x{addr_reg})"],
+                lambda: check_reg(rd),
+                ("zaamo",),
+            )
+            for instr in ("amoswap.w", "amoswap.w.aq", "amoswap.w.rl", "amoswap.w.aqrl", "amoswap.d")
         ),
         # scratch + 14 crosses a 16-byte boundary, so the word is outside any misaligned atomicity granule that
         # Zama16b guarantees: an address-misaligned or access fault unless the hart's granule is larger
@@ -339,23 +348,18 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
             lambda: [*check_reg(rd), *check_scratch(12, 16)],
             ("zaamo",),
         ),
-        XtinstCase(
-            "lrsc_access",
-            "vs_lr.w",
-            fault_gate("LRSC", "ZALRSC"),
-            [fault("LRSC"), f"LI(x{rd}, 42)"],
-            [f"lr.w x{rd}, (x{addr_reg})"],
-            lambda: check_reg(rd),
-            ("zalrsc",),
-        ),
-        XtinstCase(
-            "lrsc_access",
-            "vs_sc.w",
-            fault_gate("LRSC", "ZALRSC"),
-            [fault("LRSC"), f"LI(x{data_reg}, 0xC0FFEE55)", f"LI(x{rd}, 42)"],
-            [f"sc.w x{rd}, x{data_reg}, (x{addr_reg})"],
-            lambda: check_reg(rd),
-            ("zalrsc",),
+        *(
+            XtinstCase(
+                "lrsc_access",
+                f"vs_{op}.{size}",
+                rv64(lrsc_gate) if size == "d" else lrsc_gate,
+                [fault("LRSC"), *([f"LI(x{data_reg}, 0xC0FFEE55)"] if op == "sc" else []), f"LI(x{rd}, 42)"],
+                [f"{op}.{size} x{rd}, {f'x{data_reg}, ' if op == 'sc' else ''}(x{addr_reg})"],
+                lambda: check_reg(rd),
+                ("zalrsc",),
+            )
+            for size in ("w", "w.aqrl", "d")
+            for op in ("lr", "sc")
         ),
         XtinstCase(
             "zabha_access",
@@ -366,42 +370,43 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
             lambda: check_reg(rd),
             ("zaamo", "zabha"),
         ),
-        XtinstCase(
-            "zacas_access",
-            "vs_amocas.w",
-            fault_gate("AMO", "ZACAS"),
-            [fault("AMO"), f"LI(x{data_reg}, 0xC0FFEE77)", f"LI(x{rd}, 42)"],
-            [f"amocas.w x{rd}, x{data_reg}, (x{addr_reg})"],
-            lambda: check_reg(rd),
-            ("zaamo", "zacas"),
+        # amocas.d on RV32 takes register pairs; it is left out there
+        *(
+            XtinstCase(
+                "zacas_access",
+                f"vs_{instr}",
+                rv64(zacas_gate) if instr == "amocas.d" else zacas_gate,
+                [fault("AMO"), f"LI(x{data_reg}, 0xC0FFEE77)", f"LI(x{rd}, 42)"],
+                [f"{instr} x{rd}, x{data_reg}, (x{addr_reg})"],
+                lambda: check_reg(rd),
+                ("zaamo", "zacas"),
+            )
+            for instr in ("amocas.w", "amocas.d")
         ),
         # Compressed loads and stores: H_trans_compressed_list
-        XtinstCase(
-            "c_load_access",
-            "vs_c.lw",
-            fault_gate("LOAD", "ZCA"),
-            [fault("LOAD"), f"LI(x{data_reg}, 42)"],
-            [f"c.lw x{data_reg}, 0(x{addr_reg})"],
-            lambda: check_reg(data_reg),
-            ("zca",),
+        *(
+            XtinstCase(
+                "c_load_access",
+                f"vs_{instr}",
+                rv64(fault_gate("LOAD", ext)) if instr == "c.ld" else fault_gate("LOAD", ext),
+                [fault("LOAD"), f"LI(x{data_reg}, 42)"],
+                [f"{instr} x{data_reg}, 0(x{addr_reg})"],
+                lambda: check_reg(data_reg),
+                ("zca", "zcb") if ext == "ZCB" else ("zca",),
+            )
+            for instr, ext in (("c.lw", "ZCA"), ("c.ld", "ZCA"), ("c.lbu", "ZCB"), ("c.lhu", "ZCB"), ("c.lh", "ZCB"))
         ),
-        XtinstCase(
-            "c_store_access",
-            "vs_c.sw",
-            fault_gate("STORE", "ZCA"),
-            [fault("STORE"), f"LI(x{data_reg}, 0xC0FFEE88)"],
-            [f"c.sw x{data_reg}, 0(x{addr_reg})"],
-            no_check,
-            ("zca",),
-        ),
-        XtinstCase(
-            "zcb_access",
-            "vs_c.lbu",
-            fault_gate("LOAD", "ZCB"),
-            [fault("LOAD"), f"LI(x{data_reg}, 42)"],
-            [f"c.lbu x{data_reg}, 0(x{addr_reg})"],
-            lambda: check_reg(data_reg),
-            ("zca", "zcb"),
+        *(
+            XtinstCase(
+                "c_store_access",
+                f"vs_{instr}",
+                rv64(fault_gate("STORE", ext)) if instr == "c.sd" else fault_gate("STORE", ext),
+                [fault("STORE"), f"LI(x{data_reg}, 0xC0FFEE88)"],
+                [f"{instr} x{data_reg}, 0(x{addr_reg})"],
+                no_check,
+                ("zca", "zcb") if ext == "ZCB" else ("zca",),
+            )
+            for instr, ext in (("c.sw", "ZCA"), ("c.sd", "ZCA"), ("c.sb", "ZCB"), ("c.sh", "ZCB"))
         ),
         # Cache-block operations: H_trans_cache.  The boot enables them in VS-mode (menvcfg and henvcfg
         # CBIE = 11, CBCFE = 1 and CBZE = 1).

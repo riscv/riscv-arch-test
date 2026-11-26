@@ -190,23 +190,22 @@ coverpoints:
     goal: Atomic memory operation exceptions write xtinst
     description: |-
       From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, attempt each of:
-      amoswap.w at the AMO access-fault address (Zaamo)
+      amoswap.w, amoswap.w.aq, amoswap.w.rl, amoswap.w.aqrl and (RV64) amoswap.d at the AMO access-fault address (Zaamo)
       amoswap.w at scratch + 14, which crosses a 16-byte misaligned atomicity granule (Zaamo)
-      lr.w and sc.w at the LR/SC access-fault address (Zalrsc)
+      lr.w, sc.w, lr.w.aqrl, sc.w.aqrl and (RV64) lr.d and sc.d at the LR/SC access-fault address (Zalrsc)
       amoadd.b at the AMO access-fault address (Zabha)
-      amocas.w at the AMO access-fault address (Zacas)
+      amocas.w and (RV64) amocas.d at the AMO access-fault address (Zacas)
     expectation: The access fault or address-misaligned exception the reference model raises, into HS-mode with htval = 0 and htinst = 0 or the transformed instruction (rs1 = the address offset, rs2, rd, aq, rl and funct fields kept).  rd keeps its value.
-    bins: 6
+    bins: 15 on RV64, 11 on RV32
     notes: |-
-      Each access-fault case needs RVMODEL_ACCESS_FAULT_ADDRESS_AMO or _LRSC.  The misaligned amoswap.w completes on a hart whose misaligned atomicity granule is larger than 16 bytes.
+      Each access-fault case needs RVMODEL_ACCESS_FAULT_ADDRESS_AMO or _LRSC.  The misaligned amoswap.w completes on a hart whose misaligned atomicity granule is larger than 16 bytes.  amocas.d on RV32 takes register pairs and is left out.
   - name: |-
       cp_xtinst_c_load_access
       cp_xtinst_c_store_access
-      cp_xtinst_zcb_access
     goal: Compressed load and store exceptions write xtinst
-    description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, c.lw and c.sw (Zca) and c.lbu (Zcb) at the access-fault address.
+    description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, c.lw, c.sw and (RV64) c.ld and c.sd (Zca), and c.lbu, c.lhu, c.lh, c.sb and c.sh (Zcb) at the access-fault address.
     expectation: Access fault into HS-mode with htval = 0 and htinst = 0 or the transformed 32-bit equivalent with bit 1 = 0.  rd keeps its value.
-    bins: "3"
+    bins: 9 on RV64, 7 on RV32
   - name: |-
       cp_xtinst_cbom_access
       cp_xtinst_cboz_access

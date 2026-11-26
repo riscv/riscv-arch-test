@@ -1063,16 +1063,16 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
         "Exceptions_HSm_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
-        "Exceptions_H_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
-        "Exceptions_HSm_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
+        "Exceptions_H_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
       ]
   # A synchronous exception may write a standard transformation only for explicit memory accesses by loads, stores,
   # AMOs, CBOs and their compressed forms.  The trap record accepts the reference model's transformation or zero.
   - name: H_trap_xtinst_std_trans_mem
     coverpoint:
       [
-        "Exceptions_H_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
-        "Exceptions_HSm_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, zcb_access, cbom_access, cboz_access}",
+        "Exceptions_H_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
       ]
   # Transformed loads and stores: the immediate offset becomes zero and rs1 the address offset
   - names: [H_trans_load, H_trans_store, H_trans_ldst_imm_zero]
@@ -1093,8 +1093,8 @@ normative_rule_definitions:
       [H_trans_compressed_lead_in, H_trans_compressed_list, H_trans_bits_1_0]
     coverpoint:
       [
-        "Exceptions_H_cg/cp_xtinst_{c_load_access, c_store_access, zcb_access}",
-        "Exceptions_HSm_cg/cp_xtinst_{c_load_access, c_store_access, zcb_access}",
+        "Exceptions_H_cg/cp_xtinst_{c_load_access, c_store_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{c_load_access, c_store_access}",
       ]
   # A standard instruction with no transformation writes zero
   - name: H_trap_xtinst_no_trans_zero

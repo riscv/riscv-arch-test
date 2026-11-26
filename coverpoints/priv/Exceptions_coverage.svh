@@ -1734,7 +1734,17 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
             illegal_address_amo: coverpoint ins.current.rs1_val {
                 bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_AMO};
             }
-            cp_xtinst_amo_access: cross priv_mode_vs, amoswap_w, illegal_address_amo, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+            // The transformation keeps aq and rl
+            amoswap: coverpoint ins.current.insn {
+                wildcard bins amoswap_w      = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b00);
+                wildcard bins amoswap_w_aq   = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b10);
+                wildcard bins amoswap_w_rl   = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b01);
+                wildcard bins amoswap_w_aqrl = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b11);
+                `ifdef UDB_MXLEN_64
+                    wildcard bins amoswap_d  = {AMOSWAP_D};
+                `endif
+            }
+            cp_xtinst_amo_access: cross priv_mode_vs, amoswap, illegal_address_amo, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
             `ifdef ZABHA_SUPPORTED
                 amoadd_b: coverpoint ins.current.insn {
                     wildcard bins amoadd_b = {AMOADD_B};
@@ -1742,43 +1752,62 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
                 cp_xtinst_zabha_access: cross priv_mode_vs, amoadd_b, illegal_address_amo, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
             `endif
             `ifdef ZACAS_SUPPORTED
-                amocas_w: coverpoint ins.current.insn {
+                // amocas.d on RV32 takes register pairs; the test leaves it out there
+                amocas: coverpoint ins.current.insn {
                     wildcard bins amocas_w = {AMOCAS_W};
+                    `ifdef UDB_MXLEN_64
+                        wildcard bins amocas_d = {AMOCAS_D};
+                    `endif
                 }
-                cp_xtinst_zacas_access: cross priv_mode_vs, amocas_w, illegal_address_amo, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+                cp_xtinst_zacas_access: cross priv_mode_vs, amocas, illegal_address_amo, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
             `endif
         `endif
     `endif
     `ifdef ZALRSC_SUPPORTED
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-            lr_sc_w: coverpoint ins.current.insn {
-                wildcard bins lr_w = {LR_W};
-                wildcard bins sc_w = {SC_W};
+            lr_sc: coverpoint ins.current.insn {
+                wildcard bins lr_w      = {LR_W} iff (ins.current.insn[26:25] == 2'b00);
+                wildcard bins sc_w      = {SC_W} iff (ins.current.insn[26:25] == 2'b00);
+                wildcard bins lr_w_aqrl = {LR_W} iff (ins.current.insn[26:25] == 2'b11);
+                wildcard bins sc_w_aqrl = {SC_W} iff (ins.current.insn[26:25] == 2'b11);
+                `ifdef UDB_MXLEN_64
+                    wildcard bins lr_d  = {LR_D};
+                    wildcard bins sc_d  = {SC_D};
+                `endif
             }
             illegal_address_lrsc: coverpoint ins.current.rs1_val {
                 bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LRSC};
             }
-            cp_xtinst_lrsc_access: cross priv_mode_vs, lr_sc_w, illegal_address_lrsc, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+            cp_xtinst_lrsc_access: cross priv_mode_vs, lr_sc, illegal_address_lrsc, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
         `endif
     `endif
     `ifdef ZCA_SUPPORTED
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-            c_lw: coverpoint ins.current.insn {
-                wildcard bins c_lw = {C_LW};
-            }
-            cp_xtinst_c_load_access: cross priv_mode_vs, c_lw, illegal_address_load, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
-            `ifdef ZCB_SUPPORTED
-                c_lbu: coverpoint ins.current.insn {
+            c_loads: coverpoint ins.current.insn {
+                wildcard bins c_lw  = {C_LW};
+                `ifdef UDB_MXLEN_64
+                    wildcard bins c_ld  = {C_LD};
+                `endif
+                `ifdef ZCB_SUPPORTED
                     wildcard bins c_lbu = {C_LBU};
-                }
-                cp_xtinst_zcb_access: cross priv_mode_vs, c_lbu, illegal_address_load, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
-            `endif
+                    wildcard bins c_lhu = {C_LHU};
+                    wildcard bins c_lh  = {C_LH};
+                `endif
+            }
+            cp_xtinst_c_load_access: cross priv_mode_vs, c_loads, illegal_address_load, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-            c_sw: coverpoint ins.current.insn {
+            c_stores: coverpoint ins.current.insn {
                 wildcard bins c_sw = {C_SW};
+                `ifdef UDB_MXLEN_64
+                    wildcard bins c_sd = {C_SD};
+                `endif
+                `ifdef ZCB_SUPPORTED
+                    wildcard bins c_sb = {C_SB};
+                    wildcard bins c_sh = {C_SH};
+                `endif
             }
-            cp_xtinst_c_store_access: cross priv_mode_vs, c_sw, illegal_address_store, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+            cp_xtinst_c_store_access: cross priv_mode_vs, c_stores, illegal_address_store, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
         `endif
     `endif
     // CBOs take the store access-fault address; rs1 is their address
@@ -2065,7 +2094,17 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
             illegal_address_amo: coverpoint ins.current.rs1_val {
                 bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_AMO};
             }
-            cp_xtinst_amo_access: cross priv_mode_vs, amoswap_w, illegal_address_amo, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+            // The transformation keeps aq and rl
+            amoswap: coverpoint ins.current.insn {
+                wildcard bins amoswap_w      = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b00);
+                wildcard bins amoswap_w_aq   = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b10);
+                wildcard bins amoswap_w_rl   = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b01);
+                wildcard bins amoswap_w_aqrl = {AMOSWAP_W} iff (ins.current.insn[26:25] == 2'b11);
+                `ifdef UDB_MXLEN_64
+                    wildcard bins amoswap_d  = {AMOSWAP_D};
+                `endif
+            }
+            cp_xtinst_amo_access: cross priv_mode_vs, amoswap, illegal_address_amo, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
             `ifdef ZABHA_SUPPORTED
                 amoadd_b: coverpoint ins.current.insn {
                     wildcard bins amoadd_b = {AMOADD_B};
@@ -2073,43 +2112,62 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
                 cp_xtinst_zabha_access: cross priv_mode_vs, amoadd_b, illegal_address_amo, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
             `endif
             `ifdef ZACAS_SUPPORTED
-                amocas_w: coverpoint ins.current.insn {
+                // amocas.d on RV32 takes register pairs; the test leaves it out there
+                amocas: coverpoint ins.current.insn {
                     wildcard bins amocas_w = {AMOCAS_W};
+                    `ifdef UDB_MXLEN_64
+                        wildcard bins amocas_d = {AMOCAS_D};
+                    `endif
                 }
-                cp_xtinst_zacas_access: cross priv_mode_vs, amocas_w, illegal_address_amo, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+                cp_xtinst_zacas_access: cross priv_mode_vs, amocas, illegal_address_amo, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
             `endif
         `endif
     `endif
     `ifdef ZALRSC_SUPPORTED
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LRSC
-            lr_sc_w: coverpoint ins.current.insn {
-                wildcard bins lr_w = {LR_W};
-                wildcard bins sc_w = {SC_W};
+            lr_sc: coverpoint ins.current.insn {
+                wildcard bins lr_w      = {LR_W} iff (ins.current.insn[26:25] == 2'b00);
+                wildcard bins sc_w      = {SC_W} iff (ins.current.insn[26:25] == 2'b00);
+                wildcard bins lr_w_aqrl = {LR_W} iff (ins.current.insn[26:25] == 2'b11);
+                wildcard bins sc_w_aqrl = {SC_W} iff (ins.current.insn[26:25] == 2'b11);
+                `ifdef UDB_MXLEN_64
+                    wildcard bins lr_d  = {LR_D};
+                    wildcard bins sc_d  = {SC_D};
+                `endif
             }
             illegal_address_lrsc: coverpoint ins.current.rs1_val {
                 bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LRSC};
             }
-            cp_xtinst_lrsc_access: cross priv_mode_vs, lr_sc_w, illegal_address_lrsc, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+            cp_xtinst_lrsc_access: cross priv_mode_vs, lr_sc, illegal_address_lrsc, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
         `endif
     `endif
     `ifdef ZCA_SUPPORTED
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-            c_lw: coverpoint ins.current.insn {
-                wildcard bins c_lw = {C_LW};
-            }
-            cp_xtinst_c_load_access: cross priv_mode_vs, c_lw, illegal_address_load, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
-            `ifdef ZCB_SUPPORTED
-                c_lbu: coverpoint ins.current.insn {
+            c_loads: coverpoint ins.current.insn {
+                wildcard bins c_lw  = {C_LW};
+                `ifdef UDB_MXLEN_64
+                    wildcard bins c_ld  = {C_LD};
+                `endif
+                `ifdef ZCB_SUPPORTED
                     wildcard bins c_lbu = {C_LBU};
-                }
-                cp_xtinst_zcb_access: cross priv_mode_vs, c_lbu, illegal_address_load, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
-            `endif
+                    wildcard bins c_lhu = {C_LHU};
+                    wildcard bins c_lh  = {C_LH};
+                `endif
+            }
+            cp_xtinst_c_load_access: cross priv_mode_vs, c_loads, illegal_address_load, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
         `endif
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-            c_sw: coverpoint ins.current.insn {
+            c_stores: coverpoint ins.current.insn {
                 wildcard bins c_sw = {C_SW};
+                `ifdef UDB_MXLEN_64
+                    wildcard bins c_sd = {C_SD};
+                `endif
+                `ifdef ZCB_SUPPORTED
+                    wildcard bins c_sb = {C_SB};
+                    wildcard bins c_sh = {C_SH};
+                `endif
             }
-            cp_xtinst_c_store_access: cross priv_mode_vs, c_sw, illegal_address_store, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+            cp_xtinst_c_store_access: cross priv_mode_vs, c_stores, illegal_address_store, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
         `endif
     `endif
     // CBOs take the store access-fault address; rs1 is their address

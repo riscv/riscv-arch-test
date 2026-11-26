@@ -101,10 +101,9 @@ coverpoints:
       cp_xtinst_zacas_access
       cp_xtinst_c_load_access
       cp_xtinst_c_store_access
-      cp_xtinst_zcb_access
       cp_xtinst_cbom_access
       cp_xtinst_cboz_access
     goal: AMO, LR/SC, compressed load and store, and CBO exceptions taken into M-mode write mtval2 and mtinst
-    description: As above and as in Exceptions_H, attempt amoswap.w at the AMO access-fault address and at scratch + 14 (Zaamo), lr.w and sc.w at the LR/SC access-fault address (Zalrsc), amoadd.b (Zabha) and amocas.w (Zacas) at the AMO access-fault address, c.lw and c.sw (Zca) and c.lbu (Zcb) at the access-fault address, and cbo.clean, cbo.flush, cbo.inval (Zicbom) and cbo.zero (Zicboz) at the store access-fault address.
+    description: As above and as in Exceptions_H, attempt amoswap.w, amoswap.w.aq, amoswap.w.rl, amoswap.w.aqrl and (RV64) amoswap.d at the AMO access-fault address and amoswap.w at scratch + 14 (Zaamo), lr.w, sc.w, lr.w.aqrl, sc.w.aqrl and (RV64) lr.d and sc.d at the LR/SC access-fault address (Zalrsc), amoadd.b (Zabha), amocas.w and (RV64) amocas.d (Zacas) at the AMO access-fault address, c.lw, c.sw and (RV64) c.ld and c.sd (Zca) and c.lbu, c.lhu, c.lh, c.sb and c.sh (Zcb) at the access-fault address, and cbo.clean, cbo.flush, cbo.inval (Zicbom) and cbo.zero (Zicboz) at the store access-fault address.
     expectation: The exception traps to M-mode with mtval2 = 0 and mtinst = 0 or the transformed instruction; for a compressed instruction, the transformed 32-bit equivalent with bit 1 = 0.
-    bins: "13"
+    bins: 28 on RV64, 22 on RV32

@@ -569,7 +569,11 @@ normative_rule_definitions:
   # must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur
   # Needs Sv57 bins in canonical_page_{i,d}; the Sv57 canonical tests run but no cross records them.
   - name: Sv57_va_signext
-    coverpoint: ["Sv_H_twostage_cg/cp_twostage_canonical", "Sv_H_vsstage_cg/cp_vsatp_canonical"]
+    coverpoint:
+      [
+        "Sv_H_twostage_cg/cp_twostage_canonical",
+        "Sv_H_vsstage_cg/cp_vsatp_canonical",
+      ]
 
   # Any level of PTE may be a leaf PTE
   # Needs Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run but no cross records the leaf level.
@@ -1088,7 +1092,8 @@ normative_rule_definitions:
 
   # hfence.vvma orders VS-stage translation, also with hgatp = Bare
   - name: hfence-vvma_hfence-gvma_op
-    coverpoint: ["Sv_H_fence_cg/{cp_vsatp_hfence_vvma, cp_vsatp_hfence_vvma_asid}"]
+    coverpoint:
+      ["Sv_H_fence_cg/{cp_vsatp_hfence_vvma, cp_vsatp_hfence_vvma_asid}"]
 
   # MPRV with MPV = 1 translates M-mode loads and stores through both stages, where vsstatus.SUM replaces the
   # HS-level SUM and the HS-level MXR covers both stages

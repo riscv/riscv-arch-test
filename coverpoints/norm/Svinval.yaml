@@ -8,18 +8,30 @@ normative_rule_definitions:
   # change (rs1 = x0 or the address, rs2 = x0 or the current ASID); both check that the next access
   # uses the new leaf.
   - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
-    coverpoint: ["Svinval_cg/cp_sinval_vma", "Svinval_H_cg/{cp_sinval_vma_vs, cp_vsatp_sinval_vma_vs}"]
+    coverpoint:
+      [
+        "Svinval_cg/cp_sinval_vma",
+        "Svinval_H_cg/{cp_sinval_vma_vs, cp_vsatp_sinval_vma_vs}",
+      ]
 
   # The SFENCE.INVAL.IR instruction guarantees that any previous SINVAL.VMA instructions
   # executed by the current hart are ordered before subsequent implicit references by
   # that hart to the memory-management data structures.
   - name: Svinval_sfence_w_inval_orders_before_sinval_vma
-    coverpoint: ["Svinval_cg/cp_sinval_vma", "Svinval_H_cg/{cp_sinval_vma_vs, cp_vsatp_sinval_vma_vs}"]
+    coverpoint:
+      [
+        "Svinval_cg/cp_sinval_vma",
+        "Svinval_H_cg/{cp_sinval_vma_vs, cp_vsatp_sinval_vma_vs}",
+      ]
 
   # the values of rs1 and rs2 for the SFENCE.VMA are the same as those used in the
   # SINVAL.VMA,
   - name: Svinval_sequence_rs1_rs2
-    coverpoint: ["Svinval_cg/cp_sinval_vma", "Svinval_H_cg/{cp_sinval_vma_vs, cp_vsatp_sinval_vma_vs}"]
+    coverpoint:
+      [
+        "Svinval_cg/cp_sinval_vma",
+        "Svinval_H_cg/{cp_sinval_vma_vs, cp_vsatp_sinval_vma_vs}",
+      ]
 
   # reads and writes prior to the SFENCE.W.INVAL are considered to be those prior to the
   # SFENCE.VMA,

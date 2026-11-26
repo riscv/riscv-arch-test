@@ -26,6 +26,7 @@ def _pmp_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
 
     set_pmpaddr clobbers x5 and x6 before each case loads its registers.
     """
+    assert c.g is not None
     lines = []
     for xwr in ("000", "001"):
         region = [

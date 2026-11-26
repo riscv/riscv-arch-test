@@ -41,7 +41,7 @@ normative_rule_definitions:
   - name: V_dependent_F_D
     coverpoint:
       [
-        "Implicit: the F and D dependency is satisfied by the configuration under test; the vector floating-point tests cannot run without it",
+        "Configuration requirement: V requires F and D; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/V.yaml[ext/V.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/D.yaml[ext/D.yaml]).",
       ]
 
   # Vector floating-point instructions require the presence of base scalar floating-point
@@ -49,7 +49,7 @@ normative_rule_definitions:
   - name: vf_requires_vx
     coverpoint:
       [
-        "Implicit: the vector floating-point tests cannot run unless the scalar floating-point extensions are present",
+        "Configuration requirement: Zve32f requires F, Zve64d requires D, and Zvfh requires Zfhmin; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve32f.yaml[ext/Zve32f.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zve64d.yaml[ext/Zve64d.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvfh.yaml[ext/Zvfh.yaml]).",
       ]
 
   # Vector single-width floating-point reductions for EEW=32 and EEW=64 are supported as well as
@@ -85,4 +85,31 @@ normative_rule_definitions:
         "Vf64_vfmv_s_f_cg/cp_asm_count",
         "Vf64_vfslide1up_vf_cg/cp_asm_count",
         "Vf64_vfslide1down_vf_cg/cp_asm_count",
+      ]
+
+  # Input|Output|Exceptions raised === -∞ ≤ x < -0.0|canonical NaN|NV¶ -0.0|-∞|DZ¶ +0.0|+∞|DZ¶ +0.0
+  # < x < +∞|estimate of 1/sqrt(x)|¶ +∞|+0.0|¶ qNaN|canonical NaN|¶ sNaN|canonical NaN|NV ===
+  - name: vfrsqrt7_special_tbl
+    coverpoint:
+      [
+        "Vf{16,32,64}_vfrsqrt7_v_cg/{cp_custom_FpRecSqrtEst_flag_edges,cp_custom_vfp_NaN_input}",
+      ]
+
+  # Input (x)|Rounding Mode|Output (y ≈ 1/x)|Exceptions raised === -∞|any|-0.0|¶ -2B+1 < x ≤ -2B
+  # (normal)|any|-2-(B+1) ≥ y > -2-B (subnormal, sig=01…)|¶ -2B < x ≤ -2B-1 (normal)|any|-2-B ≥ y >
+  # -2-B+1 (subnormal, sig=1…)|¶ -2B-1 < x ≤ -2-B+1 (normal)|any|-2-B+1 ≥ y > -2B-1 (normal)|¶
+  # -2-B+1 < x ≤ -2-B (subnormal, sig=1…)|any|-2B-1 ≥ y > -2B (normal)|¶ -2-B < x ≤ -2-(B+1)
+  # (subnormal, sig=01…)|any|-2B ≥ y > -2B+1 (normal)|¶ -2-(B+1) < x < -0.0 (subnormal,
+  # sig=00…)|RUP, RTZ|greatest-mag. negative finite value|NX, OF¶ -2-(B+1) < x < -0.0 (subnormal,
+  # sig=00…)|RDN, RNE, RMM|-∞|NX, OF¶ -0.0|any|-∞|DZ¶ +0.0|any|+∞|DZ¶ +0.0 < x < 2-(B+1) (subnormal,
+  # sig=00…)|RUP, RNE, RMM|+∞|NX, OF¶ +0.0 < x < 2-(B+1) (subnormal, sig=00…)|RDN, RTZ|greatest
+  # finite value|NX, OF¶ 2-(B+1) ≤ x < 2-B (subnormal, sig=01…)|any|2B+1 > y ≥ 2B (normal)|¶ 2-B ≤ x
+  # < 2-B+1 (subnormal, sig=1…)|any|2B > y ≥ 2B-1 (normal)|¶ 2-B+1 ≤ x < 2B-1 (normal)|any|2B-1 > y
+  # ≥ 2-B+1 (normal)|¶ 2B-1 ≤ x < 2B (normal)|any|2-B+1 > y ≥ 2-B (subnormal, sig=1…)|¶ 2B ≤ x <
+  # 2B+1 (normal)|any|2-B > y ≥ 2-(B+1) (subnormal, sig=01…)|¶ +∞|any|+0.0|¶ qNaN|any|canonical
+  # NaN|¶ sNaN|any|canonical NaN|NV ===
+  - name: vfrec7_special_tbl
+    coverpoint:
+      [
+        "Vf{16,32,64}_vfrec7_v_cg/{cp_custom_FpRecipEst_flag_edges,cp_custom_vfp_NaN_input}",
       ]

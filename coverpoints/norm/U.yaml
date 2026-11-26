@@ -5,11 +5,11 @@ normative_rule_definitions:
   # At any time, a RISC-V hardware thread (hart) is running at some privilege level encoded as
   # a mode in one or more CSRs (control and status registers).
   - name: always_priv_level
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["No independent assertion: definition."]
 
   # Three RISC-V privilege levels are currently defined
   - name: priv_levels_txt
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint: ["No independent assertion: definition."]
 
   # Level|Encoding|Name|Abbreviation === 0|00|User/Application|U¶1|01|Supervisor|S¶2|10|
   # Reserved|¶3|11|Machine|M ===
@@ -29,12 +29,18 @@ normative_rule_definitions:
 
   # Implementations might provide anywhere from 1 to 3 privilege modes
   - name: priv_combs_txt
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: UDB checks that S requires Sm and U (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/S.yaml[ext/S.yaml]), but not the other mode combinations.",
+      ]
 
   # Number of levels|Supported Modes|Intended Usage === 1|M|Simple embedded systems¶2|M,
   # U|Secure embedded systems¶3|M, S, U|Systems running Unix-like operating systems ===
   - name: priv_combs_tbl
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: UDB checks that S requires Sm and U (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/S.yaml[ext/S.yaml]), but not the other mode combinations.",
+      ]
 
   # All hardware implementations must provide M-mode
   - name: m_mode_mandatory

@@ -20,7 +20,10 @@ normative_rule_definitions:
       ]
 
   - name: B_extension_composition
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: B requires Zba, Zbb, and Zbs; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/B.yaml[ext/B.yaml]).",
+      ]
 
   - name: Zbb_sign_zero_extension_function
     coverpoint: ["{Zbb_sext_b_cg, Zbb_sext_h_cg, Zbb_zext_h_cg}/cp_rs1_edges"]
@@ -191,3 +194,41 @@ normative_rule_definitions:
 
   - name: zext-h_op
     coverpoint: ["Zbb_zext_h_cg/cp_rs1_edges"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:andn[rd,rs1,rs2]|<<insns-andn>>¶
+  # ✓|✓|insn:orn[rd,rs1,rs2]|<<insns-orn>>¶ ✓|✓|insn:xnor[rd,rs1,rs2]|<<insns-xnor>> ===
+  - name: Zbb_logical_insns_tbl
+    coverpoint: ["Zbb_{andn,orn,xnor}_cg/cp_asm_count"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:clz[rd,rs]|<<insns-clz>>¶
+  # |✓|insn:clzw[rd,rs]|<<insns-clzw>>¶ ✓|✓|insn:ctz[rd,rs]|<<insns-ctz>>¶
+  # |✓|insn:ctzw[rd,rs]|<<insns-ctzw>> ===
+  - name: Zbb_count_zeros_insns_tbl
+    coverpoint: ["Zbb_{clz,clzw,ctz,ctzw}_cg/cp_asm_count"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:cpop[rd,rs]|<<insns-cpop>>¶
+  # |✓|insn:cpopw[rd,rs]|<<insns-cpopw>> ===
+  - name: Zbb_cpop_insns_tbl
+    coverpoint: ["Zbb_{cpop,cpopw}_cg/cp_asm_count"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:max[rd,rs1,rs2]|<<insns-max>>¶
+  # ✓|✓|insn:maxu[rd,rs1,rs2]|<<insns-maxu>>¶ ✓|✓|insn:min[rd,rs1,rs2]|<<insns-min>>¶
+  # ✓|✓|insn:minu[rd,rs1,rs2]|<<insns-minu>> ===
+  - name: Zbb_min_max_insns_tbl
+    coverpoint: ["Zbb_{min,minu,max,maxu}_cg/cp_asm_count"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:sext.b[rd,rs]|<<insns-sext_b>>¶
+  # ✓|✓|insn:sext.h[rd,rs]|<<insns-sext_h>>¶ ✓|✓|insn:zext.h[rd,rs]|<<insns-zext_h>> ===
+  - name: Zbb_sext_zext_insns_tbl
+    coverpoint: ["Zbb_{sext_b,sext_h,zext_h}_cg/cp_asm_count"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:rol[rd,rs1,rs2]|<<insns-rol>>¶
+  # |✓|insn:rolw[rd,rs1,rs2]|<<insns-rolw>>¶ ✓|✓|insn:ror[rd,rs1,rs2]|<<insns-ror>>¶
+  # ✓|✓|insn:rori[rd,rs1,shamt]|<<insns-rori>>¶ |✓|insn:roriw[rd,rs1,shamt]|<<insns-roriw>>¶
+  # |✓|insn:rorw[rd,rs1,rs2]|<<insns-rorw>> ===
+  - name: Zbb_rotate_insns_tbl
+    coverpoint: ["Zbb_{rol,rolw,ror,rorw,rori,roriw}_cg/cp_asm_count"]
+
+  # RV32|RV64|Mnemonic|Instruction === ✓|✓|insn:orc.b[rd,rs]|<<insns-orc_b>> ===
+  - name: Zbb_orc-b_insns_tbl
+    coverpoint: ["Zbb_orc_b_cg/cp_asm_count"]

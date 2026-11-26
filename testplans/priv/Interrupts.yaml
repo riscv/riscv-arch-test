@@ -112,6 +112,18 @@ coverpoints:
       RVTEST_CLR_<type>_INT
     expectation: Interrupt if sie and sip match.  With H, sie and hie are written together, so hie also enables or disables the VS-level interrupts.
     bins: 4 priv * 2 sie * 7 int
+  - name: cp_enable_zero_vs
+    goal: A delegated VS-level interrupt is not taken while its vsie bit is clear
+    description: |-
+      In {VS, VU} mode, for <type> in VSEI, VSTI, VSSI:
+      hideleg = 1 in type, vsstatus.SIE = 1, sstatus.SIE = 1
+      sie = hie = 1s everywhere except type
+      RVTEST_SET_<type>_INT
+      RVTEST_IDLE_FOR_INT
+      read vsip in HS-mode
+      RVTEST_CLR_<type>_INT
+    expectation: No interrupt.  The interrupt is pending in vsip.
+    bins: 2 priv * 3 int
   - name: cp_priority_sip
     goal: Priority of pending interrupts
     description: |-

@@ -80,6 +80,9 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] {
             // autofill 0/1
         }
+        vsstatus_sie_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] {
+            bins one = {1};
+        }
     `endif
 
     // Privilege modes below M this config implements
@@ -601,6 +604,17 @@ covergroup Interrupts_cg with function sample(ins_t ins);
     // No _tsbi twin: cp_enable_zero checks that the disabled interrupt does not fire, so the test
     // instruction retires with it pending and is observed directly.
     cp_enable_zero:             cross priv_mode_interrupts, mideleg_s_ones, sstatus_sie_one, walking_sie_zero, sip_matches_sie_zero;
+    // The same in VS-mode and VU-mode with hideleg delegating the disabled VS-level interrupt and vsstatus.SIE = 1:
+    // with its vsie (hie) bit clear, it is not taken. {delegated, disabled interrupt}
+    `ifdef H_SUPPORTED
+        walking_sie_zero_vs: coverpoint {(((~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)[15:0]) & get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HIDELEG)[15:0] & 16'h0444) != 16'h0),
+                                         ((~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIE)[15:0]) & `INTR_BELOW_M)} {
+            bins vseie = {17'h10400};
+            bins vstie = {17'h10040};
+            bins vssie = {17'h10004};
+        }
+        cp_enable_zero_vs:      cross priv_mode_vs_vu, mideleg_s_ones, vsstatus_sie_on, walking_sie_zero_vs, sip_matches_sie_zero;
+    `endif
 
     // The pair is raised with sie = 0, then sie is written. S writes sie directly, so the higher
     // priority interrupt is taken on that csrw. U writes sie through T-SBI, so it is taken on the

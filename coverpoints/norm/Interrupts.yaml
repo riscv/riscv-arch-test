@@ -326,7 +326,7 @@ normative_rule_definitions:
   - name: hideleg_op
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip_tsbi}",
+        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip_tsbi, cp_enable_zero_vs}",
         "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}",
         "Interrupts_Sm_cg/{cp_trigger, cp_enable_one}",
         "Interrupts_Sm_cg/{cp_trigger, cp_priority_mip}",
@@ -435,17 +435,17 @@ normative_rule_definitions:
   # When bit 10 of hideleg is zero, vsip.SEIP and vsie.SEIE are read-only zeros. Else,
   # vsip.SEIP and vsie.SEIE are aliases of hip.VSEIP and hie.VSEIE.
   - name: vsip_vsie_sei
-    coverpoint: ["Interrupts_cg/cp_vsip_vsie"]
+    coverpoint: ["Interrupts_cg/{cp_vsip_vsie, cp_enable_zero_vs}"]
 
   # When bit 6 of hideleg is zero, vsip.STIP and vsie.STIE are read-only zeros. Else,
   # vsip.STIP and vsie.STIE are aliases of hip.VSTIP and hie.VSTIE.
   - name: vsip_vsie_sti
-    coverpoint: ["Interrupts_cg/cp_vsip_vsie"]
+    coverpoint: ["Interrupts_cg/{cp_vsip_vsie, cp_enable_zero_vs}"]
 
   # When bit 2 of hideleg is zero, vsip.SSIP and vsie.SSIE are read-only zeros. Else,
   # vsip.SSIP and vsie.SSIE are aliases of hip.VSSIP and hie.VSSIE.
   - name: vsip_vsie_ssi
-    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sip_vs}"]
+    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sip_vs, enable_zero_vs}"]
 
   # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hideleg_img&gt;&gt;.

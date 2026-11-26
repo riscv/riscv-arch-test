@@ -186,7 +186,12 @@ def hideleg_vs_target(hideleg: int, int_type: str, mode: int, sie: int, reg: int
 
 
 def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
-    """Raise each interrupt with only its enable bit set, then with every enable bit but its own."""
+    """Raise each interrupt with only its enable bit set, then with every enable bit but its own.
+
+    In VS-mode and VU-mode, the S-mode suite also raises each VS-level interrupt with every enable bit but its own,
+    hideleg delegating it to VS-mode and vsstatus.SIE = 1 (cp_enable_zero_vs): with its vsie bit clear, it is not
+    taken and stays pending in vsip.
+    """
 
     ######################################
     banner = "cp_enable_one / cp_enable_zero"
@@ -223,6 +228,34 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                 f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the interrupt handler hasn't done so",
                 *mode_exit(suite, priv),
+                f"#endif // {guard}",
+                "",
+            ]
+        if suite.hie and priv in ("VS", "VU") and int_type in vs_ints:
+            tc.code += [
+                f"#ifdef {guard}",
+                *suite.deleg,
+                f"LI(x{tmp_reg}, {1 << bit:#x})",
+                f"csrw hideleg, x{tmp_reg} # hideleg delegates {int_type} to VS-mode",
+                f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
+                f"csrs vsstatus, x{tmp_reg} # vsstatus.SIE = 1",
+                f"LI(x{tmp_reg}, {status['mask']:#x})",
+                f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
+                f"LI(x{tmp_reg}, {~(1 << bit)})",
+                *write_ie(suite, tmp_reg, f"{int_type} others"),
+                test_data.add_testcase(
+                    f"priv_{priv}_{int_type}_{ie}_others_hideleg", "cp_enable_zero_vs", suite.covergroup
+                ),
+                *mode_enter(suite, priv),
+                f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # It must not be taken",
+                *mode_exit(suite, priv),
+                f"csrr x{tmp_reg}, vsip # pending in vsip",
+                write_sigupd(tmp_reg, test_data),
+                f"RVTEST_CLR_{macro}_INT_{suite.boot}",
+                "csrw hideleg, zero # hideleg = 0",
+                f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
+                f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0",
                 f"#endif // {guard}",
                 "",
             ]

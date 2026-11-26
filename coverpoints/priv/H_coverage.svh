@@ -622,6 +622,20 @@ covergroup H_inst_cg with function sample(ins_t ins);
     cp_vtvm_satp:        cross priv_mode_vs, satp_access, satp, hstatus_vtvm;
     cp_vtvm_hfence_vvma: cross priv_mode_hs, hfence_vvma, hstatus_vtvm;
 
+    // The other six CSR instruction forms on satp.  rs1 = x0 and uimm = 0 read only; every other form writes.
+    satp_forms : coverpoint ins.current.insn {
+        wildcard bins csrrs_zero  = {CSRRS}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrc_x0    = {CSRRC}  iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrc_zero  = {CSRRC}  iff (ins.current.insn[19:15] != 0 && ins.current.rs1_val == 0);
+        wildcard bins csrrwi      = {CSRRWI};
+        wildcard bins csrrsi_zero = {CSRRSI} iff (ins.current.insn[19:15] == 0);
+        wildcard bins csrrci_nz   = {CSRRCI} iff (ins.current.insn[19:15] != 0);
+    }
+    hstatus_vtvm_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtvm") {
+        bins on = {1};
+    }
+    cp_vtvm_satp_forms:  cross priv_mode_vs, satp_forms, satp, hstatus_vtvm_on;
+
     // In VS-mode the trace reports vsstatus as sstatus
     old_spp : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spp")[0] {
     }

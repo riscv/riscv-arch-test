@@ -2351,7 +2351,9 @@ covergroup Sv_H_csr_cg with function sample(ins_t ins);
     }
     hgatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
         bins bare   = {0};
-        bins sv39x4 = {8};
+        `ifdef UDB_SV39X4_TRANSLATION
+            bins sv39x4 = {8};
+        `endif
     }
     // In VS-mode, satp is vsatp
     satp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
@@ -2359,12 +2361,11 @@ covergroup Sv_H_csr_cg with function sample(ins_t ins);
         bins sv39 = {8};
     }
 
-    // Each MODE written starting from Bare and Sv39 (Sv39x4)
+    // Each MODE written starting from Bare and Sv39 (Sv39x4, where hgatp supports it).  The test runs with VS-stage
+    // Sv39.
     `ifdef UDB_SV39_VSMODE_TRANSLATION
         cp_vsatp_mode_field : cross priv_mode_hs, csrrw, vsatp, vsatp_mode, mode_written;
         cp_satp_mode_field  : cross priv_mode_vs, csrrw, satp, satp_mode, mode_written;
-    `endif
-    `ifdef UDB_SV39X4_TRANSLATION
         cp_hgatp_mode_field : cross priv_mode_hs, csrrw, hgatp, hgatp_mode, mode_written;
     `endif
 endgroup

@@ -1355,14 +1355,15 @@ def _supported_mode_check(test_data: TestData, csr: str, gates: Sequence[str]) -
 
 
 def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
-    """Write each MODE to vsatp and hgatp in HS-mode, and to satp (vsatp) in VS-mode."""
+    """Write each MODE to vsatp and hgatp in HS-mode, and to satp (vsatp) in VS-mode.  hgatp starts from Sv39x4 only
+    where it supports Sv39x4; a hart whose hgatp supports only Bare reads Bare after every write."""
     chunk = begin_chunk(
         test_data,
-        "H_sv39x4_atp_mode",
+        "H_sv39_atp_mode",
         "cp_vsatp_mode_field, cp_hgatp_mode_field, cp_satp_mode_field",
-        "Starting from MODE = Bare and Sv39 (Sv39x4), write MODE = 0-15 to vsatp and hgatp in HS-mode, where an\n"
-        "unsupported MODE leaves a supported one (the write is ignored or WARL), and to satp in VS-mode, where an\n"
-        "unsupported MODE is ignored.  The other fields are zero, or the root table in VS-mode",
+        "Starting from MODE = Bare and Sv39 (Sv39x4, where supported), write MODE = 0-15 to vsatp and hgatp in\n"
+        "HS-mode, where an unsupported MODE leaves a supported one (the write is ignored or WARL), and to satp in\n"
+        "VS-mode, where an unsupported MODE is ignored.  The other fields are zero, or the root table in VS-mode",
     )
     save, val, check = test_data.int_regs.get_registers(3)
     code = []
@@ -1370,8 +1371,9 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         gates = [pair[stage] for pair in ATP_MODES.values()]
         code.append(f"csrr x{save}, {csr}")
         for start in (0, 8):
+            start_code = []
             for mode in range(16):
-                code.extend(
+                start_code.extend(
                     [
                         f"LI(x{val}, {start << 60:#x})",
                         f"csrw {csr}, x{val}",
@@ -1381,9 +1383,9 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
                     ]
                 )
                 if mode == 0:
-                    code.append(gen_csr_read_sigupd(check, (csr, None), test_data))
+                    start_code.append(gen_csr_read_sigupd(check, (csr, None), test_data))
                 elif mode in ATP_MODES:
-                    code.extend(
+                    start_code.extend(
                         [
                             f"#ifdef {ATP_MODES[mode][stage]}",
                             gen_csr_read_sigupd(check, (csr, None), test_data),
@@ -1393,7 +1395,8 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
                         ]
                     )
                 else:
-                    code.extend(_supported_mode_check(test_data, csr, gates))
+                    start_code.extend(_supported_mode_check(test_data, csr, gates))
+            code.extend(gated(start_code, f"defined({ATP_MODES[8][stage]})") if start else start_code)
         code.append(f"csrw {csr}, x{save}")
 
     # The VS-stage identity maps the test image for Sv39 (gigapages) and for Sv48 and Sv57 (the terapage or
@@ -1444,11 +1447,11 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_bare(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
+def _t_bare(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     """Guest accesses with vsatp and hgatp Bare."""
     chunk = begin_chunk(
         test_data,
-        f"H_{g.name}_bare",
+        "H_bare",
         "cp_stage_both_bare",
         "In VS-mode and VU-mode with vsatp and hgatp Bare, store, load and fetch at a physical address",
     )
@@ -1508,18 +1511,20 @@ def _fence_chunk(test_data: TestData, g: SvMode, vs: SvMode) -> TestChunk:
     return fence_chunk(test_data, g, vs, f"H_{g.name}_fence", fences, "Sv_H_fence_cg", ISOLATION_CASES)
 
 
-def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
-    """Every H group test for the smallest G-stage and VS-stage modes of each XLEN."""
-    test_chunks: list[TestChunk] = []
-    _t_bare(test_data, test_chunks, g)
-    test_chunks.extend(_vs_stage_tests(test_data, vs))
-    test_chunks.extend(_g_stage_tests(test_data, g))
-    test_chunks.extend(_two_stage_tests(test_data, g, vs))
-    for mode in ("VS", "VU"):
-        _t_hedeleg(test_data, test_chunks, g, vs, mode)
-    if g.xlen == 64:
+def _make_svh_vs(test_data: TestData, vs: SvMode) -> list[TestChunk]:
+    """The tests with hgatp = Bare, for the smallest VS-stage mode of each XLEN."""
+    test_chunks = _vs_stage_tests(test_data, vs)
+    if vs.xlen == 64:
         _t_atp_mode(test_data, test_chunks)
     return test_chunks
+
+
+def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    """The tests that need both stages, for the smallest G-stage and VS-stage modes of each XLEN."""
+    test_chunks = _two_stage_tests(test_data, g, vs)
+    for mode in ("VS", "VU"):
+        _t_hedeleg(test_data, test_chunks, g, vs, mode)
+    return [*test_chunks, _fence_chunk(test_data, g, vs)]
 
 
 def _make_svh_straddle(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
@@ -1542,14 +1547,41 @@ MISALIGNED_PARAMS = ["MISALIGNED_LDST: true", "MISALIGNED_SPLIT_STRATEGY: sequen
 BOOT = ["#define BOOT_TO_SMODE"]
 
 
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT)
+def make_svh_bare(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_bare(test_data, test_chunks)
+    return test_chunks
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV32_VSMODE_TRANSLATION: true"])
+def make_svh_vs_sv32(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_vs(test_data, VS_SV32)
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV32X4_TRANSLATION: true"])
+def make_svh_g_sv32x4(test_data: TestData) -> list[TestChunk]:
+    return _g_stage_tests(test_data, SV32X4)
+
+
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=SV32_PARAMS)
 def make_svh_sv32(test_data: TestData) -> list[TestChunk]:
-    return [*_make_svh(test_data, SV32X4, VS_SV32), _fence_chunk(test_data, SV32X4, VS_SV32)]
+    return _make_svh(test_data, SV32X4, VS_SV32)
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV39_VSMODE_TRANSLATION: true"])
+def make_svh_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_vs(test_data, VS_SV39)
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV39X4_TRANSLATION: true"])
+def make_svh_g_sv39x4(test_data: TestData) -> list[TestChunk]:
+    return _g_stage_tests(test_data, SV39X4)
 
 
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=SV39_PARAMS)
 def make_svh_sv39(test_data: TestData) -> list[TestChunk]:
-    return [*_make_svh(test_data, SV39X4, VS_SV39), _fence_chunk(test_data, SV39X4, VS_SV39)]
+    return _make_svh(test_data, SV39X4, VS_SV39)
 
 
 # A 4-byte instruction in the last halfword of a page needs IALIGN = 16

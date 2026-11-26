@@ -27,7 +27,6 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.extensions.sv.SvH import (
     BOOT,
-    SV39_PARAMS,
     begin_chunk,
     guest_access,
     guest_chunk_setup,
@@ -140,9 +139,18 @@ def _g_chunk(test_data: TestData, g: SvMode) -> TestChunk:
     return test_data.end_test_chunk()
 
 
-@add_priv_test_generator("Svpbmt", required_extensions=["H", "Svpbmt"], extra_defines=BOOT, params=SV39_PARAMS)
-def make_svpbmt_h_sv39(test_data: TestData) -> list[TestChunk]:
-    return [_vs_chunk(test_data, VS_SV39, True), _g_chunk(test_data, SV39X4)]
+@add_priv_test_generator(
+    "Svpbmt", required_extensions=["H", "Svpbmt"], extra_defines=BOOT, params=["SV39_VSMODE_TRANSLATION: true"]
+)
+def make_svpbmt_h_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    return [_vs_chunk(test_data, VS_SV39, True)]
+
+
+@add_priv_test_generator(
+    "Svpbmt", required_extensions=["H", "Svpbmt"], extra_defines=BOOT, params=["SV39X4_TRANSLATION: true"]
+)
+def make_svpbmt_h_g_sv39x4(test_data: TestData) -> list[TestChunk]:
+    return [_g_chunk(test_data, SV39X4)]
 
 
 @add_priv_test_generator(

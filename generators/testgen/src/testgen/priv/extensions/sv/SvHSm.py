@@ -312,11 +312,30 @@ def _t_straddle_m(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, 
 
 def _make_svhsm(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
-    _t_mprv_vsatp(test_data, test_chunks, vs)
-    _t_mprv_hgatp(test_data, test_chunks, g)
     _t_mprv_sum_mxr(test_data, test_chunks, g, vs)
     for mode in ("VS", "VU"):
         _t_guest_faults(test_data, test_chunks, g, vs, mode)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_vs_sv32(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_vsatp(test_data, test_chunks, VS_SV32)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv", required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"], params=["SV32X4_TRANSLATION: true"]
+)
+def make_svhsm_g_sv32x4(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_hgatp(test_data, test_chunks, SV32X4)
     return test_chunks
 
 
@@ -328,6 +347,27 @@ def _make_svhsm(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
 )
 def make_svhsm_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svhsm(test_data, SV32X4, VS_SV32)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_vsatp(test_data, test_chunks, VS_SV39)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv", required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"], params=["SV39X4_TRANSLATION: true"]
+)
+def make_svhsm_g_sv39x4(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_hgatp(test_data, test_chunks, SV39X4)
+    return test_chunks
 
 
 @add_priv_test_generator(

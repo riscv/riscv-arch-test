@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: Sv_HSm
 notes: |-
-  Sv_HSm covers two-stage address translation seen from M-mode through mstatus.MPRV and MPV, and guest traps taken in M-mode.  The group boots to M-mode and delegates nothing (medeleg = hedeleg = 0), so the M-mode trap handler takes every trap and records mcause, mtval, mtval2, mtinst and mstatus.GVA/MPV.  It runs with Sv39/Sv39x4 on RV64 and Sv32/Sv32x4 on RV32, and uses the Sv_H test page, page tables and conventions; the other two-stage cases are in Sv_H.
+  Sv_HSm covers two-stage address translation seen from M-mode through mstatus.MPRV and MPV, and guest traps taken in M-mode.  The group boots to M-mode and delegates nothing (medeleg = hedeleg = 0), so the M-mode trap handler takes every trap and records mcause, mtval, mtval2, mtinst and mstatus.GVA/MPV.  It runs with Sv39/Sv39x4 on RV64 and Sv32/Sv32x4 on RV32, and uses the Sv_H test page, page tables and conventions; the other two-stage cases are in Sv_H.  The tests with hgatp = Bare need only the VS-stage mode, and those with vsatp = Bare only the G-stage mode.
   MPRV tests set mstatus.MPRV, MPP and MPV (mstatush.MPV on RV32) just before each M-mode load or store and clear MPRV after it, because a trap from M-mode leaves MPP = M and MPV = 0.  Instruction fetches in M-mode are never translated.  The fetch straddle test (cp_straddle_m) needs Zca, and the load/store straddle test (cp_ldst_straddle_m) needs a hart that performs misaligned accesses byte by byte (MISALIGNED_LDST with MISALIGNED_SPLIT_STRATEGY = sequential_bytes); they are separate test files.
 coverpoints:
   - heading: M-mode accesses with MPRV (Sv_HSm_mprv_cg)

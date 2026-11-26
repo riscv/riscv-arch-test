@@ -760,11 +760,7 @@ normative_rule_definitions:
   # In HS- and M-modes, pointer masking for these instructions is enabled or disabled by
   # senvcfg.PMM, when their explicit memory access is performed as though in VU-mode.
   - name: hstatus_hupmm_vu_mode
-    coverpoint:
-      [
-        "Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm",
-        "Needs test: HLV and HSV from M-mode with SPVP=0 and senvcfg.PMM set.",
-      ]
+    coverpoint: ["Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm", "Ssnpm_HSm_cg/cp_hlv_m_pmm"]
 
   # Setting henvcfg.PMM enables or disables pointer masking for HLV.* and HSV.* when their explicit
   # memory access is performed as though in VS-mode.
@@ -772,7 +768,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssnpm_H_cg/{cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
-        "Needs test: HLV and HSV from M-mode with SPVP=1 and henvcfg.PMM set.",
+        "Ssnpm_HSm_cg/cp_hlv_m_pmm",
       ]
 
   # Value|Description === 00|Pointer masking is disabled (PMLEN = 0)¶ 01|Reserved¶ 10|Pointer

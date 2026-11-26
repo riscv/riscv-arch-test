@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssnpm_HSm
+title: Ssnpm_HSm Coverpoints (M-mode accesses as VS-mode and VU-mode)
+notes: |-
+  The group boots to M-mode and runs every access in M-mode.  A load or store with mstatus.MPRV = MPV = 1 runs with the effective privilege VS (MPP = S) or VU (MPP = U), and an HLV or HSV with VS (hstatus.SPVP = 1) or VU (SPVP = 0).  The PMM field of the effective privilege applies (pm_mprv_spvp): henvcfg.PMM for VS and senvcfg.PMM for VU.  hstatus.HUPMM applies only to HLV and HSV in U-mode (hstatus_hupmm_u_mode), so in M-mode an HLV or HSV as VU takes senvcfg.PMM (hstatus_hupmm_vu_mode).
+  As in Ssnpm_H, the PMM fields a case does not test hold a different value (the largest supported one when the field under test is 00, else 00), so a hart that takes the wrong field gets a different result.  menvcfg.PMM and mseccfg.PMM are set only when Smnpm and Smmpm are implemented.
+  The cases use Ssnpm_H's BARE_PAIR and PAGED_PAIR, the widest supported (vsatp, hgatp) pairs with vsatp = Bare and with vsatp paged.  M-mode seeds the test page pm_lo_page and checks it through its physical address, with MPRV clear.  Every coverpoint is RV64 only.
+  Tags: 0x0400 (bit 58) is masked by PMLEN 7 and 16, and 0xFFFF in full only by PMLEN 16.  A tag that masking keeps makes the access fault, also with (Bare, Bare), where both tags are above every physical address width.
+coverpoints:
+  - name: cp_mprv_mpv_pmm
+    goal: An M-mode load or store with MPRV and MPV takes the PMM field of the effective privilege, VS or VU
+    description: |-
+      On BARE_PAIR and PAGED_PAIR, with mstatus.MPRV = MPV = 1 and MPP = S (henvcfg.PMM) or U (senvcfg.PMM), for each value of that field: ld from and sd to pm_lo_page with bits 63:48 = 0x0400 and 0xFFFF.
+    expectation: |-
+      The access reaches pm_lo_page (ld returns value_old, the readback after sd returns value_new) when the PMM of the effective privilege masks every tag bit: 0x0400 with PMM 10 or 11, 0xFFFF with PMM 11.  Otherwise it faults: a guest-page fault, page fault or access fault, taken in M-mode.
+      The address is zero-extended with vsatp = Bare and sign-extended with vsatp paged; pm_lo_page has bits 47 and 56 clear, so both give the same address.
+    bins: M x {ld, sd} x {VS, VU} x PMM {00, 10, 11} x tag {0x0400, 0xFFFF} x vsatp {Bare, paged}; PMM 10 and 11 only where supported
+  - name: cp_mprv_mpv_pmm_upper
+    goal: Under MPRV with MPV, vsatp selects sign extension, not satp
+    description: |-
+      On PAGED_PAIR, with PMM 10 or 11 for the effective privilege as in cp_mprv_mpv_pmm, the VS stage maps the guest virtual address 0xFFFF_FFFF_C000_0000 to pm_lo_page.  ld from and sd to that address with every bit that masking replaces flipped: bits 63:48 = 0x0000 for PMLEN 16 and 0x01FF for PMLEN 7.
+    expectation: |-
+      The access reaches pm_lo_page, because masking sign-extends the guest virtual address when vsatp is paged.  satp is Bare, so a hart that takes the extension from satp zero-extends it and faults.
+    bins: M x {ld, sd} x {VS, VU} x PMM {10, 11}
+  - name: cp_mprv_mpv_mxr_pmm
+    goal: MXR in effect for the effective privilege turns pointer masking off
+    description: |-
+      On BARE_PAIR with every PMM field = 10, then 11, and vsstatus.MXR or the HS-level mstatus.MXR set: ld in M-mode with MPRV = MPV = 1 and MPP = S, then U, from pm_lo_page with the tag that the PMM masks in full (0x0400 for PMLEN 7, 0xFFFF for PMLEN 16).
+    expectation: Masking does not apply (pm_mxr_exception), so the access faults.  With vsatp = Bare, MXR has no effect on permissions but still turns masking off.
+    bins: M x ld x {VS, VU} x PMM {10, 11} x {vsstatus.MXR, mstatus.MXR}
+  - name: cp_hlv_m_pmm
+    goal: HLV and HSV in M-mode take henvcfg.PMM as VS and senvcfg.PMM, not hstatus.HUPMM, as VU
+    description: |-
+      On BARE_PAIR with hstatus.SPVP = 1 (henvcfg.PMM) and 0 (senvcfg.PMM), for each value of that field, with hstatus.HUPMM and the other fields different: hlv.d from and hsv.d to pm_lo_page with bits 63:48 = 0x0400.
+    expectation: The access reaches pm_lo_page with PMM 10 or 11 and faults with PMM 00.
+    bins: M x {hlv.d, hsv.d} x SPVP {0, 1} x PMM {00, 10, 11}

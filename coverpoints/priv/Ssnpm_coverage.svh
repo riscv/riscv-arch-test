@@ -995,6 +995,148 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
 endgroup
 `endif // H_SUPPORTED
 
+// HSm group: M-mode loads and stores with MPRV and MPV = 1, and HLV and HSV in M-mode (testplans/priv/Ssnpm_HSm.yaml).
+// The PMM field of the effective privilege applies: henvcfg.PMM for VS, senvcfg.PMM for VU.  hstatus.HUPMM applies only
+// to HLV and HSV in U-mode.
+`ifdef H_SUPPORTED
+`ifndef EXCLUDE_SM
+// Whether an Ssnpm_HSm access runs as VS: MPP = S for a load or store with MPRV, hstatus.SPVP = 1 for HLV and HSV
+function automatic bit ssnpm_hsm_as_vs(ins_t ins);
+    if (ins.current.insn ==? HLV_D || ins.current.insn ==? HSV_D)
+        return get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0];
+    return get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[0];
+endfunction
+
+// The PMM field that applies to an Ssnpm_HSm access: henvcfg.PMM as VS, senvcfg.PMM as VU
+function automatic bit [1:0] ssnpm_hsm_pmm(ins_t ins);
+    return ssnpm_hsm_as_vs(ins) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0] :
+                                  get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm")[1:0];
+endfunction
+
+covergroup Ssnpm_HSm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    ld_sd: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins ld = {LD};
+        wildcard bins sd = {SD};
+    }
+    ld: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins ld = {LD};
+    }
+    hlv_hsv: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins hlv_d = {HLV_D};
+        wildcard bins hsv_d = {HSV_D};
+    }
+    // MPRV = MPV = 1: an M-mode load or store runs with the effective privilege VS (MPP = S) or VU (MPP = U)
+    mprv_mpv_mpp: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                              get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+        type_option.weight = 0;
+        bins vs = {4'b11_01};
+        bins vu = {4'b11_00};
+    }
+    spvp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp") {
+        type_option.weight = 0;
+        bins vu = {0};
+        bins vs = {1};
+    }
+    // The PMM field of the effective privilege
+    pmm_effective: coverpoint ssnpm_hsm_pmm(ins) {
+        type_option.weight = 0;
+        bins disabled = {2'b00};
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7 = {2'b10};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16 = {2'b11};
+        `endif
+    }
+    // The other PMM fields hold a different value, so a hart that takes the wrong one gets a different result
+    pmm_others_differ: coverpoint ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0] !=
+                                    get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm")[1:0]) &&
+                                   (ssnpm_hsm_pmm(ins) != get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm")[1:0])) {
+        type_option.weight = 0;
+        bins differ = {1};
+    }
+    // Every PMM field holds the same value, for the MXR cases
+    pmm_all_same: coverpoint ((get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "pmm")[1:0] ==
+                               get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm")[1:0]) &&
+                              (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "pmm")[1:0] ==
+                               get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "hupmm")[1:0])) {
+        type_option.weight = 0;
+        bins same = {1};
+    }
+    // Bits 63:48 of the address: 0x0400 is masked by PMLEN 7 and 16, 0xFFFF in full only by PMLEN 16
+    tag2: coverpoint 16'(ins.current.eff_addr >> 48) {
+        type_option.weight = 0;
+        bins t0400 = {16'h0400};
+        bins tFFFF = {16'hFFFF};
+    }
+    t0400: coverpoint 16'(ins.current.eff_addr >> 48) {
+        type_option.weight = 0;
+        bins t0400 = {16'h0400};
+    }
+    // The PMM and the tag of the MXR cases, which the PMM would mask in full: 0x0400 for PMLEN 7, 0xFFFF for PMLEN 16
+    tag_masked: coverpoint {ssnpm_hsm_pmm(ins), 16'(ins.current.eff_addr >> 48)} {
+        type_option.weight = 0;
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7_t0400 = {{2'b10, 16'h0400}};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16_tFFFF = {{2'b11, 16'hFFFF}};
+        `endif
+    }
+    // vsatp Bare (zero extension) and paged (sign extension).  The cases use the widest supported pair of each kind,
+    // as Ssnpm_H's pair_chosen.
+    vsatp_mode: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0] != 4'h0) {
+        type_option.weight = 0;
+        `ifdef UDB_VSSTAGE_MODE_BARE
+            bins bare = {1'b0};
+        `endif
+        `ifdef SSNPM_H_UPPER_SIGN
+            bins paged = {1'b1};
+        `endif
+    }
+    vsatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0] {
+        type_option.weight = 0;
+        bins bare = {4'h0};
+    }
+    // vsstatus.MXR or the HS-level mstatus.MXR: either one is MXR in effect for an access as VS or VU
+    mxr_pair: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0],
+                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0]} {
+        type_option.weight = 0;
+        bins vsstatus_0_mstatus_1 = {2'b01};
+        bins vsstatus_1_mstatus_0 = {2'b10};
+    }
+
+    cp_mprv_mpv_pmm:     cross priv_mode_m, ld_sd, mprv_mpv_mpp, pmm_effective, pmm_others_differ, tag2, vsatp_mode;
+    cp_mprv_mpv_mxr_pmm: cross priv_mode_m, ld, mprv_mpv_mpp, pmm_all_same, mxr_pair, tag_masked, vsatp_bare;
+    cp_hlv_m_pmm:        cross priv_mode_m, hlv_hsv, spvp, pmm_effective, pmm_others_differ, t0400, vsatp_bare;
+    // The PMM of the effective privilege, and the upper-half guest virtual address with bit 63 - PMLEN set and the
+    // masked bits all flipped, which only sign extension under the paged vsatp maps to the test data.  satp is Bare,
+    // so a hart that takes the extension from satp zero-extends it.
+    `ifdef SSNPM_H_UPPER_SIGN
+        upper_sign: coverpoint {ssnpm_hsm_pmm(ins),
+                                get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0] != 4'h0,
+                                17'(ins.current.eff_addr >> 47)} iff (!ins.current.trap) {
+            type_option.weight = 0;
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+                bins pmlen16_flipped = {{2'b11, 1'b1, 16'h0000, 1'b1}};
+            `endif
+            `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+                bins pmlen7_flipped = {{2'b10, 1'b1, 16'h01FF, 1'b1}};
+            `endif
+        }
+        cp_mprv_mpv_pmm_upper: cross priv_mode_m, ld_sd, mprv_mpv_mpp, upper_sign;
+    `endif
+endgroup
+`endif // EXCLUDE_SM
+`endif // H_SUPPORTED
+
 
 function void ssnpm_sample(int hart, int issue, ins_t ins);
     Ssnpm_cg.sample(ins);
@@ -1003,5 +1145,8 @@ function void ssnpm_sample(int hart, int issue, ins_t ins);
     `endif
     `ifdef H_SUPPORTED
         Ssnpm_H_cg.sample(ins);
+        `ifndef EXCLUDE_SM
+            Ssnpm_HSm_cg.sample(ins);
+        `endif
     `endif
 endfunction

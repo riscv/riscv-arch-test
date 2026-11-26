@@ -237,6 +237,8 @@ exclude_extensions:
   - Ssnpm_H_pmm11_hlv
   - Ssnpm_H_pmm10_vs_masking
   - Ssnpm_H_pmm11_vs_masking
+  # The same for an M-mode load with MPRV = MPV = 1 and MPP = S (NEW-10)
+  - Ssnpm_HSm
   # henvcfg.PBMTE is writable while menvcfg.PBMTE is 0, where it must be read-only zero: csr:csr_bsc.sv#L657 (NEW-7).
   # Only Smstateen-00 and Ssstateen-01 fail, but a numbered part cannot be excluded alone.
   - Smstateen-

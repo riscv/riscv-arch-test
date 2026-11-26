@@ -133,8 +133,5 @@ include::{testplansdir}/priv/SsdbltrpH.adoc[]
 
 ==== Hypervisor Pointer Masking
 
-The hypervisor pointer masking tests are the <<t-Ssnpm_H-coverpoints,Ssnpm_H>> group of the Ssnpm suite.
-
-==== SmnpmH Hypervisor Pointer Masking
-
-include::{testplansdir}/priv/SmnpmH.adoc[]
+The hypervisor pointer masking tests are the <<t-Ssnpm_H-coverpoints,Ssnpm_H>> and <<t-Ssnpm_HSm-coverpoints,Ssnpm_HSm>>
+groups of the Ssnpm suite.

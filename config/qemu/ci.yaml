@@ -145,6 +145,8 @@ exclude_extensions:
   - Sstc_HSm
   # Runs in VS-mode and VU-mode, which QEMU never enters (see H above).
   - Ssnpm_H
+  # M-mode accesses with MPRV and mstatus.MPV = 1, but MPV is read-only zero, so they run as HS-mode (see H above).
+  - Ssnpm_HSm
   # QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
   # same issue as Exceptions_ZicboU/Exceptions_ZicboS and Sv_Zicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
   - Ssnpm_bare_pmm00_sweep

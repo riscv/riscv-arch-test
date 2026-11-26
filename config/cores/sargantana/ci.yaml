@@ -55,6 +55,8 @@ exclude_extensions:
   - InterruptsSm_trigger_VU
   # scountovf reads are masked by mcounteren in M mode too: https://github.com/bsc-loca/sargantana/issues/116
   - Sscofpmf_Sm_mcounteren
+  # VS-mode reads of scountovf ignore hcounteren (norm:scountovf_vsmode_read_access): csr:csr_bsc.sv#L863
+  - Sscofpmf_H_scountovf
   # A non-leaf PTE with a reserved bit set faults on the first access through it and is walked on the next ones
   # (https://github.com/bsc-loca/sargantana/issues/113 item 7; v4.0's invalid_pte guard on the PTE cache,
   # mmu:ptw/ptw.sv#L276, does not stop it)

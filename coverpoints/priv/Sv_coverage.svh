@@ -1949,6 +1949,17 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     satp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SATP, "mode") {
         bins paged = {[1:15]};
     }
+    // VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare, the one VS-stage mode of the tests that do not run in
+    // each mode
+    vs_only : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            bins sv39_bare = {8'h80};
+        `endif
+        `ifdef UDB_SV32_VSMODE_TRANSLATION
+            bins sv32_bare = {8'h10};
+        `endif
+    }
     // The trap into HS-mode that the access takes, if any.  Only a trap writes scause on these instructions.
     trap : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         wildcard bins none = {6'b0?????};
@@ -1956,6 +1967,13 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     }
     page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
         bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+    }
+    // A page fault delegated to VS-mode
+    vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE)[4:0]} {
+        bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+    }
+    hedeleg_page_faults : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[15:12] {
+        bins delegated = {4'b1011};
     }
     vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
     vsstatus_sum_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum") {
@@ -2005,6 +2023,8 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     cp_vsatp_hs_sum : cross priv_mode_vs, ldst, vsatp_mode, hgatp_bare, vsstatus_sum_off, mstatus_sum_on, page_fault;
     // VS-stage A/D bits: Svade faults with menvcfg.ADUE = henvcfg.ADUE = 0.  Svadu_H_cg has the ADUE = 1 cases.
     cp_vsatp_svade  : cross priv_mode_vs, access, vsatp_mode, hgatp_bare, menvcfg_adue, henvcfg_adue;
+    // hedeleg delegates VS-stage page faults to VS-mode
+    cp_vsatp_hedeleg : cross priv_mode_vs_vu, access, vs_only, hedeleg_page_faults, vs_page_fault;
     // When V=0, vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses through satp
     cp_v0_vsstatus_sum : cross priv_mode_hs, ldst, satp_paged, sstatus_sum_off, vsstatus_sum_on, page_fault;
     cp_v0_vsstatus_mxr : cross priv_mode_s_u, lw, satp_paged, sstatus_mxr_off, vsstatus_mxr_on, page_fault;

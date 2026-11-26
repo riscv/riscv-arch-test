@@ -956,6 +956,7 @@ normative_rule_definitions:
       [
         "Sv_H_twostage_cg/cp_hedeleg_page_fault",
         "Sv_H_twostage_cg/cp_hedeleg_guest_page_fault",
+        "Sv_H_vsstage_cg/cp_vsatp_hedeleg",
       ]
 
   # vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both stages.  MXR applies only to explicit loads.

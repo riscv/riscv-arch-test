@@ -1138,17 +1138,27 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
+def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode | None, vs: SvMode, mode: str) -> None:
     """With hedeleg delegating page faults, VS-stage faults go to VS-mode.  Guest-page faults cannot be delegated
-    (hedeleg bits 20-23 are read-only zero), so they still go to HS-mode."""
+    (hedeleg bits 20-23 are read-only zero), so they still go to HS-mode.  With g = None, hgatp is Bare."""
+    # (VS-stage leaf, G-stage leaf, coverpoint)
+    if g is None:
+        what = "(page faults taken in VS-mode), with hgatp = Bare"
+        cases: tuple[tuple[str, str, str], ...] = (("inv", "rwx", "cp_vsatp_hedeleg"), ("r", "rwx", "cp_vsatp_hedeleg"))
+    else:
+        what = "(page faults taken in VS-mode) and an invalid G-stage leaf (guest-page faults\ntaken in HS-mode)"
+        cases = (
+            ("inv", "rwx", "cp_hedeleg_page_fault"),
+            ("r", "rwx", "cp_hedeleg_page_fault"),
+            ("rwx", "inv", "cp_hedeleg_guest_page_fault"),
+        )
     chunk = begin_chunk(
         test_data,
-        f"H_{g.name}_hedeleg_{mode.lower()}",
-        "cp_hedeleg_page_fault, cp_hedeleg_guest_page_fault",
+        f"H_{(g or vs).name}_hedeleg_{mode.lower()}",
+        ", ".join(dict.fromkeys(coverpoint for _, _, coverpoint in cases)),
         f"In {mode}-mode with hedeleg[12], [13], [15], [20], [21] and [23] written with 1, access through an invalid\n"
-        "and a read-only VS-stage leaf (page faults taken in VS-mode) and an invalid G-stage leaf (guest-page faults\n"
-        "taken in HS-mode)",
-        stages=(g, vs),
+        f"and a read-only VS-stage leaf {what}",
+        stages=(vs,) if g is None else (g, vs),
     )
     user = mode == "VU"
     reg = test_data.int_regs.get_register()
@@ -1162,12 +1172,12 @@ def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs:
         f"csrw hedeleg, x{reg}",
     ]
     test_data.int_regs.return_register(reg)
-    for vs_perm, g_perm in (("inv", "rwx"), ("r", "rwx"), ("rwx", "inv")):
+    for vs_perm, g_perm, coverpoint in cases:
         setup = map_test_page(test_data, g, vs, vs_flags=perm_flags(vs_perm, user), g_flags=perm_flags(g_perm, True))
-        name = f"vs_{vs_perm}_g_{g_perm}"
-        coverpoint = "cp_hedeleg_guest_page_fault" if g_perm == "inv" else "cp_hedeleg_page_fault"
-        code.extend(guest_access(test_data, TWO_CG, coverpoint, name, mode, vs.data_va, setup=setup))
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+        name = f"vs_{vs_perm}" if g is None else f"vs_{vs_perm}_g_{g_perm}"
+        covergroup = VS_CG if g is None else TWO_CG
+        code.extend(guest_access(test_data, covergroup, coverpoint, name, mode, vs.data_va, setup=setup))
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -1616,6 +1626,8 @@ def _make_svh_vs(test_data: TestData, vs: SvMode) -> list[TestChunk]:
     """The tests with hgatp = Bare, for the smallest VS-stage mode of each XLEN."""
     test_chunks = _vs_stage_tests(test_data, vs)
     _t_hlv_vs(test_data, test_chunks, vs)
+    for mode in ("VS", "VU"):
+        _t_hedeleg(test_data, test_chunks, None, vs, mode)
     if vs.xlen == 64:
         _t_atp_mode(test_data, test_chunks)
     return test_chunks

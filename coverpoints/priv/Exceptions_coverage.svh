@@ -1655,6 +1655,47 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         // An HSV fault taken into HS-mode sets hstatus.GVA
         cp_hstatus_gva_hsv: cross priv_mode_s_u, hsv_w, hsv_illegal_address, hstatus_gva_set;
     `endif
+    // Floating-point loads and stores and their compressed forms at the access-fault address, from VS-mode with
+    // hedeleg = 0.  xtinst holds zero or the transformed instruction (H_trans_load, H_trans_store,
+    // H_trans_compressed_list).
+    `ifdef F_SUPPORTED
+        xtinst_fp_loads: coverpoint ins.current.insn {
+            wildcard bins flw = {FLW};
+            `ifdef D_SUPPORTED
+                wildcard bins fld = {FLD};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                wildcard bins flh = {FLH};
+            `endif
+            `ifdef ZCF_SUPPORTED
+                wildcard bins c_flw = {C_FLW};
+            `endif
+            `ifdef ZCD_SUPPORTED
+                wildcard bins c_fld = {C_FLD};
+            `endif
+        }
+        xtinst_fp_stores: coverpoint ins.current.insn {
+            wildcard bins fsw = {FSW};
+            `ifdef D_SUPPORTED
+                wildcard bins fsd = {FSD};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                wildcard bins fsh = {FSH};
+            `endif
+            `ifdef ZCF_SUPPORTED
+                wildcard bins c_fsw = {C_FSW};
+            `endif
+            `ifdef ZCD_SUPPORTED
+                wildcard bins c_fsd = {C_FSD};
+            `endif
+        }
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+            cp_xtinst_fp_load_access:  cross priv_mode_vs, xtinst_fp_loads, illegal_address_load, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+        `endif
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+            cp_xtinst_fp_store_access: cross priv_mode_vs, xtinst_fp_stores, illegal_address_store, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+        `endif
+    `endif
 endgroup
 `endif // H_SUPPORTED
 
@@ -1882,6 +1923,47 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         hsv_address_legality: coverpoint (ins.current.rs1_val & ~`UDB_MXLEN'(3)) == (`UDB_MXLEN'(`RVMODEL_ACCESS_FAULT_ADDRESS_STORE) & ~`UDB_MXLEN'(3)) {}
         // Highest-priority exception of hsv.w on legal and access-fault addresses, aligned and misaligned
         cp_priority_hsv: cross priv_mode_m, hsv_w, hsv_address_legality, hlv_addr_alignment, hstatus_hu;
+    `endif
+    // Floating-point loads and stores and their compressed forms at the access-fault address, from VS-mode with
+    // hedeleg = 0.  xtinst holds zero or the transformed instruction (H_trans_load, H_trans_store,
+    // H_trans_compressed_list).
+    `ifdef F_SUPPORTED
+        xtinst_fp_loads: coverpoint ins.current.insn {
+            wildcard bins flw = {FLW};
+            `ifdef D_SUPPORTED
+                wildcard bins fld = {FLD};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                wildcard bins flh = {FLH};
+            `endif
+            `ifdef ZCF_SUPPORTED
+                wildcard bins c_flw = {C_FLW};
+            `endif
+            `ifdef ZCD_SUPPORTED
+                wildcard bins c_fld = {C_FLD};
+            `endif
+        }
+        xtinst_fp_stores: coverpoint ins.current.insn {
+            wildcard bins fsw = {FSW};
+            `ifdef D_SUPPORTED
+                wildcard bins fsd = {FSD};
+            `endif
+            `ifdef ZFHMIN_SUPPORTED
+                wildcard bins fsh = {FSH};
+            `endif
+            `ifdef ZCF_SUPPORTED
+                wildcard bins c_fsw = {C_FSW};
+            `endif
+            `ifdef ZCD_SUPPORTED
+                wildcard bins c_fsd = {C_FSD};
+            `endif
+        }
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+            cp_xtinst_fp_load_access:  cross priv_mode_vs, xtinst_fp_loads, illegal_address_load, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+        `endif
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
+            cp_xtinst_fp_store_access: cross priv_mode_vs, xtinst_fp_stores, illegal_address_store, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+        `endif
     `endif
 endgroup
 `endif // EXCLUDE_SM

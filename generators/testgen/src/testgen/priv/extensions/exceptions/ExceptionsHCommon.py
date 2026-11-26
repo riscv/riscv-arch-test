@@ -13,7 +13,7 @@ Modes are named as the T-SBI GOTO macros name them: m, s (HS), vs, u and vu.
 
 from collections.abc import Sequence
 
-from testgen.asm.helpers import comment_banner, gated, write_sigupd
+from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.extensions.exceptions.ExceptionsCommon import DELEGATED_FAULT_KINDS, generate_delegated_fault_tests
 
@@ -151,6 +151,32 @@ def hlv_priority_tests(test_data: TestData, covergroup: str, mode: str, home: st
     return lines
 
 
+def _enter_vs(home: str, temp_reg: int) -> list[str]:
+    """Enter VS-mode from the home mode without writing the second trap value or xtinst.
+
+    M-mode enters VS-mode by mret, because a T-SBI call would overwrite mtval2 and mtinst.
+    """
+    if home != "m":
+        return ["RVTEST_TSBI_GOTO_VSMODE"]
+    return [
+        f"LI(x{temp_reg}, MSTATUS_MPP)",
+        f"csrc mstatus, x{temp_reg}",
+        f"LI(x{temp_reg}, MPP_SMODE)",
+        f"csrs mstatus, x{temp_reg}",
+        "#if __riscv_xlen == 64",
+        f"LI(x{temp_reg}, MSTATUS_MPV)",
+        f"csrs mstatus, x{temp_reg}",
+        "#else",
+        f"LI(x{temp_reg}, MSTATUSH_MPV)",
+        f"csrs mstatush, x{temp_reg}",
+        "#endif",
+        f"LA(x{temp_reg}, 1f)",
+        f"csrw mepc, x{temp_reg}",
+        "mret",
+        "1:",
+    ]
+
+
 def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> list[str]:
     """cp_xtinst_*: exceptions from VS-mode with hedeleg = 0, taken in HS-mode (home "s") or M-mode (home "m").
 
@@ -159,28 +185,7 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
     """
     addr_reg, data_reg, rd, rand_reg, temp_reg = test_data.int_regs.get_registers(5)
     tval2, tinst = ("mtval2", "mtinst") if home == "m" else ("htval", "htinst")
-    # M-mode enters VS-mode by mret; a T-SBI call would overwrite mtval2 and mtinst
-    enter_vs = (
-        [
-            f"LI(x{temp_reg}, MSTATUS_MPP)",
-            f"csrc mstatus, x{temp_reg}",
-            f"LI(x{temp_reg}, MPP_SMODE)",
-            f"csrs mstatus, x{temp_reg}",
-            "#if __riscv_xlen == 64",
-            f"LI(x{temp_reg}, MSTATUS_MPV)",
-            f"csrs mstatus, x{temp_reg}",
-            "#else",
-            f"LI(x{temp_reg}, MSTATUSH_MPV)",
-            f"csrs mstatush, x{temp_reg}",
-            "#endif",
-            f"LA(x{temp_reg}, 1f)",
-            f"csrw mepc, x{temp_reg}",
-            "mret",
-            "1:",
-        ]
-        if home == "m"
-        else ["RVTEST_TSBI_GOTO_VSMODE"]
-    )
+    enter_vs = _enter_vs(home, temp_reg)
 
     def fault(kind: str) -> str:
         return f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_{kind})"
@@ -255,4 +260,60 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
         body.append(f"RVTEST_TSBI_GOTO_{home.upper()}MODE")
         lines.extend(gated(body, gate))
     test_data.int_regs.return_registers([addr_reg, data_reg, rd, rand_reg, temp_reg])
+    return lines
+
+
+# Floating-point loads and stores, which H_trans_load and H_trans_store list, and their compressed forms
+# (H_trans_compressed_list): (instruction, access-fault address, preprocessor condition, extensions to assemble it)
+_XTINST_FP = (
+    ("flw", "LOAD", "defined(F_SUPPORTED)", ("f",)),
+    ("fsw", "STORE", "defined(F_SUPPORTED)", ("f",)),
+    ("fld", "LOAD", "defined(D_SUPPORTED)", ("d",)),
+    ("fsd", "STORE", "defined(D_SUPPORTED)", ("d",)),
+    ("flh", "LOAD", "defined(ZFHMIN_SUPPORTED) || defined(ZFH_SUPPORTED)", ("f", "zfhmin")),
+    ("fsh", "STORE", "defined(ZFHMIN_SUPPORTED) || defined(ZFH_SUPPORTED)", ("f", "zfhmin")),
+    ("c.flw", "LOAD", "defined(ZCF_SUPPORTED)", ("f", "zca", "zcf")),
+    ("c.fsw", "STORE", "defined(ZCF_SUPPORTED)", ("f", "zca", "zcf")),
+    ("c.fld", "LOAD", "defined(ZCD_SUPPORTED)", ("d", "zca", "zcd")),
+    ("c.fsd", "STORE", "defined(ZCD_SUPPORTED)", ("d", "zca", "zcd")),
+)
+
+
+def xtinst_fp_tests(test_data: TestData, covergroup: str, home: str) -> list[str]:
+    """cp_xtinst_fp_load_access and cp_xtinst_fp_store_access: each floating-point load and store, and its compressed
+    form, at the access-fault address in VS-mode with hedeleg = 0, taken in HS-mode (home "s") or M-mode (home "m").
+
+    As in xtinst_exception_tests, the home mode first writes a nonzero value to htval and htinst (mtval2 and mtinst).
+    The boot sets FS in mstatus and vsstatus.  The trap record holds xtinst: zero, or the transformed instruction, which
+    for a compressed instruction is its 32-bit expansion transformed, with bit 1 cleared.
+    """
+    # Compressed loads and stores name registers x8-x15 and f8-f15
+    addr_reg = test_data.int_regs.get_register(reg_range=list(range(8, 16)))
+    rand_reg, temp_reg = test_data.int_regs.get_registers(2)
+    freg = test_data.float_regs.get_register(reg_range=list(range(8, 16)))
+    tval2, tinst = ("mtval2", "mtinst") if home == "m" else ("htval", "htinst")
+    lines = [
+        comment_banner(
+            "cp_xtinst_fp_load_access, cp_xtinst_fp_store_access",
+            "From VS-mode with hedeleg = 0, execute each floating-point load and store and its compressed form at the\n"
+            f"access-fault address after writing a nonzero value to {tval2} and {tinst}.  The access fault goes to "
+            f"{'M' if home == 'm' else 'HS'}-mode, and\nthe trap record holds {tinst}: zero or the transformed instruction",
+        ),
+        "csrw hedeleg, zero",
+        f"LI(x{rand_reg}, 0x5A5A5A5B)",
+    ]
+    for instr, kind, gate, extensions in _XTINST_FP:
+        cp = f"cp_xtinst_fp_{kind.lower()}_access"
+        body = [
+            f"csrw {tval2}, x{rand_reg}",
+            f"csrw {tinst}, x{rand_reg}",
+            *_enter_vs(home, temp_reg),
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_{kind})",
+            test_data.add_testcase(f"vs_{instr}", cp, covergroup),
+            *arch_block([f"{instr} f{freg}, 0(x{addr_reg})"], *extensions),
+            f"RVTEST_TSBI_GOTO_{home.upper()}MODE",
+        ]
+        lines.extend(gated(body, f"({gate}) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_{kind})"))
+    test_data.int_regs.return_registers([addr_reg, rand_reg, temp_reg])
+    test_data.float_regs.return_register(freg)
     return lines

@@ -822,13 +822,31 @@ normative_rule_definitions:
   # LHU, LW, LWU, LD, FLW, FLD, FLQ, or FLH, the transformed instruction has the format shown in
   # <<transformedloadinst>>.
   - name: H_trans_load
-    coverpoint: ["Exceptions_H_cg/cp_xtinst_load_{misaligned,access}"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_load_{misaligned,access}",
+        "{Exceptions_H_cg,Exceptions_HSm_cg}/cp_xtinst_fp_load_access",
+      ]
 
   # For a standard store instruction that is not a compressed instruction and is one of SB, SH, SW,
   # SD, FSW, FSD, FSQ, or FSH, the transformed instruction has the format shown in
   # <<transformedstoreinst>>.
   - name: H_trans_store
-    coverpoint: ["Exceptions_H_cg/cp_xtinst_store_{misaligned,access}"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_store_{misaligned,access}",
+        "{Exceptions_H_cg,Exceptions_HSm_cg}/cp_xtinst_fp_store_access",
+      ]
+
+  # For a standard compressed instruction (16-bit size), the transformed instruction is found as follows: expand
+  # the compressed instruction to its 32-bit equivalent, transform the 32-bit equivalent instruction, and replace
+  # bit 1 with a 0.  Bits 1:0 of a transformed standard instruction are binary 01 if the trapping instruction is
+  # compressed.  The c.flw and c.fld bins of cp_xtinst_fp_load_access and the c.fsw and c.fsd bins of
+  # cp_xtinst_fp_store_access
+  - names:
+      [H_trans_compressed_lead_in, H_trans_compressed_list, H_trans_bits_1_0]
+    coverpoint:
+      ["{Exceptions_H_cg,Exceptions_HSm_cg}/cp_xtinst_fp_{load,store}_access"]
 
   # For a standard virtual-machine load/store instruction (HLV, HLVX, or HSV), the transformed
   # instruction has the format shown in <<transformedvmaccessinst>>.

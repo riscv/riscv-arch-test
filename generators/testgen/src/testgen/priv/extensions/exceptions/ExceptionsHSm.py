@@ -20,6 +20,7 @@ from testgen.priv.extensions.exceptions.ExceptionsHCommon import (
     hedeleg_tests,
     hlv_priority_tests,
     xtinst_exception_tests,
+    xtinst_fp_tests,
 )
 from testgen.priv.extensions.HCommon import HLV_INSTRS, HLVX_INSTRS, HSV_INSTRS
 from testgen.priv.registry import add_priv_test_generator
@@ -202,6 +203,9 @@ def make_exceptionshsm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "HSm_xtinst")
     tc.code.extend(xtinst_exception_tests(test_data, CG, "m"))
+
+    tc = test_data.new_test_chunk(test_chunks, "HSm_xtinst_fp")
+    tc.code.extend(xtinst_fp_tests(test_data, CG, "m"))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

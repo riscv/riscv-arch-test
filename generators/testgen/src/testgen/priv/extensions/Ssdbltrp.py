@@ -1,14 +1,18 @@
 ##################################
 # priv/extensions/Ssdbltrp.py
 #
-# Ssdbltrp H and HSm groups: vsstatus.SDT across xRET and traps, and double traps from VS-mode.
+# Ssdbltrp Sm, H and HSm groups: sstatus.SDT and vsstatus.SDT across xRET and traps, and double traps.
 # David_Harris@hmc.edu 8 November 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Ssdbltrp H and HSm group test generators.
+"""Ssdbltrp Sm, H and HSm group test generators.
 
-Both groups set menvcfg.DTE = henvcfg.DTE = 1, so sstatus.SDT and vsstatus.SDT are writable.
+The Sm group boots to M-mode, sets menvcfg.DTE = 1 and enters S-mode (HS-mode with H) by MRET.  A trap into
+S-mode with sstatus.SDT = 1 is a double trap, taken in M-mode with mcause = 16 and the cause in mtval2.  A trap
+not delegated to S-mode, a trap with sstatus.SDT = 0 (which sets it), and a trap with menvcfg.DTE = 0 are not.
+
+The H and HSm groups set menvcfg.DTE = henvcfg.DTE = 1, so sstatus.SDT and vsstatus.SDT are writable.
 
 The H group boots to HS-mode.  An SRET in HS-mode clears sstatus.SDT, and also vsstatus.SDT when it returns to
 VU-mode; an SRET in VS-mode clears vsstatus.SDT.  An SRET from HS-mode to VS-mode or HS-mode leaves vsstatus.SDT
@@ -384,8 +388,8 @@ def make_ssdbltrph(test_data: TestData) -> list[TestChunk]:
     return test_chunks
 
 
-def _m_dte(op: str, reg: int) -> list[str]:
-    """menvcfg.DTE and henvcfg.DTE from M-mode."""
+def _menvcfg_dte(op: str, reg: int) -> list[str]:
+    """menvcfg.DTE from M-mode."""
     return [
         "#if __riscv_xlen == 64",
         f"LI(x{reg}, MENVCFG_DTE)",
@@ -394,24 +398,32 @@ def _m_dte(op: str, reg: int) -> list[str]:
         f"LI(x{reg}, MENVCFGH_DTE)",
         f"{op} menvcfgh, x{reg}",
         "#endif",
-        *_henvcfg_dte(op, reg),
     ]
 
 
+def _m_dte(op: str, reg: int) -> list[str]:
+    """menvcfg.DTE and henvcfg.DTE from M-mode."""
+    return [*_menvcfg_dte(op, reg), *_henvcfg_dte(op, reg)]
+
+
 def _m_xret_to(instr: str, mode: str, reg: int, target: str) -> list[str]:
-    """From M-mode, set up ``instr`` (mret or sret) to return to ``mode`` (VS or VU) at ``target``."""
+    """From M-mode, set up ``instr`` (mret or sret) to return to ``mode`` (VS, VU, or for mret S) at ``target``."""
     if instr == "mret":
+        mpv_op = "csrc" if mode == "S" else "csrs"
+        mpv = [
+            "#if __riscv_xlen == 64",
+            f"LI(x{reg}, MSTATUS_MPV)",
+            f"{mpv_op} mstatus, x{reg}",
+            "#else",
+            f"LI(x{reg}, MSTATUSH_MPV)",
+            f"{mpv_op} mstatush, x{reg}",
+            "#endif",
+        ]
         return [
             f"LI(x{reg}, MSTATUS_MPP)",
             f"csrc mstatus, x{reg}",
-            *([f"LI(x{reg}, MPP_SMODE)", f"csrs mstatus, x{reg}"] if mode == "VS" else []),
-            "#if __riscv_xlen == 64",
-            f"LI(x{reg}, MSTATUS_MPV)",
-            f"csrs mstatus, x{reg}",
-            "#else",
-            f"LI(x{reg}, MSTATUSH_MPV)",
-            f"csrs mstatush, x{reg}",
-            "#endif",
+            *([f"LI(x{reg}, MPP_SMODE)", f"csrs mstatus, x{reg}"] if mode in ("VS", "S") else []),
+            *(gated(mpv, "defined(H_SUPPORTED)") if mode == "S" else mpv),
             f"LA(x{reg}, {target})",
             f"csrw mepc, x{reg}",
         ]
@@ -432,49 +444,43 @@ _DOUBLE_TRAPS = (
 )
 
 
-def _vs_double_trap_tests(test_data: TestData) -> list[str]:
-    """cp_vs_double_trap: a trap into VS-mode with vsstatus.SDT = 1 is a double trap taken in M-mode.
+def _sdt_traps_to_m(test_data: TestData, mode: str, coverpoint: str, covergroup: str, delegate: bool) -> list[str]:
+    """From M-mode, enter ``mode`` (VS or S) by MRET with xstatus.SDT = 1 and raise each trap in _DOUBLE_TRAPS.
 
-    M-mode presets vsstatus, vsepc, vscause and vstval, points mtvec just past the trapping instruction, and enters
-    VS-mode by MRET.  The double trap resumes in M-mode, which puts mtvec back, clears mstatus.MDT, MPV and GVA, and
-    records mstatus.MPP, MPV and GVA, mcause, mtval2, mepc, mtval for ebreak, and the VS CSRs.  The group starts with
-    medeleg = hedeleg = 0 and puts them back to 0.
+    With ``delegate``, medeleg (and for VS-mode hedeleg) send the trap to ``mode``, so it is a double trap; otherwise
+    medeleg = 0 sends it to M-mode.  M-mode presets xstatus, xepc, xcause and xtval and points mtvec just past the
+    trapping instruction.  Back in M-mode, the test puts mtvec back, clears mstatus.MDT, MPV and GVA, and records
+    mstatus.MPP, MPV and GVA, mcause, mtval2 (double traps only), mepc, mtval for ebreak, and the x CSRs.  medeleg
+    and hedeleg start and end at 0.
     """
+    x = mode.lower()
+    deleg = ["medeleg", "hedeleg"] if mode == "VS" else ["medeleg"]
     save_mtvec, addr_reg, temp_reg, rd, rd2 = test_data.int_regs.get_registers(5)
-    lines = [
-        comment_banner(
-            "cp_vs_double_trap",
-            "With menvcfg.DTE = henvcfg.DTE = 1, vsstatus.SDT = 1 and medeleg = hedeleg = {cause}, ebreak or a load\n"
-            "access fault in VS-mode is a double trap: mcause = 16, mtval2 = the cause, mepc and mtval as for the\n"
-            "trap, mstatus.MPP = S and MPV = 1, and vsstatus, vsepc, vscause and vstval unchanged",
-        ),
-    ]
+    lines = []
     for name, cause, trap, gate in _DOUBLE_TRAPS:
-        testcase = test_data.add_testcase(name, "cp_vs_double_trap", _HSM_CG)
+        testcase = test_data.add_testcase(name, coverpoint, covergroup)
         label = test_data.current_testcase_label
         handler = f"{label}_mtvec"
         body = [
             "",
-            f"LI(x{temp_reg}, 1 << {cause})",
-            f"csrw medeleg, x{temp_reg}",
-            f"csrw hedeleg, x{temp_reg}",
-            "# vsstatus.SDT = SPIE = 1 and SPP = 0, the opposite of what the trap would write; vsepc, vscause, vstval",
+            *([f"LI(x{temp_reg}, 1 << {cause})", *[f"csrw {csr}, x{temp_reg}" for csr in deleg]] if delegate else []),
+            f"# {x}status.SDT = SPIE = 1 and SPP = 0, the opposite of what the trap would write; {x}epc, {x}cause, {x}tval",
             f"LI(x{temp_reg}, SSTATUS_SDT | SSTATUS_SPIE)",
-            f"csrs vsstatus, x{temp_reg}",
+            f"csrs {x}status, x{temp_reg}",
             f"LI(x{temp_reg}, SSTATUS_SPP)",
-            f"csrc vsstatus, x{temp_reg}",
+            f"csrc {x}status, x{temp_reg}",
             f"LA(x{temp_reg}, {label})",
-            f"csrw vsepc, x{temp_reg}",
-            f"csrw vstval, x{temp_reg}",
+            f"csrw {x}epc, x{temp_reg}",
+            f"csrw {x}tval, x{temp_reg}",
             f"LI(x{temp_reg}, CAUSE_ILLEGAL_INSTRUCTION)",
-            f"csrw vscause, x{temp_reg}",
+            f"csrw {x}cause, x{temp_reg}",
             f"csrr x{save_mtvec}, mtvec",
             f"andi x{temp_reg}, x{save_mtvec}, 3   # keep the MODE the DUT uses",
             f"LA(x{rd}, {handler})",
             f"or x{rd}, x{rd}, x{temp_reg}",
             f"csrw mtvec, x{rd}",
             *([f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"] if gate else []),
-            *_m_xret_to("mret", "VS", temp_reg, label),
+            *_m_xret_to("mret", mode, temp_reg, label),
             "mret",
             testcase,
             trap.format(rd=rd, addr=addr_reg),
@@ -500,34 +506,48 @@ def _vs_double_trap_tests(test_data: TestData) -> list[str]:
             write_sigupd(rd2, test_data),
             f"csrr x{rd}, mcause",
             write_sigupd(rd, test_data),
-            f"csrr x{rd}, mtval2",
-            write_sigupd(rd, test_data),
+            # Ssdbltrp defines mtval2 only for double traps
+            *([f"csrr x{rd}, mtval2", write_sigupd(rd, test_data)] if delegate else []),
             f"csrr x{rd}, mepc",
             f"LA(x{temp_reg}, {label})",
             f"sub x{rd}, x{rd}, x{temp_reg}",
             write_sigupd(rd, test_data),
             # An access-fault address may be reported as another invalid address, so only ebreak's mtval is recorded
             *([] if gate else [f"csrr x{rd}, mtval", write_sigupd(rd, test_data)]),
-            f"csrr x{rd}, vsstatus",
+            f"csrr x{rd}, {x}status",
             f"LI(x{temp_reg}, SSTATUS_SDT | SSTATUS_SPP | SSTATUS_SPIE | SSTATUS_SIE)",
             f"and x{rd}, x{rd}, x{temp_reg}",
             write_sigupd(rd, test_data),
-            f"csrr x{rd}, vscause",
+            f"csrr x{rd}, {x}cause",
             write_sigupd(rd, test_data),
             f"LA(x{temp_reg}, {label})",
-            f"csrr x{rd}, vsepc",
+            f"csrr x{rd}, {x}epc",
             f"sub x{rd}, x{rd}, x{temp_reg}",
             write_sigupd(rd, test_data),
-            f"csrr x{rd}, vstval",
+            f"csrr x{rd}, {x}tval",
             f"sub x{rd}, x{rd}, x{temp_reg}",
             write_sigupd(rd, test_data),
             f"LI(x{temp_reg}, SSTATUS_SDT | SSTATUS_SPIE)",
-            f"csrc vsstatus, x{temp_reg}",
+            f"csrc {x}status, x{temp_reg}",
         ]
         lines.extend(gated(body, gate))
-    lines.extend(["csrw medeleg, zero", "csrw hedeleg, zero"])
+    if delegate:
+        lines.extend(f"csrw {csr}, zero" for csr in deleg)
     test_data.int_regs.return_registers([save_mtvec, addr_reg, temp_reg, rd, rd2])
     return lines
+
+
+def _vs_double_trap_tests(test_data: TestData) -> list[str]:
+    """cp_vs_double_trap: a trap into VS-mode with vsstatus.SDT = 1 is a double trap taken in M-mode."""
+    return [
+        comment_banner(
+            "cp_vs_double_trap",
+            "With menvcfg.DTE = henvcfg.DTE = 1, vsstatus.SDT = 1 and medeleg = hedeleg = {cause}, ebreak or a load\n"
+            "access fault in VS-mode is a double trap: mcause = 16, mtval2 = the cause, mepc and mtval as for the\n"
+            "trap, mstatus.MPP = S and MPV = 1, and vsstatus, vsepc, vscause and vstval unchanged",
+        ),
+        *_sdt_traps_to_m(test_data, "VS", "cp_vs_double_trap", _HSM_CG, delegate=True),
+    ]
 
 
 def _m_xret_sdt_tests(test_data: TestData) -> list[str]:
@@ -580,5 +600,145 @@ def make_ssdbltrphsm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend([*_vs_double_trap_tests(test_data), *_m_xret_sdt_tests(test_data)])
     temp_reg = test_data.int_regs.get_register()
     tc.code.extend(_m_dte("csrc", temp_reg))
+    test_data.int_regs.return_registers([temp_reg])
+    return [test_data.end_test_chunk()]
+
+
+_SM_CG = "Ssdbltrp_Sm_cg"
+
+
+def _s_ebreak(test_data: TestData, name: str, coverpoint: str, regs: list[int], s_code: list[str]) -> list[str]:
+    """From M-mode, enter S-mode by MRET, run ``s_code``, and execute an ebreak that medeleg[3] sends to S-mode.
+
+    stvec points just past the ebreak, so the trap resumes there in S-mode instead of in the framework's S-mode
+    handler, whose SRET would clear sstatus.SDT.  The test returns to M-mode, puts stvec back, and records
+    sstatus.SDT and scause.
+    """
+    save_stvec, temp_reg, rd = regs
+    testcase = test_data.add_testcase(name, coverpoint, _SM_CG)
+    label = test_data.current_testcase_label
+    handler = f"{label}_stvec"
+    return [
+        f"csrr x{save_stvec}, stvec",
+        f"andi x{temp_reg}, x{save_stvec}, 3   # keep the MODE the DUT uses",
+        f"LA(x{rd}, {handler})",
+        f"or x{rd}, x{rd}, x{temp_reg}",
+        f"csrw stvec, x{rd}",
+        *_m_xret_to("mret", "S", temp_reg, f"{label}_smode"),
+        "mret",
+        f"{label}_smode:",
+        *s_code,
+        testcase,
+        "ebreak",
+        *tvec_alignment("stvec"),
+        f"{handler}:",
+        "RVTEST_TSBI_GOTO_MMODE",
+        f"csrw stvec, x{save_stvec}",
+        f"csrr x{rd}, sstatus",
+        f"LI(x{temp_reg}, SSTATUS_SDT)",
+        f"and x{rd}, x{rd}, x{temp_reg}",
+        write_sigupd(rd, test_data),
+        f"csrr x{rd}, scause",
+        write_sigupd(rd, test_data),
+    ]
+
+
+def _s_trap_sdt_tests(test_data: TestData) -> list[str]:
+    """cp_s_trap_sdt: a breakpoint from S-mode delegated to S-mode with sstatus.SDT = 0 sets sstatus.SDT."""
+    regs = test_data.int_regs.get_registers(3)
+    temp_reg = regs[1]
+    lines = [
+        comment_banner(
+            "cp_s_trap_sdt",
+            "With menvcfg.DTE = 1, sstatus.SDT = 0 and medeleg[3] = 1, ebreak in S-mode is an ordinary trap into\n"
+            "S-mode, which sets sstatus.SDT",
+        ),
+        f"LI(x{temp_reg}, SSTATUS_SDT)",
+        f"csrc sstatus, x{temp_reg}",
+        f"LI(x{temp_reg}, 1 << CAUSE_BREAKPOINT)",
+        f"csrw medeleg, x{temp_reg}",
+        *_s_ebreak(test_data, "ebreak", "cp_s_trap_sdt", regs, []),
+        "csrw medeleg, zero",
+        f"LI(x{temp_reg}, SSTATUS_SDT)",
+        f"csrc sstatus, x{temp_reg}",
+    ]
+    test_data.int_regs.return_registers(regs)
+    return lines
+
+
+def _menvcfg_dte0_tests(test_data: TestData) -> list[str]:
+    """cp_menvcfg_dte0: menvcfg.DTE = 0 makes sstatus.SDT read-only zero and disables double traps in S-mode.
+
+    sstatus.SDT is set while menvcfg.DTE = 1, so reads and traps with menvcfg.DTE = 0 must ignore a stored 1.
+    """
+    regs = test_data.int_regs.get_registers(3)
+    _, temp_reg, rd = regs
+    sdt = f"LI(x{temp_reg}, SSTATUS_SDT)"
+    s_code = [
+        test_data.add_testcase("s_read", "cp_menvcfg_dte0", _SM_CG),
+        f"csrr x{rd}, sstatus",
+        f"and x{rd}, x{rd}, x{temp_reg}",
+        write_sigupd(rd, test_data),
+        test_data.add_testcase("s_write", "cp_menvcfg_dte0", _SM_CG),
+        f"csrs sstatus, x{temp_reg}",
+        f"csrr x{rd}, sstatus",
+        f"and x{rd}, x{rd}, x{temp_reg}",
+        write_sigupd(rd, test_data),
+    ]
+    lines = [
+        comment_banner(
+            "cp_menvcfg_dte0",
+            "Set sstatus.SDT with menvcfg.DTE = 1, then clear menvcfg.DTE.  In S-mode, sstatus.SDT reads 0, a write\n"
+            "of 1 leaves it 0, and ebreak with medeleg[3] = 1 is an ordinary trap into S-mode",
+        ),
+        sdt,
+        f"csrs sstatus, x{temp_reg}",
+        *_menvcfg_dte("csrc", temp_reg),
+        f"LI(x{temp_reg}, 1 << CAUSE_BREAKPOINT)",
+        f"csrw medeleg, x{temp_reg}",
+        *_s_ebreak(test_data, "s_ebreak", "cp_menvcfg_dte0", regs, [sdt, *s_code]),
+        "csrw medeleg, zero",
+        "",
+        "# Turn menvcfg.DTE back on and clear sstatus.SDT, whose value while it was read-only zero is not specified",
+        *_menvcfg_dte("csrs", temp_reg),
+        sdt,
+        f"csrc sstatus, x{temp_reg}",
+    ]
+    test_data.int_regs.return_registers(regs)
+    return lines
+
+
+@add_priv_test_generator(
+    "Ssdbltrp",
+    required_extensions=["Sm", "Ssdbltrp", "S"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_ssdbltrpsm(test_data: TestData) -> list[TestChunk]:
+    """Generate the Ssdbltrp_Sm tests: traps from S-mode with sstatus.SDT = 0 and 1, and menvcfg.DTE = 0."""
+    tc = test_data.begin_test_chunk("Sm")
+    temp_reg = test_data.int_regs.get_register()
+    tc.code.extend(_menvcfg_dte("csrs", temp_reg))
+    test_data.int_regs.return_registers([temp_reg])
+    tc.code.extend(
+        [
+            comment_banner(
+                "cp_s_double_trap",
+                "With menvcfg.DTE = 1, sstatus.SDT = 1 and medeleg = {cause}, ebreak or a load access fault in S-mode\n"
+                "is a double trap: mcause = 16, mtval2 = the cause, mepc and mtval as for the trap, mstatus.MPP = S and\n"
+                "MPV = 0, and sstatus, sepc, scause and stval unchanged",
+            ),
+            *_sdt_traps_to_m(test_data, "S", "cp_s_double_trap", _SM_CG, delegate=True),
+            comment_banner(
+                "cp_s_sdt_mtrap",
+                "With menvcfg.DTE = 1, sstatus.SDT = 1 and medeleg = 0, ebreak or a load access fault in S-mode is an\n"
+                "ordinary trap into M-mode (mcause = the cause), and sstatus, sepc, scause and stval are unchanged",
+            ),
+            *_sdt_traps_to_m(test_data, "S", "cp_s_sdt_mtrap", _SM_CG, delegate=False),
+            *_s_trap_sdt_tests(test_data),
+            *_menvcfg_dte0_tests(test_data),
+        ]
+    )
+    temp_reg = test_data.int_regs.get_register()
+    tc.code.extend(_menvcfg_dte("csrc", temp_reg))
     test_data.int_regs.return_registers([temp_reg])
     return [test_data.end_test_chunk()]

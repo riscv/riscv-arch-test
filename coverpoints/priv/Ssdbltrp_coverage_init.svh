@@ -10,6 +10,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+`ifndef EXCLUDE_SM
+    `ifdef S_SUPPORTED
+        Ssdbltrp_Sm_cg = new();    Ssdbltrp_Sm_cg.set_inst_name("obj_Ssdbltrp_Sm");
+    `endif
+`endif
 `ifdef H_SUPPORTED
     Ssdbltrp_H_cg = new();     Ssdbltrp_H_cg.set_inst_name("obj_Ssdbltrp_H");
     `ifndef EXCLUDE_SM

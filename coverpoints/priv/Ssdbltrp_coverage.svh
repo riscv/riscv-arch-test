@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Ssdbltrp H and HSm groups: vsstatus.SDT across xRET and traps, and double traps from VS-mode.
+// Ssdbltrp Sm, H and HSm groups: sstatus.SDT and vsstatus.SDT across xRET and traps, and double traps.
 // Written: David_Harris@hmc.edu 8 November 2026
 //
 // Copyright (C) 2026 Harvey Mudd College
@@ -12,6 +12,73 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SSDBLTRP
+
+`ifndef EXCLUDE_SM
+`ifdef S_SUPPORTED
+// A trap into S-mode (HS-mode with H) with sstatus.SDT = 1 is a double trap, taken in M-mode.  A trap that medeleg
+// sends to M-mode is not, a trap into S-mode with sstatus.SDT = 0 sets it, and menvcfg.DTE = 0 makes it read-only zero.
+covergroup Ssdbltrp_Sm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    `ifdef UDB_MXLEN_64
+        menvcfg_dte_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "dte")[0] {
+            bins one = {1};
+        }
+        menvcfg_dte_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "dte")[0] {
+            bins zero = {0};
+        }
+    `else
+        menvcfg_dte_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "dte")[0] {
+            bins one = {1};
+        }
+        menvcfg_dte_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFGH, "dte")[0] {
+            bins zero = {0};
+        }
+    `endif
+    // sstatus.SDT is bit 24
+    sstatus_sdt_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS)[24] {
+        bins one = {1};
+    }
+    sstatus_sdt_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS)[24] {
+        bins zero = {0};
+    }
+
+    // A breakpoint and a load access fault that medeleg sends to S-mode
+    trap_to_s : coverpoint ins.current.insn {
+        bins ebreak = {EBREAK} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[3]);
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+            wildcard bins lw_access_fault = {LW} iff (ins.current.eff_addr == `RVMODEL_ACCESS_FAULT_ADDRESS_LOAD &&
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[5]);
+        `endif
+    }
+    cp_s_double_trap : cross priv_mode_s, trap_to_s, menvcfg_dte_on, sstatus_sdt_set;
+
+    // A breakpoint and a load access fault that medeleg sends to M-mode
+    trap_to_m : coverpoint ins.current.insn {
+        bins ebreak = {EBREAK} iff (!get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[3]);
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
+            wildcard bins lw_access_fault = {LW} iff (ins.current.eff_addr == `RVMODEL_ACCESS_FAULT_ADDRESS_LOAD &&
+                                    !get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[5]);
+        `endif
+    }
+    cp_s_sdt_mtrap : cross priv_mode_s, trap_to_m, menvcfg_dte_on, sstatus_sdt_set;
+
+    ebreak_to_s : coverpoint ins.current.insn {
+        bins ebreak = {EBREAK} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[3]);
+    }
+    cp_s_trap_sdt : cross priv_mode_s, ebreak_to_s, menvcfg_dte_on, sstatus_sdt_clear;
+
+    // With menvcfg.DTE = 0, S-mode reads and sets sstatus.SDT and takes a breakpoint that medeleg sends to S-mode
+    dte0_access : coverpoint ins.current.insn {
+        wildcard bins s_read = {CSRR} iff (ins.current.insn[31:20] == CSR_SSTATUS);
+        wildcard bins s_write = {CSRRS} iff (ins.current.insn[31:20] == CSR_SSTATUS && ins.current.rs1_val[24]);
+        bins s_ebreak = {EBREAK} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[3]);
+    }
+    cp_menvcfg_dte0 : cross priv_mode_s, dte0_access, menvcfg_dte_off;
+endgroup
+`endif
+`endif
 
 `ifdef H_SUPPORTED
 // SRET in HS-mode clears vsstatus.SDT when it returns to VU-mode, and leaves it when it returns to VS-mode or HS-mode.
@@ -168,6 +235,11 @@ endgroup
 `endif
 
 function void ssdbltrp_sample(int hart, int issue, ins_t ins);
+    `ifndef EXCLUDE_SM
+        `ifdef S_SUPPORTED
+            Ssdbltrp_Sm_cg.sample(ins);
+        `endif
+    `endif
     `ifdef H_SUPPORTED
         Ssdbltrp_H_cg.sample(ins);
         `ifndef EXCLUDE_SM

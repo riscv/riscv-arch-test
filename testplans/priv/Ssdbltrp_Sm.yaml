@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssdbltrp_Sm
+notes: |
+  covergroup Ssdbltrp_Sm
+  The tests boot to M-mode, set menvcfg.DTE, and enter S-mode (HS-mode with H) by MRET, which leaves sstatus.SDT unchanged.
+  A trap that should reach M-mode resumes there just past the trapping instruction (mtvec points there), where the test records the trap CSRs and clears mstatus.MDT.
+  A trap into S-mode resumes in S-mode just past the trapping instruction (stvec points there), so no SRET clears sstatus.SDT before M-mode reads it.
+coverpoints:
+  - name: cp_s_double_trap
+    goal: A trap into S-mode with sstatus.SDT = 1 is a double trap taken in M-mode
+    description: |-
+      With menvcfg.DTE = 1, set sstatus.SDT = sstatus.SPIE = 1 and sstatus.SPP = 0, sepc = stval = the address of the trapping instruction, and scause = 2.
+      Set medeleg = 1 << 3 and execute ebreak in S-mode, and medeleg = 1 << 5 and load from RVMODEL_ACCESS_FAULT_ADDRESS_LOAD in S-mode.
+      In M-mode, read mstatus.MPP, MPV and GVA, mcause, mtval2, mepc, mtval (ebreak only), sstatus, scause, sepc and stval.
+    expectation: mcause = 16 and mtval2 = 3 or 5.  mepc is the trapping instruction, mstatus.MPP = S, MPV = GVA = 0, and mtval is what the breakpoint would write.  sstatus, scause, sepc and stval are unchanged.
+    bins: ebreak, load access fault
+    rules:
+      - sstatus_sdt_unexpected_trap
+      - sstatus_sdt_double_trap
+      - sstatus_sdt_double_trap_regs
+      - sstatus_sdt_double_trap_mtval2
+      - sstatus_sdt_double_trap_mcause
+  - name: cp_s_sdt_mtrap
+    goal: sstatus.SDT affects only traps into S-mode
+    description: With menvcfg.DTE = 1, sstatus.SDT = 1 and medeleg = 0, preset sstatus, scause, sepc and stval as for cp_s_double_trap, execute ebreak and a load from RVMODEL_ACCESS_FAULT_ADDRESS_LOAD in S-mode, and read the same CSRs in M-mode except mtval2.
+    expectation: Each is an ordinary trap into M-mode (mcause = 3 or 5), not a double trap.  sstatus, scause, sepc and stval are unchanged.
+    bins: ebreak, load access fault
+    rules:
+      - sstatus_sdt_unexpected_trap
+  - name: cp_s_trap_sdt
+    goal: A trap into S-mode with sstatus.SDT = 0 sets sstatus.SDT
+    description: With menvcfg.DTE = 1, sstatus.SDT = 0 and medeleg[3] = 1, execute ebreak in S-mode.  stvec points just past the ebreak.  Return to M-mode and read sstatus and scause.
+    expectation: The breakpoint is taken in S-mode (scause = 3) and sstatus.SDT = 1.
+    bins: ebreak
+    rules:
+      - sstatus_sdt_trap
+  - name: cp_menvcfg_dte0
+    goal: menvcfg.DTE = 0 makes sstatus.SDT read-only zero and turns off double traps
+    description: |-
+      With menvcfg.DTE = 1, set sstatus.SDT, then clear menvcfg.DTE and set medeleg[3] = 1.
+      In S-mode, read sstatus, then set sstatus.SDT and read it, then execute ebreak; stvec points just past it.  Return to M-mode and read sstatus and scause.
+    expectation: sstatus.SDT reads 0 every time, and the breakpoint is an ordinary trap into S-mode (scause = 3), not a double trap.
+    bins: S-mode read, S-mode write, S-mode ebreak
+    rules:
+      - menvcfg_dte_op

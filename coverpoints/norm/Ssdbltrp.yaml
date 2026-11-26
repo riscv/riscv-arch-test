@@ -22,7 +22,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssdbltrp_H_cg/cp_vs_trap_sdt (traps into VS-mode)",
-        "Needs test: traps into S-mode or HS-mode (only traps into VS-mode are tested).",
+        "Ssdbltrp_Sm_cg/cp_s_trap_sdt (traps into S-mode or HS-mode)",
       ]
 
   # However, if SDT is already set to 1, then this is an unexpected trap.
@@ -30,7 +30,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssdbltrp_HSm_cg/cp_vs_double_trap (traps into VS-mode)",
-        "Needs test: traps into S-mode or HS-mode with sstatus.SDT = 1 (only traps into VS-mode are tested).",
+        "Ssdbltrp_Sm_cg/cp_s_double_trap (traps into S-mode or HS-mode)",
+        "Ssdbltrp_Sm_cg/cp_s_sdt_mtrap (traps that medeleg sends to M-mode are not double traps)",
       ]
 
   # In the event of an unexpected trap, a double-trap exception trap is delivered into
@@ -39,7 +40,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssdbltrp_HSm_cg/cp_vs_double_trap (traps into VS-mode)",
-        "Needs test: traps into S-mode or HS-mode with sstatus.SDT = 1 (only traps into VS-mode are tested).",
+        "Ssdbltrp_Sm_cg/cp_s_double_trap (traps into S-mode or HS-mode)",
       ]
 
   # To deliver this trap, the hart writes registers, except mcause and mtval2, with the
@@ -49,7 +50,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssdbltrp_HSm_cg/cp_vs_double_trap (traps into VS-mode)",
-        "Needs test: traps into S-mode or HS-mode with sstatus.SDT = 1 (only traps into VS-mode are tested).",
+        "Ssdbltrp_Sm_cg/cp_s_double_trap (traps into S-mode or HS-mode)",
       ]
 
   # The mtval2 register is then set to what would be otherwise written into the mcause
@@ -58,7 +59,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssdbltrp_HSm_cg/cp_vs_double_trap (traps into VS-mode)",
-        "Needs test: traps into S-mode or HS-mode with sstatus.SDT = 1 (only traps into VS-mode are tested).",
+        "Ssdbltrp_Sm_cg/cp_s_double_trap (traps into S-mode or HS-mode)",
       ]
 
   # The mcause register is set to 16, the double-trap exception code.
@@ -66,7 +67,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssdbltrp_HSm_cg/cp_vs_double_trap (traps into VS-mode)",
-        "Needs test: traps into S-mode or HS-mode with sstatus.SDT = 1 (only traps into VS-mode are tested).",
+        "Ssdbltrp_Sm_cg/cp_s_double_trap (traps into S-mode or HS-mode)",
       ]
 
   # An SRET instruction sets the SDT bit to 0.
@@ -83,5 +84,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_mcsr_cg/cp_mstatus_sdt_dte",
-        "TODO: covered by the Ssdbltrp suite (not yet written): traps into S-mode and SRET with menvcfg.DTE = 0 and 1",
+        "Ssdbltrp_Sm_cg/cp_menvcfg_dte0 (sstatus.SDT and traps into S-mode with menvcfg.DTE = 0)",
+        "Ssdbltrp_Sm_cg/cp_s_double_trap (double traps with menvcfg.DTE = 1)",
+        "TODO: SRET in S-mode with menvcfg.DTE = 0 and 1 (not yet written)",
       ]

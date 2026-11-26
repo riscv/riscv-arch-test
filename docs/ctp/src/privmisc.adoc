@@ -100,11 +100,11 @@ include::norm/Smdbltrp_norm_rules.adoc[]
 ==== Ssdbltrp Supervisor Double Traps
 
 [[t-Ssdbltrp-coverpoints]]
-.Ssdbltrp Coverpoints
-//,===
-//include::{testplansdir}/Ssdbltrp.adoc[]
-//,===
-No test plan yet.
+Ssdbltrp_Sm boots to M-mode and checks double traps from S-mode (HS-mode with H), the traps from S-mode that are not double traps, and menvcfg.DTE = 0.
+The Ssdbltrp_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
+The hypervisor groups are described in <<t-Ssdbltrp_H-coverpoints>> and <<t-Ssdbltrp_HSm-coverpoints>>.
+
+include::{testplansdir}/priv/Ssdbltrp_Sm.adoc[]
 
 include::norm/Ssdbltrp_norm_rules.adoc[]
 

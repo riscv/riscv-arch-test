@@ -285,13 +285,27 @@ covergroup Interrupts_cg with function sample(ins_t ins);
                                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "sie")[0]) {
         // autofill 0/1
     }
+    // stvec.MODE, or vstvec.MODE for an interrupt delegated to VS-mode. Every row of the trigger crosses
+    // has every bin, so with H a bin needs its mode in both stvec and vstvec.
     trigger_tvec: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVEC)[1:0] :
                                           get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVEC, "mode")[1:0]) {
         `ifdef UDB_STVEC_MODES_0
-            bins direct = {2'b00};
+            `ifdef H_SUPPORTED
+                `ifdef UDB_VSTVEC_MODES_0
+                    bins direct = {2'b00};
+                `endif
+            `else
+                bins direct = {2'b00};
+            `endif
         `endif
         `ifdef UDB_STVEC_MODES_1
-            bins vector = {2'b01};
+            `ifdef H_SUPPORTED
+                `ifdef UDB_VSTVEC_MODES_1
+                    bins vector = {2'b01};
+                `endif
+            `else
+                bins vector = {2'b01};
+            `endif
         `endif
     }
 
@@ -997,14 +1011,27 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
             wildcard bins vssip_vs = {17'b1_??0?000?000?010?};
         `endif
     }
-    // mtvec.MODE, or vstvec.MODE for an interrupt delegated to VS-mode
+    // mtvec.MODE, or vstvec.MODE for an interrupt delegated to VS-mode. As in trigger_tvec, with H a bin needs
+    // its mode in both mtvec and vstvec.
     sm_trigger_tvec: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVEC)[1:0] :
                                              get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVEC, "mode")[1:0]) {
         `ifdef UDB_MTVEC_MODES_0
-            bins direct = {2'b00};
+            `ifdef H_SUPPORTED
+                `ifdef UDB_VSTVEC_MODES_0
+                    bins direct = {2'b00};
+                `endif
+            `else
+                bins direct = {2'b00};
+            `endif
         `endif
         `ifdef UDB_MTVEC_MODES_1
-            bins vector = {2'b01};
+            `ifdef H_SUPPORTED
+                `ifdef UDB_VSTVEC_MODES_1
+                    bins vector = {2'b01};
+                `endif
+            `else
+                bins vector = {2'b01};
+            `endif
         `endif
     }
     sm_trigger_sie: coverpoint (`INT_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] :

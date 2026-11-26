@@ -161,9 +161,7 @@ normative_rule_definitions:
   # to a CSR on which these interrupt trap conditions expressly depend (including
   # mip, mie, mstatus, and mideleg).
   - name: intr_mip_mie_xret_csrwr
-    # cp_trigger_tsbi: taken on the xret; cp_priority_sie: taken on the write to sie
-    coverpoint:
-      ["Interrupts_cg/{cp_trigger_tsbi, cp_enable_one_tsbi, cp_priority_sie}"]
+    coverpoint: ["Needs infrastructure: a way to measure interrupt latency."]
 
   # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
   - name: intr_m_mode_highest_pri

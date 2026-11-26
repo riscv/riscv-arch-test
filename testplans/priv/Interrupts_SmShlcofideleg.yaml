@@ -3,6 +3,8 @@ suite: Interrupts_SmShlcofideleg
 description: |
   Shlcofideleg with mideleg[13] = 0.  Tests run if Sm, H, Sscofpmf and Shlcofideleg are implemented.
   Boot to MMODE with mideleg = 0s.  mideleg[13] = 0 makes hideleg[13] read-only zero, so LCOFI goes to M-mode from every mode.
+  No CI configuration runs these tests yet: Sail 0.16 lacks Shlcofideleg, and xiangshan-kmhv2, the only configuration that declares it, excludes them.
+  Sail master's legalize_hideleg keeps hideleg[13] writable when mideleg[13] = 0, so cp_trigger_lcofi_m needs that fixed before it can run against Sail.
 coverpoints:
   - name: cp_trigger_lcofi_m
     goal: LCOFI is not delegated when mideleg[13] = 0

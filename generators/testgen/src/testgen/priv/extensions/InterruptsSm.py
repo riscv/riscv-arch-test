@@ -114,18 +114,23 @@ def _trigger_sm_cases(
                     modecmd = "csrs" if mode == 1 else "csrc"
                     siecmd = "csrs" if sie == 1 else "csrc"
                     miecmd = "csrs" if mie == 1 else "csrc"
+                    # mtvec.MODE, or vstvec.MODE (set and gated by hideleg_vs_target) for a case delegated to VS-mode
                     vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, sie, tmp_reg)
+                    mtvec_open = [] if hideleg else [f"#ifdef UDB_MTVEC_MODES_{mode}"]
+                    mtvec_close = [] if hideleg else [f"#endif // UDB_MTVEC_MODES_{mode}"]
+                    mtvec_write = (
+                        [] if hideleg else [f"LI(x{tmp_reg}, 1)", f"{modecmd} mtvec, x{tmp_reg} # mtvec.mode = {mode}"]
+                    )
                     tc.code += [
                         f"#ifdef {guard}",
                         *case_open,
-                        f"#ifdef UDB_MTVEC_MODES_{mode}",
+                        *mtvec_open,
                         *vs_open,
                         *write_open,
                         f"LI(x{tmp_reg}, {mideleg})",
                         f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}",
                         *write_close,
-                        f"LI(x{tmp_reg}, 1)",
-                        f"{modecmd} mtvec, x{tmp_reg} # mtvec.mode = {mode}",
+                        *mtvec_write,
                         # The trap handler clears the taken interrupt's xIE bit, so re-enable before every case
                         f"LI(x{tmp_reg}, -1)",
                         f"csrw mie, x{tmp_reg} # mie = 1s",
@@ -161,7 +166,7 @@ def _trigger_sm_cases(
                         f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                         *mode_exit(suite, priv),
                         *vs_close,
-                        f"#endif // UDB_MTVEC_MODES_{mode}",
+                        *mtvec_close,
                         *case_close,
                         f"#endif // {guard}",
                         "",
@@ -227,7 +232,8 @@ def _generate_cp_mip_seip(test_data: TestData, test_chunks: list[TestChunk], sui
     """mip.SEIP reads the OR of the software SEIP bit and the platform's SEI, and csrrs and csrrc write back only the
     software bit.
 
-    Needs a platform interrupt controller (RVMODEL_SET/CLR_SEXT_INT) that can drop SEI without touching mip.SEIP.  The coverage model gates on the same macros (RVMODEL_SEXT_INT_EXTERNAL).
+    Needs a platform interrupt controller (RVMODEL_SET/CLR_SEXT_INT) that can drop SEI without touching mip.SEIP.
+    The coverage model gates on the same macros (RVMODEL_SEXT_INT_EXTERNAL).
     With SEI asserted and software SEIP = 0, csrrs and csrrc of mip with rs1 = 0 or SSIP return SEIP = 1.  Once the
     platform drops SEI, mip.SEIP reads 0: none of the writes set the software bit.
     """

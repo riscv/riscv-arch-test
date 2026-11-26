@@ -92,18 +92,22 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
             for mode in [0, 1]
             for enable in [0, 1]
         ]:
-            # stvec.MODE
+            # stvec.MODE, or vstvec.MODE (set and gated by hideleg_vs_target) for a case delegated to VS-mode
             modecmd = "csrs" if mode == 1 else "csrc"
             enablecmd = "csrs" if enable == 1 else "csrc"
             vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, enable, tmp_reg)
+            stvec_open = [] if hideleg else [f"#ifdef UDB_STVEC_MODES_{mode}"]
+            stvec_close = [] if hideleg else [f"#endif // UDB_STVEC_MODES_{mode}"]
+            stvec_write = (
+                [] if hideleg else [f"LI(x{tmp_reg}, 1)", f"{modecmd} stvec, x{tmp_reg} # stvec.mode = {mode}"]
+            )
             tc.code += [
                 f"#ifdef {guard}",
-                f"#ifdef UDB_STVEC_MODES_{mode}",
+                *stvec_open,
                 *vs_open,
                 f"LI(x{tmp_reg}, -1)",
                 *write_ie(suite, tmp_reg, "1s"),
-                f"LI(x{tmp_reg}, 1)",
-                f"{modecmd} stvec, x{tmp_reg} # stvec.mode = {mode}",
+                *stvec_write,
                 f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
                 f"{enablecmd} sstatus, x{tmp_reg} # sstatus.SIE = {enable}",
                 # Leave a nonzero stval so the trap handler's stval == 0 check sees the interrupt write it
@@ -127,7 +131,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                 *mode_exit(suite, priv),
                 *vs_close,
-                f"#endif // UDB_STVEC_MODES_{mode}",
+                *stvec_close,
                 f"#endif // {guard}",
                 "",
             ]

@@ -4,6 +4,7 @@ source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR
 description: |
   Shlcofideleg makes hideleg[13] writable, so LCOFI can be delegated to VS-mode.  Tests run if H, Sscofpmf and Shlcofideleg are implemented.
   Boot to SMODE, where mideleg delegates LCOFI.
+  No CI configuration runs these tests yet: Sail 0.16 lacks Shlcofideleg, and xiangshan-kmhv2, the only configuration that declares it, excludes them.
 coverpoints:
   - name: cp_trigger_lcofi_vs
     goal: LCOFI delegated to VS-mode

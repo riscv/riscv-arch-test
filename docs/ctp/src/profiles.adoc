@@ -43,6 +43,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
 |D|Double|<<t-D-coverpoints>>|o||x|x|x
+|ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
 |Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x
@@ -81,7 +82,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
 |Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
-|Interrupts|Supervisor Interrupts|<<t-Interrupts-coverpoints>>|||x|x|x
+|Interrupts|Interrupts|<<t-Interrupts-coverpoints>>||x|x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
 |EndianSm|Machine Endian|<<t-EndianSm-coverpoints>>|||||
 |EndianS|Supervisor Endian|<<t-EndianS-coverpoints>>|||||
@@ -156,7 +157,7 @@ All privileged suites require at least version 1.11 of the privileged specificat
 |Shvstvecd|Direct Vectoring|<<t-Shvstvecd-coverpoints>>|||o|o|x
 |Shvstvala|vstval Addresses|<<t-Shvstvala-coverpoints>>|||o|o|x
 |Shtvala|htval Addresses|<<t-Shtvala-coverpoints>>|||o|o|x
-|Shlcofideleg|Counter Overflow Delegation|<<t-Interrupts_Shlcofideleg-coverpoints>>|||||
+|Shlcofideleg|Counter Overflow Delegation|<<t-Interrupts_Shlcofideleg-coverpoints>>|||o|o|x
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x

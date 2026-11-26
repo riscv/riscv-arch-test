@@ -671,16 +671,14 @@ normative_rule_definitions:
 
   # With Ssdbltrp, henvcfg.DTE = 0 disables Ssdbltrp for VS-mode and makes vsstatus.SDT read-only zero
   - names: [henvcfg_dte_op]
-    coverpoint:
-      [
-        "Not tested: writing vsstatus.SDT and trapping into VS-mode with henvcfg.DTE = 0 and 1 are not yet in the Ssdbltrp_H group",
-      ]
+    coverpoint: ["Ssdbltrp_H_cg/cp_henvcfg_dte0"]
 
   # Ssdbltrp adds vsstatus.SDT for double traps in VS-mode
   - names: [vsstatus_sdt_op]
     coverpoint:
       [
-        "Not tested: traps into VS-mode with vsstatus.SDT = 0 and 1 are not yet in the Ssdbltrp_H group",
+        "Ssdbltrp_H_cg/{cp_vs_trap_sdt,cp_vs_sdt_target}",
+        "Ssdbltrp_HSm_cg/cp_vs_double_trap",
       ]
 
   # With Ssdbltrp, sret from HS-mode into VU-mode and sret in VS-mode clear vsstatus.SDT

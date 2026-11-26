@@ -12,4 +12,7 @@
 
 `ifdef H_SUPPORTED
     Ssdbltrp_H_cg = new();     Ssdbltrp_H_cg.set_inst_name("obj_Ssdbltrp_H");
+    `ifndef EXCLUDE_SM
+        Ssdbltrp_HSm_cg = new();   Ssdbltrp_HSm_cg.set_inst_name("obj_Ssdbltrp_HSm");
+    `endif
 `endif

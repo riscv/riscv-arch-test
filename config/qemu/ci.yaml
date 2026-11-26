@@ -146,6 +146,9 @@ exclude_extensions:
   # SRETs and the VS/VU event counts run in HS-mode instead.
   - Ssdbltrp_H
   - Sscofpmf_H
+  # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the ebreak and load that
+  # should be double traps from VS-mode trap into HS-mode.
+  - Ssdbltrp_HSm
   # mret never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/issues/4620), so the VS/VU
   # accesses and the VS timer interrupts fail, and M-mode writes of hvip.VSTIP are dropped while
   # menvcfg.STCE = henvcfg.STCE = 1 (https://gitlab.com/qemu-project/qemu/-/work_items/4593).

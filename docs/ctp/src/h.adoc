@@ -127,9 +127,14 @@ The hypervisor landing pad tests are the <<t-Zicfilp_H-coverpoints,Zicfilp_H>> a
 
 ==== Ssdbltrp Hypervisor Double Trap
 
-The hypervisor double trap tests are the H group of the Ssdbltrp suite.
+The hypervisor double trap tests are the H and HSm groups of the Ssdbltrp suite.
+Ssdbltrp_H boots to HS-mode and checks vsstatus.SDT across SRET and traps, and henvcfg.DTE.
+Ssdbltrp_HSm boots to M-mode and checks double traps from VS-mode and, with Smdbltrp, MRET and SRET in M-mode.
+The Ssdbltrp_HSm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
 
 include::{testplansdir}/priv/Ssdbltrp_H.adoc[]
+
+include::{testplansdir}/priv/Ssdbltrp_HSm.adoc[]
 
 ==== Hypervisor Pointer Masking
 

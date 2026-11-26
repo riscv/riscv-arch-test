@@ -12,7 +12,7 @@
 from itertools import product
 from typing import Literal
 
-from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
+from testgen.asm.helpers import arch_block, comment_banner, tvec_alignment, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -535,15 +535,6 @@ def trap_entry_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestCh
     return test_data.end_test_chunk()
 
 
-def _tvec_alignment(tvec: str) -> list[str]:
-    """Align a trap handler label for ``tvec`` in either MODE the DUT supports."""
-    lines = []
-    for mode in ("VECTORED", "DIRECT"):
-        align = f"UDB_{tvec.upper()}_BASE_ALIGNMENT_{mode}"
-        lines += [f"#ifdef {align}", f".balign {align}", "#endif"]
-    return [*lines, ".balign 4"]
-
-
 def pelp_lpe_off_trap_tests(test_data: TestData, priv: Priv, covergroup: str) -> TestChunk:
     """A trap writes xPELP = ELP even when the trapping mode's xLPE is 0, so a stale xPELP = 1 is cleared.
 
@@ -600,7 +591,7 @@ def pelp_lpe_off_trap_tests(test_data: TestData, priv: Priv, covergroup: str) ->
             ".option norvc",
             "ebreak",
             ".option pop",
-            *_tvec_alignment(tvec),
+            *tvec_alignment(tvec),
             f"{handler}:",
             f"csrw {tvec}, x{save_tvec}",
             *read_pelp,

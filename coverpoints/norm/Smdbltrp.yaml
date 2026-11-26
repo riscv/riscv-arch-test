@@ -39,11 +39,15 @@ normative_rule_definitions:
   # If the Ssdbltrp extension is also implemented, and the new privilege mode is U, VS, or
   # VU, then csr:sstatus[sdt] is also set to 0.
   - name: sstatus_sdt_clr_mret_sret
-    coverpoint: ["TODO: covered by the Smdbltrp suite (not yet written)"]
+    coverpoint:
+      [
+        "Ssdbltrp_HSm_cg/cp_m_xret_vsstatus_sdt (returns to VS-mode and VU-mode)",
+        "Needs test: returns to U-mode (the Smdbltrp suite is not yet written).",
+      ]
 
   # Additionally, if it is VU, then vsstatus.SDT is also set to 0.
   - name: vsstatus_sdt_clr_mret_sret
-    coverpoint: ["TODO: covered by the Smdbltrp suite (not yet written)"]
+    coverpoint: ["Ssdbltrp_HSm_cg/cp_m_xret_vsstatus_sdt"]
 
   # When a trap is to be taken into M-mode, if the csr::[mdt] bit is currently 0, it is
   # then set to 1, and the trap is delivered as expected.

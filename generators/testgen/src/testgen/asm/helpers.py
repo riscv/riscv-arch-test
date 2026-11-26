@@ -62,6 +62,18 @@ def gated(lines: list[str], gate: str | None) -> list[str]:
     return [f"#if {gate}", *lines, f"#endif // {gate}"]
 
 
+def tvec_alignment(tvec: str) -> list[str]:
+    """Align a trap handler label for ``tvec`` ("mtvec" or "stvec") in either MODE the DUT supports.
+
+    VS-mode uses the stvec alignment for vstvec, as the framework's trap handlers do.
+    """
+    lines = []
+    for mode in ("VECTORED", "DIRECT"):
+        align = f"UDB_{tvec.upper()}_BASE_ALIGNMENT_{mode}"
+        lines += [f"#ifdef {align}", f".balign {align}", "#endif"]
+    return [*lines, ".balign 4"]
+
+
 def write64_csr(csr: str, value: int, reg: int) -> list[str]:
     """Write a 64-bit value to a CSR, and to its upper-half CSR first on RV32."""
     value &= (1 << 64) - 1

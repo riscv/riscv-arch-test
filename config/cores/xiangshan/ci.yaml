@@ -55,6 +55,7 @@ exclude_extensions:
   - SdtrigSm
   - SdtrigS
   - SdtrigU
+  - Sdtrig
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache clang"
 install_script: ".github/scripts/install-xiangshan.sh"

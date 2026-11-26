@@ -891,7 +891,7 @@ coverpoints:
       - Sdtrig_mcontrol6_select_data
   - heading: "Notes:"
   - heading: uncertain and uncertainen not tested because optional and unpredictable
-  - heading: vs, vu deferred to SdtrigH
+  - heading: vs, vu tested in Sdtrig_H and Sdtrig_HSm
   - heading: hit not tested because optional and implementation-dependent
   - heading: action other than 0 not tested until those features are supported (e.g. SdtrigSdext/SdtrigTrace)
   - name: "Icount tests: test fire and don't fire for each scenario"

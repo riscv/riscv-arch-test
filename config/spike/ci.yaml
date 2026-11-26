@@ -31,6 +31,10 @@ exclude_extensions:
   - Sscofpmf_S_shadow
   - Sscofpmf_U_inhibit
   - Sscofpmf_U_overflow
+  # An icount breakpoint from VS-mode or VU-mode writes tval = 0, but Spike sets GVA as if tval held a guest virtual
+  # address (https://github.com/riscv-software-src/riscv-isa-sim/issues/2542, item 15).
+  - Sdtrig_H_delegate
+  - Sdtrig_HSm_delegate
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

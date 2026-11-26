@@ -82,6 +82,9 @@
     `ifdef COVER_S
         s_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SDTRIG
+        sdtrig_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SDTRIGS
         sdtrigs_sample(hart, issue, ins);
     `endif

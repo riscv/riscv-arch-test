@@ -83,6 +83,9 @@
 `ifdef S_COVERAGE
   `include "S_coverage.svh"
 `endif
+`ifdef SDTRIG_COVERAGE
+  `include "Sdtrig_coverage.svh"
+`endif
 `ifdef SDTRIGS_COVERAGE
   `include "SdtrigS_coverage.svh"
 `endif

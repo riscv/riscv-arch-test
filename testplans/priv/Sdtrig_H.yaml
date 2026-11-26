@@ -1,0 +1,87 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sdtrig_H
+notes: |-
+  The group boots to HS-mode and enters VS-mode and VU-mode from HS-mode.
+  Unless otherwise specified, triggers are armed through T-SBI from the guest, with tdata1.vs or tdata1.vu = 1 for the guest mode under test.
+  While a guest runs, medeleg[3] = hedeleg[3] = 1 (breakpoints from the guest are taken into VS-mode) and vsstatus.SIE = 1, so the re-entrancy rule does not suppress VS-mode triggers.
+  The textra cases arm an icount trigger with count = 1, whose breakpoint is taken on a marker instruction (addi x0, x0, 0x5a).
+  satp, vsatp and hgatp never select Bare with a nonzero ASID or VMID, which is UNSPECIFIED.
+  Sdtrig_HSm covers breakpoints from the guest into M-mode, itrigger and etrigger in VS-mode and VU-mode, and hcontext from M-mode.
+  All other assumptions are inherited from SdtrigSm.
+coverpoints:
+  - heading: Mode bits
+  - name: |-
+      cp_mcontrol6_vs
+      cp_mcontrol6_vu
+    goal: An mcontrol6 trigger fires in VS-mode (VU-mode) only when its vs (vu) bit is set
+    description: |-
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports mcontrol6:
+      mcontrol6 store address trigger on scratch (select = 0, XSL = 010)
+      tdata1 = {vs (vu) only, every other mode bit (m, s, u, and vu (vs))}
+      sw to scratch in VS-mode (VU-mode)
+    expectation: |-
+      Breakpoint exception taken into VS-mode when only tdata1.vs (vu) = 1
+      No breakpoint when only the other mode bits are set
+    bins: mcontrol6 triggers * 2 per mode
+  - name: |-
+      cp_icount_vs
+      cp_icount_vu
+    goal: An icount trigger counts and fires in VS-mode (VU-mode) only when its vs (vu) bit is set
+    description: |-
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports icount:
+      icount trigger with count = 1
+      tdata1 = {vs (vu) only, every other mode bit (m, s, u, and vu (vs))}
+      execute a nop and the marker in VS-mode (VU-mode)
+    expectation: |-
+      Breakpoint exception taken into VS-mode on the marker when only tdata1.vs (vu) = 1
+      No breakpoint when only the other mode bits are set
+    bins: icount triggers * 2 per mode
+  - heading: Breakpoint delegation
+  - name: |-
+      cp_breakpoint_delegate_vs
+      cp_breakpoint_delegate_vu
+    goal: A breakpoint from VS-mode (VU-mode) is taken into HS-mode or VS-mode as hedeleg[3] says, and GVA records whether tval is a guest virtual address
+    description: |-
+      With medeleg[3] = 1 and hedeleg[3] = {0, 1}, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
+      fire an mcontrol6 store address trigger (sw to scratch) and an icount trigger (count = 1) in VS-mode (VU-mode)
+    expectation: |-
+      hedeleg[3] = 0: breakpoint taken into HS-mode with hstatus.SPV = 1, htval = htinst = 0, and hstatus.GVA = 1 for mcontrol6 (stval is the guest virtual address) and 0 for icount (stval = 0)
+      hedeleg[3] = 1: breakpoint taken into VS-mode
+      On a hart that hard-wires medeleg[3] to 0, both are taken into M-mode
+    bins: NTRIG * 2 types * 2 (into HS-mode, into VS-mode) per mode
+    notes: The icount cases into HS-mode need a reference model that clears GVA when a trigger breakpoint writes tval = 0 (Sail after 0.16, riscv/sail-riscv#2111).
+  - heading: textra
+  - name: cp_textra_mctx_sel
+    goal: mhselect = 1 and 5 match {mhvalue, mhselect[2]} against mcontext in VS-mode and VU-mode
+    description: |-
+      If mcontext matching is supported, in VS-mode and VU-mode, for an even and an odd mcontext (written through T-SBI, limited to the bits that mcontext and {mhvalue, mhselect[2]} implement):
+      for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports icount, icount trigger (count = 1) with tdata3 =
+      {mhselect matching mcontext[0] with mhvalue = mcontext >> 1, the other mhselect, the matching mhselect with mhvalue bit 0 flipped}
+    expectation: Breakpoint only when {mhvalue, mhselect[2]} equals the low bits of mcontext
+    bins: 2 modes * icount triggers * 2 mhselect * (match and fired, mismatch and not fired)
+  - name: cp_textra_vmid_sel
+    goal: mhselect = 2 and 6 match {mhvalue, mhselect[2]} against hgatp.VMID in VS-mode and VU-mode
+    description: |-
+      If VMID matching is supported, with hgatp = Sv39x4 (RV64) or Sv32x4 (RV32) identity mapping the test image, and an even and then an odd VMID (all ones in the bits that hgatp.VMID and {mhvalue, mhselect[2]} implement, without and with bit 0):
+      in VS-mode and VU-mode, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports icount, icount trigger (count = 1) with tdata3 =
+      {mhselect matching VMID[0] with mhvalue = VMID >> 1, the other mhselect, the matching mhselect with mhvalue bit 0 flipped}
+    expectation: Breakpoint only when {mhvalue, mhselect[2]} equals hgatp.VMID
+    bins: 2 modes * icount triggers * 2 mhselect * (match and fired, mismatch and not fired)
+  - name: cp_textra_vsatp_asid
+    goal: sselect = 2 matches svalue against vsatp.ASID in VS-mode and VU-mode
+    description: |-
+      If ASID matching is supported, with vsatp = Sv39 (RV64) or Sv32 (RV32) identity mapping the test image and ASID X = 2^ASIDLEN-2 (satp = Bare, ASID 0):
+      in VS-mode and VU-mode, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports icount, icount trigger (count = 1) with sselect = 2 and
+      svalue = {X, 0, X ^ 1, X | (1 << ASIDMAX)}, and X and X ^ 1 with sbytemask all ones
+    expectation: Breakpoint only when the low ASIDMAX bits of svalue equal vsatp.ASID (X and X | (1 << ASIDMAX)); sbytemask is ignored
+    bins: 2 modes * icount triggers * (match and fired, mismatch and not fired)
+  - heading: hcontext
+  - name: cp_hcontext_hs
+    goal: hcontext is an alias of the hcontext field of mcontext, accessible in HS-mode
+    description: |-
+      If hcontext is implemented, in HS-mode:
+      csrw hcontext with all ones and a random value, and read hcontext and mcontext (T-SBI)
+      write mcontext (T-SBI) and read hcontext
+      Reads are checked in the low UDB_DBG_HCONTEXT_WIDTH bits
+    expectation: hcontext and mcontext read the value written through either name
+    bins: 2 (csrr, csrw)

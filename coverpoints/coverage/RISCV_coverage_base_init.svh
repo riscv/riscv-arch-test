@@ -106,6 +106,10 @@
         `cover_info("//      S - Enabled");
         `include "S_coverage_init.svh"
     `endif
+    `ifdef COVER_SDTRIG
+        `cover_info("//      Sdtrig - Enabled");
+        `include "Sdtrig_coverage_init.svh"
+    `endif
     `ifdef COVER_SDTRIGS
         `cover_info("//      SdtrigS - Enabled");
         `include "SdtrigS_coverage_init.svh"

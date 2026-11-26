@@ -615,6 +615,22 @@ def _write_ones_read(test_data: TestData, csr: str, save: int, obs: int) -> list
     ]
 
 
+def _writable_bits(test_data: TestData, csr: str, save: int, obs: int, tmp: int) -> list[str]:
+    """Write all ones, then zeros, to a CSR; leave in x{obs} the bits that followed both
+    writes, which excludes read-only-one bits; and restore it."""
+    return [
+        f"csrr x{save}, {csr}",
+        f"LI(x{obs}, -1)",
+        f"csrw {csr}, x{obs}",
+        f"csrr x{obs}, {csr}",
+        f"csrw {csr}, x0",
+        f"csrr x{tmp}, {csr}",
+        f"xori x{tmp}, x{tmp}, -1",
+        f"and x{obs}, x{obs}, x{tmp}",
+        f"csrw {csr}, x{save}",
+    ]
+
+
 def _deleg(test_data: TestData) -> list[str]:
     """The medeleg and mideleg bits that can be set: which traps can go to S-mode.
 
@@ -746,7 +762,9 @@ def _counters(test_data: TestData) -> list[str]:
 
     UDB lets a counter-enable bit be writable only for a counter the config has: CY, TM
     and IR with Zicntr, the HPM counters with Zihpm. A hart may still make the others
-    writable, so only the bits the config can describe are compared.
+    writable, so only the bits the config can describe are compared. A hart may also
+    make the inhibit bit of a counter it lacks read-only one (CV32E20 does), so
+    mcountinhibit is compared by the bits that follow a write of ones and of zeros.
     """
     save, obs, cfg, mask = test_data.int_regs.get_registers(4)
     lines = [comment_banner("ConfigCheck: counters", "Counter-enable and counter-inhibit bits")]
@@ -772,7 +790,11 @@ def _counters(test_data: TestData) -> list[str]:
         lines += [
             test_data.add_testcase(param, "cp_counters", _CG),
             f"#if {guard} && defined(UDB_{param}_MASK)",
-            *_write_ones_read(test_data, csr, save, obs),
+            *(
+                _write_ones_read(test_data, csr, save, obs)
+                if describable
+                else _writable_bits(test_data, csr, save, obs, cfg)
+            ),
             *compare,
             f"and x{obs}, x{obs}, x{mask}",
             f"LI(x{cfg}, UDB_{param}_MASK)",

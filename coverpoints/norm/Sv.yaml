@@ -1212,4 +1212,6 @@ normative_rule_definitions:
         "Sv_vm_permissions_cg/cp_spage_{exec_s_i,noexec_s_i,read_s_d,noread_s_d,write_s_d,nowrite_s_d,rwx_s_i_noexec,rwx_s_d_noread,rwx_s_d_nowrite}",
         "Sv_vm_permissions_cg/cp_PTE_res_rwx_s_{i_exec,d_read,d_write}",
         "Sv_vm_permissions_cg/cp_PTE_nonleaf_lvl0_s_{i_exec,d_read,d_write}",
+        "Sv_H_vsstage_cg/cp_vsatp_perm",
+        "Sv_H_gstage_cg/cp_hgatp_perm",
       ]

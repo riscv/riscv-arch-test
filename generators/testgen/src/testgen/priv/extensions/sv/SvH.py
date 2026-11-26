@@ -421,9 +421,12 @@ def _t_vs_perm(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode, mo
 
 
 def _pte_format_cases(xlen: int, user: bool) -> list[tuple[str, PteExpression]]:
-    """Leaves whose format decides the access: V clear, a level-0 pointer, RSW set, or a reserved bit set."""
+    """Leaves whose format decides the access: V clear, W without R (reserved), a level-0 pointer, RSW set, or a
+    reserved bit set."""
     cases: list[tuple[str, PteExpression]] = [
         ("invalid", PteFlags(valid=False, user=user)),
+        ("reserved_w", perm_flags("w", user)),
+        ("reserved_wx", perm_flags("wx", user)),
         ("nonleaf_lvl0", PteFlags(user=user, read=False, write=False, execute=False, accessed=False, dirty=False)),
         *((f"rsw{number}", PteFlags(user=user, extra=(rsw,))) for number, (rsw, _) in enumerate(PTE_RSW, start=1)),
     ]
@@ -433,15 +436,66 @@ def _pte_format_cases(xlen: int, user: bool) -> list[tuple[str, PteExpression]]:
     return cases
 
 
+def _walk_format_accesses(test_data: TestData, stage: SvMode, covergroup: str, coverpoint: str) -> list[str]:
+    """VS-mode accesses through ``stage`` alone, the other stage Bare, where the walk faults on the PTE format: a
+    misaligned superpage leaf at each level above 0, and D, A or U set in the level-1 non-leaf PTE, where they are
+    reserved.  G-stage leaves are user pages."""
+    user = stage.stage == "g"
+    fence = "hfence.gvma" if user else "hfence.vvma"
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    regs = (pte, addr, tmp)
+    cases = [
+        *(
+            (
+                f"misaligned_lvl{level}",
+                GUEST_OPS,
+                create_page_mapping(
+                    stage,
+                    leaf_level=level,
+                    leaf_flags=PteFlags(user=user),
+                    virtual_address=stage.data_va,
+                    physical_address="svh_page",
+                    regs=regs,
+                    superpage=False,
+                ),
+            )
+            for level in range(1, stage.levels)
+        ),
+        *(
+            (
+                f"nonleaf_{bit.lower()}",
+                ("load",),
+                create_page_mapping(
+                    stage,
+                    leaf_level=0,
+                    leaf_flags=PteFlags(user=user),
+                    virtual_address=stage.data_va,
+                    physical_address="svh_page",
+                    walk_overrides={1: PteFlags.nonleaf(f"PTE_{bit}")},
+                    regs=regs,
+                ),
+            )
+            for bit in "DAU"
+        ),
+    ]
+    test_data.int_regs.return_registers(list(regs))
+    lines = []
+    for name, ops, ptes in cases:
+        setup = [*ptes, fence]
+        lines.extend(guest_access(test_data, covergroup, coverpoint, name, "VS", stage.data_va, setup=setup, ops=ops))
+    return lines
+
+
 def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> None:
     """VS-stage PTE formats, and A/D bits with Svade, in VS-mode."""
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_pte",
         "cp_vsatp_perm, cp_vsatp_svade",
-        "In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, a level-0 pointer, or have\n"
-        "RSW or reserved bits, and through leaves with A or D clear with menvcfg.ADUE = henvcfg.ADUE = 0\n"
-        "(page fault, PTE unchanged)",
+        "In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, have W without R, are a\n"
+        "level-0 pointer, have RSW or reserved bits, or are misaligned superpages, under a non-leaf PTE with D, A\n"
+        "or U set, and through leaves with A or D clear with menvcfg.ADUE = henvcfg.ADUE = 0 (page fault, PTE\n"
+        "unchanged)",
         stages=(vs,),
     )
     va = vs.data_va
@@ -458,6 +512,7 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
                 setup=map_test_page(test_data, None, vs, vs_flags=flags),
             )
         )
+    code.extend(_walk_format_accesses(test_data, vs, VS_CG, "cp_vsatp_perm"))
     code.extend(vs_ad_accesses(test_data, vs, SVADE_CASES, VS_CG, "cp_vsatp_svade"))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
@@ -553,9 +608,9 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
         test_data,
         f"H_{g.name}_g_pte",
         "cp_hgatp_perm, cp_hgatp_svade",
-        "In VS-mode with vsatp = Bare, access through G-stage leaves that are invalid, a level-0 pointer, have RSW,\n"
-        "reserved or G bits, are misaligned superpages, or have A or D clear with menvcfg.ADUE = 0 (guest-page\n"
-        "fault, PTE unchanged)",
+        "In VS-mode with vsatp = Bare, access through G-stage leaves that are invalid, have W without R, are a\n"
+        "level-0 pointer, have RSW, reserved or G bits, or are misaligned superpages, under a non-leaf PTE with D, A\n"
+        "or U set, or with A or D clear with menvcfg.ADUE = 0 (guest-page fault, PTE unchanged)",
         stages=(g,),
     )
     va = g.data_va
@@ -563,22 +618,7 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
     for name, flags in [*_pte_format_cases(g.xlen, True), ("g_bit", PteFlags(user=True, global_=True))]:
         setup = map_test_page(test_data, g, None, g_flags=flags)
         code.extend(guest_access(test_data, G_CG, "cp_hgatp_perm", name, "VS", va, setup=setup))
-    for level in range(1, g.levels):
-        pte, addr, tmp = test_data.int_regs.get_registers(3)
-        setup = [
-            *create_page_mapping(
-                g,
-                leaf_level=level,
-                leaf_flags=PteFlags(user=True),
-                virtual_address=g.data_va,
-                physical_address="svh_page",
-                regs=(pte, addr, tmp),
-                superpage=False,
-            ),
-            "hfence.gvma",
-        ]
-        test_data.int_regs.return_registers([pte, addr, tmp])
-        code.extend(guest_access(test_data, G_CG, "cp_hgatp_perm", f"misaligned_lvl{level}", "VS", va, setup=setup))
+    code.extend(_walk_format_accesses(test_data, g, G_CG, "cp_hgatp_perm"))
     code.extend(g_ad_accesses(test_data, g, G_SVADE_CASES, G_CG, "cp_hgatp_svade"))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())

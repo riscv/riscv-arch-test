@@ -14,10 +14,10 @@ coverpoints:
     goal: VS-stage leaf permissions and PTE formats
     description: |-
       In VS-mode and VU-mode with hgatp = Bare and vsstatus.SUM = MXR = 0, store, load and fetch through VS-stage leaves with U = 0 and 1 and each legal RWX (RWX, X, RX, RW, R).
-      In VS-mode, also store, load and fetch through a leaf with V = 0, a level-0 PTE with RWX = 000 (a pointer where a leaf is required), a leaf with RSW = 01, 10 and 11, and on RV64 a leaf with each of PTE bits 60:54 set and with all of them set.
+      In VS-mode, also store, load and fetch through a leaf with V = 0, a leaf with W without R (RWX = 010 and 110), a level-0 PTE with RWX = 000 (a pointer where a leaf is required), a leaf with RSW = 01, 10 and 11, on RV64 a leaf with each of PTE bits 60:54 set and with all of them set, and a misaligned superpage leaf (low PPN bits nonzero) at each level above 0, and load through a level-0 leaf under a level-1 non-leaf PTE with D, A or U set.
     expectation: |-
       An access succeeds when RWX permits it and U matches the mode (U = 0 in VS-mode with SUM = 0, U = 1 in VU-mode); otherwise it raises an instruction, load or store/AMO page fault (12, 13, 15) in HS-mode with stval = the guest virtual address and htval = 0.  A load from an execute-only page faults.
-      V = 0 and the level-0 pointer raise page faults.  RSW is ignored.  Reserved bits 60:54 raise page faults, except that bits 60:59 are ignored with Svrsw60t59b.
+      V = 0, W without R (reserved), the level-0 pointer, misaligned superpages and D, A or U in a non-leaf PTE (reserved) raise page faults.  RSW is ignored.  Reserved bits 60:54 raise page faults, except that bits 60:59 are ignored with Svrsw60t59b.
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp_mode x hgatp Bare x {no trap, page fault}"
   - name: cp_vsatp_sum
     goal: vsstatus.SUM in VS-mode and VU-mode
@@ -62,10 +62,10 @@ coverpoints:
     goal: G-stage leaf permissions and PTE formats
     description: |-
       In VS-mode and VU-mode with vsatp = Bare and sstatus.MXR = vsstatus.MXR = 0, store, load and fetch through G-stage leaves with U = 0 and 1 and each legal RWX.
-      In VS-mode, also store, load and fetch through a G-stage leaf with V = 0, a level-0 PTE with RWX = 000, a leaf with RSW = 01, 10 and 11, a leaf with G = 1, on RV64 a leaf with each of PTE bits 60:54 set and with all of them set, and a misaligned superpage leaf (low PPN bits nonzero) at each level above 0.
+      In VS-mode, also store, load and fetch through a G-stage leaf with V = 0, a leaf with W without R (RWX = 010 and 110), a level-0 PTE with RWX = 000, a leaf with RSW = 01, 10 and 11, a leaf with G = 1, on RV64 a leaf with each of PTE bits 60:54 set and with all of them set, and a misaligned superpage leaf (low PPN bits nonzero) at each level above 0, and load through a level-0 leaf under a level-1 non-leaf PTE with D, A or U set.
     expectation: |-
       G-stage accesses are user-level, so a U = 0 leaf raises a guest-page fault even from VS-mode.  Otherwise an access succeeds when RWX permits it.  A G-stage denial raises an instruction, load or store/AMO guest-page fault (20, 21, 23) for the original access type in HS-mode, with stval = the guest virtual address, htval = the guest physical address >> 2 (or zero) and hstatus.GVA = 1.
-      V = 0, the level-0 pointer, the reserved bits (bits 60:59 are ignored with Svrsw60t59b) and misaligned superpages raise guest-page faults.  RSW and G are ignored.
+      V = 0, W without R, the level-0 pointer, the reserved bits (bits 60:59 are ignored with Svrsw60t59b), misaligned superpages and D, A or U in a non-leaf PTE raise guest-page faults.  RSW and G are ignored.
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp Bare x hgatp_mode x {no trap, guest-page fault}"
   - name: cp_hgatp_mxr
     goal: Only the HS-level MXR makes G-stage execute-only pages readable

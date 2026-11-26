@@ -1572,6 +1572,15 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     cp_xtinst_breakpoint:   cross priv_mode_vs, ebreak, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
     cp_xtinst_virtinstr:    cross priv_mode_vs, csrr, vstval, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
     cp_xtinst_ecall:        cross priv_mode_vs, ecall, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+    // Traps from HS-mode and U-mode write htval and htinst too
+    cp_xtinst_v0_illegalinstr: cross priv_mode_s_u, illegal_zeros, medeleg_delegation, htval_htinst_nonzero;
+
+    // A trap from VS-mode or VU-mode into HS-mode leaves the VS CSRs alone.  vsstatus.SPP and SPIE are set before it.
+    vsstatus_spp_spie_set: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "spp")[0],
+                                       get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "spie")[0]} {
+        bins set = {2'b11};
+    }
+    cp_hs_trap_isolation: cross priv_mode_vs_vu, illegal_zeros, medeleg_delegation, hedeleg_disabled, vsstatus_spp_spie_set;
     // Misaligned fetches trap only when IALIGN = 32
     `ifndef ZCA_SUPPORTED
         jal: coverpoint ins.current.insn {
@@ -1622,6 +1631,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         cp_hedeleg_load_access_fault:     cross priv_mode_vs_vu, loadops, illegal_address_load, medeleg_delegation, hedeleg_walk;
         cp_hedeleg_hs_u_load_access_fault:     cross priv_mode_s_u, loadops, illegal_address_load, medeleg_delegation, hedeleg_writable;
         cp_xtinst_load_access:  cross priv_mode_vs, lw, illegal_address_load, medeleg_delegation, hedeleg_disabled, htval_htinst_nonzero;
+        cp_xtinst_v0_load_access: cross priv_mode_s_u, lw, illegal_address_load, medeleg_delegation, htval_htinst_nonzero;
         hlv_w: coverpoint ins.current.insn {
             wildcard bins hlv_w = {HLV_W};
         }
@@ -1850,6 +1860,23 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     cp_xtinst_breakpoint:   cross priv_mode_vs, ebreak, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
     cp_xtinst_virtinstr:    cross priv_mode_vs, csrr, vstval, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
     cp_xtinst_ecall:        cross priv_mode_vs, ecall, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+    // Traps from M-mode, HS-mode and U-mode write mtval2 and mtinst too
+    cp_xtinst_v0_illegalinstr: cross priv_mode_m_s_u, illegal_zeros, medeleg_delegation, mtval2_mtinst_nonzero;
+
+    // A trap from VS-mode or VU-mode into VS-mode leaves hstatus, the HS-level sstatus and the other HS CSRs alone.
+    // medeleg and hedeleg delegate only illegal instruction, and hstatus.SPV, SPVP and GVA are set before the trap.
+    medeleg_illegal_only: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg") {
+        bins illegal = {32'h00000004};
+    }
+    hedeleg_illegal_only: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg") {
+        bins illegal = {32'h00000004};
+    }
+    hstatus_spv_spvp_gva_set: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spv")[0],
+                                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0],
+                                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "gva")[0]} {
+        bins set = {3'b111};
+    }
+    cp_vs_trap_isolation: cross priv_mode_vs_vu, illegal_zeros, medeleg_illegal_only, hedeleg_illegal_only, hstatus_spv_spvp_gva_set;
     // Misaligned fetches trap only when IALIGN = 32
     `ifndef ZCA_SUPPORTED
         jal: coverpoint ins.current.insn {
@@ -1898,6 +1925,7 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
         cp_hedeleg_load_access_fault:     cross priv_mode_vs_vu, loadops, illegal_address_load, medeleg_delegation, hedeleg_none_all;
         cp_hlv_access_fault: cross priv_mode_m, hlv_instructions, hlv_illegal_address;
         cp_xtinst_load_access:  cross priv_mode_vs, lw, illegal_address_load, medeleg_delegation, hedeleg_disabled, mtval2_mtinst_nonzero;
+        cp_xtinst_v0_load_access: cross priv_mode_m_s_u, lw, illegal_address_load, medeleg_delegation, mtval2_mtinst_nonzero;
         hlv_w: coverpoint ins.current.insn {
             wildcard bins hlv_w = {HLV_W};
         }

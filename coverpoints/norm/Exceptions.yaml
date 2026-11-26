@@ -860,12 +860,27 @@ normative_rule_definitions:
       ]
 
   # A trap into HS-mode writes sstatus.SPP/SPIE/SIE and hstatus.SPV/GVA, and writes SPVP only for traps from V = 1
+  # cp_hs_trap_isolation: a trap into HS-mode leaves the VS CSRs alone
   - names: [H_trap_hs_csrwrites, hstatus_spv_op, hstatus_spvp_op]
-    coverpoint: ["Exceptions_H_cg/cp_ecall_to_hs"]
+    coverpoint: ["Exceptions_H_cg/{cp_ecall_to_hs, cp_hs_trap_isolation}"]
 
   # A trap into VS-mode writes vsstatus.SPP/SPIE/SIE and goes through vstvec
+  # A trap into VS-mode leaves hstatus, the HS-level sstatus and the other HS CSRs alone
   - names: [H_trap_vs_csrwrites, vstvec_sz_acc_op]
-    coverpoint: ["Exceptions_H_cg/cp_ecall_to_vs", "Exceptions_H_cg/cp_vstvec"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_ecall_to_vs",
+        "Exceptions_H_cg/cp_vstvec",
+        "Exceptions_HSm_cg/cp_vs_trap_isolation",
+      ]
+
+  # For traps other than guest-page faults, htval and mtval2 are set to zero, also for traps from V = 0
+  - names: [htval_trapval, mtval2_trapval]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_v0_{illegalinstr, load_access}",
+        "Exceptions_HSm_cg/cp_xtinst_v0_{illegalinstr, load_access}",
+      ]
 
   # The hypervisor extension augments the trap cause encoding. lists the possible M-mode
   # and HS-mode trap cause codes when the hypervisor extension is implemented. Codes are
@@ -1088,6 +1103,7 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
         "Exceptions_HSm_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
+        "{Exceptions_H_cg,Exceptions_HSm_cg}/cp_xtinst_v0_{illegalinstr, load_access}",
       ]
 
   # When a trap is taken into M-mode, virtualization mode V gets set to 0, and fields MPV

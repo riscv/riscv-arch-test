@@ -151,24 +151,26 @@ def hlv_priority_tests(test_data: TestData, covergroup: str, mode: str, home: st
     return lines
 
 
-def _enter_vs(home: str, temp_reg: int) -> list[str]:
-    """Enter VS-mode from the home mode without writing the second trap value or xtinst.
+def _enter(home: str, mode: str, temp_reg: int) -> list[str]:
+    """Enter mode from the home mode without writing the second trap value or xtinst.
 
-    M-mode enters VS-mode by mret, because a T-SBI call would overwrite mtval2 and mtinst.
+    M-mode enters the other modes by mret, because a T-SBI call would overwrite mtval2 and mtinst.
     """
+    if mode == home:
+        return []
     if home != "m":
-        return ["RVTEST_TSBI_GOTO_VSMODE"]
+        return [f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"]
+    mpv = "csrs" if mode in ("vs", "vu") else "csrc"
     return [
         f"LI(x{temp_reg}, MSTATUS_MPP)",
         f"csrc mstatus, x{temp_reg}",
-        f"LI(x{temp_reg}, MPP_SMODE)",
-        f"csrs mstatus, x{temp_reg}",
+        *([f"LI(x{temp_reg}, MPP_SMODE)", f"csrs mstatus, x{temp_reg}"] if mode in ("s", "vs") else []),
         "#if __riscv_xlen == 64",
         f"LI(x{temp_reg}, MSTATUS_MPV)",
-        f"csrs mstatus, x{temp_reg}",
+        f"{mpv} mstatus, x{temp_reg}",
         "#else",
         f"LI(x{temp_reg}, MSTATUSH_MPV)",
-        f"csrs mstatush, x{temp_reg}",
+        f"{mpv} mstatush, x{temp_reg}",
         "#endif",
         f"LA(x{temp_reg}, 1f)",
         f"csrw mepc, x{temp_reg}",
@@ -185,7 +187,7 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
     """
     addr_reg, data_reg, rd, rand_reg, temp_reg = test_data.int_regs.get_registers(5)
     tval2, tinst = ("mtval2", "mtinst") if home == "m" else ("htval", "htinst")
-    enter_vs = _enter_vs(home, temp_reg)
+    enter_vs = _enter(home, "vs", temp_reg)
 
     def fault(kind: str) -> str:
         return f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_{kind})"
@@ -307,7 +309,7 @@ def xtinst_fp_tests(test_data: TestData, covergroup: str, home: str) -> list[str
         body = [
             f"csrw {tval2}, x{rand_reg}",
             f"csrw {tinst}, x{rand_reg}",
-            *_enter_vs(home, temp_reg),
+            *_enter(home, "vs", temp_reg),
             f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_{kind})",
             test_data.add_testcase(f"vs_{instr}", cp, covergroup),
             *arch_block([f"{instr} f{freg}, 0(x{addr_reg})"], *extensions),
@@ -316,4 +318,132 @@ def xtinst_fp_tests(test_data: TestData, covergroup: str, home: str) -> list[str
         lines.extend(gated(body, f"({gate}) && defined(RVMODEL_ACCESS_FAULT_ADDRESS_{kind})"))
     test_data.int_regs.return_registers([addr_reg, rand_reg, temp_reg])
     test_data.float_regs.return_register(freg)
+    return lines
+
+
+def xtinst_v0_tests(test_data: TestData, covergroup: str, home: str) -> list[str]:
+    """cp_xtinst_v0_illegalinstr and cp_xtinst_v0_load_access: illegal instruction and a load access fault from each
+    mode with V = 0 that traps to the home mode (HS-mode and U-mode into HS-mode, or M-mode, HS-mode and U-mode into
+    M-mode, which delegates nothing).
+
+    Before each one, the home mode writes a nonzero value to htval and htinst (mtval2 and mtinst).  The trap record
+    holds the values the trap writes: zero in htval (mtval2), and zero or the transformed lw in htinst (mtinst).
+    """
+    addr_reg, rd, rand_reg, temp_reg = test_data.int_regs.get_registers(4)
+    tval2, tinst = ("mtval2", "mtinst") if home == "m" else ("htval", "htinst")
+    modes = ("m", "s", "u") if home == "m" else ("s", "u")
+    lines = [
+        comment_banner(
+            "cp_xtinst_v0_illegalinstr, cp_xtinst_v0_load_access",
+            f"In {' and '.join(f'{m.upper()}-mode' for m in modes).replace('S-mode', 'HS-mode')}, raise illegal "
+            f"instruction and a load access fault after writing a nonzero value\nto {tval2} and {tinst}.  The trap record "
+            f"holds {tval2} (zero) and {tinst} (zero, or the transformed lw)",
+        ),
+        f"LI(x{rand_reg}, 0x5A5A5A5B)",
+    ]
+    for mode in modes:
+        name = "hs" if mode == "s" else mode
+        leave = [] if mode == home else [f"RVTEST_TSBI_GOTO_{home.upper()}MODE"]
+        preset = [f"csrw {tval2}, x{rand_reg}", f"csrw {tinst}, x{rand_reg}", *_enter(home, mode, temp_reg)]
+        lines.extend(
+            [
+                *preset,
+                ".p2align 2",
+                test_data.add_testcase(name, "cp_xtinst_v0_illegalinstr", covergroup),
+                ".word 0x00000000",
+                *leave,
+            ]
+        )
+        body = [
+            *preset,
+            f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)",
+            f"LI(x{rd}, 42)",
+            test_data.add_testcase(name, "cp_xtinst_v0_load_access", covergroup),
+            f"lw x{rd}, 0(x{addr_reg})",
+            write_sigupd(rd, test_data),
+            *leave,
+        ]
+        lines.extend(gated(body, "defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"))
+    test_data.int_regs.return_registers([addr_reg, rd, rand_reg, temp_reg])
+    return lines
+
+
+# (CSR, line that loads its preset value into x{r}, write instruction, mask of the fields a trap may write or None)
+TrapCsrPreset = tuple[str, str, str, str | None]
+
+# Presets for the HS-level CSRs a trap into VS-mode must leave alone (H_trap_vs_csrwrites).  mstatus holds the
+# HS-level sstatus.  The values are legal: an aligned code address, a supported exception code and a data address.
+HS_TRAP_CSRS: tuple[TrapCsrPreset, ...] = (
+    ("hstatus", "LI(x{r}, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_GVA)", "csrs", None),
+    ("mstatus", "LI(x{r}, SSTATUS_SPP | SSTATUS_SPIE)", "csrs", "SSTATUS_SPP | SSTATUS_SPIE | SSTATUS_SIE"),
+    ("sepc", "LA(x{r}, rvtest_code_begin)", "csrw", None),
+    ("scause", "LI(x{r}, CAUSE_BREAKPOINT)", "csrw", None),
+    ("stval", "LA(x{r}, scratch)", "csrw", None),
+    ("htval", "LI(x{r}, 0x5A5A5A5B)", "csrw", None),
+    ("htinst", "LI(x{r}, 0x5A5A5A5B)", "csrw", None),
+)
+
+# Presets for the VS CSRs a trap into HS-mode must leave alone (H_trap_hs_csrwrites)
+VS_TRAP_CSRS: tuple[TrapCsrPreset, ...] = (
+    ("vsstatus", "LI(x{r}, SSTATUS_SPP | SSTATUS_SPIE)", "csrs", None),
+    ("vsepc", "LA(x{r}, rvtest_code_begin)", "csrw", None),
+    ("vscause", "LI(x{r}, CAUSE_BREAKPOINT)", "csrw", None),
+    ("vstval", "LA(x{r}, scratch)", "csrw", None),
+)
+
+
+def trap_isolation_tests(
+    test_data: TestData, covergroup: str, coverpoint: str, home: str, presets: Sequence[TrapCsrPreset]
+) -> list[str]:
+    """Write presets to the CSRs of the privilege level that does not take the trap, then raise illegal instruction in
+    VS-mode and VU-mode, and record each CSR XORed with its value before the trap.
+
+    The trap must leave the CSRs alone, so every record is zero, whatever values the CSRs legalized the presets to.  The
+    readbacks are kept in scratch.  For a mask, only the fields in it are compared.  The caller sets the delegation
+    that takes the trap to the level that the presets do not belong to.
+    """
+    base, val, old = test_data.int_regs.get_registers(3)
+    lines = [
+        comment_banner(
+            coverpoint,
+            f"Write {', '.join(csr for csr, *_ in presets)}, raise illegal instruction in VS-mode and VU-mode,\n"
+            "and record each CSR XORed with its value before the trap: zero",
+        )
+    ]
+    for mode in ("vs", "vu"):
+        lines.append(f"LA(x{base}, scratch)")
+        for i, (csr, load, op, _) in enumerate(presets):
+            lines.extend(
+                [
+                    load.format(r=val),
+                    f"{op} {csr}, x{val}",
+                    f"csrr x{val}, {csr}",
+                    f"SREG x{val}, {i}*REGWIDTH(x{base})",
+                ]
+            )
+        lines.extend(
+            [
+                f"RVTEST_TSBI_GOTO_{mode.upper()}MODE",
+                ".p2align 2",
+                test_data.add_testcase(mode, coverpoint, covergroup),
+                ".word 0x00000000",
+                f"RVTEST_TSBI_GOTO_{home.upper()}MODE",
+                f"LA(x{base}, scratch)",
+            ]
+        )
+        for i, (csr, _, _, mask) in enumerate(presets):
+            lines.extend(
+                [
+                    f"csrr x{val}, {csr}",
+                    f"LREG x{old}, {i}*REGWIDTH(x{base})",
+                    f"xor x{val}, x{val}, x{old}",
+                    *([f"LI(x{old}, {mask})", f"and x{val}, x{val}, x{old}"] if mask else []),
+                    write_sigupd(val, test_data),
+                ]
+            )
+        # Clear the status bits that were set; the other presets are overwritten by the next trap
+        for csr, load, op, _ in presets:
+            if op == "csrs":
+                lines.extend([load.format(r=val), f"csrc {csr}, x{val}"])
+    test_data.int_regs.return_registers([base, val, old])
     return lines

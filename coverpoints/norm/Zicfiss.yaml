@@ -417,3 +417,14 @@ normative_rule_definitions:
   # (). 3 - Shadow Stack Fault. Defined by the Zicfiss extension ().
   - name: mtval_swchk_list
     coverpoint: ["{Zicfiss_Sm_cg}/{cp_ss_swcheck_mtval}"]
+
+  # Privilege Mode|xSSE === M|0¶ S or HS|csr:menvcfg[sse]¶ VS|csr:henvcfg[sse]¶ U or
+  # VU|csr:senvcfg[sse] ===
+  - name: Zicfiss_xsse_smode_tbl
+    coverpoint:
+      [
+        "Zicfiss_Sm_cg/cp_ss_instr_inactive_m",
+        "Zicfiss_S_cg/cp_ssp_csr_gating_s",
+        "Zicfiss_U_cg/cp_ssp_csr_gating_u",
+        "Zicfiss_H_cg/cp_ssp_csr_gating_{vs,vu}",
+      ]

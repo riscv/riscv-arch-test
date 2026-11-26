@@ -6,7 +6,10 @@
 normative_rule_definitions:
   # ext:zvbc[] depends upon the ext:zve64x[] extension.
   - name: Zvbc_dependent_Zve64x
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: Zvbc requires Zve64x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvbc.yaml[ext/Zvbc.yaml]).",
+      ]
 
   # The instructions in ext:zvbc[] are only defined for SEW=64.
   - name: Zvbc_sew64only
@@ -23,7 +26,7 @@ normative_rule_definitions:
   - name: vclmul_sewn64_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); no Ssstrict-equivalent suite exists for Zvbc to exercise this reserved SEW encoding",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # Each 64-bit element in the vs2 vector register is carry-less multiplied by either each
@@ -43,7 +46,7 @@ normative_rule_definitions:
   - name: vclmulh_sewn64_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); no Ssstrict-equivalent suite exists for Zvbc to exercise this reserved SEW encoding",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # Each 64-bit element in the vs2 vector register is carry-less multiplied by either each

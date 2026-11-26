@@ -4,7 +4,7 @@ normative_rule_definitions:
   # FLEN can be 32, 64, or 128 depending on which of the ext:f[], ext:d[], and ext:q[]
   # extensions are supported.
   - name: flen_def
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint: ["No independent assertion: definition."]
   # These extensions, intended for lower-cost systems, are incompatible with the ext:f[]
   # and ext:d[] extensions.
   - name: Zfinx_Zdinx_incompatible_F_D
@@ -22,7 +22,9 @@ normative_rule_definitions:
   # The ext:f[] extension depends on the ext:zicsr[] extension.
   - name: F_depends_Zicsr
     coverpoint:
-      ["Not tested: extension dependency checked by the UDB configuration"]
+      [
+        "Configuration requirement: F requires Zicsr; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/F.yaml[ext/F.yaml]).",
+      ]
   # The ext:f[] extension adds 32 floating-point registers,
   # f0&amp;#8205;&amp;#8211;&amp;#8205;f31, each 32 bits wide, i.e., FLEN=32.
   - name: flen
@@ -99,8 +101,7 @@ normative_rule_definitions:
   # insn:flw[] and insn:fsw[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned.
   - name: fsw_flw_atomic_align
-    coverpoint:
-      ["Not tested: atomicity is not observable in single-hart signature tests"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
   # insn:flw[] and insn:fsw[] do not modify the bits being transferred; in particular,
   # the payloads of non-canonical NaNs are preserved.
   - name: fsw_flw_bits_maintained
@@ -201,7 +202,8 @@ normative_rule_definitions:
   - name: fma_nv_flag
     # TODO: the FMA crosses multiply inf by zero only with non-NaN addends; needs a directed case
     # with fs1/fs2 = inf/zero and a quiet-NaN fs3 for each FMA instruction and precision
-    coverpoint: [""]
+    coverpoint:
+      ["Needs test: FMA with multiplicands ∞ and zero and a quiet-NaN addend."]
   # insn:fcvt.w.s[] or insn:fcvt.l.s[] converts a floating-point number in
   # floating-point register rs1 to a signed 32-bit or 64-bit integer, respectively, in
   # integer register rd
@@ -313,3 +315,36 @@ normative_rule_definitions:
   # not set the floating-point exception flags.
   - name: fclass-s_op
     coverpoint: ["F_fclass_s_cg/{cp_rd, cp_fs1, cp_fs1_edges, cp_fclass}"]
+
+  # rd bit|Meaning === 0|rs1 is −∞.¶ 1|rs1 is a negative normal number.¶ 2|rs1 is a negative
+  # subnormal number.¶ 3|rs1 is −0.¶ 4|rs1 is +0.¶ 5|rs1 is a positive subnormal number.¶ 6|rs1 is a
+  # positive normal number.¶ 7|rs1 is +∞.¶ 8|rs1 is a signaling NaN.¶ 9|rs1 is a quiet NaN. ===
+  - name: fclass_result_enc
+    coverpoint: ["{F_fclass_s,D_fclass_d,Zfh_fclass_h}_cg/cp_fclass"]
+
+  # |insn:fcvt.w.s[]|insn:fcvt.wu.s[]|insn:fcvt.l.s[]|insn:fcvt.lu.s[] === Minimum valid input
+  # (after rounding)|−2^31|0|−2^63|0¶ Maximum valid input (after
+  # rounding)|2^31−1|2^32−1|2^63−1|2^64−1¶ Output for out-of-range negative input|−2^31|0|−2^63|0¶
+  # Output for -∞|−2^31|0|−2^63|0¶ Output for out-of-range positive
+  # input|2^31−1|2^32−1|2^63−1|2^64−1¶ Output for +∞ or NaN|2^31−1|2^32−1|2^63−1|2^64−1 ===
+  - name: fcvt_int_domain_tbl
+    coverpoint:
+      [
+        "F_fcvt_{w,wu,l,lu}_s_cg/cr_fs1_edges_frm",
+        "Needs test: inputs at the edges of the valid range, such as −2^31, the largest value below 2^31, and 2^31; cp_fs1_edges reaches out-of-range inputs only through ±maxnorm and ±∞.",
+      ]
+
+  # Flag Mnemonic|Flag Meaning === NV|Invalid Operation¶ DZ|Divide by Zero¶ OF|Overflow¶
+  # UF|Underflow¶ NX|Inexact ===
+  - name: fflags_enc
+    coverpoint:
+      ["F_fmadd_s_cg/cp_csr_fflags_voun", "F_fdiv_s_cg/cp_csr_fflags_vdoun"]
+
+  # fmt field|Mnemonic|Meaning === 00|S|32-bit single-precision¶ 01|D|64-bit double-precision¶
+  # 10|H|16-bit half-precision¶ 11|Q|128-bit quad-precision ===
+  - name: fp_fmt_enc
+    coverpoint:
+      [
+        "{F_fadd_s,D_fadd_d,Zfh_fadd_h}_cg/cp_asm_count",
+        "Needs test: fmt=11 (Q); no Q suite exists.",
+      ]

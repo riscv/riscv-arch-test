@@ -5,24 +5,31 @@ normative_rule_definitions:
     coverpoint: ["Zalrsc_lr_w_cg/cp_custom_aqrl"]
 
   - name: A_domain_specific_ordering
-    coverpoint: ["OUT-OF-SCOPE for single hart without defined I/O domains"]
+    coverpoint:
+      [
+        "Needs infrastructure: I/O regions and multiple harts to observe ordering.",
+      ]
 
   - name: A_no_aq_rl
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      ["No independent assertion: aq = rl = 0 adds no ordering constraint."]
 
   - name: A_acquire_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: A_release_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: A_seq_cst_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # The A extension comprises the Zalrsc and Zaamo extensions, which are
   # defined in the following sections.
   - name: A_comprises
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: A requires Zaamo and Zalrsc; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/A.yaml[ext/A.yaml]).",
+      ]
 
   - name: lr-w_op
     coverpoint: ["Zalrsc_lr_w_cg/{cp_rs1_nx0, cp_rd, cp_custom_rd_edges}"]
@@ -34,7 +41,7 @@ normative_rule_definitions:
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
 
   - name: sc_failed_side_effects
-    coverpoint: ["NONE: Behavior is UNSPECIFIED and OUT-OF-SCOPE"]
+    coverpoint: ["No independent assertion: the behavior is UNSPECIFIED."]
 
   - name: sc_reservation_invalidate
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
@@ -62,46 +69,66 @@ normative_rule_definitions:
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc; multihart not tested"]
 
   - name: sc_device_write_failure
-    coverpoint: ["OUT-OF-SCOPE: device writes not modeled"]
+    coverpoint:
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
 
   - name: sc_addr_not_in_reservation_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
   - name: sc_other_hart_store_fail
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: sc_other_device_write_fail
-    coverpoint: ["OUT-OF-SCOPE: device writes not modeled"]
+    coverpoint:
+      ["Needs infrastructure: a non-coherent agent such as a DMA device."]
 
   - name: sc_intervening_sc_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
 
   - name: lr_sc_atomicity_axiom
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: sc_not_observable_before_lr
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: constrained_lrsc_loop_size
-    coverpoint: ["Untested"]
+    coverpoint:
+      [
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
+      ]
 
   - name: constrained_lrsc_instruction_set
-    coverpoint: ["Untested"]
+    coverpoint:
+      [
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
+      ]
 
   - name: constrained_lrsc_compressed_allowed
-    coverpoint: ["Untested"]
+    coverpoint:
+      [
+        "No independent assertion: permits compressed instructions in constrained LR/SC loops.",
+      ]
 
   - name: constrained_lrsc_retry_code
-    coverpoint: ["Untested"]
+    coverpoint:
+      [
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
+      ]
 
   - name: lrsc_eventuality_region
-    coverpoint: ["PMAs not tested"]
+    coverpoint:
+      [
+        "No independent assertion: part of the definition of a constrained LR/SC loop.",
+      ]
 
   - name: lrsc_same_address_and_size
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
   - name: unconstrained_lrsc_no_progress
-    coverpoint: ["Behavior is unconstrained"]
+    coverpoint:
+      [
+        "No independent assertion: unconstrained LR/SC loops have no forward-progress guarantee.",
+      ]
 
   # If a hart H enters a constrained LR/SC loop, the execution environment must
   # guarantee that one of the following events eventually occurs
@@ -126,12 +153,18 @@ normative_rule_definitions:
   # LR instruction in H's constrained LR/SC loop, or some other device in the
   # system writes to that reservation set.
   - name: constrained_lrsc_forward_progress_store_amo
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # H executes a branch or jump that exits the constrained LR/SC loop.
   - name: constrained_lrsc_forward_progress_branch
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      [
+        "No independent assertion: describes when the forward-progress guarantee ends.",
+      ]
 
   # H traps.
   - name: constrained_lrsc_forward_progress_trap
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+    coverpoint:
+      [
+        "No independent assertion: describes when the forward-progress guarantee ends.",
+      ]

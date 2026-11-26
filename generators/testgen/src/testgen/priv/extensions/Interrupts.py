@@ -114,12 +114,14 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                 # Leave a nonzero stval so the trap handler's stval == 0 check sees the interrupt write it
                 f"auipc x{tmp_reg}, 0 # nonzero valid address",
                 f"csrw stval, x{tmp_reg} # stval = nonzero",
-                # Likewise htval and htinst, which an interrupt taken into HS-mode must also zero.
+                # Likewise htval, htinst and hstatus.GVA, which an interrupt taken into HS-mode must also zero.
                 # htinst gets a transformed load, lw x1, 0(x0).
                 "#ifdef H_SUPPORTED",
                 f"csrw htval, x{tmp_reg} # htval = nonzero",
                 f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
                 f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                f"LI(x{tmp_reg}, HSTATUS_GVA)",
+                f"csrs hstatus, x{tmp_reg} # hstatus.GVA = 1",
                 "#endif // H_SUPPORTED",
                 test_data.add_testcase(
                     f"priv_{priv}_{int_type}_mode_{mode}_enable_{enable}{'_hideleg' if hideleg else ''}",

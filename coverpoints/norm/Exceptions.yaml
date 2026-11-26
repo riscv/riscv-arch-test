@@ -1019,12 +1019,14 @@ normative_rule_definitions:
         "Exceptions_HSm_cg/cp_priority_{hlv, hsv}",
       ]
 
-  # An hlv or hsv fault taken into HS-mode sets hstatus.GVA, and other traps into HS-mode clear it
+  # An hlv or hsv fault taken into HS-mode sets hstatus.GVA, and other traps into HS-mode clear it.
+  # The interrupt cases set GVA = 1 first.
   - name: hstatus_gva_op
     coverpoint:
       [
         "Exceptions_H_cg/cp_hstatus_gva_{hlv, hsv}",
         "Exceptions_H_cg/cp_ecall_to_hs",
+        "Interrupts_cg/cp_trigger_htinst",
       ]
 
   # The htval register is an HSXLEN-bit read/write register formatted as shown in . When a

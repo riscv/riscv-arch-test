@@ -146,14 +146,16 @@ def _trigger_sm_cases(
                         "#ifdef S_SUPPORTED",
                         f"csrw stval, x{tmp_reg} # stval = nonzero",
                         "#endif // S_SUPPORTED",
-                        # Likewise the second trap value and xtinst. The ecall zeroes mtval2 and mtinst but
-                        # not htval and htinst. xtinst gets a transformed load, lw x1, 0(x0).
+                        # Likewise the second trap value, xtinst and hstatus.GVA. The ecall zeroes mtval2 and
+                        # mtinst but not htval, htinst and hstatus.GVA. xtinst gets a transformed load, lw x1, 0(x0).
                         "#ifdef H_SUPPORTED",
                         f"csrw mtval2, x{tmp_reg} # mtval2 = nonzero",
                         f"csrw htval, x{tmp_reg} # htval = nonzero",
                         f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
                         f"csrw mtinst, x{tmp_reg} # mtinst = nonzero",
                         f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                        f"LI(x{tmp_reg}, HSTATUS_GVA)",
+                        f"csrs hstatus, x{tmp_reg} # hstatus.GVA = 1",
                         "#endif // H_SUPPORTED",
                         test_data.add_testcase(
                             f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}"

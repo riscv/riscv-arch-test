@@ -157,14 +157,16 @@ def mode_exit(suite: InterruptSuite, priv: str) -> list[str]:
 
 def hideleg_vs_target(hideleg: int, int_type: str, mode: int, sie: int, reg: int) -> tuple[list[str], list[str]]:
     """Lines that open and close a case where hideleg delegates int_type to VS-mode, with vstvec.MODE = mode and
-    vsstatus.SIE = sie. The close restores hideleg, vstvec.MODE and vsstatus.SIE/SPIE to their boot values. Both are
-    empty when hideleg = 0."""
+    vsstatus.SIE = sie. The open also leaves a nonzero vstval, which an interrupt taken into VS-mode must zero. The
+    close restores hideleg, vstvec.MODE and vsstatus.SIE/SPIE to their boot values. Both are empty when hideleg = 0."""
     if not hideleg:
         return [], []
     modecmd = "csrs" if mode == 1 else "csrc"
     siecmd = "csrs" if sie == 1 else "csrc"
     return [
         f"#ifdef UDB_VSTVEC_MODES_{mode}",
+        f"auipc x{reg}, 0 # nonzero valid address",
+        f"csrw vstval, x{reg} # vstval = nonzero",
         f"LI(x{reg}, {1 << int_bit[int_type]:#x})",
         f"csrw hideleg, x{reg} # hideleg delegates {int_type} to VS-mode",
         f"LI(x{reg}, 1)",

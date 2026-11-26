@@ -26,6 +26,11 @@ coverpoints:
     description: With mstatus.TSR = 1 and hstatus.VTSR = {0/1}, execute sret in VS-mode with vsstatus.SPP = 1 and SPIE = 0
     expectation: sret executes and stays in VS-mode when VTSR = 0; virtual instruction exception when VTSR = 1
     bins: 2 VTSR
+  - name: cp_tsr_vu_sret
+    goal: mstatus.TSR does not change the exception for sret in VU-mode
+    description: With mstatus.TSR = 1 and hstatus.VTSR = 0, execute sret in VU-mode
+    expectation: Virtual instruction exception.  sret is HS-qualified because the rule assumes TSR = 0, and VU-mode lacks the privilege to execute it.
+    bins: "1"
   - name: cp_loadstore_priv
     goal: Hypervisor load/store in M-mode
     description: In M-mode with hstatus.HU = {0/1}, attempt {HLV.W, HLVX.WU, HSV.W} on scratch memory.  vsatp and hgatp are Bare.

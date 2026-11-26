@@ -896,7 +896,7 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_virtual_instr_vs_{execute_hypervisor, mstatus_hgatp, mstatus_vsatp, read_vstval_htval, rv32_hedelegh, s_vma_instr, satp, sret}",
         "Exceptions_H_cg/cp_virtual_instr_vu_{execute_h, read_stval, read_vstval_htval, rv32_hedelegh, satp, sfence_vma, sret, vsatp, wfi}",
-        "Exceptions_HSm_cg/cp_tsr_vs_sret",
+        "Exceptions_HSm_cg/cp_tsr_{vs, vu}_sret",
       ]
 
   # On a virtual-instruction trap, mtval or stval is written the same as for an
@@ -940,7 +940,11 @@ normative_rule_definitions:
 
   # or to execute a supervisor instruction (SRET or SFENCE);
   - name: H_virtinst_vu_sret_sfence
-    coverpoint: ["Exceptions_H_cg/cp_virtual_instr_vu_{sret, sfence_vma}"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_virtual_instr_vu_{sret, sfence_vma}",
+        "Exceptions_HSm_cg/cp_tsr_vu_sret",
+      ]
 
   # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
   # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;

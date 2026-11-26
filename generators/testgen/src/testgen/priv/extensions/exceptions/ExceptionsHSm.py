@@ -115,7 +115,8 @@ def _hlv_fault_tests(test_data: TestData) -> list[str]:
 
 
 def _tsr_tests(test_data: TestData) -> list[str]:
-    """cp_tsr_vs_sret: sret in VS-mode with mstatus.TSR = 1 and hstatus.VTSR = 0 and 1.
+    """cp_tsr_vs_sret and cp_tsr_vu_sret: sret in VS-mode with mstatus.TSR = 1 and hstatus.VTSR = 0 and 1, then in
+    VU-mode with TSR = 1 and VTSR = 0.
 
     sret returns to 1f in VS-mode.  If it traps instead, the handler resumes at the next instruction, which changes rd.
     """
@@ -155,6 +156,18 @@ def _tsr_tests(test_data: TestData) -> list[str]:
         [
             f"LI(x{temp_reg}, HSTATUS_VTSR)",
             f"csrc hstatus, x{temp_reg}",
+            comment_banner(
+                "cp_tsr_vu_sret",
+                "sret is HS-qualified assuming TSR = 0, so with mstatus.TSR = 1, sret in VU-mode still raises virtual\n"
+                "instruction, not illegal instruction",
+            ),
+            "RVTEST_TSBI_GOTO_VUMODE",
+            f"LI(x{rd}, 1)",
+            test_data.add_testcase("vtsr0", "cp_tsr_vu_sret", CG),
+            "sret",
+            f"LI(x{rd}, 2)  # reached after the trap",
+            write_sigupd(rd, test_data),
+            "RVTEST_TSBI_GOTO_MMODE",
             f"LI(x{temp_reg}, MSTATUS_TSR)",
             f"csrc mstatus, x{temp_reg}",
         ]

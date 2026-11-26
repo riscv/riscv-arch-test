@@ -1795,6 +1795,8 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     // mstatus.TSR affects only HS-mode: sret in VS-mode executes when hstatus.VTSR = 0 and raises virtual instruction
     // when VTSR = 1
     cp_tsr_vs_sret: cross priv_mode_vs, sret, mstatus_tsr_enabled, hstatus_vtsr;
+    // sret is HS-qualified assuming TSR = 0, so in VU-mode it raises virtual instruction even with mstatus.TSR = 1
+    cp_tsr_vu_sret: cross priv_mode_vu, sret, mstatus_tsr_enabled;
     // Every hlv, hlvx and hsv in M-mode at each offset of a doubleword
     cp_hlv_address_misaligned: cross priv_mode_m, hlv_instructions, hlv_adr_LSBs;
     cp_hsv_address_misaligned: cross priv_mode_m, hsv_instructions, hlv_adr_LSBs;

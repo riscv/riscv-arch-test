@@ -968,9 +968,9 @@ normative_rule_definitions:
         "Sv_H_twostage_cg/cp_implicit_mxr",
       ]
 
-  # vsstatus.SUM in VS-mode
+  # vsstatus.SUM in VS-mode, where it replaces the HS-level SUM
   - name: vsstatus_sz_acc_op
-    coverpoint: ["Sv_H_vsstage_cg/cp_vsatp_sum"]
+    coverpoint: ["Sv_H_vsstage_cg/{cp_vsatp_sum,cp_vsatp_hs_sum}"]
 
   # HLV, HLVX and HSV: hstatus.SPVP selects the privilege, vsstatus.SUM applies and sstatus.SUM does not,
   # sstatus.MXR affects both stages and vsstatus.MXR the VS-stage, and HLVX needs execute permission

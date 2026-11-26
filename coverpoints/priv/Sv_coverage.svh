@@ -1924,6 +1924,10 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     lw : coverpoint ins.current.insn {
         wildcard bins lw = {LW};
     }
+    ldst : coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+        wildcard bins sw = {SW};
+    }
     // Each supported VS-stage mode
     vsatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         `ifdef UDB_SV39_VSMODE_TRANSLATION
@@ -1947,9 +1951,18 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         wildcard bins none = {6'b0?????};
         bins page_fault    = {6'b101100, 6'b101101, 6'b101111};
     }
+    page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]} {
+        bins page_fault = {6'b101100, 6'b101101, 6'b101111};
+    }
     vsstatus_sum : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum")[0] {}
+    vsstatus_sum_off : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "sum") {
+        bins off = {0};
+    }
     vsstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "mxr")[0] {}
-    // HS-level MXR: mret into the guest logs mstatus
+    // HS-level SUM and MXR: mret into the guest logs mstatus
+    mstatus_sum_on : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "sum") {
+        bins on = {1};
+    }
     mstatus_mxr : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mxr")[0] {}
     `ifdef UDB_MXLEN_64
         menvcfg_adue : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
@@ -1972,6 +1985,8 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     cp_vsatp_perm   : cross priv_mode_vs_vu, access, vsatp_mode, hgatp_bare, trap;
     cp_vsatp_sum    : cross priv_mode_vs_vu, access, vsatp_mode, hgatp_bare, vsstatus_sum;
     cp_vsstatus_mxr : cross priv_mode_vs_vu, lw, vsatp_mode, hgatp_bare, vsstatus_sum, vsstatus_mxr, mstatus_mxr;
+    // The HS-level SUM does not apply at V=1, where vsstatus substitutes for sstatus
+    cp_vsatp_hs_sum : cross priv_mode_vs, ldst, vsatp_mode, hgatp_bare, vsstatus_sum_off, mstatus_sum_on, page_fault;
     // VS-stage A/D bits: Svade faults with menvcfg.ADUE = henvcfg.ADUE = 0.  Svadu_H_cg has the ADUE = 1 cases.
     cp_vsatp_svade  : cross priv_mode_vs, access, vsatp_mode, hgatp_bare, menvcfg_adue, henvcfg_adue;
 endgroup

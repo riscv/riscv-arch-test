@@ -29,6 +29,11 @@ coverpoints:
     description: In VS-mode and VU-mode with hgatp = Bare, store, load and fetch through an execute-only VS-stage leaf with U = 0 and 1, vsstatus.SUM = 0 and 1, and vsstatus.MXR and sstatus.MXR not both 0.  The bins with both MXR bits 0 come from cp_vsatp_perm and cp_vsatp_sum.
     expectation: With either MXR = 1, the load succeeds when U and SUM permit the access; with both MXR = 0 it raises a load page fault.  Stores fault, and fetches follow X, U and SUM as in cp_vsatp_sum.
     bins: "{VS, VU} x lw x vsatp_mode x hgatp Bare x vsstatus.SUM {0, 1} x vsstatus.MXR {0, 1} x mstatus.MXR {0, 1}"
+  - name: cp_vsatp_hs_sum
+    goal: The HS-level sstatus.SUM does not apply at V=1
+    description: In VS-mode with hgatp = Bare, vsstatus.SUM = 0 and sstatus.SUM = 1, store and load through a VS-stage leaf with U = 1.
+    expectation: When V=1, vsstatus substitutes for sstatus, so the HS-level SUM is ignored and both accesses raise page faults.
+    bins: VS x {sw, lw} x vsatp_mode x hgatp Bare x vsstatus.SUM = 0 x mstatus.SUM = 1 x page fault
   - name: cp_vsatp_svade
     goal: Svade in the VS-stage
     description: In VS-mode with hgatp = Bare and menvcfg.ADUE = henvcfg.ADUE = 0, store, load and fetch through VS-stage leaves with A = D = 0 and with D = 0.  The leaf is read back after the accesses.

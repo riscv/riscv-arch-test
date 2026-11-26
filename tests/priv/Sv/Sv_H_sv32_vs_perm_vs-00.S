@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 38
+#define SIGUPD_COUNT 39
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -31,9 +31,10 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr
+// cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr, cp_vsatp_hs_sum
 //   In VS-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with U = 0, 1 and each
-//   legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR and sstatus.MXR = 0, 1
+//   legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR and sstatus.MXR = 0, 1,
+//   and store and load on a U = 1 leaf with vsstatus.SUM = 0 and sstatus.SUM = 1
 /////////////////////////////////
 
 // Identity map the test image in both stages
@@ -121,6 +122,8 @@ RVTEST_BEGIN
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x14, 0x90407000)
   LI(x13, 0x100)
   RVTEST_TSBI_GOTO_VSMODE
@@ -153,6 +156,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_RWX_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x8, 0x90407000)
   LI(x14, 0x103)
   RVTEST_TSBI_GOTO_VSMODE
@@ -185,6 +190,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_Xmonly_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x8, 0x90407000)
   LI(x15, 0x106)
   RVTEST_TSBI_GOTO_VSMODE
@@ -217,6 +224,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_RX_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x9, 0x90407000)
   LI(x13, 0x109)
   RVTEST_TSBI_GOTO_VSMODE
@@ -249,6 +258,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_RW_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x9, 0x90407000)
   LI(x8, 0x10c)
   RVTEST_TSBI_GOTO_VSMODE
@@ -281,6 +292,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u0_Rmonly_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x9, 0x90407000)
   LI(x15, 0x10f)
   RVTEST_TSBI_GOTO_VSMODE
@@ -313,6 +326,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_RWX_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x13, 0x90407000)
   LI(x15, 0x112)
   RVTEST_TSBI_GOTO_VSMODE
@@ -345,6 +360,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_Xmonly_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x8, 0x90407000)
   LI(x15, 0x115)
   RVTEST_TSBI_GOTO_VSMODE
@@ -377,6 +394,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_RX_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x9, 0x90407000)
   LI(x8, 0x118)
   RVTEST_TSBI_GOTO_VSMODE
@@ -409,6 +428,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_RW_exec:
   hfence.gvma
   LI(x6, SSTATUS_SUM | SSTATUS_MXR)
   csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x15, 0x90407000)
   LI(x14, 0x11b)
   RVTEST_TSBI_GOTO_VSMODE
@@ -443,6 +464,8 @@ Sv_H_vsstage_cg_cp_vsatp_perm_u1_Rmonly_exec:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM)
   csrs vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x15, 0x90407000)
   LI(x9, 0x11e)
   RVTEST_TSBI_GOTO_VSMODE
@@ -477,6 +500,8 @@ Sv_H_vsstage_cg_cp_vsatp_sum_sum_u0_RWX_exec:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM)
   csrs vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x9, 0x90407000)
   LI(x14, 0x121)
   RVTEST_TSBI_GOTO_VSMODE
@@ -511,6 +536,8 @@ Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RWX_exec:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM)
   csrs vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x9, 0x90407000)
   LI(x15, 0x124)
   RVTEST_TSBI_GOTO_VSMODE
@@ -545,6 +572,8 @@ Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_Xmonly_exec:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM)
   csrs vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x13, 0x90407000)
   LI(x15, 0x127)
   RVTEST_TSBI_GOTO_VSMODE
@@ -579,6 +608,8 @@ Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RX_exec:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM)
   csrs vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x8, 0x90407000)
   LI(x15, 0x12a)
   RVTEST_TSBI_GOTO_VSMODE
@@ -613,6 +644,8 @@ Sv_H_vsstage_cg_cp_vsatp_sum_sum_u1_RW_exec:
   csrc vsstatus, x6
   LI(x6, SSTATUS_SUM)
   csrs vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
   LI(x15, 0x90407000)
   LI(x8, 0x12d)
   RVTEST_TSBI_GOTO_VSMODE
@@ -1071,19 +1104,53 @@ Sv_H_vsstage_cg_cp_vsstatus_mxr_smxr0_vsmxr1_sum1_u1_exec:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_vsstage_cg_cp_vsstatus_mxr_smxr0_vsmxr1_sum1_u1_load, Sv_H_vsstage_cg_cp_vsstatus_mxr_smxr0_vsmxr1_sum1_u1_load_str)
 
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x14, PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x9)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LA(x15, svh_page)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
+  SREG x15, 0(x9)
+  hfence.vvma
+  hfence.gvma
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
+  LI(x6, SSTATUS_SUM)
+  csrs sstatus, x6
+  LI(x15, 0x90407000)
+  LI(x8, 0x154)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_vsstage_cg_cp_vsatp_hs_sum_ssum1_vssum0_u1_store:
+  sw x8, 8(x15)
+  LI(x8, -1)
+Sv_H_vsstage_cg_cp_vsatp_hs_sum_ssum1_vssum0_u1_load:
+  lw x8, 8(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_hs_sum_ssum1_vssum0_u1_load, Sv_H_vsstage_cg_cp_vsatp_hs_sum_ssum1_vssum0_u1_load_str)
+
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x15, rvtest_code_begin)
-  LA(x8, Vtramptbl_sv)
-  SREG x15, code_bgn_off(x8)
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x14
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x14
-  LI(x14, HENVCFGH_ADUE)
-  csrc henvcfgh, x14
+  LA(x9, rvtest_code_begin)
+  LA(x14, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x14)
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x6
+  LI(x6, HENVCFGH_ADUE)
+  csrc henvcfgh, x6
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE)
   csrw hedeleg, zero
 
@@ -1229,6 +1296,8 @@ Sv_H_vsstage_cg_cp_vsstatus_mxr_smxr1_vsmxr1_sum1_u1_exec_str: .string "\"test: 
 Sv_H_vsstage_cg_cp_vsstatus_mxr_smxr0_vsmxr1_sum1_u1_store_str: .string "\"test: 82; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: smxr0_vsmxr1_sum1_u1_store\""
 Sv_H_vsstage_cg_cp_vsstatus_mxr_smxr0_vsmxr1_sum1_u1_load_str: .string "\"test: 83; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: smxr0_vsmxr1_sum1_u1_load\""
 Sv_H_vsstage_cg_cp_vsstatus_mxr_smxr0_vsmxr1_sum1_u1_exec_str: .string "\"test: 84; cg: Sv_H_vsstage_cg; cp: cp_vsstatus_mxr; bin: smxr0_vsmxr1_sum1_u1_exec\""
+Sv_H_vsstage_cg_cp_vsatp_hs_sum_ssum1_vssum0_u1_store_str: .string "\"test: 85; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hs_sum; bin: ssum1_vssum0_u1_store\""
+Sv_H_vsstage_cg_cp_vsatp_hs_sum_ssum1_vssum0_u1_load_str: .string "\"test: 86; cg: Sv_H_vsstage_cg; cp: cp_vsatp_hs_sum; bin: ssum1_vssum0_u1_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

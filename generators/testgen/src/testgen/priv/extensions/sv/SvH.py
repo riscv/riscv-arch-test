@@ -365,41 +365,47 @@ def g_ad_accesses(
 
 
 def _t_vs_perm(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode, mode: str) -> None:
-    """VS-stage leaf permissions with vsstatus.SUM and vsstatus.MXR in VS-mode or VU-mode."""
+    """VS-stage leaf permissions with vsstatus.SUM and MXR and the HS-level SUM and MXR in VS-mode or VU-mode."""
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_perm_{mode.lower()}",
-        "cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr",
+        "cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr" + (", cp_vsatp_hs_sum" if mode == "VS" else ""),
         f"In {mode}-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with U = 0, 1 and each\n"
-        "legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR and sstatus.MXR = 0, 1",
+        "legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR and sstatus.MXR = 0, 1"
+        + (",\nand store and load on a U = 1 leaf with vsstatus.SUM = 0 and sstatus.SUM = 1" if mode == "VS" else ""),
         stages=(vs,),
     )
     va = vs.data_va
     reg = test_data.int_regs.get_register()
     code = guest_chunk_setup(test_data, None, vs, mode)
-    cases: list[tuple[str, PteFlags, int, int, int]] = []
+    # (name, leaf, coverpoint, vsstatus.SUM, vsstatus.MXR, sstatus.SUM, sstatus.MXR, accesses)
+    cases: list[tuple[str, PteFlags, str, int, int, int, int, Sequence[str]]] = []
     for user in (False, True):
-        cases.extend(
-            (f"u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 0, 0, 0)
-            for r, w, x, desc in PAGE_PERMS
-        )
+        for r, w, x, desc in PAGE_PERMS:
+            flags = PteFlags(user=user, read=r, write=w, execute=x)
+            cases.append((f"u{int(user)}_{desc}", flags, "cp_vsatp_perm", 0, 0, 0, 0, GUEST_OPS))
     # SUM = 1 lets VS-mode load and store, but not fetch, on user pages; it does not affect VU-mode
     user_perms = PAGE_PERMS if mode == "VS" else PAGE_PERMS[:1]
     for user, (r, w, x, desc) in ((False, PAGE_PERMS[0]), *((True, perm) for perm in user_perms)):
-        cases.append((f"sum_u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 1, 0, 0))
-    # The HS-level MXR (sstatus.MXR) also makes VS-stage execute-only pages readable.  The last case of each group
-    # writes sstatus.MXR = 0 again.
+        flags = PteFlags(user=user, read=r, write=w, execute=x)
+        cases.append((f"sum_u{int(user)}_{desc}", flags, "cp_vsatp_sum", 1, 0, 0, 0, GUEST_OPS))
+    # The HS-level MXR (sstatus.MXR) also makes VS-stage execute-only pages readable
     for user in (False, True):
         for sum_ in (0, 1):
             for s_mxr, vs_mxr in ((1, 0), (1, 1), (0, 1)):
                 name = f"smxr{s_mxr}_vsmxr{vs_mxr}_sum{sum_}_u{int(user)}"
-                cases.append((name, perm_flags("x", user), sum_, vs_mxr, s_mxr))
-    for name, flags, sum_, mxr, s_mxr in cases:
-        coverpoint = "cp_vsstatus_mxr" if mxr or s_mxr else "cp_vsatp_sum" if sum_ else "cp_vsatp_perm"
-        setup = [*map_test_page(test_data, None, vs, vs_flags=flags), *status_bits("vsstatus", reg, sum_=sum_, mxr=mxr)]
-        if coverpoint == "cp_vsstatus_mxr":
-            setup.extend(status_bits("sstatus", reg, mxr=s_mxr))
-        code.extend(guest_access(test_data, VS_CG, coverpoint, name, mode, va, setup=setup))
+                cases.append((name, perm_flags("x", user), "cp_vsstatus_mxr", sum_, vs_mxr, 0, s_mxr, GUEST_OPS))
+    # The HS-level SUM does not apply at V=1, where vsstatus substitutes for sstatus, so VS-mode still cannot load
+    # or store on a user page
+    if mode == "VS":
+        cases.append(("ssum1_vssum0_u1", PteFlags(user=True), "cp_vsatp_hs_sum", 0, 0, 1, 0, ("store", "load")))
+    for name, flags, coverpoint, vs_sum, vs_mxr, s_sum, s_mxr, ops in cases:
+        setup = [
+            *map_test_page(test_data, None, vs, vs_flags=flags),
+            *status_bits("vsstatus", reg, sum_=vs_sum, mxr=vs_mxr),
+            *status_bits("sstatus", reg, sum_=s_sum, mxr=s_mxr),
+        ]
+        code.extend(guest_access(test_data, VS_CG, coverpoint, name, mode, va, setup=setup, ops=ops))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())

@@ -23,6 +23,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_trigger_vsti_sstc,
     generate_cp_wfi,
     generate_cp_wfi_timeout,
+    generate_cp_wfi_vsti,
     guard_symbol,
     hideleg_vs_target,
     int_coverpoint,
@@ -297,6 +298,7 @@ def make_interrupts_sm_m(test_data: TestData) -> list[TestChunk]:
     """Interrupts_Sm tests that run in M-mode."""
     generators = _COMMON_GENERATORS + [
         generate_cp_wfi,
+        generate_cp_wfi_vsti,
         _generate_cp_priority_mideleg,
         _generate_cp_write_stip_sstc,
         _generate_cp_mip_seip,

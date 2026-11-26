@@ -168,6 +168,24 @@ coverpoints:
     rules:
       - hstatus_vtw_op
   - name: |-
+      cp_wfi_vsti
+      cp_wfi_vsti_vs
+    goal: WFI wakes for a VS-level interrupt, whether or not hideleg delegates it
+    description: |-
+      If SSTC_SUPPORTED: menvcfg.STCE = henvcfg.STCE = 1, mstatus.TW = 0, hstatus.VTW = 0, sie = 0, hie.VSTIE = 1, hideleg.VSTI = {0/1}
+      In HS-mode with sstatus.SIE = {0/1}, or in VS-mode with vsstatus.SIE = {0/1}:
+      RVTEST_SET_VSSTC_INT_SOON_S
+      do {
+        WFI instruction
+      } until VSTI has been taken, or is pending where it is not taken
+      RVTEST_CLR_VSSTC_INT_S
+    expectation: |-
+      WFI wakes in every case.  In HS-mode, VSTI is taken (cause 6) only when hideleg.VSTI = 0 and sstatus.SIE = 1.
+      In VS-mode, VSTI is taken by HS-mode (cause 6) when hideleg.VSTI = 0, and by VS-mode (cause 5) when hideleg.VSTI = 1 and vsstatus.SIE = 1.
+    bins: 2 priv * 2 hideleg * 2 SIE
+    rules:
+      - wfi_unaffected_conditions
+  - name: |-
       cp_wfi_timeout_vs
       cp_wfi_timeout_vs_vtw_one
     goal: WFI in VS-mode follows mstatus.TW and hstatus.VTW

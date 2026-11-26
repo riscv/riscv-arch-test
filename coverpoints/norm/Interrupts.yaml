@@ -790,12 +790,14 @@ normative_rule_definitions:
   # MTIE) (i.e., implementations should avoid resuming the hart if the interrupt is
   # pending but not locally enabled).
   - name: wfi_unaffected_conditions
-    # Covers mstatus.MIE = 0/1 with mideleg = 0, and S-mode WFI with sstatus.SIE = 0 woken by a
-    # delegated supervisor interrupt. The "should" on local enables cannot be checked because WFI
-    # may resume for any reason
+    # Covers mstatus.MIE = 0/1 with mideleg = 0, S-mode WFI with sstatus.SIE = 0 woken by a
+    # delegated supervisor interrupt, and HS-, VS- and M-mode WFI woken by a VS-level interrupt with
+    # hideleg = 0/1. The "should" on local enables cannot be checked because WFI may resume for any
+    # reason
     coverpoint:
       [
-        "Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}",
+        "Interrupts_Sm_cg/{cp_wfi_m, cp_wfi, cp_wfi_vsti_m}",
+        "Interrupts_cg/{cp_wfi_vsti, cp_wfi_vsti_vs}",
         "S_Zicntr_cg/{cp_instret_wfi_pending, cp_instret_wfi_wake}",
       ]
 

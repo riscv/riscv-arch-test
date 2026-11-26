@@ -186,6 +186,19 @@ coverpoints:
     bins: 2 MIE
     rules:
       - hstatus_vtw_op
+  - name: cp_wfi_vsti_m
+    goal: M-mode WFI wakes for a VS-level interrupt, which M-mode never takes
+    description: |-
+      If SSTC_SUPPORTED and H: mideleg = 0, menvcfg.STCE = henvcfg.STCE = 1, mie = 0 except hie.VSTIE = 1, hideleg.VSTI = {0/1}, mstatus.MIE = {0/1}
+      RVTEST_SET_VSSTC_INT_SOON_M
+      do {
+        WFI instruction
+      } until mip.VSTIP = 1
+      RVTEST_CLR_VSSTC_INT_M
+    expectation: WFI wakes.  M-mode does not take VSTI, whose mideleg bit is read-only one.
+    bins: 2 hideleg * 2 MIE
+    rules:
+      - wfi_unaffected_conditions
   - name: |-
       cp_wfi_timeout_vs
       cp_wfi_timeout_vs_vtw_one

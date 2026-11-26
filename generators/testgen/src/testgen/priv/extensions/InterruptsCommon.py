@@ -504,6 +504,76 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
         tc.code.append("#endif // !S_SUPPORTED && UDB_WFI_U_MODE")
 
 
+def generate_cp_wfi_vsti(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
+    """WFI wakes for a VS-level timer interrupt that hie.VSTIE enables, whether or not hideleg delegates it and
+    whatever the global enables are.
+
+    VSTI comes from vstimecmp (Sstc), armed by the boot mode.  HS-mode waits with sstatus.SIE = 0/1 and takes an
+    undelegated VSTI when SIE = 1.  VS-mode waits with vsstatus.SIE = 0/1 and takes VSTI unless it is delegated and
+    vsstatus.SIE = 0.  M-mode waits with mstatus.MIE = 0/1 and never takes VSTI, whose mideleg bit is read-only one.
+    A case that does not take VSTI leaves the wait on its pending bit: hip.VSTIP in HS-mode, vsip.STIP in VS-mode
+    and mip.VSTIP in M-mode.  mstatus.TW = hstatus.VTW = 0, so WFI never traps.
+    """
+
+    ######################################
+    coverpoint = {"S": "cp_wfi_vsti", "VS": "cp_wfi_vsti_vs", "M": "cp_wfi_vsti_m"}[priv]
+    ######################################
+    boot = suite.boot
+    # The global enable of the waiting mode, written from the boot mode
+    status = {"csr": "vsstatus", "mask": 0x22, "field": "SIE"} if priv == "VS" else suite.status
+    pending = {"S": ("hip", 0x40), "VS": ("sip", 0x20), "M": ("mip", 0x40)}[priv]
+    tc = test_data.new_test_chunk(test_chunks, f"wfi_{priv}")
+    tc.section_header = comment_banner(
+        coverpoint,
+        f"WFI in {priv} mode until a VS-level timer interrupt with hie.VSTIE = 1, hideleg.VSTI = 0/1 and"
+        f" {status['csr']}.{status['field']} = 0/1",
+    )
+    addr_reg, tmp_reg = test_data.int_regs.get_registers(2)
+    tc.code += [
+        "#ifdef H_SUPPORTED",
+        "#ifdef SSTC_SUPPORTED",
+        *suite.deleg,
+        f"csrw {suite.ie}, zero # only hie.VSTIE is set below",
+        *write_stce(test_data, True, boot),
+        *write_stce(test_data, True, boot, henvcfg=True),
+        f"LI(x{tmp_reg}, 0x200000)",
+        tsbi_call_or_direct(f"csrc mstatus, x{tmp_reg} # mstatus.TW = 0", boot),
+        *(_write_vtw(tmp_reg, False, boot) if priv == "VS" else []),
+        # vstimecmp has no reset value; all 1s keeps VSTIP clear until a case arms it
+        f"RVTEST_CLR_VSSTC_INT_{boot}",
+    ]
+    for deleg in (0, 1):
+        for enable in (0, 1):
+            taken = {"S": not deleg and enable, "VS": not deleg or enable, "M": False}[priv]
+            tc.code += [
+                f"LI(x{tmp_reg}, {'MIP_VSTIP' if deleg else 0})",
+                f"csrw hideleg, x{tmp_reg} # hideleg.VSTI = {deleg}",
+                f"LI(x{tmp_reg}, {status['mask']:#x})",
+                f"{'csrs' if enable else 'csrc'} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
+                f"LI(x{tmp_reg}, MIP_VSTIP)",
+                f"csrw hie, x{tmp_reg} # hie.VSTIE = 1",
+                test_data.add_testcase(
+                    f"priv_{priv}_hideleg_{deleg}_{status['field']}_{enable}", coverpoint, suite.covergroup
+                ),
+                # Arm the loop before the timer: the boot mode arms vstimecmp, and VSTI may be taken before a
+                # VS-mode wait starts, which then releases the loop
+                *wait_loop_arm(test_data, addr_reg, tmp_reg),
+                f"RVTEST_SET_VSSTC_INT_SOON_{boot} # VSTI after RVMODEL_TIMER_INT_SOON_DELAY",
+                *mode_enter(suite, priv),
+                # WFI may return before the timer fires (it may even be a no-op), so repeat it until VSTI has
+                # arrived. Where VSTI is not taken, WFI still wakes once it is pending.
+                *wait_loop(test_data, tmp_reg, ["wfi"], None if taken else pending),
+                *mode_exit(suite, priv),
+                f"RVTEST_CLR_VSSTC_INT_{boot}",
+                "csrw hie, zero",
+                f"LI(x{tmp_reg}, {status['mask']:#x})",
+                f"csrc {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 0",
+                "",
+            ]
+    tc.code += ["csrw hideleg, zero", "#endif // SSTC_SUPPORTED", "#endif // H_SUPPORTED", ""]
+    test_data.int_regs.return_registers([addr_reg, tmp_reg])
+
+
 def generate_cp_trigger_vsti_sstc(
     test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
 ) -> None:

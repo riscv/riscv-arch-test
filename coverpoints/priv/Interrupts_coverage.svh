@@ -77,6 +77,9 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         hstatus_vtw_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "vtw")[0] {
             bins one = {1};
         }
+        vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1] {
+            // autofill 0/1
+        }
     `endif
 
     // Privilege modes below M this config implements
@@ -626,6 +629,10 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         cp_wfi:                 cross priv_mode_s, sstatus_sie, sie_stie_one, mstatus_tw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
         `ifdef H_SUPPORTED
             cp_wfi_vs:          cross priv_mode_vs, sstatus_sie, sie_stie_one, mstatus_tw_zero, hstatus_vtw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+            // WFI also wakes for a VS-level timer interrupt (vstimecmp) that hie.VSTIE enables, whether or not
+            // hideleg delegates it and whatever the global enable of the waiting mode is
+            cp_wfi_vsti:        cross priv_mode_hs, sstatus_sie, hideleg_vstip, hie_vstie_one, mstatus_tw_zero, menvcfg_stce_one, henvcfg_stce_one, wfi;
+            cp_wfi_vsti_vs:     cross priv_mode_vs, vsstatus_sie, hideleg_vstip, hie_vstie_one, mstatus_tw_zero, hstatus_vtw_zero, menvcfg_stce_one, henvcfg_stce_one, wfi;
         `endif
     `endif
 
@@ -1374,6 +1381,11 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
     `ifdef H_SUPPORTED
         `ifdef UDB_MTI_INTR_IMPL
             cp_wfi_vs:          cross priv_mode_vs, mstatus_mie, mie_mtie_one, mstatus_tw_zero, hstatus_vtw_zero, wfi, mideleg_zeros;
+        `endif
+        // M-mode WFI wakes for a VS-level timer interrupt (vstimecmp) that hie.VSTIE enables, though M-mode
+        // never takes it, whether or not hideleg delegates it and whatever mstatus.MIE is
+        `ifdef SSTC_SUPPORTED
+            cp_wfi_vsti_m:      cross priv_mode_m, mstatus_mie, hideleg_vstip, hie_vstie_one, menvcfg_stce_one, henvcfg_stce_one, wfi;
         `endif
     `endif
 

@@ -1093,6 +1093,7 @@ normative_rule_definitions:
         "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_mprv_sum",
         "Sv_HSm_mprv_cg/cp_mprv_mxr",
+        "Sv_HSm_mprv_cg/{cp_vsatp_mprv_sum,cp_vsatp_mprv_mxr}",
       ]
 
   # MPRV does not affect HLV and HSV

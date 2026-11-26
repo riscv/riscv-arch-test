@@ -2565,6 +2565,15 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
         bins vs = {3'b101};
         bins vu = {3'b100};
     }
+    `ifdef UDB_MXLEN_64
+        mpp_mpv_vs : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+    `else
+        mpp_mpv_vs : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+    `endif
+        bins vs = {3'b101};
+    }
     vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         bins paged = {[1:15]};
     }
@@ -2595,6 +2604,9 @@ covergroup Sv_HSm_mprv_cg with function sample(ins_t ins);
     cp_mprv_sum           : cross priv_mode_m, load_store, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_paged, vsstatus_sum, mstatus_sum;
     // mstatus.MXR makes execute-only pages readable in both stages, vsstatus.MXR only in the VS-stage
     cp_mprv_mxr           : cross priv_mode_m, lw, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_paged, vsstatus_mxr, mstatus_mxr;
+    // The same with hgatp = Bare, where both MXR bits make execute-only VS-stage pages readable
+    cp_vsatp_mprv_sum     : cross priv_mode_m, load_store, mprv_on, mpp_mpv_vs, vsatp_paged, hgatp_bare, vsstatus_sum, mstatus_sum;
+    cp_vsatp_mprv_mxr     : cross priv_mode_m, lw, mprv_on, mpp_mpv_guest, vsatp_paged, hgatp_bare, vsstatus_mxr, mstatus_mxr;
 endgroup
 
 covergroup Sv_HSm_trap_cg with function sample(ins_t ins);

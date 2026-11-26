@@ -30,6 +30,18 @@ coverpoints:
     description: In M-mode with MPRV = 1, MPV = 1 and MPP = S and U, load through pages that are execute-only in the VS-stage, in the G-stage, or in both, with vsstatus.MXR = 0 and 1 and mstatus.MXR = 0 and 1.  VS-stage leaves have U = 1 for MPP = U.
     expectation: vsstatus.MXR makes the VS-stage execute-only page readable; mstatus.MXR makes execute-only pages of both stages readable.  A denied load raises a load page fault (VS-stage) or load guest-page fault (G-stage) in M-mode.
     bins: M x lw x MPRV = 1 x MPV/MPP {VS, VU} x vsatp paged x hgatp paged x vsstatus.MXR {0, 1} x mstatus.MXR {0, 1}
+  - name: |-
+      cp_vsatp_mprv_sum
+      cp_vsatp_mprv_mxr
+    goal: With MPRV = 1, MPV = 1 and hgatp = Bare, vsstatus.SUM applies instead of mstatus.SUM, and both MXR bits make VS-stage execute-only pages readable
+    description: |-
+      VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  In M-mode with MPRV = 1 and MPV = 1:
+      cp_vsatp_mprv_sum: with MPP = S, store and load through a VS-stage leaf with U = 1, with vsstatus.SUM = 0 and 1 and mstatus.SUM = 0 and 1.
+      cp_vsatp_mprv_mxr: with MPP = S and U, load through an execute-only VS-stage leaf (U = 1 for MPP = U), with vsstatus.MXR = 0 and 1 and mstatus.MXR = 0 and 1.
+    expectation: The accesses to the U = 1 page succeed only with vsstatus.SUM = 1; mstatus.SUM has no effect.  The load from the execute-only page succeeds when either MXR bit is 1, and otherwise raises a load page fault in M-mode.
+    bins: |-
+      cp_vsatp_mprv_sum: M x {lw, sw} x MPRV = 1 x MPV/MPP = VS x vsatp paged x hgatp Bare x vsstatus.SUM {0, 1} x mstatus.SUM {0, 1}
+      cp_vsatp_mprv_mxr: M x lw x MPRV = 1 x MPV/MPP {VS, VU} x vsatp paged x hgatp Bare x vsstatus.MXR {0, 1} x mstatus.MXR {0, 1}
   - heading: Guest traps taken in M-mode (Sv_HSm_trap_cg)
   - name: |-
       cp_guest_page_fault_m

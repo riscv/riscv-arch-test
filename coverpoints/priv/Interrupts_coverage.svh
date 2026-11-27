@@ -436,6 +436,23 @@ covergroup Interrupts_cg with function sample(ins_t ins);
                     bins min = {'0};
                 }
             `endif
+            // cp_trigger_vsti_htimedelta: {htimedelta, vstimecmp} for which VSTI is pending only because htimedelta is
+            // nonzero (time < 2^60)
+            `ifdef UDB_MXLEN_64
+                htimedelta_vstimecmp: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HTIMEDELTA),
+                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTIMECMP)} {
+                    bins pos = {128'h1000000000000000_1000000000000000};
+                    bins neg = {128'hF000000000000000_8000000000000000};
+                }
+            `else
+                htimedelta_vstimecmp: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HTIMEDELTAH),
+                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HTIMEDELTA),
+                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTIMECMPH),
+                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSTIMECMP)} {
+                    bins pos = {128'h1000000000000000_1000000000000000};
+                    bins neg = {128'hF000000000000000_8000000000000000};
+                }
+            `endif
             `ifdef UDB_MXLEN_64
                 henvcfg_stce_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "stce")[0] {
                     bins one = {1};
@@ -567,6 +584,9 @@ covergroup Interrupts_cg with function sample(ins_t ins);
             cp_trigger_vsti_sstc_vs:   cross priv_mode_vs, csrw_stimecmp_zero, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
             // The interrupt is taken on the mret into U-mode or VU-mode, except that U-mode never takes it delegated
             cp_trigger_vsti_sstc_tsbi: cross mret_to_u_vu, vstimecmp_min, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one, hideleg_vstip;
+            // A nonzero vstimecmp reached through htimedelta: HS-mode takes VSTI (pos, hideleg.VSTI = 0), or VS-mode
+            // takes STI (neg, hideleg.VSTI = 1)
+            cp_trigger_vsti_htimedelta: cross priv_mode_hs, htimedelta_vstimecmp, menvcfg_stce_one, henvcfg_stce_one, hie_vstie_one;
         `endif
     `endif
 

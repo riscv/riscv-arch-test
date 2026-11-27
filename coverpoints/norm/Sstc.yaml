@@ -211,7 +211,8 @@ normative_rule_definitions:
         htimedelta_sz_acc_op,
         htimedeltah_sz_acc_op,
       ]
-    coverpoint: ["Sstc_H_cg/cp_htimedelta"]
+    coverpoint:
+      ["Sstc_H_cg/cp_htimedelta", "Interrupts_cg/cp_trigger_vsti_htimedelta"]
 
   # vstimecmp is a 64-bit register, with vstimecmph holding the upper half on RV32
   - names: [vstimecmp_exist, vstimecmp_sz, vstimecmp_acc]

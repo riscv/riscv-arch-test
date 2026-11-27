@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from itertools import combinations
 
 from testgen.asm.csr import write_stce
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, write64_csr, write_sigupd
 from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
 from testgen.asm.wait import wait_loop, wait_loop_arm
 from testgen.data.state import TestData
@@ -609,6 +609,11 @@ def generate_cp_wfi_vsti(test_data: TestData, test_chunks: list[TestChunk], suit
     test_data.int_regs.return_registers([addr_reg, tmp_reg])
 
 
+# (name, htimedelta, vstimecmp, hideleg.VSTI) of cp_trigger_vsti_htimedelta: VSTI is pending only because
+# (time + htimedelta) mod 2^64 >= vstimecmp, which holds while time < 2^60
+_HTIMEDELTA_CASES = (("pos", 1 << 60, 1 << 60, 0), ("neg", -(1 << 60), 1 << 63, 1))
+
+
 def generate_cp_trigger_vsti_sstc(
     test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
 ) -> None:
@@ -683,6 +688,38 @@ def generate_cp_trigger_vsti_sstc(
             f"RVTEST_CLR_VSSTC_INT_{boot}",
             "",
         ]
+    if priv == boot == "S":
+        # hie.VSTIE is set once htimedelta and vstimecmp are written, so VSTI is pending only because of htimedelta
+        tc.code.append(
+            comment_banner(
+                "cp_trigger_vsti_htimedelta",
+                "With menvcfg.STCE = henvcfg.STCE = 1 and vsstatus.SIE = 1, set htimedelta = 2^60 and vstimecmp = 2^60\n"
+                "with hideleg.VSTI = 0, or htimedelta = -2^60 and vstimecmp = 2^63 with hideleg.VSTI = 1, then set\n"
+                "hie.VSTIE.  HS-mode takes VSTI (cause 6) with sstatus.SIE = 1, or VS-mode takes STI (cause 5)",
+            )
+        )
+        for name, delta, compare, deleg in _HTIMEDELTA_CASES:
+            target = "VS" if deleg else "S"
+            tc.code += [
+                f"LI(x{tmp_reg}, {'MIP_VSTIP' if deleg else 0})",
+                f"csrw hideleg, x{tmp_reg} # hideleg.VSTI = {deleg}",
+                *write64_csr("htimedelta", delta, tmp_reg),
+                *write64_csr("vstimecmp", compare, tmp_reg),
+                f"LI(x{tmp_reg}, MIP_VSTIP)",
+                f"csrw hie, x{tmp_reg} # hie.VSTIE = 1",
+                test_data.add_testcase(
+                    f"htimedelta_{name}_hideleg_{deleg}", "cp_trigger_vsti_htimedelta", suite.covergroup
+                ),
+                *(["csrsi sstatus, SSTATUS_SIE"] if target == "S" else []),
+                *mode_enter(suite, target),
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
+                *mode_exit(suite, target),
+                *(["csrci sstatus, SSTATUS_SIE"] if target == "S" else []),
+                "csrw hie, zero",
+                f"RVTEST_CLR_VSSTC_INT_{boot}",
+                "",
+            ]
+        tc.code += write64_csr("htimedelta", 0, tmp_reg)
     tc.code += [
         "csrw hideleg, zero",
         f"LI(x{tmp_reg}, SSTATUS_SIE)",

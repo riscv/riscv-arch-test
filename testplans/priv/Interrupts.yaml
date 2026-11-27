@@ -165,6 +165,20 @@ coverpoints:
       RVTEST_CLR_<type>_INT_S
     expectation: the interrupt is not taken while delegated to VS, then is taken in HS-mode at the instruction after the hideleg write (sepc checked, Priv 1.12+)
     bins: 3 int
+  - name: |-
+      cp_vs_enable_immediate
+      cp_vs_enable_immediate_sip
+    goal: VS-mode's own write or sret enables a pending delegated VS-level interrupt
+    description: |-
+      if H_SUPPORTED, VS-mode only
+      For <type> = {VSTI, VSEI, VSSI}, in HS-mode write hideleg = <type> only, then
+        hie = <type>, vsstatus.SIE = 0, RVTEST_SET_<type>_INT_S; in VS-mode write sstatus.SIE = 1
+        hie = 0, vsstatus.SIE = 1, RVTEST_SET_<type>_INT_S; in VS-mode write sie = <type>
+        hie = <type>, vsstatus.SIE = 0, RVTEST_SET_<type>_INT_S; in VS-mode write sstatus.SPP = S, SPIE = 1, sepc = next instruction, sret
+      cp_vs_enable_immediate_sip: hideleg = hie = VSSI, vsstatus.SIE = 1; in VS-mode write sip.SSIP = 1
+      RVTEST_CLR_<type>_INT_S in HS-mode
+    expectation: VS-mode takes the interrupt at the instruction after the enabling write or sret (vsepc checked, Priv 1.12+)
+    bins: 3 int * 3 enables + 1 sip
   - name: cp_wfi
     goal: WFI waits until timer interrupt
     description: |-

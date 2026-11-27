@@ -27,9 +27,11 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_xret_same_mode,
     guard_symbol,
     hideleg_vs_target,
+    int_bit,
     int_coverpoint,
     int_macro,
     int_xepc_checked,
+    int_xepc_label,
     label_coverpoint,
     mode_enter,
     mode_exit,
@@ -149,6 +151,80 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
     test_data.int_regs.return_register(tmp_reg)
 
 
+def _generate_cp_vs_enable_immediate(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
+    """VS-mode's own write or sret enables a pending VS-level interrupt that hideleg delegates to VS-mode.
+
+    HS-mode raises the interrupt through hvip and enters VS-mode, where vsstatus.SIE = 0 or vsie masks it.
+    VS-mode then sets sstatus.SIE or sie (vsstatus and vsie), or sets sie and then runs an sret with
+    SPIE = 1, or sets sip.SSIP (hvip.VSSIP) with VSSI enabled. The interrupt is taken before the next instruction
+    (norm:intr_mip_mie_xret_csrwr), so vsepc is checked.
+    """
+
+    ######################################
+    coverpoint = "cp_vs_enable_immediate"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, f"enable_immediate_{priv}")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "In VS-mode, enable a pending VS-level interrupt that hideleg delegates by setting sstatus.SIE or sie,"
+        " by an sret with SPIE = 1, or by setting sip.SSIP",
+    )
+    tmp_reg = test_data.int_regs.get_register()
+
+    # How VS-mode enables it: from vsstatus.SIE = 0 (sstatus, sret), from vsie = 0 (sie), or by raising it (sip)
+    cases = [(how, int_type) for how in ["sstatus", "sie", "sret"] for int_type in vs_ints]
+    for how, int_type in [*cases, ("sip", "VSSI")]:
+        macro = int_macro[int_type]
+        bit = int_bit[int_type]
+        vs_bit = 1 << (bit - 1)  # its position in vsie and vsip
+        setup = [
+            f"LI(x{tmp_reg}, {1 << bit:#x})",
+            f"csrw hideleg, x{tmp_reg} # hideleg delegates {int_type} to VS-mode",
+            f"LI(x{tmp_reg}, {0 if how in ('sie', 'sret') else 1 << bit:#x})",
+            f"csrw hie, x{tmp_reg} # hie = {'0' if how in ('sie', 'sret') else f'{int_type}E only'}",
+            f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
+            f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0",
+        ]
+        if how in ("sie", "sip"):
+            setup += [f"LI(x{tmp_reg}, SSTATUS_SIE)", f"csrs vsstatus, x{tmp_reg} # vsstatus.SIE = 1"]
+        if how == "sret":
+            setup += [f"LI(x{tmp_reg}, 0x120) # SPP, SPIE", f"csrs vsstatus, x{tmp_reg} # vsstatus.SPP = S, SPIE = 1"]
+        if how != "sip":
+            setup += [f"RVTEST_SET_{macro}_INT_S # pending, masked in VS-mode"]
+        label = test_data.add_testcase(
+            f"priv_{priv}_{how}_{int_type}", f"{coverpoint}_sip" if how == "sip" else coverpoint, suite.covergroup
+        )
+        enable_vsie = [f"LI(x{tmp_reg}, {vs_bit:#x})", f"csrs sie, x{tmp_reg} # vsie enables {int_type}"]
+        enable = {
+            "sstatus": [f"LI(x{tmp_reg}, SSTATUS_SIE)", f"csrs sstatus, x{tmp_reg} # vsstatus.SIE = 1"],
+            "sie": enable_vsie,
+            "sret": [
+                f"LA(x{tmp_reg}, {int_xepc_label(test_data)})",
+                f"csrw sepc, x{tmp_reg} # sret to the next instruction",
+                "sret # vsstatus.SIE = SPIE = 1",
+            ],
+            "sip": [f"LI(x{tmp_reg}, {vs_bit:#x})", f"csrs sip, x{tmp_reg} # vsip.SSIP = hvip.VSSIP = 1"],
+        }[how]
+        case = [
+            *setup,
+            label,
+            *mode_enter(suite, priv),
+            # With vsstatus.SIE = 0, the vsie write leaves it masked for the sret to enable
+            *(enable_vsie if how == "sret" else []),
+            *int_xepc_checked(test_data, tmp_reg, enable),
+            *mode_exit(suite, priv),
+            f"RVTEST_CLR_{macro}_INT_S # Clear the interrupt",
+            "csrw hideleg, zero # hideleg = 0",
+            f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
+            f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0",
+        ]
+        tc.code += [*gated(case, unless_required(test_data, guard_symbol(int_type))), ""]
+
+    test_data.int_regs.return_register(tmp_reg)
+
+
 _COMMON_GENERATORS = [
     _generate_cp_trigger_s,
     generate_cp_enable,
@@ -202,7 +278,7 @@ def make_interrupts_u_vsti_sstc(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator("Interrupts", required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
 def make_interrupts_vs(test_data: TestData) -> list[TestChunk]:
     """Interrupts tests that run in VS-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, _generate_cp_vs_enable_immediate]
     return emit_interrupts(test_data, SUITE, "VS", generators)
 
 

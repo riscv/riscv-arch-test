@@ -153,10 +153,10 @@ normative_rule_definitions:
   # conditions expressly depend (including sip, sie and sstatus).
   - name: sie_sip_strap_time_constraint
     # xEPC is checked to be the instruction after the write to sie, sip or sstatus, or the SRET, that
-    # enables the pending interrupt
+    # enables the pending interrupt, in HS-mode and in VS-mode (cp_vs_enable_immediate{,_sip})
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_enable_one_tsbi, cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_trigger_reg_sip_ssip, cp_xret_same_mode}",
+        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_enable_one_tsbi, cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_trigger_reg_sip_ssip, cp_xret_same_mode, cp_vs_enable_immediate, cp_vs_enable_immediate_sip}",
       ]
 
   # Interrupts to S-mode take priority over any interrupts to lower privilege modes.

@@ -48,6 +48,7 @@ exclude_extensions:
   - Interrupts_Sm_trigger_VU
   - Interrupts_Sm_trigger_vsti_sstc
   - Interrupts_enable_VS
+  - Interrupts_enable_immediate_VS
   - Interrupts_enable_VU
   - Interrupts_priority_sie_VS
   - Interrupts_priority_sie_VU

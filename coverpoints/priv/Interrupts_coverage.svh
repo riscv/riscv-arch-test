@@ -639,6 +639,40 @@ covergroup Interrupts_cg with function sample(ins_t ins);
     `ifdef H_SUPPORTED
         cp_undeleg_hideleg:     cross priv_mode_hs, sstatus_sie_one, hie_ones, hideleg_undelegates_pending;
     `endif
+    // cp_vs_enable_immediate: VS-mode's own instruction enables a pending VS-level interrupt that hideleg delegates.
+    // The trace logs VS-mode CSR accesses under the S-level numbers, so vsstatus and mie hold HS-mode's writes.
+    `ifdef H_SUPPORTED
+        `define VS_SIE_BEFORE get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[1]
+        `define VS_PENDING (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MIP)[15:0] & \
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HIDELEG)[15:0] & 16'h0444)
+        vs_enable_insn: coverpoint ins.current.insn {
+            wildcard bins csrs_sstatus_sie = {CSRRS} iff (ins.current.insn[31:20] == CSR_SSTATUS && ins.current.rs1_val[1] &&
+                                                          !`VS_SIE_BEFORE);
+            // The vsie bit written, one below its hie bit, enables the pending delegated interrupt
+            wildcard bins csrs_sie = {CSRRS} iff (ins.current.insn[31:20] == CSR_SIE && `VS_SIE_BEFORE &&
+                                                  ((ins.current.rs1_val[15:0] << 1) & ~get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE)[15:0] &
+                                                   `VS_PENDING) != 0);
+            // sret to the next instruction in VS-mode (SPP = S) with SIE = 0, SPIE = 1 and the interrupt enabled in vsie.
+            // Trap handlers' srets return elsewhere.
+            bins sret_spie = {SRET} iff (!`VS_SIE_BEFORE && get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[5] &&
+                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS)[8] &&
+                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SEPC) == ins.current.pc_rdata + 4 &&
+                                         ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SIE)[15:0] << 1) & `VS_PENDING) != 0);
+        }
+        vsstatus_sie_one: coverpoint `VS_SIE_BEFORE {
+            bins one = {1};
+        }
+        `undef VS_SIE_BEFORE
+        `undef VS_PENDING
+        // hideleg delegates VSSI and hie.VSSIE (vsie.SSIE) is set
+        vssi_delegated_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIDELEG)[2] &
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE)[2]) {
+            bins one = {1};
+        }
+        cp_vs_enable_immediate:     cross priv_mode_vs, vs_enable_insn, sip_walking_vs;
+        // VS-mode sets sip.SSIP (hvip.VSSIP) with VSSI delegated and enabled and vsstatus.SIE = 1: a self-IPI
+        cp_vs_enable_immediate_sip: cross priv_mode_vs, csrrs_csrrsi, csr_sip, rs1_ssip, vsstatus_sie_one, vssi_delegated_enabled;
+    `endif
 
     // WFI wakes on the Sstc supervisor timer whether or not SIE is set. Not tested in U-mode: with
     // S-mode implemented, U-mode WFI traps after a bounded time (cp_wfi_timeout). VS-mode WFI waits

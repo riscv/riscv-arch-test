@@ -164,11 +164,12 @@ normative_rule_definitions:
     # These tests check that xEPC is the instruction after the CSR write (mie, sie, hie, mstatus, sstatus,
     # mideleg, hideleg, mip, sip or hvip), the T-SBI xRET, or the xRET to the same mode that enables the pending
     # interrupt, or after the mip, sip or hvip write that raises an enabled LCOFI, STI or VS-level interrupt.
+    # cp_vs_enable_immediate{,_sip} check VS-mode's own sstatus, sie or sip write, or sret.
     # Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_trigger_vs, cp_trigger_tsbi_vs} check it too, but their
     # plan row already lists so many rules that one more makes its cell taller than a CTP page.
     coverpoint:
       [
-        "Interrupts_cg/{cp_enable_one, cp_enable_one_tsbi, cp_trigger, cp_trigger_tsbi, cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_priority_sie_split_tsbi, cp_priority_sip_split_tsbi, cp_trigger_reg_sip_ssip, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_trigger_vs, cp_trigger_tsbi_vs, cp_xret_same_mode, cp_undeleg_hideleg}",
+        "Interrupts_cg/{cp_enable_one, cp_enable_one_tsbi, cp_trigger, cp_trigger_tsbi, cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_priority_sie_split_tsbi, cp_priority_sip_split_tsbi, cp_trigger_reg_sip_ssip, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_trigger_vs, cp_trigger_tsbi_vs, cp_xret_same_mode, cp_undeleg_hideleg, cp_vs_enable_immediate, cp_vs_enable_immediate_sip}",
         "Interrupts_Sm_cg/{cp_enable_one, cp_enable_one_tsbi, cp_priority_mip, cp_priority_mie, cp_priority_mideleg, cp_priority_mip_tsbi, cp_priority_mie_tsbi, cp_priority_mideleg_tsbi, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_trigger_reg_sip_ssip, cp_xret_same_mode, cp_undeleg_mideleg}",
       ]
 
@@ -507,7 +508,7 @@ normative_rule_definitions:
   - name: hideleg_trans
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger_tsbi_vs, cp_priority_sip_tsbi}",
+        "Interrupts_cg/{cp_trigger_tsbi_vs, cp_priority_sip_tsbi, cp_vs_enable_immediate, cp_vs_enable_immediate_sip}",
         "Interrupts_Sm_cg/cp_trigger_tsbi_vs",
       ]
 

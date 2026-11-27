@@ -1,0 +1,1 @@
+run-neorv32.sh --elf

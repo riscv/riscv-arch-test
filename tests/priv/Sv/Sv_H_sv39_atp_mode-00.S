@@ -34,7 +34,8 @@ RVTEST_BEGIN
 // cp_vsatp_mode_field, cp_hgatp_mode_field, cp_satp_mode_field
 //   Starting from MODE = Bare and Sv39 (Sv39x4, where supported), write MODE = 0-15 to vsatp and hgatp in
 //   HS-mode, where an unsupported MODE leaves a supported one (the write is ignored or WARL), and to satp in
-//   VS-mode, where an unsupported MODE is ignored.  The other fields are zero, or the root table in VS-mode
+//   VS-mode, where an unsupported MODE is ignored.  Non-Bare vsatp values carry a page table and ASID; the
+//   other fields are zero, or the root table in VS-mode
 /////////////////////////////////
 
   csrr x14, vsatp
@@ -47,7 +48,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0:
   RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode0_str)
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x1000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x1000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode1:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -73,7 +77,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode1:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x2000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x2000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode2:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -99,7 +106,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode2:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x3000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x3000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode3:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -125,7 +135,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode3:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x4000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x4000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode4:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -151,7 +164,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode4:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x5000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x5000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode5:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -177,7 +193,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode5:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x6000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x6000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode6:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -203,7 +222,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode6:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x7000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x7000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -229,7 +251,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode7:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8:
   csrw vsatp, x6
 #ifdef UDB_SV39_VSMODE_TRANSLATION
@@ -260,7 +285,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode8:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0x9000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x9000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9:
   csrw vsatp, x6
 #ifdef UDB_SV48_VSMODE_TRANSLATION
@@ -291,7 +319,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode9:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0xa000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xa000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10:
   csrw vsatp, x6
 #ifdef UDB_SV57_VSMODE_TRANSLATION
@@ -322,7 +353,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode10:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0xb000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xb000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode11:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -348,7 +382,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode11:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0xc000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xc000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode12:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -374,7 +411,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode12:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0xd000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xd000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode13:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -400,7 +440,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode13:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0xe000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xe000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode14:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -426,7 +469,10 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode14:
 #endif
   LI(x6, 0x0)
   csrw vsatp, x6
-  LI(x6, 0xf000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xf000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -451,16 +497,25 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15, Sv_H_csr_cg_cp_vsatp_mode_field_start0_mode15_str)
 #endif
 #if defined(UDB_SV39_VSMODE_TRANSLATION)
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
   LI(x6, 0x0)
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0:
   csrw vsatp, x6
   # Read vsatp into x8 and check against expected.
   RVTEST_SIGUPD_CSR_READ(vsatp, x8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode0_str)
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x1000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x1000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode1:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -484,9 +539,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode1:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode1, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode1_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x2000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x2000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -510,9 +571,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode2_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x3000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x3000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -536,9 +603,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode3_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x4000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x4000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -562,9 +635,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode4_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x5000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x5000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -588,9 +667,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode5_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x6000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x6000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -614,9 +699,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode6_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x7000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x7000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -640,9 +731,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode7_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8:
   csrw vsatp, x6
 #ifdef UDB_SV39_VSMODE_TRANSLATION
@@ -671,9 +768,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode8_str)
 #endif
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0x9000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x9000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9:
   csrw vsatp, x6
 #ifdef UDB_SV48_VSMODE_TRANSLATION
@@ -702,9 +805,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode9_str)
 #endif
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0xa000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xa000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10:
   csrw vsatp, x6
 #ifdef UDB_SV57_VSMODE_TRANSLATION
@@ -733,9 +842,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10:
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode10_str)
 #endif
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0xb000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xb000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode11:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -759,9 +874,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode11:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode11, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode11_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0xc000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xc000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -785,9 +906,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode12_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0xd000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xd000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -811,9 +938,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode13_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0xe000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xe000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
@@ -837,9 +970,15 @@ Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14, Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode14_str)
 #endif
-  LI(x6, 0x8000000000000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0x8000000000000000 | (((1 << UDB_ASID_WIDTH) >> 1) << 44)))
+  or x6, x6, x8
   csrw vsatp, x6
-  LI(x6, 0xf000000000000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
+  LI(x8, (0xf000000000000000 | ((((1 << UDB_ASID_WIDTH) - 1) >> 1) << 44)))
+  or x6, x6, x8
 Sv_H_csr_cg_cp_vsatp_mode_field_start8_mode15:
   csrw vsatp, x6
 #ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO

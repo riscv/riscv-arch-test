@@ -1522,9 +1522,22 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         "cp_vsatp_mode_field, cp_hgatp_mode_field, cp_satp_mode_field",
         "Starting from MODE = Bare and Sv39 (Sv39x4, where supported), write MODE = 0-15 to vsatp and hgatp in\n"
         "HS-mode, where an unsupported MODE leaves a supported one (the write is ignored or WARL), and to satp in\n"
-        "VS-mode, where an unsupported MODE is ignored.  The other fields are zero, or the root table in VS-mode",
+        "VS-mode, where an unsupported MODE is ignored.  Non-Bare vsatp values carry a page table and ASID; the\n"
+        "other fields are zero, or the root table in VS-mode",
     )
     save, val, check = test_data.int_regs.get_registers(3)
+
+    def atp_value(csr: str, mode: int, table: str, asid: str) -> list[str]:
+        """Load x{val} with MODE = ``mode``.  A non-Bare vsatp value also gets PPN = ``table`` and ASID = ``asid``."""
+        if csr == "hgatp" or mode == 0:
+            return [f"LI(x{val}, {mode << 60:#x})"]
+        return [
+            f"LA(x{val}, {table})",
+            f"srli x{val}, x{val}, 12",
+            f"LI(x{check}, ({mode << 60:#x} | (({asid}) << 44)))",
+            f"or x{val}, x{val}, x{check}",
+        ]
+
     code = []
     for csr, stage, coverpoint in (("vsatp", 0, "cp_vsatp_mode_field"), ("hgatp", 1, "cp_hgatp_mode_field")):
         gates = [pair[stage] for pair in ATP_MODES.values()]
@@ -1532,11 +1545,13 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         for start in (0, 8):
             start_code = []
             for mode in range(16):
+                # The start and written vsatp values have different page tables and disjoint implemented ASID bits,
+                # so an ignored write is told apart from one that writes or clears those fields
                 start_code.extend(
                     [
-                        f"LI(x{val}, {start << 60:#x})",
+                        *atp_value(csr, start, "rvtest_Vroot_pg_tbl", "(1 << UDB_ASID_WIDTH) >> 1"),
                         f"csrw {csr}, x{val}",
-                        f"LI(x{val}, {mode << 60:#x})",
+                        *atp_value(csr, mode, "rvtest_Hroot_pg_tbl", "((1 << UDB_ASID_WIDTH) - 1) >> 1"),
                         test_data.add_testcase(f"start{start}_mode{mode}", coverpoint, CSR_CG),
                         f"csrw {csr}, x{val}",
                     ]

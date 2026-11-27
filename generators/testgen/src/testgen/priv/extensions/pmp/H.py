@@ -45,6 +45,8 @@ from testgen.priv.extensions.sv.page_tables import (
     guest_table_data,
     write_pte,
 )
+from testgen.priv.extensions.sv.SvH import set_csr_bits
+from testgen.priv.extensions.sv.SvHSm import mprv_bits
 from testgen.priv.registry import add_priv_test_generator
 
 # The PMP entry each scenario programs, so that coverage can tell the scenarios apart: a page table
@@ -411,6 +413,25 @@ def _guest_scenarios(test_data: TestData, mode: str, scenarios: list[_Scenario])
     return [*lines, *zero_pmp_regs(), *guest_translation_teardown(test_data)]
 
 
+def _hlv_probes_at(test_data: TestData, name: str, coverpoint: str, gva: int, rd: int) -> list[str]:
+    """hsv.w, hlv.w and hlvx.wu at ``gva``.  Each load is preloaded with 42, which a faulting load keeps."""
+    lines = [
+        f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)",
+        test_data.add_testcase(f"{name}_hsv.w", coverpoint, covergroup(test_data)),
+        f"hsv.w x{rd}, (x{gva})",
+    ]
+    for instr in ("hlv.w", "hlvx.wu"):
+        lines.extend(
+            [
+                f"LI(x{rd}, 42)",
+                test_data.add_testcase(f"{name}_{instr}", coverpoint, covergroup(test_data)),
+                f"{instr} x{rd}, (x{gva})",
+                write_sigupd(rd, test_data),
+            ]
+        )
+    return lines
+
+
 def _hlv_scenarios(test_data: TestData, scenarios: list[_Scenario]) -> list[str]:
     """Map both test pages, then run hsv.w, hlv.w and hlvx.wu from HS-mode with hstatus.SPVP = 1 in each scenario."""
     gva_vs, gva_g = test_data.int_regs.get_registers(2)
@@ -423,27 +444,48 @@ def _hlv_scenarios(test_data: TestData, scenarios: list[_Scenario]) -> list[str]
     for scenario in scenarios:
         body = [f"// HS-mode: {scenario.description}", *_deny(list(scenario.regions)), "RVTEST_TSBI_GOTO_SMODE"]
         for mapping, gva in zip(_MAPPINGS, (gva_vs, gva_g), strict=True):
-            name = f"{scenario.name}_{mapping}"
-            body.extend(
-                [
-                    f"LI(x{rd}, RVTEST_PMP_RET_ENCODING)",
-                    test_data.add_testcase(f"{name}_hsv.w", scenario.coverpoint, covergroup(test_data)),
-                    f"hsv.w x{rd}, (x{gva})",
-                ]
-            )
-            for instr in ("hlv.w", "hlvx.wu"):
-                body.extend(
-                    [
-                        f"LI(x{rd}, 42)",
-                        test_data.add_testcase(f"{name}_{instr}", scenario.coverpoint, covergroup(test_data)),
-                        f"{instr} x{rd}, (x{gva})",
-                        write_sigupd(rd, test_data),
-                    ]
-                )
+            body.extend(_hlv_probes_at(test_data, f"{scenario.name}_{mapping}", scenario.coverpoint, gva, rd))
         body.append("RVTEST_TSBI_GOTO_MMODE")
         lines.extend(gated(body, scenario.gate))
     lines.extend([f"LI(x{rd}, HSTATUS_SPVP)", f"csrc hstatus, x{rd}", *zero_pmp_regs()])
     test_data.int_regs.return_registers([gva_vs, gva_g, rd])
+    return [*lines, *guest_translation_teardown(test_data)]
+
+
+def _m_scenarios(test_data: TestData, mode: str, scenarios: list[_Scenario]) -> list[str]:
+    """Map both test pages, then in M-mode run hsv.w, hlv.w and hlvx.wu with hstatus.SPVP, and sw and lw with
+    mstatus.MPRV = 1, MPV = 1 and MPP, selecting VS or VU (``mode``), in each scenario.
+
+    The PMP entries stay unlocked: these accesses are VS-level or VU-level and their walks S-level, so PMP checks
+    them in M-mode.  MPRV is cleared after each access, because the mret that ends a trap leaves MPRV = 1 with
+    MPP = U.
+    """
+    user = mode == "vu"
+    gva_vs, gva_g = test_data.int_regs.get_registers(2)
+    lines = per_xlen(lambda g, vs: _guest_mappings(test_data, g, vs, user, (gva_vs, gva_g)))
+    rd, reg = test_data.int_regs.get_registers(2)
+    mpp = "0" if user else "MPP_SMODE"
+    lines.extend([f"LI(x{reg}, HSTATUS_SPVP)", f"{'csrc' if user else 'csrs'} hstatus, x{reg}"])
+    for scenario in scenarios:
+        body = [f"// M-mode, {mode.upper()}-level accesses: {scenario.description}", *_deny(list(scenario.regions))]
+        for mapping, gva in zip(_MAPPINGS, (gva_vs, gva_g), strict=True):
+            name = f"{mode}_{scenario.name}_{mapping}"
+            body.extend(_hlv_probes_at(test_data, name, "cp_pmp_hlv_pt_m", gva, rd))
+            for instr, value in (("sw", "RVTEST_PMP_RET_ENCODING"), ("lw", "42")):
+                label = test_data.add_testcase(f"{name}_mprv_{instr}", "cp_pmp_mprv_pt", covergroup(test_data))
+                body.extend(
+                    [
+                        f"LI(x{rd}, {value})",
+                        *per_xlen(lambda g, _vs: mprv_bits(g.xlen, reg, mprv=1, mpp=mpp, mpv=1)),
+                        label,
+                        f"{instr} x{rd}, 0(x{gva})",
+                        *set_csr_bits("mstatus", "MSTATUS_MPRV", "0", reg),
+                    ]
+                )
+            body.append(write_sigupd(rd, test_data))
+        lines.extend(gated(body, scenario.gate))
+    lines.extend([f"LI(x{reg}, HSTATUS_SPVP)", f"csrc hstatus, x{reg}", *zero_pmp_regs()])
+    test_data.int_regs.return_registers([gva_vs, gva_g, rd, reg])
     return [*lines, *guest_translation_teardown(test_data)]
 
 
@@ -526,10 +568,9 @@ _HLV_SCENARIOS = [
 
 
 def _two_stage_chunk(
-    test_data: TestData, split: str, title: str, description: str, guest: list[_Scenario], hlv: list[_Scenario]
+    test_data: TestData, split: str, title: str, description: str, body: Callable[[], list[str]]
 ) -> TestChunk:
-    """jalr, sw and lw from VS-mode and VU-mode in each ``guest`` scenario, then the HS-mode hypervisor loads and
-    stores in each ``hlv`` scenario, on the TEST_FOR_EXECUTION region under two-stage translation."""
+    """The accesses that ``body`` emits on the TEST_FOR_EXECUTION region under two-stage translation."""
     chunk = test_data.begin_test_chunk(split)
     chunk.section_header = comment_banner(title, description)
     chunk.raw_data.extend(guest_table_data())
@@ -538,8 +579,7 @@ def _two_stage_chunk(
             *napot_mask_defines(),
             "RVTEST_PMP_SET_BACKGROUND x4",
             f"#if ({TWO_STAGE_GATE}) && {_TABLE_GATE}",
-            *(line for mode in ("vs", "vu") if guest for line in _guest_scenarios(test_data, mode, guest)),
-            *(_hlv_scenarios(test_data, hlv) if hlv else []),
+            *body(),
             "#endif",
         ]
     )
@@ -557,8 +597,7 @@ def _make_two_stage_chunks(test_data: TestData) -> list[TestChunk]:
             "cp_pmp_lr, cp_pmp_amo_pf_priority",
             "jalr, sw, lw, amoswap.w and lr.w from VS-mode and VU-mode through a VS-stage and a G-stage kilopage\n"
             "mapping, under PMP regions at the guest virtual, supervisor physical and page-table addresses",
-            _GUEST_SCENARIOS,
-            [],
+            lambda: [line for mode in ("vs", "vu") for line in _guest_scenarios(test_data, mode, _GUEST_SCENARIOS)],
         ),
         _two_stage_chunk(
             test_data,
@@ -566,8 +605,7 @@ def _make_two_stage_chunks(test_data: TestData) -> list[TestChunk]:
             "cp_pmp_pt_update",
             "jalr, sw and lw from VS-mode and VU-mode through both mappings, whose leaves have A = D = 0, with\n"
             "menvcfg.ADUE = henvcfg.ADUE = 1 and PMP making vlvl0 or hlvl0 read-only",
-            _PT_UPDATE_SCENARIOS,
-            [],
+            lambda: [line for mode in ("vs", "vu") for line in _guest_scenarios(test_data, mode, _PT_UPDATE_SCENARIOS)],
         ),
         _two_stage_chunk(
             test_data,
@@ -575,8 +613,16 @@ def _make_two_stage_chunks(test_data: TestData) -> list[TestChunk]:
             "cp_pmp_hlv_pt",
             "hsv.w, hlv.w and hlvx.wu from HS-mode through both mappings, under PMP regions at the page tables of\n"
             "both stages and the supervisor physical address",
-            [],
-            _HLV_SCENARIOS,
+            lambda: _hlv_scenarios(test_data, _HLV_SCENARIOS),
+        ),
+        _two_stage_chunk(
+            test_data,
+            "H_m_translated",
+            "cp_pmp_hlv_pt_m, cp_pmp_mprv_pt",
+            "From M-mode through both mappings, hsv.w, hlv.w and hlvx.wu with hstatus.SPVP = 1 and 0, and sw and lw\n"
+            "with mstatus.MPRV = 1, MPV = 1 and MPP = S and U, under PMP regions at the page tables of both stages\n"
+            "and the supervisor physical address",
+            lambda: [line for mode in ("vs", "vu") for line in _m_scenarios(test_data, mode, _HLV_SCENARIOS)],
         ),
     ]
 

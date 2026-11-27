@@ -57,6 +57,19 @@ MPP_MPV = (
 )
 
 
+def mprv_bits(xlen: int, reg: int, *, mprv: int, mpp: str, mpv: int) -> list[str]:
+    """Write mstatus.MPRV, MPP and MPV (mstatush.MPV on RV32)."""
+    bits = " | ".join(
+        field for field, on in (("MSTATUS_MPRV", mprv), (mpp, mpp != "0"), ("MSTATUS_MPV", mpv and xlen == 64)) if on
+    )
+    if xlen == 64:
+        return set_csr_bits("mstatus", "MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV", bits or "0", reg)
+    return [
+        *set_csr_bits("mstatush", "MSTATUSH_MPV", "MSTATUSH_MPV" if mpv else "0", reg),
+        *set_csr_bits("mstatus", "MSTATUS_MPRV | MSTATUS_MPP", bits or "0", reg),
+    ]
+
+
 def mprv_access(
     test_data: TestData,
     coverpoint: str,
@@ -78,17 +91,7 @@ def mprv_access(
     translation.
     """
     va_reg, data, reg = test_data.int_regs.get_registers(3)
-    bits = " | ".join(
-        field for field, on in (("MSTATUS_MPRV", mprv), (mpp, mpp != "0"), ("MSTATUS_MPV", mpv and xlen == 64)) if on
-    )
-    arm = (
-        set_csr_bits("mstatus", "MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_MPV", bits or "0", reg)
-        if xlen == 64
-        else [
-            *set_csr_bits("mstatush", "MSTATUSH_MPV", "MSTATUSH_MPV" if mpv else "0", reg),
-            *set_csr_bits("mstatus", "MSTATUS_MPRV | MSTATUS_MPP", bits or "0", reg),
-        ]
-    )
+    arm = mprv_bits(xlen, reg, mprv=mprv, mpp=mpp, mpv=mpv)
     lines = [
         f"LA(x{va_reg}, {va})" if va_is_label else load_constant(f"x{va_reg}", va),
         f"LI(x{data}, {0x100 + test_data.test_count:#x})",

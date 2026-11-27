@@ -82,7 +82,7 @@ normative_rule_definitions:
       [
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_mprv_lw, cp_mprv_sw}",
         "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_mprv_lw, cp_mprv_sw}",
-        "PMP_H_cg/cp_pmp_after_translation",
+        "PMP_H_cg/{cp_pmp_after_translation,cp_pmp_mprv_pt}",
       ]
 
   # PMP CSRs are only accessible to M-mode.
@@ -120,7 +120,7 @@ normative_rule_definitions:
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
         "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_L_access_read}",
         "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
-        "PMP_H_cg/{cp_pmp_hlv,cp_pmp_amo,cp_pmp_lr}",
+        "PMP_H_cg/{cp_pmp_hlv,cp_pmp_amo,cp_pmp_lr,cp_pmp_hlv_pt_m,cp_pmp_mprv_pt}",
       ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X
@@ -534,7 +534,7 @@ normative_rule_definitions:
         "PMP_Sv_cg/pmp0_pte_{noread,nowrite,noexec}_s",
         "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s,cp_PTE_PMP_rw_unset_cbo_u}",
         "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
-        "PMP_H_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update,cp_pmp_hlv_pt}",
+        "PMP_H_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update,cp_pmp_hlv_pt,cp_pmp_hlv_pt_m,cp_pmp_mprv_pt}",
       ]
 
   # PMP checks are also applied to page-table accesses for virtual-address translation,
@@ -545,7 +545,7 @@ normative_rule_definitions:
       [
         "PMP_Sv_cg/pmp0_pte_{noread,nowrite,noexec}_s",
         "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s,cp_PTE_PMP_rw_unset_cbo_u}",
-        "PMP_H_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update,cp_pmp_hlv_pt}",
+        "PMP_H_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update,cp_pmp_hlv_pt,cp_pmp_hlv_pt_m,cp_pmp_mprv_pt}",
       ]
 
   # Implementations with virtual memory are permitted to perform address translations
@@ -596,7 +596,7 @@ normative_rule_definitions:
       [
         "PMP_S_cg/{cp_cfg_X,cp_cfg_R,cp_mprv_lw}",
         "PMP_U_cg/{cp_cfg_X,cp_cfg_R,cp_mprv_lw}",
-        "PMP_H_cg/cp_pmp_after_translation",
+        "PMP_H_cg/{cp_pmp_after_translation,cp_pmp_hlv_pt_m,cp_pmp_mprv_pt}",
         "PMP_HSvZicbo_cg/cp_pmp",
       ]
 
@@ -606,11 +606,12 @@ normative_rule_definitions:
       [
         "PMP_S_cg/{cp_mprv_jalr,cp_mprv_lw,cp_mprv_sw}",
         "PMP_U_cg/{cp_mprv_jalr,cp_mprv_lw,cp_mprv_sw}",
+        "PMP_H_cg/cp_pmp_mprv_pt",
       ]
 
   # HLV and HSV have VS or VU privilege, so PMP checks them even from M-mode
   - name: hlsv_priv
-    coverpoint: ["PMP_H_cg/{cp_pmp_hlv,cp_pmp_hsv}"]
+    coverpoint: ["PMP_H_cg/{cp_pmp_hlv,cp_pmp_hsv,cp_pmp_hlv_pt_m}"]
 
   # HLVX needs both read and execute permission from PMP
   - name: hlsv_u_op
@@ -619,7 +620,9 @@ normative_rule_definitions:
   # PMP checks the implicit page-table accesses of both stages
   - name: H_vm_gstagetrans
     coverpoint:
-      ["PMP_H_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update,cp_pmp_hlv_pt}"]
+      [
+        "PMP_H_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update,cp_pmp_hlv_pt,cp_pmp_hlv_pt_m,cp_pmp_mprv_pt}",
+      ]
 
   # With Svadu, PMP checks the A/D update of a VS-stage or G-stage leaf, which writes its page table
   - names: [henvcfg_adue_op, menvcfg_adue_op]

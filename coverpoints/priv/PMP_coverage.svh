@@ -3705,6 +3705,8 @@ covergroup PMP_H_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], l
     wildcard bins hsv_w   = {HSV_W};
     wildcard bins hlvx_wu = {HLVX_WU};
   }
+  // hstatus.SPVP selects VS (1) or VU (0) for hlv, hlvx and hsv
+  hstatus_spvp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0] {}
 
   // Each unlocked legal XWR in the entry that lxwr_walk_body gives it
   unlocked_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
@@ -3752,6 +3754,24 @@ covergroup PMP_H_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], l
     wildcard bins jalr = {JALR};
     wildcard bins sw   = {SW};
     wildcard bins lw   = {LW};
+  }
+  sw_lw: coverpoint ins.current.insn {
+    wildcard bins sw = {SW};
+    wildcard bins lw = {LW};
+  }
+  mprv_on: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
+    bins on = {1};
+  }
+  // {MPV, MPP} = VS or VU: MPRV gives M-mode loads and stores that privilege and two-stage translation
+  `ifdef UDB_MXLEN_64
+  mpp_mpv_guest: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `else
+  mpp_mpv_guest: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `endif
+    bins vs = {3'b101};
+    bins vu = {3'b100};
   }
   `ifdef ZAAMO_SUPPORTED
   amoswap_w: coverpoint ins.current.insn {
@@ -3827,6 +3847,9 @@ covergroup PMP_H_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], l
   cp_pmp_hsv:  cross priv_mode_m_s, hsv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
   `ifdef PMPH_TWO_STAGE
   cp_pmp_hlv_pt: cross priv_mode_hs, hlv_w_hsv_w_hlvx_wu, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
+  // From M-mode, PMP still checks hlv, hlvx and hsv, and lw and sw with MPRV = 1 and MPV = 1, and their walks
+  cp_pmp_hlv_pt_m: cross priv_mode_m, hstatus_spvp, hlv_w_hsv_w_hlvx_wu, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
+  cp_pmp_mprv_pt:  cross priv_mode_m, sw_lw, mprv_on, mpp_mpv_guest, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
   cp_pmp_after_translation: cross priv_mode_vs_vu, access_instr, mapping, pmp_final, vsatp_paged, hgatp_paged;
   cp_pmp_pt:                cross priv_mode_vs_vu, access_instr, mapping, pmp_table, vsatp_paged, hgatp_paged;
   // PMP checks the supervisor physical address of a VS-stage page-table read, not its guest physical address

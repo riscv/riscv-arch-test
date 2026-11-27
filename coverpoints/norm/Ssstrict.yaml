@@ -102,7 +102,7 @@ normative_rule_definitions:
   - name: roundingmode_unaffected_rm_decode
     coverpoint:
       [
-        "TODO: sweep reserved rm values (101, 110, and 111 with reserved frm) on widening conversions such as fcvt.d.s, fcvt.s.h, and fcvt.d.w",
+        "Needs test: sweep reserved rm values (101, 110, and 111 with reserved frm) on widening conversions such as fcvt.d.s, fcvt.s.h, and fcvt.d.w.",
       ]
 
   # Zfa rules

@@ -53,7 +53,7 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 
 ==== ZfhminQ Half-Quad Conversion Instructions
 
-Note that ZfhminQ is the same as ZfhQ
+Note that ZfhminQ is the same as ZfhQ.
 
 [[t-ZfhminQ-coverpoints]]
 .ZfhminQ Coverpoints

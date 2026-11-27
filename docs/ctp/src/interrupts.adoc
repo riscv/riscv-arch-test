@@ -11,16 +11,6 @@ include::{testplansdir}/priv/InterruptsSm.adoc[]
 
 include::norm/InterruptsSm_norm_rules.adoc[]
 
-TODO: coverpoints will need to ignore bins with mie.msie nonzero:
-  # If a system has only one hart, or if a platform standard supports the delivery
-  # of machine-level interprocessor interrupts through external interrupts (MEI)
-  # instead, then mip.MSIP and mie.MSIE may both be read-only zeros.
-  - name: mip_msip_mie_msie_maybe_rdonly0
-TODO: mip.MSIP update time
-  # When the memory-mapped msip register changes, it is guaranteed to be reflected
-  # in mip.MSIP eventually, but not necessarily immediately.
-  - name: msip_update_max_time
-
 ==== InterruptsS Supervisor-Mode Interrupts
 
 These tests are run on any configuration with supervisor mode that supports interrupts. They boot to S-mode and also run in U-mode (and VS/VU-mode when the H extension is supported); `mideleg` keeps its boot value with all supervisor-level interrupts delegated.

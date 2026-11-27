@@ -99,4 +99,4 @@ normative_rule_definitions:
 
   # VS-mode is out of scope for these suites: the Sscofpmf_Sm/S/U groups never run in VS-mode.
   - name: scountovf_vsmode_read_access
-    coverpoint: [""]
+    coverpoint: ["Needs test: read scountovf in VS-mode (needs H)."]

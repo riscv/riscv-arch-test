@@ -19,7 +19,10 @@ normative_rule_definitions:
       ]
   # M implies Zmmul.
   - name: M_implies_Zmmul
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: M requires Zmmul; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/M.yaml[ext/M.yaml]).",
+      ]
   - name: mul_op
     coverpoint: ["Zmmul_mul_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   # insn:mulh[], insn:mulhu[], and insn:mulhsu[] perform the same multiplication but

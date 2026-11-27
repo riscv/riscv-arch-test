@@ -448,7 +448,7 @@ normative_rule_definitions:
   # When VTVM=1, VS-mode sfence.vma and satp accesses raise virtual instruction, but neither mstatus.TVM nor
   # hstatus.VTVM traps hfence.vvma.  SINVAL.VMA is in Svinval; mstatus.TVM is in Sm_H.
   - names: [hstatus_vtvm_op, H_virtinst_vs_sfence_sinval_satp_vtvm1]
-    coverpoint: ["H_inst_cg/{cp_vtvm_sfence, cp_vtvm_satp}"]
+    coverpoint: ["H_inst_cg/{cp_vtvm_sfence, cp_vtvm_satp, cp_vtvm_satp_forms}"]
   - names: [hfence-vvma_tvm]
     coverpoint: ["H_inst_cg/cp_vtvm_hfence_vvma"]
 
@@ -760,11 +760,7 @@ normative_rule_definitions:
   # In HS- and M-modes, pointer masking for these instructions is enabled or disabled by
   # senvcfg.PMM, when their explicit memory access is performed as though in VU-mode.
   - name: hstatus_hupmm_vu_mode
-    coverpoint:
-      [
-        "Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm",
-        "Needs test: HLV and HSV from M-mode with SPVP=0 and senvcfg.PMM set.",
-      ]
+    coverpoint: ["Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm", "Ssnpm_HSm_cg/cp_hlv_m_pmm"]
 
   # Setting henvcfg.PMM enables or disables pointer masking for HLV.* and HSV.* when their explicit
   # memory access is performed as though in VS-mode.
@@ -772,7 +768,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssnpm_H_cg/{cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
-        "Needs test: HLV and HSV from M-mode with SPVP=1 and henvcfg.PMM set.",
+        "Ssnpm_HSm_cg/cp_hlv_m_pmm",
       ]
 
   # Value|Description === 00|Pointer masking is disabled (PMLEN = 0)¶ 01|Reserved¶ 10|Pointer
@@ -822,13 +818,31 @@ normative_rule_definitions:
   # LHU, LW, LWU, LD, FLW, FLD, FLQ, or FLH, the transformed instruction has the format shown in
   # <<transformedloadinst>>.
   - name: H_trans_load
-    coverpoint: ["Exceptions_H_cg/cp_xtinst_load_{misaligned,access}"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_load_{misaligned,access}",
+        "{Exceptions_H_cg,Exceptions_HSm_cg}/cp_xtinst_fp_load_access",
+      ]
 
   # For a standard store instruction that is not a compressed instruction and is one of SB, SH, SW,
   # SD, FSW, FSD, FSQ, or FSH, the transformed instruction has the format shown in
   # <<transformedstoreinst>>.
   - name: H_trans_store
-    coverpoint: ["Exceptions_H_cg/cp_xtinst_store_{misaligned,access}"]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_store_{misaligned,access}",
+        "{Exceptions_H_cg,Exceptions_HSm_cg}/cp_xtinst_fp_store_access",
+      ]
+
+  # For a standard compressed instruction (16-bit size), the transformed instruction is found as follows: expand
+  # the compressed instruction to its 32-bit equivalent, transform the 32-bit equivalent instruction, and replace
+  # bit 1 with a 0.  Bits 1:0 of a transformed standard instruction are binary 01 if the trapping instruction is
+  # compressed.  The c.flw and c.fld bins of cp_xtinst_fp_load_access and the c.fsw and c.fsd bins of
+  # cp_xtinst_fp_store_access
+  - names:
+      [H_trans_compressed_lead_in, H_trans_compressed_list, H_trans_bits_1_0]
+    coverpoint:
+      ["{Exceptions_H_cg,Exceptions_HSm_cg}/cp_xtinst_fp_{load,store}_access"]
 
   # For a standard virtual-machine load/store instruction (HLV, HLVX, or HSV), the transformed
   # instruction has the format shown in <<transformedvmaccessinst>>.

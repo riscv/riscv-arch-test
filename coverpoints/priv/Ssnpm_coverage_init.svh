@@ -17,4 +17,8 @@ Ssnpm_Sm_cg.set_inst_name("obj_Ssnpm_Sm");
 `ifdef H_SUPPORTED
 Ssnpm_H_cg = new();
 Ssnpm_H_cg.set_inst_name("obj_Ssnpm_H");
+`ifndef EXCLUDE_SM
+Ssnpm_HSm_cg = new();
+Ssnpm_HSm_cg.set_inst_name("obj_Ssnpm_HSm");
+`endif
 `endif

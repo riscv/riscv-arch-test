@@ -9,13 +9,15 @@
 
 from dataclasses import replace
 
-from testgen.asm.helpers import gated
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.StateenCommon import (
     FEATURES,
     GateWrite,
     StateenFeature,
+    _mode_block,
+    _write_bit,
     feature_tests,
     illegal_access_tests,
     stateen_walk_tests,
@@ -68,6 +70,58 @@ def _se_tests(test_data: TestData, n: int, csr: str) -> list[str]:
         )
         cp, modes = "cp_mstateen_se_controls_hstateen", ["S"]
     return feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat, f"mstateen{n}"), modes=modes, base="M")
+
+
+def _se0_virtual_tests(test_data: TestData) -> list[str]:
+    """With mstateen<n>.SE<n> = 0, read hstateen<n> (and hstateen<n>h on RV32) from VS-mode and VU-mode, and sstateen<n>
+    from VU-mode.
+
+    The same read is illegal in HS-mode, so it is not HS-qualified and raises illegal instruction, not virtual
+    instruction.  rd keeps its value.  hstateen<n>.SE<n> is read-only zero while mstateen<n>.SE<n> = 0, so hstateen<n> is
+    saved and restored with mstateen<n>.
+    """
+    saves = test_data.int_regs.get_registers(4)
+    rd, tmp = test_data.int_regs.get_registers(2)
+
+    def rv32_gated(csr: str, body: list[str]) -> list[str]:
+        """body, only on RV32 when csr is a high half."""
+        return gated(body, "__riscv_xlen == 32") if csr.endswith("h") else body
+
+    def read(csr: str, mode: str, cp: str) -> list[str]:
+        body = [
+            f"LI(x{rd}, 42)",
+            test_data.add_testcase(f"{mode.lower()}_{csr}", cp, CG),
+            f"csrr x{rd}, {csr}",
+            write_sigupd(rd, test_data),
+        ]
+        return rv32_gated(csr, body)
+
+    lines = [
+        comment_banner(
+            "cp_mstateen_se0_hstateen_virtual, cp_mstateen_se0_sstateen_vu",
+            "With mstateen<n>.SE<n> = 0, read hstateen<n> from VS-mode and VU-mode and sstateen<n> from VU-mode.\n"
+            "Each raises illegal instruction, because the same read is illegal in HS-mode",
+        )
+    ]
+    for n in range(4):
+        gates = [f"{level}stateen{n}{half}" for level in "mh" for half in ("", "h")]
+        for csr, reg in zip(gates, saves):
+            lines.extend(rv32_gated(csr, [f"csrr x{reg}, {csr}  # save {csr}"]))
+        lines.extend(_write_bit(f"mstateen{n}", FEATURES["se"], on=False, reg=tmp))
+        for mode in ("VS", "VU"):
+            body = [
+                line
+                for half in ("", "h")
+                for line in read(f"hstateen{n}{half}", mode, "cp_mstateen_se0_hstateen_virtual")
+            ]
+            if mode == "VU":
+                body.extend(read(f"sstateen{n}", mode, "cp_mstateen_se0_sstateen_vu"))
+            lines.extend(_mode_block(mode, "M", body))
+        for csr, reg in zip(gates, saves):
+            lines.extend(rv32_gated(csr, [f"csrw {csr}, x{reg}  # restore {csr}"]))
+    lines.extend(f"mv x{reg}, zero  # do not leave a stateen value in a register" for reg in saves)
+    test_data.int_regs.return_registers([*saves, rd, tmp])
+    return gated(lines, "defined(H_SUPPORTED)")
 
 
 def _se0_only_walk(test_data: TestData, csr: str, guard: str) -> list[str]:
@@ -130,6 +184,8 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
         for n in range(4):
             tc = test_data.new_test_chunk(test_chunks)
             tc.code.extend(_se_tests(test_data, n, csr))
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(_se0_virtual_tests(test_data))
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(_se0_only_walk(test_data, "sstateen0", "defined(S_SUPPORTED)"))
     tc = test_data.new_test_chunk(test_chunks)

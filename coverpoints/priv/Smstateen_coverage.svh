@@ -288,6 +288,16 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         `ifdef H_SUPPORTED
             cp_mstateen_se_controls_hstateen:     cross priv_mode_s, mstateen_se, csrops, hstateen_csrs;
             cp_mstateen0_se0_only_hstateen0:      cross priv_mode_m_s, mstateen0_se0_only, walk_ops, walk_bit, hstateen0_csr;
+            // With mstateen<n>.SE<n> = 0 the same read is illegal in HS-mode, so from VS and VU-mode it raises illegal
+            // instruction, not virtual instruction
+            csrr: coverpoint ins.current.insn {
+                wildcard bins csrr = {CSRR};
+            }
+            mstateen_se_disabled: coverpoint mstateen_se_n(ins) {
+                bins disabled = {0};
+            }
+            cp_mstateen_se0_hstateen_virtual:     cross priv_mode_vs_vu, mstateen_se_disabled, csrr, hstateen_csrs;
+            cp_mstateen_se0_sstateen_vu:          cross priv_mode_vu, mstateen_se_disabled, csrr, sstateen_csrs;
         `endif
     `endif
 

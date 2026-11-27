@@ -243,6 +243,11 @@ coverpoints:
       cp_vtvm_sfence: 2 VTVM
       cp_vtvm_satp: 2 accesses * 2 VTVM
       cp_vtvm_hfence_vvma: 2 VTVM
+  - name: cp_vtvm_satp_forms
+    goal: hstatus.VTVM traps every CSR instruction form that accesses satp
+    description: With hstatus.VTVM = 1, in VS-mode access satp with csrrs (rs1 != x0 holding 0), csrrc (rs1 = x0, and rs1 != x0 holding 0), csrrwi 0, csrrsi 0 and csrrci 1.  cp_vtvm_satp has csrr and csrw.
+    expectation: Each raises virtual instruction, and rd keeps its value.
+    bins: 6 forms
   - name: cp_sret_hs
     goal: sret from HS mode
     description: Execute sret in HS-mode with cross-product of sstatus.SPP / SPIE / hstatus.SPV.  After the sret, a read of mscratch traps to HS-mode, and the trap record shows the mode reached.  Then check sstatus.SPP, SIE, SPIE and hstatus.SPV in HS-mode; the trap and the return to HS-mode rewrite them from the mode and SIE that the sret produced.

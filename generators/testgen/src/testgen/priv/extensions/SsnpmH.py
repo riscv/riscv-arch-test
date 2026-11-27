@@ -1,7 +1,8 @@
 ##################################
 # priv/extensions/SsnpmH.py
 #
-# Ssnpm H group: pointer masking tests for VS-mode, VU-mode and the hypervisor load/store instructions.
+# Ssnpm H and HSm groups: pointer masking tests for VS-mode, VU-mode, the hypervisor load/store instructions and
+# M-mode accesses as VS-mode and VU-mode.
 # David_Harris@hmc.edu 29 September 2026
 # Marco Bartoli marco.bartoli.dev@gmail.com 10 November 2026
 # SPDX-License-Identifier: Apache-2.0
@@ -40,6 +41,10 @@ BARE_PAIR uses it only without one.
 
 The test image must lie below 255 GiB, so that it is outside the root entries of _SPARE_VA and _GPF_GPA.  The
 access-fault cases identity map RVMODEL_ACCESS_FAULT_ADDRESS_* and run only where it fits (_fault_fits).
+
+The HSm group (testplans/priv/Ssnpm_HSm.yaml) boots to M-mode and runs its accesses there: loads and stores with
+mstatus.MPRV = MPV = 1, which take the PMM field of the effective privilege (VS or VU), and HLV and HSV, which take the
+one hstatus.SPVP selects.  It uses BARE_PAIR and PAGED_PAIR, and writes menvcfg.PMM and mseccfg.PMM directly.
 """
 
 from collections.abc import Callable
@@ -392,10 +397,15 @@ def _check_alias(test_data: TestData) -> list[str]:
 # ── CSR fields ─────────────────────────────────────────────────────────────
 
 
-def _m_field(test_data: TestData, csr: str, ext: str, value: int | str, gate: str = "") -> list[str]:
+def _m_field(
+    test_data: TestData, csr: str, ext: str, value: int | str, gate: str = "", m_mode: bool = False
+) -> list[str]:
     """Write menvcfg.PMM or mseccfg.PMM through T-SBI when the extension that has it is implemented.  Each T-SBI call
-    is costly and the value often does not change, so HS-mode skips the write when _M_SHADOW holds the same value."""
+    is costly and the value often does not change, so HS-mode skips the write when _M_SHADOW holds the same value.
+    m_mode: the code runs in M-mode, which writes the field directly."""
     pmlen = None if isinstance(value, str) else _PMLEN[value]
+    if m_mode:
+        return gated(set_pmm_field(csr, value, pmlen, test_data), f"defined({ext}_SUPPORTED){gate}")
     offset = 8 * [field for field, _ in _M_FIELDS].index(csr)
     shadow, old, new = test_data.int_regs.get_registers(3)
     check = [
@@ -410,9 +420,11 @@ def _m_field(test_data: TestData, csr: str, ext: str, value: int | str, gate: st
     return gated([*check, *write, "1:"], f"defined({ext}_SUPPORTED){gate}")
 
 
-def _pmm_case(test_data: TestData, field: str, pmm: int, value: int | str | None = None) -> list[str]:
+def _pmm_case(
+    test_data: TestData, field: str, pmm: int, value: int | str | None = None, m_mode: bool = False
+) -> list[str]:
     """field = pmm, or value when given.  The other PMM fields hold the largest value their extension supports when
-    pmm is 00, else 00."""
+    pmm is 00, else 00.  m_mode: the code runs in M-mode (see _m_field)."""
     value = pmm if value is None else value
     lines = set_pmm_field(field, value, _PMLEN[value] if isinstance(value, int) else None, test_data)
     for other in _FIELDS:
@@ -423,23 +435,24 @@ def _pmm_case(test_data: TestData, field: str, pmm: int, value: int | str | None
                 else set_pmm_field(other, "SSNPMH_SSNPM_ON", None, test_data)
             )
     for csr, ext in _M_FIELDS:
-        lines.extend(_m_field(test_data, csr, ext, 0 if pmm else f"SSNPMH_{ext}_ON"))
+        lines.extend(_m_field(test_data, csr, ext, 0 if pmm else f"SSNPMH_{ext}_ON", m_mode=m_mode))
     return [*lines, "hfence.gvma", "hfence.vvma"]
 
 
-def _all_pmm(test_data: TestData, pmm: int) -> list[str]:
+def _all_pmm(test_data: TestData, pmm: int, m_mode: bool = False) -> list[str]:
     """Every PMM field = pmm, menvcfg.PMM and mseccfg.PMM only when their extension supports its PMLEN."""
     pmlen = _PMLEN[pmm]
     lines = [line for field in _FIELDS for line in set_pmm_field(field, pmm, pmlen, test_data)]
     for csr, ext in _M_FIELDS:
-        lines.extend(_m_field(test_data, csr, ext, pmm, f" && defined(UDB_SUPPORTED_PMLEN_{ext}_{pmlen})"))
+        gate = f" && defined(UDB_SUPPORTED_PMLEN_{ext}_{pmlen})"
+        lines.extend(_m_field(test_data, csr, ext, pmm, gate, m_mode=m_mode))
     return [*lines, "hfence.gvma", "hfence.vvma"]
 
 
-def _clear_pmm(test_data: TestData) -> list[str]:
+def _clear_pmm(test_data: TestData, m_mode: bool = False) -> list[str]:
     lines = [line for field in _FIELDS for line in set_pmm_field(field, 0, 0, test_data)]
     for csr, ext in _M_FIELDS:
-        lines.extend(_m_field(test_data, csr, ext, 0))
+        lines.extend(_m_field(test_data, csr, ext, 0, m_mode=m_mode))
     return [*lines, "hfence.gvma", "hfence.vvma"]
 
 
@@ -1662,6 +1675,160 @@ def _make_xl(test_data: TestData, cp: str) -> list[TestChunk]:
     ]
 
 
+# ── Group HSm: M-mode accesses with MPRV and MPV, and HLV and HSV in M-mode ────────────────
+
+_HSM_CG = "Ssnpm_HSm_cg"
+# The tags of the M-mode cases.  0x0400 (bit 58) is masked by PMLEN 7 and 16, so it shows which PMM field applies;
+# 0xFFFF is masked in full only by PMLEN 16.  Both fault when kept, also with (vsatp, hgatp) = (Bare, Bare).
+_M_TAGS = (0x0400, 0xFFFF)
+# (effective mode, mstatus.MPP, PMM field that applies to it)
+_MPRV_MODES = (("VS", "MPP_SMODE", "henvcfg"), ("VU", "0", "senvcfg"))
+
+
+def _mprv_mpv(test_data: TestData, mpp: str | None) -> list[str]:
+    """Set mstatus.MPRV and MPV with MPP = mpp, or clear MPRV and MPV when mpp is None.  A trap into M-mode sets MPP = M
+    and MPV = 0, so each access sets them again."""
+    if mpp is None:
+        return csr_op("csrc", "mstatus", "MSTATUS_MPRV | MSTATUS_MPV", test_data)
+    return [
+        *csr_op("csrc", "mstatus", "MSTATUS_MPP", test_data),
+        *csr_op("csrs", "mstatus", f"MSTATUS_MPRV | MSTATUS_MPV | ({mpp})", test_data),
+    ]
+
+
+def _m_probe(
+    test_data: TestData, cp: str, name: str, op: str, address: int | None, tag: int, mpp: str | None
+) -> list[str]:
+    """op in M-mode at address (pm_lo_page when None) with bits 63:48 XORed with tag: a load or store with MPRV and MPV
+    set and MPP = mpp, or an HLV or HSV with mpp None.  M-mode seeds pm_lo_page and checks it through its physical
+    address, with MPRV clear."""
+    phys, addr, data = test_data.int_regs.get_registers(3)
+    store = op in ("sd", "hsv.d")
+    lines = [
+        f"LA(x{phys}, pm_lo_page)",
+        f"LI(x{data}, {VALUE_OLD:#x})",
+        f"sd x{data}, 0(x{phys})",
+        f"mv x{addr}, x{phys}" if address is None else f"LI(x{addr}, {address:#x})",
+        f"LI(x{data}, {tag << 48:#x})",
+        f"xor x{addr}, x{addr}, x{data}",
+        f"LI(x{data}, {VALUE_NEW if store else SENTINEL:#x})",
+        *(_mprv_mpv(test_data, mpp) if mpp else []),
+        test_data.add_testcase(name, cp, _HSM_CG),
+        f"{op} x{data}, 0(x{addr})",
+        *(_mprv_mpv(test_data, None) if mpp else []),
+        *([f"ld x{data}, 0(x{phys})"] if store else []),
+        write_sigupd(data, test_data),
+    ]
+    test_data.int_regs.return_registers([phys, addr, data])
+    return lines
+
+
+def _mprv(test_data: TestData, target: _Target) -> list[str]:
+    """cp_mprv_mpv_pmm and cp_mprv_mpv_pmm_upper: ld and sd in M-mode with MPRV = MPV = 1, as VS-mode (MPP = S,
+    henvcfg.PMM) and VU-mode (MPP = U, senvcfg.PMM), for each PMM of that field, the other PMM fields holding a
+    different value.  On PAGED_PAIR, ld and sd also reach pm_lo_page through _HIGH_VA, which only the sign extension
+    that vsatp selects (not satp, which is Bare) recovers."""
+    lines = []
+    for mode, mpp, field in _MPRV_MODES:
+        body = [
+            comment_banner(
+                f"cp_mprv_mpv_pmm: M-mode with MPRV, MPV = 1, MPP as {mode}-mode, {field}.PMM, {_name(target)}"
+            ),
+            *_on(test_data, target, user=mode == "VU"),
+        ]
+        for pmm, pmlen, label in PMM_CONFIGS:
+            prefix = f"{_name(target)}_{mode.lower()}_{label}"
+            cases = _pmm_case(test_data, field, pmm, m_mode=True)
+            for tag in _M_TAGS:
+                for op in ("ld", "sd"):
+                    probe = _m_probe(test_data, "cp_mprv_mpv_pmm", f"{prefix}_{op}_t{tag:04x}", op, None, tag, mpp)
+                    cases.extend(gated(probe, _tag_gate(target, tag, pmlen)))
+            if target == "paged" and pmm in _UPPER_TAGS:
+                tag = _UPPER_TAGS[pmm][1]
+                user = mode == "VU"
+                cases.extend(
+                    _per_pair(target, lambda pair, pmm=pmm, user=user: _upper_map(test_data, pair, pmm, user, False))
+                )
+                for op in ("ld", "sd"):
+                    name = f"{prefix}_{op}_t{tag:04x}"
+                    cases.extend(_m_probe(test_data, "cp_mprv_mpv_pmm_upper", name, op, _HIGH_VA, tag, mpp))
+                cases.extend(
+                    _per_pair(target, lambda pair, pmm=pmm, user=user: _upper_map(test_data, pair, pmm, user, True))
+                )
+            body.extend(pmm_ifdef(field, pmlen, cases))
+        body.extend(guest_translation_teardown(test_data))
+        lines.extend(_wrap(target, body))
+    return [*lines, *_clear_pmm(test_data, m_mode=True)]
+
+
+def _mprv_mxr(test_data: TestData) -> list[str]:
+    """cp_mprv_mpv_mxr_pmm: as _mprv on BARE_PAIR with every PMM field on, ld with vsstatus.MXR or mstatus.MXR set.
+    MXR is in effect for the effective privilege VS or VU, so masking does not apply, and the tag that the PMM would
+    mask makes the access fault."""
+    lines = []
+    for mode, mpp, _ in _MPRV_MODES:
+        body = [
+            comment_banner(f"cp_mprv_mpv_mxr_pmm: M-mode with MPRV, MPV = 1, MPP as {mode}-mode, MXR set"),
+            *_on(test_data, "bare", user=mode == "VU"),
+        ]
+        for pmm, pmlen, label in PMM_CONFIGS[1:]:
+            cases = _all_pmm(test_data, pmm, m_mode=True)
+            tag = _FULL_TAGS[pmm][1]
+            for vs_mxr, s_mxr in ((1, 0), (0, 1)):
+                name = f"bare_pair_{mode.lower()}_{label}_vsmxr{vs_mxr}_smxr{s_mxr}_ld_t{tag:04x}"
+                cases.extend(
+                    [
+                        *_mxr(test_data, vs_mxr, s_mxr),
+                        *_m_probe(test_data, "cp_mprv_mpv_mxr_pmm", name, "ld", None, tag, mpp),
+                    ]
+                )
+            cases.extend(_mxr(test_data, 0, 0))
+            body.extend(pmm_ifdef("henvcfg", pmlen, cases))
+        body.extend(guest_translation_teardown(test_data))
+        lines.extend(_wrap("bare", body))
+    return [*lines, *_clear_pmm(test_data, m_mode=True)]
+
+
+def _hlv_m(test_data: TestData) -> list[str]:
+    """cp_hlv_m_pmm: hlv.d and hsv.d in M-mode on BARE_PAIR.  With hstatus.SPVP = 1 they access memory as VS-mode,
+    masked by henvcfg.PMM; with SPVP = 0 as VU-mode, masked by senvcfg.PMM, not hstatus.HUPMM, which applies only in
+    U-mode.  The other PMM fields hold a different value."""
+    lines = []
+    for spvp, field in ((1, "henvcfg"), (0, "senvcfg")):
+        body = [
+            comment_banner(f"cp_hlv_m_pmm: hlv.d and hsv.d in M-mode with hstatus.SPVP = {spvp}, {field}.PMM"),
+            *_on(test_data, "bare", user=not spvp),
+            *_hstatus(test_data, spvp=spvp, hu=0),
+        ]
+        for pmm, pmlen, label in PMM_CONFIGS:
+            cases = _pmm_case(test_data, field, pmm, m_mode=True)
+            for op in ("hlv.d", "hsv.d"):
+                name = f"bare_pair_spvp{spvp}_{label}_{op}_t{_M_TAGS[0]:04x}"
+                cases.extend(_m_probe(test_data, "cp_hlv_m_pmm", name, op, None, _M_TAGS[0], None))
+            body.extend(pmm_ifdef(field, pmlen, cases))
+        body.extend([*_hstatus(test_data, spvp=0, hu=0), *guest_translation_teardown(test_data)])
+        lines.extend(_wrap("bare", body))
+    return [*lines, *_clear_pmm(test_data, m_mode=True)]
+
+
+def _make_hsm(test_data: TestData) -> list[TestChunk]:
+    return [
+        _chunk(
+            test_data,
+            "HSm",
+            "cp_mprv_mpv_pmm, cp_mprv_mpv_mxr_pmm, cp_hlv_m_pmm",
+            "M-mode loads and stores with MPRV and MPV take the PMM field of the effective privilege, and HLV and HSV\n"
+            "in M-mode take the PMM field that hstatus.SPVP selects",
+            lambda: [
+                *_mprv(test_data, "bare"),
+                *_mprv(test_data, "paged"),
+                *_mprv_mxr(test_data),
+                *_hlv_m(test_data),
+            ],
+        )
+    ]
+
+
 # ── Generators ─────────────────────────────────────────────────────────────
 
 
@@ -1763,3 +1930,14 @@ def make_ssnpmh_vsxl(test_data: TestData) -> list[TestChunk]:
 # )
 def make_ssnpmh_vsuxl(test_data: TestData) -> list[TestChunk]:
     return _make_xl(test_data, "cp_pmm_vsuxl_clear")
+
+
+@add_priv_test_generator(
+    "Ssnpm",
+    required_extensions=["Sm", *_EXTENSIONS],
+    march_extensions=_MARCH,
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=_XLEN64,
+)
+def make_ssnpmh_hsm(test_data: TestData) -> list[TestChunk]:
+    return _make_hsm(test_data)

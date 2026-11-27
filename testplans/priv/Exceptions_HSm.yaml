@@ -26,6 +26,11 @@ coverpoints:
     description: With mstatus.TSR = 1 and hstatus.VTSR = {0/1}, execute sret in VS-mode with vsstatus.SPP = 1 and SPIE = 0
     expectation: sret executes and stays in VS-mode when VTSR = 0; virtual instruction exception when VTSR = 1
     bins: 2 VTSR
+  - name: cp_tsr_vu_sret
+    goal: mstatus.TSR does not change the exception for sret in VU-mode
+    description: With mstatus.TSR = 1 and hstatus.VTSR = 0, execute sret in VU-mode
+    expectation: Virtual instruction exception.  sret is HS-qualified because the rule assumes TSR = 0, and VU-mode lacks the privilege to execute it.
+    bins: "1"
   - name: cp_loadstore_priv
     goal: Hypervisor load/store in M-mode
     description: In M-mode with hstatus.HU = {0/1}, attempt {HLV.W, HLVX.WU, HSV.W} on scratch memory.  vsatp and hgatp are Bare.
@@ -88,3 +93,25 @@ coverpoints:
     bins: "3"
     notes: |-
       cp_xtinst_instr_misaligned is compiled only without Zca, and the load and store cases only when the hart does not perform misaligned loads and stores (UDB MISALIGNED_LDST = false).  None of the current H configurations assembles them.
+  - name: |-
+      cp_xtinst_fp_load_access
+      cp_xtinst_fp_store_access
+    goal: Floating-point load and store access faults write xtinst
+    description: |-
+      From VS-mode with hedeleg = 0, after M-mode writes a nonzero value to mtval2 and mtinst, execute each of flw, fld and flh and their compressed forms c.flw (RV32) and c.fld at the load access-fault address, and fsw, fsd, fsh, c.fsw (RV32) and c.fsd at the store access-fault address, where the configuration has the instruction.  FS is on in mstatus and vsstatus.
+    expectation: |-
+      Access fault into M-mode with mtval2 = 0 and mtinst = 0 or the transformed instruction.  For a compressed instruction the transformation is that of its 32-bit expansion with bit 1 cleared (H_trans_compressed_list).
+    bins: 3-5 loads + 3-5 stores
+  - name: |-
+      cp_xtinst_v0_illegalinstr
+      cp_xtinst_v0_load_access
+    goal: Traps from V = 0 write mtval2 and mtinst
+    description: In M-mode, HS-mode and U-mode, after M-mode writes a nonzero value to mtval2 and mtinst and enters the mode with mret (a T-SBI call would overwrite them), execute illegal instruction all 0s, and lw from the access-fault address.
+    expectation: The trap into M-mode writes mtval2 = 0 (mtval2_trapval) and mtinst = 0, or for lw the transformed instruction.
+    bins: 3 modes * 2 instr
+  - name: cp_vs_trap_isolation
+    goal: A trap into VS-mode leaves hstatus, the HS-level sstatus and the other HS CSRs alone
+    description: |-
+      With medeleg = hedeleg = 1 << 2 (illegal instruction only), M-mode sets hstatus.SPV, SPVP and GVA and sstatus.SPP and SPIE, writes sepc, scause (3), stval, htval and htinst, and reads each back.  Then illegal instruction all 0s in VS-mode and in VU-mode traps to VS-mode, and the T-SBI ecall that follows goes to M-mode, which reads the CSRs again.
+    expectation: Each CSR XORed with its value before the trap is zero (for mstatus, in SPP, SPIE and SIE).  A trap into VS-mode writes only vsstatus, vsepc, vscause and vstval (H_trap_vs_csrwrites); the VS-mode trap record checks those.
+    bins: 2 modes

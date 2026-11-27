@@ -367,7 +367,8 @@ def _hfence_tests(test_data: TestData) -> list[str]:
 
 
 def _vtvm_tests(test_data: TestData) -> list[str]:
-    """hstatus.VTVM = {0, 1}: sfence.vma and satp accesses in VS-mode, and hfence.vvma in HS-mode.
+    """hstatus.VTVM = {0, 1}: sfence.vma and satp accesses in VS-mode, and hfence.vvma in HS-mode; then, with VTVM = 1,
+    satp accessed by the other CSR instruction forms in VS-mode.
 
     VTVM = 1 makes the VS-mode accesses raise virtual instruction, but does not trap hfence.vvma.  vsatp stays Bare.
     """
@@ -398,8 +399,37 @@ def _vtvm_tests(test_data: TestData) -> list[str]:
                 "RVTEST_TSBI_GOTO_SMODE",
             ]
         )
-    lines.extend([f"LI(x{rd}, HSTATUS_VTVM)", f"csrc hstatus, x{rd}"])
-    test_data.int_regs.return_register(rd)
+    # VTVM is still 1: the other six CSR instruction forms on satp raise virtual instruction too.  rd keeps its value.
+    rs = test_data.int_regs.get_register()
+    lines.extend(
+        [
+            comment_banner(
+                "cp_vtvm_satp_forms",
+                "With hstatus.VTVM = 1, access satp in VS-mode with csrrs and csrrc (rs1 = x0 and rs1 != x0 holding 0),\n"
+                "csrrwi, csrrsi and csrrci.  Each raises virtual instruction and leaves rd unchanged",
+            ),
+            f"LI(x{rs}, 0)",
+            "RVTEST_TSBI_GOTO_VSMODE",
+        ]
+    )
+    for form, instr in (
+        ("csrrs_zero", f"csrrs x{rd}, satp, x{rs}"),
+        ("csrrc_x0", f"csrrc x{rd}, satp, x0"),
+        ("csrrc_zero", f"csrrc x{rd}, satp, x{rs}"),
+        ("csrrwi", f"csrrwi x{rd}, satp, 0"),
+        ("csrrsi_zero", f"csrrsi x{rd}, satp, 0"),
+        ("csrrci_nz", f"csrrci x{rd}, satp, 1"),
+    ):
+        lines.extend(
+            [
+                f"LI(x{rd}, 42)",
+                test_data.add_testcase(f"vs_{form}_satp", "cp_vtvm_satp_forms", INST_CG),
+                instr,
+                write_sigupd(rd, test_data),
+            ]
+        )
+    lines.extend(["RVTEST_TSBI_GOTO_SMODE", f"LI(x{rd}, HSTATUS_VTVM)", f"csrc hstatus, x{rd}"])
+    test_data.int_regs.return_registers([rd, rs])
     return lines
 
 

@@ -172,3 +172,25 @@ coverpoints:
     description: From VS mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, ecall.
     expectation: Environment call from VS-mode (cause 10) into HS-mode with htval = 0 and htinst = 0.
     bins: "1"
+  - name: |-
+      cp_xtinst_fp_load_access
+      cp_xtinst_fp_store_access
+    goal: Floating-point load and store access faults write xtinst
+    description: |-
+      From VS-mode with hedeleg = 0, after HS-mode writes a nonzero value to htval and htinst, execute each of flw, fld and flh and their compressed forms c.flw (RV32) and c.fld at the load access-fault address, and fsw, fsd, fsh, c.fsw (RV32) and c.fsd at the store access-fault address, where the configuration has the instruction.  FS is on in mstatus and vsstatus.
+    expectation: |-
+      Access fault into HS-mode with htval = 0 and htinst = 0 or the transformed instruction.  For a compressed instruction the transformation is that of its 32-bit expansion with bit 1 cleared (H_trans_compressed_list).
+    bins: 3-5 loads + 3-5 stores
+  - name: |-
+      cp_xtinst_v0_illegalinstr
+      cp_xtinst_v0_load_access
+    goal: Traps from V = 0 write htval and htinst
+    description: In HS-mode and U-mode, after HS-mode writes a nonzero value to htval and htinst, execute illegal instruction all 0s, and lw from the access-fault address.
+    expectation: The trap into HS-mode writes htval = 0 (htval_trapval) and htinst = 0, or for lw the transformed instruction.
+    bins: 2 modes * 2 instr
+  - name: cp_hs_trap_isolation
+    goal: A trap into HS-mode leaves the VS CSRs alone
+    description: |-
+      With hedeleg = 0, HS-mode sets vsstatus.SPP and SPIE, writes vsepc, vscause (3) and vstval, and reads each back.  Then illegal instruction all 0s in VS-mode and in VU-mode traps to HS-mode, and HS-mode reads vsstatus, vsepc, vscause and vstval again.
+    expectation: Each CSR XORed with its value before the trap is zero.  A trap into HS-mode writes sstatus, hstatus, sepc, scause, stval, htval and htinst, not the VS CSRs (H_trap_hs_csrwrites).
+    bins: 2 modes

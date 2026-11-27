@@ -154,6 +154,23 @@ coverpoints:
     rules:
       - mstateen_bit_63_op
       - stateen_illegal_state_access
+  - name: |-
+      cp_mstateen_se0_hstateen_virtual
+      cp_mstateen_se0_sstateen_vu
+    goal: With mstateenN bit 63 = 0, hstateenN and sstateenN accesses from VS and VU-mode raise illegal instruction, not virtual instruction
+    description: |-
+      If H is supported, for N = 0-3 with mstateenN bit 63 = 0, read hstateenN from VS-mode and VU-mode, and sstateenN from VU-mode.
+      For RV32, also read hstateenNh, where bit 63 is bit 31 of mstateenNh.
+    expectation: |-
+      Illegal instruction, and rd keeps its value.  The same read is illegal in HS-mode, so it is not HS-qualified and the virtual-instruction rule does not apply.
+      With bit 63 = 1, the same reads raise virtual instruction; that case is in Ssstateen cp_hstateen_illegal_accesses and the H suite's VU-mode CSR sweep.
+    bins: |-
+      cp_mstateen_se0_hstateen_virtual: 4-8 CSRs * 2 modes
+      cp_mstateen_se0_sstateen_vu: 4 CSRs
+    rules:
+      - mstateen_bit_63_op
+      - mstateen0_se0_op
+      - stateen_illegal_state_access
   - name: cp_mstateen0_se0_only_sstateen0
     goal: Bits that are zero in mstateen0 are read-only zero in sstateen0
     description: |-

@@ -19,9 +19,13 @@ from testgen.priv.extensions.exceptions.ExceptionsHCommon import (
     DELEGATED_FAULTS,
     HEDELEG_WALK,
     HEDELEG_WRITABLE,
+    VS_TRAP_CSRS,
     hedeleg_tests,
     hlv_priority_tests,
+    trap_isolation_tests,
     xtinst_exception_tests,
+    xtinst_fp_tests,
+    xtinst_v0_tests,
 )
 from testgen.priv.extensions.HCommon import P1P13_OFF, P1P13_ON
 from testgen.priv.registry import add_priv_test_generator
@@ -216,6 +220,19 @@ def make_exceptionsh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "H_xtinst")
     tc.code.extend(xtinst_exception_tests(test_data, CG, "s"))
+
+    tc = test_data.new_test_chunk(test_chunks, "H_xtinst_fp")
+    tc.code.extend(xtinst_fp_tests(test_data, CG, "s"))
+
+    # Traps from V = 0 write htval and htinst too, and a trap into HS-mode leaves the VS CSRs alone
+    tc = test_data.new_test_chunk(test_chunks, "H_trap_csrs")
+    tc.code.extend(
+        [
+            *xtinst_v0_tests(test_data, CG, "s"),
+            "csrw hedeleg, zero",
+            *trap_isolation_tests(test_data, CG, "cp_hs_trap_isolation", "s", VS_TRAP_CSRS),
+        ]
+    )
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -89,7 +89,7 @@ def _operand_cases(fence: Fence) -> list[FenceCase]:
 _ID_FIELDS = {"asid": ("vsatp", "SATP{xlen}_ASID"), "vmid": ("hgatp", "HGATP{xlen}_VMID")}
 
 
-def _id_bits(xlen: int, identifier: Literal["vmid", "asid"], on: bool, reg: int) -> list[str]:
+def id_bits(xlen: int, identifier: Literal["vmid", "asid"], on: bool, reg: int) -> list[str]:
     """Set every implemented bit of vsatp.ASID or hgatp.VMID, or clear them all."""
     csr, mask = _ID_FIELDS[identifier]
     return [f"LI(x{reg}, {mask.format(xlen=xlen)})", f"{'csrs' if on else 'csrc'} {csr}, x{reg}"]
@@ -198,7 +198,7 @@ def _fence_case(test_data: TestData, g: SvMode | None, vs: SvMode, case: FenceCa
     tmp = test_data.int_regs.get_register()
     lines = [f"\n// Testcase: {fence.name} with {case.name}"]
     for identifier in ("asid",) if g is None else ("vmid", "asid"):
-        lines.extend(_id_bits(vs.xlen, identifier, identifier != case.switch, tmp))
+        lines.extend(id_bits(vs.xlen, identifier, identifier != case.switch, tmp))
     test_data.int_regs.return_register(tmp)
     lines.extend([*_map_page_a(test_data, g, vs), "hfence.gvma", "hfence.vvma"])
     va, data = test_data.int_regs.get_registers(2)
@@ -215,7 +215,7 @@ def _fence_case(test_data: TestData, g: SvMode | None, vs: SvMode, case: FenceCa
     lines.extend(_move_to_page_b(test_data, g, vs, fence.stage))
     rs1, rs2, tmp = test_data.int_regs.get_registers(3)
     if case.switch is not None:
-        lines.extend(_id_bits(vs.xlen, case.switch, True, tmp))
+        lines.extend(id_bits(vs.xlen, case.switch, True, tmp))
     operands = {
         "rs1": {"x0": "x0", "va": f"x{va}"}.get(case.rs1, f"x{rs1}"),
         "rs2": "x0" if case.rs2 == "x0" else f"x{rs2}",

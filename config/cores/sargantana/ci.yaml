@@ -93,8 +93,9 @@ exclude_extensions:
   - Sv_H_sv39x4_ldst_straddle
   - Sv_H_sv39x4_two_stage_vu
   # With hgatp = Bare, a VS-stage superpage translates every address to its first page: mmu:tlb/tlb.sv#L521-L524
-  # (https://github.com/bsc-loca/sargantana/issues/136)
+  # (https://github.com/bsc-loca/sargantana/issues/136).  The guest code alias of each test is such a superpage.
   - Sv_H_sv39_atp_mode
+  - Sv_H_sv39_v_isolation
   # The GVA (#135) and hgatp = Bare superpage (#136) bugs, and VS-stage page-fault checks are enabled by the G-stage
   # enable, so with hgatp = Bare no VS-stage permission is checked: mmu:tlb/tlb.sv#L481-L492
   # (https://github.com/bsc-loca/sargantana/issues/137)

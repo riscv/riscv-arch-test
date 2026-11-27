@@ -1928,6 +1928,10 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
         wildcard bins lw = {LW};
         wildcard bins sw = {SW};
     }
+    load_fetch : coverpoint ins.current.insn {
+        wildcard bins lw   = {LW};
+        wildcard bins jalr = {JALR};
+    }
     // Each supported VS-stage mode
     vsatp_mode : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
         `ifdef UDB_SV39_VSMODE_TRANSLATION
@@ -2044,6 +2048,8 @@ covergroup Sv_H_vsstage_cg with function sample(ins_t ins);
     // When V=0, vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses through satp
     cp_v0_vsstatus_sum : cross priv_mode_hs, ldst, satp_paged, sstatus_sum_off, vsstatus_sum_on, page_fault;
     cp_v0_vsstatus_mxr : cross priv_mode_s_u, lw, satp_paged, sstatus_mxr_off, vsstatus_mxr_on, page_fault;
+    // satp and vsatp map the same address to different pages: an access at V=0 or V=1 uses only its own translation
+    cp_vsatp_v_isolation : cross priv_mode_hs_vs_u_vu, load_fetch, satp_paged, vs_only;
 endgroup
 
 covergroup Sv_H_gstage_cg with function sample(ins_t ins);

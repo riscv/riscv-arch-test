@@ -60,6 +60,7 @@ from testgen.priv.extensions.sv.SvHFenceCommon import (
     SFENCE_VMA_VS,
     SFENCE_VMA_VS_BARE,
     fence_chunk,
+    id_bits,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -566,6 +567,105 @@ def _t_v0_vsstatus(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     chunk.code.extend(status_bits("vsstatus", regs.scratch))
     chunk.raw_data.extend(sv_data(sv, regs, levels=(0,)))
     test_chunks.append(end_sv_test(test_data, regs))
+
+
+###########################
+# HS-level and VS-level translations of the same address
+###########################
+
+# (case, satp leaf G, VS-stage leaf G, vsatp.ASID all ones, the order of the V=0 and V=1 accesses, access)
+V_ISOLATION_CASES = (
+    ("same_asid", False, False, False, (0, 1, 0, 1), "load"),
+    ("satp_global", True, False, True, (0, 1), "load"),
+    ("vsatp_global", False, True, True, (1, 0), "load"),
+    ("fetch", False, False, False, (0, 1), "exec"),
+)
+
+
+def _v_isolation_fetch(test_data: TestData, mode: str | None, va: str, name: str) -> list[str]:
+    """Fetch from ``va`` in ``mode`` (S-mode for None) and check a2, which the code there sets to the page's ID."""
+    va_reg, data = test_data.int_regs.get_registers(2)
+    label = test_data.add_testcase(f"{name}_exec", "cp_vsatp_v_isolation", VS_CG)
+    lines = [
+        load_constant(f"x{va_reg}", va),
+        *([f"RVTEST_TSBI_GOTO_{mode}MODE"] if mode else []),
+        "LI(a2, -1)",
+        label,
+        f"jalr ra, 0(x{va_reg})",
+        f"addi x{data}, a2, 0",
+        *(["RVTEST_TSBI_GOTO_SMODE"] if mode else []),
+        write_sigupd(data, test_data, label=label.removesuffix(":")),
+        "",
+    ]
+    test_data.int_regs.return_registers([va_reg, data])
+    return lines
+
+
+def _t_v_isolation(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, vs: SvMode, mode: str) -> None:
+    """satp and vsatp map the same address to different pages, and accesses alternate between V=0 and V=1 with no
+    fence between them.  ``mode`` is "S" (HS-mode and VS-mode) or "U" (U-mode and VU-mode)."""
+    modes = ("S", "VS") if mode == "S" else ("U", "VU")
+    # With sig_init=None begin_sv_test reads no register, so the registers are free for the guest setup
+    regs = SvRegs.allocate(test_data)
+    chunk = begin_sv_test(
+        test_data, regs, sv, f"{mode}mode", f"H_{sv.name}_v_isolation_{modes[1].lower()}", sig_init=None
+    )
+    regs.release(test_data)
+    chunk.section_header = comment_banner(
+        "cp_vsatp_v_isolation",
+        "satp maps an address to iso_page_a and vsatp (hgatp = Bare) maps it to iso_page_b.  Load or fetch from it\n"
+        f"in {modes[0]}-mode and {modes[1]}-mode in turn with no fence between, also with a global leaf and different\n"
+        "ASIDs: each access must reach its own page",
+    )
+    for label, ident in (("iso_page_a", 0xA), ("iso_page_b", 0xB)):
+        chunk.raw_data.extend(
+            [
+                ".p2align 12",
+                f"{label}:",
+                f".4byte {0x613 | ident << 20:#010x}    # addi a2, x0, {ident:#x}",
+                ".4byte 0x00008067    # ret",
+                f".4byte {ident * 0x01010101:#010x}    # load word",
+                ".skip 4096 - 12",
+            ]
+        )
+    chunk.raw_data.extend(lower_table_data(sv, vs))
+    code = guest_chunk_setup(test_data, None, vs, modes[1])
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    code.extend(
+        line
+        for stage in (sv, vs)
+        for line in create_page_walk(stage, leaf_level=0, virtual_address=stage.data_va, regs=(pte, addr, tmp))
+    )
+    test_data.int_regs.return_registers([pte, addr, tmp])
+    for case, s_global, vs_global, asid, order, op in V_ISOLATION_CASES:
+        code.append(f"// {case}: satp maps the address to iso_page_a and vsatp to iso_page_b")
+        pte, addr, tmp = test_data.int_regs.get_registers(3)
+        for stage, page, global_ in ((sv, "iso_page_a", s_global), (vs, "iso_page_b", vs_global)):
+            flags = PteFlags(user=mode == "U", global_=global_)
+            code.extend(
+                write_pte(
+                    stage,
+                    level=0,
+                    flags=flags,
+                    virtual_address=stage.data_va,
+                    physical_address=page,
+                    regs=(pte, addr, tmp),
+                )
+            )
+        code.extend([*id_bits(vs.xlen, "asid", asid, tmp), "sfence.vma", "hfence.vvma"])
+        test_data.int_regs.return_registers([pte, addr, tmp])
+        for count, virt in enumerate(order):
+            # HS-mode accesses run in the S-mode driver
+            access_mode = None if modes[virt] == "S" else modes[virt]
+            name = f"{case}_{modes[virt].lower()}{count}"
+            if op == "exec":
+                code.extend(_v_isolation_fetch(test_data, access_mode, sv.data_va, name))
+            else:
+                code.extend(
+                    guest_access(test_data, VS_CG, "cp_vsatp_v_isolation", name, access_mode, sv.data_va, ops=("load",))
+                )
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
 
 
 ###########################
@@ -1758,6 +1858,35 @@ def make_svh_v0_sv32(test_data: TestData) -> list[TestChunk]:
 def make_svh_v0_sv39(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     _t_v0_vsstatus(test_data, test_chunks, SV39)
+    return test_chunks
+
+
+# satp and vsatp (hgatp = Bare) translating the same address
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Sv32"],
+    march_extensions=["H"],
+    extra_defines=BOOT,
+    params=["SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svh_v_isolation_sv32(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    for mode in ("S", "U"):
+        _t_v_isolation(test_data, test_chunks, SV32, VS_SV32, mode)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Sv39"],
+    march_extensions=["H"],
+    extra_defines=BOOT,
+    params=["SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svh_v_isolation_sv39(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    for mode in ("S", "U"):
+        _t_v_isolation(test_data, test_chunks, SV39, VS_SV39, mode)
     return test_chunks
 
 

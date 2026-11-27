@@ -62,6 +62,17 @@ coverpoints:
     bins: |-
       cp_v0_vsstatus_sum: HS x {sw, lw} x satp paged x sstatus.SUM = 0 x vsstatus.SUM = 1 x page fault
       cp_v0_vsstatus_mxr: {HS, U} x lw x satp paged x sstatus.MXR = 0 x vsstatus.MXR = 1 x page fault
+  - name: cp_vsatp_v_isolation
+    goal: HS-level and VS-level translations of the same address are separate
+    description: |-
+      Needs satp Sv39 (RV64) or Sv32 (RV32) and the same VS-stage mode with hgatp = Bare.  satp maps an address to page A and vsatp maps it to page B, each page holding code that returns its ID and an ID word.  After sfence.vma and hfence.vvma, and with no fence between the accesses, in HS-mode and VS-mode, and in U-mode and VU-mode:
+      load in V=0, V=1, V=0 and V=1 with satp.ASID = vsatp.ASID = 0;
+      load in V=0 then V=1 with a global satp leaf and every implemented vsatp.ASID bit set;
+      load in V=1 then V=0 with a global VS-stage leaf and every implemented vsatp.ASID bit set;
+      fetch in V=0 then V=1 with both ASIDs 0.
+    expectation: HS-level and VS-level address translations are separate, and changing V is not a page-table change, so each access reaches page A when V=0 and page B when V=1.  A global leaf applies to all ASIDs of its own translation regime only.
+    bins: "{HS, VS, U, VU} x {lw, jalr} x satp paged x vsatp Sv39 or Sv32 with hgatp Bare"
+    notes: Not tested is a V=0 load followed by a V=1 load with vsatp = Bare at an address equal to the physical address of a third page, because that address lies in the superpage through which satp identity maps the test image.
   - heading: G-stage translation, vsatp = Bare (Sv_H_gstage_cg)
   - name: cp_hgatp_perm
     goal: G-stage leaf permissions and PTE formats

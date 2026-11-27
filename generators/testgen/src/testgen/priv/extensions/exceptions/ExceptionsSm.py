@@ -8,10 +8,11 @@
 
 """Exceptions Sm test generator (refactored, calls ExceptionsCommon)."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, gated
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.exceptions.ExceptionsCommon import (
+    ZICFILP_LINK_REGS,
     generate_breakpoint_tests,
     generate_ecall_tests,
     generate_illegal_instruction_seed_tests,
@@ -28,7 +29,9 @@ from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_misaligned_priority_store_tests,
     generate_store_access_fault_tests,
     generate_store_address_misaligned_tests,
+    missing_lpad_tests,
 )
+from testgen.priv.extensions.Zicfilp import Mode, set_lpe
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Exceptions_Sm_cg"
@@ -40,6 +43,10 @@ _MEDELEG_WALK = (
     + [1 << i for i in range(10, 16)]  # bits 10-15 walking 1s
     + [0b1011_0001_1111_1111]
 )
+
+# The walk above never sets medeleg[18], so the software-check exception walks none, bit 18 alone, and
+# the walk's all-ones value plus bit 18
+_MEDELEG_SWCHECK_WALK = (0, 1 << 18, _MEDELEG_WALK[-1] | 1 << 18)
 
 
 def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
@@ -202,6 +209,77 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
     return lines
 
 
+def _generate_medeleg_softwarecheck_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
+    """cp_medeleg_msu_softwarecheck: a missing landing pad in one privilege mode with each medeleg value.
+
+    M-mode sets xLPE of the mode (mseccfg.MLPE, menvcfg.LPE or senvcfg.LPE) only around each case, so the other
+    medeleg tests run with landing pads disabled.
+    """
+    covergroup, coverpoint = _CG, "cp_medeleg_msu_softwarecheck"
+    modes: dict[int, Mode] = {3: "M", 1: "S", 0: "U"}
+    mode = modes[priv_mode]
+    jump_reg = test_data.int_regs.get_register(exclude_regs=ZICFILP_LINK_REGS)
+    temp_reg, medeleg_orig = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner(
+            coverpoint,
+            f"With xLPE = 1 in {mode}-mode and medeleg = {', '.join(f'{v:#x}' for v in _MEDELEG_SWCHECK_WALK)}, "
+            "jalr to an instruction\nthat is not an lpad: a software-check exception, delegated to S-mode by "
+            "medeleg[18] except from M-mode",
+        ),
+        f"csrr x{medeleg_orig}, medeleg",
+    ]
+    for medeleg_val in _MEDELEG_SWCHECK_WALK:
+        lines.extend(
+            [
+                f"LI(x{temp_reg}, {medeleg_val:#x})",
+                f"csrw medeleg, x{temp_reg}",
+                *set_lpe("M", mode, temp_reg, True),
+                *([f"RVTEST_TSBI_GOTO_{mode}MODE"] if mode != "M" else []),
+                *missing_lpad_tests(test_data, f"mdlg_{medeleg_val:#07x}_{mode_tag}", coverpoint, covergroup, jump_reg),
+                *(["RVTEST_TSBI_GOTO_MMODE"] if mode != "M" else []),
+                *set_lpe("M", mode, temp_reg, False),
+            ]
+        )
+    lines.append(f"csrw medeleg, x{medeleg_orig}")
+    test_data.int_regs.return_registers([jump_reg, temp_reg, medeleg_orig])
+    return gated(lines, "defined(ZICFILP_SUPPORTED)")
+
+
+def _generate_load_x0_tests(test_data: TestData) -> list[str]:
+    """cp_load_x0_access_fault and cp_load_x0_misaligned: loads with rd = x0 still raise their exceptions."""
+    covergroup = _CG
+    addr_reg = test_data.int_regs.get_register()
+    ops = [("lb", False), ("lbu", False), ("lh", False), ("lhu", False), ("lw", False), ("lwu", True), ("ld", True)]
+    lines = [
+        comment_banner(
+            "cp_load_x0_access_fault, cp_load_x0_misaligned",
+            "Each load with rd = x0 from the access-fault address, and each multibyte load with rd = x0 from a\n"
+            "misaligned address when misaligned loads trap.  Each raises its exception",
+        ),
+    ]
+    access = [f"LI_FIXED_LEN(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"]
+    misaligned = [f"LA(x{addr_reg}, scratch)"]
+    for op, rv64 in ops:
+        access.extend(
+            gated(
+                [test_data.add_testcase(op, "cp_load_x0_access_fault", covergroup), f"{op} x0, 0(x{addr_reg})"],
+                "__riscv_xlen == 64" if rv64 else None,
+            )
+        )
+        if op not in ("lb", "lbu"):
+            misaligned.extend(
+                gated(
+                    [test_data.add_testcase(op, "cp_load_x0_misaligned", covergroup), f"{op} x0, 1(x{addr_reg})"],
+                    "__riscv_xlen == 64" if rv64 else None,
+                )
+            )
+    lines.extend(gated(access, "defined(RVMODEL_ACCESS_FAULT_ADDRESS_LOAD)"))
+    lines.extend(gated(misaligned, "!defined(UDB_MISALIGNED_LDST)"))
+    test_data.int_regs.return_registers([addr_reg])
+    return lines
+
+
 def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = _CG, "cp_mstatus_ie"
     save_reg, mask_reg = test_data.int_regs.get_registers(2)
@@ -306,6 +384,7 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_breakpoint_tests(test_data, _CG))
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))
+    tc.code.extend(_generate_load_x0_tests(test_data))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))
     tc.code.append("#ifdef S_SUPPORTED")
     tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_s", priv_mode=1))
@@ -320,6 +399,7 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
         tc = test_data.begin_test_chunk(f"Sm_medeleg_{mode_tag[-1]}")
         tc.code.append("#ifdef S_SUPPORTED")
         tc.code.extend(_generate_medeleg_msu_tests(test_data, mode_tag, priv_mode))
+        tc.code.extend(_generate_medeleg_softwarecheck_tests(test_data, mode_tag, priv_mode))
         tc.code.append("#endif // S_SUPPORTED")
         test_chunks.append(test_data.end_test_chunk())
     return test_chunks

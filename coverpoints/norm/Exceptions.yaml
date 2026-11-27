@@ -120,7 +120,7 @@ normative_rule_definitions:
       [
         "Exceptions_S_cg/cp_instr_access_fault",
         "Exceptions_Sm_cg/cp_instr_access_fault",
-        "Sv_Exceptions_cg/cp_instr_page_fault_s",
+        "ExceptionsSv_cg/cp_instr_page_fault_s",
         "Exceptions_U_cg/cp_instr_access_fault",
       ]
   # The EBREAK instruction is used by debuggers to cause control to be transferred back to
@@ -275,7 +275,8 @@ normative_rule_definitions:
   # Loads with a destination of x0 must still raise any exceptions and cause any
   # other side effects even though the load value is discarded.
   - name: load_exc_x0
-    coverpoint: ["Needs test: a load with rd = x0 that takes an exception."]
+    coverpoint:
+      ["Exceptions_Sm_cg/{cp_load_x0_access_fault, cp_load_x0_misaligned}"]
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of
   # the access in bytes) have behavior dependent on the EEI.
@@ -398,14 +399,14 @@ normative_rule_definitions:
   # architecture that uses access failures as part of the discovery mechanism. In this case, error
   # responses from peripheral devices will be reported as imprecise bus-error interrupts.
   - name: pma_imprecise_ok
-    coverpoint: ["Needs infrastructure: a device that returns bus errors."]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # The most important characterization of a given memory address range is whether it holds regular
   # main memory or I/O devices. Regular main memory is required to have a number of properties,
   # specified below, whereas I/O devices can have a much broader range of attributes. Memory regions
   # that do not fit into regular main memory, for example, device scratchpad RAMs, are categorized
   # as I/O regions.
   - name: pma_mm_vs_io_def
-    coverpoint: ["No independent assertion: definition."]
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
   # Main memory regions always support read and write of all access widths required by the attached
   # devices
   - name: pma_mm_rw
@@ -416,20 +417,19 @@ normative_rule_definitions:
   # can specify whether instruction fetch is supported.
   - name: pma_mm_ifetch
     coverpoint:
-      ["Needs infrastructure: platform PMA regions with these attributes."]
+      [
+        "Untestable: profile defines no main-memory region without instruction fetch",
+      ]
   # I/O regions can specify which combinations of read, write, or execute accesses to which data
   # widths are supported.
   - name: pma_io_rwx_per_sz
-    coverpoint:
-      [
-        "Needs infrastructure: platform regions with access-type and access-width restrictions.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # For systems with page-based virtual memory, I/O and memory regions can specify which
   # combinations of hardware page-table reads and hardware page-table writes are supported.
   - name: pma_vm_hw_tbl_acc
     coverpoint:
       [
-        "Needs infrastructure: platform regions that do not support hardware page-table accesses.",
+        "TODO: walk a page table at RVMODEL_ACCESS_FAULT_ADDRESS_LOAD and check for an access fault",
       ]
   # Within AMOs, there are four levels of support: AMONone, AMOSwap, AMOLogical, and AMOArithmetic.
   # AMONone indicates that no AMO operations are supported. AMOSwap indicates that only amoswap
@@ -437,31 +437,25 @@ normative_rule_definitions:
   # plus all the logical AMOs (amoand, amoor, amoxor) are supported. AMOArithmetic indicates that
   # all RISC-V AMOs defined by the A extension are supported.
   - name: pma_amo_levels
-    coverpoint:
-      ["Needs infrastructure: platform regions with each AMO support level."]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # Main memory and I/O regions may only support a subset or none of the processor-supported atomic
   # operations.
   - name: pma_amo_far_subset_proc
-    coverpoint:
-      [
-        "Needs infrastructure: platform regions that support a subset of the processor's AMOs.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # The Zacas extension defines three additional levels of support: AMOCASW, AMOCASD, and AMOCASQ.
   - name: pma_amo_Zacas_levels1
-    coverpoint: ["No independent assertion: definition."]
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
   # AMOCASW indicates that in addition to instructions indicated by AMOArithmetic-level support, the
   # AMOCAS.W instruction is supported. AMOCASD indicates that in addition to instructions indicated
   # by AMOCASW-level support, the AMOCAS.D instruction is supported. AMOCASQ indicates that in
   # addition to instructions indicated by AMOCASD-level support, the AMOCAS.Q instruction is
   # supported.
   - name: pma_amo_Zacas_levels2
-    coverpoint:
-      ["Needs infrastructure: platform regions with each AMOCAS support level."]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # The AMOs specified by the Zabha extension require the same level of support as the corresponding
   # instructions in the Zaamo standard extension or the Zacas extension.
   - name: pma_amo_Zabha_req
-    coverpoint:
-      ["Needs infrastructure: platform regions with each AMO support level."]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # For LR/SC, there are three levels of support indicating combinations of the reservability and
   # eventuality properties: RsrvNone, RsrvNonEventual, and RsrvEventual. RsrvNone indicates that no
   # LR/SC operations are supported (the location is non-reservable). RsrvNonEventual indicates that
@@ -469,8 +463,7 @@ normative_rule_definitions:
   # guarantee described in the unprivileged ISA specification. RsrvEventual indicates that the
   # operations are supported and provide the eventual success guarantee.
   - name: pma_rsrv_levels
-    coverpoint:
-      ["Needs infrastructure: platform regions with each reservability level."]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # Implementations may raise access-fault exceptions instead of address-misaligned exceptions for
   # some misaligned accesses, indicating the instruction should not be emulated by a trap handler.
   # Implementations may raise access-fault exceptions instead of address-misaligned
@@ -484,17 +477,11 @@ normative_rule_definitions:
   # Each strongly ordered I/O region specifies a numbered ordering channel, which is a mechanism by
   # which ordering guarantees can be provided between different I/O regions.
   - name: pma_mo_io_chan_def
-    coverpoint:
-      [
-        "Needs infrastructure: multiple harts, and platform I/O regions for channels other than 0. PBMT=IO mappings of RAM can supply channel 0.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # Channel 0 is used to indicate point-to-point strong ordering only, where only accesses by the
   # hart to the single associated I/O region are strongly ordered.
   - name: pma_mo_io_chan_0
-    coverpoint:
-      [
-        "Needs infrastructure: multiple harts. PBMT=IO mappings of RAM can supply channel 0 I/O attributes.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # Channel 1 is used to provide global strong ordering across all I/O regions. Any accesses by a
   # hart to any I/O region associated with channel 1 can only be observed to have occurred in
   # program order by all other harts and I/O devices, including relative to accesses made by that
@@ -502,41 +489,25 @@ normative_rule_definitions:
   # other words, any access to a region in channel 1 is equivalent to executing a fence io,io
   # instruction before and after the instruction.
   - name: pma_mo_io_chan_1
-    coverpoint:
-      ["Needs infrastructure: platform channel 1 regions and multiple harts."]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # Other larger channel numbers provide program ordering to accesses by that hart across any
   # regions with the same channel number
   - name: pma_mo_io_chan_other
-    coverpoint:
-      [
-        "Needs infrastructure: platform I/O regions on channels above 1 and multiple harts.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # Systems might support dynamic configuration of ordering properties on each memory region.
   - name: pma_mo_dyn
-    coverpoint:
-      [
-        "No independent assertion: permits dynamic reconfiguration of memory-ordering PMAs.",
-      ]
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
   # If a PMA indicates non-cacheability, then accesses to that region must be satisfied by the
   # memory itself, not by any caches.
   - name: pma_non_cacheable
-    coverpoint:
-      [
-        "Needs infrastructure: a way to observe cache use. PBMT=NC or PBMT=IO mappings of RAM can supply non-cacheable attributes.",
-      ]
+    coverpoint: ["Untestable: no non-cacheable PMA region defined in profile"]
   # Main memory regions are assumed to be idempotent.
   - name: pma_idp_mm
-    coverpoint:
-      [
-        "Configuration requirement: main memory regions are idempotent; not checked.",
-      ]
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
   # hardware should always be designed to avoid speculative or redundant accesses to memory regions
   # marked as non-idempotent
   - name: pma_idp_no_spec
-    coverpoint:
-      [
-        "Needs infrastructure: a device with read side effects to detect speculative or repeated accesses. PBMT=IO mappings of RAM can supply non-idempotent attributes.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # For non-idempotent regions, implicit reads and writes must not be performed early or
   # speculatively, with the following exceptions. When a non-speculative implicit read is performed,
   # an implementation is permitted to additionally read any of the bytes within a naturally aligned
@@ -545,17 +516,11 @@ normative_rule_definitions:
   # read any of the bytes within the next naturally aligned power-of-2 region of the same size (with
   # the address of the region taken modulo 2^XLEN).
   - name: pma_idp_implicit_ok
-    coverpoint:
-      [
-        "Needs infrastructure: a device with read side effects to observe implicit accesses.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # The size of these naturally aligned power-of-2 regions is implementation-defined, but, for
   # systems with page-based virtual memory, must not exceed the smallest supported page size.
   - name: pma_idp_implicit_sz
-    coverpoint:
-      [
-        "Needs infrastructure: a device with read side effects to observe implicit accesses.",
-      ]
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
   # When a trap is taken into M-mode, mtval is either set to zero or written with exception-specific
   # information to assist software in handling the trap. Otherwise, mtval is never written by the
   # implementation, though it may be explicitly written by software.
@@ -743,10 +708,7 @@ normative_rule_definitions:
   # The CBIE/CBCFE/CBZE fields in each xenvcfg register do not affect the read and
   # write behavior of the same fields in the other xenvcfg registers.
   - name: cbxe_unaffected
-    coverpoint:
-      [
-        "Needs test: write CBIE/CBCFE/CBZE in one xenvcfg and check that the same fields in the other xenvcfg registers are unchanged.",
-      ]
+    coverpoint: [""]
   # A CBO.INVAL instruction executes or raises either an illegal-instruction
   # exception or a virtual-instruction exception based on the state of the
   # xenvcfg.CBIE fields:
@@ -857,6 +819,23 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_hedeleg_{breakpoint, ecall, hs_u_breakpoint, hs_u_ecall, hs_u_illegal_instruction, hs_u_instr_access_fault, hs_u_instr_misaligned_jalr, hs_u_load_access_fault, hs_u_load_misaligned, hs_u_store_access_fault, hs_u_store_misaligned, illegal_instruction, instr_access_fault, instr_misaligned_jalr, load_access_fault, load_misaligned, store_access_fault, store_misaligned}",
         "Exceptions_HSm_cg/cp_hedeleg_{breakpoint, ecall, illegal_instruction, instr_access_fault, instr_misaligned_jalr, load_access_fault, load_misaligned, store_access_fault, store_misaligned}",
+        "Exceptions_H_cg/cp_hedeleg_software_check",
+        "Exceptions_HSm_cg/cp_software_check_to_m",
+      ]
+
+  # On a software-check exception, xtval holds its code: 2 for a landing pad fault.  The trap record checks mtval
+  # for traps into M-mode, and stval or vstval for traps delegated to HS-mode or VS-mode.
+  - names: [mtval_swchk_lead_in, mtval_swchk_list]
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_softwarecheck",
+        "Exceptions_HSm_cg/cp_software_check_to_m",
+      ]
+  - name: stval_exception_info
+    coverpoint:
+      [
+        "Exceptions_Sm_cg/cp_medeleg_msu_softwarecheck",
+        "Exceptions_H_cg/cp_hedeleg_software_check",
       ]
 
   # A trap into HS-mode writes sstatus.SPP/SPIE/SIE and hstatus.SPV/GVA, and writes SPVP only for traps from V = 1
@@ -1084,6 +1063,45 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
         "Exceptions_HSm_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, load_access, load_misaligned, store_access, store_misaligned, virtinstr}",
+        "Exceptions_H_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
+      ]
+  # A synchronous exception may write a standard transformation only for explicit memory accesses by loads, stores,
+  # AMOs, CBOs and their compressed forms.  The trap record accepts the reference model's transformation or zero.
+  - name: H_trap_xtinst_std_trans_mem
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned, amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access, c_load_access, c_store_access, cbom_access, cboz_access}",
+      ]
+  # Transformed loads and stores: the immediate offset becomes zero and rs1 the address offset
+  - names: [H_trans_load, H_trans_store, H_trans_ldst_imm_zero]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned}",
+        "Exceptions_HSm_cg/cp_xtinst_{load_access, load_misaligned, store_access, store_misaligned}",
+      ]
+  # Transformed LR, SC and AMOs (including Zabha and Zacas)
+  - name: H_trans_atomic
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{amo_access, amo_misaligned, lrsc_access, zabha_access, zacas_access}",
+      ]
+  # A compressed instruction is expanded and transformed, and bit 1 is cleared, so bits 1:0 are 01
+  - names:
+      [H_trans_compressed_lead_in, H_trans_compressed_list, H_trans_bits_1_0]
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{c_load_access, c_store_access}",
+        "Exceptions_HSm_cg/cp_xtinst_{c_load_access, c_store_access}",
+      ]
+  # A standard instruction with no transformation writes zero
+  - name: H_trap_xtinst_no_trans_zero
+    coverpoint:
+      [
+        "Exceptions_H_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, virtinstr}",
+        "Exceptions_HSm_cg/cp_xtinst_{breakpoint, ecall, illegalinstr, instr_access, instr_misaligned, virtinstr}",
       ]
 
   # When a trap is taken into M-mode, virtualization mode V gets set to 0, and fields MPV

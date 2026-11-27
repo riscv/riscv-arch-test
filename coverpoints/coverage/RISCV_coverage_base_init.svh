@@ -106,17 +106,9 @@
         `cover_info("//      S - Enabled");
         `include "S_coverage_init.svh"
     `endif
-    `ifdef COVER_SDTRIGS
-        `cover_info("//      SdtrigS - Enabled");
-        `include "SdtrigS_coverage_init.svh"
-    `endif
-    `ifdef COVER_SDTRIGSM
-        `cover_info("//      SdtrigSm - Enabled");
-        `include "SdtrigSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_SDTRIGU
-        `cover_info("//      SdtrigU - Enabled");
-        `include "SdtrigU_coverage_init.svh"
+    `ifdef COVER_SDTRIG
+        `cover_info("//      Sdtrig - Enabled");
+        `include "Sdtrig_coverage_init.svh"
     `endif
     `ifdef COVER_SHCOUNTERENW
         `cover_info("//      Shcounterenw - Enabled");

@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sdtrig_HSm
+notes: |-
+  The group boots to M-mode, where medeleg = mideleg = 0, and enters VS-mode and VU-mode from M-mode.
+  The guest arms its triggers through T-SBI, with tdata1.vs or tdata1.vu = 1 for the guest mode under test.
+  itrigger and etrigger fire before the first instruction of the handler of the trap they match, so their tests take the trap from the guest into HS-mode and the breakpoint into M-mode, where no re-entrancy option suppresses it.
+  All other assumptions are inherited from Sdtrig_Sm and Sdtrig_H.
+coverpoints:
+  - heading: Breakpoint delegation
+  - name: |-
+      cp_mcontrol6_delegate_vs
+      cp_mcontrol6_delegate_vu
+      cp_icount_delegate_vs
+      cp_icount_delegate_vu
+    goal: A breakpoint from VS-mode (VU-mode) is taken into M-mode with medeleg[3] = 0, and GVA records whether tval is a guest virtual address
+    description: |-
+      With medeleg[3] = 0, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports the type:
+      fire an mcontrol6 store address trigger (sw to scratch) and an icount trigger (count = 1) in VS-mode (VU-mode)
+    expectation: Breakpoint taken into M-mode with MPV = 1, mtval2 = mtinst = 0, and GVA = 1 when mtval is the guest virtual address, which mcontrol6 may write, and 0 when mtval = 0, which icount always writes
+    bins: mcontrol6 (icount) triggers per mode
+    notes: The icount cases need a reference model that clears GVA when a trigger breakpoint writes tval = 0 (Sail after 0.16, riscv/sail-riscv#2111).
+  - heading: itrigger and etrigger
+  - name: |-
+      cp_itrigger_vs
+      cp_itrigger_vu
+    goal: An itrigger fires on an interrupt taken from VS-mode (VU-mode) only when its vs (vu) bit is set
+    description: |-
+      In M-mode, with mideleg[1] = 1, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports itrigger:
+      itrigger with tdata2 = SSI, mie.SSIE = 1
+      tdata1 = {vs (vu) only, every other mode bit (m, s, u, and vu (vs))}
+      set mip.SSIP and enter VS-mode (VU-mode); the SSI is taken from the guest into HS-mode
+    expectation: |-
+      Breakpoint exception taken into M-mode before the first HS handler instruction when only tdata1.vs (vu) = 1
+      No breakpoint when only the other mode bits are set
+    bins: itrigger triggers * 2 per mode
+  - name: |-
+      cp_etrigger_vs
+      cp_etrigger_vu
+    goal: An etrigger fires on an exception taken from VS-mode (VU-mode) only when its vs (vu) bit is set
+    description: |-
+      In M-mode, with medeleg[22] = 1, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports etrigger:
+      etrigger with tdata2 = virtual instruction (22)
+      tdata1 = {vs (vu) only, every other mode bit (m, s, u, and vu (vs))}
+      enter VS-mode (VU-mode) and read hstatus, which raises a virtual-instruction exception taken into HS-mode
+    expectation: |-
+      Breakpoint exception taken into M-mode before the first HS handler instruction when only tdata1.vs (vu) = 1
+      No breakpoint when only the other mode bits are set
+    bins: etrigger triggers * 2 per mode
+  - heading: hcontext
+  - name: cp_hcontext_m
+    goal: hcontext is an alias of the hcontext field of mcontext, accessible in M-mode
+    description: If hcontext is implemented, in M-mode csrw hcontext and read mcontext, then read hcontext.  Reads are checked in the low UDB_DBG_HCONTEXT_WIDTH bits
+    expectation: mcontext and hcontext read the value written to hcontext
+    bins: 2 (csrr, csrw)

@@ -209,14 +209,16 @@ include::norm/Zama16b_norm_rules.adoc[]
 ==== Sdtrig Debug Triggers
 
 Located here because it is part of RVA23 and can function without the rest of the https://docs.riscv.org/reference/debug-trace-ras/debug/_attachments/riscv-debug-specification.pdf[Debug Specification].  See <<Debug>> for non-RVA23 debug extensions.
-The suite is divided into SdtrigSm, SdtrigS, and SdtrigU suites that are essentially identical, but are run on different privilege levels and thus produce different results for coverpoints such as reading debug registers or triggering in certain modes.
-SdtrigSm is listed in full; the SdtrigS and SdtrigU plans below list only how they differ, and they cover the same normative rules.
+The suite is divided into groups Sdtrig_Sm, Sdtrig_S and Sdtrig_U that are essentially identical, but are run on different privilege levels and thus produce different results for coverpoints such as reading debug registers or triggering in certain modes.
+The Sdtrig_H and Sdtrig_HSm groups run triggers in VS-mode and VU-mode.
+Sdtrig_Sm is listed in full; the Sdtrig_S and Sdtrig_U plans below list only how they differ, and they cover the same normative rules.
+The Sdtrig_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
 
-include::{testplansdir}/priv/SdtrigSm.adoc[]
+include::{testplansdir}/priv/Sdtrig_Sm.adoc[]
 
-include::norm/SdtrigSm_norm_rules.adoc[]
+include::norm/Sdtrig_norm_rules.adoc[]
 
-As of 10/22/26, the SdtrigSm, SdtrigS and SdtrigU tests and coverpoints exercise the `mcontrol6`, `icount`, `itrigger` and `etrigger` trigger types, `textra`,
+As of 10/22/26, the Sdtrig_Sm, Sdtrig_S and Sdtrig_U tests and coverpoints exercise the `mcontrol6`, `icount`, `itrigger` and `etrigger` trigger types, `textra`,
 access to the trigger registers, and address matching on scalar, compressed, atomic, vector, cache-block and translated accesses.
 
 Most Sdtrig features are optional, so the tests take every DUT-specific fact from the Sdtrig parameters of the DUT's https://github.com/riscv/riscv-unified-db[UDB] configuration.
@@ -304,19 +306,19 @@ The other Spike, Whisper and Sail configurations use interrupt enables, and so d
 On such a hart, a trigger that fires in an M-mode trap handler overwrites `mepc` and `mcause`, and the test cannot recover.
 The tests assume one of the two methods.
 
-The three suites start in different modes.
-SdtrigSm boots to M-mode and can change `medeleg`.
-SdtrigS and SdtrigU boot to S-mode and U-mode, and keep the boot value of `medeleg`[3]: 1 on a hart that uses interrupt enables, and read-only 0 on a hart that uses tcontrol.
+The three groups start in different modes.
+Sdtrig_Sm boots to M-mode and can change `medeleg`.
+Sdtrig_S and Sdtrig_U boot to S-mode and U-mode, and keep the boot value of `medeleg`[3]: 1 on a hart that uses interrupt enables, and read-only 0 on a hart that uses tcontrol.
 The exception is their breakpoint-delegation test, which switches to M-mode to clear and then set `medeleg`[3] and fires mcontrol6 and icount triggers each way.
-SdtrigSm arms its M-mode triggers with MIE=1, and with MTE=1 when `SDTRIG_BREAKPOINT_REENTRANCY` is `Use_tcontrol`.
-SdtrigS arms its triggers with SIE=1.
-SdtrigSm reaches S-mode and U-mode only in the etrigger and itrigger tests, which clear `medeleg`[3] first.
-The tables below show what each suite then exercises.
+Sdtrig_Sm arms its M-mode triggers with MIE=1, and with MTE=1 when `SDTRIG_BREAKPOINT_REENTRANCY` is `Use_tcontrol`.
+Sdtrig_S arms its triggers with SIE=1.
+Sdtrig_Sm reaches S-mode and U-mode only in the etrigger and itrigger tests, which clear `medeleg`[3] first.
+The tables below show what each group then exercises.
 
 .Exercised on a hart that uses interrupt enables
 [cols="2,3,3,3" options=header]
 |===
-|Trigger |SdtrigSm |SdtrigS |SdtrigU
+|Trigger |Sdtrig_Sm |Sdtrig_S |Sdtrig_U
 
 |mcontrol6, icount
 |Fires in M-mode; breakpoint taken from M to M
@@ -327,13 +329,13 @@ The tables below show what each suite then exercises.
 |Raised in M-mode: suppressed.
 Raised in S-mode or U-mode with `medeleg`[3]=0: fires into M if delegated to S, suppressed if handled in M.
 |Suppressed: handled in S with SIE=0 and `medeleg`[3]=1, or handled in M
-|Suppressed, as for SdtrigS
+|Suppressed, as for Sdtrig_S
 |===
 
 .Exercised on a hart that uses tcontrol
 [cols="2,3,3,3" options=header]
 |===
-|Trigger |SdtrigSm |SdtrigS |SdtrigU
+|Trigger |Sdtrig_Sm |Sdtrig_S |Sdtrig_U
 
 |mcontrol6, icount
 |Fires in M-mode, where the tests set MTE; breakpoint taken from M to M
@@ -343,23 +345,37 @@ Raised in S-mode or U-mode with `medeleg`[3]=0: fires into M if delegated to S, 
 |etrigger, itrigger
 |As on a hart that uses interrupt enables
 |Fires into M if delegated to S; suppressed if handled in M
-|As for SdtrigS; suppressed on a hart without S-mode
+|As for Sdtrig_S; suppressed on a hart without S-mode
 |===
 
 So the outcome differs between the two kinds of hart in four of the six cells.
 Each kind of hart leaves some cases unexercised, but none of these gaps comes from the specification:
 
-* SdtrigS and SdtrigU (`cp_breakpoint_delegate_s/u`) fire mcontrol6 and icount triggers in S-mode and U-mode with `medeleg`[3]=0 and with `medeleg`[3]=1, so on a hart that uses interrupt enables a breakpoint is also taken from S or U to M.
+* Sdtrig_S and Sdtrig_U (`cp_mcontrol6_delegate_s/u`, `cp_icount_delegate_s/u`) fire mcontrol6 and icount triggers in S-mode and U-mode with `medeleg`[3]=0 and with `medeleg`[3]=1, so on a hart that uses interrupt enables a breakpoint is also taken from S or U to M.
 * The tests read the reentrancy method from `SDTRIG_BREAKPOINT_REENTRANCY` and whether `tcontrol` exists from `TCONTROL_IMPLEMENTED`.
 The `tcontrol` tests check that a trap into M-mode copies MTE to MPTE and clears MTE and that `mret` copies MPTE to MTE on every hart with `tcontrol`, and that MTE gates M-mode triggers on a hart that uses `tcontrol` for reentrancy.
-* On a hart that uses interrupt enables, etrigger and itrigger never fire in SdtrigS or SdtrigU, because those suites keep `medeleg`[3]=1 for these tests.
-They fire only in SdtrigSm, which clears `medeleg`[3] first.
-SdtrigS and SdtrigU could clear `medeleg`[3] from M-mode, as their breakpoint-delegation test does.
+* On a hart that uses interrupt enables, etrigger and itrigger never fire in Sdtrig_S or Sdtrig_U, because those groups keep `medeleg`[3]=1 for these tests.
+They fire only in Sdtrig_Sm, which clears `medeleg`[3] first.
+Sdtrig_S and Sdtrig_U could clear `medeleg`[3] from M-mode, as their breakpoint-delegation test does.
 
-===== SdtrigS
+===== Sdtrig_S
 
-include::{testplansdir}/priv/SdtrigS.adoc[]
+include::{testplansdir}/priv/Sdtrig_S.adoc[]
 
-===== SdtrigU
+===== Sdtrig_U
 
-include::{testplansdir}/priv/SdtrigU.adoc[]
+include::{testplansdir}/priv/Sdtrig_U.adoc[]
+
+===== Sdtrig_H Triggers in VS-mode and VU-mode
+
+These tests are run on any configuration with the hypervisor extension.
+They fire mcontrol6 and icount triggers in VS-mode and VU-mode, take guest breakpoints into HS-mode and VS-mode, match the textra `mcontext`, VMID and `vsatp` ASID selects in the guest, and access `hcontext` from HS-mode.
+
+include::{testplansdir}/priv/Sdtrig_H.adoc[]
+
+===== Sdtrig_HSm Machine-Mode Triggers in VS-mode and VU-mode
+
+These tests are run on any configuration with machine mode and the hypervisor extension.
+They take guest breakpoints into M-mode, fire itrigger and etrigger on traps taken from VS-mode and VU-mode, and access `hcontext` from M-mode.
+
+include::{testplansdir}/priv/Sdtrig_HSm.adoc[]

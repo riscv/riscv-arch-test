@@ -7,27 +7,31 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   cp_csr_access_common building blocks of the SdtrigSm access covergroup
+//   cp_csr_access_common building blocks of the Sdtrig_Sm access covergroup
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-// supported standard trigger types; 1 and 2 are legacy, 7 is tmexttrigger, 8-11 are reserved, 12-14 are custom.
-// 0 means no trigger at this tselect, which no implemented trigger (triggernum) can read back.
-tdata1_type: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+// the type of the accessed trigger, one coverpoint per supported standard type (cp_csr_access_common_<type>); 1 and
+// 2 are legacy, 7 is tmexttrigger, 8-11 are reserved, 12-14 are custom.
+access_icount: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
     type_option.weight = 0;
-    `ifdef SDTRIG_ICOUNT_ANY
-        bins icount    = {4'd3};
-    `endif
-    `ifdef SDTRIG_ITRIGGER_ANY
-        bins itrigger  = {4'd4};
-    `endif
-    `ifdef SDTRIG_ETRIGGER_ANY
-        bins etrigger  = {4'd5};
-    `endif
-    `ifdef SDTRIG_MCONTROL6_ANY
-        bins mcontrol6 = {4'd6};
-    `endif
-    bins disabled  = {4'd15};
+    bins icount = {4'd3};
+}
+access_itrigger: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins itrigger = {4'd4};
+}
+access_etrigger: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins etrigger = {4'd5};
+}
+access_mcontrol6: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins mcontrol6 = {4'd6};
+}
+access_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins disabled = {4'd15};
 }
 csr_common_reg: coverpoint ins.current.insn[31:20] {
     type_option.weight = 0;
@@ -61,7 +65,7 @@ csr_access_common: coverpoint ins.current.insn {
     wildcard bins csrrc1 = {CSRC} iff (ins.current.rs1_val == '1);
 }
 `ifndef SDTRIG_SUITE_SM
-// SdtrigS/U cp_csr_access_trap: a direct S- or U-mode csrr or csrw of an M-level trigger CSR, which raises an
+// Sdtrig_S/U cp_csr_access_trap: a direct S- or U-mode csrr or csrw of an M-level trigger CSR, which raises an
 // illegal-instruction exception (into S when medeleg[2] = 1, else into M). scontext and hcontext are S/H-level CSRs.
 csr_trigger_mlevel: coverpoint ins.current.insn[31:20] {
     type_option.weight = 0;

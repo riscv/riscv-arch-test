@@ -73,4 +73,4 @@ coverpoints:
     rules:
       - Shvstvala_vstval_written
     notes: |-
-      In VS-mode and VU-mode these come only from Sdtrig triggers.  The SdtrigH suite, which is not yet in act4, delegates them to VS-mode (hedeleg[3] = 1), where the trap handler records vstval.
+      In VS-mode and VU-mode these come only from Sdtrig triggers.  The Sdtrig_H group of the Sdtrig suite takes mcontrol6 breakpoints into VS-mode (hedeleg[3] = 1), where the trap handler records vstval.

@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Defines derived from the Sdtrig UDB parameters, included by the Sdtrig*_coverage.svh files
+//   Defines derived from the Sdtrig UDB parameters, included by Sdtrig_coverage.svh
 //
 ///////////////////////////////////////////
 `ifndef RISCV_COVERAGE_SDTRIG_DERIVED_SVH
@@ -501,6 +501,44 @@
 `ifdef UDB_SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH
     `ifndef UDB_SDTRIG_TEXTRA_SVALUE_LEN_0
         `define SDTRIG_TEXTRA_SCONTEXT
+    `endif
+`endif
+// a trigger can be enabled in VS-mode or VU-mode (UDB_SDTRIG_VS_WRITABLE or UDB_SDTRIG_VU_WRITABLE)
+`ifdef UDB_SDTRIG_VS_WRITABLE
+    `define SDTRIG_GUEST_WRITABLE
+`elsif UDB_SDTRIG_VU_WRITABLE
+    `define SDTRIG_GUEST_WRITABLE
+`endif
+// Covergroups that a configuration may leave without crosses, which are left out instead
+// Sdtrig_<group>_a_cg: Zalrsc or Zaamo
+`ifdef ZALRSC_SUPPORTED
+    `define SDTRIG_LRSC_OR_AMO
+`elsif ZAAMO_SUPPORTED
+    `define SDTRIG_LRSC_OR_AMO
+`endif
+// Sdtrig_<group>_cache_operations_cg: Zicbom, Zicboz or Zicbop
+`ifdef ZICBOM_SUPPORTED
+    `define SDTRIG_CBO_OR_PREFETCH
+`elsif ZICBOZ_SUPPORTED
+    `define SDTRIG_CBO_OR_PREFETCH
+`elsif ZICBOP_SUPPORTED
+    `define SDTRIG_CBO_OR_PREFETCH
+`endif
+// Sdtrig_S_cg, Sdtrig_U_cg: a trigger that takes their breakpoints, icount or mcontrol6 with store matching
+`ifdef SDTRIG_ICOUNT_ANY
+    `define SDTRIG_BREAKPOINT_ANY
+`elsif SDTRIG_MCONTROL6_ANY
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE
+        `define SDTRIG_BREAKPOINT_ANY
+    `endif
+`endif
+// Sdtrig_S_textra_cg: tdata3, and triggers enabled in S-mode or cp_textra_mhselect_no_h_* (without H)
+`ifdef UDB_TDATA3_IMPLEMENTED
+    `ifdef UDB_SDTRIG_S_WRITABLE
+        `define SDTRIG_S_TEXTRA
+    `endif
+    `ifndef H_SUPPORTED
+        `define SDTRIG_S_TEXTRA
     `endif
 `endif
 

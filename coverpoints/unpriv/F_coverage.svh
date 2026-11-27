@@ -1131,6 +1131,10 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         // Cross coverage FS1, FS2, rounding mode
     }
 
+    cr_fs1_fs2_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_fs3_edges,cp_frm_4 iff (ins.trap == 0) {
+        // Cross coverage FS1, FS2, FS3, rounding mode
+    }
+
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS3, rounding mode
     }
@@ -1496,6 +1500,10 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
+    }
+
+    cr_fs1_fs2_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_fs3_edges,cp_frm_4 iff (ins.trap == 0) {
+        // Cross coverage FS1, FS2, FS3, rounding mode
     }
 
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {
@@ -1882,6 +1890,10 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         // Cross coverage FS1, FS2, rounding mode
     }
 
+    cr_fs1_fs2_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_fs3_edges,cp_frm_4 iff (ins.trap == 0) {
+        // Cross coverage FS1, FS2, FS3, rounding mode
+    }
+
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS3, rounding mode
     }
@@ -2043,6 +2055,10 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
 
     cr_fs1_fs2_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_frm_4  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2, rounding mode
+    }
+
+    cr_fs1_fs2_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs2_edges,cp_fs3_edges,cp_frm_4 iff (ins.trap == 0) {
+        // Cross coverage FS1, FS2, FS3, rounding mode
     }
 
     cr_fs1_fs3_edges_frm4 : cross cp_fs1_edges,cp_fs3_edges,cp_frm_4  iff (ins.trap == 0 )  {

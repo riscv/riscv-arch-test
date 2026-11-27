@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   icount building blocks of the SdtrigSm/S/U icount covergroups. Each suite defines SDTRIG_ICOUNT_MODE_BIT,
+//   icount building blocks of the Sdtrig_Sm/S/U icount covergroups. Each group defines SDTRIG_ICOUNT_MODE_BIT,
 //   the icount tdata1 bit of the mode its tests count in (m 9, s 7, u 6)
 //   Weight 0: only the crosses count.
 //

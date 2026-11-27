@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   tdata2 address building blocks of the SdtrigSm/SdtrigS address_matches covergroups
+//   tdata2 address building blocks of the Sdtrig_Sm/Sdtrig_S address_matches covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////

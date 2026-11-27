@@ -98,9 +98,7 @@ exclude_extensions:
   - Zawrs_U
   # QEMU's trigger implementation has too many problems (tdata1 writes of 0 ignored, reserved types abort, icount
   # hangs: https://gitlab.com/qemu-project/qemu/-/work_items/4665); revisit when QEMU's Sdtrig matures.
-  - SdtrigSm
-  - SdtrigS
-  - SdtrigU
+  - Sdtrig
   # mstatus.MPV and mstatus.GVA are read-only zero, so mret never enters VS/VU: a guest's
   # ecall is reported as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises
   # an illegal instruction instead of a virtual instruction exception

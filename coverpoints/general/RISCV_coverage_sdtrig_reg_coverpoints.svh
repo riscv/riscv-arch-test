@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Trigger-module register building blocks of the SdtrigSm/SdtrigS trig_module_reg covergroups
+//   Trigger-module register building blocks of the Sdtrig_Sm/Sdtrig_S trig_module_reg covergroups
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
@@ -23,7 +23,7 @@ priv_bits: coverpoint ins.current.rs1_val[26:0] {
     type_option.weight = 0;
     bins priv = {27'b001_1000_0000_0000_0000_0101_1000};
 }
-// cp_tdata1_dmode: an M-mode write of dmode = 1 with a supported type (tdata1_write_type) leaves dmode = 0
+// cp_tdata1_dmode_*: an M-mode write of dmode = 1 with a supported type (tdata1_write_*) leaves dmode = 0
 dmode_written: coverpoint ins.current.rs1_val[XLEN-5] {
     type_option.weight = 0;
     bins set = {1'b1};

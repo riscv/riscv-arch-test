@@ -79,6 +79,8 @@ HEDELEG_P113_WRITABLE = (1 << 18) | (1 << 19)
 P113_GATE = "defined(SM1P13P0_OR_LATER_SUPPORTED)"
 # hideleg: VS-level interrupts 2, 6 and 10 are writable; 1, 5, 9 and 12 are read-only zero.
 HIDELEG_MASK = 0x1666
+# hideleg[13] is writable with Shlcofideleg (when mideleg[13] = 1) and read-only zero otherwise
+HIDELEG_LCOFI = 1 << 13
 # The VS-level interrupts (MIP_VS_MASK)
 VS_INTERRUPTS = 0x444
 # hie and hip are walked across bits 15:0, as mie and mip are in Sm.  The reference model decides each bit:
@@ -213,24 +215,28 @@ def hcsr_tests(
         tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(csr_access_test(test_data, ("hgeip", None), covergroup, "cp_hcsr_access_ro"))
-    if any(csr.name == "hedeleg" for csr in csrs):
-        for name, mask, gate in (
-            ("p113", HEDELEG_P113_WRITABLE, P113_GATE),
-            ("ialign32", HEDELEG_IALIGN32_WRITABLE, "!defined(ZCA_SUPPORTED)"),
-        ):
-            tc = test_data.new_test_chunk(test_chunks)
-            save_reg, ones_reg, check_reg, mask_reg = test_data.int_regs.get_registers(4)
-            lines = [
-                f"csrr x{save_reg}, hedeleg",
-                f"LI(x{ones_reg}, -1)",
-                f"LI(x{mask_reg}, {mask:#x})",
-                test_data.add_testcase(f"hedeleg_{name}_writable", "cp_hcsr_access", covergroup),
-                f"csrw hedeleg, x{ones_reg}",
-                gen_csr_read_sigupd(check_reg, ("hedeleg", mask), test_data, mask_reg),
-                f"csrw hedeleg, x{save_reg}",
-            ]
-            test_data.int_regs.return_registers([save_reg, ones_reg, check_reg, mask_reg])
-            tc.code.extend(gated(lines, gate))
+    # Bits outside the CSR's mask that the config makes writable or read-only zero, checked after writing all 1s
+    names = {csr.name for csr in csrs}
+    for csr_name, name, mask, gate in (
+        ("hedeleg", "p113_writable", HEDELEG_P113_WRITABLE, P113_GATE),
+        ("hedeleg", "ialign32_writable", HEDELEG_IALIGN32_WRITABLE, "!defined(ZCA_SUPPORTED)"),
+        ("hideleg", "lcofi_ro0", HIDELEG_LCOFI, "!defined(SHLCOFIDELEG_SUPPORTED)"),
+    ):
+        if csr_name not in names:
+            continue
+        tc = test_data.new_test_chunk(test_chunks)
+        save_reg, ones_reg, check_reg, mask_reg = test_data.int_regs.get_registers(4)
+        lines = [
+            f"csrr x{save_reg}, {csr_name}",
+            f"LI(x{ones_reg}, -1)",
+            f"LI(x{mask_reg}, {mask:#x})",
+            test_data.add_testcase(f"{csr_name}_{name}", "cp_hcsr_access", covergroup),
+            f"csrw {csr_name}, x{ones_reg}",
+            gen_csr_read_sigupd(check_reg, (csr_name, mask), test_data, mask_reg),
+            f"csrw {csr_name}, x{save_reg}",
+        ]
+        test_data.int_regs.return_registers([save_reg, ones_reg, check_reg, mask_reg])
+        tc.code.extend(gated(lines, gate))
 
     tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_walk")
     tc.section_header = comment_banner(

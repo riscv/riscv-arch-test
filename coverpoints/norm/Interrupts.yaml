@@ -524,6 +524,7 @@ normative_rule_definitions:
       [
         "Interrupts_cg/cp_vsip_vsie (vsie and vsip bit 13 read zero while hideleg bit 13 is zero)",
         "Interrupts_Shlcofideleg_cg/cp_{vsip_vsie_lcofi, trigger_lcofi_vs}",
+        "{H_hscsr_cg, Sm_H_mcsr_cg}/cp_hcsr_access/hideleg (bit 13 reads zero after writing all 1s without Shlcofideleg)",
       ]
 
   # mip holds hip.SGEIP, read from M-mode with a guest external interrupt pending

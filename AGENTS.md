@@ -85,6 +85,13 @@
 - After generator or testplan changes, run `make tests` and inspect the tracked generated diff.
 - Check that changed documentation builds.
 
+## Before Opening A PR
+
+- Run the ACTBot static review ([docs/ACTBot.md](docs/ACTBot.md)) on the branch and address its findings before
+  opening or updating a PR. Fix each finding that holds up; drop one only if it is wrong, and be ready to say why.
+- In Claude Code, run `/actbot`. Other agents follow `docs/ACTBot.md`, in a subagent or fresh session if the tool
+  has one.
+
 ## Debugging
 
 - Run summaries are in `work/<config>/summary.log`. Simulator logs are in `work/<config>/logs/`.

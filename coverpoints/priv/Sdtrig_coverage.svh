@@ -981,18 +981,19 @@ function automatic logic [1:0] sdtrig_h_bp_handler(ins_t ins);
     return 2'd0;
 endfunction
 
-// 1 when the breakpoint taken on this record left the GVA bit of the mode that took it as specified: 1 for an
-// mcontrol6 address trigger, whose tval is a guest virtual address, and 0 for icount, which writes tval = 0. A
-// breakpoint taken into VS-mode has no GVA bit.
+// 1 when the breakpoint taken on this record set GVA exactly when it wrote a guest virtual address to tval: an mcontrol6
+// trigger writes the address or 0, and icount writes 0. A breakpoint taken into VS-mode has no GVA bit.
 function automatic logic sdtrig_h_gva_ok(ins_t ins);
-    logic gva_expected = get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] == 4'd6;
+    logic mcontrol6 = get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] == 4'd6;
+    logic mtval_va = mcontrol6 && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL) != '0;
+    logic stval_va = mcontrol6 && get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL) != '0;
     case (sdtrig_h_bp_handler(ins))
         2'd3: `ifdef UDB_MXLEN_64
-                  return get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "gva")[0] == gva_expected;
+                  return get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "gva")[0] == mtval_va;
               `else
-                  return get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "gva")[0] == gva_expected;
+                  return get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "gva")[0] == mtval_va;
               `endif
-        2'd1: return get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "gva")[0] == gva_expected;
+        2'd1: return get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "gva")[0] == stval_va;
         2'd2: return 1'b1;
         default: return 1'b0;
     endcase
@@ -1106,10 +1107,13 @@ covergroup Sdtrig_H_cg with function sample(ins_t ins);
         bins others_no_fire = {2'd2};
     }
     // delegation: the type of the trigger whose breakpoint was taken, and where it was taken
-    bp_type: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] iff (sdtrig_h_bp_taken(ins)) {
+    bp_mcontrol6: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] iff (sdtrig_h_bp_taken(ins)) {
         type_option.weight = 0;
-        bins icount    = {4'd3};
         bins mcontrol6 = {4'd6};
+    }
+    bp_icount: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] iff (sdtrig_h_bp_taken(ins)) {
+        type_option.weight = 0;
+        bins icount = {4'd3};
     }
     // {medeleg[3], hedeleg[3], the mode that took the breakpoint}
     bp_routing: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[3],
@@ -1128,8 +1132,12 @@ covergroup Sdtrig_H_cg with function sample(ins_t ins);
     // textra
     guest_mode: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
         type_option.weight = 0;
-        bins VS_mode = {3'b101};
-        bins VU_mode = {3'b100};
+        `ifdef UDB_SDTRIG_VS_WRITABLE
+            bins VS_mode = {3'b101};
+        `endif
+        `ifdef UDB_SDTRIG_VU_WRITABLE
+            bins VU_mode = {3'b100};
+        `endif
     }
     mhselect_mctx: coverpoint sdtrig_textra_mhselect(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA3)) {
         type_option.weight = 0;
@@ -1174,16 +1182,34 @@ covergroup Sdtrig_H_cg with function sample(ins_t ins);
 
     // main coverpoints
     `ifdef SDTRIG_MCONTROL6_ANY
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE
         cp_mcontrol6_vs: cross priv_mode_vs, triggernum_mcontrol6, sw_watched, mcontrol6_outcome_vs;  // mcontrol6 triggers * 2 outcomes
         cp_mcontrol6_vu: cross priv_mode_vu, triggernum_mcontrol6, sw_watched, mcontrol6_outcome_vu;  // mcontrol6 triggers * 2 outcomes
+    `endif
     `endif
     `ifdef SDTRIG_ICOUNT_ANY
         cp_icount_vs: cross priv_mode_vs, triggernum_icount, icount_point, icount_outcome_vs;  // icount triggers * 2 outcomes
         cp_icount_vu: cross priv_mode_vu, triggernum_icount, icount_point, icount_outcome_vu;  // icount triggers * 2 outcomes
     `endif
     `ifdef UDB_MEDELEG_DELEGATABLE_3
-        cp_breakpoint_delegate_vs: cross priv_mode_vs, triggernum, bp_type, bp_routing, bp_gva;  // NTRIG * 2 types * 2 (into HS, into VS)
-        cp_breakpoint_delegate_vu: cross priv_mode_vu, triggernum, bp_type, bp_routing, bp_gva;  // NTRIG * 2 types * 2 (into HS, into VS)
+    `ifdef SDTRIG_MCONTROL6_ANY
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE
+        `ifdef UDB_SDTRIG_VS_WRITABLE
+            cp_mcontrol6_delegate_vs: cross priv_mode_vs, triggernum_mcontrol6, bp_mcontrol6, bp_routing, bp_gva;  // mcontrol6 triggers * 2 (into HS, into VS)
+        `endif
+        `ifdef UDB_SDTRIG_VU_WRITABLE
+            cp_mcontrol6_delegate_vu: cross priv_mode_vu, triggernum_mcontrol6, bp_mcontrol6, bp_routing, bp_gva;  // mcontrol6 triggers * 2 (into HS, into VS)
+        `endif
+    `endif
+    `endif
+    `ifdef SDTRIG_ICOUNT_ANY
+        `ifdef UDB_SDTRIG_VS_WRITABLE
+            cp_icount_delegate_vs: cross priv_mode_vs, triggernum_icount, bp_icount, bp_routing, bp_gva;  // icount triggers * 2 (into HS, into VS)
+        `endif
+        `ifdef UDB_SDTRIG_VU_WRITABLE
+            cp_icount_delegate_vu: cross priv_mode_vu, triggernum_icount, bp_icount, bp_routing, bp_gva;  // icount triggers * 2 (into HS, into VS)
+        `endif
+    `endif
     `endif
     `ifdef SDTRIG_ICOUNT_ANY
         `ifdef UDB_SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH
@@ -1209,10 +1235,13 @@ covergroup Sdtrig_HSm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
 
     // delegation: breakpoints from the guest into M-mode
-    bp_type: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] iff (sdtrig_h_bp_taken(ins)) {
+    bp_mcontrol6: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] iff (sdtrig_h_bp_taken(ins)) {
         type_option.weight = 0;
-        bins icount    = {4'd3};
         bins mcontrol6 = {4'd6};
+    }
+    bp_icount: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] iff (sdtrig_h_bp_taken(ins)) {
+        type_option.weight = 0;
+        bins icount = {4'd3};
     }
     // {medeleg[3], the mode that took the breakpoint}
     bp_routing: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG)[3], sdtrig_h_bp_handler(ins)} iff (sdtrig_h_bp_taken(ins)) {
@@ -1267,8 +1296,24 @@ covergroup Sdtrig_HSm_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_breakpoint_delegate_vs: cross priv_mode_vs, triggernum, bp_type, bp_routing, bp_gva;  // NTRIG * 2 types
-    cp_breakpoint_delegate_vu: cross priv_mode_vu, triggernum, bp_type, bp_routing, bp_gva;  // NTRIG * 2 types
+    `ifdef SDTRIG_MCONTROL6_ANY
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE
+        `ifdef UDB_SDTRIG_VS_WRITABLE
+            cp_mcontrol6_delegate_vs: cross priv_mode_vs, triggernum_mcontrol6, bp_mcontrol6, bp_routing, bp_gva;  // mcontrol6 triggers
+        `endif
+        `ifdef UDB_SDTRIG_VU_WRITABLE
+            cp_mcontrol6_delegate_vu: cross priv_mode_vu, triggernum_mcontrol6, bp_mcontrol6, bp_routing, bp_gva;  // mcontrol6 triggers
+        `endif
+    `endif
+    `endif
+    `ifdef SDTRIG_ICOUNT_ANY
+        `ifdef UDB_SDTRIG_VS_WRITABLE
+            cp_icount_delegate_vs: cross priv_mode_vs, triggernum_icount, bp_icount, bp_routing, bp_gva;  // icount triggers
+        `endif
+        `ifdef UDB_SDTRIG_VU_WRITABLE
+            cp_icount_delegate_vu: cross priv_mode_vu, triggernum_icount, bp_icount, bp_routing, bp_gva;  // icount triggers
+        `endif
+    `endif
     `ifdef SDTRIG_ITRIGGER_ANY
     `ifdef UDB_SDTRIG_ITRIGGER_SUPPORTED_INTERRUPTS_1
     `ifdef UDB_SSI_INTR_IMPL

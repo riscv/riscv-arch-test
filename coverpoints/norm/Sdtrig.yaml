@@ -162,8 +162,8 @@ normative_rule_definitions:
       [
         "Sdtrig_S_cg/cp_breakpoint_delegate_s",
         "Sdtrig_U_cg/cp_breakpoint_delegate_u",
-        "Sdtrig_H_cg/{cp_breakpoint_delegate_vs, cp_breakpoint_delegate_vu}",
-        "Sdtrig_HSm_cg/{cp_breakpoint_delegate_vs, cp_breakpoint_delegate_vu}",
+        "Sdtrig_H_cg/{cp_mcontrol6_delegate_vs, cp_mcontrol6_delegate_vu, cp_icount_delegate_vs, cp_icount_delegate_vu}",
+        "Sdtrig_HSm_cg/{cp_mcontrol6_delegate_vs, cp_mcontrol6_delegate_vu, cp_icount_delegate_vs, cp_icount_delegate_vu}",
       ]
 
   # lr instructions are loads.
@@ -1682,8 +1682,8 @@ normative_rule_definitions:
         "Sdtrig_Sm_icount_cg/cp_icount_instr_fire",
         "Sdtrig_Sm_icount_cg/cp_icount_trap_fire",
         "Sdtrig_Sm_icount_cg/cp_icount_eq0_fire",
-        "Sdtrig_H_cg/{cp_breakpoint_delegate_vs, cp_breakpoint_delegate_vu}",
-        "Sdtrig_HSm_cg/{cp_breakpoint_delegate_vs, cp_breakpoint_delegate_vu}",
+        "Sdtrig_H_cg/{cp_icount_delegate_vs, cp_icount_delegate_vu}",
+        "Sdtrig_HSm_cg/{cp_icount_delegate_vs, cp_icount_delegate_vu}",
       ]
 
   # The intent of pending is to cleanly handle the case where action is 0, m is 0, u

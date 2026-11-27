@@ -246,9 +246,9 @@ def _icount_mode_tests(test_data: TestData) -> list[TestChunk]:
 
 
 def _delegate_tests(test_data: TestData, group: str) -> list[TestChunk]:
-    """cp_breakpoint_delegate_vs/vu: mcontrol6 and icount breakpoints from VS-mode and VU-mode. Group H takes them
-    into HS-mode (hedeleg[3] = 0) and VS-mode (hedeleg[3] = 1) with medeleg[3] = 1 as booted; group HSm boots to
-    M-mode with medeleg = 0 and takes them into M-mode."""
+    """cp_mcontrol6_delegate_vs/vu and cp_icount_delegate_vs/vu: mcontrol6 and icount breakpoints from VS-mode and
+    VU-mode. Group H takes them into HS-mode (hedeleg[3] = 0) and VS-mode (hedeleg[3] = 1) with medeleg[3] = 1 as
+    booted; group HSm boots to M-mode with medeleg = 0 and takes them into M-mode."""
     chunks: list[TestChunk] = []
     cfg_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(4, reg_range=_REG_RANGE)
     lines = test_data.new_test_chunk(chunks, f"{group}_delegate").code
@@ -265,10 +265,10 @@ def _delegate_tests(test_data: TestData, group: str) -> list[TestChunk]:
         m = mode.lower()
         lines.append(
             comment_banner(
-                f"cp_breakpoint_delegate_{m}",
+                f"cp_mcontrol6_delegate_{m}, cp_icount_delegate_{m}",
                 f"mcontrol6 (store address) and icount (count = 1) breakpoints from {mode.upper()}-mode, taken\n"
-                f"{note} the trap sets GVA for the mcontrol6 breakpoint, whose tval is the guest\n"
-                "virtual address, and clears it for icount, which writes tval = 0",
+                f"{note} the trap sets GVA when it writes the guest virtual address to tval, which\n"
+                "mcontrol6 may do (or write 0), and clears it when tval = 0, which icount always writes",
             )
         )
         for hedeleg, target in routes:
@@ -285,7 +285,7 @@ def _delegate_tests(test_data: TestData, group: str) -> list[TestChunk]:
                             _add_tc(
                                 test_data,
                                 f"trig_num_{trig_num}_{trig_type}_{target.lower()}",
-                                f"cp_breakpoint_delegate_{m}",
+                                f"cp_{trig_type}_delegate_{m}",
                                 covergroup,
                             ),
                             *_fire_supported_trigger(trig_type, trig_num, mode, cfg_reg, addr_reg, data_reg),

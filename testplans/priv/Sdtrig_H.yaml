@@ -38,17 +38,19 @@ coverpoints:
     bins: icount triggers * 2 per mode
   - heading: Breakpoint delegation
   - name: |-
-      cp_breakpoint_delegate_vs
-      cp_breakpoint_delegate_vu
+      cp_mcontrol6_delegate_vs
+      cp_mcontrol6_delegate_vu
+      cp_icount_delegate_vs
+      cp_icount_delegate_vu
     goal: A breakpoint from VS-mode (VU-mode) is taken into HS-mode or VS-mode as hedeleg[3] says, and GVA records whether tval is a guest virtual address
     description: |-
-      With medeleg[3] = 1 and hedeleg[3] = {0, 1}, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
+      With medeleg[3] = 1 and hedeleg[3] = {0, 1}, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports the type:
       fire an mcontrol6 store address trigger (sw to scratch) and an icount trigger (count = 1) in VS-mode (VU-mode)
     expectation: |-
-      hedeleg[3] = 0: breakpoint taken into HS-mode with hstatus.SPV = 1, htval = htinst = 0, and hstatus.GVA = 1 for mcontrol6 (stval is the guest virtual address) and 0 for icount (stval = 0)
+      hedeleg[3] = 0: breakpoint taken into HS-mode with hstatus.SPV = 1, htval = htinst = 0, and hstatus.GVA = 1 when stval is the guest virtual address, which mcontrol6 may write, and 0 when stval = 0, which icount always writes
       hedeleg[3] = 1: breakpoint taken into VS-mode
       On a hart that hard-wires medeleg[3] to 0, both are taken into M-mode
-    bins: NTRIG * 2 types * 2 (into HS-mode, into VS-mode) per mode
+    bins: mcontrol6 (icount) triggers * 2 (into HS-mode, into VS-mode) per mode
     notes: The icount cases into HS-mode need a reference model that clears GVA when a trigger breakpoint writes tval = 0 (Sail after 0.16, riscv/sail-riscv#2111).
   - heading: textra
   - name: cp_textra_mctx_sel

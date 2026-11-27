@@ -8,14 +8,16 @@ notes: |-
 coverpoints:
   - heading: Breakpoint delegation
   - name: |-
-      cp_breakpoint_delegate_vs
-      cp_breakpoint_delegate_vu
+      cp_mcontrol6_delegate_vs
+      cp_mcontrol6_delegate_vu
+      cp_icount_delegate_vs
+      cp_icount_delegate_vu
     goal: A breakpoint from VS-mode (VU-mode) is taken into M-mode with medeleg[3] = 0, and GVA records whether tval is a guest virtual address
     description: |-
-      With medeleg[3] = 0, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
+      With medeleg[3] = 0, for each of UDB_SDTRIG_NUM_TRIGGERS in tselect that supports the type:
       fire an mcontrol6 store address trigger (sw to scratch) and an icount trigger (count = 1) in VS-mode (VU-mode)
-    expectation: Breakpoint taken into M-mode with MPV = 1, mtval2 = mtinst = 0, and GVA = 1 for mcontrol6 (mtval is the guest virtual address) and 0 for icount (mtval = 0)
-    bins: NTRIG * 2 types per mode
+    expectation: Breakpoint taken into M-mode with MPV = 1, mtval2 = mtinst = 0, and GVA = 1 when mtval is the guest virtual address, which mcontrol6 may write, and 0 when mtval = 0, which icount always writes
+    bins: mcontrol6 (icount) triggers per mode
     notes: The icount cases need a reference model that clears GVA when a trigger breakpoint writes tval = 0 (Sail after 0.16, riscv/sail-riscv#2111).
   - heading: itrigger and etrigger
   - name: |-

@@ -606,7 +606,8 @@ params:
   VSSTAGE_MODE_BARE: true
   VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
-  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
+  # At V=0, a vsatp write with an unsupported MODE keeps MODE and writes ASID and PPN (compute_new_satp)
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: false
   # Spike's IMSIC has 31 guest interrupt files (GEILEN in riscv/platform.h), whatever the XLEN
   NUM_EXTERNAL_GUEST_INTERRUPTS: 31
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true

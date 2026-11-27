@@ -1,0 +1,37 @@
+# Directory-level test unit manifest for the Hypervisor exceptions suite.
+#
+# Covers H-extension exception behaviour: hedeleg delegation, the virtual
+# instruction exception, htinst and mtval2 reporting, the hypervisor fields of
+# mstatus (MPV/GVA/SPV/SPVP), trap entry and return, and exception priority.
+#
+# The whole directory is one test: every file listed in SOURCES plus the
+# RUNTIME sources are compiled and linked into a single ELF. The unit boots
+# itself through the runtime's entry.S, so the ACT4 C runtime
+# (tests/env/c_test_start.S) is not linked in.
+#
+# Assertion-based self-checking: the runtime prints the RVCP-SUMMARY line the
+# harness parses, so there is no reference-model signature to compare against.
+
+REQUIRED_EXTENSIONS: ["I", "S", "H"]
+FORBIDDEN_EXTENSIONS: []
+MARCH: rv${XLEN}imach_zicsr_zifencei
+NEEDS_SIGNATURE: False
+MIN_HARTS: 1
+
+SOURCES:
+  - main.c
+  # tests/test_register.c textually includes the other tests/test_*.c files.
+  - tests/test_register.c
+
+# hyp_region provides the G-stage fault helpers this suite calls
+# (setup_implicit_walk_victim, probe_load_gpf, fire_vs_load_fault, ...), which
+# need the .vm_test_region section that kernel.ld defines.
+RUNTIME: [base, vm, hyp, hyp_region]
+LINKER_SCRIPT: kernel.ld
+
+EXTRA_CFLAGS:
+  - -DENABLE_HYP
+  - -I{c_common}/hyp
+  # Mode-agnostic suite: follow the platform-selected paging modes.
+  - -DSUITE_VSATP_MODE=PLATFORM_SATP_MODE
+  - -DSUITE_HGATP_MODE=PLATFORM_HGATP_MODE

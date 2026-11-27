@@ -10,9 +10,11 @@
 
 import importlib.resources
 from collections import defaultdict
+from collections.abc import Sequence
 from pathlib import Path
 
 import pyjson5
+import rich
 
 from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction
 from act.config import Config, CoverageSimulator, RefModelType
@@ -35,6 +37,30 @@ _OBJDUMP_FLAGS = ["-x", "-d", "-S", "-M", "no-aliases,numeric", "-t", "-s"]
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+# Directory under tests/env/ holding the shared C runtime that directory-level
+# test units boot from and link against.
+C_RUNTIME_DIR = "c_common"
+
+
+def load_runtime_sources(env_dir: Path, groups: Sequence[str]) -> tuple[Path, ...]:
+    """Resolve RUNTIME group names to the sources listed in their manifests.
+
+    Each group names a ``RUNTIME_SOURCES.<group>.txt`` file under
+    ``tests/env/<C_RUNTIME_DIR>/`` listing sources relative to that directory.
+    Blank lines and ``#`` comments are ignored.
+    """
+    runtime_dir = env_dir / C_RUNTIME_DIR
+    sources: list[Path] = []
+    for group in groups:
+        manifest = runtime_dir / f"RUNTIME_SOURCES.{group}.txt"
+        if not manifest.is_file():
+            raise FileNotFoundError(f"Unknown RUNTIME group '{group}': {manifest} not found")
+        for line in manifest.read_text().splitlines():
+            name = line.split("#", 1)[0].strip()
+            if name:
+                sources.append((runtime_dir / name).absolute())
+    return tuple(sources)
 
 
 def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> int:
@@ -119,6 +145,7 @@ def gen_compile_tasks(
     signature_compile_flags: tuple[str, ...] = (),
     compile_inputs: tuple[Path, ...] = (),
     c_runtime_sources: tuple[Path, ...] = (),
+    c_common_files: tuple[Path, ...] = (),
     ref_model_inputs: tuple[Path, ...] = (),
     debug: bool = False,
     enable_experimental_extensions: bool = False,
@@ -141,6 +168,7 @@ def gen_compile_tasks(
         toolchain: Toolchain used to resolve compiler ISA flags for this test.
         compile_inputs: Shared inputs for compilation.
         c_runtime_sources: Runtime sources compiled into C tests.
+        c_common_files: Shared runtime files tracked as inputs for directory-level test units.
         ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
         debug: Whether to generate debug output (objdumps, trace files, and trap reports).
         enable_experimental_extensions: Whether to enable experimental extensions.
@@ -160,16 +188,66 @@ def gen_compile_tasks(
     final_elf = elf_dir / test_name.with_suffix(".elf")
     coverage_elf = coverage_dir / test_name.with_suffix(".elf")
 
+    # Directory-level test units bring their own runtime, headers, and linker
+    # script; single-file tests use the shared ACT4 environment.
+    is_suite = test_metadata.is_suite
+    suite_include_flags: list[str] = []
+    suite_flags: list[str] = []
+    suite_inputs: tuple[Path, ...] = ()
+    suite_sources: tuple[Path, ...] = ()
+    runtime_sources: tuple[Path, ...] = ()
+
+    linker_script = config.linker_script.absolute()
+
+    if is_suite:
+        suite_dir = test_metadata.suite_dir.absolute()
+        runtime_dir = (env_dir / C_RUNTIME_DIR).absolute()
+
+        suite_sources = tuple((suite_dir / name).absolute() for name in test_metadata.sources)
+        runtime_sources = load_runtime_sources(env_dir, test_metadata.runtime)
+
+        if test_metadata.linker_script is not None:
+            linker_script = (suite_dir / test_metadata.linker_script).absolute()
+
+        # Ahead of the shared env include path so the runtime's own headers win
+        # over any same-named ACT4 test-environment header.
+        suite_include_flags = [f"-I{runtime_dir}", f"-I{suite_dir}"]
+        suite_flags = [
+            "-include",
+            str(runtime_dir / "act4_config.h"),
+            "-mno-relax",
+            "-fno-common",
+            "-fno-omit-frame-pointer",
+            "-fno-stack-protector",
+            "-nostartfiles",
+            "-nodefaultlibs",
+            "-Wl,-z,max-page-size=4096",
+            f"-Wl,--defsym=__riscv_xlen={xlen}",
+            # Lets a per-suite linker script INCLUDE the config's linker script by name.
+            f"-L{config.linker_script.parent.absolute()}",
+        ]
+        for flag in test_metadata.extra_cflags:
+            suite_flags.append(flag.replace("{c_common}", str(runtime_dir)).replace("{suite_dir}", str(suite_dir)))
+
+        suite_inputs = (
+            *suite_sources,
+            *runtime_sources,
+            *c_common_files,
+            *tuple(sorted(p.absolute() for p in test_metadata.suite_dir.rglob("*") if p.is_file())),
+        )
+
     compile_prefix = [
         *toolchain.compile_prefix(xlen),
         f"-I{config.dut_include_dir.absolute()}",
-        f"-T{config.linker_script.absolute()}",
+        *suite_include_flags,
+        f"-T{linker_script}",
         "-O0",
         "-g",
         "-mcmodel=medany",
         "-nostdlib",
         f"-I{env_dir}",
         f"-I{base_dir.absolute() / 'env'}",
+        *suite_flags,
     ]
     if enable_experimental_extensions:
         compile_prefix.append("-DENABLE_EXPERIMENTAL_EXTENSIONS")
@@ -192,10 +270,14 @@ def gen_compile_tasks(
     stack_flags = [] if test_metadata.is_c_test else ["-Wl,--defsym=__stack_size=128"]
 
     # Compilation sources and inputs
-    test_sources = [str(test_path)]
-    if test_metadata.is_c_test:
-        test_sources = [str(source) for source in c_runtime_sources] + test_sources
-    test_inputs = (test_path, *compile_inputs)
+    if is_suite:
+        test_sources = [str(source) for source in (*suite_sources, *runtime_sources)]
+        test_inputs = (*suite_inputs, *compile_inputs)
+    else:
+        test_sources = [str(test_path)]
+        if test_metadata.is_c_test:
+            test_sources = [str(source) for source in c_runtime_sources] + test_sources
+        test_inputs = (test_path, *compile_inputs)
 
     if test_metadata.needs_signature:
         # 1. sig.elf – compile with -DSIGNATURE
@@ -572,7 +654,30 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
-_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset()
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset({Path("priv/c_test")})
+
+# The shared C runtime reads the DUT's platform address map (UART, memory base,
+# CLINT) from this header, so a config that does not provide one cannot build
+# directory-level test units.
+PLATFORM_HEADER = "platform_config.h"
+
+
+def _drop_unsupported_suites(config: Config, selected_tests: dict[str, TestMetadata]) -> dict[str, TestMetadata]:
+    """Drop directory-level test units that the config cannot build."""
+    suites = sorted(name for name, metadata in selected_tests.items() if metadata.is_suite)
+    if not suites:
+        return selected_tests
+
+    platform_header = config.dut_include_dir / PLATFORM_HEADER
+    if platform_header.is_file():
+        return selected_tests
+
+    rich.print(
+        f"[yellow][bold]WARNING:[/bold] config '{config.name}' does not provide {platform_header}, so "
+        f"{len(suites)} directory-level C test unit(s) were not built: {', '.join(suites)}. "
+        f"Add that header to {config.dut_include_dir} to build them for this DUT.[/yellow]"
+    )
+    return {name: metadata for name, metadata in selected_tests.items() if not metadata.is_suite}
 
 
 def generate_build_plan(
@@ -613,6 +718,11 @@ def generate_build_plan(
     env_dir = tests_dir / "env"
     env_files = tuple(sorted(p.absolute() for p in env_dir.iterdir() if p.is_file()))
     c_runtime_sources = tuple((env_dir / name).absolute() for name in ("c_test_start.S", "c_test_support.c"))
+    c_common_dir = env_dir / C_RUNTIME_DIR
+    c_common_files = (
+        tuple(sorted(p.absolute() for p in c_common_dir.rglob("*") if p.is_file())) if c_common_dir.is_dir() else ()
+    )
+    selected_tests = _drop_unsupported_suites(config, selected_tests)
     dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
     udb_headers = tuple(sorted(p.absolute() for p in (config_wkdir / "env").iterdir() if p.suffix == ".h"))
     compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute())
@@ -642,6 +752,7 @@ def generate_build_plan(
                 signature_compile_flags,
                 compile_inputs,
                 c_runtime_sources,
+                c_common_files,
                 ref_model_inputs,
                 debug,
                 enable_experimental_extensions,

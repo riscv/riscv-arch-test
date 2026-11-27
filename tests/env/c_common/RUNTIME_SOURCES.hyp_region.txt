@@ -1,0 +1,3 @@
+# G-stage fault helpers that read the .vm_test_region section. Link only into
+# suites whose linker script defines __vm_test_region_start/_end.
+hyp/hyp_test_helpers_region.c

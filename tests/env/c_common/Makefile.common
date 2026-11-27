@@ -1,0 +1,642 @@
+# =====================================================================
+# Common build rules for RISC-V Privilege Test Framework
+# =====================================================================
+#
+# Include this from each extension's Makefile:
+#   include ../common/Makefile.common
+#
+# Extensions must define ONE of:
+#   Single-target mode (legacy):
+#     TARGET    - output binary name (e.g., pmp_test.elf)
+#     EXT_OBJS  - extension-specific object files
+#
+#   Multi-target mode:
+#     TARGETS   - list of output binaries (e.g., pmp_cvpt.elf pmp_basic.elf)
+#     <base>_OBJS - per-target object files (e.g., pmp_cvpt_OBJS = ...)
+#       where <base> is the filename without .elf, with - and . replaced by _
+#
+# =====================================================================
+
+# Default configuration (CONFIG must be resolved before including platform.mk)
+CONFIG ?= qemu-rv64-max
+LOG_LEVEL ?= 3
+
+COMMON_DIR = ../common
+SCRIPTS_DIR = ../scripts
+
+# Configuration directory (config/ lives at the project root)
+CONFIG_DIR = $(COMMON_DIR)/../config/$(CONFIG)
+
+# Include configuration-specific build rules (platform.mk may override
+# defaults such as XLEN, CROSS_COMPILER, QEMU_CPU, etc.)
+include $(CONFIG_DIR)/platform.mk
+
+# Framework fallback defaults (only apply if platform.mk did not set them)
+XLEN     ?= 64
+
+# Configuration headers (included via -include in CFLAGS/ASFLAGS)
+CONFIG_PLATFORM_HEADER = $(CONFIG_DIR)/platform_config.h
+CONFIG_RVTEST_HEADER   = $(CONFIG_DIR)/rvtest_config.h
+CONFIG_MODEL_HEADER     = $(CONFIG_DIR)/rvmodel_macros.h
+
+# All three configuration headers are mandatory for each platform.
+# Header roles:
+#   platform_config.h  -> C only    (injected via CFLAGS -include)
+#   rvmodel_macros.h   -> C + Assembly (injected via both CFLAGS and ASFLAGS)
+#   rvtest_config.h    -> Shared C + Assembly (injected via both)
+# If any is missing, abort with a clear error message.
+$(if $(wildcard $(CONFIG_PLATFORM_HEADER)),,$(error Missing required config header: $(CONFIG_PLATFORM_HEADER)))
+$(if $(wildcard $(CONFIG_RVTEST_HEADER)),,$(error Missing required config header: $(CONFIG_RVTEST_HEADER)))
+$(if $(wildcard $(CONFIG_MODEL_HEADER)),,$(error Missing required config header: $(CONFIG_MODEL_HEADER)))
+
+# ABI selection
+# MARCH uses ?= so a suite Makefile may pre-declare its own ISA
+# string (e.g. appending an extension like _zcmp before including
+# this file); the ENABLE_HYP block below preserves those suffixes.
+ifeq ($(XLEN),32)
+    ABI   = ilp32
+    MARCH ?= rv32imac_zicsr_zifencei
+else
+    ABI   = lp64
+    MARCH ?= rv64imac_zicsr_zifencei
+endif
+
+# Toolchain selection: gcc (default) or clang (LLVM)
+# Both toolchains share the same binutils-compatible tool names (as, ld,
+# objcopy, objdump); only the compiler binary differs (gcc vs clang).
+TOOLCHAIN ?= gcc
+
+ifeq ($(TOOLCHAIN),clang)
+  CC = $(CROSS_COMPILER)clang
+else
+  CC = $(CROSS_COMPILER)gcc
+endif
+AS      = $(CROSS_COMPILER)as
+LD      = $(CROSS_COMPILER)ld
+OBJCOPY = $(CROSS_COMPILER)objcopy
+OBJDUMP = $(CROSS_COMPILER)objdump
+
+# Common object files (built from common/ sources)
+COMMON_OBJS = \
+    $(COMMON_DIR)/entry.o \
+    $(COMMON_DIR)/reg_init.o \
+    $(COMMON_DIR)/platform_init.o \
+    $(COMMON_DIR)/trap_asm.o \
+    $(COMMON_DIR)/trap.o \
+    $(COMMON_DIR)/privilege.o \
+    $(COMMON_DIR)/csr_accessors.o \
+    $(COMMON_DIR)/tsbi/tsbi_proxy.o \
+    $(COMMON_DIR)/tsbi/tsbi_deleg.o \
+    $(COMMON_DIR)/uart.o \
+    $(COMMON_DIR)/test_framework.o \
+    $(COMMON_DIR)/string.o \
+    $(COMMON_DIR)/compiler_rt.o
+
+# VM support (conditional, set ENABLE_VM=1 in extension Makefile)
+ifdef ENABLE_VM
+VM_DIR = $(COMMON_DIR)/vm
+VM_OBJS = $(VM_DIR)/page_table.o $(VM_DIR)/satp.o
+COMMON_OBJS += $(VM_OBJS)
+endif
+
+# PMP support (conditional, set ENABLE_PMP=1 in extension Makefile)
+ifdef ENABLE_PMP
+PMP_DIR_COMMON = $(COMMON_DIR)/pmp
+PMP_OBJS = $(PMP_DIR_COMMON)/pmp_cfg.o $(PMP_DIR_COMMON)/pmp_init.o
+COMMON_OBJS += $(PMP_OBJS)
+endif
+
+# Hypervisor (H ext) support (conditional, set ENABLE_HYP=1 in extension Makefile)
+ifdef ENABLE_HYP
+HYP_DIR  = $(COMMON_DIR)/hyp
+HYP_OBJS = \
+    $(HYP_DIR)/hyp_csr.o \
+    $(HYP_DIR)/hyp_priv.o \
+    $(HYP_DIR)/hyp_trap.o \
+    $(HYP_DIR)/hyp_trap_asm.o \
+    $(HYP_DIR)/hyp_fence.o \
+    $(HYP_DIR)/hyp_ldst.o \
+    $(HYP_DIR)/hyp_reset.o \
+    $(HYP_DIR)/gstage_pt.o \
+    $(HYP_DIR)/two_stage.o \
+    $(HYP_DIR)/test_vs_helpers.o \
+    $(HYP_DIR)/hyp_vs_trap.o \
+    $(HYP_DIR)/hyp_vs_trap_asm.o \
+    $(HYP_DIR)/hyp_test_helpers.o
+ifdef ENABLE_TWO_STAGE
+HYP_OBJS += $(HYP_DIR)/two_stage_helpers.o
+endif
+COMMON_OBJS += $(HYP_OBJS)
+# Append H extension to ISA string. Strip the base single-letter ISA
+# segment (with or without h) from the suite-declared MARCH and
+# rebuild it as rvXXimach, preserving any extension suffixes the
+# suite appended (e.g. _zcmp for the Zcmp suite). Evaluated
+# immediately so the result is final.
+_MARCH_EXTS := $(subst $(firstword $(subst _, ,$(MARCH))),,$(MARCH))
+ifeq ($(XLEN),32)
+MARCH := rv32imach$(strip $(_MARCH_EXTS))
+else
+MARCH := rv64imach$(strip $(_MARCH_EXTS))
+endif
+endif
+
+# PM (Pointer Masking) support (conditional, set ENABLE_PM=1 in extension Makefile)
+ifdef ENABLE_PM
+PM_DIR = $(COMMON_DIR)/pm
+PM_OBJS = $(PM_DIR)/pm_cfg.o
+COMMON_OBJS += $(PM_OBJS)
+endif
+
+# IOPMP support (conditional, set ENABLE_IOPMP=1 in extension Makefile)
+ifdef ENABLE_IOPMP
+IOPMP_DIR = $(COMMON_DIR)/iopmp
+IOPMP_OBJS = $(IOPMP_DIR)/iopmp_cfg.o $(IOPMP_DIR)/iopmp_init.o
+COMMON_OBJS += $(IOPMP_OBJS)
+endif
+
+# SMMTT support (conditional, set ENABLE_SMMTT=1 in extension Makefile)
+ifdef ENABLE_SMMTT
+SMMTT_DIR = $(COMMON_DIR)/smmtt
+SMMTT_OBJS = $(SMMTT_DIR)/mpt_table.o
+COMMON_OBJS += $(SMMTT_OBJS)
+endif
+
+# N-Trace (Nexus-based Trace) support (conditional, set ENABLE_NTRACE=1 in extension Makefile)
+ifdef ENABLE_NTRACE
+NTRACE_DIR = $(COMMON_DIR)/trace
+NTRACE_OBJS = $(NTRACE_DIR)/trace_ctrl.o $(NTRACE_DIR)/ntrace_decoder.o
+COMMON_OBJS += $(NTRACE_OBJS)
+endif
+
+# CMO (Cache Management Operations) support (conditional, set ENABLE_CMO=1 in extension Makefile)
+ifdef ENABLE_CMO
+CMO_DIR = $(COMMON_DIR)/cmo
+endif
+
+# Compiler flags
+CFLAGS  = -Wall -O0 -g -fno-omit-frame-pointer -ggdb
+CFLAGS += -march=$(MARCH) -mabi=$(ABI) -mcmodel=medany
+CFLAGS += -ffreestanding -fno-common -nostdlib -mno-relax
+CFLAGS += -I$(COMMON_DIR) -I.
+# CFLAGS: platform_config.h (C-only) + rvmodel_macros.h (C + Assembly) + rvtest_config.h (shared)
+CFLAGS += -include $(CONFIG_PLATFORM_HEADER)
+CFLAGS += -include $(CONFIG_MODEL_HEADER)
+CFLAGS += -include $(CONFIG_RVTEST_HEADER)
+# capabilities.h: normalize <EXT>_SUPPORTED -> <EXT>_AVAILABLE 1/0 flags.
+# Must be force-included AFTER rvtest_config.h (it reads those flags).
+CFLAGS += -include $(COMMON_DIR)/capabilities.h
+CFLAGS += -D LOG_LEVEL=$(LOG_LEVEL)
+CFLAGS += -D MEM_BASE=$(MEM_BASE)
+CFLAGS += -MMD -MP
+CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
+
+# ---------------------------------------------------------------------
+# SUITE_SATP_MODE -- the S/HS-stage paging mode a single-stage (non
+# Hypervisor) suite actually runs under (consumed by pt_init, satp
+# writes and REQUIRE_SATP_MODE). This is the single-stage counterpart
+# of the SUITE_VSATP_MODE / SUITE_HGATP_MODE block below.
+#
+# Precedence, highest first:
+#   1. make command line `SATP_MODE=sv39|sv48|sv57`, mapped to the
+#      architectural SATP_MODE_SV* macro name below -- lets a
+#      mode-agnostic suite be re-run under a different Sv* mode for
+#      diagnostics.
+#   2. the suite's tests/test_helpers.h `#ifndef SUITE_SATP_MODE`
+#      fallback: PLATFORM_SATP_MODE for a mode-agnostic suite, or a
+#      fixed SATP_MODE_SV* for a mode-intrinsic suite (Sv39/Sv48/Sv57).
+#
+# The -D is emitted from this single place through a lazily-expanded
+# $(if), so nothing is emitted (and the header fallback wins) unless
+# SATP_MODE is passed on the make command line. PLATFORM_SATP_MODE in
+# capabilities.h stays purely platform-derived and is never forced.
+# ---------------------------------------------------------------------
+ifdef SATP_MODE
+  ifeq ($(SATP_MODE),sv39)
+    SUITE_SATP_MODE := SATP_MODE_SV39
+  else ifeq ($(SATP_MODE),sv48)
+    SUITE_SATP_MODE := SATP_MODE_SV48
+  else ifeq ($(SATP_MODE),sv57)
+    SUITE_SATP_MODE := SATP_MODE_SV57
+  else
+    $(error Unknown SATP_MODE=$(SATP_MODE); use sv39, sv48 or sv57)
+  endif
+endif
+CFLAGS += $(if $(SUITE_SATP_MODE),-DSUITE_SATP_MODE=$(SUITE_SATP_MODE))
+
+# ---------------------------------------------------------------------
+# SUITE_HGATP_MODE / SUITE_VSATP_MODE -- the G-stage / VS-stage paging
+# mode a two-stage suite actually runs under (consumed by ts2_setup_*,
+# two_stage_init and REQUIRE_HGATP_MODE / REQUIRE_VSATP_MODE).
+#
+# Precedence, highest first:
+#   1. make command line `HGATP_MODE=sv39|sv48|sv57` and/or
+#      `VSATP_MODE=sv39|sv48|sv57`, mapped to the architectural MODE
+#      macro name below -- lets a mode-agnostic suite be re-run under a
+#      different mode for diagnostics.
+#   2. the suite Makefile default, e.g. `SUITE_HGATP_MODE ?=
+#      PLATFORM_HGATP_MODE` (follow the platform) or a fixed
+#      `HGATP_MODE_SV48X4` (mode-intrinsic suite).
+#   3. two_stage_helpers.h's `#ifndef` fallback (HGATP_MODE_SV39X4 /
+#      SATP_MODE_SV39) when a suite sets neither.
+#
+# The -D is emitted from this single place through a lazily-expanded
+# $(if), so a suite may set SUITE_*_MODE before OR after including this
+# file (CFLAGS is recursively expanded). Suites that still hardcode their
+# own `-DSUITE_*_MODE=...` (e.g. the Sv*x4 two-stage suites) leave
+# SUITE_*_MODE undefined here, so nothing extra is emitted and there is
+# no double -D. The command-line mapping uses `:=` so it wins over a
+# suite's `?=` default.
+# ---------------------------------------------------------------------
+ifdef HGATP_MODE
+  ifeq ($(HGATP_MODE),sv39)
+    SUITE_HGATP_MODE := HGATP_MODE_SV39X4
+  else ifeq ($(HGATP_MODE),sv48)
+    SUITE_HGATP_MODE := HGATP_MODE_SV48X4
+  else ifeq ($(HGATP_MODE),sv57)
+    SUITE_HGATP_MODE := HGATP_MODE_SV57X4
+  else
+    $(error Unknown HGATP_MODE=$(HGATP_MODE); use sv39, sv48 or sv57)
+  endif
+endif
+ifdef VSATP_MODE
+  ifeq ($(VSATP_MODE),sv39)
+    SUITE_VSATP_MODE := SATP_MODE_SV39
+  else ifeq ($(VSATP_MODE),sv48)
+    SUITE_VSATP_MODE := SATP_MODE_SV48
+  else ifeq ($(VSATP_MODE),sv57)
+    SUITE_VSATP_MODE := SATP_MODE_SV57
+  else
+    $(error Unknown VSATP_MODE=$(VSATP_MODE); use sv39, sv48 or sv57)
+  endif
+endif
+CFLAGS += $(if $(SUITE_HGATP_MODE),-DSUITE_HGATP_MODE=$(SUITE_HGATP_MODE))
+CFLAGS += $(if $(SUITE_VSATP_MODE),-DSUITE_VSATP_MODE=$(SUITE_VSATP_MODE))
+
+# Disable PIE
+ifeq ($(TOOLCHAIN),clang)
+  CFLAGS += -fno-pie
+else
+  ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]no-pie'),)
+    CFLAGS += -fno-pie -no-pie
+  endif
+endif
+
+# Conditional CFLAGS for PMP support
+ifdef ENABLE_PMP
+CFLAGS += -I$(PMP_DIR_COMMON)
+endif
+
+# Conditional CFLAGS for Hypervisor support
+ifdef ENABLE_HYP
+CFLAGS  += -DENABLE_HYP -I$(HYP_DIR)
+endif
+
+# Conditional CFLAGS for PM support
+ifdef ENABLE_PM
+CFLAGS += -DENABLE_PM -I$(PM_DIR)/..
+endif
+
+# Conditional CFLAGS for IOPMP support
+ifdef ENABLE_IOPMP
+CFLAGS += -DENABLE_IOPMP -I$(IOPMP_DIR)
+endif
+
+# Conditional CFLAGS for SMMTT support
+ifdef ENABLE_SMMTT
+CFLAGS += -DENABLE_SMMTT -I$(SMMTT_DIR)
+endif
+
+# Conditional CFLAGS for N-Trace support
+ifdef ENABLE_NTRACE
+CFLAGS += -DENABLE_NTRACE -I$(NTRACE_DIR)
+endif
+
+# Conditional CFLAGS for CMO support
+ifdef ENABLE_CMO
+CFLAGS += -DENABLE_CMO -I$(CMO_DIR)
+endif
+
+# Fail-fast mode (FAIL_FAST=1): halt the suite immediately when a test
+# case fails, instead of running the remaining cases. The simulator
+# exits with fail status via RVMODEL_HALT_FAIL; on HW it spins.
+ifeq ($(FAIL_FAST),1)
+CFLAGS += -DTEST_FAIL_FAST
+endif
+
+# Extra CFLAGS from command line (e.g., make qemu EXTRA_CFLAGS='-DTEST_FILTER="VS-10"')
+CFLAGS += $(EXTRA_CFLAGS)
+
+# Assembler flags
+ASFLAGS  = -march=$(MARCH) -mabi=$(ABI)
+ASFLAGS += -I$(COMMON_DIR) -I.
+# ASFLAGS: rvmodel_macros.h (assembly-only) + rvtest_config.h (shared)
+# platform_config.h is NOT included in ASFLAGS (C-only)
+ASFLAGS += -include $(CONFIG_MODEL_HEADER)
+ASFLAGS += -include $(CONFIG_RVTEST_HEADER)
+# capabilities.h: normalize <EXT>_SUPPORTED -> <EXT>_AVAILABLE 1/0 flags.
+# Must be force-included AFTER rvtest_config.h (it reads those flags).
+ASFLAGS += -include $(COMMON_DIR)/capabilities.h
+ASFLAGS += -D MEM_BASE=$(MEM_BASE)
+
+# Extra ASFLAGS from command line (e.g., make qemu EXTRA_ASFLAGS='-DRVMODEL_HALT_EBREAK')
+ASFLAGS += $(EXTRA_ASFLAGS)
+
+# Conditional ASFLAGS for PMP support
+ifdef ENABLE_PMP
+ASFLAGS += -DENABLE_PMP -I$(PMP_DIR_COMMON)
+endif
+
+# Conditional ASFLAGS for Hypervisor support
+ifdef ENABLE_HYP
+ASFLAGS += -DENABLE_HYP -I$(HYP_DIR)
+endif
+
+# Conditional ASFLAGS for PM support
+ifdef ENABLE_PM
+ASFLAGS += -DENABLE_PM -I$(PM_DIR)/..
+endif
+
+# Conditional ASFLAGS for IOPMP support
+ifdef ENABLE_IOPMP
+ASFLAGS += -DENABLE_IOPMP -I$(IOPMP_DIR)
+endif
+
+# Conditional ASFLAGS for SMMTT support
+ifdef ENABLE_SMMTT
+ASFLAGS += -DENABLE_SMMTT -I$(SMMTT_DIR)
+endif
+
+# Conditional ASFLAGS for N-Trace support
+ifdef ENABLE_NTRACE
+ASFLAGS += -DENABLE_NTRACE -I$(NTRACE_DIR)
+endif
+
+# Conditional ASFLAGS for CMO support
+ifdef ENABLE_CMO
+ASFLAGS += -DENABLE_CMO -I$(CMO_DIR)
+endif
+
+# Linker flags
+LDFLAGS  = -z max-page-size=4096 -nostartfiles -nostdlib -nodefaultlibs
+LDFLAGS += -Wl,--defsym=__riscv_xlen=$(XLEN)
+LDFLAGS += -Wl,--defsym=MEM_BASE=$(MEM_BASE)
+ifeq ($(TOOLCHAIN),clang)
+  LDFLAGS += -fuse-ld=lld
+  # LLD does not emit rwx-segment warnings, so --no-warn-rwx-segments is not needed
+else
+  LDFLAGS += -Wl,--no-warn-rwx-segments
+endif
+LDFLAGS += -L$(CONFIG_DIR)
+LDFLAGS += -march=$(MARCH) -mabi=$(ABI)
+
+# Linker script flag: for clang, pass -T via -Wl, so LLD processes --defsym
+# symbols BEFORE parsing the linker script (clang driver reorders -T ahead of
+# -Wl flags, causing LLD to evaluate __riscv_xlen as 0 in linker script expressions)
+ifeq ($(TOOLCHAIN),clang)
+  LINK_T = -Wl,-T,kernel.ld
+else
+  LINK_T = -T kernel.ld
+endif
+
+# =====================================================================
+# Flag fingerprint
+#
+# The objects under common/ are built in place and shared by every suite,
+# yet each suite compiles them with a different -D set (ENABLE_HYP,
+# ENABLE_PM, ...) and each CONFIG force-includes a different platform
+# header.  Make only compares timestamps, so building suite B after suite A
+# leaves A's objects in place and B silently links code compiled for A.
+#
+# The stamp below carries the current flag set and is a prerequisite of
+# every object.  It is rewritten only when the flags actually change, and
+# that rewrite is what forces the recompile.
+# =====================================================================
+FLAG_SIG_FILE = $(COMMON_DIR)/.build_flags
+FLAG_SIG      = $(CC) |$(CFLAGS) |$(ASFLAGS)
+
+ifneq ($(strip $(FLAG_SIG)),$(strip $(shell cat $(FLAG_SIG_FILE) 2>/dev/null)))
+$(file >$(FLAG_SIG_FILE),$(FLAG_SIG))
+endif
+
+# =====================================================================
+# Compile rules (shared by both single and multi-target modes)
+# =====================================================================
+
+# C source -> object (common)
+$(COMMON_DIR)/%.o: $(COMMON_DIR)/%.c $(FLAG_SIG_FILE)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Assembly source -> object (common)
+$(COMMON_DIR)/%.o: $(COMMON_DIR)/%.S $(FLAG_SIG_FILE)
+	$(CC) $(ASFLAGS) -c $< -o $@
+
+# C source -> object (extension)
+%.o: %.c $(FLAG_SIG_FILE)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Assembly source -> object (extension)
+%.o: %.S $(FLAG_SIG_FILE)
+	$(CC) $(ASFLAGS) -c $< -o $@
+
+# =====================================================================
+# Build targets
+# =====================================================================
+
+# Helper: convert filename to Make variable name (replace - and . with _)
+_varname = $(subst -,_,$(subst .,_,$(1)))
+
+ifdef TARGETS
+# =================================================================
+# Multi-target mode
+# =================================================================
+# Usage in extension Makefile:
+#   TARGETS = pmp_cvpt.elf pmp_basic.elf pmp_lock.elf
+#   pmp_cvpt_OBJS  = pmp_reset.o main_cvpt.o tests/register_cvpt.o
+#   pmp_basic_OBJS = pmp_reset.o main_basic.o tests/register_basic.o
+#   pmp_lock_OBJS  = pmp_reset.o main_lock.o tests/register_lock.o
+#
+# Each target links its own _OBJS + COMMON_OBJS against kernel.ld.
+# All products remain in the same directory.
+# =================================================================
+
+.PHONY: all clean
+
+all: $(TARGETS)
+
+# Generate a link rule for each target
+define MULTI_TARGET_RULE
+$(1): $$($(call _varname,$(basename $(1)))_OBJS) $$(COMMON_OBJS) kernel.ld
+	$$(CC) $$(LDFLAGS) $$(LINK_T) -o $(1) $$($(call _varname,$(basename $(1)))_OBJS) $$(COMMON_OBJS)
+	$$(OBJDUMP) -S $(1) > $(basename $(1)).asm
+	$$(OBJDUMP) -t $(1) | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$$$/ d' > $(basename $(1)).sym
+	$$(OBJCOPY) -O binary $(1) $(basename $(1)).bin
+endef
+
+$(foreach target,$(TARGETS),$(eval $(call MULTI_TARGET_RULE,$(target))))
+
+# Collect all extension objs across all targets (for clean)
+_ALL_EXT_OBJS = $(sort $(foreach t,$(TARGETS),$($(call _varname,$(basename $(t)))_OBJS)))
+
+clean:
+	rm -f $(_ALL_EXT_OBJS) $(_ALL_EXT_OBJS:.o=.d)
+	rm -f $(TARGETS)
+	rm -f $(foreach t,$(TARGETS),$(basename $(t)).asm $(basename $(t)).sym $(basename $(t)).bin)
+	rm -f $(foreach t,$(TARGETS),$(basename $(t)).trace $(basename $(t)).rvvi)
+	rm -f $(FLAG_SIG_FILE)
+	find $(COMMON_DIR) \( -name "*.o" -o -name "*.d" \) -type f -delete
+
+else
+# =================================================================
+# Single-target mode (legacy, fully backward compatible)
+# =================================================================
+
+ALL_OBJS = $(COMMON_OBJS) $(EXT_OBJS)
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+# Strip .elf suffix for auxiliary file names (e.g., pmp_test.elf -> pmp_test.asm)
+TARGET_BASE = $(basename $(TARGET))
+
+$(TARGET): $(ALL_OBJS) kernel.ld
+	$(CC) $(LDFLAGS) $(LINK_T) -o $(TARGET) $(ALL_OBJS)
+	$(OBJDUMP) -S $(TARGET) > $(TARGET_BASE).asm
+	$(OBJDUMP) -t $(TARGET) | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(TARGET_BASE).sym
+	$(OBJCOPY) -O binary $(TARGET) $(TARGET_BASE).bin
+
+clean:
+	rm -f $(ALL_OBJS) $(ALL_OBJS:.o=.d)
+	rm -f $(TARGET) $(TARGET_BASE).asm $(TARGET_BASE).sym $(TARGET_BASE).bin
+	rm -f $(TARGET_BASE).trace $(TARGET_BASE).rvvi
+	rm -f $(FLAG_SIG_FILE)
+	find $(COMMON_DIR) \( -name "*.o" -o -name "*.d" \) -type f -delete
+
+endif # ifdef TARGETS
+
+# =====================================================================
+# Header dependency tracking (-MMD -MP generates .d files alongside .o)
+# =====================================================================
+-include $(COMMON_OBJS:.o=.d)
+ifdef TARGETS
+-include $(_ALL_EXT_OBJS:.o=.d)
+else
+-include $(EXT_OBJS:.o=.d)
+endif
+
+# =====================================================================
+# Simulator targets
+# =====================================================================
+
+# --- QEMU ---
+.PHONY: qemu
+
+ifdef TARGETS
+qemu:
+	$(MAKE) CONFIG=qemu-rv64-max
+	@for elf in $(TARGETS); do \
+		echo "========== QEMU: $$elf =========="; \
+		$(QEMU) -machine $(QEMU_MCH) -cpu $(QEMU_CPU) -bios none \
+			-kernel $$elf -m $(QEMU_MEM) -smp $(QEMU_SMP) \
+			-semihosting -nographic || exit 1; \
+	done
+else
+qemu:
+	$(MAKE) CONFIG=$(CONFIG)
+	$(QEMU) $(QEMU_OPTS)
+endif
+
+# --- Sail ---
+SAIL ?= sail_riscv_sim
+
+.PHONY: sail
+
+ifdef TARGETS
+sail:
+	$(MAKE) CONFIG=sail-rv64-max
+	@for elf in $(TARGETS); do \
+		echo "========== Sail: $$elf =========="; \
+		$(SAIL) $$elf || exit 1; \
+	done
+else
+sail:
+	$(MAKE) CONFIG=sail-rv64-max
+	$(SAIL) $(TARGET)
+endif
+
+# --- Trace ---
+.PHONY: trace
+
+ifdef TARGETS
+trace:
+	$(MAKE) CONFIG=sail-rv64-max
+	@for elf in $(TARGETS); do \
+		base=$$(basename $$elf .elf); \
+		echo "========== Trace: $$elf =========="; \
+		$(SAIL) --trace --trace-output $$base.trace $$elf || exit 1; \
+		$(SCRIPTS_DIR)/sail_to_rvvi.py $$base.trace; \
+	done
+else
+trace:
+	$(MAKE) CONFIG=sail-rv64-max
+	$(SAIL) --trace --trace-output $(basename $(TARGET)).trace $(TARGET)
+	$(SCRIPTS_DIR)/sail_to_rvvi.py $(basename $(TARGET)).trace
+endif
+
+# --- Spike ---
+SPIKE ?= spike
+
+# Unified Spike ISA string.
+#
+# Every suite launches Spike with this single fixed --isa string instead of
+# declaring its own per-suite extensions. It is the union of all extensions
+# the suites exercise, restricted to tokens this Spike build actually accepts.
+# Notes:
+#   - 'h' (Hypervisor) is always included so the Hypervisor/Sv*x4/Sh* suites
+#     work; the spike-rv64-max config declares H_SUPPORTED anyway.
+#   - Behavioural extensions that Spike does not accept as ISA tokens
+#     (smctr, ssctr, ssccptr, sscounterenw, sstvala, sstvecd, ssu64xl,
+#     svrsw60t59b) are intentionally omitted; those suites are gated at
+#     compile time via config *_SUPPORTED and detect behaviour at runtime.
+#   - Zcmp/Zcmt are architecturally incompatible with Zcd (implied by 'd'),
+#     so they cannot live in this string. Those two suites override SPIKE_ISA
+#     with their own no-'d' string before including this file (SPIKE_ISA uses
+#     ?= here so a suite-level override is preserved).
+#   - Smrnmi is deliberately excluded: enabling RNMI globally changes the
+#     reset/trap behaviour of unrelated suites (e.g. Zicsr hangs at reset).
+#     Only the Smrnmi suite overrides SPIKE_ISA to add _smrnmi.
+SPIKE_ISA ?= rv64imafdcbvh_zicbom_zicboz_zicbop_zicfilp_zicfiss_zicond_zicsr_zicntr_zicclsm_ziccif_ziccid_zifencei_zihintntl_zihintpause_zihpm_zimop_zcmop_zabha_zacas_zawrs_zalasr_zama16b_zfa_zfbfmin_zfh_zfhmin_zcb_zbc_zkn_zks_zkr_zkt_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval_svade_svadu_svnapot_svpbmt_svvptc_smstateen_ssnpm_smmpm_smnpm_smdbltrp_ssdbltrp_smcsrind_sscsrind_smcdeleg_ssccfg_ssqosid_smepmp
+
+.PHONY: spike
+
+ifdef TARGETS
+spike:
+	$(MAKE) CONFIG=spike-rv64-max
+	@for elf in $(TARGETS); do \
+		echo "========== Spike: $$elf =========="; \
+		$(SPIKE) --isa=$(SPIKE_ISA) $$elf || exit 1; \
+	done
+else
+spike:
+	$(MAKE) CONFIG=spike-rv64-max
+	$(SPIKE) --isa=$(SPIKE_ISA) $(TARGET)
+endif
+
+# --- Whisper ---
+WHISPER ?= whisper
+WHISPER_CONFIG = $(COMMON_DIR)/../config/whisper-rv64-max/whisper.json
+
+.PHONY: whisper
+
+ifdef TARGETS
+whisper:
+	$(MAKE) CONFIG=whisper-rv64-max
+	@for elf in $(TARGETS); do \
+		echo "========== Whisper: $$elf =========="; \
+		$(WHISPER) --config $(WHISPER_CONFIG) $$elf || exit 1; \
+	done
+else
+whisper:
+	$(MAKE) CONFIG=whisper-rv64-max
+	$(WHISPER) --config $(WHISPER_CONFIG) $(TARGET)
+endif

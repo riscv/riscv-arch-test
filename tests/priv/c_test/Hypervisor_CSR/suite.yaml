@@ -1,0 +1,35 @@
+# Directory-level test unit manifest for the Hypervisor CSR suite.
+#
+# Covers H-extension CSR behaviour: VS CSR substitution, hstatus, henvcfg,
+# htimedelta, vsstatus, vsip/vsie, vstimecmp, vsscratch/vsepc/vscause/vstval,
+# and the hedeleg/hideleg field constraints.
+#
+# The whole directory is one test: every file listed in SOURCES plus the
+# RUNTIME sources are compiled and linked into a single ELF. The unit boots
+# itself through the runtime's entry.S, so the ACT4 C runtime
+# (tests/env/c_test_start.S) is not linked in.
+#
+# Assertion-based self-checking: the runtime prints the RVCP-SUMMARY line the
+# harness parses, so there is no reference-model signature to compare against.
+
+REQUIRED_EXTENSIONS: ["I", "S", "H"]
+FORBIDDEN_EXTENSIONS: []
+MARCH: rv${XLEN}imach_zicsr_zifencei
+NEEDS_SIGNATURE: False
+MIN_HARTS: 1
+
+SOURCES:
+  - main.c
+  # tests/test_register.c textually includes the other tests/test_*.c files.
+  - tests/test_register.c
+
+# hyp_region needs the .vm_test_region section that kernel.ld defines.
+RUNTIME: [base, vm, hyp, hyp_region]
+LINKER_SCRIPT: kernel.ld
+
+EXTRA_CFLAGS:
+  - -DENABLE_HYP
+  - -I{c_common}/hyp
+  # Mode-agnostic suite: follow the platform-selected paging modes.
+  - -DSUITE_VSATP_MODE=PLATFORM_SATP_MODE
+  - -DSUITE_HGATP_MODE=PLATFORM_HGATP_MODE

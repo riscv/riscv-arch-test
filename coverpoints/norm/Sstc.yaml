@@ -17,7 +17,7 @@ normative_rule_definitions:
         "Sstc_cg/cp_supervisor_stce",
         "Sstc_Sm_cg/cp_machine_stce",
         "Interrupts_Sm_cg/cp_trigger_sti_sstc",
-        "Interrupts_Sm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc_{csrrs,csrrc}",
       ]
   # When this extension is implemented and STCE in menvcfg is zero, an attempt to access
   # stimecmp or vstimecmp in a mode other than M-mode raises an illegal-instruction
@@ -31,7 +31,7 @@ normative_rule_definitions:
         "Sstc_H_cg/{cp_hs_vstimecmp_accessible, cp_vs_stimecmp_accessible, cp_vu_timecmp_inaccessible}",
         "Sstc_H_cg/cp_vstip",
         "Interrupts_Sm_cg/cp_trigger_sti_sstc",
-        "Interrupts_Sm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc_{csrrs,csrrc}",
       ]
   # Further, if the H extension is implemented, then hip.VSTIP also reverts its defined
   # behavior as if this extension is not implemented.
@@ -41,7 +41,7 @@ normative_rule_definitions:
         "Sstc_Sm_cg/cp_machine_stce",
         "Sstc_H_cg/cp_vstip",
         "Interrupts_Sm_cg/cp_trigger_sti_sstc",
-        "Interrupts_Sm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc_{csrrs,csrrc}",
       ]
 
   # when the TM bit in the mcounteren register is clear, attempts to access the
@@ -88,7 +88,7 @@ normative_rule_definitions:
         "Sstc_Sm_cg/cp_machine_stce",
         "Sstc_cg/cp_supervisor_stce",
         "Interrupts_Sm_cg/cp_trigger_sti_sstc",
-        "Interrupts_Sm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc_{csrrs,csrrc}",
       ]
   # When the Sstc extension is not implemented, STCE is read-only zero.
   - name: menvcfg_stce_rdonly0
@@ -96,7 +96,7 @@ normative_rule_definitions:
       [
         "Sstc_Sm_cg/cp_machine_stce",
         "Interrupts_Sm_cg/cp_trigger_sti_sstc",
-        "Interrupts_Sm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc_{csrrs,csrrc}",
       ]
   # A supervisor timer interrupt becomes pending, as reflected in the STIP bit in the mip
   # and sip registers whenever time contains a value greater than or equal to stimecmp,
@@ -110,7 +110,7 @@ normative_rule_definitions:
       [
         "Interrupts_cg/cp_trigger_sti_sstc",
         "Interrupts_Sm_cg/cp_trigger_sti_sstc",
-        "Interrupts_Sm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc_{csrrs,csrrc}",
       ]
   # Bits sip.STIP and sie.STIE are the interrupt-pending and interrupt-enable bits for
   # supervisor-level timer interrupts. If implemented, STIP is read-only in sip. When the
@@ -124,7 +124,7 @@ normative_rule_definitions:
       [
         "Interrupts_cg/cp_trigger_sti_sstc",
         "Interrupts_Sm_cg/cp_trigger_sti_sstc",
-        "Interrupts_Sm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc_{csrrs,csrrc}",
       ]
 
   # The rules below need H.

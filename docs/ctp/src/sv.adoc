@@ -14,7 +14,7 @@ include::{testplansdir}/priv/Sv.adoc[]
 
 *UDB Parameters:*
 
-* REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
+* REPORT_VA_IN_{MTVAL/STVAL}_ON_{INSTRUCTION/LOAD/STORE_AMO}_PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
 * TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
 ===== Sv_Sm Virtual Memory with M-mode State

@@ -184,7 +184,6 @@ top-level directory of the repository:
 
 ```bash
 mise trust .mise.toml
-
 ```
 
 ### Configuration

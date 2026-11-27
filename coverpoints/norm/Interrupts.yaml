@@ -164,11 +164,11 @@ normative_rule_definitions:
     # These tests check that xEPC is the instruction after the CSR write (mie, sie, hie, mstatus, sstatus,
     # mideleg, hideleg, mip, sip or hvip), the T-SBI xRET, or the xRET to the same mode that enables the pending
     # interrupt, or after the mip, sip or hvip write that raises an enabled LCOFI, STI or VS-level interrupt.
-    # Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi} check it too, but their plan row already lists so many rules
-    # that one more makes its cell taller than a CTP page.
+    # Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_trigger_vs, cp_trigger_tsbi_vs} check it too, but their
+    # plan row already lists so many rules that one more makes its cell taller than a CTP page.
     coverpoint:
       [
-        "Interrupts_cg/{cp_enable_one, cp_enable_one_tsbi, cp_trigger, cp_trigger_tsbi, cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_priority_sie_split_tsbi, cp_priority_sip_split_tsbi, cp_trigger_reg_sip_ssip, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_xret_same_mode, cp_undeleg_hideleg}",
+        "Interrupts_cg/{cp_enable_one, cp_enable_one_tsbi, cp_trigger, cp_trigger_tsbi, cp_priority_sie, cp_priority_sip, cp_priority_sie_tsbi, cp_priority_sip_tsbi, cp_priority_sie_split_tsbi, cp_priority_sip_split_tsbi, cp_trigger_reg_sip_ssip, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_trigger_vs, cp_trigger_tsbi_vs, cp_xret_same_mode, cp_undeleg_hideleg}",
         "Interrupts_Sm_cg/{cp_enable_one, cp_enable_one_tsbi, cp_priority_mip, cp_priority_mie, cp_priority_mideleg, cp_priority_mip_tsbi, cp_priority_mie_tsbi, cp_priority_mideleg_tsbi, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_trigger_reg_sip_ssip, cp_xret_same_mode, cp_undeleg_mideleg}",
       ]
 
@@ -335,8 +335,8 @@ normative_rule_definitions:
   - name: hideleg_op
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip_tsbi}",
-        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}",
+        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_trigger_vs, cp_trigger_tsbi_vs, cp_priority_sip_tsbi}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_trigger_vs, cp_trigger_tsbi_vs}",
         "Interrupts_Sm_cg/{cp_trigger, cp_enable_one}",
         "Interrupts_Sm_cg/{cp_trigger, cp_priority_mip}",
         "Interrupts_Sm_cg/{cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip}",
@@ -499,26 +499,29 @@ normative_rule_definitions:
   # The trap record of a VS-mode trap holds vsstatus (SPP, SPIE, SIE), vscause, vsip and vstval.
   - name: H_trap_vs_csrwrites
     coverpoint:
-      ["Interrupts_cg/cp_trigger_tsbi", "Interrupts_Sm_cg/cp_trigger_tsbi"]
+      [
+        "Interrupts_cg/cp_trigger_tsbi_vs",
+        "Interrupts_Sm_cg/cp_trigger_tsbi_vs",
+      ]
 
   - name: hideleg_trans
     coverpoint:
       [
-        "Interrupts_cg/{cp_trigger_tsbi, cp_priority_sip_tsbi}",
-        "Interrupts_Sm_cg/cp_trigger_tsbi",
+        "Interrupts_cg/{cp_trigger_tsbi_vs, cp_priority_sip_tsbi}",
+        "Interrupts_Sm_cg/cp_trigger_tsbi_vs",
       ]
 
     # Representative coverpoints; delegated VS-level interrupts taken in VS and VU, and through a
     # vectored vstvec
   - name: vstvec_img
-    coverpoint: ["Interrupts_cg/cp_trigger_tsbi (vectored vstvec)"]
+    coverpoint: ["Interrupts_cg/cp_trigger_tsbi_vs (vectored vstvec)"]
 
   # The vstvec register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register stvec, formatted as shown in . When V=1, vstvec substitutes for
   # the usual stvec, so instructions that normally read or modify stvec actually access
   # vstvec instead. When V=0, vstvec does not directly affect the behavior of the machine.
   - name: vstvec_sz_acc_op
-    coverpoint: ["Interrupts_cg/cp_trigger_tsbi (vectored vstvec)"]
+    coverpoint: ["Interrupts_cg/cp_trigger_tsbi_vs (vectored vstvec)"]
 
   # Shlcofideleg makes hideleg bit 13 writable; while it is zero, vsip.LCOFIP and vsie.LCOFIE are read-only zero,
   # and otherwise they alias sip.LCOFIP and sie.LCOFIE

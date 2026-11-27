@@ -7,7 +7,7 @@ Some of these profiles, ratified and unratified, are listed below:
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified)
 ** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).
-* MC100 Microcontroller Profile
+* MC100 Microcontroller Profile (Unratified)
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified)
 ** Application processor without vector, hypervisor, and other newer extensions
@@ -15,22 +15,13 @@ Some of these profiles, ratified and unratified, are listed below:
 ** RVA23 less vector and hypervisor
 * RVA23 Profile (https://riscv.github.io/riscv-arch-test/crd/rva23_crd.html[RVA23 CRD])
 
-Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
-
-This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
-
-* All certificates for profiles that support interrupts require that the platform be able to set and clear via software all implemented interrupt pending bits
-* Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported independent of the Zicntr or F instructions, so there
-is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.
-* Atomics and fences are much more interesting in a multi-core / multi-master environment.  The base test plan just checks that they execute on a single core.
+As of 2026, certification is only in development for the RVA23 profile.  However, tests can run on any DUT, including those implementing other profiles or those with extensions not in any profile.
 
 === Profile Coverage Matrix
 
 <<t-profiles>> summarizes the coverage files applicable to each profile. x indicates a mandatory extension, and o indicates an optional extension.  The certification test plan handles all mandatory and optional extensions.
 
-Coverage files with multiple extensions in the name apply when all the extensions are supported; for example, ZicsrF is used in a system supporting the Zicsr and F extensions.
-
-All privileged suites require at least version 1.12 of the privileged specification.  Features specific to version 1.13 are tested separately in the Sm1p13 and Ss1p13 suites.
+All privileged suites require at least version 1.11 of the privileged specification. Tests are written assuming 1.12 and exclude certain features when running on 1.11. Features specific to version 1.13 are tested separately in the Sm1p13 and Ss1p13 suites.
 
 [[t-profiles]]
 .Profile Coverage Files
@@ -52,6 +43,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
 |D|Double|<<t-D-coverpoints>>|o||x|x|x
+|ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
 |Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x
@@ -68,6 +60,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zksed|SM4 Cipher|<<t-Zksed-coverpoints>>|||o||
 |Zksh|SM3 Hashing|<<t-Zksh-coverpoints>>|||o||
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
+|Zicntr|Base Counters and Timers|<<t-Zicntr-coverpoints>>|o|x|x|x|x
+|Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
 |Ziccif|Main Memory Instruction Fetch|<<t-Ziccif-coverpoints>>|||x|x|x
@@ -83,14 +77,13 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Za64rs|Max 64B Reservation Sets|<<t-Za64rs-coverpoints>>|||x|x|x
 |Zic64b|64B Cache Blocks|<<t-Zic64b-coverpoints>>|||x|x|x
 8+^|Privileged
-|Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|x|x|x
+|Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|||
 |S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
 |Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
-|Interrupts|Supervisor Interrupts|<<t-Interrupts-coverpoints>>|||x|x|x
+|Interrupts|Interrupts|<<t-Interrupts-coverpoints>>||x|x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
-|Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
 |EndianSm|Machine Endian|<<t-EndianSm-coverpoints>>|||||
 |EndianS|Supervisor Endian|<<t-EndianS-coverpoints>>|||||
 |EndianU|User Endian|<<t-EndianU-coverpoints>>|||||
@@ -98,9 +91,10 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
 |EndianF|Float Endian|<<t-EndianF-coverpoints>>|||||
 |EndianZca|Compressed Endian|<<t-EndianZca-coverpoints>>|||||
-|PMP|Physical Memory Protection|<<t-PMP-coverpoints>>|||||
+|PMP|Physical Memory Protection|<<PMP>>|||||
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
+|Ssccptr|Main Memory Page-table Reads|<<t-Ssccptr-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
@@ -140,7 +134,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvkb16|Vector Crypto Bit Manip 16-bit|<<t-Zvkb-coverpoints>>||||o|o
 |Zvkb32|Vector Crypto Bit Manip 32-bit|<<t-Zvkb-coverpoints>>||||o|o
 |Zvkb64|Vector Crypto Bit Manip 64-bit|<<t-Zvkb-coverpoints>>||||o|o
-|Zvbc64|Vector Carryless Mult|<<t-Zvbc64-coverpoints>>||||o|o
+|Zvbc64|Vector Carryless Mult|<<t-Zvbc-coverpoints>>||||o|o
 |Zvkg32|Vector GCM|<<t-Zvkg-coverpoints>>||||o|o
 |Zvkned32|Vector Crypt|<<t-Zvkned-coverpoints>>||||o|o
 |Zvknha32|Vector Hash 32-bit|<<t-Zvknha-coverpoints>>|||||
@@ -163,7 +157,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Shvstvecd|Direct Vectoring|<<t-Shvstvecd-coverpoints>>|||o|o|x
 |Shvstvala|vstval Addresses|<<t-Shvstvala-coverpoints>>|||o|o|x
 |Shtvala|htval Addresses|<<t-Shtvala-coverpoints>>|||o|o|x
-|Shlcofideleg|Counter Overflow Delegation|<<t-Interrupts_Shlcofideleg-coverpoints>>|||||
+|Shlcofideleg|Counter Overflow Delegation|<<t-Interrupts_Shlcofideleg-coverpoints>>|||o|o|x
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x
@@ -198,7 +192,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Smepmp|Enhanced PMP|<<t-Smepmp-coverpoints>>|||||
 |Smrnmi|Machine Resumable Interrupts|<<t-Smrnmi-coverpoints>>|||||
 |Ssrnmi|Supervisor Resumable Interrupts|<<t-Ssrnmi-coverpoints>>|||||
-|Sm1p13|Machine 1p13|<<t-Sm1p13-coverpoints>>||||x|x
+|Sm1p13|Machine 1p13|<<t-Sm1p13-coverpoints>>|||||
 |Smstateen|Machine State Enable|<<t-Smstateen-coverpoints>>|||||
 |Smcntrpmf|Cycle and Instret Mode Filtering|<<t-Smcntrpmf-coverpoints>>|||||
 |Smcdeleg|Counter Delegation|<<t-Smcdeleg-coverpoints>>|||||
@@ -229,7 +223,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 
 === Out-of-Scope Extensions
 
-<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  Measuring the latency of an instruction with a cycle counter is unreliable because instruction fetch, branch prediction, superscalar issue, and out-of-order execution make the count depend on where the instruction is and what surrounds it, not only on its operand data.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
+<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  Measuring the latency of an instruction with a cycle counter is unreliable because instruction fetch, branch prediction, superscalar issue, and out-of-order execution make the count depend on where the instruction is and what surrounds it, not only on its operand data.  Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
 
 [[t-untested]]
 .Extensions Lacking Architectural Visibility for Certification Testing
@@ -237,23 +231,18 @@ All privileged suites require at least version 1.12 of the privileged specificat
 [cols="1, 4, 1, 1, 1, 1, 1" options=header]
 [%AUTOWIDTH]
 |===
-|Coverage File|Description|RVI20|uController|RVA22S64|RVB23S64|RVA23S64
+|Coverage File|Description|RVI20|MC100|RVA22S64|RVB23S64|RVA23S64
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |===
 
 Furthermore, the following features are not supported in this version of the certification test plan:
 
-* sfence.vma, sinval, and hypervisor fences are lightly tested because it is hard to prove they don't work
-* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in main memory with full capabilities.
-TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each type of access (load/store/execute, misaligned, at start/middle/end/partially wrapping) to each region.
+* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in coherent main memory, cacheable if Zicbo* is supported.
 * Testing privilege modes whose XLEN differs from MXLEN; low ROI
 * Testing extensions that have been disabled with `misa` fields; behavior is unspecified.
 * Non-Maskable Interrupts (NMI) - no standard way to generate them yet
-* Reset behavior - no way for a program to reset itself
 * Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make these interrupts delegatable from M-mode to S-mode"
-* Multicore or multi-master systems; current tests only run on one core and atomics and memory consistency are only lightly tested. TODO: coming later.
 * Custom extensions
-
 
 A hart with these features can still be certified if it meets all other requirements; these features are simply not tested.

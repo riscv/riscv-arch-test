@@ -10,16 +10,52 @@ normative_rule_definitions:
   # All instructions shall be implemented with data-independent timing. That is, the latency
   # of the execution of these instructions shall not vary with different input values.
   - name: zvk_dataindep_timing
-    coverpoint:
-      [
-        "TODO: data-independent execution timing (a side-channel-resistance property) cannot be observed from a final-state signature comparison",
-      ]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # For all of the vector crypto instructions in this specification, EEW=SEW.
   - name: veccrypto_eeweqsew
     coverpoint:
       [
         "TODO: EEW=SEW is inherent in every vector-crypto instruction's encoding; no dedicated coverpoint isolates it",
+      ]
+
+  # Mnemonic|Instruction === insn:vandn.*[]|<<insns-vandn>>¶ insn:vbrev8.v*[]|<<insns-vbrev8>>¶
+  # insn:vrev8.v*[]|<<insns-vrev8>>¶ insn:vrol.*[]|<<insns-vrol>>¶ insn:vror.*[]|<<insns-vror>> ===
+  - name: Zvkb_insns_tbl
+    # Representative coverpoints; also the Zvkb8, Zvkb16 and Zvkb64 covergroups
+    coverpoint:
+      [
+        "Zvkb32_{vandn_vv,vandn_vx,vbrev8_v,vrev8_v,vrol_vv,vrol_vx,vror_vv,vror_vx,vror_vi}_cg/cp_asm_count",
+      ]
+
+  # Instruction Group|Extension|EGW|EEW|EGS === AES|extzvkned|128|32|4¶ SHA256|extzvknha|128|32|4¶
+  # SHA512|extzvknhb|256|64|4¶ GCM|extzvkg|128|32|4¶ SM4|extzvksed|128|32|4¶ SM3|extzvksh|256|32|8
+  # ===
+  - name: veccrypto_eg_params_tbl
+    # Representative coverpoints: one instruction of each group; also cr_vl_lmul_egs* of the others
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
+      ]
+
+  # Instructions|Required SEW === insn:vaes*[]|32¶ Zvknha: insn:vsha2*[]|32¶ Zvknhb:
+  # insn:vsha2*[]|32 or 64¶ insn:vg*[]|32¶ insn:vsm3*[]|32¶ insn:vsm4*[]|32 ===
+  - name: veccrypto_sew_tbl
+    # Representative coverpoints: one instruction of each group; also cr_vl_lmul_egs* of the others
+    coverpoint:
+      [
+        "Zvkned_vaesef_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvkg_vghsh_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksed_vsm4r_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvksh_vsm3c_vi_cg/cr_vl_lmul_egs8_sew32",
       ]
 
   # Since vl and vstart refer to elements, Vector Crypto instructions that use element
@@ -35,7 +71,7 @@ normative_rule_definitions:
   - name: veccrypto_vl_vstart_rsv
     coverpoint:
       [
-        "TODO: no Ssstrict-equivalent suite exists for the vector-crypto extensions to exercise vl/vstart values that violate the EGS constraint",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # For element-group instructions, LMUL*VLEN must always be at least as large as EGW,
@@ -43,7 +79,7 @@ normative_rule_definitions:
   - name: veccrypto_lmul_egwconstr
     coverpoint:
       [
-        "TODO: no ExceptionsZvk-style suite exists yet to exercise the LMUL*VLEN<EGW illegal-instruction condition",
+        "Needs test: LMUL×VLEN < EGW, even with vl = 0, raises an illegal-instruction exception.",
       ]
 
   # Some Vector Crypto instructions are only defined for a specific SEW. In such a case all
@@ -51,7 +87,7 @@ normative_rule_definitions:
   - name: veccrypto_sew_rsv
     coverpoint:
       [
-        "Out-of-Scope: reserved because of CSR state (vtype.sew); no Ssstrict-equivalent suite exists to exercise these reserved SEW encodings; see the per-instruction _sewn32_rsv/_sewn64_rsv rules in each extension's own file",
+        "No independent assertion: reserved because of CSR state, which Ssstrict does not cover.",
       ]
 
   # In the case of the *.vs instructions defined in this specification, vs2 holds a 128-bit
@@ -67,9 +103,7 @@ normative_rule_definitions:
   # overlap this vs2 register group.
   - name: veccrypto_vsins_vdvs2overlap
     coverpoint:
-      [
-        "TODO: this is an SsstrictV-style reserved-encoding test; no register-overlap coverpoint exists yet for the *.vs instruction forms (e.g. Zvkned_vaesdf_vs_cg has no cmp_vd_vs2-style coverpoint)",
-      ]
+      ["Needs test: .vs vector crypto instructions with vd overlapping vs2."]
 
   # they return vector results to vd, which is also a source vector operand.
   - name: veccrypto_vsins_vd
@@ -79,14 +113,14 @@ normative_rule_definitions:
   - name: Zvknhb_Zvkn_Zvknc_Zvkng_Zvksc_depZve64x
     coverpoint:
       [
-        "TODO: extension-composition fact; no dedicated coverpoint exists for it (Zvkn/Zvknc/Zvkng/Zvksc are not separate suites in this repo)",
+        "Configuration requirement: these extensions require Zve64x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvknhb.yaml[ext/Zvknhb.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkn.yaml[ext/Zvkn.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvknc.yaml[ext/Zvknc.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkng.yaml[ext/Zvkng.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvksc.yaml[ext/Zvksc.yaml], https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvbc.yaml[ext/Zvbc.yaml]).",
       ]
 
   # All of the other Vector Crypto Extensions depend on ext:zve32x[].
   - name: Zvkb_Zvkg_Zvkned_Zvknha_Zvksed_Zvksh_Zvks_Zvksc_Zvksg_Zvkt_depZve32x
     coverpoint:
       [
-        "TODO: extension-composition fact; no dedicated coverpoint exists for it (Zvks/Zvksc/Zvksg/Zvkt are not separate suites in this repo)",
+        "Configuration requirement: these extensions require Zve32x; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/Zvkb.yaml[ext/Zvkb.yaml]) except for Zvkt.",
       ]
 
   # It is important to note that the Vector Crypto instructions are independent of the
@@ -94,9 +128,7 @@ normative_rule_definitions:
   # implemented.
   - name: veccrypto_indepZkt
     coverpoint:
-      [
-        "TODO: independence from an unrelated extension's implementation is not something a coverpoint can assert one way or the other",
-      ]
+      ["No independent assertion: vector crypto does not depend on Zkt."]
 
   # Each bit of Op1 is inverted and logically ANDed with the corresponding bits in vs2.
   - name: vandn_op
@@ -182,22 +214,28 @@ normative_rule_definitions:
   # with data-independent execution latency as defined in the RISC-V Scalar Cryptography Extensions
   # specification.
   - name: Zvkt_req
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # Data-independent execution latency (DIEL) applies to all data operands of an instruction, even
   # those that are not a part of the body or that are inactive. However, DIEL does not apply to
   # other values such as vl, vtype, and the mask (when used to control execution of a masked vector
   # instruction).
   - name: Zvkt_diel_def
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint: ["Needs infrastructure: execution-latency measurement."]
 
   # Also, DIEL does not apply to constant values specified in the instruction encoding such as the
   # use of the zero register (x0), and, in the case of immediate forms of an instruction, the values
   # in the immediate fields (i.e., imm and uimm).
   - name: Zvkt_diel_constants_exempt
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint:
+      [
+        "No independent assertion: exempts these operands from the data-independent-latency requirement.",
+      ]
 
   # In some cases—which are explicitly specified in the lists below—operands that are used as
   # control rather than data are exempt from DIEL.
   - name: Zvkt_diel_control_exempt
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint:
+      [
+        "No independent assertion: exempts these operands from the data-independent-latency requirement.",
+      ]

@@ -5,27 +5,34 @@ normative_rule_definitions:
     coverpoint: ["Zaamo_amoadd_w_cg/cp_custom_aqrl"]
 
   - name: amo_release_consistency
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: A_domain_specific_ordering
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "Needs infrastructure: I/O regions and multiple harts to observe ordering.",
+      ]
 
   - name: A_no_aq_rl
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      ["No independent assertion: aq = rl = 0 adds no ordering constraint."]
 
   - name: A_acquire_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: A_release_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   - name: A_seq_cst_semantics
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # The A extension comprises the Zalrsc and Zaamo extensions, which are
   # defined in the following sections.
   - name: A_comprises
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint:
+      [
+        "Configuration requirement: A requires Zaamo and Zalrsc; checked by UDB (https://github.com/riscv/riscv-unified-db/blob/main/spec/std/isa/ext/A.yaml[ext/A.yaml]).",
+      ]
 
   # Load into rd, operate with rs2, store back; representative: memory and rs2 edge values
   - name: amo_op

@@ -52,12 +52,14 @@ coverpoints:
   - name: |-
       cp_trigger
       cp_trigger_tsbi
+      cp_trigger_vs
+      cp_trigger_tsbi_vs
     goal: Assert each interrupt
     description: |-
       For <type> = {LCOFI, MTI, MSI, MEI, STI, SSI, SEI, VSTI, VSEI, VSSI}
       setup_interrupts_sm
       trigger_interrupts_<type>
-      With H, each VS-level interrupt is also raised with hideleg delegating it to VS-mode, which the cross records with vsstatus.SIE in place of mstatus.SIE.
+      With H, each VS-level interrupt is also raised with hideleg delegating it to VS-mode.  cp_trigger_vs and cp_trigger_tsbi_vs record those cases with vsstatus.SIE and vstvec.MODE in place of mstatus.SIE and mtvec.MODE.
     expectation: |-
       supported interrupts will fire if
       - not delegted to a lower priv mode than the current mode

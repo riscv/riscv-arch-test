@@ -12,7 +12,7 @@ normative_rule_definitions:
   # An implementation with the Ziccif extension fetches instructions in a manner
   # equivalent to the following state machine.
   - name: Ziccif_fetch_mechanism
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["Needs infrastructure: multiple harts."]
 
   # Memory protection and executability PMAs are applied only to bytes that are not discarded
   # by this algorithm.
@@ -20,4 +20,4 @@ normative_rule_definitions:
     # Discarded bytes lie in the same M-byte aligned block as the instruction. With ILEN=32, M=4,
     # the minimum PMP granule, so no protection boundary can separate them from the instruction.
     # Only a hart with ILEN>32 on RV64 (M=8) and a 4-byte PMP grain could observe this rule.
-    coverpoint: ["OUT-OF-SCOPE: not observable with ILEN=32"]
+    coverpoint: ["Out of scope: not observable with ILEN = 32."]

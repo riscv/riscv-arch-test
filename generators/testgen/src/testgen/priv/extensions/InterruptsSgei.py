@@ -16,7 +16,7 @@ produce no testcases when GEILEN = 0.
 Interrupts_Sgei boots to HS-mode.  Its trigger file takes SGEI from HS, U, VS and VU modes; its hs file covers hgeip
 and hgeie, hip.SGEIP, hstatus.VGEIN and the SGEI priority.  Interrupts_SgeiSm boots to M-mode with mideleg = 0 and
 takes SGEI from every mode: SGEI still goes to HS-mode because mideleg[12] is read-only one.  The hooks may reach
-IMSIC state below M-mode (vstopei, vsiselect and vsireg), so each file first sets mstateen0.IMSIC, AIA and CSRIND.
+IMSIC state below M-mode (vstopei, vsiselect and vsireg); boot sets mstateen0.IMSIC, AIA and CSRIND for them.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -30,17 +30,6 @@ _CG_SM = "Interrupts_SgeiSm_cg"
 
 # S-level interrupts that preempt SGEI, raised by RVTEST_SET_<macro>_INT_S
 S_INTS = ["SEI", "STI", "SSI"]
-
-# Let the hooks reach IMSIC state (vstopei, vsiselect and vsireg) below M-mode
-IMSIC_STATEEN_ON = (
-    "#ifdef SMSTATEEN_SUPPORTED",
-    "#if __riscv_xlen == 64",
-    "RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0, MSTATEEN0_IMSIC | MSTATEEN0_AIA | MSTATEEN0_CSRIND)",
-    "#else",
-    "RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEEN0H_IMSIC | MSTATEEN0H_AIA | MSTATEEN0H_CSRIND)",
-    "#endif",
-    "#endif",
-)
 
 
 def _gei(op: str, gei: int, tmp_reg: int, mode: str = "S") -> list[str]:
@@ -384,10 +373,10 @@ def make_interrupts_sgei(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "Sgei_trigger")
-    tc.code.extend([*IMSIC_STATEEN_ON, *_trigger_tests(test_data)])
+    tc.code.extend(_trigger_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "Sgei_hs")
-    tc.code.extend([*IMSIC_STATEEN_ON, *_sgei_tests(test_data), *_vgein_switch_tests(test_data)])
+    tc.code.extend([*_sgei_tests(test_data), *_vgein_switch_tests(test_data)])
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
@@ -403,7 +392,7 @@ def make_interrupts_sgeism(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "SgeiSm_trigger")
-    tc.code.extend([*IMSIC_STATEEN_ON, *_trigger_sm_tests(test_data)])
+    tc.code.extend(_trigger_sm_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

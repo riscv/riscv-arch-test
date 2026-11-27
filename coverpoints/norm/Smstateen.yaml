@@ -31,7 +31,7 @@ normative_rule_definitions:
       ]
 
   - name: stateen_implicit_state_update
-    coverpoint: ["Not tested: either behavior is permitted"]
+    coverpoint: ["No independent assertion: either behavior is permitted."]
 
   - name: mstateen_bit_correspondence
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]

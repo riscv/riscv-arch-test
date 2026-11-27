@@ -14,12 +14,16 @@ does.  vsip.LCOFIP and vsie.LCOFIE are aliases of sip.LCOFIP and sie.LCOFIE, and
 
 Interrupts_SmShlcofideleg boots to M-mode with mideleg[13] = 0, which makes hideleg[13] read-only zero, so LCOFI
 goes to M-mode from every mode.
+
+No CI configuration runs these groups yet: Sail 0.16 lacks Shlcofideleg, and xiangshan-kmhv2, the only configuration
+that declares it, excludes them.  Sail master's legalize_hideleg keeps hideleg[13] writable when mideleg[13] = 0, so
+cp_trigger_lcofi_m needs that fixed before it can run against Sail.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.InterruptsCommon import lower_modes
+from testgen.priv.extensions.InterruptsCommon import flavor, lower_modes
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Interrupts_Shlcofideleg_cg"
@@ -39,7 +43,6 @@ def _trigger_tests(test_data: TestData) -> list[str]:
         "csrci sstatus, SSTATUS_SIE",
     ]
     for mode in lower_modes:
-        flavor = "S" if mode == "S" else "U"
         for sie in (0, 1):
             lines.extend(
                 [
@@ -52,9 +55,9 @@ def _trigger_tests(test_data: TestData) -> list[str]:
                     *(["csrsi sstatus, SSTATUS_SIE # sstatus.SIE = 1"] if mode == "S" else []),
                     test_data.add_testcase(f"{mode.lower()}_vsstatus_sie{sie}", "cp_trigger_lcofi_vs", _CG),
                     *([] if mode == "S" else [f"RVTEST_TSBI_GOTO_{mode}MODE"]),
-                    f"RVTEST_SET_LCOFI_INT_{flavor}",
+                    f"RVTEST_SET_LCOFI_INT_{flavor(mode)}",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                    f"RVTEST_CLR_LCOFI_INT_{flavor}",
+                    f"RVTEST_CLR_LCOFI_INT_{flavor(mode)}",
                     *(["csrci sstatus, SSTATUS_SIE # sstatus.SIE = 0"] if mode == "S" else ["RVTEST_TSBI_GOTO_SMODE"]),
                     f"csrr x{tmp_reg}, sie # LCOFIE is cleared only if VS-mode took LCOFI",
                     write_sigupd(tmp_reg, test_data),

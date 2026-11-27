@@ -1212,6 +1212,7 @@ covergroup Sdtrig_H_cg with function sample(ins_t ins);
     `endif
     `endif
     `ifdef SDTRIG_ICOUNT_ANY
+    `ifdef SDTRIG_GUEST_WRITABLE  // with neither guest mode bit writable, guest_mode would get automatic bins
         `ifdef UDB_SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH
             cp_textra_mctx_sel:   cross guest_mode, triggernum_icount, icount_point, mhselect_mctx, mctx_outcome;  // 2 modes * icount triggers * 2 selects * 2
         `endif
@@ -1221,6 +1222,7 @@ covergroup Sdtrig_H_cg with function sample(ins_t ins);
         `ifdef UDB_SDTRIG_TEXTRA_SSELECT_ASID_MATCH
             cp_textra_vsatp_asid: cross guest_mode, triggernum_icount, icount_point, sselect_asid, asid_outcome;   // 2 modes * icount triggers * 2
         `endif
+    `endif
     `endif
     `ifdef UDB_HCONTEXT_IMPLEMENTED
         cp_hcontext_hs: cross priv_mode_hs, csr_read_write, csr_hcontext;  // 2

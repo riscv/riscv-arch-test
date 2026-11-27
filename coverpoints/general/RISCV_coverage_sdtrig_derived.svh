@@ -503,5 +503,11 @@
         `define SDTRIG_TEXTRA_SCONTEXT
     `endif
 `endif
+// a trigger can be enabled in VS-mode or VU-mode (UDB_SDTRIG_VS_WRITABLE or UDB_SDTRIG_VU_WRITABLE)
+`ifdef UDB_SDTRIG_VS_WRITABLE
+    `define SDTRIG_GUEST_WRITABLE
+`elsif UDB_SDTRIG_VU_WRITABLE
+    `define SDTRIG_GUEST_WRITABLE
+`endif
 
 `endif // RISCV_COVERAGE_SDTRIG_DERIVED_SVH

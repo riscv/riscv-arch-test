@@ -1259,12 +1259,44 @@ def make_sscofpmfu(test_data: TestData) -> list[TestChunk]:
 
 # {MINH, SINH, UINH, VSINH, VUINH} patterns that leave one mode below HS-mode uninhibited
 _VIRT_INHIBIT_PATTERNS = {"only_vs": 0b11101, "only_vu": 0b11110, "only_u": 0b11011}
+# Patterns that leave only HS-mode or only U-mode uninhibited, with VSINH = VUINH = 1, and the mode that runs the
+# event code under each.  U-mode under only_hs would count the HS-mode T-SBI handler, so it is left out.
+_HS_U_INHIBIT_PATTERNS = {"only_hs": (0b10111, "HS"), "only_u": (0b11011, "U")}
+
+
+def _xinh_mode_cases(
+    test_data: TestData, coverpoint: str, cases: list[tuple[str, int, tuple[str, ...]]], regs: list[int]
+) -> list[str]:
+    """For each (name, pattern, modes), write the pattern and run the event code in each mode (HS, U, VS or VU).
+    HS-mode reads the counter through T-SBI and records whether it moved."""
+    r_val, r_hval, r_temp, r_addr = regs
+    lines = []
+    for name, pattern, modes in cases:
+        lines.extend(write_event_pattern(r_val, r_hval, pattern, "S"))
+        for mode in modes:
+            lines.extend(
+                [
+                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
+                    "#if __riscv_xlen == 32",
+                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTERH, zero", "S"),
+                    "#endif",
+                    *([] if mode == "HS" else [f"RVTEST_TSBI_GOTO_{mode}MODE"]),
+                    test_data.add_testcase(f"{name}_{mode.lower()}", coverpoint, "Sscofpmf_H_cg"),
+                    f"LA(x{r_addr}, scratch)",
+                    f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_temp})",
+                    *([] if mode == "HS" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                    tsbi_call_or_direct(f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER", "S"),
+                    f"snez x{r_temp}, x{r_temp}    # counted iff the mode is uninhibited",
+                    write_sigupd(r_temp, test_data),
+                ]
+            )
+    return lines
 
 
 def _generate_virt_xinh_filter_tests(test_data: TestData) -> list[str]:
     """The event code runs in VS-mode and in VU-mode under each pattern; the counter moves iff that mode's own
-    inhibit bit is clear.  HS-mode reads the counter through T-SBI and records whether it moved."""
-    r_val, r_hval, r_temp, r_addr = test_data.int_regs.get_registers(4)
+    inhibit bit is clear.  Then VSINH = VUINH = 1 must not stop HS-mode or U-mode from counting."""
+    regs = test_data.int_regs.get_registers(4)
     lines = [
         comment_banner(
             "cp_virt_xinh_filter",
@@ -1272,28 +1304,26 @@ def _generate_virt_xinh_filter_tests(test_data: TestData) -> list[str]:
             "counter moves only in the mode whose inhibit bit is clear: UINH does not filter VU-mode",
         ),
         tsbi_call_or_direct("csrw mie, zero", "S"),
+        *_xinh_mode_cases(
+            test_data,
+            "cp_virt_xinh_filter",
+            [(name, pattern, ("VS", "VU")) for name, pattern in _VIRT_INHIBIT_PATTERNS.items()],
+            regs,
+        ),
+        comment_banner(
+            "cp_virt_xinh_hs_u",
+            "With VSINH = VUINH = 1 and only SINH or only UINH clear, run the event code in HS-mode or U-mode.\n"
+            "The counter moves: VSINH and VUINH do not inhibit counting in HS-mode or U-mode",
+        ),
+        *_xinh_mode_cases(
+            test_data,
+            "cp_virt_xinh_hs_u",
+            [(name, pattern, (mode,)) for name, (pattern, mode) in _HS_U_INHIBIT_PATTERNS.items()],
+            regs,
+        ),
+        *clear_event_counter("S"),
     ]
-    for name, pattern in _VIRT_INHIBIT_PATTERNS.items():
-        lines.extend(write_event_pattern(r_val, r_hval, pattern, "S"))
-        for mode in ("VS", "VU"):
-            lines.extend(
-                [
-                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
-                    "#if __riscv_xlen == 32",
-                    tsbi_call_or_direct("csrw RVTEST_CSR_MHPMCOUNTERH, zero", "S"),
-                    "#endif",
-                    f"RVTEST_TSBI_GOTO_{mode}MODE",
-                    test_data.add_testcase(f"{name}_{mode.lower()}", "cp_virt_xinh_filter", "Sscofpmf_H_cg"),
-                    f"LA(x{r_addr}, scratch)",
-                    f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_temp})",
-                    "RVTEST_TSBI_GOTO_SMODE",
-                    tsbi_call_or_direct(f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER", "S"),
-                    f"snez x{r_temp}, x{r_temp}    # counted iff the mode is uninhibited",
-                    write_sigupd(r_temp, test_data),
-                ]
-            )
-    lines.extend(clear_event_counter("S"))
-    test_data.int_regs.return_registers([r_val, r_hval, r_temp, r_addr])
+    test_data.int_regs.return_registers(regs)
     return lines
 
 

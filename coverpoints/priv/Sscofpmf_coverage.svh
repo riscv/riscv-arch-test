@@ -501,6 +501,20 @@ covergroup Sscofpmf_H_cg with function sample(ins_t ins);
     `endif
     cp_virt_xinh_filter : cross priv_mode_vs_vu, virt_inh_pattern;
 
+    // VSINH = VUINH = 1 with only the current mode's inhibit bit clear: SINH in HS-mode, UINH in U-mode
+    `ifdef UDB_MXLEN_64
+        hs_u_inh_pattern : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENT)[62:58] ==
+                                       ((ins.prev.mode == 2'b01) ? 5'b10111 : 5'b11011)) {
+            bins own_bit_clear = {1'b1};
+        }
+    `else
+        hs_u_inh_pattern : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SSCOFPMF_MHPMEVENTH)[30:26] ==
+                                       ((ins.prev.mode == 2'b01) ? 5'b10111 : 5'b11011)) {
+            bins own_bit_clear = {1'b1};
+        }
+    `endif
+    cp_virt_xinh_hs_u : cross priv_mode_s_u, hs_u_inh_pattern;
+
     // VS-mode reads scountovf as OF & mcounteren & hcounteren, whatever scounteren holds.  Every implemented OF bit
     // is set (`OF_VEC is defined by general/RISCV_coverage_sscofpmf.svh, which the S covergroup includes).
     scountovf_read : coverpoint ins.current.insn {

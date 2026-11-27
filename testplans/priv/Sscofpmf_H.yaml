@@ -10,6 +10,13 @@ coverpoints:
       For each pattern, in VS-mode and then in VU-mode: mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, and read mhpmcounter in HS-mode
     expectation: mhpmcounter is nonzero iff the inhibit bit of the mode that ran the event code is 0
     bins: 3 patterns * {VS, VU} = 6
+  - name: cp_virt_xinh_hs_u
+    goal: VSINH and VUINH do not inhibit counting in HS-mode or U-mode
+    description: |-
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0, and mhpmevent[62:58] (MINH, SINH, UINH, VSINH, VUINH) = 10111 (only HS-mode counts) and 11011 (only U-mode counts)
+      Under 10111 in HS-mode and under 11011 in U-mode: mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, and read mhpmcounter in HS-mode
+    expectation: mhpmcounter is nonzero in both cases, because VSINH = VUINH = 1 filters only VS-mode and VU-mode
+    bins: "{HS-mode with only SINH clear, U-mode with only UINH clear} = 2"
   - name: cp_scountovf_vs
     goal: In VS-mode, scountovf reads OF & mcounteren & hcounteren
     description: |-

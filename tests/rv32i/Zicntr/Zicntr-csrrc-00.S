@@ -93,8 +93,6 @@ Zicntr_csrrc_cg_cp_cntr_instret:
 
 #endif
 
-#if __riscv_xlen == 32
-
 #if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_0) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_0))))
 
 # Testcase: cp_cntr (cycleh)
@@ -152,8 +150,6 @@ Zicntr_csrrc_cg_cp_cntr_instreth:
   sub x14, x18, x14 # compute difference
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zicntr_csrrc_cg_cp_cntr_instreth, Zicntr_csrrc_cg_cp_cntr_instreth_str)
-
-#endif
 
 #endif
 

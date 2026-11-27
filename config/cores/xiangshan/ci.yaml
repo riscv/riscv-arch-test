@@ -55,6 +55,10 @@ exclude_extensions:
   - SdtrigSm
   - SdtrigS
   - SdtrigU
+  # Sail 0.16 keeps hideleg[13] read-only zero (no Shlcofideleg), so it cannot produce the reference
+  # signatures for LCOFI delegated to VS-mode
+  - Interrupts_Shlcofideleg
+  - Interrupts_SmShlcofideleg
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache clang"
 install_script: ".github/scripts/install-xiangshan.sh"

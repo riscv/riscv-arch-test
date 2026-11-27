@@ -920,8 +920,9 @@ normative_rule_definitions:
         "Exceptions_H_cg/cp_hedeleg_{illegal_instruction,breakpoint,load_misaligned,store_misaligned,ecall,instr_access_fault,load_access_fault,store_access_fault}",
         "Exceptions_H_cg/cp_virtual_instr_vs_sret",
         "Sv_H_twostage_cg/cp_hedeleg_{page_fault,guest_page_fault}",
-        "InterruptsS_cg/cp_trigger",
-        "Needs infrastructure: the supervisor guest external interrupt (code 12) needs a guest external interrupt source.",
+        "Interrupts_cg/cp_trigger",
+        "Interrupts_Sgei_cg/{cp_trigger_sgei, cp_trigger_sgei_lower}",
+        "Interrupts_SgeiSm_cg/cp_trigger_sgei",
       ]
 
   # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶ |12, 20, 1|During
@@ -1032,7 +1033,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hip",
-        "InterruptsS_cg/cp_trigger",
+        "Interrupts_cg/cp_trigger",
         "Sstc_H_cg/cp_vstip",
       ]
 
@@ -1042,5 +1043,5 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hie",
-        "InterruptsS_cg/cp_trigger_vsti_sstc",
+        "Interrupts_cg/cp_trigger_vsti_sstc",
       ]

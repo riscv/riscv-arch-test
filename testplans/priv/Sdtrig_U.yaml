@@ -7,8 +7,8 @@ description: |
   from U-mode, which traps. The icount readbacks are sampled on those M-mode accesses, as in Sdtrig_Sm
   medeleg[3] = 1 (breakpoints from triggers are taken in S-mode) unless the hart has no S-mode or hard-wires it to 0 (tcontrol); then
   they are taken in M-mode. Other assumptions are inherited from Sdtrig_Sm
-  cp_csr_access_common runs only in Sdtrig_Sm. The trigger-module register tests, cp_tdata2_translate/_exec,
-  cp_textra_asid/_asid_sbytemask and cp_textra_mhselect_no_h run in Sdtrig_Sm and Sdtrig_S: their accesses run in
+  cp_csr_access_common_* run only in Sdtrig_Sm. The trigger-module register tests, cp_tdata2_translate/_exec,
+  cp_textra_asid_* and cp_textra_mhselect_no_h_* run in Sdtrig_Sm and Sdtrig_S: their accesses run in
   M-mode or need S-mode paging.
   Only Sdtrig_Sm runs cp_csr_unimplemented and the itrigger/etrigger cases that need traps handled in M or
   medeleg[3] = 0 (cp_itrigger_m/s, cp_etrigger_m/s/_deleg, cp_textra_itrigger_*, cp_textra_etrigger_*). Here an
@@ -25,15 +25,19 @@ coverpoints:
     expectation: Illegal instruction exception on every access (into S-mode when medeleg[2] = 1, else into M-mode)
     bins: 2 accesses * implemented M-level trigger CSRs (5-7)
   - heading: Native Triggers
-  - name: cp_breakpoint_u
+  - name: |-
+      cp_mcontrol6_breakpoint_u
+      cp_icount_breakpoint_u
     goal: Triggers enabled for U-mode fire in U-mode
     description: |-
       For each of UDB_SDTRIG_NUM_TRIGGERS in tselect, for each supported trigger type in {icount, mcontrol6}:
       arm the trigger with tdata1.u = 1 (T-SBI)
       run the U-mode instruction that matches it
     expectation: Breakpoint exception taken from U-mode (into S-mode when medeleg[3] = 1, else into M-mode)
-    bins: NUM_TRIGGERS * 2 types
-  - name: cp_breakpoint_delegate_u
+    bins: triggers that support the type
+  - name: |-
+      cp_mcontrol6_delegate_u
+      cp_icount_delegate_u
     goal: Breakpoints caused by triggers can be delegated
     description: |-
       if S_SUPPORTED
@@ -43,7 +47,7 @@ coverpoints:
       run the U-mode instruction that fires it
       After each case, rvtest_trap_count is written to the signature
     expectation: Breakpoint exception taken into M when medeleg[3] = 0 and into S when medeleg[3] = 1
-    bins: NUM_TRIGGERS * 2 types * 2 medeleg
+    bins: triggers that support the type * 2 medeleg
   - name: A Extension
     description: |-
       Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS[i]:
@@ -638,7 +642,9 @@ coverpoints:
       other fields depending on trigger type should use the defaults defined in the sections above
 
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_textra_mcontext
+  - name: |-
+      cp_textra_mcontext_icount
+      cp_textra_mcontext_mcontrol6
     description: |-
       only run tests if MCONTEXT_IMPLEMENTED:
       repeat for each trigger type supported:
@@ -664,12 +670,14 @@ coverpoints:
 
       After each case, rvtest_trap_count is written to the signature.
     expectation: Breakpoint exception if mhvalue equals mcontext
-    bins: 3 mhvalues * 2 trigger types (icount, mcontrol6)
+    bins: triggers that support the type * 3 mhvalues
     rules:
       - Sdtrig_icount_textra
       - Sdtrig_mcontrol6_textra
       - Sdtrig_textra32_mhselect_mcontext
-  - name: cp_textra_scontext
+  - name: |-
+      cp_textra_scontext_icount
+      cp_textra_scontext_mcontrol6
     description: |-
       only run tests if SCONTEXT_IMPLEMENTED:
       repeat for each trigger type supported:
@@ -699,9 +707,9 @@ coverpoints:
     expectation: Breakpoint exception when svalue equals scontext and mask ignores A's
     bins: |-
       if RV32:
-      4 svalues * 4 masks * 2 trigger types
+      triggers that support the type * 4 svalues * 4 masks
       if RV64:
-      6 svalues * 6 masks * 2 trigger types
+      triggers that support the type * 6 svalues * 6 masks
     rules:
       - Sdtrig_icount_textra
       - Sdtrig_mcontrol6_textra
@@ -710,14 +718,18 @@ coverpoints:
       - Sdtrig_textra64_sbytemask
       - Sdtrig_textra32_byte_granular
       - Sdtrig_textra64_byte_granular
-  - name: cp_textra_scontext_all
+  - name: |-
+      cp_textra_scontext_all_icount
+      cp_textra_scontext_all_mcontrol6
     goal: With every scontext byte masked, the scontext compare always matches
     description: |-
       only run tests if SCONTEXT_IMPLEMENTED:
       as cp_textra_scontext, with tdata3.sselect = 1 and tdata3.sbytemask = all ones (RV32 11, RV64 1111)
     expectation: Breakpoint exception for every svalue
-    bins: 2 trigger types
-  - name: cp_textra_double_context
+    bins: triggers that support the type
+  - name: |-
+      cp_textra_double_context_icount
+      cp_textra_double_context_mcontrol6
     description: |-
       only run tests if MCONTEXT_IMPLEMENTED and SCONTEXT_IMPLEMENTED:
       repeat for each trigger type supported:

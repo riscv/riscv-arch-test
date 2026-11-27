@@ -25,7 +25,12 @@ notes: |
   optional context registers hold 0 if they exist
 coverpoints:
   - heading: Access
-  - name: cp_csr_access_common
+  - name: |-
+      cp_csr_access_common_disabled
+      cp_csr_access_common_icount
+      cp_csr_access_common_itrigger
+      cp_csr_access_common_etrigger
+      cp_csr_access_common_mcontrol6
     goal: |-
       Access all Sdtrig CSRs common to all triggers
       Accesses to trigger CSRs used by any of the implemented triggers must succeed
@@ -39,13 +44,13 @@ coverpoints:
     expectation: |-
       WARL
       illegal instruction exception on CSR access if it is not implemented by any trigger
-    bins: UDB_SDTRIG_NUM_TRIGGERS * supported types (up to 5) * implemented regs (2-8) * 5 accesses
+    bins: triggers that support the type * implemented regs (2-8) * 5 accesses
     rules:
       - Sdtrig_csr_mode
       - Sdtrig_num_trigs_ge1
     notes: "comments on test results: No exceptions. Tcontrol and mscontext not implemented on spike"
   - heading: "Note: Use CSRW/CSRR to access registers in all modes"
-  - heading: "Native Triggers: breakpoint delegation from S/U-mode is tested in Sdtrig_S and Sdtrig_U (cp_breakpoint_delegate_s/u)"
+  - heading: "Native Triggers: breakpoint delegation from S/U-mode is tested in Sdtrig_S and Sdtrig_U (cp_mcontrol6_delegate_s/u, cp_icount_delegate_s/u)"
   - name: A Extension
     description: |-
       Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS[i]:
@@ -378,14 +383,16 @@ coverpoints:
     notes: |-
       coverpoint drafted: 9/10
       coverpoint reviewed: 9/10
-  - name: cp_tdata1_dmode
+  - name: |-
+      cp_tdata1_dmode_mcontrol6
+      cp_tdata1_dmode_icount
     goal: dmode is writable only from Debug Mode
     description: |-
       For each of UDB_SDTRIG_NUM_TRIGGERS in tselect, for each supported type in {icount, mcontrol6}:
       CSRW tdata1 with dmode = 1 and that type (icount: count = 1, m = 0; mcontrol6: m = 1, XSL = 000, so neither fires)
       CSRR tdata1 and check dmode
     expectation: dmode reads back 0 after an M-mode write of 1
-    bins: NTRIGGERS * 2 types
+    bins: triggers that support the type
     rules:
       - Sdtrig_tdata1_dmode_writable
   - name: cp_tinfo_read_only
@@ -1147,7 +1154,9 @@ coverpoints:
       other fields depending on trigger type should use the defaults defined in the sections above
 
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_textra_mcontext
+  - name: |-
+      cp_textra_mcontext_icount
+      cp_textra_mcontext_mcontrol6
     description: |-
       only run tests if SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH and SDTRIG_TEXTRA_MHVALUE_LEN > 0:
       repeat for each trigger type supported:
@@ -1175,12 +1184,14 @@ coverpoints:
       itrigger/etrigger are not used here (their traps are taken with xIE=0); see cp_textra_itrigger/etrigger.
       After each case, rvtest_trap_count is written to the signature.
     expectation: Breakpoint exception if mhvalue equals mcontext
-    bins: 3 mhvalues * 2 trigger types (icount, mcontrol6)
+    bins: triggers that support the type * 3 mhvalues
     rules:
       - Sdtrig_icount_textra
       - Sdtrig_mcontrol6_textra
       - Sdtrig_textra32_mhselect_mcontext
-  - name: cp_textra_scontext
+  - name: |-
+      cp_textra_scontext_icount
+      cp_textra_scontext_mcontrol6
     description: |-
       only run tests if SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH and SDTRIG_TEXTRA_SVALUE_LEN > 0:
       repeat for each trigger type supported:
@@ -1212,9 +1223,9 @@ coverpoints:
     expectation: Breakpoint exception when svalue equals scontext and mask ignores A's
     bins: |-
       if RV32:
-      4 svalues * 4 masks * 2 trigger types
+      triggers that support the type * 4 svalues * 4 masks
       if RV64:
-      6 svalues * 6 masks * 2 trigger types
+      triggers that support the type * 6 svalues * 6 masks
     rules:
       - Sdtrig_icount_textra
       - Sdtrig_mcontrol6_textra
@@ -1223,14 +1234,18 @@ coverpoints:
       - Sdtrig_textra64_sbytemask
       - Sdtrig_textra32_byte_granular
       - Sdtrig_textra64_byte_granular
-  - name: cp_textra_scontext_all
+  - name: |-
+      cp_textra_scontext_all_icount
+      cp_textra_scontext_all_mcontrol6
     goal: With every scontext byte masked, the scontext compare always matches
     description: |-
       only run tests if SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH and SDTRIG_TEXTRA_SVALUE_LEN > 0:
       as cp_textra_scontext, with tdata3.sselect = 1 and tdata3.sbytemask = all ones (RV32 11, RV64 1111)
     expectation: Breakpoint exception for every svalue
-    bins: 2 trigger types
-  - name: cp_textra_double_context
+    bins: triggers that support the type
+  - name: |-
+      cp_textra_double_context_icount
+      cp_textra_double_context_mcontrol6
     description: |-
       only run tests if the conditions of both cp_textra_mcontext and cp_textra_scontext hold:
       repeat for each trigger type supported:
@@ -1273,7 +1288,9 @@ coverpoints:
       - Sdtrig_textra32_sselect_scontext
       - Sdtrig_textra32_mhselect_ignore
       - Sdtrig_textra32_sselect_ignore
-  - name: cp_textra_asid
+  - name: |-
+      cp_textra_asid_icount
+      cp_textra_asid_mcontrol6
     description: |-
       only run tests if S is supported, SDTRIG_TEXTRA_SSELECT_ASID_MATCH, ASID_WIDTH >= 2,
       SDTRIG_TEXTRA_SVALUE_LEN >= ASID_WIDTH, and Sv39 (RV64) or Sv32 (RV32) is supported.
@@ -1297,22 +1314,26 @@ coverpoints:
       tdata2 = {0x12345678 (RV32) / 0xEDCBA98712345678 (RV64)}
       perform SW (RV32) / SD (RV64) of the same value (an XLEN-wide access, as size = 0 needs)
     expectation: Breakpoint exception if ASID in satp equals the lower ASIDMAX bits of svalue.
-    bins: 2 types * 2 asid_match
+    bins: triggers that support the type * 2 asid_match
     rules:
       - Sdtrig_textra32_sselect_asid1
       - Sdtrig_textra32_sselect_asid3
-  - name: cp_textra_asid_sbytemask
+  - name: |-
+      cp_textra_asid_sbytemask_icount
+      cp_textra_asid_sbytemask_mcontrol6
     goal: sbytemask applies only with sselect = 1
     description: |-
       as cp_textra_asid, with tdata3.sbytemask = all ones (RV32 11, RV64 1111) and tdata3.svalue = {X / X^1}
     expectation: |-
       Breakpoint exception if ASID in satp equals the lower ASIDMAX bits of svalue.
       sbytemask is ignored with sselect = 2, so it does not hide the mismatch in svalue = X^1
-    bins: 2 types * 2 asid_match
+    bins: triggers that support the type * 2 asid_match
     rules:
       - Sdtrig_textra32_byte_mask_applies
       - Sdtrig_textra64_byte_mask_applies
-  - name: cp_textra_mhselect_no_h
+  - name: |-
+      cp_textra_mhselect_no_h_icount
+      cp_textra_mhselect_no_h_mcontrol6
     goal: Without H, mhselect holds only 0 or 4
     description: |-
       only run tests if H is not supported and TDATA3_IMPLEMENTED; the tdata3 accesses run in M-mode (through T-SBI in Sdtrig_S).
@@ -1321,7 +1342,7 @@ coverpoints:
       CSRW tdata3.mhselect = {1/2/3/5/6/7}
       CSRR tdata3 and check mhselect
     expectation: mhselect reads back 0 or 4 (which of the two is implementation-defined, so only that is recorded)
-    bins: 2 types * 6 mhselect values
+    bins: triggers that support the type * 6 mhselect values
     rules:
       - Sdtrig_textra32_mhselect_no_h
   - name: |-

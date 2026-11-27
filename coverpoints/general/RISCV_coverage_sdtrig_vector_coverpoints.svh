@@ -11,17 +11,24 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
+// the loads (stores) are watched by a load (store) trigger, so they need a writable load (store) bit
 vec_access: coverpoint ins.current.insn {
     type_option.weight = 0;
-    wildcard bins vle8  = {VLE8_V};
-    wildcard bins vle16 = {VLE16_V};
-    wildcard bins vle32 = {VLE32_V};
-    wildcard bins vse8  = {VSE8_V};
-    wildcard bins vse16 = {VSE16_V};
-    wildcard bins vse32 = {VSE32_V};
-    `ifdef ZVE64X_SUPPORTED
-        wildcard bins vle64 = {VLE64_V};
-        wildcard bins vse64 = {VSE64_V};
+    `ifdef UDB_SDTRIG_MCONTROL6_LOAD_WRITABLE
+        wildcard bins vle8  = {VLE8_V};
+        wildcard bins vle16 = {VLE16_V};
+        wildcard bins vle32 = {VLE32_V};
+        `ifdef ZVE64X_SUPPORTED
+            wildcard bins vle64 = {VLE64_V};
+        `endif
+    `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE
+        wildcard bins vse8  = {VSE8_V};
+        wildcard bins vse16 = {VSE16_V};
+        wildcard bins vse32 = {VSE32_V};
+        `ifdef ZVE64X_SUPPORTED
+            wildcard bins vse64 = {VSE64_V};
+        `endif
     `endif
 }
 // the trigger watches the direction of the access: load (x/s/l = 001) for vle, store (010) for vse

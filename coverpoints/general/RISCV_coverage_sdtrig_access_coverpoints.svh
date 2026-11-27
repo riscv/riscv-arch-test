@@ -11,23 +11,27 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-// supported standard trigger types; 1 and 2 are legacy, 7 is tmexttrigger, 8-11 are reserved, 12-14 are custom.
-// 0 means no trigger at this tselect, which no implemented trigger (triggernum) can read back.
-tdata1_type: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+// the type of the accessed trigger, one coverpoint per supported standard type (cp_csr_access_common_<type>); 1 and
+// 2 are legacy, 7 is tmexttrigger, 8-11 are reserved, 12-14 are custom.
+access_icount: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
     type_option.weight = 0;
-    `ifdef SDTRIG_ICOUNT_ANY
-        bins icount    = {4'd3};
-    `endif
-    `ifdef SDTRIG_ITRIGGER_ANY
-        bins itrigger  = {4'd4};
-    `endif
-    `ifdef SDTRIG_ETRIGGER_ANY
-        bins etrigger  = {4'd5};
-    `endif
-    `ifdef SDTRIG_MCONTROL6_ANY
-        bins mcontrol6 = {4'd6};
-    `endif
-    bins disabled  = {4'd15};
+    bins icount = {4'd3};
+}
+access_itrigger: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins itrigger = {4'd4};
+}
+access_etrigger: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins etrigger = {4'd5};
+}
+access_mcontrol6: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins mcontrol6 = {4'd6};
+}
+access_disabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
+    bins disabled = {4'd15};
 }
 csr_common_reg: coverpoint ins.current.insn[31:20] {
     type_option.weight = 0;

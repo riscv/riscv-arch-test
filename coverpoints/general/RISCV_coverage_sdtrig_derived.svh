@@ -503,5 +503,37 @@
         `define SDTRIG_TEXTRA_SCONTEXT
     `endif
 `endif
+// Covergroups that a configuration may leave without crosses, which are left out instead
+// Sdtrig_<group>_a_cg: Zalrsc or Zaamo
+`ifdef ZALRSC_SUPPORTED
+    `define SDTRIG_LRSC_OR_AMO
+`elsif ZAAMO_SUPPORTED
+    `define SDTRIG_LRSC_OR_AMO
+`endif
+// Sdtrig_<group>_cache_operations_cg: Zicbom, Zicboz or Zicbop
+`ifdef ZICBOM_SUPPORTED
+    `define SDTRIG_CBO_OR_PREFETCH
+`elsif ZICBOZ_SUPPORTED
+    `define SDTRIG_CBO_OR_PREFETCH
+`elsif ZICBOP_SUPPORTED
+    `define SDTRIG_CBO_OR_PREFETCH
+`endif
+// Sdtrig_S_cg, Sdtrig_U_cg: a trigger that takes their breakpoints, icount or mcontrol6 with store matching
+`ifdef SDTRIG_ICOUNT_ANY
+    `define SDTRIG_BREAKPOINT_ANY
+`elsif SDTRIG_MCONTROL6_ANY
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE
+        `define SDTRIG_BREAKPOINT_ANY
+    `endif
+`endif
+// Sdtrig_S_textra_cg: tdata3, and triggers enabled in S-mode or cp_textra_mhselect_no_h_* (without H)
+`ifdef UDB_TDATA3_IMPLEMENTED
+    `ifdef UDB_SDTRIG_S_WRITABLE
+        `define SDTRIG_S_TEXTRA
+    `endif
+    `ifndef H_SUPPORTED
+        `define SDTRIG_S_TEXTRA
+    `endif
+`endif
 
 `endif // RISCV_COVERAGE_SDTRIG_DERIVED_SVH

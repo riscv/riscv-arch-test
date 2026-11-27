@@ -25,6 +25,8 @@
 // define STANDARD_SM_SUPPORTED.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+// Uncomment STANDARD_SM_SUPPORTED when enabling optional Zicsr.
+//#define STANDARD_SM_SUPPORTED
 //#define RVMODEL_BOOT_TO_MMODE
 
 ##### TERMINATION #####

@@ -217,6 +217,9 @@
     `ifdef COVER_VX8
         vx8_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_WORLDS
+        worlds_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZA64RS
         za64rs_sample(hart, issue, ins);
     `endif

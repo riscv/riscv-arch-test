@@ -2511,6 +2511,30 @@ skpsv_\__MODE__\()epc:
         j skp_adj_\__MODE__\()epc
 
 adj_\__MODE__\()epc_rtn:
+#ifdef WORLDS_SUPPORTED
+  .ifc \__MODE__ , M
+        // RISC-V Worlds: a software-check exception with xtval = illegal world fault taken from a
+        // mode below M means that mode's WID is unauthorized, so nothing can execute there and
+        // its instruction cannot be read to find its width. Return to M-mode at ra instead, where
+        // the test code recovers. From M-mode (an MPRV access) the instruction is skipped as usual.
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_SOFTWARE_CHECK_FAULT)
+        bne     T2, T6, 7f
+        csrr    T2, CSR_XTVAL
+        LI(     T6, ILLEGAL_WORLD_FAULT)
+        bne     T2, T6, 7f
+        csrr    T2, CSR_MSTATUS
+        srli    T2, T2, MPP_LSB
+        andi    T2, T2, 3
+        LI(     T6, 3)
+        beq     T2, T6, 7f                           // trapped in M-mode: skip the instruction
+        LI(     T6, MSTATUS_MPP)
+        csrs    CSR_MSTATUS, T6                      // MPP = M: mret returns to M-mode
+        csrw    CSR_XEPC, ra                         // at ra
+        j       skp_adj_\__MODE__\()epc
+7:
+  .endif
+#endif
 #if defined(SDTRIG_XEPC_IN_VECTOR) && defined(S_SUPPORTED)
   .ifc \__MODE__ , M
         // An itrigger or etrigger on a trap delegated to S fires after that trap is taken and before

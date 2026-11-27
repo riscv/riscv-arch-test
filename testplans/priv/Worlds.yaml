@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Worlds
+source: https://github.com/riscv/riscv-worlds (RISC-V Worlds: Smwid, Smlwid, Smlwidlist, Smwiddeleg, Sswid)
+coverpoints:
+  - heading: Smwid
+  - name: cp_mwid_reset
+    goal: mwid shows the platform-defined WID of M-mode (pmwid) out of reset, and whether it is locked
+    description: As the first access, read mwid.
+    expectation: pmwid in the WID field, L as defined by the platform, reserved bits zero
+    bins: 1
+  - name: cp_mwid_warl
+    goal: Only the WID field and the lock bit of mwid are writable
+    description: |-
+      Write mwid with all bits but L set and the reset WID, then with the reset value, and read it back after each write.
+      The WID is kept at its reset value, which the platform must authorize.
+    expectation: Reserved bits read as zero; the WID field holds the reset WID
+    bins: 2
+  - name: cp_mwid_illegal_access
+    goal: mwid is accessible only from M-mode
+    description: Read mwid from S-mode and from U-mode.
+    expectation: Illegal instruction
+    bins: 2 modes
+  - name: cp_mwid_lock
+    goal: mwid.L is sticky and locks mwid
+    description: |-
+      Set mwid.L and read mwid back.  Then write a different WID, and then the unlocked reset value, reading mwid back after each.
+    expectation: mwid.L reads as 1; later writes are ignored
+    bins: 3
+  - heading: Smlwid
+  - name: cp_mlwid_reset
+    goal: mlwid has a platform-defined reset value
+    description: As the first access, read mlwid.
+    expectation: Platform-defined
+    bins: 1
+  - name: cp_mlwid_warl
+    goal: Only the WID field of mlwid is writable
+    description: Write 0, 1, 2, 3, 0xF, 0xFF and all ones to mlwid, reading it back after each write.
+    expectation: The low ceil(log2(NWorlds)) bits hold the written value; the other bits read as zero
+    bins: 7 values
+  - name: cp_mlwid_fetch
+    goal: The first instruction fetch of a lower mode whose WID is unauthorized raises a software-check exception
+    description: |-
+      With each of the WIDs 0-3 in mlwid, enter S-mode and U-mode (Sswid is disabled, so U-mode also uses mlwid).
+    expectation: |-
+      Software-check exception with xtval = illegal world fault (4) if the WID is not in pmlwidlist (and mlwidlist); otherwise the lower mode runs
+    bins: 4 WIDs x 2 modes
+  - name: cp_mlwid_mprv
+    goal: Loads and stores made with MPRV=1 as a lower mode whose WID is unauthorized raise a software-check exception
+    description: |-
+      With each of the WIDs 0-3 in mlwid, load and store from M-mode with mstatus.MPRV=1 and MPP=S and MPP=U.
+    expectation: |-
+      Software-check exception with xtval = illegal world fault (4) if the WID is not authorized; the exception has priority over access faults
+    bins: 4 WIDs x 2 modes x load/store
+  - name: cp_mlwid_illegal_access
+    goal: mlwid is accessible only from M-mode
+    description: Read mlwid from S-mode and from U-mode.
+    expectation: Illegal instruction
+    bins: 2 modes
+  - heading: Smlwidlist
+  - name: cp_mlwidlist_reset
+    goal: mlwidlist shows pmlwidlist out of reset
+    description: As the first access, read mlwidlist.
+    expectation: pmlwidlist
+    bins: 1
+  - name: cp_mlwidlist_warl
+    goal: mlwidlist is a WARL subset of pmlwidlist
+    description: Write 0, 1, 2, 4, 8, 0xF, 0xFF and all ones to mlwidlist, reading it back after each write.
+    expectation: The written value ANDed with pmlwidlist
+    bins: 8 values
+  - name: cp_mlwidlist_restricts
+    goal: mlwidlist restricts the WIDs usable by the modes below M
+    description: |-
+      With mlwidlist = 0, enter S-mode and U-mode, and load and store from M-mode with MPRV=1 and MPP=S and MPP=U.
+    expectation: Software-check exception with xtval = illegal world fault (4) in every case
+    bins: 2 modes x fetch/load/store
+  - name: cp_mlwidlist_lock
+    goal: mlwidlist is read-only whenever mwid is locked
+    description: Lock mwid, then write 0 and all ones to mlwidlist, reading it back after each write.
+    expectation: mlwidlist is unchanged
+    bins: 2
+  - heading: Smwiddeleg and Sswid
+  - name: cp_mwiddeleg_reset
+    goal: mwiddeleg is zero out of reset
+    description: As the first access, read mwiddeleg.
+    expectation: "0"
+    bins: 1
+  - name: cp_sswid_disabled
+    goal: While mwiddeleg is zero, Sswid is disabled and slwid does not exist
+    description: With mwiddeleg = 0, read and write slwid from M-mode and read it from S-mode.
+    expectation: Illegal instruction
+    bins: 3
+  - name: cp_mwiddeleg_warl
+    goal: mwiddeleg is a WARL subset of the delegatable WIDs
+    description: Write 0, 1, 2, 4, 8, 0xF, 0xFF and all ones to mwiddeleg, reading it back after each write.
+    expectation: The written value ANDed with the platform's delegatable WIDs, pmlwidlist and mlwidlist
+    bins: 8 values
+  - name: cp_mwiddeleg_subset_of_mlwidlist
+    goal: mwiddeleg is always a subset of mlwidlist
+    description: |-
+      With mlwidlist = 0, write all ones to mwiddeleg.  With mlwidlist restored, write all ones to mwiddeleg, then write 1 and 0 to mlwidlist, reading mwiddeleg back after each write.
+    expectation: mwiddeleg never has a bit set that is clear in mlwidlist
+    bins: 6
+  - name: cp_slwid_warl
+    goal: Only the WID field of slwid is writable, from M-mode and S-mode
+    description: With all delegatable WIDs in mwiddeleg, write 0, 1, 2, 3, 0xFF and all ones to slwid from M-mode and 1 from S-mode, reading it back after each write.
+    expectation: The low ceil(log2(NWorlds)) bits hold the written value; the other bits read as zero.  Illegal instruction if no WID is delegatable.
+    bins: 9
+  - name: cp_slwid_fetch
+    goal: The first access of a mode below S whose WID is not delegated raises a software-check exception
+    description: |-
+      With all delegatable WIDs in mwiddeleg, S-mode writes each of the WIDs 0-3 to slwid.  Then enter U-mode, and load and store from M-mode with MPRV=1 and MPP=U.
+    expectation: Software-check exception with xtval = illegal world fault (4) if the WID is not in mwiddeleg; otherwise U-mode runs
+    bins: 4 WIDs x fetch/load/store
+  - name: cp_mwiddeleg_illegal_access
+    goal: mwiddeleg is accessible only from M-mode and slwid only from S-mode and M-mode
+    description: Read mwiddeleg from S-mode and U-mode, and slwid from U-mode, with Sswid enabled.
+    expectation: Illegal instruction
+    bins: 3

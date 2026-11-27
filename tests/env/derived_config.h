@@ -59,3 +59,9 @@
 #endif
 
 #endif // DERIVED_CONFIG_H
+
+// WORLDS_SUPPORTED: a RISC-V Worlds extension that can raise the illegal world fault
+// (a software-check exception) is implemented.
+#if defined(SMWID_SUPPORTED) || defined(SMLWID_SUPPORTED)
+  #define WORLDS_SUPPORTED
+#endif

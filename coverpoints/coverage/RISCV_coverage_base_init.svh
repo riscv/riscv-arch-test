@@ -286,6 +286,10 @@
         `cover_info("//      Vx8 - Enabled");
         `include "Vx8_coverage_init.svh"
     `endif
+    `ifdef COVER_WORLDS
+        `cover_info("//      Worlds - Enabled");
+        `include "Worlds_coverage_init.svh"
+    `endif
     `ifdef COVER_ZA64RS
         `cover_info("//      Za64rs - Enabled");
         `include "Za64rs_coverage_init.svh"

@@ -32,7 +32,7 @@ _ERROR_LINE_RE = re.compile(r"Error:|Failed stop:|critical[-_ ]error|fatal", re.
 USE_COLOR = sys.stdout.isatty()
 
 
-def _expand_debug_placeholders(command: str, *, debug: bool) -> str:
+def expand_debug_placeholders(command: str, *, debug: bool) -> str:
     """Expand {debug:...} placeholders in a command string.
 
     When debug is True, {debug:--flag1 --flag2} expands to '--flag1 --flag2'.
@@ -40,6 +40,16 @@ def _expand_debug_placeholders(command: str, *, debug: bool) -> str:
     """
     result = _DEBUG_PLACEHOLDER_RE.sub(lambda m: m.group(1) if debug else "", command)
     return " ".join(result.split())
+
+
+def split_env_assignments(tokens: list[str]) -> tuple[dict[str, str], list[str]]:
+    """Split the leading KEY=VALUE environment assignments off a command's tokens."""
+    env: dict[str, str] = {}
+    while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
+        key, _, value = tokens[0].partition("=")
+        env[key] = value
+        tokens = tokens[1:]
+    return env, tokens
 
 
 def _color(code: str, text: str) -> str:
@@ -113,13 +123,8 @@ def run_test(
     # Build display command from the substituted tokens
     test_command = shlex.join(tokens)
 
-    # Extract leading KEY=VALUE env var assignments
-    env_overrides: dict[str, str] = {}
-    while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
-        key, _, value = tokens.pop(0).partition("=")
-        env_overrides[key] = value
+    env_overrides, cmd = split_env_assignments(tokens)
     env = {**os.environ, **env_overrides} if env_overrides else None
-    cmd = tokens
 
     full_cmd = [*cmd, str(elf_path)]
     display_cmd = f"{test_command} {elf_path}"
@@ -268,7 +273,7 @@ def main() -> int:
         args.jobs = 1
 
     # Expand {debug:...} placeholders based on --debug flag
-    command = _expand_debug_placeholders(args.command, debug=args.debug)
+    command = expand_debug_placeholders(args.command, debug=args.debug)
 
     # Set up directories
     elf_dir = args.elf_dir.resolve()

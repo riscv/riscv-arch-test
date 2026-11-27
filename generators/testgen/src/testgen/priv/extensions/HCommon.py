@@ -264,7 +264,9 @@ def _atp_walk_test(test_data: TestData, csr: str, covergroup: str) -> list[str]:
 
     MODE = Bare with other bits nonzero is UNSPECIFIED, and unsupported MODEs are legalized in an
     implementation-defined way, so MODE is held at a paged mode.  The PPN need not hold page numbers beyond the
-    physical address width, so the readback leaves out PPN bits UDB_PHYS_ADDR_WIDTH-12 and up.
+    physical address width, and a write of such a page number may be legalized to any legal PPN, so the readback
+    leaves out the whole PPN after a write that sets a PPN bit UDB_PHYS_ADDR_WIDTH-12 or above, and otherwise only
+    those bits.
     """
     save_reg, mode_reg, val_reg, check_reg, mask_reg = test_data.int_regs.get_registers(5)
 
@@ -274,6 +276,26 @@ def _atp_walk_test(test_data: TestData, csr: str, covergroup: str) -> list[str]:
             f"LI(x{mode_reg}, {(g if csr == 'hgatp' else vs).atp_mode:#x})",
             f"LI(x{mask_reg}, (~{ppn} | ((1 << (UDB_PHYS_ADDR_WIDTH - 12)) - 1)))",
         ]
+
+    def ppn_readback(bit: int, walking_ones: bool) -> list[str]:
+        def build(g: SvMode, _: SvMode) -> list[str]:
+            ppn_bits = 44 if g.xlen == 64 else 22
+            narrow = [f"and x{check_reg}, x{check_reg}, x{mask_reg}"]
+            if walking_ones and bit >= ppn_bits:
+                return narrow
+            # The lowest PPN bit the hart need not hold is set by walking a 1 through it or higher, and by every
+            # walking 0, which sets every PPN bit but one
+            low = f"{bit}" if walking_ones else f"{ppn_bits - 1}"
+            return [
+                f"#if UDB_PHYS_ADDR_WIDTH - 12 <= {low}",
+                f"srli x{check_reg}, x{check_reg}, {ppn_bits}",
+                f"slli x{check_reg}, x{check_reg}, {ppn_bits}",
+                "#else",
+                *narrow,
+                "#endif",
+            ]
+
+        return per_xlen(build)
 
     lines = [f"#if {ATP_GATE[csr]}", f"csrr x{save_reg}, {csr}", *per_xlen(mode_and_mask)]
     for walking_ones in (True, False):
@@ -290,7 +312,7 @@ def _atp_walk_test(test_data: TestData, csr: str, covergroup: str) -> list[str]:
                     test_data.add_testcase(f"{csr}_{bit}", f"cp_atpwalk{int(walking_ones)}", covergroup),
                     f"csrw {csr}, x{val_reg}",
                     f"csrr x{check_reg}, {csr}",
-                    f"and x{check_reg}, x{check_reg}, x{mask_reg}",
+                    *ppn_readback(bit, walking_ones),
                     write_sigupd(check_reg, test_data),
                 ]
             )

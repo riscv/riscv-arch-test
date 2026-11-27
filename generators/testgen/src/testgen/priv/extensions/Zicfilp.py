@@ -1104,6 +1104,62 @@ def _h_trap_entry_tests(test_data: TestData) -> TestChunk:
     return test_data.end_test_chunk()
 
 
+def _h_lpe_off_trap_tests(test_data: TestData) -> TestChunk:
+    """With every LPE clear, a trap from VS-mode or VU-mode into VS-mode or HS-mode writes SPELP = ELP = 0 over a
+    stale SPELP = 1.  As in pelp_lpe_off_trap_tests, a local handler stands in for the framework's, whose SRET
+    would clear SPELP."""
+    coverpoint = "cp_pelp_trap_entry_lpe_off"
+    save_tvec, save_status, save_hstatus, temp_reg, mask_reg = test_data.int_regs.get_registers(5)
+    tc = test_data.begin_test_chunk(_split(_H_CG))
+    lines = [
+        comment_banner(
+            coverpoint,
+            "menvcfg.LPE = henvcfg.LPE = senvcfg.LPE = 0.  HS-mode sets SPELP = 1 in vsstatus or sstatus, points vstvec\n"
+            "or stvec at a local handler just after an ebreak, and enters VS-mode or VU-mode.  The ebreak traps into\n"
+            "VS-mode (hedeleg[3] = 1) or HS-mode (hedeleg = 0) with ELP = NO_LP_EXPECTED, so it must write SPELP = 0.\n"
+            "Back in HS-mode, the test records SPELP and puts xtvec and the status registers back.",
+        ),
+        *set_lpe("S", "S", temp_reg, False),
+        *_set_lpes(0, 0, temp_reg),
+    ]
+    for handler, mode in product(("vs", "hs"), _V_MODES):
+        tvec, status = ("vstvec", "vsstatus") if handler == "vs" else ("stvec", "sstatus")
+        testcase = test_data.add_testcase(f"{mode.lower()}_to_{handler}_spelp_stale", coverpoint, _H_CG)
+        label = f"{test_data.current_testcase_label}_handler"
+        lines.extend(
+            [
+                "",
+                f"LI(x{temp_reg}, (1 << CAUSE_BREAKPOINT) | (1 << CAUSE_SOFTWARE_CHECK_FAULT))",
+                f"{'csrs' if handler == 'vs' else 'csrc'} hedeleg, x{temp_reg}",
+                f"csrr x{save_status}, {status}",
+                f"csrr x{save_hstatus}, hstatus",
+                f"csrr x{save_tvec}, {tvec}",
+                f"andi x{mask_reg}, x{save_tvec}, 3 # keep the MODE the DUT uses",
+                f"LA(x{temp_reg}, {label})",
+                f"or x{temp_reg}, x{temp_reg}, x{mask_reg}",
+                f"csrw {tvec}, x{temp_reg}",
+                *_set_spelp(status, 1, temp_reg),
+                f"RVTEST_TSBI_GOTO_{mode}MODE",
+                testcase,
+                ".option push",
+                ".option norvc",
+                "ebreak",
+                ".option pop",
+                *tvec_alignment("stvec"),
+                f"{label}:",
+                *(["RVTEST_TSBI_GOTO_SMODE"] if handler == "vs" else []),
+                f"csrw {tvec}, x{save_tvec}",
+                *_record_spelp(test_data, status, temp_reg, mask_reg),
+                f"csrw {status}, x{save_status}",
+                f"csrw hstatus, x{save_hstatus} # a trap into HS-mode writes SPV and SPVP",
+            ]
+        )
+    lines.append("csrw hedeleg, zero")
+    tc.code.extend(lines)
+    test_data.int_regs.return_registers([save_tvec, save_status, save_hstatus, temp_reg, mask_reg])
+    return test_data.end_test_chunk()
+
+
 def _h_vs_sret_tests(test_data: TestData) -> TestChunk:
     """SRET in VS-mode takes the previous ELP from vsstatus.SPELP, ignores sstatus.SPELP and clears vsstatus.SPELP."""
     coverpoint = "cp_vs_sret_spelp"
@@ -1319,6 +1375,7 @@ def make_zicfilph(test_data: TestData) -> list[TestChunk]:
         _h_enable_tests(test_data, "VS"),
         _h_enable_tests(test_data, "VU"),
         _h_trap_entry_tests(test_data),
+        _h_lpe_off_trap_tests(test_data),
         _h_vs_delivery_tests(test_data, "VS"),
         _h_vs_delivery_tests(test_data, "VU"),
         _h_vs_sret_tests(test_data),

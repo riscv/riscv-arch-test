@@ -583,6 +583,23 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     }
     cp_trap_entry_spelp: cross priv_mode_vs_vu, mode_lpe_enabled, trap_elp, trap_to;
 
+    // With menvcfg.LPE = henvcfg.LPE = senvcfg.LPE = 0 and a software-written SPELP = 1 in the handler's mode
+    // (vsstatus or sstatus), an ebreak into VS-mode or HS-mode must still write SPELP = 0
+    lpe_all_off: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "lpe")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "lpe")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SENVCFG, "lpe")[0]} {
+        bins off = {3'b000};
+    }
+    handler_spelp_stale: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg")[BREAKPOINT] ?
+                                     get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSSTATUS, "spelp")[0] :
+                                     get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SSTATUS, "spelp")[0]) {
+        bins one = {1'b1};
+    }
+    ebreak_instr: coverpoint ins.current.insn {
+        bins ebreak = {EBREAK};
+    }
+    cp_pelp_trap_entry_lpe_off: cross priv_mode_vs_vu, lpe_all_off, handler_spelp_stale, ebreak_instr, trap_to;
+
     // SRET, which the test places before a non-LPAD instruction. It restores ELP from vsstatus.SPELP
     // when executed in VS-mode and from sstatus.SPELP when executed in HS-mode, only if the LPE of the
     // new mode (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1. The test gives the other SPELP

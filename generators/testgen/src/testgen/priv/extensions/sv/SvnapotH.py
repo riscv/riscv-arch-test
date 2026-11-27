@@ -71,83 +71,97 @@ def _napot_leaves(
 NAPOT_BITS = ("PTE_N", NAPOT_64K_PPN)
 
 
-def _t_napot(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
-    """64 KiB NAPOT translation in the VS-stage, the G-stage and both."""
+def _t_napot(test_data: TestData, test_chunks: list[TestChunk], g: SvMode | None, vs: SvMode, mode: str) -> None:
+    """64 KiB NAPOT translation in the VS-stage (g = None), or in the G-stage and in both stages."""
+    combos = ((vs, None, "vsatp_napot"),) if g is None else ((None, g, "hgatp_napot"), (vs, g, "twostage_napot"))
+    where = "the VS-stage (hgatp = Bare)" if g is None else "the G-stage (vsatp = Bare) and in both\nstages"
     chunk = begin_chunk(
         test_data,
-        f"H_{g.name}_napot_{mode.lower()}",
-        "cp_vsatp_napot, cp_hgatp_napot, cp_twostage_napot",
-        f"In {mode}-mode, store, load and fetch in pages 0, 2 and 15 of a 64 KiB NAPOT mapping in the VS-stage\n"
-        "(hgatp = Bare), in the G-stage (vsatp = Bare) and in both stages",
+        f"H_{(g or vs).name}_napot_{mode.lower()}",
+        ", ".join(f"cp_{name}" for _, _, name in combos),
+        f"In {mode}-mode, store, load and fetch in pages 0, 2 and 15 of a 64 KiB NAPOT mapping in {where}",
     )
     chunk.raw_data.extend(NAPOT_PAGES)
     user = mode == "VU"
     vs_base = int(vs.data_va, 16) & ~0xFFFF
-    g_base = int(g.data_va, 16) & ~0xFFFF
     code = []
-    for vs_stage, g_stage, name in ((vs, None, "vsatp_napot"), (None, g, "hgatp_napot"), (vs, g, "twostage_napot")):
+    for vs_stage, g_stage, name in combos:
         code.extend(guest_chunk_setup(test_data, g_stage, vs_stage, mode))
+        g_base = 0 if g_stage is None else int(g_stage.data_va, 16) & ~0xFFFF
         if vs_stage is not None:
             target = "svh_napot" if g_stage is None else hex(g_base)
             flags = PteFlags(user=user, extra=NAPOT_BITS)
-            code.extend(_napot_leaves(test_data, vs, vs_base, target, flags, g_stage is None))
+            code.extend(_napot_leaves(test_data, vs_stage, vs_base, target, flags, g_stage is None))
         if g_stage is not None:
-            code.extend(_napot_leaves(test_data, g, g_base, "svh_napot", PteFlags(user=True, extra=NAPOT_BITS), True))
+            flags = PteFlags(user=True, extra=NAPOT_BITS)
+            code.extend(_napot_leaves(test_data, g_stage, g_base, "svh_napot", flags, True))
         code.extend(["hfence.vvma", "hfence.gvma"])
         base = g_base if vs_stage is None else vs_base
         for page in (0, 2, 15):
             va = hex(base + page * 0x1000)
             code.extend(guest_access(test_data, CG, f"cp_{name}", f"{name}_page{page}", mode, va))
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_napot_reserved(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """Reserved NAPOT encodings fault in either stage: N on a superpage, or PPN[3:0] other than 1000."""
+def _t_napot_reserved(test_data: TestData, test_chunks: list[TestChunk], stage: SvMode) -> None:
+    """Reserved NAPOT encodings fault in the VS-stage (hgatp = Bare) or the G-stage (vsatp = Bare): N on a
+    superpage, or PPN[3:0] other than 1000."""
+    g_stage, vs_stage = (stage, None) if stage.stage == "g" else (None, stage)
+    coverpoint = "cp_vsatp_napot" if g_stage is None else "cp_hgatp_napot"
+    what = "VS-stage (hgatp = Bare)" if g_stage is None else "G-stage (vsatp = Bare)"
     chunk = begin_chunk(
         test_data,
-        f"H_{g.name}_napot_reserved",
-        "cp_vsatp_napot, cp_hgatp_napot",
-        "In VS-mode, access through a VS-stage (hgatp = Bare) and a G-stage (vsatp = Bare) leaf with N set on a\n"
-        "superpage, or with N set and PPN[3:0] = 0000, 0001, 0010 or 0100",
+        f"H_{stage.name}_napot_reserved",
+        coverpoint,
+        f"In VS-mode, access through a {what} leaf with N set on a superpage, or with N set and\n"
+        "PPN[3:0] = 0000, 0001, 0010 or 0100",
     )
     chunk.raw_data.extend(NAPOT_PAGES)
-    code = []
-    for stage, coverpoint in ((vs, "cp_vsatp_napot"), (g, "cp_hgatp_napot")):
-        g_stage, vs_stage = (None, vs) if stage is vs else (g, None)
-        code.extend(guest_chunk_setup(test_data, g_stage, vs_stage, "VS"))
-        user = stage is g
-        # A superpage leaf maps svh_page; a kilopage leaf maps svh_napot, whose PPN[3:0] = 0000
-        cases = [
-            *(
-                (f"{stage.name}_superpage_lvl{level}", level, PteFlags(user=user, extra=("PTE_N",)), "svh_page")
-                for level in range(1, stage.levels)
+    code = guest_chunk_setup(test_data, g_stage, vs_stage, "VS")
+    user = g_stage is not None
+    # A superpage leaf maps svh_page; a kilopage leaf maps svh_napot, whose PPN[3:0] = 0000
+    cases = [
+        *(
+            (f"{stage.name}_superpage_lvl{level}", level, PteFlags(user=user, extra=("PTE_N",)), "svh_page")
+            for level in range(1, stage.levels)
+        ),
+        *(
+            (f"{stage.name}_ppn{ppn}", 0, PteFlags(user=user, extra=("PTE_N", f"({ppn} << 10)")), "svh_napot")
+            for ppn in NAPOT_RESERVED_PPNS
+        ),
+    ]
+    for name, level, flags, target in cases:
+        pte, addr, tmp = test_data.int_regs.get_registers(3)
+        setup = [
+            *create_page_mapping(
+                stage,
+                leaf_level=level,
+                leaf_flags=flags,
+                virtual_address=stage.data_va,
+                physical_address=target,
+                regs=(pte, addr, tmp),
             ),
-            *(
-                (f"{stage.name}_ppn{ppn}", 0, PteFlags(user=user, extra=("PTE_N", f"({ppn} << 10)")), "svh_napot")
-                for ppn in NAPOT_RESERVED_PPNS
-            ),
+            "hfence.vvma",
+            "hfence.gvma",
         ]
-        for name, level, flags, target in cases:
-            pte, addr, tmp = test_data.int_regs.get_registers(3)
-            setup = [
-                *create_page_mapping(
-                    stage,
-                    leaf_level=level,
-                    leaf_flags=flags,
-                    virtual_address=stage.data_va,
-                    physical_address=target,
-                    regs=(pte, addr, tmp),
-                ),
-                "hfence.vvma",
-                "hfence.gvma",
-            ]
-            test_data.int_regs.return_registers([pte, addr, tmp])
-            code.extend(
-                guest_access(test_data, CG, coverpoint, name, "VS", stage.data_va, setup=setup, sv=stage, level=level)
-            )
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+        test_data.int_regs.return_registers([pte, addr, tmp])
+        code.extend(
+            guest_access(test_data, CG, coverpoint, name, "VS", stage.data_va, setup=setup, sv=stage, level=level)
+        )
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, stage.xlen)])
     test_chunks.append(test_data.end_test_chunk())
+
+
+@add_priv_test_generator(
+    "Svnapot", required_extensions=["H", "Svnapot"], extra_defines=BOOT, params=["SV39_VSMODE_TRANSLATION: true"]
+)
+def make_svnapot_h_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    for mode in ("VS", "VU"):
+        _t_napot(test_data, test_chunks, None, VS_SV39, mode)
+    _t_napot_reserved(test_data, test_chunks, VS_SV39)
+    return test_chunks
 
 
 @add_priv_test_generator("Svnapot", required_extensions=["H", "Svnapot"], extra_defines=BOOT, params=SV39_PARAMS)
@@ -155,5 +169,5 @@ def make_svnapot_h_sv39(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     for mode in ("VS", "VU"):
         _t_napot(test_data, test_chunks, SV39X4, VS_SV39, mode)
-    _t_napot_reserved(test_data, test_chunks, SV39X4, VS_SV39)
+    _t_napot_reserved(test_data, test_chunks, SV39X4)
     return test_chunks

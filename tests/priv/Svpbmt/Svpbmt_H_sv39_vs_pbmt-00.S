@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'H', 'Svpbmt']
 # params:
-#   SV39X4_TRANSLATION: true
 #   SV39_VSMODE_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicsr_zifencei_svpbmt
 ##### END_TEST_CONFIG #####
@@ -43,11 +42,11 @@ RVTEST_BEGIN
   csrc henvcfg, x15
 Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg0:
   csrs henvcfg, x15
-  # Read henvcfg into x6, keep only bits specified by mask, and check against expected.
-  csrr x6, henvcfg    # Read CSR
-  and x6, x6, x15    # keep only masked bits 0x4000000000000000
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg0, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg0_str)
+  # Read henvcfg into x14, keep only bits specified by mask, and check against expected.
+  csrr x14, henvcfg    # Read CSR
+  and x14, x14, x15    # keep only masked bits 0x4000000000000000
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg0, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg0_str)
   csrc henvcfg, x15
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_PBMTE)
@@ -55,79 +54,79 @@ Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg0:
   csrc henvcfg, x15
 Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg1:
   csrs henvcfg, x15
-  # Read henvcfg into x6, keep only bits specified by mask, and check against expected.
-  csrr x6, henvcfg    # Read CSR
-  and x6, x6, x15    # keep only masked bits 0x4000000000000000
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg1, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg1_str)
+  # Read henvcfg into x14, keep only bits specified by mask, and check against expected.
+  csrr x14, henvcfg    # Read CSR
+  and x14, x14, x15    # keep only masked bits 0x4000000000000000
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg1, Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg1_str)
   csrc henvcfg, x15
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
 // Identity map the test image in both stages
-  LA(x13, rvtest_code_begin)
-  srli x13, x13, 30
-  slli x13, x13, 55
-  srli x13, x13, 52
-  LA(x15, rvtest_Vroot_pg_tbl)
-  add x13, x13, x15
-  LA(x6, rvtest_code_begin)
-  srli x6, x6, 30
-  slli x6, x6, 28
-  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x13)
-  LA(x13, rvtest_data_begin)
-  srli x13, x13, 30
-  slli x13, x13, 55
-  srli x13, x13, 52
-  LA(x15, rvtest_Vroot_pg_tbl)
-  add x13, x13, x15
-  LA(x6, rvtest_data_begin)
-  srli x6, x6, 30
-  slli x6, x6, 28
-  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x13)
-  LA(x13, rvtest_sig_end)
-  srli x13, x13, 30
-  slli x13, x13, 55
-  srli x13, x13, 52
-  LA(x15, rvtest_Vroot_pg_tbl)
-  add x13, x13, x15
-  LA(x6, rvtest_sig_end)
-  srli x6, x6, 30
-  slli x6, x6, 28
-  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x13)
+  LA(x8, rvtest_code_begin)
+  srli x8, x8, 30
+  slli x8, x8, 55
+  srli x8, x8, 52
+  LA(x13, rvtest_Vroot_pg_tbl)
+  add x8, x8, x13
+  LA(x15, rvtest_code_begin)
+  srli x15, x15, 30
+  slli x15, x15, 28
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
+  LA(x8, rvtest_data_begin)
+  srli x8, x8, 30
+  slli x8, x8, 55
+  srli x8, x8, 52
+  LA(x13, rvtest_Vroot_pg_tbl)
+  add x8, x8, x13
+  LA(x15, rvtest_data_begin)
+  srli x15, x15, 30
+  slli x15, x15, 28
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
+  LA(x8, rvtest_sig_end)
+  srli x8, x8, 30
+  slli x8, x8, 55
+  srli x8, x8, 52
+  LA(x13, rvtest_Vroot_pg_tbl)
+  add x8, x8, x13
+  LA(x15, rvtest_sig_end)
+  srli x15, x15, 30
+  slli x15, x15, 28
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
 // Map the code region again at the guest alias
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x180000000) >> 30) & 0x1ff) * 8)
-  LA(x6, rvtest_code_begin)
-  srli x6, x6, 30
-  slli x6, x6, 28
-  LI(x15, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x13)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x180000000) >> 30) & 0x1ff) * 8)
+  LA(x15, rvtest_code_begin)
+  srli x15, x15, 30
+  slli x15, x15, 28
+  LI(x13, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
 // Register the alias of rvtest_code_begin
-  LI(x6, ((0x180000000) >> 30) << 30)
-  LA(x13, rvtest_code_begin)
-  slli x13, x13, 34
-  srli x13, x13, 34
-  or x6, x6, x13
-  LA(x13, Vtramptbl_sv)
-  SREG x6, code_bgn_off(x13)
+  LI(x15, ((0x180000000) >> 30) << 30)
+  LA(x8, rvtest_code_begin)
+  slli x8, x8, 34
+  srli x8, x8, 34
+  or x15, x15, x8
+  LA(x8, Vtramptbl_sv)
+  SREG x15, code_bgn_off(x8)
 
   csrw hgatp, zero
-  LI(x6, 0x8000000000000000)
-  LA(x13, rvtest_Vroot_pg_tbl)
-  srli x13, x13, 12
-  or x13, x13, x6
-  csrw vsatp, x13
+  LI(x15, 0x8000000000000000)
+  LA(x8, rvtest_Vroot_pg_tbl)
+  srli x8, x8, 12
+  or x8, x8, x15
+  csrw vsatp, x8
   hfence.gvma
   hfence.vvma
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x8
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x8
+  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x9
+  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x9
   csrw hedeleg, zero
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_PBMTE)
@@ -136,132 +135,132 @@ Svpbmt_H_cg_cp_henvcfg_menvcfg_pbmte_menvcfg1:
 #endif
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
-  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x14
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_vlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x15)
-  LA(x15, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_vlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x6, (1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x6
-  SREG x9, 0(x15)
+  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x6
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x14, rvtest_vlvl1_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
+  LA(x8, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LA(x14, rvtest_vlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x14, svh_page)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, (1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x9, 0x140802000)
+  LI(x15, 0x140802000)
   LI(x13, 0x102)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt1_store:
-  sw x13, 8(x9)
+  sw x13, 8(x15)
   LI(x13, -1)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt1_load:
-  lw x13, 8(x9)
+  lw x13, 8(x15)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt1_exec:
-  jalr ra, 0(x9)
+  jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt1_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt1_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
-  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x14
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x6, rvtest_vlvl1_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x13)
-  LA(x13, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x6, svh_page)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, (2 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x13)
+  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x6
+  LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x13, rvtest_vlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
+  LA(x15, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (2 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x15)
   hfence.vvma
   hfence.gvma
-  LI(x13, 0x140802000)
-  LI(x8, 0x105)
+  LI(x8, 0x140802000)
+  LI(x9, 0x105)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt2_store:
-  sw x8, 8(x13)
-  LI(x8, -1)
+  sw x9, 8(x8)
+  LI(x9, -1)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt2_load:
-  lw x8, 8(x13)
+  lw x9, 8(x8)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt2_exec:
-  jalr ra, 0(x13)
+  jalr ra, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt2_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt2_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt2_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt2_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
-  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x14
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_vlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x13)
-  LA(x13, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_vlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, (3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x13)
+  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x6
+  LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x8, rvtest_vlvl1_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x13, PTE_V)
+  or x8, x8, x13
+  SREG x8, 0(x15)
+  LA(x15, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LA(x8, rvtest_vlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x13, PTE_V)
+  or x8, x8, x13
+  SREG x8, 0(x15)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x8, svh_page)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x13, (3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x13
+  SREG x8, 0(x15)
   hfence.vvma
   hfence.gvma
   LI(x9, 0x140802000)
@@ -280,160 +279,160 @@ Svpbmt_H_cg_cp_vsatp_pbmt_pbmte0_pbmt3_exec:
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
-  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x14
-  LI(x14, HENVCFG_PBMTE)
-  csrs henvcfg, x14
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x6
+  LI(x6, HENVCFG_PBMTE)
+  csrs henvcfg, x6
+  LA(x14, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x9, rvtest_vlvl1_pg_tbl)
   srli x9, x9, 12
   slli x9, x9, 10
   LI(x15, PTE_V)
   or x9, x9, x15
-  SREG x9, 0(x13)
-  LA(x13, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  SREG x9, 0(x14)
+  LA(x14, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
   LA(x9, rvtest_vlvl0_pg_tbl)
   srli x9, x9, 12
   slli x9, x9, 10
   LI(x15, PTE_V)
   or x9, x9, x15
-  SREG x9, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  SREG x9, 0(x14)
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
   LA(x9, svh_page)
   srli x9, x9, 12
   slli x9, x9, 10
   LI(x15, (1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x15
-  SREG x9, 0(x13)
+  SREG x9, 0(x14)
   hfence.vvma
   hfence.gvma
   LI(x8, 0x140802000)
-  LI(x9, 0x10b)
+  LI(x14, 0x10b)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt1_store:
-  sw x9, 8(x8)
-  LI(x9, -1)
+  sw x14, 8(x8)
+  LI(x14, -1)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt1_load:
-  lw x9, 8(x8)
+  lw x14, 8(x8)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt1_exec:
   jalr ra, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt1_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt1_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt1_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt1_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
-  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x14
-  LI(x14, HENVCFG_PBMTE)
-  csrs henvcfg, x14
+  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x6
+  LI(x6, HENVCFG_PBMTE)
+  csrs henvcfg, x6
   LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x15, rvtest_vlvl1_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x8)
+  LA(x13, rvtest_vlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x8)
   LA(x8, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x15, rvtest_vlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x8)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x8)
   LA(x8, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x15, svh_page)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, (2 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (2 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x140802000)
-  LI(x6, 0x10e)
+  LI(x9, 0x140802000)
+  LI(x8, 0x10e)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt2_store:
-  sw x6, 8(x8)
-  LI(x6, -1)
+  sw x8, 8(x9)
+  LI(x8, -1)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt2_load:
-  lw x6, 8(x8)
+  lw x8, 8(x9)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt2_exec:
-  jalr ra, 0(x8)
+  jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt2_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt2_load_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt2_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt2_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
-  LI(x14, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x14
-  LI(x14, HENVCFG_PBMTE)
-  csrs henvcfg, x14
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x15, rvtest_vlvl1_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  LA(x9, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x15, rvtest_vlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LA(x15, svh_page)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, (3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
+  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x6
+  LI(x6, HENVCFG_PBMTE)
+  csrs henvcfg, x6
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x9, rvtest_vlvl1_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x13, PTE_V)
+  or x9, x9, x13
+  SREG x9, 0(x8)
+  LA(x8, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x13, PTE_V)
+  or x9, x9, x13
+  SREG x9, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LA(x9, svh_page)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x13, (3 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x13
+  SREG x9, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x6, 0x140802000)
-  LI(x8, 0x111)
+  LI(x15, 0x140802000)
+  LI(x9, 0x111)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_store:
-  sw x8, 8(x6)
-  LI(x8, -1)
+  sw x9, 8(x15)
+  LI(x9, -1)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_load:
-  lw x8, 8(x6)
+  lw x9, 8(x15)
 Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_exec:
-  jalr ra, 0(x6)
+  jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_load, Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
@@ -445,14 +444,14 @@ Svpbmt_H_cg_cp_vsatp_pbmt_pbmte1_pbmt3_exec:
   hfence.gvma
   hfence.vvma
   LA(x9, rvtest_code_begin)
-  LA(x6, Vtramptbl_sv)
-  SREG x9, code_bgn_off(x6)
-  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x15
-  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x15
-  LI(x15, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x15
+  LA(x13, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x13)
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x6
+  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x6
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
 

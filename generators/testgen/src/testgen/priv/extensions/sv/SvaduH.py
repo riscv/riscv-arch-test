@@ -152,22 +152,42 @@ def _two_stage_chunk(test_data: TestData, g: SvMode, vs: SvMode) -> TestChunk:
     return test_data.end_test_chunk()
 
 
+@add_priv_test_generator(
+    "Svadu", required_extensions=["H", "Svadu"], extra_defines=BOOT, params=["SV32_VSMODE_TRANSLATION: true"]
+)
+def make_svadu_h_vs_sv32(test_data: TestData) -> list[TestChunk]:
+    return [_vs_chunk(test_data, VS_SV32, True)]
+
+
+@add_priv_test_generator(
+    "Svadu", required_extensions=["H", "Svadu"], extra_defines=BOOT, params=["SV32X4_TRANSLATION: true"]
+)
+def make_svadu_h_g_sv32x4(test_data: TestData) -> list[TestChunk]:
+    return [_g_chunk(test_data, SV32X4)]
+
+
 @add_priv_test_generator("Svadu", required_extensions=["H", "Svadu"], extra_defines=BOOT, params=SV32_PARAMS)
-def make_svadu_h_sv32(test_data: TestData) -> list[TestChunk]:
-    return [
-        _vs_chunk(test_data, VS_SV32, True),
-        _g_chunk(test_data, SV32X4),
-        _two_stage_chunk(test_data, SV32X4, VS_SV32),
-    ]
+def make_svadu_h_two_stage_sv32(test_data: TestData) -> list[TestChunk]:
+    return [_two_stage_chunk(test_data, SV32X4, VS_SV32)]
+
+
+@add_priv_test_generator(
+    "Svadu", required_extensions=["H", "Svadu"], extra_defines=BOOT, params=["SV39_VSMODE_TRANSLATION: true"]
+)
+def make_svadu_h_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    return [_vs_chunk(test_data, VS_SV39, True)]
+
+
+@add_priv_test_generator(
+    "Svadu", required_extensions=["H", "Svadu"], extra_defines=BOOT, params=["SV39X4_TRANSLATION: true"]
+)
+def make_svadu_h_g_sv39x4(test_data: TestData) -> list[TestChunk]:
+    return [_g_chunk(test_data, SV39X4)]
 
 
 @add_priv_test_generator("Svadu", required_extensions=["H", "Svadu"], extra_defines=BOOT, params=SV39_PARAMS)
-def make_svadu_h_sv39(test_data: TestData) -> list[TestChunk]:
-    return [
-        _vs_chunk(test_data, VS_SV39, True),
-        _g_chunk(test_data, SV39X4),
-        _two_stage_chunk(test_data, SV39X4, VS_SV39),
-    ]
+def make_svadu_h_two_stage_sv39(test_data: TestData) -> list[TestChunk]:
+    return [_two_stage_chunk(test_data, SV39X4, VS_SV39)]
 
 
 @add_priv_test_generator(

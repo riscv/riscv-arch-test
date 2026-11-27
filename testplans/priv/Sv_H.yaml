@@ -3,8 +3,8 @@ suite: Sv_H
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884
 notes: |-
   Sv_H verifies two-stage (VS-stage and G-stage) address translation for guest accesses in VS-mode and VU-mode and for HLV, HLVX and HSV in HS-mode.  The group boots to HS-mode with hedeleg = 0, so guest traps are taken in HS-mode, whose trap handler records scause, stval, htval, htinst and hstatus.GVA; only the cp_hedeleg tests delegate page faults to VS-mode.  Tests that need M-mode (mstatus.MPRV with MPV = 1, and guest traps taken in M-mode) are in Sv_HSm.
-  Guest code runs at a guest virtual address that the test maps through both stages.  A guest access is a store (sw) and a load (lw) of the word at offset 8 of a 4 KiB test page, and a fetch (jalr) of the ret at its start.  Loads are checked in the signature after the guest returns to HS-mode, because VU-mode cannot write the signature.  VS-stage tests (Sv_H_vsstage_cg) run with hgatp = Bare, G-stage tests (Sv_H_gstage_cg) with vsatp = Bare, and two-stage tests (Sv_H_twostage_cg, Sv_H_hlv_cg) with both paged.  After changing a PTE, vsatp or hgatp, the test executes hfence.vvma and hfence.gvma.  Leaves are kilopages with V = R = W = X = A = D = 1 unless a row says otherwise.  VS-stage leaves have U = 0 for VS-mode and U = 1 for VU-mode; G-stage leaves have U = 1, because every G-stage access is a user-level access.
-  The crosses have a bin for each supported mode: vsatp_mode (Sv32, or Sv39, Sv48 and Sv57), hgatp_mode (Sv32x4, or Sv39x4, Sv48x4 and Sv57x4) and stage_modes (the pairs Sv32/Sv32x4, Sv39/Sv39x4, Sv48/Sv48x4 and Sv57/Sv57x4).  The VS-stage, G-stage and two-stage tests run in each mode the hart supports, in separate test files for Sv48/Sv48x4 and Sv57/Sv57x4; the Bare, hedeleg, MODE-field, straddle and fence tests run with Sv32/Sv32x4 or Sv39/Sv39x4.  The fetch straddle test (cp_straddle) needs Zca and the load/store straddle test (cp_ldst_straddle) needs a hart that performs misaligned accesses byte by byte; they are separate test files.  The GPA-width and non-canonical tests are RV64 only.
+  Guest code runs at a guest virtual address that the test maps through both stages.  A guest access is a store (sw) and a load (lw) of the word at offset 8 of a 4 KiB test page, and a fetch (jalr) of the ret at its start.  Loads are checked in the signature after the guest returns to HS-mode, because VU-mode cannot write the signature.  VS-stage tests (Sv_H_vsstage_cg) run with hgatp = Bare, G-stage tests (Sv_H_gstage_cg) with vsatp = Bare, and two-stage tests (Sv_H_twostage_cg, Sv_H_hlv_cg) with both paged; the cp_vsatp_* crosses of the other covergroups also run with hgatp = Bare.  After changing a PTE, vsatp or hgatp, the test executes hfence.vvma and hfence.gvma.  Leaves are kilopages with V = R = W = X = A = D = 1 unless a row says otherwise.  VS-stage leaves have U = 0 for VS-mode and U = 1 for VU-mode; G-stage leaves have U = 1, because every G-stage access is a user-level access.
+  The crosses have a bin for each supported mode: vsatp_mode (Sv32, or Sv39, Sv48 and Sv57), hgatp_mode (Sv32x4, or Sv39x4, Sv48x4 and Sv57x4) and stage_modes (the pairs Sv32/Sv32x4, Sv39/Sv39x4, Sv48/Sv48x4 and Sv57/Sv57x4).  The VS-stage, G-stage and two-stage tests run in each mode the hart supports, in separate test files, so the VS-stage tests (hgatp = Bare) need only the VS-stage mode and run on a hart whose hgatp supports only Bare; the G-stage tests need only the G-stage mode.  The MODE-field tests run with VS-stage Sv39, the hgatp = Bare HLV, hedeleg and fence tests (vs_only) with VS-stage Sv32 or Sv39, the two-stage hedeleg, straddle and fence tests with Sv32/Sv32x4 or Sv39/Sv39x4, and the Bare tests on every hart.  The fetch straddle test (cp_straddle) needs Zca and the load/store straddle test (cp_ldst_straddle) needs a hart that performs misaligned accesses byte by byte; they are separate test files.  The GPA-width and non-canonical tests are RV64 only.
   Sv_H tests Svade (menvcfg.ADUE = henvcfg.ADUE = 0).  Svadu_H, Svpbmt_H and Svnapot_H test hardware A/D updates, PBMT and NAPOT in the VS-stage and G-stage.
   The reference model trace records instructions, registers and CSRs but not PTEs or page-table walks.  The coverpoints therefore record each access with its privilege mode, the translation modes, the controls that affect it (SUM, MXR, ADUE, SPVP, hedeleg) and the trap it takes (cause, htinst, htval).  The PTE that a testcase uses (permissions, U, A/D, RSW and reserved bits, leaf level, superpage alignment) is set by the test, and its effect is checked by the signature: the loaded word, the trap record, and the PTE read back after an A/D case.  The coverage cannot tell apart testcases that differ only in PTE bits with the same outcome, such as RSW = 01 and 11, or reserved bits 60:59 that Svrsw60t59b makes ignored; a hart that mishandles such a bit fails the signature check instead.
   The vsatp and hgatp PPN, ASID and VMID fields, including hgatp.PPN[1:0] reading as zero in paged modes, are walked by H cp_atpwalk0 and cp_atpwalk1, and mstatus.TVM on hgatp is checked by HSm cp_tvm_hs.  Because hgatp.PPN[1:0] are zero, the 16 KiB G-stage root table is always 16 KiB aligned and no misaligned root can be configured.
@@ -14,10 +14,10 @@ coverpoints:
     goal: VS-stage leaf permissions and PTE formats
     description: |-
       In VS-mode and VU-mode with hgatp = Bare and vsstatus.SUM = MXR = 0, store, load and fetch through VS-stage leaves with U = 0 and 1 and each legal RWX (RWX, X, RX, RW, R).
-      In VS-mode, also store, load and fetch through a leaf with V = 0, a level-0 PTE with RWX = 000 (a pointer where a leaf is required), a leaf with RSW = 01, 10 and 11, and on RV64 a leaf with each of PTE bits 60:54 set and with all of them set.
+      In VS-mode, also store, load and fetch through a leaf with V = 0, a leaf with W without R (RWX = 010 and 110), a level-0 PTE with RWX = 000 (a pointer where a leaf is required), a leaf with RSW = 01, 10 and 11, on RV64 a leaf with each of PTE bits 60:54 set and with all of them set, and a misaligned superpage leaf (low PPN bits nonzero) at each level above 0, and load through a level-0 leaf under a level-1 non-leaf PTE with D, A or U set.
     expectation: |-
       An access succeeds when RWX permits it and U matches the mode (U = 0 in VS-mode with SUM = 0, U = 1 in VU-mode); otherwise it raises an instruction, load or store/AMO page fault (12, 13, 15) in HS-mode with stval = the guest virtual address and htval = 0.  A load from an execute-only page faults.
-      V = 0 and the level-0 pointer raise page faults.  RSW is ignored.  Reserved bits 60:54 raise page faults, except that bits 60:59 are ignored with Svrsw60t59b.
+      V = 0, W without R (reserved), the level-0 pointer, misaligned superpages and D, A or U in a non-leaf PTE (reserved) raise page faults.  RSW is ignored.  Reserved bits 60:54 raise page faults, except that bits 60:59 are ignored with Svrsw60t59b.
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp_mode x hgatp Bare x {no trap, page fault}"
   - name: cp_vsatp_sum
     goal: vsstatus.SUM in VS-mode and VU-mode
@@ -25,25 +25,63 @@ coverpoints:
     expectation: In VS-mode with SUM = 1, loads and stores to U = 1 pages succeed when RWX permits them, and fetches from U = 1 pages raise instruction page faults.  SUM does not affect VU-mode, so U = 0 pages still fault there.
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp_mode x hgatp Bare x vsstatus.SUM {0, 1}"
   - name: cp_vsstatus_mxr
-    goal: vsstatus.MXR makes VS-stage execute-only pages readable
-    description: In VS-mode and VU-mode with hgatp = Bare and vsstatus.MXR = 1, store, load and fetch through an execute-only VS-stage leaf with U = 0 and 1 and vsstatus.SUM = 0 and 1.  The MXR = 0 bins come from cp_vsatp_perm and cp_vsatp_sum.
-    expectation: With MXR = 1, the load succeeds when U and SUM permit the access; with MXR = 0 it raises a load page fault.  Stores fault, and fetches follow X, U and SUM as in cp_vsatp_sum.
-    bins: "{VS, VU} x lw x vsatp_mode x hgatp Bare x vsstatus.SUM {0, 1} x vsstatus.MXR {0, 1}"
+    goal: vsstatus.MXR and the HS-level sstatus.MXR each make VS-stage execute-only pages readable
+    description: In VS-mode and VU-mode with hgatp = Bare, store, load and fetch through an execute-only VS-stage leaf with U = 0 and 1, vsstatus.SUM = 0 and 1, and vsstatus.MXR and sstatus.MXR not both 0.  The bins with both MXR bits 0 come from cp_vsatp_perm and cp_vsatp_sum.
+    expectation: With either MXR = 1, the load succeeds when U and SUM permit the access; with both MXR = 0 it raises a load page fault.  Stores fault, and fetches follow X, U and SUM as in cp_vsatp_sum.
+    bins: "{VS, VU} x lw x vsatp_mode x hgatp Bare x vsstatus.SUM {0, 1} x vsstatus.MXR {0, 1} x mstatus.MXR {0, 1}"
+  - name: cp_vsatp_hs_sum
+    goal: The HS-level sstatus.SUM does not apply at V=1
+    description: In VS-mode with hgatp = Bare, vsstatus.SUM = 0 and sstatus.SUM = 1, store and load through a VS-stage leaf with U = 1.
+    expectation: When V=1, vsstatus substitutes for sstatus, so the HS-level SUM is ignored and both accesses raise page faults.
+    bins: VS x {sw, lw} x vsatp_mode x hgatp Bare x vsstatus.SUM = 0 x mstatus.SUM = 1 x page fault
   - name: cp_vsatp_svade
     goal: Svade in the VS-stage
     description: In VS-mode with hgatp = Bare and menvcfg.ADUE = henvcfg.ADUE = 0, store, load and fetch through VS-stage leaves with A = D = 0 and with D = 0.  The leaf is read back after the accesses.
     expectation: An access with A = 0, or a store with D = 0, raises a page fault and the PTE is unchanged.
     bins: VS x {sw, lw, jalr} x vsatp_mode x hgatp Bare x menvcfg.ADUE = henvcfg.ADUE = 0
     notes: Svadu_H cp_vsatp_adue has the ADUE = 1 cases.
+  - name: cp_vsatp_canonical
+    goal: Non-canonical guest virtual addresses with hgatp = Bare
+    description: RV64 only.  For each supported VS-stage mode (Sv39, Sv48, Sv57), in VS-mode with hgatp = Bare, store, load and fetch at the mapped guest virtual address with the bit just above the VS-stage VA width set.  The top VA bit is clear, so the address is non-canonical.
+    expectation: Store/AMO, load or instruction page fault.  stval, and sepc for the fetch, may hold any invalid address.
+    bins: VS x {lw, sw, jalr} x hgatp Bare x {Sv39, Sv48, Sv57 that the hart supports} x page fault
+  - name: cp_vsatp_hedeleg
+    goal: hedeleg delegates VS-stage page faults to VS-mode with hgatp = Bare
+    description: VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  In VS-mode and VU-mode with hedeleg bits 12, 13, 15, 20, 21 and 23 written with 1, store, load and fetch through an invalid VS-stage leaf and a read-only VS-stage leaf.
+    expectation: The page faults are taken in VS-mode (vscause = 12, 13 or 15, vstval = the guest virtual address).  The read-only leaf permits the load.
+    bins: "{VS, VU} x {sw, lw, jalr} x vsatp Sv39 or Sv32 with hgatp Bare x hedeleg[15:12] = 1011 x page fault in VS-mode"
+  - name: |-
+      cp_v0_vsstatus_sum
+      cp_v0_vsstatus_mxr
+    goal: vsstatus.SUM and vsstatus.MXR do not affect accesses at V=0
+    description: |-
+      Needs satp Sv39 (RV64) or Sv32 (RV32).  With satp paged and sstatus.SUM = MXR = 0:
+      cp_v0_vsstatus_sum: in HS-mode with vsstatus.SUM = 1, store and load through a satp leaf with U = 1.
+      cp_v0_vsstatus_mxr: in HS-mode and U-mode with vsstatus.MXR = 1, load through an execute-only satp leaf (U = 0 for HS-mode, U = 1 for U-mode).
+    expectation: When V=0, vsstatus does not affect the machine except through HLV, HLVX, HSV or MPRV, so every access raises a page fault.
+    bins: |-
+      cp_v0_vsstatus_sum: HS x {sw, lw} x satp paged x sstatus.SUM = 0 x vsstatus.SUM = 1 x page fault
+      cp_v0_vsstatus_mxr: {HS, U} x lw x satp paged x sstatus.MXR = 0 x vsstatus.MXR = 1 x page fault
+  - name: cp_vsatp_v_isolation
+    goal: HS-level and VS-level translations of the same address are separate
+    description: |-
+      Needs satp Sv39 (RV64) or Sv32 (RV32) and the same VS-stage mode with hgatp = Bare.  satp maps an address to page A and vsatp maps it to page B, each page holding code that returns its ID and an ID word.  After sfence.vma and hfence.vvma, and with no fence between the accesses, in HS-mode and VS-mode, and in U-mode and VU-mode:
+      load in V=0, V=1, V=0 and V=1 with satp.ASID = vsatp.ASID = 0;
+      load in V=0 then V=1 with a global satp leaf and every implemented vsatp.ASID bit set;
+      load in V=1 then V=0 with a global VS-stage leaf and every implemented vsatp.ASID bit set;
+      fetch in V=0 then V=1 with both ASIDs 0.
+    expectation: HS-level and VS-level address translations are separate, and changing V is not a page-table change, so each access reaches page A when V=0 and page B when V=1.  A global leaf applies to all ASIDs of its own translation regime only.
+    bins: "{HS, VS, U, VU} x {lw, jalr} x satp paged x vsatp Sv39 or Sv32 with hgatp Bare"
+    notes: Not tested is a V=0 load followed by a V=1 load with vsatp = Bare at an address equal to the physical address of a third page, because that address lies in the superpage through which satp identity maps the test image.
   - heading: G-stage translation, vsatp = Bare (Sv_H_gstage_cg)
   - name: cp_hgatp_perm
     goal: G-stage leaf permissions and PTE formats
     description: |-
       In VS-mode and VU-mode with vsatp = Bare and sstatus.MXR = vsstatus.MXR = 0, store, load and fetch through G-stage leaves with U = 0 and 1 and each legal RWX.
-      In VS-mode, also store, load and fetch through a G-stage leaf with V = 0, a level-0 PTE with RWX = 000, a leaf with RSW = 01, 10 and 11, a leaf with G = 1, on RV64 a leaf with each of PTE bits 60:54 set and with all of them set, and a misaligned superpage leaf (low PPN bits nonzero) at each level above 0.
+      In VS-mode, also store, load and fetch through a G-stage leaf with V = 0, a leaf with W without R (RWX = 010 and 110), a level-0 PTE with RWX = 000, a leaf with RSW = 01, 10 and 11, a leaf with G = 1, on RV64 a leaf with each of PTE bits 60:54 set and with all of them set, and a misaligned superpage leaf (low PPN bits nonzero) at each level above 0, and load through a level-0 leaf under a level-1 non-leaf PTE with D, A or U set.
     expectation: |-
       G-stage accesses are user-level, so a U = 0 leaf raises a guest-page fault even from VS-mode.  Otherwise an access succeeds when RWX permits it.  A G-stage denial raises an instruction, load or store/AMO guest-page fault (20, 21, 23) for the original access type in HS-mode, with stval = the guest virtual address, htval = the guest physical address >> 2 (or zero) and hstatus.GVA = 1.
-      V = 0, the level-0 pointer, the reserved bits (bits 60:59 are ignored with Svrsw60t59b) and misaligned superpages raise guest-page faults.  RSW and G are ignored.
+      V = 0, W without R, the level-0 pointer, the reserved bits (bits 60:59 are ignored with Svrsw60t59b), misaligned superpages and D, A or U in a non-leaf PTE raise guest-page faults.  RSW and G are ignored.
     bins: "{VS, VU} x {sw, lw, jalr} x vsatp Bare x hgatp_mode x {no trap, guest-page fault}"
   - name: cp_hgatp_mxr
     goal: Only the HS-level MXR makes G-stage execute-only pages readable
@@ -169,13 +207,33 @@ coverpoints:
     expectation: Each raises a load or store guest-page fault with htval = the guest physical address of the root PTE >> 2 and htinst = the read pseudoinstruction.
     bins: HS x {hlv.w, hlvx.wu, hsv.w} x stage_modes x htinst read pseudoinstruction x htval in the root table
     notes: Needs htval to report the guest physical address.
+  - name: |-
+      cp_vsatp_hlv_priv
+      cp_vsatp_hlv_sum
+      cp_vsatp_hlv_mxr
+      cp_vsatp_hlvx_perm
+    goal: HLV, HLVX and HSV through the VS-stage with hgatp = Bare
+    description: |-
+      VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  In HS-mode:
+      cp_vsatp_hlv_priv: execute hlv.w, hlvx.wu and hsv.w on VS-stage leaves with U = 0 and 1, with hstatus.SPVP = 0 and 1 and vsstatus.SUM = sstatus.SUM = 0.
+      cp_vsatp_hlv_sum: with SPVP = 1, execute them on a U = 1 leaf with (vsstatus.SUM, sstatus.SUM) = (1, 0), (0, 1) and (1, 1).
+      cp_vsatp_hlv_mxr: with SPVP = 1, execute hlv.w and hlvx.wu on an execute-only leaf with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1.
+      cp_vsatp_hlvx_perm: with SPVP = 1, execute hlvx.wu on a read-only leaf with each vsstatus.MXR and sstatus.MXR.
+    expectation: |-
+      With SPVP = 0 the accesses are VU-level, so the U = 0 page raises load or store/AMO page faults.  With SPVP = 1 they are VS-level, so the U = 1 page faults unless vsstatus.SUM = 1; sstatus.SUM is ignored.
+      hlvx.wu reads the execute-only page; hlv.w reads it when either MXR is 1 and otherwise raises a load page fault.  hlvx.wu raises a load page fault on the read-only page, whatever the MXR bits.
+    bins: |-
+      cp_vsatp_hlv_priv: HS x {hlv.w, hlvx.wu, hsv.w} x vsatp Sv39 or Sv32 with hgatp Bare x hstatus.SPVP {0, 1}
+      cp_vsatp_hlv_sum: HS x {hlv.w, hlvx.wu, hsv.w} x vsatp Sv39 or Sv32 with hgatp Bare x hstatus.SPVP = 1 x vsstatus.SUM {0, 1} x sstatus.SUM {0, 1}
+      cp_vsatp_hlv_mxr: HS x {hlv.w, hlvx.wu} x vsatp Sv39 or Sv32 with hgatp Bare x vsstatus.MXR {0, 1} x sstatus.MXR {0, 1}
+      cp_vsatp_hlvx_perm: HS x hlvx.wu x vsatp Sv39 or Sv32 with hgatp Bare x vsstatus.MXR {0, 1} x sstatus.MXR {0, 1} x load page fault
   - heading: vsatp, satp and hgatp MODE (Sv_H_csr_cg)
   - name: cp_vsatp_mode_field
     goal: supported/unsupported MODE encodings
     description: |-
       RV64 with Sv39 VS-stage translation.
-      Test Case: For x = {0...15} In HS-mode: First write vsatp with {Bare, Sv39}.  Then write vsatp.MODE field = {x} and read back.  The other fields are zero.
-    expectation: A supported MODE is retained.  A write with an unsupported MODE value is either ignored as it is for satp, or the fields of vsatp are treated as WARL in the normal way, so the test checks only that vsatp holds a supported MODE.
+      Test Case: For x = {0...15} In HS-mode: First write vsatp with {Bare, Sv39}.  Then write vsatp.MODE field = {x} and read back.  The Sv39 start value has one page table and ASID, and a non-Bare written value has a different page table and different implemented ASID bits; Bare values have the other fields zero.
+    expectation: A supported MODE is retained.  A write with an unsupported MODE value is either ignored as it is for satp, or the fields of vsatp are treated as WARL in the normal way.  The UDB parameter IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO says which.  When the write is ignored, the test checks that vsatp keeps its old value; otherwise it checks only that vsatp holds a supported MODE.
     bins: "{16 x} * 2 starting modes"
   - name: cp_satp_mode_field
     goal: supported/unsupported MODE encodings
@@ -187,10 +245,10 @@ coverpoints:
   - name: cp_hgatp_mode_field
     goal: supported/unsupported MODE encodings for hgatp
     description: |-
-      RV64 with Sv39x4.
-      Test Case: For x = {0...15} In HS-mode: First write hgatp with {Bare, Sv39x4}.  Then write hgatp.MODE field = {x} and read back.  The other fields are zero.
-    expectation: Supported MODEs are retained.  hgatp is WARL, and the legal value that an unsupported MODE produces is implementation-defined, so the test checks only that hgatp holds a supported MODE.
-    bins: "{16 x} * 2 starting modes"
+      RV64 with Sv39 VS-stage translation.
+      Test Case: For x = {0...15} In HS-mode: First write hgatp with Bare, and with Sv39x4 if the hart supports it.  Then write hgatp.MODE field = {x} and read back.  The other fields are zero.
+    expectation: Supported MODEs are retained.  hgatp is WARL, and the legal value that an unsupported MODE produces is implementation-defined, so the test checks only that hgatp holds a supported MODE.  A hart whose hgatp supports only Bare reads Bare after every write.
+    bins: "{16 x} * {Bare, and Sv39x4 if supported} starting modes"
   - heading: Fences (Sv_H_fence_cg)
   - name: |-
       cp_hfence_vvma
@@ -212,6 +270,21 @@ coverpoints:
       cp_hfence_gvma_vmid: HS x hfence.gvma x vsatp paged x hgatp paged x rs2 {current VMID, all VMIDMAX bits set}
       cp_sfence_vma_vs_asid: VS x sfence.vma x vsatp paged x hgatp paged x rs2 {current ASID, all ASIDMAX bits set}
     notes: A fence is required only to make new translations visible.  That a fence leaves the translations of another ASID or VMID cached, or that SFENCE.VMA in VS-mode leaves HS-level and G-stage translations cached, is not observable.
+  - name: |-
+      cp_vsatp_hfence_vvma
+      cp_vsatp_sfence_vma_vs
+      cp_vsatp_hfence_vvma_asid
+      cp_vsatp_sfence_vma_vs_asid
+    goal: VS-stage fences remove stale VS-stage translations with hgatp = Bare
+    description: |-
+      VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare.  Map a guest virtual address through the VS-stage to physical page A and load from it in VS-mode.  HS-mode then points the VS-stage leaf at physical page B and runs hfence.vvma in HS-mode or sfence.vma in VS-mode, with rs1 = x0 or the guest virtual address and rs2 = x0 or the current ASID, and with the address and all ASIDMAX bits set.  The cases run with every implemented vsatp.ASID bit set; hgatp.VMID stays zero, because nonzero hgatp fields have an UNSPECIFIED effect with Bare.
+      Isolation cases load under ASID 0, switch to the other ASID, change the leaf and fence only the new ASID, with hfence.vvma and with sfence.vma in VS-mode.
+    expectation: The VS-mode load after the fence reads page B.  Both loads are recorded.  A hart that caches no translation passes.
+    bins: |-
+      cp_vsatp_hfence_vvma: HS x hfence.vvma x vsatp Sv39 or Sv32 with hgatp Bare x rs1 {x0, register} x rs2 {x0, register}
+      cp_vsatp_sfence_vma_vs: VS x sfence.vma x vsatp Sv39 or Sv32 with hgatp Bare x rs1 {x0, register} x rs2 {x0, register}
+      cp_vsatp_hfence_vvma_asid: HS x hfence.vvma x vsatp Sv39 or Sv32 with hgatp Bare x rs2 {current ASID, all ASIDMAX bits set}
+      cp_vsatp_sfence_vma_vs_asid: VS x sfence.vma x vsatp Sv39 or Sv32 with hgatp Bare x rs2 {current ASID, all ASIDMAX bits set}
   - heading: Not tested
   - goal: hstatus.VSBE sets the endianness of VS-mode explicit accesses and VS-stage page-table accesses
     description: Load and store in VS-mode, and walk VS-stage page tables, with hstatus.VSBE = 0 and 1.

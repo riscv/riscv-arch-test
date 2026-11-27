@@ -12,7 +12,6 @@
 # REQUIRED_EXTENSIONS: ['I', 'H', 'Svpbmt']
 # params:
 #   SV39X4_TRANSLATION: true
-#   SV39_VSMODE_TRANSLATION: true
 # MARCH: rv${XLEN}ih_zicsr_zifencei_svpbmt
 ##### END_TEST_CONFIG #####
 
@@ -42,45 +41,45 @@ RVTEST_BEGIN
   srli x15, x15, 30
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x6, rvtest_Hroot_pg_tbl)
-  add x15, x15, x6
+  LA(x9, rvtest_Hroot_pg_tbl)
+  add x15, x15, x9
   LA(x8, rvtest_code_begin)
   srli x8, x8, 30
   slli x8, x8, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x6
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x9
   SREG x8, 0(x15)
   LA(x15, rvtest_data_begin)
   srli x15, x15, 30
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x6, rvtest_Hroot_pg_tbl)
-  add x15, x15, x6
+  LA(x9, rvtest_Hroot_pg_tbl)
+  add x15, x15, x9
   LA(x8, rvtest_data_begin)
   srli x8, x8, 30
   slli x8, x8, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x6
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x9
   SREG x8, 0(x15)
   LA(x15, rvtest_sig_end)
   srli x15, x15, 30
   slli x15, x15, 53
   srli x15, x15, 50
-  LA(x6, rvtest_Hroot_pg_tbl)
-  add x15, x15, x6
+  LA(x9, rvtest_Hroot_pg_tbl)
+  add x15, x15, x9
   LA(x8, rvtest_sig_end)
   srli x8, x8, 30
   slli x8, x8, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x6
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x9
   SREG x8, 0(x15)
 // Map the code region again at the guest alias
   LA(x15, rvtest_Hroot_pg_tbl + (((0x240000000) >> 30) & 0x7ff) * 8)
   LA(x8, rvtest_code_begin)
   srli x8, x8, 30
   slli x8, x8, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x6
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x9
   SREG x8, 0(x15)
 // Register the alias of rvtest_code_begin
   LI(x8, ((0x240000000) >> 30) << 30)
@@ -109,295 +108,295 @@ RVTEST_BEGIN
 #endif
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
-  LA(x6, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
   LA(x9, rvtest_hlvl1_pg_tbl)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x6)
-  LA(x6, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LI(x13, PTE_V)
+  or x9, x9, x13
+  SREG x9, 0(x8)
+  LA(x8, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
   LA(x9, rvtest_hlvl0_pg_tbl)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LI(x13, PTE_V)
+  or x9, x9, x13
+  SREG x9, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
   LA(x9, svh_page)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x15, (1 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x6)
+  LI(x13, (1 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x13
+  SREG x9, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x9, 0x2C0802000)
-  LI(x6, 0x114)
+  LI(x15, 0x2C0802000)
+  LI(x9, 0x100)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_store:
-  sw x6, 8(x9)
-  LI(x6, -1)
+  sw x9, 8(x15)
+  LI(x9, -1)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_load:
-  lw x6, 8(x9)
+  lw x9, 8(x15)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_exec:
-  jalr ra, 0(x9)
+  jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x13, rvtest_hlvl1_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  LA(x9, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x13, rvtest_hlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x13, svh_page)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, (2 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  LA(x14, rvtest_hlvl1_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
+  LA(x8, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LA(x14, rvtest_hlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x14, svh_page)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x9, (2 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x9
+  SREG x14, 0(x8)
   hfence.vvma
   hfence.gvma
-  LI(x15, 0x2C0802000)
-  LI(x9, 0x117)
+  LI(x13, 0x2C0802000)
+  LI(x15, 0x103)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_store:
-  sw x9, 8(x15)
-  LI(x9, -1)
+  sw x15, 8(x13)
+  LI(x15, -1)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_load:
-  lw x9, 8(x15)
+  lw x15, 8(x13)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_exec:
-  jalr ra, 0(x15)
+  jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   LA(x15, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x13, rvtest_hlvl1_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
+  LA(x9, rvtest_hlvl1_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x15)
   LA(x15, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x13, rvtest_hlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x13, svh_page)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, (3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
+  LA(x9, svh_page)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x14, (3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x15)
   hfence.vvma
   hfence.gvma
-  LI(x6, 0x2C0802000)
-  LI(x15, 0x11a)
+  LI(x9, 0x2C0802000)
+  LI(x8, 0x106)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_store:
-  sw x15, 8(x6)
-  LI(x15, -1)
+  sw x8, 8(x9)
+  LI(x8, -1)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_load:
-  lw x15, 8(x6)
+  lw x8, 8(x9)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_exec:
-  jalr ra, 0(x6)
+  jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_load_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_PBMTE)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x15, rvtest_hlvl1_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x13)
-  LA(x13, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x15, rvtest_hlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x15, svh_page)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, (1 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x13)
+  LA(x15, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x14, PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x15)
+  LA(x15, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x14, PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x15)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x14, (1 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x15)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x2C0802000)
-  LI(x13, 0x11d)
+  LI(x9, 0x2C0802000)
+  LI(x13, 0x109)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_store:
-  sw x13, 8(x8)
+  sw x13, 8(x9)
   LI(x13, -1)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_load:
-  lw x13, 8(x8)
+  lw x13, 8(x9)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_exec:
-  jalr ra, 0(x8)
+  jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_PBMTE)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x13)
-  LA(x13, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x15, (2 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x15
-  SREG x9, 0(x13)
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  LA(x13, rvtest_hlvl1_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x13, svh_page)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x9, (2 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x9
+  SREG x13, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x2C0802000)
-  LI(x9, 0x120)
+  LI(x14, 0x2C0802000)
+  LI(x13, 0x10c)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_store:
-  sw x9, 8(x8)
-  LI(x9, -1)
+  sw x13, 8(x14)
+  LI(x13, -1)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_load:
-  lw x9, 8(x8)
+  lw x13, 8(x14)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_exec:
-  jalr ra, 0(x8)
+  jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_load_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   RVTEST_TSBI_CSR_SET(CSR_MENVCFG, MENVCFG_PBMTE)
-  LA(x6, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x8, rvtest_hlvl1_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x6)
-  LA(x6, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x8, svh_page)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, (3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x6)
+  LA(x14, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  LA(x15, rvtest_hlvl1_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x9, PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x14)
+  LA(x14, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x9, PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x15, svh_page)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x9, (3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x2C0802000)
-  LI(x6, 0x123)
+  LI(x14, 0x2C0802000)
+  LI(x9, 0x10f)
   RVTEST_TSBI_GOTO_VSMODE
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_store:
-  sw x6, 8(x8)
-  LI(x6, -1)
+  sw x9, 8(x14)
+  LI(x9, -1)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_load:
-  lw x6, 8(x8)
+  lw x9, 8(x14)
 Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_exec:
-  jalr ra, 0(x8)
+  jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_load, Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_load_str)
 
   fence iorw, iorw
 #ifdef ZICBOM_SUPPORTED
-  LA(x14, svh_page)
+  LA(x6, svh_page)
   .option push
   .option arch, +zicbom
-  cbo.flush (x14)
+  cbo.flush (x6)
   .option pop
   fence iorw, iorw
 #endif
@@ -408,15 +407,15 @@ Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_exec:
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x15, rvtest_code_begin)
-  LA(x9, Vtramptbl_sv)
-  SREG x15, code_bgn_off(x9)
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x8
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x8
-  LI(x8, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x8
+  LA(x13, rvtest_code_begin)
+  LA(x8, Vtramptbl_sv)
+  SREG x13, code_bgn_off(x8)
+  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x9
+  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x9
+  LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x9
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
 
@@ -483,24 +482,24 @@ rvtest_hlvl1_pg_tbl:
   .endif
 
 // Testcase strings
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_store_str: .string "\"test: 21; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt1_store\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_load_str: .string "\"test: 22; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt1_load\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_exec_str: .string "\"test: 23; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt1_exec\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_store_str: .string "\"test: 24; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt2_store\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_load_str: .string "\"test: 25; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt2_load\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_exec_str: .string "\"test: 26; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt2_exec\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_store_str: .string "\"test: 27; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt3_store\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_load_str: .string "\"test: 28; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt3_load\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_exec_str: .string "\"test: 29; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt3_exec\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_store_str: .string "\"test: 30; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt1_store\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_load_str: .string "\"test: 31; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt1_load\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_exec_str: .string "\"test: 32; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt1_exec\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_store_str: .string "\"test: 33; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt2_store\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_load_str: .string "\"test: 34; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt2_load\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_exec_str: .string "\"test: 35; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt2_exec\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_store_str: .string "\"test: 36; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt3_store\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_load_str: .string "\"test: 37; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt3_load\""
-Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_exec_str: .string "\"test: 38; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt3_exec\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_store_str: .string "\"test: 1; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt1_store\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_load_str: .string "\"test: 2; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt1_load\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt1_exec_str: .string "\"test: 3; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt1_exec\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_store_str: .string "\"test: 4; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt2_store\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_load_str: .string "\"test: 5; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt2_load\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt2_exec_str: .string "\"test: 6; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt2_exec\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_store_str: .string "\"test: 7; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt3_store\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_load_str: .string "\"test: 8; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt3_load\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte0_pbmt3_exec_str: .string "\"test: 9; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte0_pbmt3_exec\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_store_str: .string "\"test: 10; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt1_store\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_load_str: .string "\"test: 11; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt1_load\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt1_exec_str: .string "\"test: 12; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt1_exec\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_store_str: .string "\"test: 13; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt2_store\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_load_str: .string "\"test: 14; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt2_load\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt2_exec_str: .string "\"test: 15; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt2_exec\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_store_str: .string "\"test: 16; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt3_store\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_load_str: .string "\"test: 17; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt3_load\""
+Svpbmt_H_cg_cp_hgatp_pbmt_pbmte1_pbmt3_exec_str: .string "\"test: 18; cg: Svpbmt_H_cg; cp: cp_hgatp_pbmt; bin: pbmte1_pbmt3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

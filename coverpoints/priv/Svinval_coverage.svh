@@ -93,25 +93,38 @@ covergroup Svinval_H_cg with function sample(ins_t ins);
     cp_svinval: cross priv_mode_hs_vs_u_vu, svinval, mstatus_tvm, hstatus_vtvm;
 
     // The SFENCE.W.INVAL, HINVAL.VVMA or HINVAL.GVMA (or SINVAL.VMA in VS-mode), SFENCE.INVAL.IR sequence after a
-    // VS-stage or G-stage leaf change, with x0 or a register in rs1 and rs2.  The test checks that the next guest
-    // access uses the new leaf.
+    // VS-stage or G-stage leaf change, with x0 or a register in rs1 and rs2, with both stages paged or, for the
+    // VS-stage, with hgatp = Bare.  The test checks that the next guest access uses the new leaf.
+    hinval_vvma : coverpoint ins.current.insn {
+        wildcard bins hinval_vvma = {HINVAL_VVMA};
+    }
+    sinval_vma : coverpoint ins.current.insn {
+        wildcard bins sinval_vma = {SINVAL_VMA};
+    }
+    rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.ins_str inside {"sinval.vma", "hinval.vvma", "hinval.gvma"}) {
+        bins x0       = {x0};
+        bins register = {[x1:x31]};
+    }
+    rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.ins_str inside {"sinval.vma", "hinval.vvma", "hinval.gvma"}) {
+        bins x0       = {x0};
+        bins register = {[x1:x31]};
+    }
+    // VS-stage Sv39 (RV64) or Sv32 (RV32) with hgatp = Bare
+    vs_only : coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode")[3:0],
+                          get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode")[3:0]} {
+        `ifdef UDB_SV39_VSMODE_TRANSLATION
+            bins sv39_bare = {8'h80};
+        `endif
+        `ifdef UDB_SV32_VSMODE_TRANSLATION
+            bins sv32_bare = {8'h10};
+        `endif
+    }
+
+    cp_vsatp_hinval_vvma   : cross priv_mode_hs, hinval_vvma, vs_only, rs1, rs2;
+    cp_vsatp_sinval_vma_vs : cross priv_mode_vs, sinval_vma, vs_only, rs1, rs2;
     `ifdef H_TWO_STAGE
-        hinval_vvma : coverpoint ins.current.insn {
-            wildcard bins hinval_vvma = {HINVAL_VVMA};
-        }
         hinval_gvma : coverpoint ins.current.insn {
             wildcard bins hinval_gvma = {HINVAL_GVMA};
-        }
-        sinval_vma : coverpoint ins.current.insn {
-            wildcard bins sinval_vma = {SINVAL_VMA};
-        }
-        rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.ins_str inside {"sinval.vma", "hinval.vvma", "hinval.gvma"}) {
-            bins x0       = {x0};
-            bins register = {[x1:x31]};
-        }
-        rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.ins_str inside {"sinval.vma", "hinval.vvma", "hinval.gvma"}) {
-            bins x0       = {x0};
-            bins register = {[x1:x31]};
         }
         vsatp_paged : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
             bins paged = {[1:15]};

@@ -25,7 +25,14 @@ from testgen.priv.extensions.sv.page_tables import (
     lower_table_data,
     write_pte,
 )
-from testgen.priv.extensions.sv.SvHFenceCommon import HINVAL_GVMA, HINVAL_VVMA, SINVAL_VMA_VS, fence_chunk
+from testgen.priv.extensions.sv.SvHFenceCommon import (
+    HINVAL_GVMA,
+    HINVAL_VVMA,
+    HINVAL_VVMA_BARE,
+    SINVAL_VMA_VS,
+    SINVAL_VMA_VS_BARE,
+    fence_chunk,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 _OPERATIONS = (
@@ -281,6 +288,28 @@ def make_svinvalh(test_data: TestData) -> list[TestChunk]:
 
 
 INVAL_FENCES = (HINVAL_VVMA, HINVAL_GVMA, SINVAL_VMA_VS)
+# The VS-stage invalidations with hgatp = Bare
+BARE_INVAL_FENCES = (HINVAL_VVMA_BARE, SINVAL_VMA_VS_BARE)
+
+
+@add_priv_test_generator(
+    "Svinval",
+    required_extensions=["H", "Svinval"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svinvalh_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    return [fence_chunk(test_data, None, VS_SV39, "H_sv39_inval", BARE_INVAL_FENCES, "Svinval_H_cg")]
+
+
+@add_priv_test_generator(
+    "Svinval",
+    required_extensions=["H", "Svinval"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svinvalh_vs_sv32(test_data: TestData) -> list[TestChunk]:
+    return [fence_chunk(test_data, None, VS_SV32, "H_sv32_inval", BARE_INVAL_FENCES, "Svinval_H_cg")]
 
 
 @add_priv_test_generator(

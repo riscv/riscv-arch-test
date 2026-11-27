@@ -2,7 +2,7 @@
 suite: Svnapot_H
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884
 notes: |-
-  Svnapot_H uses the Sv_H test environment (see Sv_H).  The tests run on RV64 with Sv39 and Sv39x4.
+  Svnapot_H uses the Sv_H test environment (see Sv_H).  The tests run on RV64 with Sv39 and Sv39x4.  The VS-stage tests (hgatp = Bare) need only VS-stage Sv39, so they also run on a hart whose hgatp supports only Bare.
 coverpoints:
   - name: cp_vsatp_napot
     goal: Svnapot in the VS-stage

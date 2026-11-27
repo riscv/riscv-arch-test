@@ -59,11 +59,11 @@ _DATA_REGION = [".p2align 12", f"{DATA}:", f".fill 1024, 4, {CBO_ZERO_FILL:#x}"]
 
 
 class Chunk(NamedTuple):
-    """One chunk's CBO family, translation modes, covergroup and home mode ("S" or "M", which checks the results), and
-    the register that holds each case's guest address."""
+    """One chunk's CBO family, translation modes (g = None for hgatp = Bare), covergroup and home mode ("S" or "M",
+    which checks the results), and the register that holds each case's guest address."""
 
     family: str
-    g: SvMode
+    g: SvMode | None
     vs: SvMode
     covergroup: str
     home: str
@@ -120,6 +120,7 @@ def _pte(
 
 def vs_identity(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """The VS-stage superpage leaf that maps g.data_va to the same guest physical address."""
+    assert c.g is not None
     flags = PteFlags(user=mode == "vu")
     return _pte(test_data, c.vs, c.vs.levels - 1, flags, c.g.data_va, c.g.data_va, superpage=True)
 
@@ -216,6 +217,7 @@ def _leaf_cases(
 def _vs_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """VS-stage PTE cases at each level.  The G-stage identity maps the test data."""
     vs, g = c.vs, c.g
+    assert g is not None
     user = PteFlags(user=mode == "vu")
     fault = "store page fault"
     sum_reg = test_data.int_regs.get_register()
@@ -307,10 +309,38 @@ def _vs_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     return lines
 
 
+def _vs_bare_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
+    """VS-stage kilopage leaves with hgatp = Bare: invalid, read-only (a cache-block management instruction needs read
+    or write permission, cbo.zero write permission), and a user page with vsstatus.SUM = 0 and 1."""
+    vs = c.vs
+    fault = "store page fault"
+    sum_reg = test_data.int_regs.get_register()
+    sum_on = ([f"LI(x{sum_reg}, SSTATUS_SUM)", f"csrs sstatus, x{sum_reg}"], [f"csrc sstatus, x{sum_reg}"])
+    cases = (
+        ("v0", "cp_vsatp_cbo_pte", f"{fault}: PTE.V unset", PteFlags(valid=False), ([], [])),
+        (
+            "r",
+            "cp_vsatp_cbo_pte",
+            "no fault" if c.family == "zicbom" else f"{fault}: cbo.zero needs write permission",
+            PteFlags(write=False, execute=False),
+            ([], []),
+        ),
+        ("u1_sum0", "cp_vsatp_cbo_pte", f"{fault}: VS-mode cannot access a user page", PteFlags(user=True), ([], [])),
+        ("u1_sum1", "cp_vsatp_cbo_sum", "no fault: vsstatus.SUM = 1", PteFlags(user=True), sum_on),
+    )
+    lines = []
+    for name, coverpoint, expected, flags, guest in cases:
+        ptes = mapping(test_data, vs, 0, flags)
+        lines.extend(case(test_data, c, mode, name, coverpoint, expected, ptes, stage=vs, level=0, guest=guest))
+    test_data.int_regs.return_register(sum_reg)
+    return lines
+
+
 def _g_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """G-stage PTE cases at each level, reached through a VS-stage identity superpage, and a non-leaf G-stage PTE that
     points at the page of the access-fault region, with an index there that selects a PTE inside the region."""
     g = c.g
+    assert g is not None
     user = PteFlags(user=True)
     fault = "store guest-page fault"
     identity = vs_identity(test_data, c, mode)
@@ -373,6 +403,7 @@ def _prefetch_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     """Prefetches at kilopage leaves of each stage.  A prefetch is a HINT, so it raises no exception where a load or
     store would fault in either stage."""
     vs, g = c.vs, c.g
+    assert g is not None
     user = mode == "vu"
     identity = vs_identity(test_data, c, mode)
     unmapped_gpa = _pte(test_data, g, g.levels - 1, "0", g.data_va, "0")
@@ -442,7 +473,7 @@ _SECTIONS = (
 def make_chunk(
     test_data: TestData,
     family: str,
-    g: SvMode,
+    g: SvMode | None,
     vs: SvMode,
     *,
     group: str,
@@ -450,15 +481,18 @@ def make_chunk(
     home: str,
     section: tuple[str, str, str, Callable[[TestData, Chunk, str], list[str]]],
     setup: tuple[str, ...] = (),
+    modes: tuple[str, ...] = ("vs", "vu"),
 ) -> TestChunk:
-    """One file of ``group``, with a section's cases from VS-mode and VU-mode, after ``setup``.
+    """One file of ``group``, with a section's cases from each of ``modes``, after ``setup``.  With g = None, hgatp
+    is Bare.
 
     section is (file name, coverpoints, description, cases for one mode).  The CBOs are enabled in henvcfg and
     senvcfg, and cleared there at the end; boot enables them in menvcfg.
     """
     name, title, description, cases = section
-    tc = test_data.begin_test_chunk(f"{group}_{g.name}_{family}_{name}")
-    tc.section_header = comment_banner(title, f"{description}, for {', '.join(OPS[family])} from VS and VU")
+    tc = test_data.begin_test_chunk(f"{group}_{(g or vs).name}_{family}_{name}")
+    from_modes = " and ".join(mode.upper() for mode in modes)
+    tc.section_header = comment_banner(title, f"{description}, for {', '.join(OPS[family])} from {from_modes}")
     chunk = Chunk(family, g, vs, covergroup, home, test_data.int_regs.get_register())
     body = [
         f"LI(x{chunk.gva}, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE)",
@@ -467,7 +501,7 @@ def make_chunk(
         f"csrs senvcfg, x{chunk.gva}",
         *setup,
     ]
-    for mode in ("vs", "vu"):
+    for mode in modes:
         body.extend(
             [
                 *guest_translation_setup(test_data, g, vs, f"{mode.upper()}mode"),
@@ -487,6 +521,31 @@ def make_chunk(
     tc.code.extend(body)
     tc.raw_data.extend([*_DATA_REGION, *guest_table_data()])
     return test_data.end_test_chunk()
+
+
+_VS_BARE_SECTION = (
+    "vs",
+    "cp_vsatp_cbo_pte, cp_vsatp_cbo_sum",
+    "VS-stage leaves with hgatp = Bare: invalid, read-only, and user pages with vsstatus.SUM = 0 and 1",
+    _vs_bare_cases,
+)
+
+
+def _make_svhzicbo_vs(test_data: TestData, vs: SvMode, family: str) -> list[TestChunk]:
+    section = _VS_BARE_SECTION
+    return [
+        make_chunk(
+            test_data,
+            family,
+            None,
+            vs,
+            group="HZicbo",
+            covergroup="Sv_HZicbo_cg",
+            home="S",
+            section=section,
+            modes=("vs",),
+        )
+    ]
 
 
 def _make_svhzicbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> list[TestChunk]:
@@ -576,6 +635,46 @@ def make_svhzicbo_zicbom_henvcfg(test_data: TestData) -> list[TestChunk]:
 )
 def make_svhzicbo_zicboz_henvcfg(test_data: TestData) -> list[TestChunk]:
     return _make_henvcfg(test_data, "zicboz")
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svhzicbo_vs_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svhzicbo_vs(test_data, VS_SV39, "zicbom")
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svhzicbo_vs_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svhzicbo_vs(test_data, VS_SV39, "zicboz")
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Zicbom"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svhzicbo_vs_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_svhzicbo_vs(test_data, VS_SV32, "zicbom")
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Zicboz"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svhzicbo_vs_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_svhzicbo_vs(test_data, VS_SV32, "zicboz")
 
 
 @add_priv_test_generator(

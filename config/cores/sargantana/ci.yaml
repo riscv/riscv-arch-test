@@ -93,13 +93,21 @@ exclude_extensions:
   - Sv_H_sv39x4_ldst_straddle
   - Sv_H_sv39x4_two_stage_vu
   # With hgatp = Bare, a VS-stage superpage translates every address to its first page: mmu:tlb/tlb.sv#L521-L524
-  # (https://github.com/bsc-loca/sargantana/issues/136)
-  - Sv_H_sv39x4_atp_mode
+  # (https://github.com/bsc-loca/sargantana/issues/136).  The guest code alias of each test is such a superpage.
+  - Sv_H_sv39_atp_mode
+  - Sv_H_sv39_v_isolation
   # The GVA (#135) and hgatp = Bare superpage (#136) bugs, and VS-stage page-fault checks are enabled by the G-stage
   # enable, so with hgatp = Bare no VS-stage permission is checked: mmu:tlb/tlb.sv#L481-L492
   # (https://github.com/bsc-loca/sargantana/issues/137)
   - Sv_H_sv39_vs_perm
   - Sv_H_sv39_vs_pte
+  - Sv_H_sv39_hlv
+  - Sv_H_sv39_hedeleg
+  - Sv_H_sv39_fence
+  - Sv_HSm_sv39_mprv_sum_mxr
+  - Sv_HZicbo_sv39_zicbom_vs
+  - Sv_HZicbo_sv39_zicboz_vs
+  - Svinval_H_sv39_inval
   # The same check with vsatp = Bare: user-level accesses (VU, HLV with SPVP = 0, MPRV with MPP = U and MPV = 1) take a
   # spurious page fault (https://github.com/bsc-loca/sargantana/issues/137). Sv_HSm_sv39_mprv_vsatp also hits the
   # GVA bug (#135), and Sv_HSm_sv39x4_mprv_hgatp translates M-mode MPRV accesses with MPP = M when MPV = 1:
@@ -244,7 +252,9 @@ exclude_extensions:
   - Svpbmt_H_sv39_vs_pbmt
   # With hgatp = Bare, a 64 KiB VS-stage NAPOT page translates every address to its first 4 KiB page, as for
   # superpages (https://github.com/bsc-loca/sargantana/issues/136)
-  - Svnapot_H_sv39x4_napot
+  - Svnapot_H_sv39_napot
+  # With vsatp = Bare, VU-mode accesses take a spurious page fault (https://github.com/bsc-loca/sargantana/issues/137)
+  - Svnapot_H_sv39x4_napot_vu
   # A VS-level interrupt delegated by hideleg is taken in U-mode (https://github.com/bsc-loca/sargantana/issues/122)
   - InterruptsS_trigger_vsti_sstc_U
   # A VS-timer interrupt taken from VS or VU sets hstatus.GVA = 1 (https://github.com/bsc-loca/sargantana/issues/119)

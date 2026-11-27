@@ -183,19 +183,31 @@ def _t_mprv_hgatp(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) 
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_mprv_sum_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
-    """With MPRV = 1 and MPV = 1, vsstatus.SUM replaces mstatus.SUM, and mstatus.MXR covers both stages."""
-    chunk = begin_chunk(
-        test_data,
-        f"HSm_{g.name}_mprv_sum_mxr",
-        "cp_mprv_sum, cp_mprv_mxr",
-        "In M-mode with mstatus.MPRV = 1 and MPV = 1, store and load on a VS-stage user page with MPP = S and a\n"
-        "supervisor page with MPP = U, with vsstatus.SUM = 0, 1 and mstatus.SUM = 0, 1, and load from pages\n"
-        "execute-only in the VS-stage, the G-stage or both with MPP = S, U, vsstatus.MXR = 0, 1 and mstatus.MXR = 0, 1",
-    )
+def _t_mprv_sum_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode | None, vs: SvMode) -> None:
+    """With MPRV = 1 and MPV = 1, vsstatus.SUM replaces mstatus.SUM, and mstatus.MXR covers both stages.  With
+    g = None, hgatp is Bare: the SUM cases run with MPP = S, and the MXR cases on an execute-only VS-stage page."""
+    if g is None:
+        sum_cp, mxr_cp = "cp_vsatp_mprv_sum", "cp_vsatp_mprv_mxr"
+        sum_cases: tuple[tuple[str, str, bool], ...] = (("s", "MPP_SMODE", True),)
+        mxr_perms: tuple[tuple[str, str], ...] = (("x", "rwx"),)
+        description = (
+            "In M-mode with mstatus.MPRV = 1, MPV = 1 and hgatp = Bare, store and load on a VS-stage user page with\n"
+            "MPP = S, with vsstatus.SUM = 0, 1 and mstatus.SUM = 0, 1, and load from an execute-only VS-stage page with\n"
+            "MPP = S, U, vsstatus.MXR = 0, 1 and mstatus.MXR = 0, 1"
+        )
+    else:
+        sum_cp, mxr_cp = "cp_mprv_sum", "cp_mprv_mxr"
+        sum_cases = (("s", "MPP_SMODE", True), ("u", "0", False))
+        mxr_perms = (("x", "rwx"), ("rwx", "x"), ("x", "x"))
+        description = (
+            "In M-mode with mstatus.MPRV = 1 and MPV = 1, store and load on a VS-stage user page with MPP = S and a\n"
+            "supervisor page with MPP = U, with vsstatus.SUM = 0, 1 and mstatus.SUM = 0, 1, and load from pages\n"
+            "execute-only in the VS-stage, the G-stage or both with MPP = S, U, vsstatus.MXR = 0, 1 and mstatus.MXR = 0, 1"
+        )
+    chunk = begin_chunk(test_data, f"HSm_{(g or vs).name}_mprv_sum_mxr", f"{sum_cp}, {mxr_cp}", description)
     reg = test_data.int_regs.get_register()
     code = guest_chunk_setup(test_data, g, vs, "VS")
-    for mpp_name, mpp, user in (("s", "MPP_SMODE", True), ("u", "0", False)):
+    for mpp_name, mpp, user in sum_cases:
         for vs_sum in (0, 1):
             for m_sum in (0, 1):
                 code.extend(
@@ -206,10 +218,10 @@ def _t_mprv_sum_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
                     ]
                 )
                 name = f"mpp_{mpp_name}_u{int(user)}_vssum{vs_sum}_msum{m_sum}"
-                code.extend(mprv_access(test_data, "cp_mprv_sum", name, g.xlen, vs.data_va, mprv=1, mpp=mpp, mpv=1))
+                code.extend(mprv_access(test_data, sum_cp, name, vs.xlen, vs.data_va, mprv=1, mpp=mpp, mpv=1))
     # VS-stage leaves are user pages for MPP = U
     for mpp_name, mpp in (("s", "MPP_SMODE"), ("u", "0")):
-        for vs_perm, g_perm in (("x", "rwx"), ("rwx", "x"), ("x", "x")):
+        for vs_perm, g_perm in mxr_perms:
             for vs_mxr in (0, 1):
                 for m_mxr in (0, 1):
                     code.extend(
@@ -225,13 +237,14 @@ def _t_mprv_sum_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
                             *status_bits("mstatus", reg, mxr=m_mxr),
                         ]
                     )
-                    name = f"mpp_{mpp_name}_vs_{vs_perm}_g_{g_perm}_vsmxr{vs_mxr}_mmxr{m_mxr}"
+                    stages = f"vs_{vs_perm}" if g is None else f"vs_{vs_perm}_g_{g_perm}"
+                    name = f"mpp_{mpp_name}_{stages}_vsmxr{vs_mxr}_mmxr{m_mxr}"
                     code.extend(
                         mprv_access(
                             test_data,
-                            "cp_mprv_mxr",
+                            mxr_cp,
                             name,
-                            g.xlen,
+                            vs.xlen,
                             vs.data_va,
                             mprv=1,
                             mpp=mpp,
@@ -241,7 +254,7 @@ def _t_mprv_sum_mxr(test_data: TestData, test_chunks: list[TestChunk], g: SvMode
                     )
     code.extend(status_bits("mstatus", reg))
     test_data.int_regs.return_register(reg)
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -312,11 +325,31 @@ def _t_straddle_m(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, 
 
 def _make_svhsm(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
-    _t_mprv_vsatp(test_data, test_chunks, vs)
-    _t_mprv_hgatp(test_data, test_chunks, g)
     _t_mprv_sum_mxr(test_data, test_chunks, g, vs)
     for mode in ("VS", "VU"):
         _t_guest_faults(test_data, test_chunks, g, vs, mode)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_vs_sv32(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_vsatp(test_data, test_chunks, VS_SV32)
+    _t_mprv_sum_mxr(test_data, test_chunks, None, VS_SV32)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv", required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"], params=["SV32X4_TRANSLATION: true"]
+)
+def make_svhsm_g_sv32x4(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_hgatp(test_data, test_chunks, SV32X4)
     return test_chunks
 
 
@@ -328,6 +361,28 @@ def _make_svhsm(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
 )
 def make_svhsm_sv32(test_data: TestData) -> list[TestChunk]:
     return _make_svhsm(test_data, SV32X4, VS_SV32)
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["Sm", "H"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+    params=["SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svhsm_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_vsatp(test_data, test_chunks, VS_SV39)
+    _t_mprv_sum_mxr(test_data, test_chunks, None, VS_SV39)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv", required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"], params=["SV39X4_TRANSLATION: true"]
+)
+def make_svhsm_g_sv39x4(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_mprv_hgatp(test_data, test_chunks, SV39X4)
+    return test_chunks
 
 
 @add_priv_test_generator(

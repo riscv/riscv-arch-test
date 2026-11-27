@@ -20,14 +20,20 @@ from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, load_constant, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import virtual_address
+from testgen.priv.extensions.sv.access import add_rwx_test, virtual_address
 from testgen.priv.extensions.sv.generate import (
+    SvRegs,
+    begin_sv_test,
+    end_sv_test,
     guest_translation_setup,
     guest_translation_teardown,
     identity_map_image,
+    sv_data,
 )
 from testgen.priv.extensions.sv.page_tables import (
+    SV32,
     SV32X4,
+    SV39,
     SV39X4,
     SV48X4,
     SV57X4,
@@ -46,11 +52,15 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.extensions.sv.Sv import PAGE_PERMS, PTE_RESERVED_BITS, PTE_RSW
 from testgen.priv.extensions.sv.SvHFenceCommon import (
+    BARE_ISOLATION_CASES,
     HFENCE_GVMA,
     HFENCE_VVMA,
+    HFENCE_VVMA_BARE,
     ISOLATION_CASES,
     SFENCE_VMA_VS,
+    SFENCE_VMA_VS_BARE,
     fence_chunk,
+    id_bits,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -365,44 +375,59 @@ def g_ad_accesses(
 
 
 def _t_vs_perm(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode, mode: str) -> None:
-    """VS-stage leaf permissions with vsstatus.SUM and vsstatus.MXR in VS-mode or VU-mode."""
+    """VS-stage leaf permissions with vsstatus.SUM and MXR and the HS-level SUM and MXR in VS-mode or VU-mode."""
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_perm_{mode.lower()}",
-        "cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr",
+        "cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr" + (", cp_vsatp_hs_sum" if mode == "VS" else ""),
         f"In {mode}-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with U = 0, 1 and each\n"
-        "legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR = 0, 1",
+        "legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR and sstatus.MXR = 0, 1"
+        + (",\nand store and load on a U = 1 leaf with vsstatus.SUM = 0 and sstatus.SUM = 1" if mode == "VS" else ""),
         stages=(vs,),
     )
     va = vs.data_va
     reg = test_data.int_regs.get_register()
     code = guest_chunk_setup(test_data, None, vs, mode)
-    cases: list[tuple[str, PteFlags, int, int]] = []
+    # (name, leaf, coverpoint, vsstatus.SUM, vsstatus.MXR, sstatus.SUM, sstatus.MXR, accesses)
+    cases: list[tuple[str, PteFlags, str, int, int, int, int, Sequence[str]]] = []
     for user in (False, True):
-        cases.extend(
-            (f"u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 0, 0)
-            for r, w, x, desc in PAGE_PERMS
-        )
+        for r, w, x, desc in PAGE_PERMS:
+            flags = PteFlags(user=user, read=r, write=w, execute=x)
+            cases.append((f"u{int(user)}_{desc}", flags, "cp_vsatp_perm", 0, 0, 0, 0, GUEST_OPS))
     # SUM = 1 lets VS-mode load and store, but not fetch, on user pages; it does not affect VU-mode
     user_perms = PAGE_PERMS if mode == "VS" else PAGE_PERMS[:1]
     for user, (r, w, x, desc) in ((False, PAGE_PERMS[0]), *((True, perm) for perm in user_perms)):
-        cases.append((f"sum_u{int(user)}_{desc}", PteFlags(user=user, read=r, write=w, execute=x), 1, 0))
+        flags = PteFlags(user=user, read=r, write=w, execute=x)
+        cases.append((f"sum_u{int(user)}_{desc}", flags, "cp_vsatp_sum", 1, 0, 0, 0, GUEST_OPS))
+    # The HS-level MXR (sstatus.MXR) also makes VS-stage execute-only pages readable
     for user in (False, True):
         for sum_ in (0, 1):
-            cases.append((f"mxr_sum{sum_}_u{int(user)}", perm_flags("x", user), sum_, 1))
-    for name, flags, sum_, mxr in cases:
-        coverpoint = "cp_vsstatus_mxr" if mxr else "cp_vsatp_sum" if sum_ else "cp_vsatp_perm"
-        setup = [*map_test_page(test_data, None, vs, vs_flags=flags), *status_bits("vsstatus", reg, sum_=sum_, mxr=mxr)]
-        code.extend(guest_access(test_data, VS_CG, coverpoint, name, mode, va, setup=setup))
+            for s_mxr, vs_mxr in ((1, 0), (1, 1), (0, 1)):
+                name = f"smxr{s_mxr}_vsmxr{vs_mxr}_sum{sum_}_u{int(user)}"
+                cases.append((name, perm_flags("x", user), "cp_vsstatus_mxr", sum_, vs_mxr, 0, s_mxr, GUEST_OPS))
+    # The HS-level SUM does not apply at V=1, where vsstatus substitutes for sstatus, so VS-mode still cannot load
+    # or store on a user page
+    if mode == "VS":
+        cases.append(("ssum1_vssum0_u1", PteFlags(user=True), "cp_vsatp_hs_sum", 0, 0, 1, 0, ("store", "load")))
+    for name, flags, coverpoint, vs_sum, vs_mxr, s_sum, s_mxr, ops in cases:
+        setup = [
+            *map_test_page(test_data, None, vs, vs_flags=flags),
+            *status_bits("vsstatus", reg, sum_=vs_sum, mxr=vs_mxr),
+            *status_bits("sstatus", reg, sum_=s_sum, mxr=s_mxr),
+        ]
+        code.extend(guest_access(test_data, VS_CG, coverpoint, name, mode, va, setup=setup, ops=ops))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
 def _pte_format_cases(xlen: int, user: bool) -> list[tuple[str, PteExpression]]:
-    """Leaves whose format decides the access: V clear, a level-0 pointer, RSW set, or a reserved bit set."""
+    """Leaves whose format decides the access: V clear, W without R (reserved), a level-0 pointer, RSW set, or a
+    reserved bit set."""
     cases: list[tuple[str, PteExpression]] = [
         ("invalid", PteFlags(valid=False, user=user)),
+        ("reserved_w", perm_flags("w", user)),
+        ("reserved_wx", perm_flags("wx", user)),
         ("nonleaf_lvl0", PteFlags(user=user, read=False, write=False, execute=False, accessed=False, dirty=False)),
         *((f"rsw{number}", PteFlags(user=user, extra=(rsw,))) for number, (rsw, _) in enumerate(PTE_RSW, start=1)),
     ]
@@ -412,15 +437,66 @@ def _pte_format_cases(xlen: int, user: bool) -> list[tuple[str, PteExpression]]:
     return cases
 
 
+def _walk_format_accesses(test_data: TestData, stage: SvMode, covergroup: str, coverpoint: str) -> list[str]:
+    """VS-mode accesses through ``stage`` alone, the other stage Bare, where the walk faults on the PTE format: a
+    misaligned superpage leaf at each level above 0, and D, A or U set in the level-1 non-leaf PTE, where they are
+    reserved.  G-stage leaves are user pages."""
+    user = stage.stage == "g"
+    fence = "hfence.gvma" if user else "hfence.vvma"
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    regs = (pte, addr, tmp)
+    cases = [
+        *(
+            (
+                f"misaligned_lvl{level}",
+                GUEST_OPS,
+                create_page_mapping(
+                    stage,
+                    leaf_level=level,
+                    leaf_flags=PteFlags(user=user),
+                    virtual_address=stage.data_va,
+                    physical_address="svh_page",
+                    regs=regs,
+                    superpage=False,
+                ),
+            )
+            for level in range(1, stage.levels)
+        ),
+        *(
+            (
+                f"nonleaf_{bit.lower()}",
+                ("load",),
+                create_page_mapping(
+                    stage,
+                    leaf_level=0,
+                    leaf_flags=PteFlags(user=user),
+                    virtual_address=stage.data_va,
+                    physical_address="svh_page",
+                    walk_overrides={1: PteFlags.nonleaf(f"PTE_{bit}")},
+                    regs=regs,
+                ),
+            )
+            for bit in "DAU"
+        ),
+    ]
+    test_data.int_regs.return_registers(list(regs))
+    lines = []
+    for name, ops, ptes in cases:
+        setup = [*ptes, fence]
+        lines.extend(guest_access(test_data, covergroup, coverpoint, name, "VS", stage.data_va, setup=setup, ops=ops))
+    return lines
+
+
 def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> None:
     """VS-stage PTE formats, and A/D bits with Svade, in VS-mode."""
     chunk = begin_chunk(
         test_data,
         f"H_{vs.name}_vs_pte",
-        "cp_vsatp_perm, cp_vsatp_svade",
-        "In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, a level-0 pointer, or have\n"
-        "RSW or reserved bits, and through leaves with A or D clear with menvcfg.ADUE = henvcfg.ADUE = 0\n"
-        "(page fault, PTE unchanged)",
+        "cp_vsatp_perm, cp_vsatp_svade" + (", cp_vsatp_canonical" if vs.xlen == 64 else ""),
+        "In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, have W without R, are a\n"
+        "level-0 pointer, have RSW or reserved bits, or are misaligned superpages, under a non-leaf PTE with D, A\n"
+        "or U set, and through leaves with A or D clear with menvcfg.ADUE = henvcfg.ADUE = 0 (page fault, PTE\n"
+        "unchanged)" + (".  Access a non-canonical guest virtual address (page fault)" if vs.xlen == 64 else ""),
         stages=(vs,),
     )
     va = vs.data_va
@@ -437,7 +513,157 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
                 setup=map_test_page(test_data, None, vs, vs_flags=flags),
             )
         )
+    code.extend(_walk_format_accesses(test_data, vs, VS_CG, "cp_vsatp_perm"))
     code.extend(vs_ad_accesses(test_data, vs, SVADE_CASES, VS_CG, "cp_vsatp_svade"))
+    if vs.xlen == 64:
+        # The mapped guest virtual address with the bit above the VS-stage width set is not sign-extended
+        va = hex(int(vs.data_va, 16) | 1 << vs.va_bits)
+        setup = map_test_page(test_data, None, vs)
+        code.extend(guest_access(test_data, VS_CG, "cp_vsatp_canonical", f"bit{vs.va_bits}", "VS", va, setup=setup))
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
+###########################
+# vsstatus at V=0
+###########################
+
+
+def _t_v0_vsstatus(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    """vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses (V=0) through satp."""
+    regs = SvRegs.allocate(test_data)
+    chunk = begin_sv_test(
+        test_data, regs, sv, "Umode", f"H_{sv.name}_v0_vsstatus", coverpoint="cp_v0_vsstatus_sum, cp_v0_vsstatus_mxr"
+    )
+    # (name, mode, satp leaf, vsstatus bit, accesses, coverpoint); sstatus.SUM = MXR = 0, so each access faults
+    cases = (
+        ("vssum1_u1", "Smode", PteFlags(user=True), "SSTATUS_SUM", ("store", "load"), "cp_v0_vsstatus_sum"),
+        ("vsmxr1_xonly", "Smode", perm_flags("x", False), "SSTATUS_MXR", ("load",), "cp_v0_vsstatus_mxr"),
+        ("vsmxr1_xonly_u1", "Umode", perm_flags("x", True), "SSTATUS_MXR", ("load",), "cp_v0_vsstatus_mxr"),
+    )
+    chunk.code.extend(status_bits("sstatus", regs.scratch))
+    for name, mode, flags, bit, ops, coverpoint in cases:
+        chunk.code.extend(
+            [
+                f"// {mode[0]}-mode access with {bit.replace('SSTATUS_', 'vsstatus.')} = 1: page fault",
+                *create_page_mapping(sv, leaf_level=0, leaf_flags=flags),
+                "sfence.vma",
+                *set_csr_bits("vsstatus", "SSTATUS_SUM | SSTATUS_MXR", bit, regs.scratch),
+                *add_rwx_test(
+                    test_data,
+                    sv,
+                    regs,
+                    mode,
+                    "va_data",
+                    0,
+                    name,
+                    driver_mode="Smode",
+                    operations=ops,
+                    coverpoints=dict.fromkeys(ops, coverpoint),
+                    covergroup=VS_CG,
+                ),
+            ]
+        )
+    chunk.code.extend(status_bits("vsstatus", regs.scratch))
+    chunk.raw_data.extend(sv_data(sv, regs, levels=(0,)))
+    test_chunks.append(end_sv_test(test_data, regs))
+
+
+###########################
+# HS-level and VS-level translations of the same address
+###########################
+
+# (case, satp leaf G, VS-stage leaf G, vsatp.ASID all ones, the order of the V=0 and V=1 accesses, access)
+V_ISOLATION_CASES = (
+    ("same_asid", False, False, False, (0, 1, 0, 1), "load"),
+    ("satp_global", True, False, True, (0, 1), "load"),
+    ("vsatp_global", False, True, True, (1, 0), "load"),
+    ("fetch", False, False, False, (0, 1), "exec"),
+)
+
+
+def _v_isolation_fetch(test_data: TestData, mode: str | None, va: str, name: str) -> list[str]:
+    """Fetch from ``va`` in ``mode`` (S-mode for None) and check a2, which the code there sets to the page's ID."""
+    va_reg, data = test_data.int_regs.get_registers(2)
+    label = test_data.add_testcase(f"{name}_exec", "cp_vsatp_v_isolation", VS_CG)
+    lines = [
+        load_constant(f"x{va_reg}", va),
+        *([f"RVTEST_TSBI_GOTO_{mode}MODE"] if mode else []),
+        "LI(a2, -1)",
+        label,
+        f"jalr ra, 0(x{va_reg})",
+        f"addi x{data}, a2, 0",
+        *(["RVTEST_TSBI_GOTO_SMODE"] if mode else []),
+        write_sigupd(data, test_data, label=label.removesuffix(":")),
+        "",
+    ]
+    test_data.int_regs.return_registers([va_reg, data])
+    return lines
+
+
+def _t_v_isolation(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, vs: SvMode, mode: str) -> None:
+    """satp and vsatp map the same address to different pages, and accesses alternate between V=0 and V=1 with no
+    fence between them.  ``mode`` is "S" (HS-mode and VS-mode) or "U" (U-mode and VU-mode)."""
+    modes = ("S", "VS") if mode == "S" else ("U", "VU")
+    # With sig_init=None begin_sv_test reads no register, so the registers are free for the guest setup
+    regs = SvRegs.allocate(test_data)
+    chunk = begin_sv_test(
+        test_data, regs, sv, f"{mode}mode", f"H_{sv.name}_v_isolation_{modes[1].lower()}", sig_init=None
+    )
+    regs.release(test_data)
+    chunk.section_header = comment_banner(
+        "cp_vsatp_v_isolation",
+        "satp maps an address to iso_page_a and vsatp (hgatp = Bare) maps it to iso_page_b.  Load or fetch from it\n"
+        f"in {modes[0]}-mode and {modes[1]}-mode in turn with no fence between, also with a global leaf and different\n"
+        "ASIDs: each access must reach its own page",
+    )
+    for label, ident in (("iso_page_a", 0xA), ("iso_page_b", 0xB)):
+        chunk.raw_data.extend(
+            [
+                ".p2align 12",
+                f"{label}:",
+                f".4byte {0x613 | ident << 20:#010x}    # addi a2, x0, {ident:#x}",
+                ".4byte 0x00008067    # ret",
+                f".4byte {ident * 0x01010101:#010x}    # load word",
+                ".skip 4096 - 12",
+            ]
+        )
+    chunk.raw_data.extend(lower_table_data(sv, vs))
+    code = guest_chunk_setup(test_data, None, vs, modes[1])
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    code.extend(
+        line
+        for stage in (sv, vs)
+        for line in create_page_walk(stage, leaf_level=0, virtual_address=stage.data_va, regs=(pte, addr, tmp))
+    )
+    test_data.int_regs.return_registers([pte, addr, tmp])
+    for case, s_global, vs_global, asid, order, op in V_ISOLATION_CASES:
+        code.append(f"// {case}: satp maps the address to iso_page_a and vsatp to iso_page_b")
+        pte, addr, tmp = test_data.int_regs.get_registers(3)
+        for stage, page, global_ in ((sv, "iso_page_a", s_global), (vs, "iso_page_b", vs_global)):
+            flags = PteFlags(user=mode == "U", global_=global_)
+            code.extend(
+                write_pte(
+                    stage,
+                    level=0,
+                    flags=flags,
+                    virtual_address=stage.data_va,
+                    physical_address=page,
+                    regs=(pte, addr, tmp),
+                )
+            )
+        code.extend([*id_bits(vs.xlen, "asid", asid, tmp), "sfence.vma", "hfence.vvma"])
+        test_data.int_regs.return_registers([pte, addr, tmp])
+        for count, virt in enumerate(order):
+            # HS-mode accesses run in the S-mode driver
+            access_mode = None if modes[virt] == "S" else modes[virt]
+            name = f"{case}_{modes[virt].lower()}{count}"
+            if op == "exec":
+                code.extend(_v_isolation_fetch(test_data, access_mode, sv.data_va, name))
+            else:
+                code.extend(
+                    guest_access(test_data, VS_CG, "cp_vsatp_v_isolation", name, access_mode, sv.data_va, ops=("load",))
+                )
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
@@ -487,9 +713,9 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
         test_data,
         f"H_{g.name}_g_pte",
         "cp_hgatp_perm, cp_hgatp_svade",
-        "In VS-mode with vsatp = Bare, access through G-stage leaves that are invalid, a level-0 pointer, have RSW,\n"
-        "reserved or G bits, are misaligned superpages, or have A or D clear with menvcfg.ADUE = 0 (guest-page\n"
-        "fault, PTE unchanged)",
+        "In VS-mode with vsatp = Bare, access through G-stage leaves that are invalid, have W without R, are a\n"
+        "level-0 pointer, have RSW, reserved or G bits, or are misaligned superpages, under a non-leaf PTE with D, A\n"
+        "or U set, or with A or D clear with menvcfg.ADUE = 0 (guest-page fault, PTE unchanged)",
         stages=(g,),
     )
     va = g.data_va
@@ -497,22 +723,7 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
     for name, flags in [*_pte_format_cases(g.xlen, True), ("g_bit", PteFlags(user=True, global_=True))]:
         setup = map_test_page(test_data, g, None, g_flags=flags)
         code.extend(guest_access(test_data, G_CG, "cp_hgatp_perm", name, "VS", va, setup=setup))
-    for level in range(1, g.levels):
-        pte, addr, tmp = test_data.int_regs.get_registers(3)
-        setup = [
-            *create_page_mapping(
-                g,
-                leaf_level=level,
-                leaf_flags=PteFlags(user=True),
-                virtual_address=g.data_va,
-                physical_address="svh_page",
-                regs=(pte, addr, tmp),
-                superpage=False,
-            ),
-            "hfence.gvma",
-        ]
-        test_data.int_regs.return_registers([pte, addr, tmp])
-        code.extend(guest_access(test_data, G_CG, "cp_hgatp_perm", f"misaligned_lvl{level}", "VS", va, setup=setup))
+    code.extend(_walk_format_accesses(test_data, g, G_CG, "cp_hgatp_perm"))
     code.extend(g_ad_accesses(test_data, g, G_SVADE_CASES, G_CG, "cp_hgatp_svade"))
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
     test_chunks.append(test_data.end_test_chunk())
@@ -1075,17 +1286,27 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
+def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode | None, vs: SvMode, mode: str) -> None:
     """With hedeleg delegating page faults, VS-stage faults go to VS-mode.  Guest-page faults cannot be delegated
-    (hedeleg bits 20-23 are read-only zero), so they still go to HS-mode."""
+    (hedeleg bits 20-23 are read-only zero), so they still go to HS-mode.  With g = None, hgatp is Bare."""
+    # (VS-stage leaf, G-stage leaf, coverpoint)
+    if g is None:
+        what = "(page faults taken in VS-mode), with hgatp = Bare"
+        cases: tuple[tuple[str, str, str], ...] = (("inv", "rwx", "cp_vsatp_hedeleg"), ("r", "rwx", "cp_vsatp_hedeleg"))
+    else:
+        what = "(page faults taken in VS-mode) and an invalid G-stage leaf (guest-page faults\ntaken in HS-mode)"
+        cases = (
+            ("inv", "rwx", "cp_hedeleg_page_fault"),
+            ("r", "rwx", "cp_hedeleg_page_fault"),
+            ("rwx", "inv", "cp_hedeleg_guest_page_fault"),
+        )
     chunk = begin_chunk(
         test_data,
-        f"H_{g.name}_hedeleg_{mode.lower()}",
-        "cp_hedeleg_page_fault, cp_hedeleg_guest_page_fault",
+        f"H_{(g or vs).name}_hedeleg_{mode.lower()}",
+        ", ".join(dict.fromkeys(coverpoint for _, _, coverpoint in cases)),
         f"In {mode}-mode with hedeleg[12], [13], [15], [20], [21] and [23] written with 1, access through an invalid\n"
-        "and a read-only VS-stage leaf (page faults taken in VS-mode) and an invalid G-stage leaf (guest-page faults\n"
-        "taken in HS-mode)",
-        stages=(g, vs),
+        f"and a read-only VS-stage leaf {what}",
+        stages=(vs,) if g is None else (g, vs),
     )
     user = mode == "VU"
     reg = test_data.int_regs.get_register()
@@ -1099,12 +1320,12 @@ def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs:
         f"csrw hedeleg, x{reg}",
     ]
     test_data.int_regs.return_register(reg)
-    for vs_perm, g_perm in (("inv", "rwx"), ("r", "rwx"), ("rwx", "inv")):
+    for vs_perm, g_perm, coverpoint in cases:
         setup = map_test_page(test_data, g, vs, vs_flags=perm_flags(vs_perm, user), g_flags=perm_flags(g_perm, True))
-        name = f"vs_{vs_perm}_g_{g_perm}"
-        coverpoint = "cp_hedeleg_guest_page_fault" if g_perm == "inv" else "cp_hedeleg_page_fault"
-        code.extend(guest_access(test_data, TWO_CG, coverpoint, name, mode, vs.data_va, setup=setup))
-    chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+        name = f"vs_{vs_perm}" if g is None else f"vs_{vs_perm}_g_{g_perm}"
+        covergroup = VS_CG if g is None else TWO_CG
+        code.extend(guest_access(test_data, covergroup, coverpoint, name, mode, vs.data_va, setup=setup))
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -1241,6 +1462,50 @@ def hlv_implicit_accesses(
     return code
 
 
+def _t_hlv_vs(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> None:
+    """HLV, HLVX and HSV with hgatp = Bare: hstatus.SPVP against the VS-stage U bit, vsstatus.SUM and not
+    sstatus.SUM, MXR in each status register, and the execute permission that HLVX needs."""
+    chunk = begin_chunk(
+        test_data,
+        f"H_{vs.name}_hlv",
+        "cp_vsatp_hlv_priv, cp_vsatp_hlv_sum, cp_vsatp_hlv_mxr, cp_vsatp_hlvx_perm",
+        "In HS-mode with hgatp = Bare, execute hlv.w, hlvx.wu and hsv.w on VS-stage pages with U = 0, 1 and\n"
+        "hstatus.SPVP = 0, 1, and with SPVP = 1 on a U = 1 page with vsstatus.SUM and sstatus.SUM (ignored) = 0, 1.\n"
+        "With SPVP = 1, execute hlv.w and hlvx.wu on an execute-only page, and hlvx.wu on a read-only page (a load\n"
+        "page fault, because HLVX needs execute permission), with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1",
+        stages=(vs,),
+    )
+    va = f"{vs.data_va} + 8"
+    reg = test_data.int_regs.get_register()
+    hlv = ("hlv", "hlvx", "hsv")
+    # (name, coverpoint, VS-stage leaf, SPVP, vsstatus.SUM, sstatus.SUM, vsstatus.MXR, sstatus.MXR, accesses)
+    cases: list[tuple[str, str, PteFlags, int, int, int, int, int, Sequence[str]]] = []
+    for spvp in (0, 1):
+        for user in (False, True):
+            cases.append((f"spvp{spvp}_u{int(user)}", "cp_vsatp_hlv_priv", PteFlags(user=user), spvp, 0, 0, 0, 0, hlv))
+    for vs_sum, s_sum in ((1, 0), (0, 1), (1, 1)):
+        name = f"vssum{vs_sum}_ssum{s_sum}_u1"
+        cases.append((name, "cp_vsatp_hlv_sum", PteFlags(user=True), 1, vs_sum, s_sum, 0, 0, hlv))
+    for perm, coverpoint, ops in (("x", "cp_vsatp_hlv_mxr", ("hlv", "hlvx")), ("r", "cp_vsatp_hlvx_perm", ("hlvx",))):
+        for vs_mxr in (0, 1):
+            for s_mxr in (0, 1):
+                name = f"{perm}only_vsmxr{vs_mxr}_smxr{s_mxr}"
+                cases.append((name, coverpoint, perm_flags(perm, False), 1, 0, 0, vs_mxr, s_mxr, ops))
+    code = guest_chunk_setup(test_data, None, vs, "VS")
+    for name, coverpoint, flags, spvp, vs_sum, s_sum, vs_mxr, s_mxr, ops in cases:
+        setup = [
+            *map_test_page(test_data, None, vs, vs_flags=flags),
+            *set_csr_bits("hstatus", "HSTATUS_SPVP", "HSTATUS_SPVP" if spvp else "0", reg),
+            *status_bits("vsstatus", reg, sum_=vs_sum, mxr=vs_mxr),
+            *status_bits("sstatus", reg, sum_=s_sum, mxr=s_mxr),
+        ]
+        code.extend(guest_access(test_data, HLV_CG, coverpoint, name, None, va, setup=setup, ops=ops))
+    code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
+    test_data.int_regs.return_register(reg)
+    chunk.code.extend([*code, *guest_chunk_teardown(test_data, vs.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
 def _hlv_root_gpf(test_data: TestData, g: SvMode, vs: SvMode, va: str) -> list[str]:
     """HLV, HLVX and HSV with vsatp.PPN at a guest physical page whose G-stage leaf is invalid, so the read of the
     VS-stage root table takes a guest-page fault."""
@@ -1349,45 +1614,74 @@ def _supported_mode_check(test_data: TestData, csr: str, gates: Sequence[str]) -
 
 
 def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
-    """Write each MODE to vsatp and hgatp in HS-mode, and to satp (vsatp) in VS-mode."""
+    """Write each MODE to vsatp and hgatp in HS-mode, and to satp (vsatp) in VS-mode.  hgatp starts from Sv39x4 only
+    where it supports Sv39x4; a hart whose hgatp supports only Bare reads Bare after every write."""
     chunk = begin_chunk(
         test_data,
-        "H_sv39x4_atp_mode",
+        "H_sv39_atp_mode",
         "cp_vsatp_mode_field, cp_hgatp_mode_field, cp_satp_mode_field",
-        "Starting from MODE = Bare and Sv39 (Sv39x4), write MODE = 0-15 to vsatp and hgatp in HS-mode, where an\n"
-        "unsupported MODE leaves a supported one (the write is ignored or WARL), and to satp in VS-mode, where an\n"
-        "unsupported MODE is ignored.  The other fields are zero, or the root table in VS-mode",
+        "Starting from MODE = Bare and Sv39 (Sv39x4, where supported), write MODE = 0-15 to vsatp and hgatp in\n"
+        "HS-mode, where an unsupported MODE leaves a supported one (the write is ignored or WARL), and to satp in\n"
+        "VS-mode, where an unsupported MODE is ignored.  Non-Bare vsatp values carry a page table and ASID; the\n"
+        "other fields are zero, or the root table in VS-mode",
     )
     save, val, check = test_data.int_regs.get_registers(3)
+
+    def atp_value(csr: str, mode: int, table: str, asid: str) -> list[str]:
+        """Load x{val} with MODE = ``mode``.  A non-Bare vsatp value also gets PPN = ``table`` and ASID = ``asid``."""
+        if csr == "hgatp" or mode == 0:
+            return [f"LI(x{val}, {mode << 60:#x})"]
+        return [
+            f"LA(x{val}, {table})",
+            f"srli x{val}, x{val}, 12",
+            f"LI(x{check}, ({mode << 60:#x} | (({asid}) << 44)))",
+            f"or x{val}, x{val}, x{check}",
+        ]
+
     code = []
     for csr, stage, coverpoint in (("vsatp", 0, "cp_vsatp_mode_field"), ("hgatp", 1, "cp_hgatp_mode_field")):
         gates = [pair[stage] for pair in ATP_MODES.values()]
         code.append(f"csrr x{save}, {csr}")
         for start in (0, 8):
+            start_code = []
             for mode in range(16):
-                code.extend(
+                # The start and written vsatp values have different page tables and disjoint implemented ASID bits,
+                # so an ignored write is told apart from one that writes or clears those fields
+                start_code.extend(
                     [
-                        f"LI(x{val}, {start << 60:#x})",
+                        *atp_value(csr, start, "rvtest_Vroot_pg_tbl", "(1 << UDB_ASID_WIDTH) >> 1"),
                         f"csrw {csr}, x{val}",
-                        f"LI(x{val}, {mode << 60:#x})",
+                        *atp_value(csr, mode, "rvtest_Hroot_pg_tbl", "((1 << UDB_ASID_WIDTH) - 1) >> 1"),
                         test_data.add_testcase(f"start{start}_mode{mode}", coverpoint, CSR_CG),
                         f"csrw {csr}, x{val}",
                     ]
                 )
+                unsupported = _supported_mode_check(test_data, csr, gates)
+                if csr == "vsatp":
+                    # At V=0, a write of an unsupported MODE to vsatp is ignored or WARL; the UDB parameter says
+                    # which, and an ignored write keeps the whole old value
+                    unsupported = [
+                        "#ifdef UDB_IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO",
+                        gen_csr_read_sigupd(check, (csr, None), test_data),
+                        "#else",
+                        *unsupported,
+                        "#endif",
+                    ]
                 if mode == 0:
-                    code.append(gen_csr_read_sigupd(check, (csr, None), test_data))
+                    start_code.append(gen_csr_read_sigupd(check, (csr, None), test_data))
                 elif mode in ATP_MODES:
-                    code.extend(
+                    start_code.extend(
                         [
                             f"#ifdef {ATP_MODES[mode][stage]}",
                             gen_csr_read_sigupd(check, (csr, None), test_data),
                             "#else",
-                            *_supported_mode_check(test_data, csr, gates),
+                            *unsupported,
                             "#endif",
                         ]
                     )
                 else:
-                    code.extend(_supported_mode_check(test_data, csr, gates))
+                    start_code.extend(unsupported)
+            code.extend(gated(start_code, f"defined({ATP_MODES[8][stage]})") if start else start_code)
         code.append(f"csrw {csr}, x{save}")
 
     # The VS-stage identity maps the test image for Sv39 (gigapages) and for Sv48 and Sv57 (the terapage or
@@ -1438,11 +1732,11 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_bare(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
+def _t_bare(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     """Guest accesses with vsatp and hgatp Bare."""
     chunk = begin_chunk(
         test_data,
-        f"H_{g.name}_bare",
+        "H_bare",
         "cp_stage_both_bare",
         "In VS-mode and VU-mode with vsatp and hgatp Bare, store, load and fetch at a physical address",
     )
@@ -1502,18 +1796,27 @@ def _fence_chunk(test_data: TestData, g: SvMode, vs: SvMode) -> TestChunk:
     return fence_chunk(test_data, g, vs, f"H_{g.name}_fence", fences, "Sv_H_fence_cg", ISOLATION_CASES)
 
 
-def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
-    """Every H group test for the smallest G-stage and VS-stage modes of each XLEN."""
-    test_chunks: list[TestChunk] = []
-    _t_bare(test_data, test_chunks, g)
-    test_chunks.extend(_vs_stage_tests(test_data, vs))
-    test_chunks.extend(_g_stage_tests(test_data, g))
-    test_chunks.extend(_two_stage_tests(test_data, g, vs))
+def _make_svh_vs(test_data: TestData, vs: SvMode) -> list[TestChunk]:
+    """The tests with hgatp = Bare, for the smallest VS-stage mode of each XLEN."""
+    test_chunks = _vs_stage_tests(test_data, vs)
+    _t_hlv_vs(test_data, test_chunks, vs)
     for mode in ("VS", "VU"):
-        _t_hedeleg(test_data, test_chunks, g, vs, mode)
-    if g.xlen == 64:
+        _t_hedeleg(test_data, test_chunks, None, vs, mode)
+    fences = (HFENCE_VVMA_BARE, SFENCE_VMA_VS_BARE)
+    test_chunks.append(
+        fence_chunk(test_data, None, vs, f"H_{vs.name}_fence", fences, "Sv_H_fence_cg", BARE_ISOLATION_CASES)
+    )
+    if vs.xlen == 64:
         _t_atp_mode(test_data, test_chunks)
     return test_chunks
+
+
+def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    """The tests that need both stages, for the smallest G-stage and VS-stage modes of each XLEN."""
+    test_chunks = _two_stage_tests(test_data, g, vs)
+    for mode in ("VS", "VU"):
+        _t_hedeleg(test_data, test_chunks, g, vs, mode)
+    return [*test_chunks, _fence_chunk(test_data, g, vs)]
 
 
 def _make_svh_straddle(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
@@ -1536,14 +1839,85 @@ MISALIGNED_PARAMS = ["MISALIGNED_LDST: true", "MISALIGNED_SPLIT_STRATEGY: sequen
 BOOT = ["#define BOOT_TO_SMODE"]
 
 
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT)
+def make_svh_bare(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_bare(test_data, test_chunks)
+    return test_chunks
+
+
+# vsstatus at V=0, with HS-mode and U-mode translation through satp
+@add_priv_test_generator("Sv", required_extensions=["H", "Sv32"], march_extensions=["H"], extra_defines=BOOT)
+def make_svh_v0_sv32(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_v0_vsstatus(test_data, test_chunks, SV32)
+    return test_chunks
+
+
+@add_priv_test_generator("Sv", required_extensions=["H", "Sv39"], march_extensions=["H"], extra_defines=BOOT)
+def make_svh_v0_sv39(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    _t_v0_vsstatus(test_data, test_chunks, SV39)
+    return test_chunks
+
+
+# satp and vsatp (hgatp = Bare) translating the same address
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Sv32"],
+    march_extensions=["H"],
+    extra_defines=BOOT,
+    params=["SV32_VSMODE_TRANSLATION: true"],
+)
+def make_svh_v_isolation_sv32(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    for mode in ("S", "U"):
+        _t_v_isolation(test_data, test_chunks, SV32, VS_SV32, mode)
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sv",
+    required_extensions=["H", "Sv39"],
+    march_extensions=["H"],
+    extra_defines=BOOT,
+    params=["SV39_VSMODE_TRANSLATION: true"],
+)
+def make_svh_v_isolation_sv39(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    for mode in ("S", "U"):
+        _t_v_isolation(test_data, test_chunks, SV39, VS_SV39, mode)
+    return test_chunks
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV32_VSMODE_TRANSLATION: true"])
+def make_svh_vs_sv32(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_vs(test_data, VS_SV32)
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV32X4_TRANSLATION: true"])
+def make_svh_g_sv32x4(test_data: TestData) -> list[TestChunk]:
+    return _g_stage_tests(test_data, SV32X4)
+
+
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=SV32_PARAMS)
 def make_svh_sv32(test_data: TestData) -> list[TestChunk]:
-    return [*_make_svh(test_data, SV32X4, VS_SV32), _fence_chunk(test_data, SV32X4, VS_SV32)]
+    return _make_svh(test_data, SV32X4, VS_SV32)
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV39_VSMODE_TRANSLATION: true"])
+def make_svh_vs_sv39(test_data: TestData) -> list[TestChunk]:
+    return _make_svh_vs(test_data, VS_SV39)
+
+
+@add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=["SV39X4_TRANSLATION: true"])
+def make_svh_g_sv39x4(test_data: TestData) -> list[TestChunk]:
+    return _g_stage_tests(test_data, SV39X4)
 
 
 @add_priv_test_generator("Sv", required_extensions=["H"], extra_defines=BOOT, params=SV39_PARAMS)
 def make_svh_sv39(test_data: TestData) -> list[TestChunk]:
-    return [*_make_svh(test_data, SV39X4, VS_SV39), _fence_chunk(test_data, SV39X4, VS_SV39)]
+    return _make_svh(test_data, SV39X4, VS_SV39)
 
 
 # A 4-byte instruction in the last halfword of a page needs IALIGN = 16

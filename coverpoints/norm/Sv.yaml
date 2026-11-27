@@ -23,7 +23,7 @@ normative_rule_definitions:
       [
         "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noread_s, cp_upage_smode_sumunset_noexec_s}",
         "Sv_vm_permissions_cg/{cp_upage_smode_sumset_read_s, cp_upage_smode_sumset_noexec_s}",
-        "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte}",
+        "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte,cp_vsatp_cbo_sum}",
       ]
 
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for SXLEN=32
@@ -392,6 +392,7 @@ normative_rule_definitions:
       [
         "Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s",
         "Sv_H_twostage_cg/cp_twostage_canonical",
+        "Sv_H_vsstage_cg/cp_vsatp_canonical",
       ]
 
   # Any level of PTE may be a leaf PTE
@@ -495,6 +496,7 @@ normative_rule_definitions:
       [
         "Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s",
         "Sv_H_twostage_cg/cp_twostage_canonical",
+        "Sv_H_vsstage_cg/cp_vsatp_canonical",
       ]
 
   # Any level of PTE may be a leaf PTE
@@ -567,7 +569,11 @@ normative_rule_definitions:
   # must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur
   # Needs Sv57 bins in canonical_page_{i,d}; the Sv57 canonical tests run but no cross records them.
   - name: Sv57_va_signext
-    coverpoint: ["Sv_H_twostage_cg/cp_twostage_canonical"]
+    coverpoint:
+      [
+        "Sv_H_twostage_cg/cp_twostage_canonical",
+        "Sv_H_vsstage_cg/cp_vsatp_canonical",
+      ]
 
   # Any level of PTE may be a leaf PTE
   # Needs Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run but no cross records the leaf level.
@@ -678,6 +684,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_spage_rwx_cbo_u,cp_upage_sumunset_cbo_s}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # The permissions required for a cache-block management instruction are defined in the
@@ -689,6 +696,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_PTE_inv_cbo_s, cp_spage_rwx_cbo_u}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # During address translation, the instruction also checks the accessed bit and may
@@ -708,6 +716,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_PTE_w_unset_zicboz_s,cp_PTE_w_unset_zicboz_u}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # During address translation, the instruction also checks the accessed and dirty bits
@@ -741,6 +750,7 @@ normative_rule_definitions:
       [
         "Sv_Zicbo_cg/{cp_PTE_r_set_w_unset_zicbom_s,cp_PTE_r_set_w_unset_zicbom_u}",
         "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+        "Sv_HZicbo_cg/cp_vsatp_cbo_pte",
       ]
 
   # PMAs are checked for any access to physical memory, including accesses that have
@@ -956,6 +966,7 @@ normative_rule_definitions:
       [
         "Sv_H_twostage_cg/cp_hedeleg_page_fault",
         "Sv_H_twostage_cg/cp_hedeleg_guest_page_fault",
+        "Sv_H_vsstage_cg/cp_vsatp_hedeleg",
       ]
 
   # vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both stages.  MXR applies only to explicit loads.
@@ -968,9 +979,13 @@ normative_rule_definitions:
         "Sv_H_twostage_cg/cp_implicit_mxr",
       ]
 
-  # vsstatus.SUM in VS-mode
+  # vsstatus.SUM in VS-mode, where it replaces the HS-level SUM
   - name: vsstatus_sz_acc_op
-    coverpoint: ["Sv_H_vsstage_cg/cp_vsatp_sum"]
+    coverpoint: ["Sv_H_vsstage_cg/{cp_vsatp_sum,cp_vsatp_hs_sum}"]
+
+  # vsstatus.SUM and vsstatus.MXR do not affect HS-mode and U-mode accesses
+  - name: vsstatus_v0
+    coverpoint: ["Sv_H_vsstage_cg/{cp_v0_vsstatus_sum,cp_v0_vsstatus_mxr}"]
 
   # HLV, HLVX and HSV: hstatus.SPVP selects the privilege, vsstatus.SUM applies and sstatus.SUM does not,
   # sstatus.MXR affects both stages and vsstatus.MXR the VS-stage, and HLVX needs execute permission
@@ -981,6 +996,7 @@ normative_rule_definitions:
         "Sv_H_hlv_cg/cp_hlv_priv",
         "Sv_H_hlv_cg/cp_hlv_mxr",
         "Sv_H_hlv_cg/cp_hlv_root_gpf",
+        "Sv_H_hlv_cg/{cp_vsatp_hlv_priv,cp_vsatp_hlv_sum,cp_vsatp_hlv_mxr}",
         "Sv_HSm_mprv_cg/cp_vsatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_mprv_sum",
@@ -995,6 +1011,7 @@ normative_rule_definitions:
         "Sv_H_hlv_cg/cp_hlv_mxr",
         "Sv_H_hlv_cg/cp_hlvx_perm",
         "Sv_H_hlv_cg/cp_hlv_implicit",
+        "Sv_H_hlv_cg/{cp_vsatp_hlv_mxr,cp_vsatp_hlvx_perm}",
       ]
 
   # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
@@ -1045,7 +1062,7 @@ normative_rule_definitions:
 
   # hstatus.SPVP sets the effective privilege of the explicit accesses of HLV, HLVX and HSV
   - name: hstatus_spvp_virtls_op
-    coverpoint: ["Sv_H_hlv_cg/cp_hlv_priv"]
+    coverpoint: ["Sv_H_hlv_cg/{cp_hlv_priv,cp_vsatp_hlv_priv}"]
 
   # For Sv32x4, Sv39x4, Sv48x4 and Sv57x4, the root page table is 16 KiB and aligned to 16 KiB
   - name: hgatp_root_pt_sz_align
@@ -1060,14 +1077,29 @@ normative_rule_definitions:
     coverpoint:
       ["No independent assertion: writing hgatp does not imply a fence."]
 
-  # With V=0, SFENCE.VMA takes an HS-level address and ASID and orders only HS-level address translation
+  # With V=0, SFENCE.VMA takes an HS-level address and ASID and orders only HS-level address translation; HS-level
+  # and VS-level translations of the same address are separate
   - name: sfence_vma_v0
-    coverpoint: ["Sv_sfence_cg/cp_ins (Sv tests on an H hart run with V=0)"]
+    coverpoint:
+      [
+        "Sv_sfence_cg/cp_ins (Sv tests on an H hart run with V=0)",
+        "Sv_H_vsstage_cg/cp_vsatp_v_isolation",
+      ]
 
   # With V=1, SFENCE.VMA takes a guest virtual address and a VS-level ASID and orders VS-stage translation for the
   # current VMID
   - name: sfence_vma_v1
-    coverpoint: ["Sv_H_fence_cg/{cp_sfence_vma_vs, cp_sfence_vma_vs_asid}"]
+    coverpoint:
+      [
+        "Sv_H_fence_cg/{cp_sfence_vma_vs, cp_sfence_vma_vs_asid}",
+        "Sv_H_fence_cg/{cp_vsatp_sfence_vma_vs, cp_vsatp_sfence_vma_vs_asid}",
+        "Sv_H_vsstage_cg/cp_vsatp_v_isolation",
+      ]
+
+  # hfence.vvma orders VS-stage translation, also with hgatp = Bare
+  - name: hfence-vvma_hfence-gvma_op
+    coverpoint:
+      ["Sv_H_fence_cg/{cp_vsatp_hfence_vvma, cp_vsatp_hfence_vvma_asid}"]
 
   # MPRV with MPV = 1 translates M-mode loads and stores through both stages, where vsstatus.SUM replaces the
   # HS-level SUM and the HS-level MXR covers both stages
@@ -1078,6 +1110,7 @@ normative_rule_definitions:
         "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_mprv_sum",
         "Sv_HSm_mprv_cg/cp_mprv_mxr",
+        "Sv_HSm_mprv_cg/{cp_vsatp_mprv_sum,cp_vsatp_mprv_mxr}",
       ]
 
   # MPRV does not affect HLV and HSV
@@ -1167,7 +1200,7 @@ normative_rule_definitions:
 
   # CBO permission and faults under two-stage translation
   - name: cbz_access
-    coverpoint: ["Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}"]
+    coverpoint: ["Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte,cp_vsatp_cbo_pte}"]
 
   # With ADUE = 0, a clear A bit, or a clear D bit for cbo.zero, raises a fault in either stage
   - name: Svadu_disabled_hw_update_falls_back_to_Svade
@@ -1196,4 +1229,6 @@ normative_rule_definitions:
         "Sv_vm_permissions_cg/cp_spage_{exec_s_i,noexec_s_i,read_s_d,noread_s_d,write_s_d,nowrite_s_d,rwx_s_i_noexec,rwx_s_d_noread,rwx_s_d_nowrite}",
         "Sv_vm_permissions_cg/cp_PTE_res_rwx_s_{i_exec,d_read,d_write}",
         "Sv_vm_permissions_cg/cp_PTE_nonleaf_lvl0_s_{i_exec,d_read,d_write}",
+        "Sv_H_vsstage_cg/cp_vsatp_perm",
+        "Sv_H_gstage_cg/cp_hgatp_perm",
       ]
